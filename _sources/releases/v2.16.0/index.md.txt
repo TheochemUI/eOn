@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v2.16.0, rgpot, RgpotPot, Davidson, readcon, Metatomic, PbcConvention"
 ---
 
-## [v2.16.0] - pending cut
+## [v2.16.0] - 2026-07-03
 
 Post-`v2.15.0` work on `main`, cut with the standard release flow
 ({doc}`/devdocs/release`). This page is authored **before** the version chore so

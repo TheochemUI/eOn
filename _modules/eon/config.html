@@ -175,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
@@ -199,19 +200,19 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.16.0/index.html">[v2.16.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.15.0/index.html">[v2.15.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.15.0/index.html">[v2.15.0] - 2026-06-24</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.15.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.14.0/index.html">[v2.14.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.14.0/index.html">[v2.14.0] - 2026-04-24</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.14.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.13.0/index.html">[v2.13.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.13.0/index.html">[v2.13.0] - 2026-04-18</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.13.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
@@ -656,41 +657,69 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="315">            <span class="bp">self</span><span class="o">.</span><span class="n">sb_rt_rate_threshold</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span> <span class="s1">&#39;rate_threshold&#39;</span><span class="p">)</span>
 </span><span data-line="316">        <span class="bp">self</span><span class="o">.</span><span class="n">sb_superbasin_confidence</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span> <span class="s1">&#39;superbasin_confidence&#39;</span><span class="p">)</span>
 </span><span data-line="317">
-</span><span data-line="318">        <span class="bp">self</span><span class="o">.</span><span class="n">askmc_on</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;use_askmc&#39;</span><span class="p">)</span>
-</span><span data-line="319">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">askmc_on</span><span class="p">:</span>
-</span><span data-line="320">            <span class="bp">self</span><span class="o">.</span><span class="n">askmc_confidence</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;askmc_confidence&#39;</span><span class="p">)</span>
-</span><span data-line="321">            <span class="bp">self</span><span class="o">.</span><span class="n">askmc_alpha</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;askmc_barrier_raise_param&#39;</span><span class="p">)</span>
-</span><span data-line="322">            <span class="bp">self</span><span class="o">.</span><span class="n">askmc_gamma</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;askmc_high_barrier_def&#39;</span><span class="p">)</span>
-</span><span data-line="323">            <span class="bp">self</span><span class="o">.</span><span class="n">askmc_barrier_test_on</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;askmc_barrier_test_on&#39;</span><span class="p">)</span>
-</span><span data-line="324">            <span class="bp">self</span><span class="o">.</span><span class="n">askmc_connections_test_on</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;askmc_connections_test_on&#39;</span><span class="p">)</span>
-</span><span data-line="325">
-</span><span data-line="326">        <span class="c1"># Optimizers</span>
-</span><span data-line="327">        <span class="bp">self</span><span class="o">.</span><span class="n">optimizers_max_iterations</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;Optimizer&#39;</span><span class="p">,</span> <span class="s1">&#39;max_iterations&#39;</span><span class="p">)</span>
-</span><span data-line="328">
-</span><span data-line="329">        <span class="c1"># Debug options</span>
-</span><span data-line="330">        <span class="bp">self</span><span class="o">.</span><span class="n">debug_interactive_shell</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;interactive_shell&#39;</span><span class="p">)</span>
-</span><span data-line="331">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug_interactive_shell</span><span class="p">:</span>
-</span><span data-line="332">            <span class="kn">import</span><span class="w"> </span><span class="nn">signal</span><span class="o">,</span><span class="w"> </span><span class="nn">code</span>
-</span><span data-line="333">            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="s1">&#39;SIGQUIT&#39;</span><span class="p">):</span>
-</span><span data-line="334">                <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGQUIT</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">code</span><span class="o">.</span><span class="n">interact</span><span class="p">(</span><span class="n">local</span><span class="o">=</span><span class="nb">locals</span><span class="p">()))</span>
-</span><span data-line="335">        <span class="bp">self</span><span class="o">.</span><span class="n">debug_keep_bad_saddles</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;keep_bad_saddles&#39;</span><span class="p">)</span>
-</span><span data-line="336">        <span class="bp">self</span><span class="o">.</span><span class="n">debug_keep_all_results</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;keep_all_result_files&#39;</span><span class="p">)</span>
-</span><span data-line="337">        <span class="bp">self</span><span class="o">.</span><span class="n">debug_results_path</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;result_files_path&#39;</span><span class="p">)</span>
-</span><span data-line="338">        <span class="bp">self</span><span class="o">.</span><span class="n">debug_register_extra_results</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;register_extra_results&#39;</span><span class="p">)</span>
-</span><span data-line="339">        <span class="bp">self</span><span class="o">.</span><span class="n">debug_use_mean_time</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;use_mean_time&#39;</span><span class="p">)</span>
-</span><span data-line="340">        <span class="bp">self</span><span class="o">.</span><span class="n">debug_target_trajectory</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;target_trajectory&#39;</span><span class="p">)</span>
-</span><span data-line="341">        <span class="bp">self</span><span class="o">.</span><span class="n">debug_stop_criterion</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;stop_criterion&#39;</span><span class="p">)</span>
-</span><span data-line="342">
-</span><span data-line="343">        <span class="bp">self</span><span class="o">.</span><span class="n">mpi_poll_period</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Potential&#39;</span><span class="p">,</span> <span class="s1">&#39;mpi_poll_period&#39;</span><span class="p">)</span>
-</span><span data-line="344">
-</span><span data-line="345">        <span class="k">del</span> <span class="n">parser</span></div>
+</span><span data-line="318">        <span class="c1"># [amsel] optional discover_decide gate before Superbasin.step (default off)</span>
+</span><span data-line="319">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="320">            <span class="bp">self</span><span class="o">.</span><span class="n">amsel_discover_decide</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;amsel&#39;</span><span class="p">,</span> <span class="s1">&#39;discover_decide&#39;</span><span class="p">)</span>
+</span><span data-line="321">        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="322">            <span class="bp">self</span><span class="o">.</span><span class="n">amsel_discover_decide</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="323">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="324">            <span class="bp">self</span><span class="o">.</span><span class="n">amsel_e_min_init</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;amsel&#39;</span><span class="p">,</span> <span class="s1">&#39;e_min_init&#39;</span><span class="p">)</span>
+</span><span data-line="325">        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="326">            <span class="bp">self</span><span class="o">.</span><span class="n">amsel_e_min_init</span> <span class="o">=</span> <span class="mf">0.5</span>
+</span><span data-line="327">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="328">            <span class="bp">self</span><span class="o">.</span><span class="n">amsel_e_min_step</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;amsel&#39;</span><span class="p">,</span> <span class="s1">&#39;e_min_step&#39;</span><span class="p">)</span>
+</span><span data-line="329">        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="330">            <span class="bp">self</span><span class="o">.</span><span class="n">amsel_e_min_step</span> <span class="o">=</span> <span class="mf">0.05</span>
+</span><span data-line="331">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="332">            <span class="bp">self</span><span class="o">.</span><span class="n">amsel_e_min_floor</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;amsel&#39;</span><span class="p">,</span> <span class="s1">&#39;e_min_floor&#39;</span><span class="p">)</span>
+</span><span data-line="333">        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="334">            <span class="bp">self</span><span class="o">.</span><span class="n">amsel_e_min_floor</span> <span class="o">=</span> <span class="mf">0.05</span>
+</span><span data-line="335">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="336">            <span class="bp">self</span><span class="o">.</span><span class="n">amsel_cv_threshold</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;amsel&#39;</span><span class="p">,</span> <span class="s1">&#39;cv_threshold&#39;</span><span class="p">)</span>
+</span><span data-line="337">        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="338">            <span class="bp">self</span><span class="o">.</span><span class="n">amsel_cv_threshold</span> <span class="o">=</span> <span class="mf">10.0</span>
+</span><span data-line="339">        <span class="c1"># Back-compat aliases used by Superbasin.step getattr</span>
+</span><span data-line="340">        <span class="bp">self</span><span class="o">.</span><span class="n">sb_amsel_discover_decide</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amsel_discover_decide</span>
+</span><span data-line="341">        <span class="bp">self</span><span class="o">.</span><span class="n">sb_amsel_e_min_init</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amsel_e_min_init</span>
+</span><span data-line="342">        <span class="bp">self</span><span class="o">.</span><span class="n">sb_amsel_e_min_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amsel_e_min_step</span>
+</span><span data-line="343">        <span class="bp">self</span><span class="o">.</span><span class="n">sb_amsel_e_min_floor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amsel_e_min_floor</span>
+</span><span data-line="344">        <span class="bp">self</span><span class="o">.</span><span class="n">sb_amsel_cv_threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amsel_cv_threshold</span>
+</span><span data-line="345">
+</span><span data-line="346">        <span class="bp">self</span><span class="o">.</span><span class="n">askmc_on</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;use_askmc&#39;</span><span class="p">)</span>
+</span><span data-line="347">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">askmc_on</span><span class="p">:</span>
+</span><span data-line="348">            <span class="bp">self</span><span class="o">.</span><span class="n">askmc_confidence</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;askmc_confidence&#39;</span><span class="p">)</span>
+</span><span data-line="349">            <span class="bp">self</span><span class="o">.</span><span class="n">askmc_alpha</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;askmc_barrier_raise_param&#39;</span><span class="p">)</span>
+</span><span data-line="350">            <span class="bp">self</span><span class="o">.</span><span class="n">askmc_gamma</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;askmc_high_barrier_def&#39;</span><span class="p">)</span>
+</span><span data-line="351">            <span class="bp">self</span><span class="o">.</span><span class="n">askmc_barrier_test_on</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;askmc_barrier_test_on&#39;</span><span class="p">)</span>
+</span><span data-line="352">            <span class="bp">self</span><span class="o">.</span><span class="n">askmc_connections_test_on</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Coarse Graining&#39;</span><span class="p">,</span><span class="s1">&#39;askmc_connections_test_on&#39;</span><span class="p">)</span>
+</span><span data-line="353">
+</span><span data-line="354">        <span class="c1"># Optimizers</span>
+</span><span data-line="355">        <span class="bp">self</span><span class="o">.</span><span class="n">optimizers_max_iterations</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;Optimizer&#39;</span><span class="p">,</span> <span class="s1">&#39;max_iterations&#39;</span><span class="p">)</span>
+</span><span data-line="356">
+</span><span data-line="357">        <span class="c1"># Debug options</span>
+</span><span data-line="358">        <span class="bp">self</span><span class="o">.</span><span class="n">debug_interactive_shell</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;interactive_shell&#39;</span><span class="p">)</span>
+</span><span data-line="359">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug_interactive_shell</span><span class="p">:</span>
+</span><span data-line="360">            <span class="kn">import</span><span class="w"> </span><span class="nn">signal</span><span class="o">,</span><span class="w"> </span><span class="nn">code</span>
+</span><span data-line="361">            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="s1">&#39;SIGQUIT&#39;</span><span class="p">):</span>
+</span><span data-line="362">                <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGQUIT</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">code</span><span class="o">.</span><span class="n">interact</span><span class="p">(</span><span class="n">local</span><span class="o">=</span><span class="nb">locals</span><span class="p">()))</span>
+</span><span data-line="363">        <span class="bp">self</span><span class="o">.</span><span class="n">debug_keep_bad_saddles</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;keep_bad_saddles&#39;</span><span class="p">)</span>
+</span><span data-line="364">        <span class="bp">self</span><span class="o">.</span><span class="n">debug_keep_all_results</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;keep_all_result_files&#39;</span><span class="p">)</span>
+</span><span data-line="365">        <span class="bp">self</span><span class="o">.</span><span class="n">debug_results_path</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;result_files_path&#39;</span><span class="p">)</span>
+</span><span data-line="366">        <span class="bp">self</span><span class="o">.</span><span class="n">debug_register_extra_results</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;register_extra_results&#39;</span><span class="p">)</span>
+</span><span data-line="367">        <span class="bp">self</span><span class="o">.</span><span class="n">debug_use_mean_time</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getboolean</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;use_mean_time&#39;</span><span class="p">)</span>
+</span><span data-line="368">        <span class="bp">self</span><span class="o">.</span><span class="n">debug_target_trajectory</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;target_trajectory&#39;</span><span class="p">)</span>
+</span><span data-line="369">        <span class="bp">self</span><span class="o">.</span><span class="n">debug_stop_criterion</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Debug&#39;</span><span class="p">,</span> <span class="s1">&#39;stop_criterion&#39;</span><span class="p">)</span>
+</span><span data-line="370">
+</span><span data-line="371">        <span class="bp">self</span><span class="o">.</span><span class="n">mpi_poll_period</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;Potential&#39;</span><span class="p">,</span> <span class="s1">&#39;mpi_poll_period&#39;</span><span class="p">)</span>
+</span><span data-line="372">
+</span><span data-line="373">        <span class="k">del</span> <span class="n">parser</span></div>
 </div>
 
-</span><span data-line="346">
-</span><span data-line="347"><span class="c1"># Process-edge default instance for CLI / ``python -m eon`` only.</span>
-</span><span data-line="348"><span class="c1"># Library code must take ConfigClass via parameter injection (see epic eOn-gmhl).</span>
-</span><span data-line="349"><span class="c1"># Prefer: cfg = ConfigClass(); cfg.init(path); runner(cfg)</span>
-</span><span data-line="350"><span class="n">config</span> <span class="o">=</span> <span class="n">ConfigClass</span><span class="p">()</span>
+</span><span data-line="374">
+</span><span data-line="375"><span class="c1"># Process-edge default instance for CLI / ``python -m eon`` only.</span>
+</span><span data-line="376"><span class="c1"># Library code must take ConfigClass via parameter injection (see epic eOn-gmhl).</span>
+</span><span data-line="377"><span class="c1"># Prefer: cfg = ConfigClass(); cfg.init(path); runner(cfg)</span>
+</span><span data-line="378"><span class="n">config</span> <span class="o">=</span> <span class="n">ConfigClass</span><span class="p">()</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -721,7 +750,7 @@ data-aria-dark="Switch to auto color mode">
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=e9c9fbf8"></script>
+      <script src="../../_static/documentation_options.js?v=7a49f58b"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

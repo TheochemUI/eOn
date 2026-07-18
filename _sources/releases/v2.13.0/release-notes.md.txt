@@ -7,7 +7,7 @@ myst:
 
 # Release notes
 
-## [v2.13.0] - 2026-XX-XX
+## [v2.13.0] - 2026-04-18
 
 See the [CHANGELOG](project:../changelog.md) for the full fragment-by-fragment
 list; this page picks out the user-facing highlights.

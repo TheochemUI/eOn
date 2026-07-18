@@ -175,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
@@ -199,19 +200,19 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.15.0/index.html">[v2.15.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.15.0/index.html">[v2.15.0] - 2026-06-24</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.15.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.14.0/index.html">[v2.14.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.14.0/index.html">[v2.14.0] - 2026-04-24</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.14.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.13.0/index.html">[v2.13.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.13.0/index.html">[v2.13.0] - 2026-04-18</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.13.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
@@ -276,8 +277,7 @@ data-aria-dark="Switch to auto color mode">
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#">Installation</a><ul>
-<li><a class="reference internal" href="#python-client-only-pyeonclient">Python client only (<code class="docutils literal notranslate"><span class="pre">pyeonclient</span></code>)</a></li>
-<li><a class="reference internal" href="#getting-started-full-eon">Getting started (full eOn)</a></li>
+<li><a class="reference internal" href="#getting-started">Getting started</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#obtaining-sources">Obtaining sources</a><ul>
@@ -386,21 +386,9 @@ data-aria-dark="Switch to auto color mode">
 does most of the computation (e.g. saddle searches, minimizations, and molecular
 dynamics) while the server creates the input for the client and processes its
 results.</p>
-<section id="python-client-only-pyeonclient">
-<h2>Python client only (<code class="docutils literal notranslate"><span class="pre">pyeonclient</span></code>)<a class="headerlink" href="#python-client-only-pyeonclient" title="Link to this heading">¶</a></h2>
-<p>For in-process minimization / NEB without the conda <code class="docutils literal notranslate"><span class="pre">eon</span></code> package or the
-<code class="docutils literal notranslate"><span class="pre">eonclient</span></code> binary:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span>pyeonclient<span class="w"> </span><span class="s1">&#39;rgpot&gt;=2.4.2&#39;</span>
-</span><span data-line="2">pip<span class="w"> </span>install<span class="w"> </span><span class="s1">&#39;pyeonclient[ase,metatomic]&#39;</span><span class="w">   </span><span class="c1"># ASE converters + torch stack</span>
-</span></pre></div>
-</div>
-<p>Then use Matter objects as in <a class="reference internal" href="../user_guide/pyeonclient.html"><span class="doc">pyeonclient (Python client API)</span></a> (ASE-shaped API).
-Wheels and variants: <a class="reference internal" href="../devdocs/pyeonclient-pypi.html"><span class="doc">pyeonclient on PyPI</span></a>.</p>
-</section>
-<section id="getting-started-full-eon">
-<h2>Getting started (full eOn)<a class="headerlink" href="#getting-started-full-eon" title="Link to this heading">¶</a></h2>
-<p>The simplest way to hit the ground running with the full server + client is the
-<code class="docutils literal notranslate"><span class="pre">conda</span></code> package:</p>
+<section id="getting-started">
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h2>
+<p>The simplest way to hit the ground running is with the <code class="docutils literal notranslate"><span class="pre">conda</span></code> package:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># best with pixi</span>
 </span><span data-line="2">pixi<span class="w"> </span>init
 </span><span data-line="3">pixi<span class="w"> </span>add<span class="w"> </span>eon
@@ -464,9 +452,12 @@ passed with <code class="docutils literal notranslate"><span class="pre">--nativ
 compiler sysroot can conflict with system headers. The symptom is errors like
 <code class="docutils literal notranslate"><span class="pre">__iseqsigf128</span> <span class="pre">was</span> <span class="pre">not</span> <span class="pre">declared</span></code> or <code class="docutils literal notranslate"><span class="pre">__fpclassify</span> <span class="pre">has</span> <span class="pre">not</span> <span class="pre">been</span> <span class="pre">declared</span></code> when
 compiling with the pixi/conda compilers.</p>
-<p>The root cause is system-installed CMake configs (e.g. <code class="docutils literal notranslate"><span class="pre">nlohmann_json</span></code>) exporting
-<code class="docutils literal notranslate"><span class="pre">-I/usr/include</span></code>, which mixes the system glibc headers with the conda sysroot.
-Fix by forcing meson to use subproject fallbacks:</p>
+<p>By default meson <strong>prefers</strong> an installed <code class="docutils literal notranslate"><span class="pre">nlohmann_json</span></code> module (pkg-config /
+cmake; EasyBuild and distro packages), with the wrap as fallback — same pattern
+as readcon.</p>
+<p>On rolling-release distros with conda compilers, system CMake configs can still
+export <code class="docutils literal notranslate"><span class="pre">-I/usr/include</span></code> and mix glibc headers with the conda sysroot. Force the
+wrap when that happens:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">meson<span class="w"> </span>setup<span class="w"> </span>bbdir<span class="w"> </span>--prefix<span class="o">=</span><span class="nv">$CONDA_PREFIX</span><span class="w"> </span>--libdir<span class="o">=</span>lib<span class="w"> </span><span class="se">\</span>
 </span><span data-line="2"><span class="w">  </span>--force-fallback-for<span class="o">=</span>nlohmann_json
 </span></pre></div>
@@ -566,7 +557,7 @@ License</a>.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=e9c9fbf8"></script>
+      <script src="../_static/documentation_options.js?v=7a49f58b"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

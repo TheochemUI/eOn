@@ -175,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
@@ -199,19 +200,19 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.15.0/index.html">[v2.15.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.15.0/index.html">[v2.15.0] - 2026-06-24</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.15.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.14.0/index.html">[v2.14.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.14.0/index.html">[v2.14.0] - 2026-04-24</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.14.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.13.0/index.html">[v2.13.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.13.0/index.html">[v2.13.0] - 2026-04-18</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.13.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
@@ -378,10 +379,7 @@ data-aria-dark="Switch to auto color mode">
 </div>
 <p>When eOn is built with <strong><code class="docutils literal notranslate"><span class="pre">-Dwith_rgpot=true</span></code></strong>, potential type <strong><code class="docutils literal notranslate"><span class="pre">RGPOT</span></code></strong> links
 <a class="reference external" href="https://github.com/OmniPotentRPC/rgpot">rgpot</a> <strong>NWChemPot</strong> / <strong>CPMDPot</strong> and
-loads <code class="docutils literal notranslate"><span class="pre">libnwchemc.so</span></code> / <code class="docutils literal notranslate"><span class="pre">libcpmdc.so</span></code> with <strong><code class="docutils literal notranslate"><span class="pre">dlopen</span></code> in the eOn process</strong>.
-Backend <strong><code class="docutils literal notranslate"><span class="pre">metatomic</span></code></strong> uses the same RGPOT pot type but loads
-<code class="docutils literal notranslate"><span class="pre">libmetatomic_engine.so</span></code> (see <a class="reference internal" href="rgpot_metatomic.html"><span class="std std-doc">RGPOT Metatomic</span></a>);
-native <code class="docutils literal notranslate"><span class="pre">potential</span> <span class="pre">=</span> <span class="pre">Metatomic</span></code> remains the default packaging path.</p>
+loads <code class="docutils literal notranslate"><span class="pre">libnwchemc.so</span></code> / <code class="docutils literal notranslate"><span class="pre">libcpmdc.so</span></code> with <strong><code class="docutils literal notranslate"><span class="pre">dlopen</span></code> in the eOn process</strong>.</p>
 <p>This is <strong>not</strong>:</p>
 <ul class="simple">
 <li><p>Cap’n Proto to <strong>potserv</strong> (that is an <em>external</em> RPC client role), nor</p></li>
@@ -433,10 +431,36 @@ locator); see rgpot NWChemPot.</p>
 </span><span data-line="4"><span class="na">cutoff_ry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">70.0</span>
 </span></pre></div>
 </div>
+<p>For Metatomic (dlopen engine; no fat metatomic/torch link into eOn):</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Potential]</span>
+</span><span data-line="2"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">RGPOT</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">[RgpotPot]</span>
+</span><span data-line="5"><span class="na">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">metatomic</span>
+</span><span data-line="6"><span class="na">model_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/path/to/model.pt</span>
+</span><span data-line="7"><span class="na">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cpu</span>
+</span><span data-line="8"><span class="c1"># engine_path = /path/to/libmetatomic_engine.so</span>
+</span><span data-line="9"><span class="c1"># or: export RGPOT_METATOMIC_ENGINE=...</span>
+</span></pre></div>
+</div>
+<p>For xTB (preferred packaging path; leaves <code class="docutils literal notranslate"><span class="pre">-Dwith_xtb=false</span></code>):</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Potential]</span>
+</span><span data-line="2"><span class="na">potential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">RGPOT</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">[RgpotPot]</span>
+</span><span data-line="5"><span class="na">backend</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">xtb</span>
+</span><span data-line="6"><span class="na">paramset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">GFN2xTB</span>
+</span><span data-line="7"><span class="na">accuracy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1.0</span>
+</span><span data-line="8"><span class="c1"># engine_path = /path/to/libxtb_engine.so</span>
+</span><span data-line="9"><span class="c1"># or: export RGPOT_XTB_ENGINE=...</span>
+</span></pre></div>
+</div>
 <p>Optional <code class="docutils literal notranslate"><span class="pre">input_block</span></code> (or env <code class="docutils literal notranslate"><span class="pre">RGPOT_NWCHEM_INPUT_BLOCK</span></code>) supplies NWChem
 <code class="docutils literal notranslate"><span class="pre">inputBlocks</span></code> (e.g. explicit <code class="docutils literal notranslate"><span class="pre">dft</span></code> / <code class="docutils literal notranslate"><span class="pre">xc</span></code> stanzas). When <code class="docutils literal notranslate"><span class="pre">theory=dft</span></code> and
 <code class="docutils literal notranslate"><span class="pre">scf_type</span></code> looks like an XC label (e.g. <code class="docutils literal notranslate"><span class="pre">b3lyp</span></code>), a minimal DFT block is
 emitted automatically.</p>
+<p>Installed <strong>rgpot ≥ 2.5.0</strong> is preferred via <code class="docutils literal notranslate"><span class="pre">pkg-config</span></code> (<code class="docutils literal notranslate"><span class="pre">dependency('rgpot')</span></code>);
+the Meson wrap is the fallback for hermetic/dev builds.</p>
 </section>
 <section id="vs-socketnwchem">
 <h2>vs SocketNWChem<a class="headerlink" href="#vs-socketnwchem" title="Link to this heading">¶</a></h2>
@@ -520,7 +544,7 @@ Hartree / Hartree·bohr⁻¹.</p></li>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=e9c9fbf8"></script>
+      <script src="../_static/documentation_options.js?v=7a49f58b"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

@@ -12,23 +12,9 @@ does most of the computation (e.g. saddle searches, minimizations, and molecular
 dynamics) while the server creates the input for the client and processes its
 results.
 
-## Python client only (`pyeonclient`)
+## Getting started
 
-For in-process minimization / NEB without the conda `eon` package or the
-`eonclient` binary:
-
-```{code-block} bash
-pip install pyeonclient 'rgpot>=2.4.2'
-pip install 'pyeonclient[ase,metatomic]'   # ASE converters + torch stack
-```
-
-Then use Matter objects as in {doc}`/user_guide/pyeonclient` (ASE-shaped API).
-Wheels and variants: {doc}`/devdocs/pyeonclient-pypi`.
-
-## Getting started (full eOn)
-
-The simplest way to hit the ground running with the full server + client is the
-`conda` package:
+The simplest way to hit the ground running is with the `conda` package:
 
 ```{code-block} bash
 # best with pixi
@@ -113,9 +99,13 @@ compiler sysroot can conflict with system headers. The symptom is errors like
 `__iseqsigf128 was not declared` or `__fpclassify has not been declared` when
 compiling with the pixi/conda compilers.
 
-The root cause is system-installed CMake configs (e.g. `nlohmann_json`) exporting
-`-I/usr/include`, which mixes the system glibc headers with the conda sysroot.
-Fix by forcing meson to use subproject fallbacks:
+By default meson **prefers** an installed `nlohmann_json` module (pkg-config /
+cmake; EasyBuild and distro packages), with the wrap as fallback — same pattern
+as readcon.
+
+On rolling-release distros with conda compilers, system CMake configs can still
+export `-I/usr/include` and mix glibc headers with the conda sysroot. Force the
+wrap when that happens:
 
 ```{code-block} bash
 meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib \

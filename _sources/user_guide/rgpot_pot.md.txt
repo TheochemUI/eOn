@@ -13,9 +13,6 @@ myst:
 When eOn is built with **`-Dwith_rgpot=true`**, potential type **`RGPOT`** links
 [rgpot](https://github.com/OmniPotentRPC/rgpot) **NWChemPot** / **CPMDPot** and
 loads `libnwchemc.so` / `libcpmdc.so` with **`dlopen` in the eOn process**.
-Backend **`metatomic`** uses the same RGPOT pot type but loads
-`libmetatomic_engine.so` (see [RGPOT Metatomic](project:rgpot_metatomic.md));
-native `potential = Metatomic` remains the default packaging path.
 
 This is **not**:
 
@@ -74,10 +71,41 @@ functional = BLYP
 cutoff_ry = 70.0
 ```
 
+For Metatomic (dlopen engine; no fat metatomic/torch link into eOn):
+
+```{code-block} ini
+[Potential]
+potential = RGPOT
+
+[RgpotPot]
+backend = metatomic
+model_path = /path/to/model.pt
+device = cpu
+# engine_path = /path/to/libmetatomic_engine.so
+# or: export RGPOT_METATOMIC_ENGINE=...
+```
+
+For xTB (preferred packaging path; leaves `-Dwith_xtb=false`):
+
+```{code-block} ini
+[Potential]
+potential = RGPOT
+
+[RgpotPot]
+backend = xtb
+paramset = GFN2xTB
+accuracy = 1.0
+# engine_path = /path/to/libxtb_engine.so
+# or: export RGPOT_XTB_ENGINE=...
+```
+
 Optional `input_block` (or env `RGPOT_NWCHEM_INPUT_BLOCK`) supplies NWChem
 `inputBlocks` (e.g. explicit `dft` / `xc` stanzas). When `theory=dft` and
 `scf_type` looks like an XC label (e.g. `b3lyp`), a minimal DFT block is
 emitted automatically.
+
+Installed **rgpot ≥ 2.5.0** is preferred via `pkg-config` (`dependency('rgpot')`);
+the Meson wrap is the fallback for hermetic/dev builds.
 
 ## vs SocketNWChem
 

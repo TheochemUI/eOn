@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Release notes - eOn</title><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="[v2.13.0] - 2026-XX-XX" href="../v2.13.0/index.html" /><link rel="prev" title="[v2.14.0] - 2026-XX-XX" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Release notes - eOn</title><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="[v2.13.0] - 2026-04-18" href="../v2.13.0/index.html" /><link rel="prev" title="[v2.14.0] - 2026-04-24" href="index.html" />
       <link rel="canonical" href="https://eondocs.org/releases/v2.14.0/release-notes.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -175,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
@@ -199,19 +200,19 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Releases</a><ul class="current">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../changelog.html">Changelog</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../v2.16.0/index.html">[v2.16.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../v2.15.0/index.html">[v2.15.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../v2.15.0/index.html">[v2.15.0] - 2026-06-24</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../v2.15.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html">[v2.14.0] - 2026-XX-XX</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">[v2.14.0] - 2026-04-24</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../v2.13.0/index.html">[v2.13.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../v2.13.0/index.html">[v2.13.0] - 2026-04-18</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../v2.13.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
@@ -275,7 +276,7 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
-<li><a class="reference internal" href="#v2-14-0-2026-xx-xx">[v2.14.0] - 2026-XX-XX</a><ul>
+<li><a class="reference internal" href="#v2-14-0-2026-04-24">[v2.14.0] - 2026-04-24</a><ul>
 <li><a class="reference internal" href="#trajectory-output">Trajectory output</a><ul>
 <li><a class="reference internal" href="#structured-per-frame-metadata-in-con-movies">Structured per-frame metadata in <code class="docutils literal notranslate"><span class="pre">.con</span></code> movies</a></li>
 <li><a class="reference internal" href="#visualization-tutorial">Visualization tutorial</a></li>
@@ -347,7 +348,7 @@ data-aria-dark="Switch to auto color mode">
         <span>/</span>
         <meta itemprop="position" content="2" />
       </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <a itemprop="item" href="index.html"><span itemprop="name">[v2.14.0] - 2026-XX-XX</span></a>
+        <a itemprop="item" href="index.html"><span itemprop="name">[v2.14.0] - 2026-04-24</span></a>
         <span>/</span>
         <meta itemprop="position" content="3" />
       </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
@@ -401,8 +402,8 @@ data-aria-dark="Switch to auto color mode">
 </div><article class="yue dark-code" role="main">
           <section id="release-notes">
 <h1>Release notes<a class="headerlink" href="#release-notes" title="Link to this heading">¶</a></h1>
-<section id="v2-14-0-2026-xx-xx">
-<h2>[v2.14.0] - 2026-XX-XX<a class="headerlink" href="#v2-14-0-2026-xx-xx" title="Link to this heading">¶</a></h2>
+<section id="v2-14-0-2026-04-24">
+<h2>[v2.14.0] - 2026-04-24<a class="headerlink" href="#v2-14-0-2026-04-24" title="Link to this heading">¶</a></h2>
 <p>See the <a class="reference internal" href="../changelog.html"><span class="std std-doc">CHANGELOG</span></a> for the fragment-by-fragment
 list; this page picks out the user-facing highlights.</p>
 <section id="trajectory-output">
@@ -554,13 +555,13 @@ pixi env for dev builds).</p></li>
     <a href="index.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span><div class="title">[v2.14.0] - 2026-XX-XX</div></div>
+        <span>Previous</span><div class="title">[v2.14.0] - 2026-04-24</div></div>
     </a>
   </div><div class="navigation-next">
     <a href="../v2.13.0/index.html">
       <div class="page-info">
         <span>Next</span>
-        <div class="title">[v2.13.0] - 2026-XX-XX</div>
+        <div class="title">[v2.13.0] - 2026-04-18</div>
       </div>
       <i class="i-lucide chevron-right"></i>
     </a>
@@ -588,7 +589,7 @@ pixi env for dev builds).</p></li>
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=e9c9fbf8"></script>
+      <script src="../../_static/documentation_options.js?v=7a49f58b"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

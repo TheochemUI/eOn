@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>eon.prstatelist - eOn</title><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="eon.state" href="eon.state.html" /><link rel="prev" title="eon.statelist" href="eon.statelist.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>eon.prstatelist - eOn</title><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="eon.state" href="eon.state.html" /><link rel="prev" title="eon.amsel_superbasin_gate" href="eon.amsel_superbasin_gate.html" />
       <link rel="canonical" href="https://eondocs.org/apidocs/eon/eon.prstatelist.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -175,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
@@ -199,19 +200,19 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.16.0/index.html">[v2.16.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.15.0/index.html">[v2.15.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.15.0/index.html">[v2.15.0] - 2026-06-24</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.15.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.14.0/index.html">[v2.14.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.14.0/index.html">[v2.14.0] - 2026-04-24</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.14.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.13.0/index.html">[v2.13.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.13.0/index.html">[v2.13.0] - 2026-04-18</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.13.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
@@ -386,7 +387,7 @@ data-aria-dark="Switch to auto color mode">
 
 <dl class="py class">
 <dt class="sig sig-object py" id="eon.prstatelist.PRStateList">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.prstatelist.</span></span><span class="sig-name descname"><span class="pre">PRStateList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.prstatelist.PRStateList" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.prstatelist.</span></span><span class="sig-name descname"><span class="pre">PRStateList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/prstatelist.html#PRStateList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.prstatelist.PRStateList" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="eon.statelist.html#eon.statelist.StateList" title="eon.statelist.StateList"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eon.statelist.StateList</span></code></a></p>
 <p>The StateList class.  Serves as an interface to State objects and StateList metadata.</p>
 <p class="rubric">Initialization</p>
@@ -395,7 +396,7 @@ Initializes state zero when passed a initial_state only if state
 zero doesn’t already exist.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.prstatelist.PRStateList.register_process">
-<span class="sig-name descname"><span class="pre">register_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactant_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.prstatelist.PRStateList.register_process" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">register_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactant_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/prstatelist.html#PRStateList.register_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.prstatelist.PRStateList.register_process" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -410,10 +411,10 @@ zero doesn’t already exist.</p>
   </svg>
   <span>Back to top</span>
 </button><div class="navigation flex print:hidden"><div class="navigation-prev">
-    <a href="eon.statelist.html">
+    <a href="eon.amsel_superbasin_gate.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span><div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></div></div>
+        <span>Previous</span><div class="title"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></div></div>
     </a>
   </div><div class="navigation-next">
     <a href="eon.state.html">
@@ -447,7 +448,7 @@ zero doesn’t already exist.</p>
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=e9c9fbf8"></script>
+      <script src="../../_static/documentation_options.js?v=7a49f58b"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

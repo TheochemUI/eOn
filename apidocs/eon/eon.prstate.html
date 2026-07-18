@@ -175,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
@@ -199,19 +200,19 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.16.0/index.html">[v2.16.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.15.0/index.html">[v2.15.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.15.0/index.html">[v2.15.0] - 2026-06-24</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.15.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.14.0/index.html">[v2.14.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.14.0/index.html">[v2.14.0] - 2026-04-24</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.14.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.13.0/index.html">[v2.13.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.13.0/index.html">[v2.13.0] - 2026-04-18</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.13.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
@@ -396,7 +397,7 @@ data-aria-dark="Switch to auto color mode">
 
 <dl class="py class">
 <dt class="sig sig-object py" id="eon.prstate.PRState">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.prstate.</span></span><span class="sig-name descname"><span class="pre">PRState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statenumber</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statelist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_state_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reactant_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.prstate.PRState" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.prstate.</span></span><span class="sig-name descname"><span class="pre">PRState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statenumber</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statelist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_state_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reactant_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/prstate.html#PRState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.prstate.PRState" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="eon.state.html#eon.state.State" title="eon.state.State"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eon.state.State</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="eon.prstate.PRState.processtable_head_fmt">
@@ -424,43 +425,43 @@ data-aria-dark="Switch to auto color mode">
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.prstate.PRState.add_process">
-<span class="sig-name descname"><span class="pre">add_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.prstate.PRState.add_process" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">add_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/prstate.html#PRState.add_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.prstate.PRState.add_process" title="Link to this definition">¶</a></dt>
 <dd><p>Adds a process to this state.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.prstate.PRState.load_process_table">
-<span class="sig-name descname"><span class="pre">load_process_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.prstate.PRState.load_process_table" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">load_process_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/prstate.html#PRState.load_process_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.prstate.PRState.load_process_table" title="Link to this definition">¶</a></dt>
 <dd><p>Load the process table.  If the process table is not loaded, load it.  If it is
 loaded, do nothing.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.prstate.PRState.save_process_table">
-<span class="sig-name descname"><span class="pre">save_process_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.prstate.PRState.save_process_table" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">save_process_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/prstate.html#PRState.save_process_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.prstate.PRState.save_process_table" title="Link to this definition">¶</a></dt>
 <dd><p>If the processtable is present in memory, writes it to disk.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.prstate.PRState.append_process_table">
-<span class="sig-name descname"><span class="pre">append_process_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.prstate.PRState.append_process_table" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">append_process_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">product_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/prstate.html#PRState.append_process_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.prstate.PRState.append_process_table" title="Link to this definition">¶</a></dt>
 <dd><p>Append to the process table.  Append a single line to the process table file.  If we
 have loaded the process table, also append it to the process table in memory.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.prstate.PRState.get_time">
-<span class="sig-name descname"><span class="pre">get_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.prstate.PRState.get_time" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/prstate.html#PRState.get_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.prstate.PRState.get_time" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.prstate.PRState.inc_time">
-<span class="sig-name descname"><span class="pre">inc_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeinc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.prstate.PRState.inc_time" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">inc_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeinc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/prstate.html#PRState.inc_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.prstate.PRState.inc_time" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.prstate.PRState.zero_time">
-<span class="sig-name descname"><span class="pre">zero_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.prstate.PRState.zero_time" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">zero_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/prstate.html#PRState.zero_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.prstate.PRState.zero_time" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -512,7 +513,7 @@ have loaded the process table, also append it to the process table in memory.</p
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=e9c9fbf8"></script>
+      <script src="../../_static/documentation_options.js?v=7a49f58b"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

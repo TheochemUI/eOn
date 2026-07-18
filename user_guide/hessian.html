@@ -175,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
@@ -199,19 +200,19 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.15.0/index.html">[v2.15.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.15.0/index.html">[v2.15.0] - 2026-06-24</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.15.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.14.0/index.html">[v2.14.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.14.0/index.html">[v2.14.0] - 2026-04-24</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.14.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.13.0/index.html">[v2.13.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.13.0/index.html">[v2.13.0] - 2026-04-18</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.13.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
@@ -275,10 +276,12 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
-<li><a class="reference internal" href="#how-it-works">How It Works</a></li>
+<li><a class="reference internal" href="#how-it-works">How It Works</a><ul>
+<li><a class="reference internal" href="#fd-schemes-hessian-fd-scheme">FD schemes (<code class="docutils literal notranslate"><span class="pre">[Hessian]</span> <span class="pre">fd_scheme</span></code>)</a></li>
+<li><a class="reference internal" href="#column-resume">Column resume</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#usage">Usage</a></li>
-<li><a class="reference internal" href="#configuration">Configuration</a></li>
-<li><a class="reference internal" href="#references">References</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
   data-type="github" data-user="TheochemUI" data-repo="eOn">
@@ -387,37 +390,51 @@ Hessian eigenvalue.</p></li>
 </ul>
 <section id="how-it-works">
 <h2>How It Works<a class="headerlink" href="#how-it-works" title="Link to this heading">¶</a></h2>
-<p>eOn computes the Hessian numerically via central finite differences:</p>
-<p>$$H_{ij} = \frac{F_i(x + \delta e_j) - F_i(x - \delta e_j)}{2\delta}$$</p>
-<p>where $\delta$ is the finite difference step size (<code class="docutils literal notranslate"><span class="pre">min_displacement</span></code>). This
-requires $2 \times 3N$ gradient evaluations for $N$ atoms (or $2 \times 3N_\text{free}$
-if some atoms are frozen).</p>
-<p>The Hessian is then mass-weighted:</p>
-<p>$$\tilde{H}<em>{ij} = \frac{H</em>{ij}}{\sqrt{m_i m_j}}$$</p>
-<p>and diagonalized to obtain vibrational frequencies $\nu_k = \sqrt{\lambda_k} / (2\pi)$.</p>
+<p>eOn computes the Hessian numerically with a selectable finite-difference scheme
+on the <strong>mobile</strong> (displaced) atoms: non-fixed atoms in <code class="docutils literal notranslate"><span class="pre">pos.con</span></code>, optionally
+restricted by <code class="docutils literal notranslate"><span class="pre">[Hessian]</span> <span class="pre">atom_list</span></code> (comma-separated indices, or <code class="docutils literal notranslate"><span class="pre">All</span></code>). That
+list is the hybrid/PHVA-class <em>active set</em> — atoms that are moved in FD, not
+the frozen environment (Li &amp; Jensen, <em>Theor. Chem. Acc.</em> <strong>107</strong>, 211, 2002).</p>
+<p>Step size is <code class="docutils literal notranslate"><span class="pre">Main.finite_difference</span></code> (historically also called finite-difference
+displacement; default (0.01,\text{Å})).</p>
+<section id="fd-schemes-hessian-fd-scheme">
+<h3>FD schemes (<code class="docutils literal notranslate"><span class="pre">[Hessian]</span> <span class="pre">fd_scheme</span></code>)<a class="headerlink" href="#fd-schemes-hessian-fd-scheme" title="Link to this heading">¶</a></h3>
+<p><strong>one_sided</strong> (default) — forward difference, (\sim M) force evaluations for
+(M = 3 N_\text{mobile}) active DOF (plus one base gradient):</p>
+<p>$$H_{ij} \approx -\frac{F_j(x + h e_i) - F_j(x)}{h}$$</p>
+<p><strong>central</strong> — central difference, (\sim 2M) force evaluations:</p>
+<p>$$H_{ij} \approx -\frac{F_j(x + h e_i) - F_j(x - h e_i)}{2h}$$</p>
+<p>One-sided is preferred for classical EAM AKMC cost; central reduces (O(h)) bias
+when validating prefactors. The assembled matrix is symmetrized ((H+H^T)/2)
+before diagonalization. Mass-weighting uses (\tilde H_{ij} = H_{ij}/\sqrt{m_i m_j}).</p>
+</section>
+<section id="column-resume">
+<h3>Column resume<a class="headerlink" href="#column-resume" title="Link to this heading">¶</a></h3>
+<p>Long partial Hessians can checkpoint FD columns to <code class="docutils literal notranslate"><span class="pre">checkpoint_path</span></code> (e.g.
+<code class="docutils literal notranslate"><span class="pre">hessian.ckpt</span></code>) with <code class="docutils literal notranslate"><span class="pre">resume</span> <span class="pre">=</span> <span class="pre">true</span></code>. Interrupted jobs continue from the next
+column; a successful run removes the checkpoint.</p>
+</section>
 </section>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
-<p>The Hessian job computes and reports the vibrational frequencies:</p>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Main]</span>
 </span><span data-line="2"><span class="na">job</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">hessian</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="k">[Hessian]</span>
-</span><span data-line="5"><span class="na">min_displacement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.001</span>
+</span><span data-line="3"><span class="na">finite_difference</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.01</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">[Hessian]</span>
+</span><span data-line="6"><span class="na">atom_list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">All</span>
+</span><span data-line="7"><span class="na">fd_scheme</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">one_sided</span>
+</span><span data-line="8"><span class="c1"># fd_scheme = central</span>
+</span><span data-line="9"><span class="c1"># resume = true</span>
+</span><span data-line="10"><span class="c1"># checkpoint_path = hessian.ckpt</span>
+</span><span data-line="11"><span class="na">zero_freq_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1e-6</span>
 </span></pre></div>
 </div>
-<p>The output <code class="docutils literal notranslate"><span class="pre">results.dat</span></code> contains the eigenvalues (squared frequencies) of the
-mass-weighted Hessian matrix.</p>
+<p>The output <code class="docutils literal notranslate"><span class="pre">results.dat</span></code> records force-call counts; <code class="docutils literal notranslate"><span class="pre">hessian.dat</span></code> holds the
+mass-weighted matrix when <code class="docutils literal notranslate"><span class="pre">quiet</span> <span class="pre">=</span> <span class="pre">false</span></code>. Eigenvalues (squared frequencies)
+are obtained by diagonalizing the symmetrized matrix (ColMajor eigen solve in
+the client).</p>
 </section>
-<section id="configuration">
-<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
-<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Hessian]</span>
-</span></pre></div>
-</div>
-</section>
-<section id="references">
-<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
-<span class="target" id="id1"></span></section>
 </section>
 
         </article><button class="back-to-top" type="button">
@@ -463,7 +480,7 @@ mass-weighted Hessian matrix.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=e9c9fbf8"></script>
+      <script src="../_static/documentation_options.js?v=7a49f58b"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

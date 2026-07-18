@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v2.15.0, runtime potentials, process search, LAMMPS MPI, release process, PyPI"
 ---
 
-## [v2.15.0] - pending cut
+## [v2.15.0] - 2026-06-24
 
 Post-`v2.14.0` work on `main` plus maintainer release-process hardening, consolidated
 here for the **next** semver (supersede incomplete multi-channel `2.14.0` per

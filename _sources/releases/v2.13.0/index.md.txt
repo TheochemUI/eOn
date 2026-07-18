@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v2.13.0, ARTn, pARTn, OCINEB, IRA, NEB modularization, Highway SIMD, parallel dimer"
 ---
 
-## [v2.13.0] - 2026-XX-XX
+## [v2.13.0] - 2026-04-18
 
 Saddle-search and NEB get new capabilities. ARTn (Activation-Relaxation
 Technique nouveau) is wired in via the [pARTn](https://gitlab.com/mammasmias/artn-plugin)

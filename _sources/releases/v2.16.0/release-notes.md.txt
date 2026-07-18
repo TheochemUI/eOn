@@ -7,7 +7,7 @@ myst:
 
 # Release notes
 
-## [v2.16.0] - pending cut (post-v2.15.0 on `main`)
+## [v2.16.0] - 2026-07-03
 
 See the [CHANGELOG](project:../changelog.md) for the fragment-by-fragment list
 after `cog bump` consumes `docs/newsfragments/`; this page consolidates

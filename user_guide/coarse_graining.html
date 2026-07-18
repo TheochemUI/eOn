@@ -175,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
@@ -199,19 +200,19 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.15.0/index.html">[v2.15.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.15.0/index.html">[v2.15.0] - 2026-06-24</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.15.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.14.0/index.html">[v2.14.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.14.0/index.html">[v2.14.0] - 2026-04-24</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.14.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.13.0/index.html">[v2.13.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.13.0/index.html">[v2.13.0] - 2026-04-18</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.13.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
@@ -277,6 +278,7 @@ data-aria-dark="Switch to auto color mode">
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#monte-carlo-with-absorbing-markov-chains-mcamc">Monte Carlo with Absorbing Markov Chains (MCAMC)</a></li>
 <li><a class="reference internal" href="#accelerated-superbasin-kinetic-monte-carlo-as-kmc">Accelerated Superbasin Kinetic Monte Carlo (AS-KMC)</a></li>
+<li><a class="reference internal" href="#optional-amsel-discover-decide-gate">Optional AMSEl discover/decide gate</a></li>
 <li><a class="reference internal" href="#configuration">Configuration</a></li>
 <li><a class="reference internal" href="#references">References</a></li>
 </ul>
@@ -425,6 +427,30 @@ the approximate amount of error the user might expect in eventual superbasin
 exit direction and time compared to normal KMC simulation
 (<code class="xref any docutils literal notranslate"><span class="pre">eon.schema.CoarseGrainingConfig.askmc_confidence</span></code>).</p>
 </section>
+<section id="optional-amsel-discover-decide-gate">
+<h2>Optional AMSEl discover/decide gate<a class="headerlink" href="#optional-amsel-discover-decide-gate" title="Link to this heading">¶</a></h2>
+<p>When MCAMC superbasins are active, an optional pre-step gate can call
+<code class="docutils literal notranslate"><span class="pre">amsel.discover_decide_status</span></code> on the superbasin process graph before
+<code class="docutils literal notranslate"><span class="pre">Superbasin.step</span></code>. Enable it under <strong>[amsel]</strong> (default off):</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[amsel]</span>
+</span><span data-line="2"><span class="na">discover_decide</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">True</span>
+</span><span data-line="3"><span class="na">e_min_init</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.5</span>
+</span><span data-line="4"><span class="na">e_min_step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.05</span>
+</span><span data-line="5"><span class="na">e_min_floor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.05</span>
+</span><span data-line="6"><span class="na">cv_threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">10.0</span>
+</span></pre></div>
+</div>
+<p>If the <code class="docutils literal notranslate"><span class="pre">amsel</span></code> Python package is not installed, the gate is a no-op and legacy
+MCAMC behaviour is unchanged. Status outcomes:</p>
+<ul class="simple">
+<li><p><strong>accepted</strong> / <strong>retightened</strong> — proceed with MCAMC as usual</p></li>
+<li><p><strong>split_required</strong> — restrict the superbasin to the primary transient set
+(entry state is always retained; membership is persisted via <code class="docutils literal notranslate"><span class="pre">write_data</span></code>)</p></li>
+<li><p><strong>rejected_no_metastable_basin</strong> — AKMC skips the superbasin step and uses
+ordinary single-state KMC for that iteration</p></li>
+</ul>
+<p>Configuration is under the <code class="docutils literal notranslate"><span class="pre">[amsel]</span></code> INI section (<code class="docutils literal notranslate"><span class="pre">discover_decide</span></code>, <code class="docutils literal notranslate"><span class="pre">e_min_*</span></code>, <code class="docutils literal notranslate"><span class="pre">cv_threshold</span></code>).</p>
+</section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">[Coarse Graining]</span>
@@ -491,7 +517,7 @@ exit direction and time compared to normal KMC simulation
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=e9c9fbf8"></script>
+      <script src="../_static/documentation_options.js?v=7a49f58b"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn v2.14.0, structured trajectory output, readcon-core, ARTn filin, batched force evaluation, parallel NEB"
 ---
 
-## [v2.14.0] - 2026-XX-XX
+## [v2.14.0] - 2026-04-24
 
 Trajectory output gets a first-class metadata format and NEB gets a real
 batched force path. `readcon-core` now ships a per-frame metadata

@@ -175,6 +175,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
@@ -199,19 +200,19 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/changelog.html">Changelog</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.16.0/index.html">[v2.16.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.16.0/index.html">[v2.16.0] - 2026-07-03</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.16.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.15.0/index.html">[v2.15.0] - pending cut</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.15.0/index.html">[v2.15.0] - 2026-06-24</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.15.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.14.0/index.html">[v2.14.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.14.0/index.html">[v2.14.0] - 2026-04-24</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.14.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.13.0/index.html">[v2.13.0] - 2026-XX-XX</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../releases/v2.13.0/index.html">[v2.13.0] - 2026-04-18</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../releases/v2.13.0/release-notes.html">Release notes</a></li>
 </ul>
 </li>
@@ -412,38 +413,38 @@ data-aria-dark="Switch to auto color mode">
 
 <dl class="py class">
 <dt class="sig sig-object py" id="eon.basinhopping.BHStates">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.basinhopping.</span></span><span class="sig-name descname"><span class="pre">BHStates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.basinhopping.BHStates" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">eon.basinhopping.</span></span><span class="sig-name descname"><span class="pre">BHStates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/basinhopping.html#BHStates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.basinhopping.BHStates" title="Link to this definition">¶</a></dt>
 <dd><p class="rubric">Initialization</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.basinhopping.BHStates.get_random_minimum">
-<span class="sig-name descname"><span class="pre">get_random_minimum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#eon.basinhopping.BHStates.get_random_minimum" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_random_minimum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/basinhopping.html#BHStates.get_random_minimum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.basinhopping.BHStates.get_random_minimum" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.basinhopping.BHStates.add_state">
-<span class="sig-name descname"><span class="pre">add_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_info</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.basinhopping.BHStates.add_state" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">add_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/basinhopping.html#BHStates.add_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.basinhopping.BHStates.add_state" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.basinhopping.basinhopping">
-<span class="sig-prename descclassname"><span class="pre">eon.basinhopping.</span></span><span class="sig-name descname"><span class="pre">basinhopping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.basinhopping.basinhopping" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.basinhopping.</span></span><span class="sig-name descname"><span class="pre">basinhopping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/basinhopping.html#basinhopping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.basinhopping.basinhopping" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.basinhopping.make_searches">
-<span class="sig-prename descclassname"><span class="pre">eon.basinhopping.</span></span><span class="sig-name descname"><span class="pre">make_searches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wuid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bhstates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.basinhopping.make_searches" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.basinhopping.</span></span><span class="sig-name descname"><span class="pre">make_searches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wuid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bhstates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/basinhopping.html#make_searches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.basinhopping.make_searches" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.basinhopping.register_results">
-<span class="sig-prename descclassname"><span class="pre">eon.basinhopping.</span></span><span class="sig-name descname"><span class="pre">register_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bhstates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.basinhopping.register_results" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.basinhopping.</span></span><span class="sig-name descname"><span class="pre">register_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bhstates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/basinhopping.html#register_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.basinhopping.register_results" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.basinhopping.main">
-<span class="sig-prename descclassname"><span class="pre">eon.basinhopping.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eon.basinhopping.main" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.basinhopping.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="eon.config.html#eon.config.ConfigClass" title="eon.config.ConfigClass"><span class="pre">eon.config.ConfigClass</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/basinhopping.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.basinhopping.main" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </section>
@@ -493,7 +494,7 @@ data-aria-dark="Switch to auto color mode">
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=e9c9fbf8"></script>
+      <script src="../../_static/documentation_options.js?v=7a49f58b"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
