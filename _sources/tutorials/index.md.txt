@@ -19,10 +19,17 @@ self-contained tutorials with Jupyter notebooks and visualization:
   ASE's standard NEB with eOn's energy-weighted springs and dimer refinement
 ```
 
+```{tip}
+For **built-in potentials** (no metatomic download) with modern `plt-neb` /
+`plt-min` figures, start from {doc}`systems/index` (Morse Pt NEB, LJ cluster
+minimization, Pt dimer saddle).
+```
+
 ```{toctree}
 :maxdepth: 2
 :caption: Contents
 
+systems/index
 akmc
 parrep
 displacement_scripts

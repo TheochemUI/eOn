@@ -37,6 +37,14 @@ write_eon_config(config, Path("config.ini"))
 The optimizer settings control convergence. See <project:optimizer.md> for the
 full list of available optimizers and their parameters.
 
+```{tip}
+Enable `[Debug] write_movies = true` (and optionally `write_deprecated_outs =
+true`) so `rgpycrumbs eon plt-min` can build energy profiles, 2D landscapes, and
+convergence panels. For two endpoints, use **separate** landscape plots (one
+`--job-dir` / `--label` each). See {doc}`/tutorials/systems/lj_minimization` and
+{doc}`/tutorials/systems/index`.
+```
+
 ## Optimizer selection
 
 | Optimizer | Best for | Key parameter |

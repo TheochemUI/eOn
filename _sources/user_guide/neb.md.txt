@@ -30,6 +30,10 @@ set as per the <project:optimizer.md> document.
 
 For a full walkthrough (ASE NEB vs eOn energy-weighted springs + OCI dimer), see
 the [atomistic-cookbook PET-MAD example](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html).
+
+For a **built-in** Morse Pt NEB with current `rgpycrumbs eon plt-neb` 1D/2D
+figures (full history, 1:1 reaction-valley panel, structure strip), see
+{doc}`/tutorials/systems/morse_pt_neb`.
 ```
 
 ## Variants
