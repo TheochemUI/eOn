@@ -827,7 +827,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="468">            <span class="n">get_akmc_metadata</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </span><span data-line="469">        <span class="n">current_state</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">start_state_num</span><span class="p">)</span>
 </span><span data-line="470">        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">sb_on</span><span class="p">:</span>
-</span><span data-line="471">            <span class="n">sb_scheme</span> <span class="o">=</span> <span class="n">get_superbasin_scheme</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
+</span><span data-line="471">            <span class="n">sb_scheme</span> <span class="o">=</span> <span class="n">get_superbasin_scheme</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
 </span><span data-line="472">            <span class="n">sb</span> <span class="o">=</span> <span class="n">sb_scheme</span><span class="o">.</span><span class="n">get_containing_superbasin</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
 </span><span data-line="473">        <span class="k">else</span><span class="p">:</span>
 </span><span data-line="474">            <span class="n">sb</span> <span class="o">=</span> <span class="kc">None</span>

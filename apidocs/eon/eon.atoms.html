@@ -288,6 +288,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#data">Data</a></li>
 <li><a class="reference internal" href="#api">API</a><ul>
 <li><a class="reference internal" href="#eon.atoms.logger"><code class="docutils literal notranslate"><span class="pre">logger</span></code></a></li>
+<li><a class="reference internal" href="#eon.atoms.identical"><code class="docutils literal notranslate"><span class="pre">identical()</span></code></a></li>
 <li><a class="reference internal" href="#eon.atoms.match"><code class="docutils literal notranslate"><span class="pre">match()</span></code></a></li>
 <li><a class="reference internal" href="#eon.atoms.point_energy_match"><code class="docutils literal notranslate"><span class="pre">point_energy_match()</span></code></a></li>
 <li><a class="reference internal" href="#eon.atoms.points_energies_match"><code class="docutils literal notranslate"><span class="pre">points_energies_match()</span></code></a></li>
@@ -386,54 +387,57 @@ keeps structure-matching / CNA helpers plus the element table.</p>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-left">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.match" title="eon.atoms.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.identical" title="eon.atoms.identical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">identical</span></code></a></p></td>
+<td><p>True if two structures match when same-element atoms are interchangeable.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.match" title="eon.atoms.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.point_energy_match" title="eon.atoms.point_energy_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">point_energy_match</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.point_energy_match" title="eon.atoms.point_energy_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">point_energy_match</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.points_energies_match" title="eon.atoms.points_energies_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">points_energies_match</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.points_energies_match" title="eon.atoms.points_energies_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">points_energies_match</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.rot_match" title="eon.atoms.rot_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rot_match</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.rot_match" title="eon.atoms.rot_match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rot_match</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.rotm" title="eon.atoms.rotm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotm</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.rotm" title="eon.atoms.rotm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotm</span></code></a></p></td>
 <td><p>Gives the matrix representing a rotation of theta radians about axis</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.cna" title="eon.atoms.cna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cna</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.cna" title="eon.atoms.cna"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cna</span></code></a></p></td>
 <td><p>Returns a list of cna numbers for all atoms in p
 Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.not_HCP_or_FCC" title="eon.atoms.not_HCP_or_FCC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">not_HCP_or_FCC</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.not_HCP_or_FCC" title="eon.atoms.not_HCP_or_FCC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">not_HCP_or_FCC</span></code></a></p></td>
 <td><p>Returns a list of indices for the atoms with cna = 0</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.cnat" title="eon.atoms.cnat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cnat</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.cnat" title="eon.atoms.cnat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cnat</span></code></a></p></td>
 <td><p>Returns a list of cna numbers for all atoms in p
 Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.cnar" title="eon.atoms.cnar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cnar</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.cnar" title="eon.atoms.cnar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cnar</span></code></a></p></td>
 <td><p>Returns a list of cna numbers for all atoms in p
 Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.not_TCP" title="eon.atoms.not_TCP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">not_TCP</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.not_TCP" title="eon.atoms.not_TCP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">not_TCP</span></code></a></p></td>
 <td><p>Returns a list of indices for the atoms with cna = 0</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.not_TCP_or_BCC" title="eon.atoms.not_TCP_or_BCC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">not_TCP_or_BCC</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.not_TCP_or_BCC" title="eon.atoms.not_TCP_or_BCC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">not_TCP_or_BCC</span></code></a></p></td>
 <td><p>Returns a list of indices for the atoms with cna = 0</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.get_mappings" title="eon.atoms.get_mappings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_mappings</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.get_mappings" title="eon.atoms.get_mappings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_mappings</span></code></a></p></td>
 <td><p>A recursive depth-first search for a complete set of mappings from atoms
 in configuration a to atoms in configuration b. Do not use the mappings
 argument, this is only used internally for recursion.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.get_rotation_matrix" title="eon.atoms.get_rotation_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_rotation_matrix</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.get_rotation_matrix" title="eon.atoms.get_rotation_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_rotation_matrix</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.rotate" title="eon.atoms.rotate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.rotate" title="eon.atoms.rotate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.atoms.internal_motion" title="eon.atoms.internal_motion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">internal_motion</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.atoms.internal_motion" title="eon.atoms.internal_motion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">internal_motion</span></code></a></p></td>
 <td><p>Takes two atoms objects and returns the motion from a to b that is
 entirely internal - no rotation or translation, in the form of a new atoms
 object.</p></td>
@@ -466,6 +470,17 @@ object.</p></td>
 <dt class="sig sig-object py" id="eon.atoms.logger">
 <span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">logger</span></span><a class="headerlink" href="#eon.atoms.logger" title="Link to this definition">¶</a></dt>
 <dd><p>‘getLogger(…)’</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.atoms.identical">
+<span class="sig-prename descclassname"><span class="pre">eon.atoms.</span></span><span class="sig-name descname"><span class="pre">identical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atoms2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_r</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/atoms.html#identical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.atoms.identical" title="Link to this definition">¶</a></dt>
+<dd><p>True if two structures match when same-element atoms are interchangeable.</p>
+<p class="rubric" id="id1">Parameters</p>
+<p>atoms1, atoms2 : Structure
+Configurations to compare (same box within 1e-4).
+epsilon_r : float
+Max allowed MIC displacement (Å) for a pair to count as the same site.</p>
 </dd></dl>
 
 <dl class="py function">
