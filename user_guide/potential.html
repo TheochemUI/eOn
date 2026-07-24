@@ -105,6 +105,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a><ul class="current">
 <li class="toctree-l2 _expand"><a class="reference internal" href="pyeonclient.html">pyeonclient (Python client API)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="ase_pot.html">ASE Interface</a></li>
@@ -447,13 +448,18 @@ SocketNWChem</p>
 </dd>
 <dt>EAM_Al</dt><dd><p>Embedded atom method parameterized for Aluminum.</p>
 </dd>
-<dt>QSC <span id="id10">[<a class="reference internal" href="#id62" title="Yoshitaka Kimura, Yue Qi, Tahir Cagin, and William Goddard. The Quantum Sutton-Chen Many-Body Potential for Properties of fcc Metals. N/A, September 1998.">POT_KQCG98</a>]</span></dt><dd><p>Quantum Sutton-Chen potential, for FCC metals.</p>
+<dt>QSC <span id="id10">[<a class="reference internal" href="#id62" title="Yoshitaka Kimura, Yue Qi, Tahir Cagin, and William Goddard. The Quantum Sutton-Chen Many-Body Potential for Properties of fcc Metals. N/A, September 1998.">POT_KQCG98</a>]</span></dt><dd><p>Quantum Sutton-Chen potential, for FCC metals. Neighbor pairs via
+<a class="reference internal" href="neighbor_lists.html"><span class="std std-doc">vesin</span></a> (no pot-local Verlet list).</p>
 </dd>
 <dt>EMT</dt><dd><p>Effective medium theory, for metals.</p>
 </dd>
-<dt>LJ <span id="id11">[<a class="reference internal" href="#id56" title="Lennard Jones. On the determination of molecular fields. —II. From the equation of state of a gas. Proceedings of the Royal Society of London. Series A, Containing Papers of a Mathematical and Physical Character, 106(738):463–477, October 1924. doi:10.1098/rspa.1924.0082.">POT_Jon24</a>]</span></dt><dd><p>Lennard-Jones in reduced units</p>
+<dt>LJ <span id="id11">[<a class="reference internal" href="#id56" title="Lennard Jones. On the determination of molecular fields. —II. From the equation of state of a gas. Proceedings of the Royal Society of London. Series A, Containing Papers of a Mathematical and Physical Character, 106(738):463–477, October 1924. doi:10.1098/rspa.1924.0082.">POT_Jon24</a>]</span></dt><dd><p>Lennard-Jones in reduced units. Neighbor pairs via
+<a class="reference internal" href="neighbor_lists.html"><span class="std std-doc">vesin</span></a>; timed by ASV
+<code class="docutils literal notranslate"><span class="pre">TimeMinimizationLJCluster</span></code> (ljcluster).</p>
 </dd>
-<dt>Morse_Pt</dt><dd><p>Hard sphere morse potential for Platinum</p>
+<dt>Morse_Pt</dt><dd><p>Hard sphere morse potential for Platinum. Neighbor pairs via
+<a class="reference internal" href="neighbor_lists.html"><span class="std std-doc">vesin</span></a>; timed by ASV <code class="docutils literal notranslate"><span class="pre">TimePointMorsePt</span></code> /
+saddle / NEB Morse fixtures.</p>
 </dd>
 <dt>Lenosky_Si <span id="id12">[<a class="reference internal" href="#id71" title="Thomas J Lenosky, Babak Sadigh, Eduardo Alonso, Vasily V Bulatov, Tomas Diaz De La Rubia, Jeongnim Kim, Arthur F Voter, and Joel D Kress. Highly optimized empirical potential model of silicon. Modelling and Simulation in Materials Science and Engineering, 8(6):825–841, November 2000. doi:10.1088/0965-0393/8/6/305.">POT_LSA+00</a>]</span></dt><dd><p>Lenosky potential, for silicon.</p>
 </dd>

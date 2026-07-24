@@ -58,16 +58,21 @@ EAM_Al
 : Embedded atom method parameterized for Aluminum.
 
 QSC {cite:p}`pot-kimuraQuantumSuttonChenManyBody1998`
-: Quantum Sutton-Chen potential, for FCC metals.
+: Quantum Sutton-Chen potential, for FCC metals. Neighbor pairs via
+  [vesin](neighbor_lists.md) (no pot-local Verlet list).
 
 EMT
 : Effective medium theory, for metals.
 
 LJ {cite:p}`pot-jonesDeterminationMolecularFields1924`
-: Lennard-Jones in reduced units
+: Lennard-Jones in reduced units. Neighbor pairs via
+  [vesin](neighbor_lists.md); timed by ASV
+  `TimeMinimizationLJCluster` (ljcluster).
 
 Morse_Pt
-: Hard sphere morse potential for Platinum
+: Hard sphere morse potential for Platinum. Neighbor pairs via
+  [vesin](neighbor_lists.md); timed by ASV `TimePointMorsePt` /
+  saddle / NEB Morse fixtures.
 
 Lenosky_Si {cite:p}`pot-lenoskyHighlyOptimizedEmpirical2000`
 : Lenosky potential, for silicon.

@@ -22,6 +22,7 @@ package `pyeonclient` — an ASE-shaped API where the path is a
 :caption: Python API
 
 pyeonclient
+neighbor_lists
 ```
 
 See also the [API reference](../apidocs/pyeonclient.md) and the
@@ -73,6 +74,11 @@ mpi.
 Methods run in parallel are broken up by the eon server into tasks which
 are run by client program. The server then compiles the information sent back
 by the clients in a way that can be used by the sampling or dynamics methods.
+
+## Geometry and neighbor lists
+
+Pair finding owned by eOn uses **vesin**. Architecture and **ASV** measurement
+surface: [Neighbor lists (vesin)](neighbor_lists.md).
 
 ## Potentials
 

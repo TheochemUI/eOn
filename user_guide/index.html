@@ -105,6 +105,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">User Guide</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="pyeonclient.html">pyeonclient (Python client API)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="ase_pot.html">ASE Interface</a></li>
@@ -286,6 +287,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#python-client-pyeonclient">Python client (pyeonclient)</a></li>
 <li><a class="reference internal" href="#configuration-file-config-ini">Configuration file (<code class="docutils literal notranslate">ini</span></code>)</a></li>
 <li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#geometry-and-neighbor-lists">Geometry and neighbor lists</a></li>
 <li><a class="reference internal" href="#potentials">Potentials</a></li>
 <li><a class="reference internal" href="#configuration-sections">Configuration Sections</a><ul>
 </ul>
@@ -393,6 +395,7 @@ package <code class="docutils literal notranslate"><span class="pre">pyeonclient
 <p class="caption" role="heading"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pyeonclient.html">pyeonclient (Python client API)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neighbor_lists.html">Neighbor lists (vesin)</a></li>
 </ul>
 </div>
 <p>See also the <a class="reference internal" href="#../apidocs/pyeonclient.md"><span class="xref myst">API reference</span></a> and the
@@ -433,6 +436,11 @@ mpi.</p>
 <p>Methods run in parallel are broken up by the eon server into tasks which
 are run by client program. The server then compiles the information sent back
 by the clients in a way that can be used by the sampling or dynamics methods.</p>
+</section>
+<section id="geometry-and-neighbor-lists">
+<h2>Geometry and neighbor lists<a class="headerlink" href="#geometry-and-neighbor-lists" title="Link to this heading">¶</a></h2>
+<p>Pair finding owned by eOn uses <strong>vesin</strong>. Architecture and <strong>ASV</strong> measurement
+surface: <a class="reference internal" href="neighbor_lists.html"><span class="std std-doc">Neighbor lists (vesin)</span></a>.</p>
 </section>
 <section id="potentials">
 <h2>Potentials<a class="headerlink" href="#potentials" title="Link to this heading">¶</a></h2>
