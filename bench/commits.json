@@ -65,7 +65,11 @@
     "7345": "style(client): clang-format VesinNeighbors and pot ports",
     "7346": "docs: neighbor-lists page points at ASV as performance surface",
     "7347": "Merge pull request #382 from HaoZeke/fix/results-dat-timing-footer",
-    "7352": "Merge pull request #386 from HaoZeke/feat/vesin-unified-neighborlist"
+    "7359": "feat(process-search): report how far a rejected endpoint landed",
+    "7360": "docs(changelog): newsfragment for LAMMPS worker survival fixes",
+    "7361": "Merge pull request #386 from HaoZeke/feat/vesin-unified-neighborlist",
+    "7362": "style(lammps): clang-format worker survival fixes",
+    "7365": "Merge pull request #387 from HaoZeke/fix/lammps-worker-survives-bad-geometry"
   },
   "dcbade17ecc8386a4ee5804354b4994c8ba1d6d8": "update lammps webpage",
   "292bc143343709b10fb7ed150ae5bb493748b289": "gitig: Update",
@@ -132,5 +136,9 @@
   "b2d79215d3c98097872d061e745851785ded9bf1": "style(client): clang-format VesinNeighbors and pot ports",
   "62e6f6793f33967b80e74a7192203c3c38af3bf2": "docs: neighbor-lists page points at ASV as performance surface",
   "eab7648a99b722e78993ed7309fb7367c0009998": "Merge pull request #382 from HaoZeke/fix/results-dat-timing-footer",
-  "f637fcd269a6362264b6ced3863fb956a65da136": "Merge pull request #386 from HaoZeke/feat/vesin-unified-neighborlist"
+  "c3e288a5af04ded061e3b53554c721d04232d708": "feat(process-search): report how far a rejected endpoint landed",
+  "100e1e80aba3d057b9aa74fa294f5ecd35787099": "docs(changelog): newsfragment for LAMMPS worker survival fixes",
+  "f637fcd269a6362264b6ced3863fb956a65da136": "Merge pull request #386 from HaoZeke/feat/vesin-unified-neighborlist",
+  "b0d545798119691b9f6529f00eebb9afe4654319": "style(lammps): clang-format worker survival fixes",
+  "58a437f38f9dda741832742a2a6e9721dd2c11fe": "Merge pull request #387 from HaoZeke/fix/lammps-worker-survives-bad-geometry"
 }
