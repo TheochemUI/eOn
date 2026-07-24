@@ -253,8 +253,25 @@ freqs = hess.get_freqs(matter, atoms)
 pref1, pref2 = pyec.get_prefactors(params, min1, saddle, min2)
 ```
 
-Parameters: `hessian_atom_list`, `hessian_zero_freq_value`, `prefactor_rate`
+Parameters: `hessian_phva_atoms`, `hessian_zero_freq_value`, `prefactor_rate`
 (`htst` / `qqhtst`), `prefactor_filter_scheme`, `prefactor_within_radius`, …
+
+### Free/fixed versus PHVA active (Lanczos / Davidson)
+
+**free/fixed** is the optimizer mask. **`phva_atoms`** (or `compute(..., atoms=)`)
+is the PHVA mobile set for dense Hessian and matrix-free min-mode. Default
+`All` keeps historical behavior (Krylov over all free atoms). An explicit list
+bounds the Krylov dimension to \(3 N_\mathrm{active}\) without rewriting free
+flags:
+
+```{code-block} python
+mobile = pyec.resolve_mobile_atoms(matter, "12,15,18")  # ∩ free
+lanczos = pyec.Lanczos(matter, params, pot)
+lanczos.compute(matter, direction, atoms=mobile)
+# or params.lanczos_phva_atoms = "12,15,18" then compute(matter, direction)
+```
+
+Same polarity for `params.davidson_phva_atoms` / `Davidson.compute(..., atoms=)`.
 
 ## Job factory (full JobType surface)
 
