@@ -51,8 +51,13 @@
     "7325": "docs(client): cite the method sources for OH-TST and the force guard",
     "7326": "style(client): apply clang-format",
     "7327": "Merge pull request #379 from HaoZeke/fix/local-stderr-pipe-and-fpe-retrap",
-    "7331": "fix(server,client): audit A-severity config, identical, FPE, Tip4p",
-    "7332": "Merge pull request #380 from HaoZeke/fix/audit-a-severity-bugs"
+    "7330": "fix(server,client): audit A-severity config, identical, FPE, Tip4p",
+    "7331": "Merge pull request #380 from HaoZeke/fix/audit-a-severity-bugs",
+    "7333": "style(eon-schema): ensure trailing newline on package init",
+    "7334": "ci: re-trigger checks after rebase onto main with #380",
+    "7337": "Merge pull request #381 from HaoZeke/feat/jobresult-capnp-schema",
+    "7338": "fix(ams_io): pass xc string to fprintf format",
+    "7339": "Merge pull request #384 from HaoZeke/fix/ams-io-fprintf-xc"
   },
   "dcbade17ecc8386a4ee5804354b4994c8ba1d6d8": "update lammps webpage",
   "292bc143343709b10fb7ed150ae5bb493748b289": "gitig: Update",
@@ -106,5 +111,10 @@
   "5c61e9b024b61695739d8de32f93da2f94a418e2": "style(client): apply clang-format",
   "6ebb0679e00495dd91b4ca3d0c88539ad870f738": "Merge pull request #379 from HaoZeke/fix/local-stderr-pipe-and-fpe-retrap",
   "ff748290e73c1366d6806dffe85c7a37ee0bc28c": "fix(server,client): audit A-severity config, identical, FPE, Tip4p",
-  "5be00521d0c72bd18201998edd270833ab19b835": "Merge pull request #380 from HaoZeke/fix/audit-a-severity-bugs"
+  "5be00521d0c72bd18201998edd270833ab19b835": "Merge pull request #380 from HaoZeke/fix/audit-a-severity-bugs",
+  "f531ba4c6c061330dd7cb34a4888f77744d7df7e": "style(eon-schema): ensure trailing newline on package init",
+  "793d0f4b4a851dfebaac15c91bcbd4112f862325": "ci: re-trigger checks after rebase onto main with #380",
+  "5cd6ce94d378c25bfbbe00c51aaac769d49fde17": "Merge pull request #381 from HaoZeke/feat/jobresult-capnp-schema",
+  "f650b85ef33fc71439b55eccc9586052d2c1af1e": "fix(ams_io): pass xc string to fprintf format",
+  "5022d53001704ddaa0b0e05ac280842a01596d1c": "Merge pull request #384 from HaoZeke/fix/ams-io-fprintf-xc"
 }
