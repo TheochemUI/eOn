@@ -61,7 +61,11 @@
     "7341": "style(client): clang-format bind_jobs timing footer comment",
     "7342": "Merge pull request #384 from HaoZeke/fix/ams-io-fprintf-xc",
     "7343": "Merge pull request #385 from HaoZeke/fix/ase-pot-throw-not-exit",
-    "7344": "Merge pull request #382 from HaoZeke/fix/results-dat-timing-footer"
+    "7344": "feat(client): shared VesinNeighbors; LJ/Morse/LJCluster/QSC use vesin",
+    "7345": "style(client): clang-format VesinNeighbors and pot ports",
+    "7346": "docs: neighbor-lists page points at ASV as performance surface",
+    "7347": "Merge pull request #382 from HaoZeke/fix/results-dat-timing-footer",
+    "7352": "Merge pull request #386 from HaoZeke/feat/vesin-unified-neighborlist"
   },
   "dcbade17ecc8386a4ee5804354b4994c8ba1d6d8": "update lammps webpage",
   "292bc143343709b10fb7ed150ae5bb493748b289": "gitig: Update",
@@ -124,5 +128,9 @@
   "88356fc71c5504559968e3cc16283bff00dcba94": "style(client): clang-format bind_jobs timing footer comment",
   "5022d53001704ddaa0b0e05ac280842a01596d1c": "Merge pull request #384 from HaoZeke/fix/ams-io-fprintf-xc",
   "11c8a5aeafbacacde8de9b31ba89f86ad72624ce": "Merge pull request #385 from HaoZeke/fix/ase-pot-throw-not-exit",
-  "eab7648a99b722e78993ed7309fb7367c0009998": "Merge pull request #382 from HaoZeke/fix/results-dat-timing-footer"
+  "6f613bb4bd4a1c36255050b75141648e3f146624": "feat(client): shared VesinNeighbors; LJ/Morse/LJCluster/QSC use vesin",
+  "b2d79215d3c98097872d061e745851785ded9bf1": "style(client): clang-format VesinNeighbors and pot ports",
+  "62e6f6793f33967b80e74a7192203c3c38af3bf2": "docs: neighbor-lists page points at ASV as performance surface",
+  "eab7648a99b722e78993ed7309fb7367c0009998": "Merge pull request #382 from HaoZeke/fix/results-dat-timing-footer",
+  "f637fcd269a6362264b6ced3863fb956a65da136": "Merge pull request #386 from HaoZeke/feat/vesin-unified-neighborlist"
 }
