@@ -982,12 +982,47 @@ void vesin::cpu::brute_force_neighbors(
         neighbors.increment_length();
     };
 
-    for (size_t i = 0; i < n_points; i++) {
-        for (size_t j = i + 1; j < n_points; j++) {
-            auto vector = points[j] - points[i];
+    auto diagonal = matrix[0][1] == 0 && matrix[0][2] == 0 &&
+                    matrix[1][0] == 0 && matrix[1][2] == 0 &&
+                    matrix[2][0] == 0 && matrix[2][1] == 0;
 
-            auto shift = CellShift();
-            if (any_periodic) {
+    if (diagonal || !any_periodic) {
+        // Orthorhombic / free boundaries: fold each dimension directly, no
+        // fractional-coordinate round trip. inv == 0 turns the fold into a
+        // no-op for non-periodic dimensions (floor(0.5) == 0).
+        double width[3];
+        double inv[3];
+        for (size_t k = 0; k < 3; k++) {
+            width[k] = matrix[k][k];
+            inv[k] = (box.periodic(k) && width[k] != 0.0) ? 1.0 / width[k] : 0.0;
+        }
+
+        for (size_t i = 0; i < n_points; i++) {
+            for (size_t j = i + 1; j < n_points; j++) {
+                auto vector = points[j] - points[i];
+                auto shift = CellShift();
+                for (size_t k = 0; k < 3; k++) {
+                    auto s = -std::floor(vector[k] * inv[k] + 0.5);
+                    shift[k] = static_cast<int32_t>(s);
+                    vector[k] += s * width[k];
+                }
+
+                auto distance2 = vector.dot(vector);
+                if (distance2 < cutoff2) {
+                    emit(i, j, shift, vector, distance2);
+                    if (options.full) {
+                        emit(j, i, CellShift{-shift[0], -shift[1], -shift[2]},
+                             -1.0 * vector, distance2);
+                    }
+                }
+            }
+        }
+    } else {
+        for (size_t i = 0; i < n_points; i++) {
+            for (size_t j = i + 1; j < n_points; j++) {
+                auto vector = points[j] - points[i];
+
+                auto shift = CellShift();
                 auto fractional = vector * inverse;
                 for (size_t k = 0; k < 3; k++) {
                     if (box.periodic(k)) {
@@ -1002,14 +1037,14 @@ void vesin::cpu::brute_force_neighbors(
                     } * matrix;
                     vector = vector + cartesian_shift;
                 }
-            }
 
-            auto distance2 = vector.dot(vector);
-            if (distance2 < cutoff2) {
-                emit(i, j, shift, vector, distance2);
-                if (options.full) {
-                    emit(j, i, CellShift{-shift[0], -shift[1], -shift[2]},
-                         -1.0 * vector, distance2);
+                auto distance2 = vector.dot(vector);
+                if (distance2 < cutoff2) {
+                    emit(i, j, shift, vector, distance2);
+                    if (options.full) {
+                        emit(j, i, CellShift{-shift[0], -shift[1], -shift[2]},
+                             -1.0 * vector, distance2);
+                    }
                 }
             }
         }

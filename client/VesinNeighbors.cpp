@@ -144,14 +144,16 @@ void CachedPairList::rebuild(const double *R, std::size_t n, const double *box,
     }
   }
 
+  freshArrays_ = mic_ && n <= kFreshArraysMaxAtoms;
+
   VesinNeighbors::Options vopt;
   vopt.cutoff = opt.cutoff + opt.skin;
   vopt.full = false;
   vopt.sorted = false; // vesin's permutation sort costs more than it saves
   vopt.algorithm = mic_ ? VesinBruteForce : VesinAutoAlgorithm;
   vopt.return_shifts = !mic_; // MIC mode re-folds; shifts are dead weight
-  vopt.return_distances = false;
-  vopt.return_vectors = false;
+  vopt.return_distances = freshArrays_;
+  vopt.return_vectors = freshArrays_;
   vopt.periodic = opt.periodic;
   nl_.compute(R, n, box, vopt);
 
