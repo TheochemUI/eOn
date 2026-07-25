@@ -58,8 +58,9 @@
 !     I/Oput:- "count": is increased by one per call, has to be initialized
 !               to 0.d0 before first call of bazant
 
+        use vesin, only: NeighborList
+
         implicit real*8 (a-h,o-z)
-        logical lgl
 
 !$      interface
 !$        integer ( kind=4 ) function omp_get_num_threads ( )
@@ -77,20 +78,19 @@
         REAL*8,INTENT(IN) :: ax,ay,az
         INTEGER,INTENT(IN) :: nat
         REAL*8,INTENT(OUT) :: ener
-        REAL*8,SAVE :: count=1.0d0
 
 ! END AA 21-12-2002
 
-        dimension rxyz0(3,nat),fxyz(3,nat),alat(3)
-        real*8, ALLOCATABLE, DIMENSION(:,:) :: rxyz
+        dimension rxyz0(3,nat),fxyz(3,nat),alat(3),box(3,3)
         integer, ALLOCATABLE, DIMENSION(:,:) :: lsta
         integer, ALLOCATABLE, DIMENSION(:) :: lstb
-        integer, ALLOCATABLE, DIMENSION(:) :: lay
-        integer, ALLOCATABLE, DIMENSION(:,:,:,:) :: icell
+        integer, ALLOCATABLE, DIMENSION(:) :: nnbr
         real*8, ALLOCATABLE, DIMENSION(:,:) :: rel
         real*8, ALLOCATABLE, DIMENSION(:,:) :: txyz
         real*8, ALLOCATABLE, DIMENSION(:,:) :: s2,s3,sz
         integer, ALLOCATABLE, DIMENSION(:) :: num2,num3,numz
+        TYPE(NeighborList),SAVE :: nl
+        LOGICAL,SAVE :: nl_ready=.false.
 
 
 ! AA 21-12-20002 (2)
@@ -110,10 +110,7 @@
 !        cut=par_a
         cut= 3.1213820d0 + 1.d-14
 
-!        if (count.eq.0)  open(unit=10,file='bazant.mon',status='unknown')
-!        count=count+1.d0
-
-! linear scaling calculation of verlet list
+! the box has to hold at least one cutoff sphere per direction
         ll1=int(alat(1)/cut)
         if (ll1.lt.1) stop 'alat(1) too small'
         ll2=int(alat(2)/cut)
@@ -121,668 +118,67 @@
         ll3=int(alat(3)/cut)
         if (ll3.lt.1) stop 'alat(3) too small'
 
-! determine number of threads
-        npr=1
-!$omp parallel private(iam)  shared (npr)
-!$       iam=omp_get_thread_num()
-!$       if (iam.eq.0) npr=omp_get_num_threads()
-!$omp end parallel
-
-! linear scaling calculation of verlet list
-
-     if (npr.le.1) then !serial if too few processors to gain by parallelizing
-
-! set ncx for serial case, ncx for parallel case set below
-        ncx=8
-1234    ncx=ncx*2
-        allocate(icell(0:ncx,-1:ll1,-1:ll2,-1:ll3))
-        do 984,l3=-1,ll3
-        do 984,l2=-1,ll2
-        do 984,l1=-1,ll1
-984     icell(0,l1,l2,l3)=0
-        rlc1i=ll1/alat(1)
-        rlc2i=ll2/alat(2)
-        rlc3i=ll3/alat(3)
-
-        do 983,iat=1,nat
-
-        lgl=.false.
-115    continue
-        if (rxyz0(1,iat).ge.alat(1)) then
-                  if (lgl) then
-                    write(10,*) count,' bad x position ', iat,rxyz0(1,iat)
-                    rxyz0(1,iat)=modulo(rxyz0(1,iat),alat(1))
-                    goto 115
-                  endif
-            rxyz0(1,iat)=rxyz0(1,iat)-alat(1)
-            lgl=.true.
-            goto 115
-        endif
-        if (rxyz0(1,iat).lt.0.d0) then
-                  if (lgl) then
-                    write(10,*) count,' bad x position ', iat,rxyz0(1,iat)
-                    rxyz0(1,iat)=modulo(rxyz0(1,iat),alat(1))
-                    goto 115
-                  endif
-            rxyz0(1,iat)=rxyz0(1,iat)+alat(1)
-            lgl=.true.
-            goto 115
-        endif
-        l1=int(rxyz0(1,iat)*rlc1i)
-
-        lgl=.false.
-225    continue
-        if (rxyz0(2,iat).ge.alat(2)) then
-                  if (lgl) then
-                    write(10,*) count,' bad y position ', iat,rxyz0(2,iat)
-                    rxyz0(2,iat)=modulo(rxyz0(2,iat),alat(2))
-                    goto 225
-                  endif
-            rxyz0(2,iat)=rxyz0(2,iat)-alat(2)
-            lgl=.true.
-            goto 225
-        endif
-        if (rxyz0(2,iat).lt.0.d0) then
-                  if (lgl) then
-                    write(10,*) count,' bad y position ', iat,rxyz0(2,iat)
-                    rxyz0(2,iat)=modulo(rxyz0(2,iat),alat(2))
-                    goto 225
-                  endif
-            rxyz0(2,iat)=rxyz0(2,iat)+alat(2)
-            lgl=.true.
-            goto 225
-        endif
-        l2=int(rxyz0(2,iat)*rlc2i)
-
-        lgl=.false.
-335    continue
-        if (rxyz0(3,iat).ge.alat(3)) then
-                  if (lgl) then
-                    write(10,*) count,' bad z position ', iat,rxyz0(3,iat)
-                    rxyz0(3,iat)=modulo(rxyz0(3,iat),alat(3))
-                    goto 335
-                  endif
-            rxyz0(3,iat)=rxyz0(3,iat)-alat(3)
-            lgl=.true.
-            goto 335
-        endif
-        if (rxyz0(3,iat).lt.0.d0) then
-                  if (lgl) then
-                    write(10,*) count,' bad z position ', iat,rxyz0(3,iat)
-                    rxyz0(3,iat)=modulo(rxyz0(3,iat),alat(3))
-                    goto 225
-                  endif
-            rxyz0(3,iat)=rxyz0(3,iat)+alat(3)
-            lgl=.true.
-            goto 335
-        endif
-        l3=int(rxyz0(3,iat)*rlc3i)
-
-        ii=icell(0,l1,l2,l3)
-        ii=ii+1
-        icell(0,l1,l2,l3)=ii
-        if (ii.gt.ncx) then
-        write(10,*) count,'NCX too small',ncx
-        deallocate(icell)
-        goto 1234
-        endif
-        icell(ii,l1,l2,l3)=iat
-983     continue
-
-     else  ! parallel case
-
-! periodization of particles can be done in parallel
-!$omp parallel do shared (alat,nat,rxyz0,count) private(lgl,iat)
-
-        do 5983,iat=1,nat
-
-        lgl=.false.
-1155    continue
-        if (rxyz0(1,iat).ge.alat(1)) then
-                  if (lgl) then
-                    write(10,*) count,' bad x position ', iat,rxyz0(1,iat)
-                    rxyz0(1,iat)=modulo(rxyz0(1,iat),alat(1))
-                    goto 1155
-                  endif
-            rxyz0(1,iat)=rxyz0(1,iat)-alat(1)
-            lgl=.true.
-            goto 1155
-        endif
-        if (rxyz0(1,iat).lt.0.d0) then
-                  if (lgl) then
-                    write(10,*) count,' bad x position ', iat,rxyz0(1,iat)
-                    rxyz0(1,iat)=modulo(rxyz0(1,iat),alat(1))
-                    goto 1155
-                  endif
-            rxyz0(1,iat)=rxyz0(1,iat)+alat(1)
-            lgl=.true.
-            goto 1155
+! full neighbour list from vesin; the calculator lives across calls so that
+! vesin reuses its internal buffers
+        if (.not.nl_ready) then
+          nl=NeighborList(cutoff=cut,full=.true.,sorted=.true., &
+                          return_distances=.true.,return_vectors=.true.)
+          nl_ready=.true.
         endif
 
-        lgl=.false.
-2255    continue
-        if (rxyz0(2,iat).ge.alat(2)) then
-                  if (lgl) then
-                    write(10,*) count,' bad y position ', iat,rxyz0(2,iat)
-                    rxyz0(2,iat)=modulo(rxyz0(2,iat),alat(2))
-                    goto 2255
-                  endif
-            rxyz0(2,iat)=rxyz0(2,iat)-alat(2)
-            lgl=.true.
-            goto 2255
-        endif
-        if (rxyz0(2,iat).lt.0.d0) then
-                  if (lgl) then
-                    write(10,*) count,' bad y position ', iat,rxyz0(2,iat)
-                    rxyz0(2,iat)=modulo(rxyz0(2,iat),alat(2))
-                    goto 2255
-                  endif
-            rxyz0(2,iat)=rxyz0(2,iat)+alat(2)
-            lgl=.true.
-            goto 2255
+        box=0.d0
+        box(1,1)=alat(1)
+        box(2,2)=alat(2)
+        box(3,3)=alat(3)
+        call nl%compute(rxyz0,box,periodic=[.true.,.true.,.true.], &
+                        status=ivstat)
+        if (ivstat.ne.0) then
+          write(6,*) 'EDIP: vesin neighbour build failed: ',nl%errmsg
+          stop 1
         endif
 
-        lgl=.false.
-3355    continue
-        if (rxyz0(3,iat).ge.alat(3)) then
-                  if (lgl) then
-                    write(10,*) count,' bad z position ', iat,rxyz0(3,iat)
-                    rxyz0(3,iat)=modulo(rxyz0(3,iat),alat(3))
-                    goto 3355
-                  endif
-            rxyz0(3,iat)=rxyz0(3,iat)-alat(3)
-            lgl=.true.
-            goto 3355
-        endif
-        if (rxyz0(3,iat).lt.0.d0) then
-                  if (lgl) then
-                    write(10,*) count,' bad z position ', iat,rxyz0(3,iat)
-                    rxyz0(3,iat)=modulo(rxyz0(3,iat),alat(3))
-                    goto 3355
-                  endif
-            rxyz0(3,iat)=rxyz0(3,iat)+alat(3)
-            lgl=.true.
-            goto 3355
-        endif
-5983        continue
-!$omp end parallel do
-
-! assignment to cell is done serially
-! set ncx for parallel case, ncx for serial case set above
-        ncx=8
-4321    ncx=ncx*2
-        allocate(icell(0:ncx,-1:ll1,-1:ll2,-1:ll3))
-        do 3984,l3=-1,ll3
-        do 3984,l2=-1,ll2
-        do 3984,l1=-1,ll1
-3984    icell(0,l1,l2,l3)=0
-
-        rlc1i=ll1/alat(1)
-        rlc2i=ll2/alat(2)
-        rlc3i=ll3/alat(3)
-
-        do 6983,iat=1,nat
-        l1=int(rxyz0(1,iat)*rlc1i)
-        l2=int(rxyz0(2,iat)*rlc2i)
-        l3=int(rxyz0(3,iat)*rlc3i)
-        ii=icell(0,l1,l2,l3)
-        ii=ii+1
-        icell(0,l1,l2,l3)=ii
-        if (ii.gt.ncx) then
-        write(10,*) count,'NCX too small',ncx
-        deallocate(icell)
-        goto 4321
-        endif
-        icell(ii,l1,l2,l3)=iat
-6983    continue
-
-    endif
-
-
-! duplicate all atoms within boundary layer
-        laymx=ncx*(2*ll1*ll2+2*ll1*ll3+2*ll2*ll3+4*ll1+4*ll2+4*ll3+8)
-        nn=nat+laymx
-        allocate(rxyz(3,nn),lay(nn))
-        do  iat=1,nat
-        lay(iat)=iat
-        rxyz(1,iat)=rxyz0(1,iat)
-        rxyz(2,iat)=rxyz0(2,iat)
-        rxyz(3,iat)=rxyz0(3,iat)
-        enddo
-        il=nat
-! xy plane
-        do l2=0,ll2-1
-        do l1=0,ll1-1
-
-        in=icell(0,l1,l2,0)
-        icell(0,l1,l2,ll3)=in
-        do ii=1,in
-        i=icell(ii,l1,l2,0)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,l1,l2,ll3)=il
-        rxyz(1,il)=rxyz(1,i)
-        rxyz(2,il)=rxyz(2,i)
-        rxyz(3,il)=rxyz(3,i)+alat(3)
+! per-atom neighbour counts give the contiguous lsta slices; nnbrx is the
+! widest per-atom list, so lstb and rel keep the nnbrx*nat shape that
+! subfeniatEDIP declares
+        allocate(lsta(2,nat),nnbr(nat))
+        nnbr(1:nat)=0
+        do ip=1,int(nl%length)
+          iat=int(nl%pairs(1,ip))+1
+          if (iat.eq.int(nl%pairs(2,ip))+1) cycle
+          if (nl%distances(ip).le.0.d0) cycle
+          nnbr(iat)=nnbr(iat)+1
         enddo
 
-        in=icell(0,l1,l2,ll3-1)
-        icell(0,l1,l2,-1)=in
-        do ii=1,in
-        i=icell(ii,l1,l2,ll3-1)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,l1,l2,-1)=il
-        rxyz(1,il)=rxyz(1,i)
-        rxyz(2,il)=rxyz(2,i)
-        rxyz(3,il)=rxyz(3,i)-alat(3)
-        enddo
-
-        enddo
-        enddo
-
-
-! yz plane
-        do l3=0,ll3-1
-        do l2=0,ll2-1
-
-        in=icell(0,0,l2,l3)
-        icell(0,ll1,l2,l3)=in
-        do ii=1,in
-        i=icell(ii,0,l2,l3)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,ll1,l2,l3)=il
-        rxyz(1,il)=rxyz(1,i)+alat(1)
-        rxyz(2,il)=rxyz(2,i)
-        rxyz(3,il)=rxyz(3,i)
-        enddo
-
-        in=icell(0,ll1-1,l2,l3)
-        icell(0,-1,l2,l3)=in
-        do ii=1,in
-        i=icell(ii,ll1-1,l2,l3)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,-1,l2,l3)=il
-        rxyz(1,il)=rxyz(1,i)-alat(1)
-        rxyz(2,il)=rxyz(2,i)
-        rxyz(3,il)=rxyz(3,i)
-        enddo
-
-        enddo
-        enddo
-
-
-! xz plane
-        do l3=0,ll3-1
-        do l1=0,ll1-1
-
-        in=icell(0,l1,0,l3)
-        icell(0,l1,ll2,l3)=in
-        do ii=1,in
-        i=icell(ii,l1,0,l3)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,l1,ll2,l3)=il
-        rxyz(1,il)=rxyz(1,i)
-        rxyz(2,il)=rxyz(2,i)+alat(2)
-        rxyz(3,il)=rxyz(3,i)
-        enddo
-
-        in=icell(0,l1,ll2-1,l3)
-        icell(0,l1,-1,l3)=in
-        do ii=1,in
-        i=icell(ii,l1,ll2-1,l3)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,l1,-1,l3)=il
-        rxyz(1,il)=rxyz(1,i)
-        rxyz(2,il)=rxyz(2,i)-alat(2)
-        rxyz(3,il)=rxyz(3,i)
-        enddo
-
-        enddo
-        enddo
-
-
-! x axis
-        do l1=0,ll1-1
-
-        in=icell(0,l1,0,0)
-        icell(0,l1,ll2,ll3)=in
-        do ii=1,in
-        i=icell(ii,l1,0,0)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,l1,ll2,ll3)=il
-        rxyz(1,il)=rxyz(1,i)
-        rxyz(2,il)=rxyz(2,i)+alat(2)
-        rxyz(3,il)=rxyz(3,i)+alat(3)
-        enddo
-
-        in=icell(0,l1,0,ll3-1)
-        icell(0,l1,ll2,-1)=in
-        do ii=1,in
-        i=icell(ii,l1,0,ll3-1)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,l1,ll2,-1)=il
-        rxyz(1,il)=rxyz(1,i)
-        rxyz(2,il)=rxyz(2,i)+alat(2)
-        rxyz(3,il)=rxyz(3,i)-alat(3)
-        enddo
-
-        in=icell(0,l1,ll2-1,0)
-        icell(0,l1,-1,ll3)=in
-        do ii=1,in
-        i=icell(ii,l1,ll2-1,0)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,l1,-1,ll3)=il
-        rxyz(1,il)=rxyz(1,i)
-        rxyz(2,il)=rxyz(2,i)-alat(2)
-        rxyz(3,il)=rxyz(3,i)+alat(3)
-        enddo
-
-        in=icell(0,l1,ll2-1,ll3-1)
-        icell(0,l1,-1,-1)=in
-        do ii=1,in
-        i=icell(ii,l1,ll2-1,ll3-1)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,l1,-1,-1)=il
-        rxyz(1,il)=rxyz(1,i)
-        rxyz(2,il)=rxyz(2,i)-alat(2)
-        rxyz(3,il)=rxyz(3,i)-alat(3)
-        enddo
-
-        enddo
-
-
-! y axis
-        do l2=0,ll2-1
-
-        in=icell(0,0,l2,0)
-        icell(0,ll1,l2,ll3)=in
-        do ii=1,in
-        i=icell(ii,0,l2,0)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,ll1,l2,ll3)=il
-        rxyz(1,il)=rxyz(1,i)+alat(1)
-        rxyz(2,il)=rxyz(2,i)
-        rxyz(3,il)=rxyz(3,i)+alat(3)
-        enddo
-
-        in=icell(0,0,l2,ll3-1)
-        icell(0,ll1,l2,-1)=in
-        do ii=1,in
-        i=icell(ii,0,l2,ll3-1)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,ll1,l2,-1)=il
-        rxyz(1,il)=rxyz(1,i)+alat(1)
-        rxyz(2,il)=rxyz(2,i)
-        rxyz(3,il)=rxyz(3,i)-alat(3)
-        enddo
-
-        in=icell(0,ll1-1,l2,0)
-        icell(0,-1,l2,ll3)=in
-        do ii=1,in
-        i=icell(ii,ll1-1,l2,0)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,-1,l2,ll3)=il
-        rxyz(1,il)=rxyz(1,i)-alat(1)
-        rxyz(2,il)=rxyz(2,i)
-        rxyz(3,il)=rxyz(3,i)+alat(3)
-        enddo
-
-        in=icell(0,ll1-1,l2,ll3-1)
-        icell(0,-1,l2,-1)=in
-        do ii=1,in
-        i=icell(ii,ll1-1,l2,ll3-1)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,-1,l2,-1)=il
-        rxyz(1,il)=rxyz(1,i)-alat(1)
-        rxyz(2,il)=rxyz(2,i)
-        rxyz(3,il)=rxyz(3,i)-alat(3)
-        enddo
-
-        enddo
-
-
-! z axis
-        do l3=0,ll3-1
-
-        in=icell(0,0,0,l3)
-        icell(0,ll1,ll2,l3)=in
-        do ii=1,in
-        i=icell(ii,0,0,l3)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,ll1,ll2,l3)=il
-        rxyz(1,il)=rxyz(1,i)+alat(1)
-        rxyz(2,il)=rxyz(2,i)+alat(2)
-        rxyz(3,il)=rxyz(3,i)
-        enddo
-
-        in=icell(0,ll1-1,0,l3)
-        icell(0,-1,ll2,l3)=in
-        do ii=1,in
-        i=icell(ii,ll1-1,0,l3)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,-1,ll2,l3)=il
-        rxyz(1,il)=rxyz(1,i)-alat(1)
-        rxyz(2,il)=rxyz(2,i)+alat(2)
-        rxyz(3,il)=rxyz(3,i)
-        enddo
-
-        in=icell(0,0,ll2-1,l3)
-        icell(0,ll1,-1,l3)=in
-        do ii=1,in
-        i=icell(ii,0,ll2-1,l3)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,ll1,-1,l3)=il
-        rxyz(1,il)=rxyz(1,i)+alat(1)
-        rxyz(2,il)=rxyz(2,i)-alat(2)
-        rxyz(3,il)=rxyz(3,i)
-        enddo
-
-        in=icell(0,ll1-1,ll2-1,l3)
-        icell(0,-1,-1,l3)=in
-        do ii=1,in
-        i=icell(ii,ll1-1,ll2-1,l3)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,-1,-1,l3)=il
-        rxyz(1,il)=rxyz(1,i)-alat(1)
-        rxyz(2,il)=rxyz(2,i)-alat(2)
-        rxyz(3,il)=rxyz(3,i)
-        enddo
-
-        enddo
-
-
-! corners
-        in=icell(0,0,0,0)
-        icell(0,ll1,ll2,ll3)=in
-        do ii=1,in
-        i=icell(ii,0,0,0)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,ll1,ll2,ll3)=il
-        rxyz(1,il)=rxyz(1,i)+alat(1)
-        rxyz(2,il)=rxyz(2,i)+alat(2)
-        rxyz(3,il)=rxyz(3,i)+alat(3)
-        enddo
-
-        in=icell(0,ll1-1,0,0)
-        icell(0,-1,ll2,ll3)=in
-        do ii=1,in
-        i=icell(ii,ll1-1,0,0)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,-1,ll2,ll3)=il
-        rxyz(1,il)=rxyz(1,i)-alat(1)
-        rxyz(2,il)=rxyz(2,i)+alat(2)
-        rxyz(3,il)=rxyz(3,i)+alat(3)
-        enddo
-
-        in=icell(0,0,ll2-1,0)
-        icell(0,ll1,-1,ll3)=in
-        do ii=1,in
-        i=icell(ii,0,ll2-1,0)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,ll1,-1,ll3)=il
-        rxyz(1,il)=rxyz(1,i)+alat(1)
-        rxyz(2,il)=rxyz(2,i)-alat(2)
-        rxyz(3,il)=rxyz(3,i)+alat(3)
-        enddo
-
-        in=icell(0,ll1-1,ll2-1,0)
-        icell(0,-1,-1,ll3)=in
-        do ii=1,in
-        i=icell(ii,ll1-1,ll2-1,0)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,-1,-1,ll3)=il
-        rxyz(1,il)=rxyz(1,i)-alat(1)
-        rxyz(2,il)=rxyz(2,i)-alat(2)
-        rxyz(3,il)=rxyz(3,i)+alat(3)
-        enddo
-
-        in=icell(0,0,0,ll3-1)
-        icell(0,ll1,ll2,-1)=in
-        do ii=1,in
-        i=icell(ii,0,0,ll3-1)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,ll1,ll2,-1)=il
-        rxyz(1,il)=rxyz(1,i)+alat(1)
-        rxyz(2,il)=rxyz(2,i)+alat(2)
-        rxyz(3,il)=rxyz(3,i)-alat(3)
-        enddo
-
-        in=icell(0,ll1-1,0,ll3-1)
-        icell(0,-1,ll2,-1)=in
-        do ii=1,in
-        i=icell(ii,ll1-1,0,ll3-1)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,-1,ll2,-1)=il
-        rxyz(1,il)=rxyz(1,i)-alat(1)
-        rxyz(2,il)=rxyz(2,i)+alat(2)
-        rxyz(3,il)=rxyz(3,i)-alat(3)
-        enddo
-
-        in=icell(0,0,ll2-1,ll3-1)
-        icell(0,ll1,-1,-1)=in
-        do ii=1,in
-        i=icell(ii,0,ll2-1,ll3-1)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,ll1,-1,-1)=il
-        rxyz(1,il)=rxyz(1,i)+alat(1)
-        rxyz(2,il)=rxyz(2,i)-alat(2)
-        rxyz(3,il)=rxyz(3,i)-alat(3)
-        enddo
-
-        in=icell(0,ll1-1,ll2-1,ll3-1)
-        icell(0,-1,-1,-1)=in
-        do ii=1,in
-        i=icell(ii,ll1-1,ll2-1,ll3-1)
-        il=il+1
-        if (il.gt.nn) stop 'enlarge laymx'
-        lay(il)=i
-        icell(ii,-1,-1,-1)=il
-        rxyz(1,il)=rxyz(1,i)-alat(1)
-        rxyz(2,il)=rxyz(2,i)-alat(2)
-        rxyz(3,il)=rxyz(3,i)-alat(3)
-        enddo
-
-        allocate(lsta(2,nat))
-        nnbrx=8
-2345    nnbrx=3*nnbrx/2
+        nnbrx=max(1,maxval(nnbr(1:nat)))
         allocate(lstb(nnbrx*nat),rel(5,nnbrx*nat))
 
-        indlstx=0
-
-!$omp parallel  &
-!$omp private(iat,cut2,iam,ii,indlst,l1,l2,l3,myspace,npr) &
-!$omp shared (indlstx,nat,nn,nnbrx,ncx,ll1,ll2,ll3,icell,lsta,lstb,lay, &
-!$omp rel,rxyz,cut,myspaceout)
-
-
-        npr=1
-!$       npr=omp_get_num_threads()
-        iam=0
-!$       iam=omp_get_thread_num()
-
-        cut2=cut**2
-! assign contiguous portions of the arrays lstb and rel to the threads
-        myspace=(nat*nnbrx)/npr
-        if (iam.eq.0) myspaceout=myspace
-! Verlet list, relative positions
         indlst=0
-      do 6000,l3=0,ll3-1
-      do 6000,l2=0,ll2-1
-      do 6000,l1=0,ll1-1
-      do 6600,ii=1,icell(0,l1,l2,l3)
-        iat=icell(ii,l1,l2,l3)
-        if ( ((iat-1)*npr)/nat .eq. iam) then
-!     write(6,*) 'sublstiat:iam,iat',iam,iat
-        lsta(1,iat)=iam*myspace+indlst+1
-        call sublstiatEDIP(iat,nn,ncx,ll1,ll2,ll3,l1,l2,l3,myspace, &
-             rxyz,icell,lstb(iam*myspace+1),lay,rel(1,iam*myspace+1),cut2,indlst)
-        lsta(2,iat)=iam*myspace+indlst
-!        write(6,'(a,4(x,i3),100(x,i2))') &
-!               'iam,iat,lsta',iam,iat,lsta(1,iat),lsta(2,iat), &
-!                    (lstb(j),j=lsta(1,iat),lsta(2,iat))
-        endif
+        do iat=1,nat
+          lsta(1,iat)=indlst+1
+          indlst=indlst+nnbr(iat)
+          lsta(2,iat)=indlst
+        enddo
 
-6600    continue
-6000    continue
-!$omp critical
-        indlstx=max(indlstx,indlst)
-!$omp end critical
-!$omp end parallel
+! rel carries the unit vector of r_iat - r_jat, the distance and its
+! inverse; vesin reports r_jat - r_iat with the periodic shift folded in
+        nnbr(1:nat)=0
+        do ip=1,int(nl%length)
+          iat=int(nl%pairs(1,ip))+1
+          jat=int(nl%pairs(2,ip))+1
+          if (iat.eq.jat) cycle
+          tt=nl%distances(ip)
+          if (tt.le.0.d0) cycle
+          nnbr(iat)=nnbr(iat)+1
+          indlst=lsta(1,iat)+nnbr(iat)-1
+          tti=1.d0/tt
+          lstb(indlst)=jat
+          rel(1,indlst)=-nl%vectors(1,ip)*tti
+          rel(2,indlst)=-nl%vectors(2,ip)*tti
+          rel(3,indlst)=-nl%vectors(3,ip)*tti
+          rel(4,indlst)=tt
+          rel(5,indlst)=tti
+        enddo
 
-           if (indlstx.ge.myspaceout) then
-               write(10,*) count,'NNBRX too  small', nnbrx
-               deallocate(lstb,rel)
-               goto 2345
-           endif
 
 !$omp parallel  &
 !$omp private(iam,npr,iat,iat1,iat2,lot,istop,tcoord,tcoord2, &
@@ -804,10 +200,9 @@
         allocate(txyz(3,nat),s2(max_nbrs,8),s3(max_nbrs,7),sz(max_nbrs,6),  &
                  num2(max_nbrs),num3(max_nbrs),numz(max_nbrs))
 !$omp end critical
-! Zero shared accumulators under a single+barrier. The old "if (iam.eq.0)"
-! zero without a barrier races: other threads can critical-add into ener/fxyz
-! before thread 0 clears them, so energy is wrong while forces still look
-! plausible under OMP_NUM_THREADS>1.
+! Zero shared accumulators under single (implicit barrier on exit):
+! every thread critical-adds into ener/fxyz below, so no thread may start
+! accumulating before the clear completes.
 !$omp single
         ener=0.d0
         ener2=0.d0
@@ -875,7 +270,7 @@
           j=j+3
         END DO
 
-        deallocate(rxyz,icell,lay,lsta,lstb,rel)
+        deallocate(lsta,lstb,rel,nnbr)
 
         end subroutine edip
 
@@ -1320,44 +715,6 @@
 
 1000      continue
 
-
-        return
-        end
-
-!---------------------------------------------------------------------------------------!
-
-        subroutine sublstiatEDIP(iat,nn,ncx,ll1,ll2,ll3,l1,l2,l3,myspace, &
-                   rxyz,icell,lstb,lay,rel,cut2,indlst)
-! finds the neighbours of atom iat (specified by lsta and lstb) and and
-! the relative position rel of iat with respect to these neighbours
-        implicit real*8 (a-h,o-z)
-        dimension rxyz(3,nn),lay(nn),icell(0:ncx,-1:ll1,-1:ll2,-1:ll3), &
-                  lstb(0:myspace-1),rel(5,0:myspace-1)
-
-        do 6363,k3=l3-1,l3+1
-        do 6363,k2=l2-1,l2+1
-        do 6363,k1=l1-1,l1+1
-        do 6363,jj=1,icell(0,k1,k2,k3)
-          jat=icell(jj,k1,k2,k3)
-          if (jat.eq.iat) goto 6363
-          xrel= rxyz(1,iat)-rxyz(1,jat)
-          yrel= rxyz(2,iat)-rxyz(2,jat)
-          zrel= rxyz(3,iat)-rxyz(3,jat)
-          rr2=xrel**2 + yrel**2 + zrel**2
-          if ( rr2 .le. cut2 ) then
-           indlst=min(indlst,myspace-1)
-           lstb(indlst)=lay(jat)
-!        write(6,*) 'iat,indlst,lay(jat)',iat,indlst,lay(jat)
-           tt=sqrt(rr2)
-           tti=1.d0/tt
-           rel(1,indlst)=xrel*tti
-           rel(2,indlst)=yrel*tti
-           rel(3,indlst)=zrel*tti
-           rel(4,indlst)=tt
-           rel(5,indlst)=tti
-           indlst= indlst+1
-          endif
-6363        continue
 
         return
         end
