@@ -17,7 +17,7 @@ Verlet tables or O(N²) MIC loops for new work.
 |-------|-----|---------|
 | Python server geometry | `eon.geometry.neighbors.neighbor_list` | `vesin.NeighborList` |
 | Process-atom shells / displace | `eon.atoms` / `get_process_atoms` | same |
-| Classical C++ pair pots (LJ, Morse, LJCluster, QSC) | `eonc::VesinNeighbors` | `vesin_neighbors` (C) |
+| Classical C++ pair pots (LJ, Morse, LJCluster, QSC) | `eonc::PairListCache` (Verlet-skin cache over vesin) | `vesin_neighbors` (C) |
 | Metatomic | pot-local call into vesin C | same `libvesin` / vendored TU |
 | External engines (LAMMPS, VASP, ASE, …) | engine-owned | not eOn's NL |
 | Legacy Fortran pots (SW, FeHe, …) | still pot-local | migrate via [vesin Fortran](https://luthaf.fr/vesin/) (`module vesin`) |
@@ -33,22 +33,36 @@ nl = neighbor_list(structure, cutoff=4.0)
 
 ## C++
 
+Pair potentials go through the Verlet-skin cache, not raw `VesinNeighbors`:
+
 ```cpp
 #include "eon/VesinNeighbors.h"
-// Prefer thread_local (or a long-lived member) so vesin re-uses pair buffers:
-thread_local eonc::VesinNeighbors nl;
-eonc::VesinNeighbors::Options opt{.cutoff = 5.0, .full = false,
-                                  .return_distances = true, .return_vectors = true};
-nl.compute(R, nAtoms, box9, opt);
+eonc::CachedPairList::Options opt;
+opt.cutoff = 5.0; // skin defaults to 1.0 Angstrom
+const auto &nl = eonc::PairListCache::local().ensure(R, nAtoms, box9, opt);
+nl.forEach(R, [&](int32_t i, int32_t j, double dx, double dy, double dz,
+                  double r2) {
+  // d = r_i - r_j (minimum image applied), r2 = |d|^2 <= cutoff^2
+});
 ```
 
-Vector convention matches vesin: **`r_ij = r_j − r_i + S·H`**.
-`eoncbase` always links vesin (pkg-config / system / vendored).
+vesin builds the half list at `cutoff + skin`; while every atom stays within
+`skin/2` of its build position the cached pairs are re-used and `forEach`
+derives exact vectors from the *current* positions, filtered at the true
+cutoff — results match a fresh build bit-for-bit in pair content. The pool
+(`PairListCache::local()`) matches slots by geometry proximity, so several
+NEB images sharing one pot instance each keep a live list on any
+thread-to-image assignment.
+
+`forEach` hands out the historical eOn convention **`d = r_i − r_j`** (the
+negated vesin vector). Raw `eonc::VesinNeighbors` (vesin convention
+`r_ij = r_j − r_i + S·H`) remains for consumers that need vesin's own
+buffers, e.g. Metatomic. `eoncbase` always links vesin (pkg-config / system
+/ vendored).
 
 **Do not** call `vesin_free` (or destroy a stack-local list) before every
 `compute`. Upstream documents that the same `VesinNeighborList` should be
 re-used across calls so allocations are recycled; free only when finished.
-Use `thread_local` when the pot can be shared across NEB image threads.
 
 ## How we measure (ASV, not one-off scripts)
 
