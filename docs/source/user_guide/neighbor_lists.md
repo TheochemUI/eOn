@@ -20,7 +20,7 @@ Verlet tables or O(N²) MIC loops for new work.
 | Classical C++ pair pots (LJ, Morse, LJCluster, QSC) | `eonc::PairListCache` (Verlet-skin cache over vesin) | `vesin_neighbors` (C) |
 | Metatomic | pot-local call into vesin C | same `libvesin` / vendored TU |
 | External engines (LAMMPS, VASP, ASE, …) | engine-owned | not eOn's NL |
-| Legacy Fortran pots (SW, FeHe, …) | still pot-local | migrate via [vesin Fortran](https://luthaf.fr/vesin/) (`module vesin`) |
+| Fortran pots (SW, EDIP, Lenosky, Aluminum, CuH2, FeHe, Tersoff) | `use vesin` / CSR helper modules | vendored `vesin_fortran` |
 
 ## Python
 
@@ -111,8 +111,14 @@ To compare a vesin-NL branch to `main` without waiting for GHA: build+install
 both commits’ clients (or sequential install) and use the same ASV class names;
 the PR workflow is the authoritative pair-wise run.
 
-## Not yet unified
+## Fortran
 
-Fortran Stillinger–Weber / FeHe / Aluminum / EDIP still build neighbors
-inside `.f`/`.f90`. Upstream vesin provides `fortran/src/vesin.f90`; wire under
-`with_fortran` and port pot generators next.
+The upstream vesin Fortran interface is vendored at
+`client/thirdparty/vesin/fortran/` and built as `vesin_fortran` under
+`with_fortran`; pot targets take it via `vesin_f_dep`. SW, EDIP, and
+Lenosky call `use vesin` directly for their per-atom lists; Aluminum,
+CuH2, and FeHe enumerate candidates through free-form CSR helper modules
+(`vesin_al` / `vesin_cuh2` / `vesin_fehe`) while their fixed-form kernels
+keep the MIC and sign conventions; Tersoff iterates per-atom lists instead
+of all-atom sweeps. Every Fortran pot remains orthorhombic-only (they take
+the box diagonal).
