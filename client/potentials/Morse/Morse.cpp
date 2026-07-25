@@ -61,24 +61,24 @@ void Morse::force(long N, const double *R, const int * /*atomicNrs*/, double *F,
   eonc::PairListCache::global().ensureVisit(
       R, static_cast<std::size_t>(N), box, opt,
       [&](int32_t i, int32_t j, double dx, double dy, double dz, double r2) {
-    const double r = std::sqrt(r2);
-    const double d = 1.0 - std::exp(-a * (r - re));
-    const double energy = De * d * d - De;
-    const double fmag = twoDeA * d * (d - 1.0);
-    energyAcc += energy - eCut;
+        const double r = std::sqrt(r2);
+        const double d = 1.0 - std::exp(-a * (r - re));
+        const double energy = De * d * d - De;
+        const double fmag = twoDeA * d * (d - 1.0);
+        energyAcc += energy - eCut;
 
-    const double fscale = fmag / r;
-    const double fx = fscale * dx;
-    const double fy = fscale * dy;
-    const double fz = fscale * dz;
+        const double fscale = fmag / r;
+        const double fx = fscale * dx;
+        const double fy = fscale * dy;
+        const double fz = fscale * dz;
 
-    F[3 * i] += fx;
-    F[3 * i + 1] += fy;
-    F[3 * i + 2] += fz;
-    F[3 * j] -= fx;
-    F[3 * j + 1] -= fy;
-    F[3 * j + 2] -= fz;
-  });
+        F[3 * i] += fx;
+        F[3 * i + 1] += fy;
+        F[3 * i + 2] += fz;
+        F[3 * j] -= fx;
+        F[3 * j + 1] -= fy;
+        F[3 * j + 2] -= fz;
+      });
   *U = energyAcc;
 }
 

@@ -39,21 +39,26 @@ Pair potentials go through the Verlet-skin cache, not raw `VesinNeighbors`:
 #include "eon/VesinNeighbors.h"
 eonc::CachedPairList::Options opt;
 opt.cutoff = 5.0; // skin defaults to 1.0 Angstrom
-const auto nl = eonc::PairListCache::global().ensure(R, nAtoms, box9, opt);
-nl->forEach(R, [&](int32_t i, int32_t j, double dx, double dy, double dz,
-                   double r2) {
-  // d = r_i - r_j (minimum image applied), r2 = |d|^2 <= cutoff^2
-});
+eonc::PairListCache::global().ensureVisit(
+    R, nAtoms, box9, opt,
+    [&](int32_t i, int32_t j, double dx, double dy, double dz, double r2) {
+      // d = r_i - r_j (minimum image applied), r2 = |d|^2 <= cutoff^2
+    });
 ```
 
-vesin builds the half list at `cutoff + skin`; while every atom stays within
-`skin/2` of its build position the cached pairs are re-used and `forEach`
-derives exact vectors from the *current* positions, filtered at the true
-cutoff — results match a fresh build bit-for-bit in pair content. The pool
+The candidate list is built at `cutoff + skin`; while every atom stays
+within `skin/2` of its build position the cached pairs are re-used and the
+evaluation derives exact vectors from the *current* positions, filtered at
+the true cutoff — results match a fresh build bit-for-bit in pair content.
+On a slot miss in the MIC regime (orthorhombic box, cutoff within half the
+smallest periodic width) the kernel inlines into the build's single
+brute-force scan (`vesin_visit.hpp`); everything else builds through
+vesin's cell list and evaluates with the stored cell shifts. The pool
 (`PairListCache::global()`) matches slots by geometry proximity, so several
 NEB images sharing one pot instance each keep a live list on any
 thread-to-image assignment — including NEB's per-iteration worker threads,
-which would destroy any thread_local cache.
+which would destroy any thread_local cache. `ensureVisit` returns the slot
+for further passes over the same list (`forEach`), e.g. QSC's force pass.
 
 `forEach` hands out the historical eOn convention **`d = r_i − r_j`** (the
 negated vesin vector). Raw `eonc::VesinNeighbors` (vesin convention

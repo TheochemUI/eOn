@@ -158,8 +158,9 @@ public:
     const double bc = opt.cutoff + opt.skin;
     vesin::cpu::brute_force_visit(
         R, n, w, inv, bc * bc, opt.cutoff * opt.cutoff, pairsIJ_,
-        [&](int32_t i, int32_t j, double dx, double dy, double dz,
-            double r2) { fn(i, j, -dx, -dy, -dz, r2); });
+        [&](int32_t i, int32_t j, double dx, double dy, double dz, double r2) {
+          fn(i, j, -dx, -dy, -dz, r2);
+        });
     finishRebuild(R, n, box, opt);
     return true;
   }
@@ -263,8 +264,8 @@ private:
   void finishRebuild(const double *R, std::size_t n, const double *box,
                      const Options &opt);
 
-  VesinNeighbors nl_;              ///< shift mode (cell list) storage
-  std::vector<int32_t> pairsIJ_;   ///< MIC mode storage: flat (i, j) pairs
+  VesinNeighbors nl_;            ///< shift mode (cell list) storage
+  std::vector<int32_t> pairsIJ_; ///< MIC mode storage: flat (i, j) pairs
   std::vector<double> Rref_;
   std::array<double, 9> boxref_{};
   std::array<double, 3> micInv_{}; ///< 1/width per periodic dim, else 0

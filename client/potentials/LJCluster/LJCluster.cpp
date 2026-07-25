@@ -53,26 +53,26 @@ void LJCluster::force(long N, const double *R, const int * /*atomicNrs*/,
   eonc::PairListCache::global().ensureVisit(
       R, static_cast<std::size_t>(N), box_use, opt,
       [&](int32_t i, int32_t j, double dx, double dy, double dz, double r2) {
-    const double invR2 = 1.0 / r2;
-    const double sr2 = psi2 * invR2;
-    const double a = sr2 * sr2 * sr2; // (psi/r)^6 without pow()
-    const double b = 4 * u0 * a;
-    energyAcc += b * (a - 1) - cuttOffU;
+        const double invR2 = 1.0 / r2;
+        const double sr2 = psi2 * invR2;
+        const double a = sr2 * sr2 * sr2; // (psi/r)^6 without pow()
+        const double b = 4 * u0 * a;
+        energyAcc += b * (a - 1) - cuttOffU;
 
-    // -dU/dr / r along d = r_i - r_j, same sign convention as the historical
-    // double loop.
-    const double fscale = 6 * b * invR2 * (2 * a - 1);
-    const double fx = fscale * dx;
-    const double fy = fscale * dy;
-    const double fz = fscale * dz;
+        // -dU/dr / r along d = r_i - r_j, same sign convention as the
+        // historical double loop.
+        const double fscale = 6 * b * invR2 * (2 * a - 1);
+        const double fx = fscale * dx;
+        const double fy = fscale * dy;
+        const double fz = fscale * dz;
 
-    F[3 * i] += fx;
-    F[3 * i + 1] += fy;
-    F[3 * i + 2] += fz;
-    F[3 * j] -= fx;
-    F[3 * j + 1] -= fy;
-    F[3 * j + 2] -= fz;
-  });
+        F[3 * i] += fx;
+        F[3 * i + 1] += fy;
+        F[3 * i + 2] += fz;
+        F[3 * j] -= fx;
+        F[3 * j + 1] -= fy;
+        F[3 * j + 2] -= fz;
+      });
   *U = energyAcc;
 }
 

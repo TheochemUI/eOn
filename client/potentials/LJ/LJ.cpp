@@ -42,23 +42,23 @@ void LJ::force(long N, const double *R, const int * /*atomicNrs*/, double *F,
   eonc::PairListCache::global().ensureVisit(
       R, static_cast<std::size_t>(N), box, opt,
       [&](int32_t i, int32_t j, double dx, double dy, double dz, double r2) {
-    const double invR2 = 1.0 / r2;
-    const double sr2 = psi2 * invR2;
-    const double sr6 = sr2 * sr2 * sr2;
-    const double e = 4.0 * u0 * sr6;
-    energyAcc += e * (sr6 - 1.0) - cuttOffU;
+        const double invR2 = 1.0 / r2;
+        const double sr2 = psi2 * invR2;
+        const double sr6 = sr2 * sr2 * sr2;
+        const double e = 4.0 * u0 * sr6;
+        energyAcc += e * (sr6 - 1.0) - cuttOffU;
 
-    const double fscale = 6.0 * e * invR2 * (2.0 * sr6 - 1.0);
-    const double fx = fscale * dx;
-    const double fy = fscale * dy;
-    const double fz = fscale * dz;
+        const double fscale = 6.0 * e * invR2 * (2.0 * sr6 - 1.0);
+        const double fx = fscale * dx;
+        const double fy = fscale * dy;
+        const double fz = fscale * dz;
 
-    F[3 * i] += fx;
-    F[3 * i + 1] += fy;
-    F[3 * i + 2] += fz;
-    F[3 * j] -= fx;
-    F[3 * j + 1] -= fy;
-    F[3 * j + 2] -= fz;
-  });
+        F[3 * i] += fx;
+        F[3 * i + 1] += fy;
+        F[3 * i + 2] += fz;
+        F[3 * j] -= fx;
+        F[3 * j + 1] -= fy;
+        F[3 * j + 2] -= fz;
+      });
   *U = energyAcc;
 }

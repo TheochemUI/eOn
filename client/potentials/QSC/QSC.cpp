@@ -70,37 +70,37 @@ void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
     *U += pair_term[static_cast<std::size_t>(i)] - embedding;
   }
 
-  nl->forEach(R, [&](int32_t i, int32_t j, double dx, double dy, double dz,
-                    double r2) {
-    const double r_ij = std::sqrt(r2);
+  nl->forEach(
+      R, [&](int32_t i, int32_t j, double dx, double dy, double dz, double r2) {
+        const double r_ij = std::sqrt(r2);
 
-    const auto p_ii = get_qsc_parameters(atomicNrs[i], atomicNrs[i]);
-    const auto p_ij = get_qsc_parameters(atomicNrs[i], atomicNrs[j]);
-    const auto p_jj = get_qsc_parameters(atomicNrs[j], atomicNrs[j]);
+        const auto p_ii = get_qsc_parameters(atomicNrs[i], atomicNrs[i]);
+        const auto p_ij = get_qsc_parameters(atomicNrs[i], atomicNrs[j]);
+        const auto p_jj = get_qsc_parameters(atomicNrs[j], atomicNrs[j]);
 
-    const double phi_ij = pair_potential(r_ij, p_jj.a, p_jj.m);
-    const double phi_ji = pair_potential(r_ij, p_ii.a, p_ii.m);
-    const double V = p_ij.epsilon * pair_potential(r_ij, p_ij.a, p_ij.n);
+        const double phi_ij = pair_potential(r_ij, p_jj.a, p_jj.m);
+        const double phi_ji = pair_potential(r_ij, p_ii.a, p_ii.m);
+        const double V = p_ij.epsilon * pair_potential(r_ij, p_ij.a, p_ij.n);
 
-    double Fij = p_ij.n * V;
-    Fij -= p_ii.epsilon * p_ii.c * p_jj.m * 0.5 *
-           (1.0 / sqrtrho_[static_cast<std::size_t>(i)]) * phi_ij;
-    Fij -= p_jj.epsilon * p_jj.c * p_ii.m * 0.5 *
-           (1.0 / sqrtrho_[static_cast<std::size_t>(j)]) * phi_ji;
-    Fij /= r_ij;
+        double Fij = p_ij.n * V;
+        Fij -= p_ii.epsilon * p_ii.c * p_jj.m * 0.5 *
+               (1.0 / sqrtrho_[static_cast<std::size_t>(i)]) * phi_ij;
+        Fij -= p_jj.epsilon * p_jj.c * p_ii.m * 0.5 *
+               (1.0 / sqrtrho_[static_cast<std::size_t>(j)]) * phi_ji;
+        Fij /= r_ij;
 
-    const double fscale = Fij / r_ij;
-    const double fx = fscale * dx;
-    const double fy = fscale * dy;
-    const double fz = fscale * dz;
+        const double fscale = Fij / r_ij;
+        const double fx = fscale * dx;
+        const double fy = fscale * dy;
+        const double fz = fscale * dz;
 
-    F[3 * i] += fx;
-    F[3 * i + 1] += fy;
-    F[3 * i + 2] += fz;
-    F[3 * j] -= fx;
-    F[3 * j + 1] -= fy;
-    F[3 * j + 2] -= fz;
-  });
+        F[3 * i] += fx;
+        F[3 * i + 1] += fy;
+        F[3 * i + 2] += fz;
+        F[3 * j] -= fx;
+        F[3 * j + 1] -= fy;
+        F[3 * j + 2] -= fz;
+      });
 }
 
 double QSC::dpowi(double x, unsigned n) {

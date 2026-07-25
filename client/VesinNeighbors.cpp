@@ -140,9 +140,9 @@ void CachedPairList::rebuild(const double *R, std::size_t n, const double *box,
                    : 0.0;
     }
     const double bc = opt.cutoff + opt.skin;
-    vesin::cpu::brute_force_visit(R, n, w, inv, bc * bc, -1.0, pairsIJ_,
-                                  [](int32_t, int32_t, double, double, double,
-                                     double) {});
+    vesin::cpu::brute_force_visit(
+        R, n, w, inv, bc * bc, -1.0, pairsIJ_,
+        [](int32_t, int32_t, double, double, double, double) {});
     finishRebuild(R, n, box, opt);
     return;
   }
@@ -158,9 +158,8 @@ void CachedPairList::setup(std::size_t n, const double *box,
   // resolved at evaluation time exactly like the historical MIC loops. The
   // cell list degenerates to a couple of cells in this regime and costs
   // ~20x more per build.
-  const bool orthorhombic = box[1] == 0.0 && box[2] == 0.0 &&
-                            box[3] == 0.0 && box[5] == 0.0 &&
-                            box[6] == 0.0 && box[7] == 0.0;
+  const bool orthorhombic = box[1] == 0.0 && box[2] == 0.0 && box[3] == 0.0 &&
+                            box[5] == 0.0 && box[6] == 0.0 && box[7] == 0.0;
   mic_ = orthorhombic && n <= 20000;
   for (int k = 0; mic_ && k < 3; ++k) {
     if (opt.periodic[static_cast<std::size_t>(k)] &&
@@ -190,9 +189,8 @@ void CachedPairList::finishRebuild(const double *R, std::size_t n,
                                    const double *box, const Options &opt) {
   for (int k = 0; k < 3; ++k) {
     micInv_[static_cast<std::size_t>(k)] =
-        (mic_ && opt.periodic[static_cast<std::size_t>(k)])
-            ? 1.0 / box[4 * k]
-            : 0.0;
+        (mic_ && opt.periodic[static_cast<std::size_t>(k)]) ? 1.0 / box[4 * k]
+                                                            : 0.0;
   }
 
   Rref_.assign(R, R + 3 * n);
