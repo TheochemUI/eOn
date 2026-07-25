@@ -108,47 +108,44 @@ jobs:
           # shellcheck source=scripts/ci/win_flang_rt.sh
           source scripts/ci/win_flang_rt.sh
           eon_export_flang_rt "${CONDA_PREFIX:-}" --required
-          # Prove pot DLLs exist and LoadLibrary works (static flang_rt preferred).
-          for _pot in Aluminum SW EDIP FeHe Lenosky Tersoff; do
-            ls -la "bbdir/client/potentials/${_pot}"/eon_*.dll \
-              "bbdir/client/potentials/${_pot}"/libeon_*.dll 2>/dev/null || true
-          done
+          # The Fortran kernels ship inside librgpot; prove that library loads
+          # and keeps the kernels to itself (Windows side of the Linux
+          # FortranSymbolAudit).
+          ls -la bbdir/subprojects/rgpot/*rgpot*.dll 2>/dev/null || true
           python - <<'PY'
           import ctypes, os, sys, subprocess
           from pathlib import Path
-          pot = Path("bbdir/client/potentials/SW")
-          cands = list(pot.glob("eon_*.dll")) + list(pot.glob("libeon_*.dll"))
-          print("SW pot candidates:", cands)
+          cands = sorted(Path("bbdir").rglob("*rgpot*.dll"))
+          print("rgpot candidates:", cands)
           if not cands:
-              sys.exit("no SW pot DLL in build tree")
+              sys.exit("no rgpot DLL in build tree")
           dll = str(cands[0].resolve())
           print("LoadLibrary", dll)
           try:
-              h = ctypes.WinDLL(dll)
+              ctypes.WinDLL(dll)
               print("LoadLibrary OK")
           except OSError as e:
               print("LoadLibrary FAILED:", e)
               print("PATH head:", os.environ.get("PATH", "")[:800])
               sys.exit(1)
-          # Fortran symbols must be exported (Windows PE); catch missing exports early.
-          found = None
-          for name in ("sw_", "SW_", "_sw_", "sw__", "SW__"):
-              try:
-                  getattr(h, name)
-                  found = name
-                  break
-              except AttributeError:
-                  pass
-          print("sw symbol:", found)
           try:
               out = subprocess.check_output(
                   ["dumpbin", "/exports", dll], text=True, stderr=subprocess.STDOUT
               )
-              print(out[:2500])
           except Exception as ex:
               print("dumpbin /exports failed:", ex)
-          if not found:
-              sys.exit("eon_sw.dll loads but does not export sw_ (check .def / link)")
+              sys.exit(0)
+          print(out[:2500])
+          # A legacy bare Fortran name in the export table is how two
+          # potentials used to bind to the same symbol.
+          leaked = [
+              n
+              for n in ("sw_", "edip_", "fehe_", "lenosky_", "tersoff_", "force_eam_")
+              if any(line.split()[-1:] == [n] for line in out.splitlines())
+          ]
+          if leaked:
+              sys.exit(f"librgpot exports bare Fortran names: {leaked}")
+          print("no bare Fortran exports")
           PY
           unset LDFLAGS CFLAGS CXXFLAGS FCFLAGS || true
           export CC=cl CXX=cl
