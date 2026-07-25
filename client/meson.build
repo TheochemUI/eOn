@@ -382,8 +382,23 @@ endif
 dl_dep = cppc.find_library('dl', required: false)
 _deps += dl_dep
 
+# rgpot discovery starts here because the vesin choice below depends on it:
+# a wrap-built rgpot carries its own patched vesin, and linking eOn's copy
+# next to it would define every vesin symbol twice.
+#
+# dependency('rgpot') with default allow_fallback configures the wrap once
+# with *default* options before eOn can pass its own; get_variable() then
+# fails for anything the default profile skipped. Force pkg-config-only.
+_rgpot_pkg = dependency(
+    'rgpot',
+    method: 'pkg-config',
+    required: false,
+    allow_fallback: false,
+)
+
 # vesin: single neighbor-list backend for classical pots + Metatomic.
-# Prefer pkg-config / system; else vendored thirdparty/vesin single TU.
+# Prefer pkg-config / system; else the rgpot subproject's vendored copy;
+# else eOn's own thirdparty/vesin single TU.
 vesin_dep = dependency('vesin', required: false)
 if not vesin_dep.found()
     vesin_dep = dependency('vesin', method: 'cmake', required: false)
@@ -394,7 +409,14 @@ endif
 if not vesin_dep.found() and is_windows
     vesin_dep = cppc.find_library('libvesin', required: false)
 endif
-if not vesin_dep.found()
+_vesin_from_rgpot = false
+if not vesin_dep.found() and not _rgpot_pkg.found()
+    # The rgpot subproject builds vesin already, with the local patches the
+    # Fortran interface binds to. Take that one; it arrives below, once the
+    # subproject exists.
+    _vesin_from_rgpot = true
+    message('vesin: from the rgpot subproject')
+elif not vesin_dep.found()
     # vesin 0.6 threads its builds with std::thread only — do NOT add
     # OpenMP here: an unused libgomp costs ~0.3ms of load/relocation on
     # every eonclient start.
@@ -421,7 +443,9 @@ else
     _incdirs += [include_directories('thirdparty/vesin')]
     message('vesin: using system / pkg-config')
 endif
-_deps += [vesin_dep]
+if not _vesin_from_rgpot
+    _deps += [vesin_dep]
+endif
 
 eoncbase_sources = [
     'fpe_handler.cpp',
@@ -468,16 +492,8 @@ _rgpot_from_pkg = false
 # Morse, ZBL, ...) live in librgpot and eOn consumes them through the
 # RgpotAdapter. The QM frontends / RPC stack remain optional.
 #
-# 1) installed module first (never wrap fallback here).
-# dependency('rgpot') with default allow_fallback configures the wrap once
-# with *default* options before eOn can pass its own; get_variable() then
-# fails for anything the default profile skipped. Force pkg-config-only.
-_rgpot_pkg = dependency(
-    'rgpot',
-    method: 'pkg-config',
-    required: false,
-    allow_fallback: false,
-)
+# 1) installed module first (never wrap fallback here); _rgpot_pkg is
+# probed above, next to the vesin choice that depends on it.
 if _rgpot_pkg.found()
     message('rgpot: using pkg-config (installed), not subproject wrap')
     _rgpot_from_pkg = true
@@ -507,6 +523,10 @@ else
     endif
     _rgpot_proj = subproject('rgpot', default_options: rgpot_opts)
     rgpot_dep = _rgpot_proj.get_variable('rgpot_dep')
+    if _vesin_from_rgpot
+        vesin_dep = _rgpot_proj.get_variable('vesin_dep')
+        _deps += [vesin_dep]
+    endif
     # meson applies subproject default_options only on the first configure
     # of a build directory, so a directory configured before this profile
     # changed silently keeps the old values and drops potentials. Fail
