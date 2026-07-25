@@ -39,12 +39,18 @@ Pair potentials go through the Verlet-skin cache, not raw `VesinNeighbors`:
 #include "eon/VesinNeighbors.h"
 eonc::CachedPairList::Options opt;
 opt.cutoff = 5.0; // skin defaults to 1.0 Angstrom
-eonc::PairListCache::global().ensureVisit(
+eonc::PairListCache::global().evaluate(
     R, nAtoms, box9, opt,
     [&](int32_t i, int32_t j, double dx, double dy, double dz, double r2) {
       // d = r_i - r_j (minimum image applied), r2 = |d|^2 <= cutoff^2
     });
 ```
+
+`evaluate` captures the pair list lazily: the first sighting of a geometry
+family runs a fused eval-only scan (exactly the historical per-call loop)
+and records a phantom stamp; the second sighting captures the list. Pots
+that pass over the pairs more than once per force call (QSC) use
+`ensureVisit`, which captures eagerly and returns the slot for `forEach`.
 
 The candidate list is built at `cutoff + skin`; while every atom stays
 within `skin/2` of its build position the cached pairs are re-used and the
@@ -57,8 +63,7 @@ vesin's cell list and evaluates with the stored cell shifts. The pool
 (`PairListCache::global()`) matches slots by geometry proximity, so several
 NEB images sharing one pot instance each keep a live list on any
 thread-to-image assignment — including NEB's per-iteration worker threads,
-which would destroy any thread_local cache. `ensureVisit` returns the slot
-for further passes over the same list (`forEach`), e.g. QSC's force pass.
+which would destroy any thread_local cache.
 
 `forEach` hands out the historical eOn convention **`d = r_i − r_j`** (the
 negated vesin vector). Raw `eonc::VesinNeighbors` (vesin convention
