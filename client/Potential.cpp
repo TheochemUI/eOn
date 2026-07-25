@@ -31,11 +31,11 @@
 #include "eon/potentials/ExtPot/ExtPot.h"
 #include "eon/potentials/PluginLoader.h"
 #include "eon/potentials/RgpotAdapter/RgpotAdapter.h"
-#include "rgpot/fortran/FortranPots.hpp"
 #include "rgpot/LennardJones/LJClusterPot.hpp"
 #include "rgpot/LennardJones/LJPot.hpp"
 #include "rgpot/Morse/MorsePot.hpp"
 #include "rgpot/ZBL/ZBLPot.hpp"
+#include "rgpot/fortran/FortranPots.hpp"
 #ifndef IS_WINDOWS
 #include "eon/potentials/SocketNWChem/SocketNWChemPot.h"
 #ifdef WITH_RGPOT
@@ -172,14 +172,16 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
   case PotType::TIP4P_H: {
-    return makeRgpotDefault<rgpot::fortranpots::WaterHPot>(PotType::TIP4P_H, params);
+    return makeRgpotDefault<rgpot::fortranpots::WaterHPot>(PotType::TIP4P_H,
+                                                           params);
     break;
   }
 #endif
 #endif
   // Fortran potentials: always available, loaded at runtime via dlopen
   case PotType::EAM_AL: {
-    return makeRgpotDefault<rgpot::fortranpots::EAMAlPot>(PotType::EAM_AL, params);
+    return makeRgpotDefault<rgpot::fortranpots::EAMAlPot>(PotType::EAM_AL,
+                                                          params);
     break;
   }
   case PotType::EDIP: {
@@ -191,7 +193,8 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
   case PotType::LENOSKY_SI: {
-    return makeRgpotDefault<rgpot::fortranpots::LenoskyPot>(PotType::LENOSKY_SI, params);
+    return makeRgpotDefault<rgpot::fortranpots::LenoskyPot>(PotType::LENOSKY_SI,
+                                                            params);
     break;
   }
   case PotType::SW_SI: {
@@ -199,7 +202,8 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
   case PotType::TERSOFF_SI: {
-    return makeRgpotDefault<rgpot::fortranpots::TersoffPot>(PotType::TERSOFF_SI, params);
+    return makeRgpotDefault<rgpot::fortranpots::TersoffPot>(PotType::TERSOFF_SI,
+                                                            params);
     break;
   }
 #ifndef _WIN32

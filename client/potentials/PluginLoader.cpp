@@ -97,8 +97,7 @@ void PluginLoader::add_config_paths(const std::string &colon_paths) {
                         new_paths.end());
 }
 
-std::vector<std::string>
-PluginLoader::lib_names(const char *lib_base) const {
+std::vector<std::string> PluginLoader::lib_names(const char *lib_base) const {
   std::vector<std::string> names;
 #ifdef _WIN32
   names.push_back(std::string(lib_base) + ".dll");
@@ -159,7 +158,7 @@ dynlib::Handle PluginLoader::open_lib(const char *lib_base) {
 }
 
 void PluginLoader::throw_not_found(const char *lib_base,
-                                       const char *description) const {
+                                   const char *description) const {
   auto names = lib_names(lib_base);
   std::ostringstream oss;
   oss << description << " requested but library not found.\n"
