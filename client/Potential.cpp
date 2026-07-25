@@ -33,16 +33,17 @@
 #include "eon/potentials/EAM/EAM.h"
 #include "eon/potentials/EMT/EffectiveMediumTheory.h"
 #include "eon/potentials/ExtPot/ExtPot.h"
-#include "eon/potentials/LJ/LJ.h"
-#include "eon/potentials/LJCluster/LJCluster.h"
-#include "eon/potentials/Morse/Morse.h"
+#include "eon/potentials/RgpotAdapter/RgpotAdapter.h"
+#include "rgpot/LennardJones/LJClusterPot.hpp"
+#include "rgpot/LennardJones/LJPot.hpp"
+#include "rgpot/Morse/MorsePot.hpp"
+#include "rgpot/ZBL/ZBLPot.hpp"
 #ifndef IS_WINDOWS
 #include "eon/potentials/SocketNWChem/SocketNWChemPot.h"
 #ifdef WITH_RGPOT
 #include "eon/potentials/Rgpot/RgpotPot.h"
 #endif
 #endif
-#include "eon/potentials/ZBL/ZBLPot.h"
 
 // Fortran potentials: always compiled, loaded at runtime via dlopen
 #include "eon/potentials/Aluminum/Aluminum.h"
@@ -158,15 +159,17 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
   case PotType::LJ: {
-    return (std::make_shared<LJ>(params));
+    return makeRgpot<rgpot::LJPot>(PotType::LJ, params, rgpot::LJConfig{});
     break;
   }
   case PotType::LJCLUSTER: {
-    return (std::make_shared<LJCluster>(params));
+    return makeRgpot<rgpot::LJClusterPot>(PotType::LJCLUSTER, params,
+                                          rgpot::LJClusterConfig{});
     break;
   }
   case PotType::MORSE_PT: {
-    return (std::make_shared<Morse>(params));
+    return makeRgpot<rgpot::MorsePot>(PotType::MORSE_PT, params,
+                                      rgpot::MorseConfig{});
     break;
   }
 #ifdef NEW_POT
@@ -320,7 +323,12 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   }
 #endif
   case PotType::ZBL: {
-    return (std::make_shared<ZBLPot>(params));
+    return makeRgpot<rgpot::ZBLPot>(
+        PotType::ZBL, params,
+        rgpot::ZBLConfig{
+            .cut_inner = params.zbl_options.cut_inner,
+            .cut_global = params.zbl_options.cut_global,
+        });
     break;
   }
 #ifndef IS_WINDOWS

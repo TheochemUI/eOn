@@ -467,10 +467,6 @@ subdir('potentials/EAM')
 subdir('potentials/EMT')
 subdir('potentials/ExtPot')
 subdir('potentials/IMD')
-subdir('potentials/LJ')
-subdir('potentials/LJCluster')
-subdir('potentials/Morse')
-subdir('potentials/ZBL')
 if not is_windows
     subdir('potentials/SocketNWChem')
 endif
@@ -491,46 +487,57 @@ ptlrpc_dep = disabler()
 nwchempot_dep = disabler()
 cpmdpot_dep = disabler()
 _rgpot_from_pkg = false
-if get_option('with_rgpot') or get_option('with_serve')
-    # 1) installed module only (never wrap fallback).
-    # dependency('rgpot') with default allow_fallback configures the wrap
-    # once with *default* options (with_rpc_client_only=false) before we
-    # can pass eOn's client-only opts; get_variable('nwchempot_dep') then
-    # fails because NWChemPot was never built. Force pkg-config-only here.
-    _rgpot_pkg = dependency(
-        'rgpot',
-        method: 'pkg-config',
-        required: false,
-        allow_fallback: false,
-    )
-    if _rgpot_pkg.found()
-        message('rgpot: using pkg-config (installed), not subproject wrap')
-        _rgpot_from_pkg = true
-        nwchempot_dep = _rgpot_pkg
-        cpmdpot_dep = _rgpot_pkg
-        ptlrpc_dep = _rgpot_pkg
-    else
-        # 2) wrap / multi-source fallback
-        message('rgpot: pkg-config not found; falling back to subproject wrap')
-        rgpot_opts = {
-            'with_rpc_client_only': true,
-            'pure_lib': true,
-            'with_tests': false,
-            'with_examples': false,
-            # engines stay runtime dlopen; do not force fat metatomic/xtb link
-            'with_xtb': false,
-            'with_metatomic': false,
-        }
-        _rgpot_proj = subproject('rgpot', default_options: rgpot_opts)
-        if get_option('with_serve')
-            ptlrpc_dep = _rgpot_proj.get_variable('ptlrpc_dep')
-        endif
-        if get_option('with_rgpot') and not is_windows
-            nwchempot_dep = _rgpot_proj.get_variable('nwchempot_dep')
-            cpmdpot_dep = _rgpot_proj.get_variable('cpmdpot_dep')
-        endif
+# rgpot is a hard dependency: the classical pair pots (LJ, LJCluster,
+# Morse, ZBL, ...) live in librgpot and eOn consumes them through the
+# RgpotAdapter. The QM frontends / RPC stack remain optional.
+#
+# 1) installed module first (never wrap fallback here).
+# dependency('rgpot') with default allow_fallback configures the wrap once
+# with *default* options before eOn can pass its own; get_variable() then
+# fails for anything the default profile skipped. Force pkg-config-only.
+_rgpot_pkg = dependency(
+    'rgpot',
+    method: 'pkg-config',
+    required: false,
+    allow_fallback: false,
+)
+if _rgpot_pkg.found()
+    message('rgpot: using pkg-config (installed), not subproject wrap')
+    _rgpot_from_pkg = true
+    rgpot_dep = _rgpot_pkg
+    nwchempot_dep = _rgpot_pkg
+    cpmdpot_dep = _rgpot_pkg
+    ptlrpc_dep = _rgpot_pkg
+else
+    # 2) wrap / multi-source fallback. One profile must serve every eOn
+    # consumer in this configure: pots always; the RPC stack only when the
+    # RGPOT arm or serve mode asks (keeps capnp-rpc out of plain builds).
+    message('rgpot: pkg-config not found; falling back to subproject wrap')
+    rgpot_opts = {
+        'with_rpc_client_only': false,
+        'pure_lib': true,
+        'with_tests': false,
+        'with_examples': false,
+        # engines stay runtime dlopen; do not force fat metatomic/xtb link
+        'with_xtb': false,
+        'with_metatomic': false,
+        # eOn's Fortran pots stay in-tree until the Fortran migration phase
+        'with_fortran_pots': 'disabled',
+    }
+    if get_option('with_rgpot') or get_option('with_serve')
+        rgpot_opts += {'with_rpc': true}
+    endif
+    _rgpot_proj = subproject('rgpot', default_options: rgpot_opts)
+    rgpot_dep = _rgpot_proj.get_variable('rgpot_dep')
+    if get_option('with_serve')
+        ptlrpc_dep = _rgpot_proj.get_variable('ptlrpc_dep')
+    endif
+    if get_option('with_rgpot') and not is_windows
+        nwchempot_dep = _rgpot_proj.get_variable('nwchempot_dep')
+        cpmdpot_dep = _rgpot_proj.get_variable('cpmdpot_dep')
     endif
 endif
+_deps += [rgpot_dep]
 if get_option('with_serve')
     serve_capnp_dep = dependency('capnp-rpc', required: true)
     if not ptlrpc_dep.found()
@@ -546,16 +553,13 @@ if get_option('with_rgpot') and not is_windows
     subdir('potentials/Rgpot')
 endif
 
+# LJ, LJCluster, Morse, and ZBL live in librgpot (RgpotAdapter arms).
 potentials = [
     eam,
     emt,
     extpot,
     imd,
-    lennard_jones,
-    lennard_jones_cluster,
-    morse,
     newpot,
-    zbl,
 ]
 if not is_windows
     potentials += [socket_nwchem]
@@ -1371,6 +1375,7 @@ if get_option('with_tests')
         ['strparse_run', 'StringHelpersTest.cpp', ''],
         ['test_matter', 'MatterTest.cpp', 'neb_morse'],
         ['test_pot', 'PotTest.cpp', 'neb_morse'],
+        ['test_rgpot_adapter', 'RgpotAdapterTest.cpp', 'neb_morse'],
         # ['approve_params', 'ApproveParams.cpp', ''], # needs to handle additional parameters
         ['test_zbl', 'ZBLPotTest.cpp', 'au_si'],
         ['test_extpot', 'ExtPotTest.cpp', 'extpot'],

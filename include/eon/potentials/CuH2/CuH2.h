@@ -25,6 +25,11 @@ public:
       : Potential(PotType::CUH2, p) {}
 
   [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+  /// Fortran backend keeps state in module/COMMON storage; a shared
+  /// instance across threads is never safe.
+  [[nodiscard]] bool isSharedInstanceThreadSafe() const noexcept override {
+    return false;
+  }
 
   // To satisfy interface
   void cleanMemory(void);
