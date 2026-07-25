@@ -65,6 +65,13 @@ public:
   void compute(const double *R, std::size_t n, const double *box,
                const Options &opt);
 
+  /// Build the list and, in the same scan, invoke ``visitor`` for every
+  /// pair within ``visit_cutoff`` (brute-force CPU path only — throws on
+  /// failure like ``compute``). See ``vesin_neighbors_visit``.
+  void computeVisit(const double *R, std::size_t n, const double *box,
+                    const Options &opt, double visit_cutoff,
+                    VesinPairVisitor visitor, void *user_data);
+
   [[nodiscard]] std::size_t size() const { return list_.length; }
 
   [[nodiscard]] std::size_t i(std::size_t p) const { return list_.pairs[p][0]; }
@@ -132,6 +139,14 @@ public:
   /// Rebuild via vesin at ``cutoff + skin`` into this slot's own buffers.
   void rebuild(const double *R, std::size_t n, const double *box,
                const Options &opt);
+
+  /// Rebuild and, when the MIC/brute regime applies, evaluate the visitor
+  /// in the same pair scan (vector handed to ``visitor`` is the raw vesin
+  /// ``r_j - r_i``). Returns true when the visitation happened; false means
+  /// the caller must evaluate via ``forEach`` afterwards (cell-list regime).
+  bool rebuildVisit(const double *R, std::size_t n, const double *box,
+                    const Options &opt, VesinPairVisitor visitor,
+                    void *user_data);
 
   /// Visit every cached pair within the true cutoff of the current
   /// positions. ``fn(i, j, dx, dy, dz, r2)`` receives the *historical* eOn
@@ -219,6 +234,14 @@ private:
         static_cast<long long>(t + std::copysign(0.5, t)));
   }
 
+  /// Decide MIC vs shift mode for these inputs.
+  void setup(std::size_t n, const double *box, const Options &opt);
+  /// Run the vesin build (optionally fused with a visitor) and record the
+  /// reference state.
+  void rebuildLists(const double *R, std::size_t n, const double *box,
+                    const Options &opt, VesinPairVisitor visitor,
+                    void *user_data);
+
   VesinNeighbors nl_;
   std::vector<double> Rref_;
   std::array<double, 9> boxref_{};
@@ -253,10 +276,64 @@ public:
   ensure(const double *R, std::size_t n, const double *box,
          const CachedPairList::Options &opt);
 
+  /// ``ensure`` + one evaluation of ``fn(i, j, dx, dy, dz, r2)`` over every
+  /// pair within the true cutoff (eOn convention ``d = r_i - r_j``). On a
+  /// slot miss in the MIC regime the evaluation is fused into the build's
+  /// single pair scan; a hit (or the cell-list regime) evaluates through
+  /// ``forEach``. Returns the slot for further passes (e.g. QSC forces).
+  template <typename Fn>
+  std::shared_ptr<const CachedPairList>
+  ensureVisit(const double *R, std::size_t n, const double *box,
+              const CachedPairList::Options &opt, Fn &&fn) {
+    std::shared_ptr<const CachedPairList> hit;
+    {
+      std::lock_guard<std::mutex> lock(mu_);
+      for (std::size_t s = 0; s < slots_.size(); ++s) {
+        if (slots_[s]->valid(R, n, box, opt)) {
+          if (s != 0) {
+            auto slot = std::move(slots_[s]);
+            slots_.erase(slots_.begin() + static_cast<std::ptrdiff_t>(s));
+            slots_.insert(slots_.begin(), std::move(slot));
+          }
+          hit = slots_.front();
+          break;
+        }
+      }
+    }
+    // Physics runs outside the pool lock; slots are immutable after build.
+    if (hit) {
+      hit->forEach(R, std::forward<Fn>(fn));
+      return hit;
+    }
+
+    auto fresh = std::make_shared<CachedPairList>();
+    if (!fresh->rebuildVisit(R, n, box, opt, &visitTrampoline<Fn>,
+                             static_cast<void *>(&fn))) {
+      fresh->forEach(R, std::forward<Fn>(fn));
+    }
+
+    std::lock_guard<std::mutex> lock(mu_);
+    slots_.insert(slots_.begin(), fresh);
+    if (slots_.size() > kMaxSlots) {
+      slots_.pop_back();
+    }
+    return fresh;
+  }
+
   /// Pool shared by all classical pair potentials.
   static PairListCache &global();
 
 private:
+  /// vesin hands the visitor ``r_j - r_i (+ S @ H)``; eOn pair kernels take
+  /// ``d = r_i - r_j``.
+  template <typename Fn>
+  static void visitTrampoline(void *user_data, std::size_t i, std::size_t j,
+                              double dx, double dy, double dz, double r2) {
+    (*static_cast<Fn *>(user_data))(static_cast<int32_t>(i),
+                                    static_cast<int32_t>(j), -dx, -dy, -dz,
+                                    r2);
+  }
+
   std::mutex mu_;
   std::vector<std::shared_ptr<CachedPairList>> slots_; // MRU first
 };

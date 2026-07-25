@@ -37,13 +37,11 @@ void LJ::force(long N, const double *R, const int * /*atomicNrs*/, double *F,
 
   eonc::CachedPairList::Options opt;
   opt.cutoff = cuttOffR;
-  const auto nl = eonc::PairListCache::global().ensure(
-      R, static_cast<std::size_t>(N), box, opt);
-
   const double psi2 = psi * psi;
   double energyAcc = 0.0;
-  nl->forEach(R, [&](int32_t i, int32_t j, double dx, double dy, double dz,
-                    double r2) {
+  eonc::PairListCache::global().ensureVisit(
+      R, static_cast<std::size_t>(N), box, opt,
+      [&](int32_t i, int32_t j, double dx, double dy, double dz, double r2) {
     const double invR2 = 1.0 / r2;
     const double sr2 = psi2 * invR2;
     const double sr6 = sr2 * sr2 * sr2;

@@ -26,44 +26,6 @@
 #include <cstdio>
 #include <vector>
 
-void QSC::energy_from_nl(long N, const double *R, const int *atomicNrs,
-                         double *U, const eonc::CachedPairList &nl) {
-  *U = 0.0;
-  rho_.assign(static_cast<std::size_t>(N), 0.0);
-  sqrtrho_.assign(static_cast<std::size_t>(N), 0.0);
-  if (N < 2 || nl.pairCount() == 0) {
-    return;
-  }
-
-  std::vector<double> pair_term(static_cast<std::size_t>(N), 0.0);
-
-  nl.forEach(R, [&](int32_t i, int32_t j, double /*dx*/, double /*dy*/,
-                    double /*dz*/, double r2) {
-    const double r_ij = std::sqrt(r2);
-
-    const auto p_ii = get_qsc_parameters(atomicNrs[i], atomicNrs[i]);
-    const auto p_ij = get_qsc_parameters(atomicNrs[i], atomicNrs[j]);
-    const auto p_jj = get_qsc_parameters(atomicNrs[j], atomicNrs[j]);
-
-    const double phi_ij = pair_potential(r_ij, p_jj.a, p_jj.m);
-    const double phi_ji = pair_potential(r_ij, p_ii.a, p_ii.m);
-    rho_[static_cast<std::size_t>(i)] += phi_ij;
-    rho_[static_cast<std::size_t>(j)] += phi_ji;
-
-    const double V = p_ij.epsilon * pair_potential(r_ij, p_ij.a, p_ij.n);
-    pair_term[static_cast<std::size_t>(i)] += V;
-  });
-
-  for (long i = 0; i < N; i++) {
-    const auto p_ii_e = get_qsc_parameters(atomicNrs[i], atomicNrs[i]);
-    sqrtrho_[static_cast<std::size_t>(i)] =
-        std::sqrt(rho_[static_cast<std::size_t>(i)]);
-    const double embedding =
-        p_ii_e.c * p_ii_e.epsilon * sqrtrho_[static_cast<std::size_t>(i)];
-    *U += pair_term[static_cast<std::size_t>(i)] - embedding;
-  }
-}
-
 void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
                 double *U, double *variance, const double *box) {
   variance = nullptr;
@@ -78,11 +40,35 @@ void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
   eonc::CachedPairList::Options opt;
   opt.cutoff = cutoff_;
   opt.skin = skin_;
-  const auto nl = eonc::PairListCache::global().ensure(
-      R, static_cast<std::size_t>(N), box, opt);
   ++vlist_updates;
 
-  energy_from_nl(N, R, atomicNrs, U, *nl);
+  rho_.assign(static_cast<std::size_t>(N), 0.0);
+  sqrtrho_.assign(static_cast<std::size_t>(N), 0.0);
+  std::vector<double> pair_term(static_cast<std::size_t>(N), 0.0);
+  const auto nl = eonc::PairListCache::global().ensureVisit(
+      R, static_cast<std::size_t>(N), box, opt,
+      [&](int32_t i, int32_t j, double /*dx*/, double /*dy*/, double /*dz*/,
+          double r2) {
+        const double r_ij = std::sqrt(r2);
+        const auto p_ii = get_qsc_parameters(atomicNrs[i], atomicNrs[i]);
+        const auto p_ij = get_qsc_parameters(atomicNrs[i], atomicNrs[j]);
+        const auto p_jj = get_qsc_parameters(atomicNrs[j], atomicNrs[j]);
+        const double phi_ij = pair_potential(r_ij, p_jj.a, p_jj.m);
+        const double phi_ji = pair_potential(r_ij, p_ii.a, p_ii.m);
+        rho_[static_cast<std::size_t>(i)] += phi_ij;
+        rho_[static_cast<std::size_t>(j)] += phi_ji;
+        pair_term[static_cast<std::size_t>(i)] +=
+            p_ij.epsilon * pair_potential(r_ij, p_ij.a, p_ij.n);
+      });
+
+  for (long i = 0; i < N; i++) {
+    const auto p_ii_e = get_qsc_parameters(atomicNrs[i], atomicNrs[i]);
+    sqrtrho_[static_cast<std::size_t>(i)] =
+        std::sqrt(rho_[static_cast<std::size_t>(i)]);
+    const double embedding =
+        p_ii_e.c * p_ii_e.epsilon * sqrtrho_[static_cast<std::size_t>(i)];
+    *U += pair_term[static_cast<std::size_t>(i)] - embedding;
+  }
 
   nl->forEach(R, [&](int32_t i, int32_t j, double dx, double dy, double dz,
                     double r2) {

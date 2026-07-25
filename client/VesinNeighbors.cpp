@@ -88,6 +88,49 @@ void VesinNeighbors::compute(const double *R, std::size_t n, const double *box,
   owns_ = true;
 }
 
+void VesinNeighbors::computeVisit(const double *R, std::size_t n,
+                                  const double *box, const Options &opt,
+                                  double visit_cutoff,
+                                  VesinPairVisitor visitor, void *user_data) {
+  if (R == nullptr || (n > 0 && box == nullptr)) {
+    throw std::invalid_argument("VesinNeighbors::computeVisit: null R or box");
+  }
+
+  VesinOptions vopt{};
+  vopt.cutoff = opt.cutoff;
+  vopt.full = opt.full;
+  vopt.sorted = opt.sorted;
+  vopt.algorithm = VesinBruteForce;
+  vopt.n_threads = opt.n_threads;
+  vopt.return_shifts = opt.return_shifts;
+  vopt.return_distances = opt.return_distances;
+  vopt.return_vectors = opt.return_vectors;
+
+  bool periodic[3] = {opt.periodic[0], opt.periodic[1], opt.periodic[2]};
+  double box33[3][3];
+  for (int a = 0; a < 3; ++a) {
+    for (int b = 0; b < 3; ++b) {
+      box33[a][b] = box[3 * a + b];
+    }
+  }
+
+  VesinDevice cpu{VesinCPU, 0};
+  const char *error_message = nullptr;
+  int status = vesin_neighbors_visit(
+      reinterpret_cast<const double (*)[3]>(R), n, box33, periodic, cpu, vopt,
+      visit_cutoff, visitor, user_data, &list_, &error_message);
+  if (status != EXIT_SUCCESS) {
+    std::string err = "vesin_neighbors_visit failed";
+    if (error_message != nullptr) {
+      err += ": ";
+      err += error_message;
+    }
+    free_list();
+    throw std::runtime_error(err);
+  }
+  owns_ = true;
+}
+
 VesinNeighborList *VesinNeighbors::release() {
   if (!owns_) {
     return nullptr;
@@ -127,8 +170,26 @@ bool CachedPairList::valid(const double *R, std::size_t n, const double *box,
   return true;
 }
 
+bool CachedPairList::rebuildVisit(const double *R, std::size_t n,
+                                  const double *box, const Options &opt,
+                                  VesinPairVisitor visitor, void *user_data) {
+  setup(n, box, opt);
+  if (!mic_) {
+    rebuildLists(R, n, box, opt, nullptr, nullptr);
+    return false;
+  }
+  rebuildLists(R, n, box, opt, visitor, user_data);
+  return true;
+}
+
 void CachedPairList::rebuild(const double *R, std::size_t n, const double *box,
                              const Options &opt) {
+  setup(n, box, opt);
+  rebuildLists(R, n, box, opt, nullptr, nullptr);
+}
+
+void CachedPairList::setup(std::size_t n, const double *box,
+                           const Options &opt) {
   // MIC mode: orthorhombic box with the true cutoff inside half the
   // smallest periodic width. Brute-force nearest-image candidates at
   // cutoff+skin form a valid superset (MIC distance is 1-Lipschitz in the
@@ -146,7 +207,11 @@ void CachedPairList::rebuild(const double *R, std::size_t n, const double *box,
       mic_ = false;
     }
   }
+}
 
+void CachedPairList::rebuildLists(const double *R, std::size_t n,
+                                  const double *box, const Options &opt,
+                                  VesinPairVisitor visitor, void *user_data) {
   VesinNeighbors::Options vopt;
   vopt.cutoff = opt.cutoff + opt.skin;
   vopt.full = false;
@@ -156,7 +221,11 @@ void CachedPairList::rebuild(const double *R, std::size_t n, const double *box,
   vopt.return_distances = false; // sqrt+stores during the build cost more
   vopt.return_vectors = false;   // than the fold pass they could replace
   vopt.periodic = opt.periodic;
-  nl_.compute(R, n, box, vopt);
+  if (visitor != nullptr) {
+    nl_.computeVisit(R, n, box, vopt, opt.cutoff, visitor, user_data);
+  } else {
+    nl_.compute(R, n, box, vopt);
+  }
 
   for (int k = 0; k < 3; ++k) {
     micInv_[static_cast<std::size_t>(k)] =

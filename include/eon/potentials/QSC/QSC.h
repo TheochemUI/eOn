@@ -75,10 +75,6 @@ private:
   std::vector<double> rho_;     // [N]
   std::vector<double> sqrtrho_; // [N]
 
-  /// Energy from ``nl`` (caller must have computed it on this thread).
-  void energy_from_nl(long N, const double *R, const int *atomicNrs, double *U,
-                      const eonc::CachedPairList &nl);
-
   static const qsc_parameters qsc_default_params[];
   std::vector<qsc_parameters> qsc_params_;
 

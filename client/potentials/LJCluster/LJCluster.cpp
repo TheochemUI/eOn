@@ -48,13 +48,11 @@ void LJCluster::force(long N, const double *R, const int * /*atomicNrs*/,
   // Dummy orthorhombic box (ignored when non-periodic)
   double free_box[9] = {1e6, 0, 0, 0, 1e6, 0, 0, 0, 1e6};
   const double *box_use = (box != nullptr) ? box : free_box;
-  const auto nl = eonc::PairListCache::global().ensure(
-      R, static_cast<std::size_t>(N), box_use, opt);
-
   const double psi2 = psi * psi;
   double energyAcc = 0.0;
-  nl->forEach(R, [&](int32_t i, int32_t j, double dx, double dy, double dz,
-                    double r2) {
+  eonc::PairListCache::global().ensureVisit(
+      R, static_cast<std::size_t>(N), box_use, opt,
+      [&](int32_t i, int32_t j, double dx, double dy, double dz, double r2) {
     const double invR2 = 1.0 / r2;
     const double sr2 = psi2 * invR2;
     const double a = sr2 * sr2 * sr2; // (psi/r)^6 without pow()

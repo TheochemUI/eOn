@@ -448,14 +448,20 @@ void cell_list_neighbors(
 // Faster than the cell list when the cutoff is comparable to the box (the
 // cell grid degenerates to a couple of cells and re-enumerates every pair
 // per periodic shift) and for small systems. Requires every periodic box
-// width to be at least twice the cutoff.
+// width to be at least the cutoff.
+//
+// When `visitor` is non-null it is invoked in the same scan for every pair
+// with distance2 <= visit_cutoff^2 (see vesin_neighbors_visit).
 void brute_force_neighbors(
     const Vector* points,
     size_t n_points,
     BoundingBox box,
     VesinOptions options,
     VesinNeighborList& neighbors,
-    size_t& capacity
+    size_t& capacity,
+    VesinPairVisitor visitor = nullptr,
+    void* visitor_data = nullptr,
+    double visit_cutoff = 0.0
 );
 
 void neighbors(
@@ -942,8 +948,12 @@ void vesin::cpu::brute_force_neighbors(
     BoundingBox box,
     VesinOptions options,
     VesinNeighborList& raw_neighbors,
-    size_t& capacity
+    size_t& capacity,
+    VesinPairVisitor visitor,
+    void* visitor_data,
+    double visit_cutoff
 ) {
+    auto visit_cutoff2 = visit_cutoff * visit_cutoff;
     // Exactly one pair per (i, j) — the nearest periodic image. Callers own
     // minimum-image validity: with a periodic width between one and two
     // cutoffs, second images inside the cutoff are NOT reported (use the
@@ -1032,6 +1042,9 @@ void vesin::cpu::brute_force_neighbors(
                 auto vector = points[j] - points[i];
                 auto distance2 = vector.dot(vector);
                 if (distance2 < cutoff2) {
+                    if (visitor != nullptr && distance2 <= visit_cutoff2) {
+                        visitor(visitor_data, i, j, vector[0], vector[1], vector[2], distance2);
+                    }
                     emit(i, j, CellShift(), vector, distance2);
                 }
             }
@@ -1063,6 +1076,9 @@ void vesin::cpu::brute_force_neighbors(
 
                 auto distance2 = vector.dot(vector);
                 if (distance2 < cutoff2) {
+                    if (visitor != nullptr && distance2 <= visit_cutoff2) {
+                        visitor(visitor_data, i, j, vector[0], vector[1], vector[2], distance2);
+                    }
                     emit(i, j, shift, vector, distance2);
                 }
             }
@@ -1090,6 +1106,9 @@ void vesin::cpu::brute_force_neighbors(
 
                 auto distance2 = vector.dot(vector);
                 if (distance2 < cutoff2) {
+                    if (visitor != nullptr && distance2 <= visit_cutoff2) {
+                        visitor(visitor_data, i, j, vector[0], vector[1], vector[2], distance2);
+                    }
                     emit(i, j, shift, vector, distance2);
                 }
             }
@@ -2359,6 +2378,95 @@ extern "C" int vesin_neighbors(
         } else {
             throw std::runtime_error("unknown device " + std::to_string(device.type));
         }
+    } catch (const std::bad_alloc&) {
+        LAST_ERROR = "failed to allocate memory";
+        *error_message = LAST_ERROR.c_str();
+        return EXIT_FAILURE;
+    } catch (const std::exception& e) {
+        LAST_ERROR = e.what();
+        *error_message = LAST_ERROR.c_str();
+        return EXIT_FAILURE;
+    } catch (...) {
+        *error_message = "fatal error: unknown type thrown as exception";
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+
+// eOn extension (upstream candidate); see vesin.h.
+extern "C" int vesin_neighbors_visit(
+    const double (*points)[3],
+    size_t n_points,
+    const double box[3][3],
+    const bool periodic[3],
+    VesinDevice device,
+    VesinOptions options,
+    double visit_cutoff,
+    VesinPairVisitor visitor,
+    void* user_data,
+    VesinNeighborList* neighbors,
+    const char** error_message
+) {
+    if (error_message == nullptr) {
+        return EXIT_FAILURE;
+    }
+
+    if (points == nullptr || box == nullptr || neighbors == nullptr || visitor == nullptr) {
+        *error_message = "`points`, `box`, `neighbors` and `visitor` can not be NULL pointers";
+        return EXIT_FAILURE;
+    }
+
+    if (!std::isfinite(options.cutoff) || options.cutoff <= 1e-6) {
+        *error_message = "cutoff must be a finite, positive number";
+        return EXIT_FAILURE;
+    }
+
+    if (!std::isfinite(visit_cutoff) || visit_cutoff <= 0 || visit_cutoff > options.cutoff) {
+        *error_message = "visit_cutoff must be positive and not larger than options.cutoff";
+        return EXIT_FAILURE;
+    }
+
+    if (device.type != VesinCPU) {
+        *error_message = "vesin_neighbors_visit is CPU-only";
+        return EXIT_FAILURE;
+    }
+
+    if (neighbors->device.type == VesinUnknownDevice) {
+        neighbors->device = device;
+    } else if (neighbors->device.type != device.type) {
+        *error_message = "`neighbors.device` and `device` do not match, free the neighbors first";
+        return EXIT_FAILURE;
+    }
+
+    try {
+        options.algorithm = VesinBruteForce;
+        options.skin = 0.0; // the caller owns skin semantics in this mode
+
+        auto matrix = vesin::Matrix{{{
+            {{box[0][0], box[0][1], box[0][2]}},
+            {{box[1][0], box[1][1], box[1][2]}},
+            {{box[2][0], box[2][1], box[2][2]}},
+        }}};
+
+        auto bounding = vesin::BoundingBox(matrix, periodic);
+        bounding.make_bounding_for(points, n_points);
+
+        auto& extra = extra_data(*neighbors);
+        delete extra.verlet_state;
+        extra.verlet_state = nullptr;
+
+        vesin::cpu::brute_force_neighbors(
+            reinterpret_cast<const vesin::Vector*>(points),
+            n_points,
+            std::move(bounding),
+            options,
+            *neighbors,
+            extra.capacity,
+            visitor,
+            user_data,
+            visit_cutoff
+        );
     } catch (const std::bad_alloc&) {
         LAST_ERROR = "failed to allocate memory";
         *error_message = LAST_ERROR.c_str();

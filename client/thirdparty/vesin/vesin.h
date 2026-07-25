@@ -198,6 +198,44 @@ int VESIN_API vesin_neighbors(
     const char** error_message
 );
 
+/// Callback for `vesin_neighbors_visit`: one invocation per pair with
+/// `distance2 <= visit_cutoff^2`. The vector `(dx, dy, dz)` is
+/// `r_j - r_i + S @ H` for pair `(i, j)`.
+///
+/// eOn extension (upstream candidate).
+typedef void (*VesinPairVisitor)(
+    void* user_data,
+    size_t first,
+    size_t second,
+    double dx,
+    double dy,
+    double dz,
+    double distance2
+);
+
+/// Compute a neighbor list exactly like `vesin_neighbors` and, in the same
+/// pass, invoke `visitor` for every pair within `visit_cutoff`
+/// (`visit_cutoff <= options.cutoff`). One O(n^2) scan serves both the list
+/// build (at `options.cutoff`, e.g. cutoff + skin) and the first force
+/// evaluation — one-shot consumers otherwise pay the pair scan twice.
+///
+/// CPU brute-force only: `options.algorithm` is forced to `VesinBruteForce`
+/// and the same box-width requirements apply. eOn extension (upstream
+/// candidate).
+int VESIN_API vesin_neighbors_visit(
+    const double (*points)[3],
+    size_t n_points,
+    const double box[3][3],
+    const bool periodic[3],
+    VesinDevice device,
+    struct VesinOptions options,
+    double visit_cutoff,
+    VesinPairVisitor visitor,
+    void* user_data,
+    struct VesinNeighborList* neighbors,
+    const char** error_message
+);
+
 #ifdef __cplusplus
 
 } // extern "C"
