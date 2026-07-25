@@ -18,6 +18,8 @@
 #include "rgpot/NWChemPot/NWChemPot.hpp"
 #include "rgpot/rpc/Potentials.capnp.h"
 
+using rgpot::types::AtomMatrix;
+
 namespace {
 
 std::string to_lower(std::string s) {
