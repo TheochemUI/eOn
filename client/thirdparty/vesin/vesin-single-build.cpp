@@ -566,12 +566,11 @@ class ThreadPool {
 public:
     ThreadPool():
         n_threads_(std::max<size_t>(1, static_cast<size_t>(std::thread::hardware_concurrency()))) {
+        // eOn local patch: workers spawn lazily in run() on the first
+        // parallel dispatch. Serial consumers (options.n_threads == 1) and
+        // short-lived processes must not pay hardware_concurrency() thread
+        // creations just for constructing the pool.
         workers_.reserve(n_threads_ - 1);
-        for (size_t thread_id = 1; thread_id < n_threads_; thread_id++) {
-            workers_.emplace_back([this, thread_id]() {
-                this->worker(thread_id);
-            });
-        }
     }
 
     ~ThreadPool() {
@@ -623,6 +622,18 @@ public:
                 task(task_i, 0);
             }
             return;
+        }
+
+        // Lazy worker spawn (see constructor). Workers start with
+        // seen_generation = 0, so any worker that begins after the
+        // generation bump below still picks up this run's tasks; run()
+        // blocks until every active worker has executed its chunk.
+        if (workers_.empty() && n_threads_ > 1) {
+            for (size_t thread_id = 1; thread_id < n_threads_; thread_id++) {
+                workers_.emplace_back([this, thread_id]() {
+                    this->worker(thread_id);
+                });
+            }
         }
 
         {
