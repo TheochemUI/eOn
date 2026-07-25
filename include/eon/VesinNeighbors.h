@@ -172,10 +172,10 @@ public:
         double dx = R[3 * i] - R[3 * j];
         double dy = R[3 * i + 1] - R[3 * j + 1];
         double dz = R[3 * i + 2] - R[3 * j + 2];
-        // Non-periodic dims store inv = 0: floor(0.5) == 0 disables the fold.
-        dx -= w0 * std::floor(dx * i0 + 0.5);
-        dy -= w1 * std::floor(dy * i1 + 0.5);
-        dz -= w2 * std::floor(dz * i2 + 0.5);
+        // Non-periodic dims store inv = 0, so the fold rounds 0 to 0.
+        dx -= w0 * micRound(dx * i0);
+        dy -= w1 * micRound(dy * i1);
+        dz -= w2 * micRound(dz * i2);
         const double r2 = dx * dx + dy * dy + dz * dz;
         if (r2 <= cutoff2) {
           fn(i, j, dx, dy, dz, r2);
@@ -210,6 +210,15 @@ public:
   [[nodiscard]] std::size_t pairCount() const { return nl_.size(); }
 
 private:
+  /// Round to nearest via SSE2 truncate-cast: std::floor(t + 0.5) lowers to
+  /// a libm call under -march targets without roundsd and costs ~20 cycles
+  /// per fold; this is ~5. Half-integer inputs (distance exactly half the
+  /// box) round away from zero instead of up — a measure-zero difference.
+  static double micRound(double t) {
+    return static_cast<double>(
+        static_cast<long long>(t + std::copysign(0.5, t)));
+  }
+
   VesinNeighbors nl_;
   std::vector<double> Rref_;
   std::array<double, 9> boxref_{};

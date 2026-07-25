@@ -1052,7 +1052,11 @@ void vesin::cpu::brute_force_neighbors(
                 auto vector = points[j] - points[i];
                 auto shift = CellShift();
                 for (size_t k = 0; k < 3; k++) {
-                    auto s = -std::floor(vector[k] * inv[k] + 0.5);
+                    // round-to-nearest via truncate-cast: no libm floor call
+                    // on -march targets without roundsd
+                    auto t = vector[k] * inv[k];
+                    auto s = -static_cast<double>(static_cast<int64_t>(
+                        t + std::copysign(0.5, t)));
                     shift[k] = static_cast<int32_t>(s);
                     vector[k] += s * width[k];
                 }
