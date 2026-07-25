@@ -15,7 +15,6 @@
 #include <iostream>
 // #include "system_unit.h" // unit converters
 #include "eon/Potential.h"
-#include "eon/VesinNeighbors.h"
 
 /** Lennard Jones potential.*/
 class LJCluster : public Potential {
@@ -27,8 +26,6 @@ private:
   double psi{0.0};
 
   double cuttOffU{0.0};
-  /// Reused across force() so vesin keeps pair buffers (do not stack-local).
-  eonc::VesinNeighbors nl_;
 
 public:
   // Functions

@@ -11,6 +11,7 @@
 */
 
 #include "eon/potentials/Morse/Morse.h"
+#include "eon/VesinNeighbors.h"
 #include <cassert>
 #include <cmath>
 
@@ -43,12 +44,15 @@ void Morse::force(long N, const double *R, const int * /*atomicNrs*/, double *F,
     return;
   }
 
+  // thread_local: re-use vesin pair buffers across force calls; safe when
+  // NEB/dimer evaluate images in parallel on a shared pot instance.
+  thread_local eonc::VesinNeighbors nl;
   eonc::VesinNeighbors::Options opt;
   opt.cutoff = cutoff_;
   opt.full = false;
   opt.return_distances = true;
   opt.return_vectors = true;
-  nl_.compute(R, static_cast<std::size_t>(N), box, opt);
+  nl.compute(R, static_cast<std::size_t>(N), box, opt);
 
   const double a = a_;
   const double re = re_;
@@ -57,18 +61,18 @@ void Morse::force(long N, const double *R, const int * /*atomicNrs*/, double *F,
   const double eCut = energyCutoff_;
   double energyAcc = 0.0;
 
-  for (std::size_t p = 0; p < nl_.size(); ++p) {
-    const long i = static_cast<long>(nl_.i(p));
-    const long j = static_cast<long>(nl_.j(p));
+  for (std::size_t p = 0; p < nl.size(); ++p) {
+    const long i = static_cast<long>(nl.i(p));
+    const long j = static_cast<long>(nl.j(p));
     if (i == j) {
       continue;
     }
-    const double r = nl_.distance(p);
+    const double r = nl.distance(p);
     if (r <= 0.0) {
       continue;
     }
     // vesin: r_j - r_i; Morse force used r_i - r_j
-    const double *v = nl_.vector(p);
+    const double *v = nl.vector(p);
     const double dx = -v[0];
     const double dy = -v[1];
     const double dz = -v[2];

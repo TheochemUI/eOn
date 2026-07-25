@@ -35,11 +35,10 @@ nl = neighbor_list(structure, cutoff=4.0)
 
 ```cpp
 #include "eon/VesinNeighbors.h"
-// Keep one instance for the lifetime of the pot / job:
-eonc::VesinNeighbors nl;
+// Prefer thread_local (or a long-lived member) so vesin re-uses pair buffers:
+thread_local eonc::VesinNeighbors nl;
 eonc::VesinNeighbors::Options opt{.cutoff = 5.0, .full = false,
                                   .return_distances = true, .return_vectors = true};
-// Re-use the same nl across force evaluations — vesin keeps pair buffers.
 nl.compute(R, nAtoms, box9, opt);
 ```
 
@@ -49,6 +48,7 @@ Vector convention matches vesin: **`r_ij = r_j − r_i + S·H`**.
 **Do not** call `vesin_free` (or destroy a stack-local list) before every
 `compute`. Upstream documents that the same `VesinNeighborList` should be
 re-used across calls so allocations are recycled; free only when finished.
+Use `thread_local` when the pot can be shared across NEB image threads.
 
 ## How we measure (ASV, not one-off scripts)
 

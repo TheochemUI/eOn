@@ -11,6 +11,7 @@
 */
 
 #include "eon/potentials/LJ/LJ.h"
+#include "eon/VesinNeighbors.h"
 #include <cmath>
 
 void LJ::setParameters(double u0In, double cutoffIn, double psiIn) {
@@ -34,28 +35,29 @@ void LJ::force(long N, const double *R, const int * /*atomicNrs*/, double *F,
     return;
   }
 
+  thread_local eonc::VesinNeighbors nl;
   eonc::VesinNeighbors::Options opt;
   opt.cutoff = cuttOffR;
   opt.full = false; // half list: one pair entry per unordered bond
   opt.return_distances = true;
   opt.return_vectors = true;
-  nl_.compute(R, static_cast<std::size_t>(N), box, opt);
+  nl.compute(R, static_cast<std::size_t>(N), box, opt);
 
   const double psi2 = psi * psi;
-  for (std::size_t p = 0; p < nl_.size(); ++p) {
-    const long i = static_cast<long>(nl_.i(p));
-    const long j = static_cast<long>(nl_.j(p));
+  for (std::size_t p = 0; p < nl.size(); ++p) {
+    const long i = static_cast<long>(nl.i(p));
+    const long j = static_cast<long>(nl.j(p));
     if (i == j) {
       continue;
     }
-    const double r = nl_.distance(p);
+    const double r = nl.distance(p);
     if (r <= 0.0) {
       continue;
     }
     const double r2 = r * r;
     const double invR2 = 1.0 / r2;
     // vesin vector is r_j - r_i; LJ force uses r_i - r_j
-    const double *v = nl_.vector(p);
+    const double *v = nl.vector(p);
     const double dx = -v[0];
     const double dy = -v[1];
     const double dz = -v[2];

@@ -12,7 +12,6 @@
 #pragma once
 
 #include "eon/Potential.h"
-#include "eon/VesinNeighbors.h"
 #include <cmath>
 
 /// Lennard-Jones potential.
@@ -22,8 +21,6 @@ private:
   double cuttOffR{0.0};
   double psi{0.0};
   double cuttOffU{0.0};
-  /// Reused across force() so vesin keeps pair buffers (do not stack-local).
-  eonc::VesinNeighbors nl_;
 
 public:
   explicit LJ(const Parameters &params)

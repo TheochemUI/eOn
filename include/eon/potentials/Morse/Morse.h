@@ -18,7 +18,6 @@
       @date Unknown, revision: 2010, University of Iceland
       */
 #include "eon/Potential.h"
-#include "eon/VesinNeighbors.h"
 #include <cmath>
 
 /// Morse potential, default parameters are for Pt.
@@ -52,6 +51,4 @@ private:
   double re_{0.0};
   double cutoff_{0.0};
   double energyCutoff_{0.0};
-  /// Reused across force() so vesin keeps pair buffers (do not stack-local).
-  eonc::VesinNeighbors nl_;
 };

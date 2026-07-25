@@ -23,8 +23,8 @@
 ///   rho_i = sum_(j!=i) (a/r_ij)^m
 ///   V(r_ij) = (a/r_ij)^n
 ///
-/// Neighbor pairs come from a long-lived ``eonc::VesinNeighbors`` member so
-/// vesin re-uses pair buffers across force evaluations.
+/// Neighbor pairs come from a thread_local ``eonc::VesinNeighbors`` so vesin
+/// re-uses pair buffers across force evaluations without racing under NEB.
 class QSC
 #ifndef QSC_STANDALONE
     : public Potential
@@ -43,6 +43,11 @@ public:
 
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
+  /// rho_/sqrtrho_ are instance state written during force.
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+  [[nodiscard]] bool needsPerImageInstance() const noexcept override {
+    return true;
+  }
   /// API compatibility; vesin does not use a Verlet skin.
   void set_verlet_skin(double dr);
   void set_cutoff(double c);
@@ -67,10 +72,10 @@ private:
 
   std::vector<double> rho_;     // [N]
   std::vector<double> sqrtrho_; // [N]
-  eonc::VesinNeighbors nl_;
 
-  /// Energy from the current ``nl_`` (caller must have computed it).
-  void energy_from_nl(long N, const int *atomicNrs, double *U);
+  /// Energy from ``nl`` (caller must have computed it on this thread).
+  void energy_from_nl(long N, const int *atomicNrs, double *U,
+                      const eonc::VesinNeighbors &nl);
 
   static const qsc_parameters qsc_default_params[];
   std::vector<qsc_parameters> qsc_params_;

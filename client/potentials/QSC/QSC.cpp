@@ -14,8 +14,8 @@
 /// @brief Quantum Sutton-Chen potential implementation.
 ///
 /// EAM-type potential with density = (a/r)^m, pair = (a/r)^n,
-/// embedding = c * epsilon * sqrt(rho). Neighbor pairs via a long-lived
-/// eonc::VesinNeighbors member (allocation reuse across force calls).
+/// embedding = c * epsilon * sqrt(rho). Neighbor pairs via a thread_local
+/// eonc::VesinNeighbors (allocation reuse; safe under NEB parallel).
 
 #include "eon/potentials/QSC/QSC.h"
 #include "eon/potentials/QSC/Parameters.h"
@@ -25,24 +25,24 @@
 #include <cstdio>
 #include <vector>
 
-void QSC::energy_from_nl(long N, const int *atomicNrs, double *U) {
+void QSC::energy_from_nl(long N, const int *atomicNrs, double *U,
+                         const eonc::VesinNeighbors &nl) {
   *U = 0.0;
   rho_.assign(static_cast<std::size_t>(N), 0.0);
   sqrtrho_.assign(static_cast<std::size_t>(N), 0.0);
-  if (N < 2 || nl_.size() == 0) {
+  if (N < 2 || nl.size() == 0) {
     return;
   }
 
-  // Half list: accumulate pair V and both density contributions per pair.
   std::vector<double> pair_term(static_cast<std::size_t>(N), 0.0);
 
-  for (std::size_t p = 0; p < nl_.size(); ++p) {
-    const long i = static_cast<long>(nl_.i(p));
-    const long j = static_cast<long>(nl_.j(p));
+  for (std::size_t p = 0; p < nl.size(); ++p) {
+    const long i = static_cast<long>(nl.i(p));
+    const long j = static_cast<long>(nl.j(p));
     if (i == j) {
       continue;
     }
-    const double r_ij = nl_.distance(p);
+    const double r_ij = nl.distance(p);
     if (r_ij <= 0.0 || r_ij > cutoff_) {
       continue;
     }
@@ -57,7 +57,6 @@ void QSC::energy_from_nl(long N, const int *atomicNrs, double *U) {
     rho_[static_cast<std::size_t>(j)] += phi_ji;
 
     const double V = p_ij.epsilon * pair_potential(r_ij, p_ij.a, p_ij.n);
-    // Historical half-list assignment put V on the i side only.
     pair_term[static_cast<std::size_t>(i)] += V;
   }
 
@@ -82,24 +81,24 @@ void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
     return;
   }
 
-  // One vesin rebuild with distances+vectors for energy and force.
+  thread_local eonc::VesinNeighbors nl;
   eonc::VesinNeighbors::Options opt;
   opt.cutoff = cutoff_;
   opt.full = false;
   opt.return_distances = true;
   opt.return_vectors = true;
-  nl_.compute(R, static_cast<std::size_t>(N), box, opt);
+  nl.compute(R, static_cast<std::size_t>(N), box, opt);
   ++vlist_updates;
 
-  energy_from_nl(N, atomicNrs, U);
+  energy_from_nl(N, atomicNrs, U, nl);
 
-  for (std::size_t p = 0; p < nl_.size(); ++p) {
-    const long i = static_cast<long>(nl_.i(p));
-    const long j = static_cast<long>(nl_.j(p));
+  for (std::size_t p = 0; p < nl.size(); ++p) {
+    const long i = static_cast<long>(nl.i(p));
+    const long j = static_cast<long>(nl.j(p));
     if (i == j) {
       continue;
     }
-    const double r_ij = nl_.distance(p);
+    const double r_ij = nl.distance(p);
     if (r_ij <= 0.0 || r_ij > cutoff_) {
       continue;
     }
@@ -112,7 +111,6 @@ void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
     const double phi_ji = pair_potential(r_ij, p_ii.a, p_ii.m);
     const double V = p_ij.epsilon * pair_potential(r_ij, p_ij.a, p_ij.n);
 
-    // Force magnitude (same form as previous Verlet-based path).
     double Fij = p_ij.n * V;
     Fij -= p_ii.epsilon * p_ii.c * p_jj.m * 0.5 *
            (1.0 / sqrtrho_[static_cast<std::size_t>(i)]) * phi_ij;
@@ -120,8 +118,7 @@ void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
            (1.0 / sqrtrho_[static_cast<std::size_t>(j)]) * phi_ji;
     Fij /= r_ij;
 
-    // Historical distance used d = r_i - r_j; vesin vector is r_j - r_i.
-    const double *v = nl_.vector(p);
+    const double *v = nl.vector(p);
     const double fscale = Fij / r_ij;
     const double fx = fscale * (-v[0]);
     const double fy = fscale * (-v[1]);
@@ -158,7 +155,7 @@ double QSC::pair_potential(double r, double a, double n) {
 
 void QSC::set_verlet_skin(double dr) {
   assert(dr > 0.0);
-  (void)dr; // vesin has no Verlet skin; API kept for callers
+  (void)dr;
 }
 
 void QSC::set_cutoff(double c) {
