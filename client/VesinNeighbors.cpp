@@ -124,41 +124,17 @@ bool CachedPairList::valid(const double *R, std::size_t n, const double *box,
   return true;
 }
 
-void CachedPairList::rebuild(VesinNeighbors &scratch, const double *R,
-                             std::size_t n, const double *box,
+void CachedPairList::rebuild(const double *R, std::size_t n, const double *box,
                              const Options &opt) {
   VesinNeighbors::Options vopt;
   vopt.cutoff = opt.cutoff + opt.skin;
   vopt.full = false;
-  vopt.sorted = true; // index-sorted pairs: better locality in forEach
+  vopt.sorted = false; // vesin's permutation sort costs more than it saves
   vopt.return_shifts = true;
   vopt.return_distances = false;
   vopt.return_vectors = false;
   vopt.periodic = opt.periodic;
-  scratch.compute(R, n, box, vopt);
-
-  const VesinNeighborList &vl = scratch.raw();
-  plain_.clear();
-  shifted_.clear();
-  plain_.reserve(vl.length);
-  for (std::size_t p = 0; p < vl.length; ++p) {
-    const auto i = static_cast<int32_t>(vl.pairs[p][0]);
-    const auto j = static_cast<int32_t>(vl.pairs[p][1]);
-    const int32_t sa = vl.shifts[p][0];
-    const int32_t sb = vl.shifts[p][1];
-    const int32_t sc = vl.shifts[p][2];
-    if (sa == 0 && sb == 0 && sc == 0) {
-      if (i != j) { // self pairs only arise as periodic images (shifted)
-        plain_.push_back({i, j});
-      }
-    } else {
-      // Offset S @ H with row-major cell rows a,b,c.
-      const double ox = sa * box[0] + sb * box[3] + sc * box[6];
-      const double oy = sa * box[1] + sb * box[4] + sc * box[7];
-      const double oz = sa * box[2] + sb * box[5] + sc * box[8];
-      shifted_.push_back({i, j, ox, oy, oz});
-    }
-  }
+  nl_.compute(R, n, box, vopt);
 
   Rref_.assign(R, R + 3 * n);
   for (int k = 0; k < 9; ++k) {
@@ -187,11 +163,9 @@ PairListCache::ensure(const double *R, std::size_t n, const double *box,
   }
 
   // Build outside the pool lock; concurrent misses on the same geometry cost
-  // one duplicate build, never a wrong result. The scratch VesinNeighbors is
-  // per-thread so vesin re-uses its build buffers on long-lived threads.
+  // one duplicate build, never a wrong result.
   auto fresh = std::make_shared<CachedPairList>();
-  thread_local VesinNeighbors scratch;
-  fresh->rebuild(scratch, R, n, box, opt);
+  fresh->rebuild(R, n, box, opt);
 
   std::lock_guard<std::mutex> lock(mu_);
   slots_.insert(slots_.begin(), fresh);

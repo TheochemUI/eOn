@@ -106,9 +106,9 @@ private:
 /// ``r2 <= cutoff^2`` filter in ``forEach`` keeps the physics identical to a
 /// fresh build.
 ///
-/// Pair storage is split: pairs with a zero cell shift carry only indices;
-/// wrapped pairs additionally carry the precomputed shift offset ``S @ H``
-/// (valid until rebuild — any box change forces a rebuild).
+/// The pairs live in the slot's own vesin buffers — no unsorted->sorted
+/// permutation and no copy on rebuild, which is what a one-shot evaluation
+/// (point job, first NEB iteration) actually pays for.
 class CachedPairList {
 public:
   struct Options {
@@ -121,58 +121,50 @@ public:
     }
   };
 
-  struct Pair {
-    int32_t i, j;
-  };
-  struct ShiftPair {
-    int32_t i, j;
-    double ox, oy, oz; ///< S @ H at build time
-  };
-
   /// True while the cached pair set is valid for positions ``R``: same atom
   /// count, options and box as the build, and max displacement < skin/2.
   [[nodiscard]] bool valid(const double *R, std::size_t n, const double *box,
                            const Options &opt) const;
 
-  /// Rebuild via vesin at ``cutoff + skin``. ``scratch`` supplies the
-  /// long-lived vesin buffers (pass the same instance every time so vesin
-  /// re-uses its allocations).
-  void rebuild(VesinNeighbors &scratch, const double *R, std::size_t n,
-               const double *box, const Options &opt);
+  /// Rebuild via vesin at ``cutoff + skin`` into this slot's own buffers.
+  void rebuild(const double *R, std::size_t n, const double *box,
+               const Options &opt);
 
-  /// Visit every cached pair within ``sqrt(cutoff2)`` of the current
+  /// Visit every cached pair within the true cutoff of the current
   /// positions. ``fn(i, j, dx, dy, dz, r2)`` receives the *historical* eOn
   /// convention ``d = r_i - r_j`` (minimum image / shift applied), i.e. the
   /// negated vesin vector.
   template <typename Fn> void forEach(const double *R, Fn &&fn) const {
     const double cutoff2 = opt_.cutoff * opt_.cutoff;
-    for (const auto &p : plain_) {
-      const double dx = R[3 * p.i] - R[3 * p.j];
-      const double dy = R[3 * p.i + 1] - R[3 * p.j + 1];
-      const double dz = R[3 * p.i + 2] - R[3 * p.j + 2];
-      const double r2 = dx * dx + dy * dy + dz * dz;
-      if (r2 <= cutoff2) {
-        fn(p.i, p.j, dx, dy, dz, r2);
+    const VesinNeighborList &vl = nl_.raw();
+    const double *H = boxref_.data();
+    for (std::size_t p = 0; p < vl.length; ++p) {
+      const auto i = static_cast<int32_t>(vl.pairs[p][0]);
+      const auto j = static_cast<int32_t>(vl.pairs[p][1]);
+      double dx = R[3 * i] - R[3 * j];
+      double dy = R[3 * i + 1] - R[3 * j + 1];
+      double dz = R[3 * i + 2] - R[3 * j + 2];
+      const int32_t sa = vl.shifts[p][0];
+      const int32_t sb = vl.shifts[p][1];
+      const int32_t sc = vl.shifts[p][2];
+      if ((sa | sb | sc) != 0) { // wrapped pair: d -= S @ H
+        dx -= sa * H[0] + sb * H[3] + sc * H[6];
+        dy -= sa * H[1] + sb * H[4] + sc * H[7];
+        dz -= sa * H[2] + sb * H[5] + sc * H[8];
+      } else if (i == j) {
+        continue; // degenerate zero-shift self pair
       }
-    }
-    for (const auto &p : shifted_) {
-      const double dx = R[3 * p.i] - R[3 * p.j] - p.ox;
-      const double dy = R[3 * p.i + 1] - R[3 * p.j + 1] - p.oy;
-      const double dz = R[3 * p.i + 2] - R[3 * p.j + 2] - p.oz;
       const double r2 = dx * dx + dy * dy + dz * dz;
       if (r2 <= cutoff2) {
-        fn(p.i, p.j, dx, dy, dz, r2);
+        fn(i, j, dx, dy, dz, r2);
       }
     }
   }
 
-  [[nodiscard]] std::size_t pairCount() const {
-    return plain_.size() + shifted_.size();
-  }
+  [[nodiscard]] std::size_t pairCount() const { return nl_.size(); }
 
 private:
-  std::vector<Pair> plain_;
-  std::vector<ShiftPair> shifted_;
+  VesinNeighbors nl_;
   std::vector<double> Rref_;
   std::array<double, 9> boxref_{};
   Options opt_{};
