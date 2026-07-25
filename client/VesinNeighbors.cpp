@@ -109,6 +109,9 @@ bool CachedPairList::valid(const double *R, std::size_t n, const double *box,
       return false;
     }
   }
+  if (complete_) {
+    return true; // all pairs are candidates; motion cannot invalidate
+  }
   // Verlet criterion: every atom within skin/2 of its build position. Early
   // exit on the first violator (a different NEB image rejects on atom ~1).
   const double thr2 = 0.25 * opt_.skin * opt_.skin;
@@ -170,6 +173,10 @@ void CachedPairList::rebuild(const double *R, std::size_t n, const double *box,
   }
   opt_ = opt;
   n_ = n;
+  // Complete graph (small cluster inside the cutoff): with MIC evaluation
+  // the candidate set can never lose a pair, so the slot stays valid for
+  // arbitrary motion and rebuilds stop entirely.
+  complete_ = mic_ && nl_.size() == n * (n - 1) / 2;
   built_ = true;
 }
 

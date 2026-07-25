@@ -967,29 +967,79 @@ void vesin::cpu::brute_force_neighbors(
     auto neighbors = GrowableNeighborList{raw_neighbors, initial_capacity, options};
     neighbors.reset();
 
+    auto want_shifts = options.return_shifts;
+    auto want_distances = options.return_distances;
+    auto want_vectors = options.return_vectors;
+    auto full = options.full;
+
+    // Direct writes with one capacity check per pair: the per-field set_*
+    // members each re-check capacity through a non-inlined call, which
+    // dominates dense O(n^2) fills.
     auto emit = [&](size_t first, size_t second, CellShift shift, Vector vector, double distance2) {
         auto index = neighbors.length();
-        neighbors.set_pair(index, first, second);
-        if (options.return_shifts) {
-            neighbors.set_shift(index, shift);
+        while (index + (full ? 2 : 1) > neighbors.capacity) {
+            neighbors.grow();
         }
-        if (options.return_distances) {
-            neighbors.set_distance(index, std::sqrt(distance2));
+        auto& nb = neighbors.neighbors;
+        nb.pairs[index][0] = first;
+        nb.pairs[index][1] = second;
+        double distance = 0.0;
+        if (want_shifts) {
+            nb.shifts[index][0] = shift[0];
+            nb.shifts[index][1] = shift[1];
+            nb.shifts[index][2] = shift[2];
         }
-        if (options.return_vectors) {
-            neighbors.set_vector(index, vector);
+        if (want_distances) {
+            distance = std::sqrt(distance2);
+            nb.distances[index] = distance;
         }
-        neighbors.increment_length();
+        if (want_vectors) {
+            nb.vectors[index][0] = vector[0];
+            nb.vectors[index][1] = vector[1];
+            nb.vectors[index][2] = vector[2];
+        }
+        nb.length = index + 1;
+
+        if (full) {
+            index += 1;
+            nb.pairs[index][0] = second;
+            nb.pairs[index][1] = first;
+            if (want_shifts) {
+                nb.shifts[index][0] = -shift[0];
+                nb.shifts[index][1] = -shift[1];
+                nb.shifts[index][2] = -shift[2];
+            }
+            if (want_distances) {
+                nb.distances[index] = distance;
+            }
+            if (want_vectors) {
+                nb.vectors[index][0] = -vector[0];
+                nb.vectors[index][1] = -vector[1];
+                nb.vectors[index][2] = -vector[2];
+            }
+            nb.length = index + 1;
+        }
     };
 
     auto diagonal = matrix[0][1] == 0 && matrix[0][2] == 0 &&
                     matrix[1][0] == 0 && matrix[1][2] == 0 &&
                     matrix[2][0] == 0 && matrix[2][1] == 0;
 
-    if (diagonal || !any_periodic) {
-        // Orthorhombic / free boundaries: fold each dimension directly, no
-        // fractional-coordinate round trip. inv == 0 turns the fold into a
-        // no-op for non-periodic dimensions (floor(0.5) == 0).
+    if (!any_periodic) {
+        // Free boundaries: plain distance filter, no shifts at all.
+        for (size_t i = 0; i < n_points; i++) {
+            for (size_t j = i + 1; j < n_points; j++) {
+                auto vector = points[j] - points[i];
+                auto distance2 = vector.dot(vector);
+                if (distance2 < cutoff2) {
+                    emit(i, j, CellShift(), vector, distance2);
+                }
+            }
+        }
+    } else if (diagonal) {
+        // Orthorhombic: fold each dimension directly, no fractional
+        // round trip. inv == 0 turns the fold into a no-op for
+        // non-periodic dimensions (floor(0.5) == 0).
         double width[3];
         double inv[3];
         for (size_t k = 0; k < 3; k++) {
@@ -1010,10 +1060,6 @@ void vesin::cpu::brute_force_neighbors(
                 auto distance2 = vector.dot(vector);
                 if (distance2 < cutoff2) {
                     emit(i, j, shift, vector, distance2);
-                    if (options.full) {
-                        emit(j, i, CellShift{-shift[0], -shift[1], -shift[2]},
-                             -1.0 * vector, distance2);
-                    }
                 }
             }
         }
@@ -1041,10 +1087,6 @@ void vesin::cpu::brute_force_neighbors(
                 auto distance2 = vector.dot(vector);
                 if (distance2 < cutoff2) {
                     emit(i, j, shift, vector, distance2);
-                    if (options.full) {
-                        emit(j, i, CellShift{-shift[0], -shift[1], -shift[2]},
-                             -1.0 * vector, distance2);
-                    }
                 }
             }
         }

@@ -167,6 +167,21 @@ public:
       return;
     }
     if (mic_) {
+      if (micInv_[0] == 0.0 && micInv_[1] == 0.0 && micInv_[2] == 0.0) {
+        // Free boundaries: no folds at all.
+        for (std::size_t p = 0; p < vl.length; ++p) {
+          const auto i = static_cast<int32_t>(vl.pairs[p][0]);
+          const auto j = static_cast<int32_t>(vl.pairs[p][1]);
+          const double dx = R[3 * i] - R[3 * j];
+          const double dy = R[3 * i + 1] - R[3 * j + 1];
+          const double dz = R[3 * i + 2] - R[3 * j + 2];
+          const double r2 = dx * dx + dy * dy + dz * dz;
+          if (r2 <= cutoff2) {
+            fn(i, j, dx, dy, dz, r2);
+          }
+        }
+        return;
+      }
       const double w0 = boxref_[0], w1 = boxref_[4], w2 = boxref_[8];
       const double i0 = micInv_[0], i1 = micInv_[1], i2 = micInv_[2];
       for (std::size_t p = 0; p < vl.length; ++p) {
@@ -226,6 +241,10 @@ private:
   std::size_t n_{0};
   bool mic_{false};
   bool freshArrays_{false};
+  /// MIC-mode candidate set that is the complete pair graph: valid for any
+  /// positions with the same atoms/box/options (the eval fold re-derives
+  /// exact geometry, and no pair can ever leave a complete candidate set).
+  bool complete_{false};
   bool built_{false};
 };
 
