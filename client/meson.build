@@ -395,9 +395,16 @@ if not vesin_dep.found() and is_windows
     vesin_dep = cppc.find_library('libvesin', required: false)
 endif
 if not vesin_dep.found()
+    # vesin 0.6 threads its builds (std::thread + OpenMP when available).
+    vesin_int_deps = [dependency('threads')]
+    vesin_omp_dep = dependency('openmp', required: false)
+    if vesin_omp_dep.found()
+        vesin_int_deps += vesin_omp_dep
+    endif
     vesin_int = library(
         'vesin_internal',
         ['thirdparty/vesin/vesin-single-build.cpp'],
+        dependencies: vesin_int_deps,
         install: true,
     )
     vesin_dep = declare_dependency(
