@@ -118,7 +118,16 @@ jobs:
           cands = sorted(Path("bbdir").rglob("*rgpot*.dll"))
           print("rgpot candidates:", cands)
           if not cands:
-              sys.exit("no rgpot DLL in build tree")
+              # --default-library=static builds carry the kernels in an
+              # archive, which has no export table to audit.
+              archives = sorted(Path("bbdir").rglob("*rgpot*.lib")) + sorted(
+                  Path("bbdir").rglob("*rgpot*.a")
+              )
+              print("rgpot archives:", archives)
+              if not archives:
+                  sys.exit("no rgpot library in build tree")
+              print("static rgpot: nothing exported, audit not applicable")
+              sys.exit(0)
           dll = str(cands[0].resolve())
           print("LoadLibrary", dll)
           try:
