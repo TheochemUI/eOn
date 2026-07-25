@@ -14,8 +14,9 @@
 /// @brief Quantum Sutton-Chen potential implementation.
 ///
 /// EAM-type potential with density = (a/r)^m, pair = (a/r)^n,
-/// embedding = c * epsilon * sqrt(rho). Neighbor pairs via a thread_local
-/// eonc::VesinNeighbors (allocation reuse; safe under NEB parallel).
+/// embedding = c * epsilon * sqrt(rho). Neighbor pairs via the thread-local
+/// eonc::PairListCache (Verlet-skin cached vesin lists; safe under NEB
+/// parallel).
 
 #include "eon/potentials/QSC/QSC.h"
 #include "eon/potentials/QSC/Parameters.h"
@@ -25,27 +26,20 @@
 #include <cstdio>
 #include <vector>
 
-void QSC::energy_from_nl(long N, const int *atomicNrs, double *U,
-                         const eonc::VesinNeighbors &nl) {
+void QSC::energy_from_nl(long N, const double *R, const int *atomicNrs,
+                         double *U, const eonc::CachedPairList &nl) {
   *U = 0.0;
   rho_.assign(static_cast<std::size_t>(N), 0.0);
   sqrtrho_.assign(static_cast<std::size_t>(N), 0.0);
-  if (N < 2 || nl.size() == 0) {
+  if (N < 2 || nl.pairCount() == 0) {
     return;
   }
 
   std::vector<double> pair_term(static_cast<std::size_t>(N), 0.0);
 
-  for (std::size_t p = 0; p < nl.size(); ++p) {
-    const long i = static_cast<long>(nl.i(p));
-    const long j = static_cast<long>(nl.j(p));
-    if (i == j) {
-      continue;
-    }
-    const double r_ij = nl.distance(p);
-    if (r_ij <= 0.0 || r_ij > cutoff_) {
-      continue;
-    }
+  nl.forEach(R, [&](int32_t i, int32_t j, double /*dx*/, double /*dy*/,
+                    double /*dz*/, double r2) {
+    const double r_ij = std::sqrt(r2);
 
     const auto p_ii = get_qsc_parameters(atomicNrs[i], atomicNrs[i]);
     const auto p_ij = get_qsc_parameters(atomicNrs[i], atomicNrs[j]);
@@ -58,7 +52,7 @@ void QSC::energy_from_nl(long N, const int *atomicNrs, double *U,
 
     const double V = p_ij.epsilon * pair_potential(r_ij, p_ij.a, p_ij.n);
     pair_term[static_cast<std::size_t>(i)] += V;
-  }
+  });
 
   for (long i = 0; i < N; i++) {
     const auto p_ii_e = get_qsc_parameters(atomicNrs[i], atomicNrs[i]);
@@ -81,27 +75,18 @@ void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
     return;
   }
 
-  thread_local eonc::VesinNeighbors nl;
-  eonc::VesinNeighbors::Options opt;
+  eonc::CachedPairList::Options opt;
   opt.cutoff = cutoff_;
-  opt.full = false;
-  opt.return_distances = true;
-  opt.return_vectors = true;
-  nl.compute(R, static_cast<std::size_t>(N), box, opt);
+  opt.skin = skin_;
+  const auto &nl = eonc::PairListCache::local().ensure(
+      R, static_cast<std::size_t>(N), box, opt);
   ++vlist_updates;
 
-  energy_from_nl(N, atomicNrs, U, nl);
+  energy_from_nl(N, R, atomicNrs, U, nl);
 
-  for (std::size_t p = 0; p < nl.size(); ++p) {
-    const long i = static_cast<long>(nl.i(p));
-    const long j = static_cast<long>(nl.j(p));
-    if (i == j) {
-      continue;
-    }
-    const double r_ij = nl.distance(p);
-    if (r_ij <= 0.0 || r_ij > cutoff_) {
-      continue;
-    }
+  nl.forEach(R, [&](int32_t i, int32_t j, double dx, double dy, double dz,
+                    double r2) {
+    const double r_ij = std::sqrt(r2);
 
     const auto p_ii = get_qsc_parameters(atomicNrs[i], atomicNrs[i]);
     const auto p_ij = get_qsc_parameters(atomicNrs[i], atomicNrs[j]);
@@ -118,11 +103,10 @@ void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
            (1.0 / sqrtrho_[static_cast<std::size_t>(j)]) * phi_ji;
     Fij /= r_ij;
 
-    const double *v = nl.vector(p);
     const double fscale = Fij / r_ij;
-    const double fx = fscale * (-v[0]);
-    const double fy = fscale * (-v[1]);
-    const double fz = fscale * (-v[2]);
+    const double fx = fscale * dx;
+    const double fy = fscale * dy;
+    const double fz = fscale * dz;
 
     F[3 * i] += fx;
     F[3 * i + 1] += fy;
@@ -130,7 +114,7 @@ void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
     F[3 * j] -= fx;
     F[3 * j + 1] -= fy;
     F[3 * j + 2] -= fz;
-  }
+  });
 }
 
 double QSC::dpowi(double x, unsigned n) {
@@ -155,7 +139,7 @@ double QSC::pair_potential(double r, double a, double n) {
 
 void QSC::set_verlet_skin(double dr) {
   assert(dr > 0.0);
-  (void)dr;
+  skin_ = dr;
 }
 
 void QSC::set_cutoff(double c) {

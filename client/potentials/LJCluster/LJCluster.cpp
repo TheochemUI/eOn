@@ -42,45 +42,40 @@ void LJCluster::force(long N, const double *R, const int * /*atomicNrs*/,
 
   // Cluster: free boundary (no PBC). Large cutoff if cuttOffR unused
   // historically.
-  thread_local eonc::VesinNeighbors nl;
-  eonc::VesinNeighbors::Options opt;
+  eonc::CachedPairList::Options opt;
   opt.cutoff = (cuttOffR > 0.0) ? cuttOffR : 1.0e6;
-  opt.full = false;
-  opt.return_distances = true;
-  opt.return_vectors = true;
   opt.periodic = {{false, false, false}};
   // Dummy orthorhombic box (ignored when non-periodic)
   double free_box[9] = {1e6, 0, 0, 0, 1e6, 0, 0, 0, 1e6};
   const double *box_use = (box != nullptr) ? box : free_box;
-  nl.compute(R, static_cast<std::size_t>(N), box_use, opt);
+  const auto &nl = eonc::PairListCache::local().ensure(
+      R, static_cast<std::size_t>(N), box_use, opt);
 
-  for (std::size_t p = 0; p < nl.size(); ++p) {
-    const int i = static_cast<int>(nl.i(p));
-    const int j = static_cast<int>(nl.j(p));
-    if (i == j) {
-      continue;
-    }
-    const double diffR = nl.distance(p);
-    if (diffR <= 0.0) {
-      continue;
-    }
-    const double *v = nl.vector(p); // r_j - r_i
-    const double diffRX = -v[0];
-    const double diffRY = -v[1];
-    const double diffRZ = -v[2];
-
-    const double a = pow(psi / diffR, 6);
+  const double psi2 = psi * psi;
+  double energyAcc = 0.0;
+  nl.forEach(R, [&](int32_t i, int32_t j, double dx, double dy, double dz,
+                    double r2) {
+    const double invR2 = 1.0 / r2;
+    const double sr2 = psi2 * invR2;
+    const double a = sr2 * sr2 * sr2; // (psi/r)^6 without pow()
     const double b = 4 * u0 * a;
-    *U = *U + b * (a - 1) - cuttOffU;
+    energyAcc += b * (a - 1) - cuttOffU;
 
-    const double dU = -6 * b / diffR * (2 * a - 1);
-    F[3 * i] = F[3 * i] - dU * diffRX / diffR;
-    F[3 * i + 1] = F[3 * i + 1] - dU * diffRY / diffR;
-    F[3 * i + 2] = F[3 * i + 2] - dU * diffRZ / diffR;
-    F[3 * j] = F[3 * j] + dU * diffRX / diffR;
-    F[3 * j + 1] = F[3 * j + 1] + dU * diffRY / diffR;
-    F[3 * j + 2] = F[3 * j + 2] + dU * diffRZ / diffR;
-  }
+    // -dU/dr / r along d = r_i - r_j, same sign convention as the historical
+    // double loop.
+    const double fscale = 6 * b * invR2 * (2 * a - 1);
+    const double fx = fscale * dx;
+    const double fy = fscale * dy;
+    const double fz = fscale * dz;
+
+    F[3 * i] += fx;
+    F[3 * i + 1] += fy;
+    F[3 * i + 2] += fz;
+    F[3 * j] -= fx;
+    F[3 * j + 1] -= fy;
+    F[3 * j + 2] -= fz;
+  });
+  *U = energyAcc;
 }
 
 LJCluster::~LJCluster() { cleanMemory(); }

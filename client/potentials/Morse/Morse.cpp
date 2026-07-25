@@ -44,15 +44,12 @@ void Morse::force(long N, const double *R, const int * /*atomicNrs*/, double *F,
     return;
   }
 
-  // thread_local: re-use vesin pair buffers across force calls; safe when
-  // NEB/dimer evaluate images in parallel on a shared pot instance.
-  thread_local eonc::VesinNeighbors nl;
-  eonc::VesinNeighbors::Options opt;
+  // Verlet-skin cached vesin pair list; the thread-local pool keeps one slot
+  // per nearby geometry so NEB images sharing this pot never thrash it.
+  eonc::CachedPairList::Options opt;
   opt.cutoff = cutoff_;
-  opt.full = false;
-  opt.return_distances = true;
-  opt.return_vectors = true;
-  nl.compute(R, static_cast<std::size_t>(N), box, opt);
+  const auto &nl = eonc::PairListCache::local().ensure(
+      R, static_cast<std::size_t>(N), box, opt);
 
   const double a = a_;
   const double re = re_;
@@ -61,22 +58,9 @@ void Morse::force(long N, const double *R, const int * /*atomicNrs*/, double *F,
   const double eCut = energyCutoff_;
   double energyAcc = 0.0;
 
-  for (std::size_t p = 0; p < nl.size(); ++p) {
-    const long i = static_cast<long>(nl.i(p));
-    const long j = static_cast<long>(nl.j(p));
-    if (i == j) {
-      continue;
-    }
-    const double r = nl.distance(p);
-    if (r <= 0.0) {
-      continue;
-    }
-    // vesin: r_j - r_i; Morse force used r_i - r_j
-    const double *v = nl.vector(p);
-    const double dx = -v[0];
-    const double dy = -v[1];
-    const double dz = -v[2];
-
+  nl.forEach(R, [&](int32_t i, int32_t j, double dx, double dy, double dz,
+                    double r2) {
+    const double r = std::sqrt(r2);
     const double d = 1.0 - std::exp(-a * (r - re));
     const double energy = De * d * d - De;
     const double fmag = twoDeA * d * (d - 1.0);
@@ -93,7 +77,7 @@ void Morse::force(long N, const double *R, const int * /*atomicNrs*/, double *F,
     F[3 * j] -= fx;
     F[3 * j + 1] -= fy;
     F[3 * j + 2] -= fz;
-  }
+  });
   *U = energyAcc;
 }
 

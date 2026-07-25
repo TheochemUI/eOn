@@ -95,4 +95,106 @@ VesinNeighborList *VesinNeighbors::release() {
   return heap;
 }
 
+bool CachedPairList::valid(const double *R, std::size_t n, const double *box,
+                           const Options &opt) const {
+  if (!built_ || n != n_ || !(opt == opt_)) {
+    return false;
+  }
+  // Any box change invalidates the precomputed shift offsets.
+  for (int k = 0; k < 9; ++k) {
+    if (box[k] != boxref_[k]) {
+      return false;
+    }
+  }
+  // Verlet criterion: every atom within skin/2 of its build position. Early
+  // exit on the first violator (a different NEB image rejects on atom ~1).
+  const double thr2 = 0.25 * opt_.skin * opt_.skin;
+  const double *ref = Rref_.data();
+  for (std::size_t a = 0; a < n; ++a) {
+    const double dx = R[3 * a] - ref[3 * a];
+    const double dy = R[3 * a + 1] - ref[3 * a + 1];
+    const double dz = R[3 * a + 2] - ref[3 * a + 2];
+    if (dx * dx + dy * dy + dz * dz > thr2) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void CachedPairList::rebuild(VesinNeighbors &scratch, const double *R,
+                             std::size_t n, const double *box,
+                             const Options &opt) {
+  VesinNeighbors::Options vopt;
+  vopt.cutoff = opt.cutoff + opt.skin;
+  vopt.full = false;
+  vopt.sorted = true; // index-sorted pairs: better locality in forEach
+  vopt.return_shifts = true;
+  vopt.return_distances = false;
+  vopt.return_vectors = false;
+  vopt.periodic = opt.periodic;
+  scratch.compute(R, n, box, vopt);
+
+  const VesinNeighborList &vl = scratch.raw();
+  plain_.clear();
+  shifted_.clear();
+  plain_.reserve(vl.length);
+  for (std::size_t p = 0; p < vl.length; ++p) {
+    const auto i = static_cast<int32_t>(vl.pairs[p][0]);
+    const auto j = static_cast<int32_t>(vl.pairs[p][1]);
+    const int32_t sa = vl.shifts[p][0];
+    const int32_t sb = vl.shifts[p][1];
+    const int32_t sc = vl.shifts[p][2];
+    if (sa == 0 && sb == 0 && sc == 0) {
+      if (i != j) { // self pairs only arise as periodic images (shifted)
+        plain_.push_back({i, j});
+      }
+    } else {
+      // Offset S @ H with row-major cell rows a,b,c.
+      const double ox = sa * box[0] + sb * box[3] + sc * box[6];
+      const double oy = sa * box[1] + sb * box[4] + sc * box[7];
+      const double oz = sa * box[2] + sb * box[5] + sc * box[8];
+      shifted_.push_back({i, j, ox, oy, oz});
+    }
+  }
+
+  Rref_.assign(R, R + 3 * n);
+  for (int k = 0; k < 9; ++k) {
+    boxref_[k] = box[k];
+  }
+  opt_ = opt;
+  n_ = n;
+  built_ = true;
+}
+
+const CachedPairList &PairListCache::ensure(const double *R, std::size_t n,
+                                            const double *box,
+                                            const CachedPairList::Options &opt) {
+  for (std::size_t s = 0; s < slots_.size(); ++s) {
+    if (slots_[s]->valid(R, n, box, opt)) {
+      if (s != 0) {
+        auto slot = std::move(slots_[s]);
+        slots_.erase(slots_.begin() + static_cast<std::ptrdiff_t>(s));
+        slots_.insert(slots_.begin(), std::move(slot));
+      }
+      return *slots_.front();
+    }
+  }
+
+  std::unique_ptr<CachedPairList> slot;
+  if (slots_.size() < kMaxSlots) {
+    slot = std::make_unique<CachedPairList>();
+  } else {
+    slot = std::move(slots_.back()); // recycle LRU (keeps its allocations)
+    slots_.pop_back();
+  }
+  slot->rebuild(scratch_, R, n, box, opt);
+  slots_.insert(slots_.begin(), std::move(slot));
+  return *slots_.front();
+}
+
+PairListCache &PairListCache::local() {
+  thread_local PairListCache cache;
+  return cache;
+}
+
 } // namespace eonc
