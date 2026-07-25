@@ -11,7 +11,6 @@
 */
 
 #include "eon/potentials/LJCluster/LJCluster.h"
-#include "eon/VesinNeighbors.h"
 #include <cmath>
 
 void LJCluster::cleanMemory(void) { return; }
@@ -42,7 +41,6 @@ void LJCluster::force(long N, const double *R, const int * /*atomicNrs*/,
 
   // Cluster: free boundary (no PBC). Large cutoff if cuttOffR unused
   // historically.
-  eonc::VesinNeighbors nl;
   eonc::VesinNeighbors::Options opt;
   opt.cutoff = (cuttOffR > 0.0) ? cuttOffR : 1.0e6;
   opt.full = false;
@@ -52,19 +50,19 @@ void LJCluster::force(long N, const double *R, const int * /*atomicNrs*/,
   // Dummy orthorhombic box (ignored when non-periodic)
   double free_box[9] = {1e6, 0, 0, 0, 1e6, 0, 0, 0, 1e6};
   const double *box_use = (box != nullptr) ? box : free_box;
-  nl.compute(R, static_cast<std::size_t>(N), box_use, opt);
+  nl_.compute(R, static_cast<std::size_t>(N), box_use, opt);
 
-  for (std::size_t p = 0; p < nl.size(); ++p) {
-    const int i = static_cast<int>(nl.i(p));
-    const int j = static_cast<int>(nl.j(p));
+  for (std::size_t p = 0; p < nl_.size(); ++p) {
+    const int i = static_cast<int>(nl_.i(p));
+    const int j = static_cast<int>(nl_.j(p));
     if (i == j) {
       continue;
     }
-    const double diffR = nl.distance(p);
+    const double diffR = nl_.distance(p);
     if (diffR <= 0.0) {
       continue;
     }
-    const double *v = nl.vector(p); // r_j - r_i
+    const double *v = nl_.vector(p); // r_j - r_i
     const double diffRX = -v[0];
     const double diffRY = -v[1];
     const double diffRZ = -v[2];

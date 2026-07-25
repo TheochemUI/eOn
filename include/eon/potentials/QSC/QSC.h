@@ -16,14 +16,15 @@
 #ifndef QSC_STANDALONE
 #include "eon/Potential.h"
 #endif
+#include "eon/VesinNeighbors.h"
 
 /// Quantum Sutton-Chen (QSC) potential -- EAM-type with:
 ///   F_i(rho_i) = c * sqrt(rho_i)
 ///   rho_i = sum_(j!=i) (a/r_ij)^m
 ///   V(r_ij) = (a/r_ij)^n
 ///
-/// Neighbor pairs come from vesin (``eonc::VesinNeighbors``), not a pot-local
-/// Verlet list.
+/// Neighbor pairs come from a long-lived ``eonc::VesinNeighbors`` member so
+/// vesin re-uses pair buffers across force evaluations.
 class QSC
 #ifndef QSC_STANDALONE
     : public Potential
@@ -42,14 +43,14 @@ public:
 
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
-  /// Kept for API compatibility; vesin rebuilds every force call.
+  /// API compatibility; vesin does not use a Verlet skin.
   void set_verlet_skin(double dr);
   void set_cutoff(double c);
   [[nodiscard]] double get_cutoff() const;
   void set_qsc_parameter(int Z, double n, double m, double epsilon, double c,
                          double a);
 
-  /// Historical counter (always 0 with vesin path; no separate list rebuild).
+  /// Number of vesin rebuilds (one per force with energy+force vectors).
   long vlist_updates{0};
 
 private:
@@ -66,9 +67,10 @@ private:
 
   std::vector<double> rho_;     // [N]
   std::vector<double> sqrtrho_; // [N]
+  eonc::VesinNeighbors nl_;
 
-  void energy(long N, const double *R, const int *atomicNrs, double *U,
-              const double *box);
+  /// Energy from the current ``nl_`` (caller must have computed it).
+  void energy_from_nl(long N, const int *atomicNrs, double *U);
 
   static const qsc_parameters qsc_default_params[];
   std::vector<qsc_parameters> qsc_params_;

@@ -35,14 +35,20 @@ nl = neighbor_list(structure, cutoff=4.0)
 
 ```cpp
 #include "eon/VesinNeighbors.h"
+// Keep one instance for the lifetime of the pot / job:
 eonc::VesinNeighbors nl;
 eonc::VesinNeighbors::Options opt{.cutoff = 5.0, .full = false,
                                   .return_distances = true, .return_vectors = true};
+// Re-use the same nl across force evaluations — vesin keeps pair buffers.
 nl.compute(R, nAtoms, box9, opt);
 ```
 
 Vector convention matches vesin: **`r_ij = r_j − r_i + S·H`**.
 `eoncbase` always links vesin (pkg-config / system / vendored).
+
+**Do not** call `vesin_free` (or destroy a stack-local list) before every
+`compute`. Upstream documents that the same `VesinNeighborList` should be
+re-used across calls so allocations are recycled; free only when finished.
 
 ## How we measure (ASV, not one-off scripts)
 

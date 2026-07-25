@@ -44,6 +44,10 @@ public:
 
   /// Build / rebuild the list. ``R`` is length ``3*n`` (x,y,z interleaved);
   /// ``box`` is length 9 (row-major cell vectors).
+  ///
+  /// Keep the same ``VesinNeighbors`` instance across force evaluations so
+  /// vesin can re-use pair/distance/vector allocations (see ``vesin_neighbors``
+  /// docs). Freeing before every ``compute`` is incorrect and expensive.
   void compute(const double *R, std::size_t n, const double *box,
                const Options &opt);
 

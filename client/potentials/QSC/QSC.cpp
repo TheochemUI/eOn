@@ -14,10 +14,10 @@
 /// @brief Quantum Sutton-Chen potential implementation.
 ///
 /// EAM-type potential with density = (a/r)^m, pair = (a/r)^n,
-/// embedding = c * epsilon * sqrt(rho). Neighbor pairs via vesin.
+/// embedding = c * epsilon * sqrt(rho). Neighbor pairs via a long-lived
+/// eonc::VesinNeighbors member (allocation reuse across force calls).
 
 #include "eon/potentials/QSC/QSC.h"
-#include "eon/VesinNeighbors.h"
 #include "eon/potentials/QSC/Parameters.h"
 
 #include <cassert>
@@ -25,33 +25,24 @@
 #include <cstdio>
 #include <vector>
 
-void QSC::energy(long N, const double *R, const int *atomicNrs, double *U,
-                 const double *box) {
+void QSC::energy_from_nl(long N, const int *atomicNrs, double *U) {
   *U = 0.0;
   rho_.assign(static_cast<std::size_t>(N), 0.0);
   sqrtrho_.assign(static_cast<std::size_t>(N), 0.0);
-  if (N < 2 || cutoff_ <= 0.0) {
+  if (N < 2 || nl_.size() == 0) {
     return;
   }
-
-  eonc::VesinNeighbors nl;
-  eonc::VesinNeighbors::Options opt;
-  opt.cutoff = cutoff_;
-  opt.full = false;
-  opt.return_distances = true;
-  opt.return_vectors = false;
-  nl.compute(R, static_cast<std::size_t>(N), box, opt);
 
   // Half list: accumulate pair V and both density contributions per pair.
   std::vector<double> pair_term(static_cast<std::size_t>(N), 0.0);
 
-  for (std::size_t p = 0; p < nl.size(); ++p) {
-    const long i = static_cast<long>(nl.i(p));
-    const long j = static_cast<long>(nl.j(p));
+  for (std::size_t p = 0; p < nl_.size(); ++p) {
+    const long i = static_cast<long>(nl_.i(p));
+    const long j = static_cast<long>(nl_.j(p));
     if (i == j) {
       continue;
     }
-    const double r_ij = nl.distance(p);
+    const double r_ij = nl_.distance(p);
     if (r_ij <= 0.0 || r_ij > cutoff_) {
       continue;
     }
@@ -83,30 +74,32 @@ void QSC::energy(long N, const double *R, const int *atomicNrs, double *U,
 void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
                 double *U, double *variance, const double *box) {
   variance = nullptr;
-  energy(N, R, atomicNrs, U, box);
-
   for (long i = 0; i < 3 * N; i++) {
     F[i] = 0.0;
   }
+  *U = 0.0;
   if (N < 2 || cutoff_ <= 0.0) {
     return;
   }
 
-  eonc::VesinNeighbors nl;
+  // One vesin rebuild with distances+vectors for energy and force.
   eonc::VesinNeighbors::Options opt;
   opt.cutoff = cutoff_;
   opt.full = false;
   opt.return_distances = true;
   opt.return_vectors = true;
-  nl.compute(R, static_cast<std::size_t>(N), box, opt);
+  nl_.compute(R, static_cast<std::size_t>(N), box, opt);
+  ++vlist_updates;
 
-  for (std::size_t p = 0; p < nl.size(); ++p) {
-    const long i = static_cast<long>(nl.i(p));
-    const long j = static_cast<long>(nl.j(p));
+  energy_from_nl(N, atomicNrs, U);
+
+  for (std::size_t p = 0; p < nl_.size(); ++p) {
+    const long i = static_cast<long>(nl_.i(p));
+    const long j = static_cast<long>(nl_.j(p));
     if (i == j) {
       continue;
     }
-    const double r_ij = nl.distance(p);
+    const double r_ij = nl_.distance(p);
     if (r_ij <= 0.0 || r_ij > cutoff_) {
       continue;
     }
@@ -128,7 +121,7 @@ void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
     Fij /= r_ij;
 
     // Historical distance used d = r_i - r_j; vesin vector is r_j - r_i.
-    const double *v = nl.vector(p);
+    const double *v = nl_.vector(p);
     const double fscale = Fij / r_ij;
     const double fx = fscale * (-v[0]);
     const double fy = fscale * (-v[1]);
@@ -165,7 +158,7 @@ double QSC::pair_potential(double r, double a, double n) {
 
 void QSC::set_verlet_skin(double dr) {
   assert(dr > 0.0);
-  (void)dr; // vesin rebuilds every force; skin unused
+  (void)dr; // vesin has no Verlet skin; API kept for callers
 }
 
 void QSC::set_cutoff(double c) {

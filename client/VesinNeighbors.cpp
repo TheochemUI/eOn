@@ -49,9 +49,9 @@ void VesinNeighbors::compute(const double *R, std::size_t n, const double *box,
     return;
   }
 
-  // Re-use allocation: free then default-init for a clean rebuild.
-  free_list();
-
+  // Pass the existing VesinNeighborList through so vesin can re-use pair /
+  // distance / vector buffers (upstream contract). Do not vesin_free first —
+  // that forces a full realloc every call and is the #386 ASV regression.
   VesinOptions vopt{};
   vopt.cutoff = opt.cutoff;
   vopt.full = opt.full;
