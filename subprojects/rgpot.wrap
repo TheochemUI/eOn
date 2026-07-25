@@ -1,7 +1,9 @@
 [wrap-git]
 directory = rgpot
 url = https://github.com/OmniPotentRPC/rgpot.git
-# Pot-hosting infra + batch-1 kernels (Morse, LJCluster, ZBL). Retarget to
-# the v2.6.0 release tag when it exists; wrap pins track release tags.
-revision = d54f1886dfc3aecd57d0f325224071be1b239825
+# Pot-hosting infra, batch-1 kernels (Morse, LJCluster, ZBL), and the
+# Fortran 2018 kernels (SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2,
+# TIP4P-H). Retarget to the v2.6.0 release tag when it exists; wrap pins
+# track release tags.
+revision = 1690d425b94860126f55251058f5200aa8766f39
 depth = 1

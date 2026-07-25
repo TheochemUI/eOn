@@ -519,8 +519,9 @@ else
         # engines stay runtime dlopen; do not force fat metatomic/xtb link
         'with_xtb': false,
         'with_metatomic': false,
-        # eOn's Fortran pots stay in-tree until the Fortran migration phase
-        'with_fortran_pots': 'disabled',
+        # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H are
+        # Fortran kernels inside librgpot.
+        'with_fortran_pots': 'enabled',
     }
     if get_option('with_rgpot') or get_option('with_serve')
         rgpot_opts += {'with_rpc': true}
