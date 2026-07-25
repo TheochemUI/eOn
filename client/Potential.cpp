@@ -29,6 +29,7 @@
 #include "eon/potentials/EAM/EAM.h"
 #include "eon/potentials/EMT/EffectiveMediumTheory.h"
 #include "eon/potentials/ExtPot/ExtPot.h"
+#include "eon/potentials/PluginLoader.h"
 #include "eon/potentials/RgpotAdapter/RgpotAdapter.h"
 #include "rgpot/fortran/FortranPots.hpp"
 #include "rgpot/LennardJones/LJClusterPot.hpp"

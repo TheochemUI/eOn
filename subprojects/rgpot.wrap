@@ -5,5 +5,5 @@ url = https://github.com/OmniPotentRPC/rgpot.git
 # Fortran 2018 kernels (SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2,
 # TIP4P-H). Retarget to the v2.6.0 release tag when it exists; wrap pins
 # track release tags.
-revision = 1690d425b94860126f55251058f5200aa8766f39
+revision = 12b42976d6f82b2d717f056ce894a682dcedeb8b
 depth = 1
