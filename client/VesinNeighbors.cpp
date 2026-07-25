@@ -56,7 +56,7 @@ void VesinNeighbors::compute(const double *R, std::size_t n, const double *box,
   vopt.cutoff = opt.cutoff;
   vopt.full = opt.full;
   vopt.sorted = opt.sorted;
-  vopt.algorithm = VesinAutoAlgorithm;
+  vopt.algorithm = opt.algorithm;
   vopt.skin = opt.skin;
   vopt.n_threads = opt.n_threads;
   vopt.return_shifts = opt.return_shifts;
@@ -126,15 +126,41 @@ bool CachedPairList::valid(const double *R, std::size_t n, const double *box,
 
 void CachedPairList::rebuild(const double *R, std::size_t n, const double *box,
                              const Options &opt) {
+  // MIC mode: orthorhombic box with the true cutoff inside half the
+  // smallest periodic width. Brute-force nearest-image candidates at
+  // cutoff+skin form a valid superset (MIC distance is 1-Lipschitz in the
+  // displacements), and forEach re-folds per call, so image identity is
+  // resolved at evaluation time exactly like the historical MIC loops. The
+  // cell list degenerates to a couple of cells in this regime and costs
+  // ~20x more per build.
+  const bool orthorhombic = box[1] == 0.0 && box[2] == 0.0 &&
+                            box[3] == 0.0 && box[5] == 0.0 &&
+                            box[6] == 0.0 && box[7] == 0.0;
+  mic_ = orthorhombic && n <= 20000;
+  for (int k = 0; mic_ && k < 3; ++k) {
+    if (opt.periodic[static_cast<std::size_t>(k)] &&
+        opt.cutoff > 0.5 * box[4 * k]) {
+      mic_ = false;
+    }
+  }
+
   VesinNeighbors::Options vopt;
   vopt.cutoff = opt.cutoff + opt.skin;
   vopt.full = false;
   vopt.sorted = false; // vesin's permutation sort costs more than it saves
-  vopt.return_shifts = true;
+  vopt.algorithm = mic_ ? VesinBruteForce : VesinAutoAlgorithm;
+  vopt.return_shifts = !mic_; // MIC mode re-folds; shifts are dead weight
   vopt.return_distances = false;
   vopt.return_vectors = false;
   vopt.periodic = opt.periodic;
   nl_.compute(R, n, box, vopt);
+
+  for (int k = 0; k < 3; ++k) {
+    micInv_[static_cast<std::size_t>(k)] =
+        (mic_ && opt.periodic[static_cast<std::size_t>(k)])
+            ? 1.0 / box[4 * k]
+            : 0.0;
+  }
 
   Rref_.assign(R, R + 3 * n);
   for (int k = 0; k < 9; ++k) {

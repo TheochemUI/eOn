@@ -1,8 +1,11 @@
-# Fortran-only shared module: loaded at runtime via dlopen/LoadLibrary
+# Fortran-only shared module: loaded at runtime via dlopen/LoadLibrary.
+# Neighbour list built via the vendored vesin Fortran interface.
 eon_fehe = shared_module(
     'eon_fehe',
+           'vesin_fehe.f90',
            'feforce.f',
     fortran_args: _fargs,
+    dependencies: [vesin_f_dep],
     link_args: _fortran_pot_link_args
     + (
         is_windows ? [
@@ -19,12 +22,4 @@ eon_fehe = shared_module(
     install: true,
 )
 
-# C++ wrapper (compiled into client, loads Fortran lib at runtime)
-fehe_cpp = static_library(
-    'fehe_cpp',
-    'FeHe.cpp',
-    dependencies: _deps,
-    cpp_args: _args,
-    link_with: _linkto,
-    include_directories: _incdirs,
-)
+# FeHe.cpp (dlopen wrapper) is compiled into eonclib via eonclib_sources.

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <array>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -44,6 +45,8 @@ public:
     /// Threads for the vesin build; 1 keeps small builds deterministic and
     /// spawn-free, 0 defers to OMP_NUM_THREADS / core count.
     int32_t n_threads{1};
+    /// vesin pair-search algorithm (auto / brute-force MIC / cell list).
+    VesinAlgorithm algorithm{VesinAutoAlgorithm};
   };
 
   VesinNeighbors() = default;
@@ -134,9 +137,37 @@ public:
   /// positions. ``fn(i, j, dx, dy, dz, r2)`` receives the *historical* eOn
   /// convention ``d = r_i - r_j`` (minimum image / shift applied), i.e. the
   /// negated vesin vector.
+  ///
+  /// Two evaluation modes, chosen at rebuild:
+  /// - MIC (orthorhombic box, true cutoff <= half the smallest periodic
+  ///   width): vesin brute-force enumerates candidates and the fold happens
+  ///   here per call, so an image swap between rebuilds resolves exactly as
+  ///   the historical per-call MIC loops did.
+  /// - shift (everything else): cell-list pairs carry their build-time cell
+  ///   shift; every image is its own pair entry.
   template <typename Fn> void forEach(const double *R, Fn &&fn) const {
     const double cutoff2 = opt_.cutoff * opt_.cutoff;
     const VesinNeighborList &vl = nl_.raw();
+    if (mic_) {
+      const double w0 = boxref_[0], w1 = boxref_[4], w2 = boxref_[8];
+      const double i0 = micInv_[0], i1 = micInv_[1], i2 = micInv_[2];
+      for (std::size_t p = 0; p < vl.length; ++p) {
+        const auto i = static_cast<int32_t>(vl.pairs[p][0]);
+        const auto j = static_cast<int32_t>(vl.pairs[p][1]);
+        double dx = R[3 * i] - R[3 * j];
+        double dy = R[3 * i + 1] - R[3 * j + 1];
+        double dz = R[3 * i + 2] - R[3 * j + 2];
+        // Non-periodic dims store inv = 0: floor(0.5) == 0 disables the fold.
+        dx -= w0 * std::floor(dx * i0 + 0.5);
+        dy -= w1 * std::floor(dy * i1 + 0.5);
+        dz -= w2 * std::floor(dz * i2 + 0.5);
+        const double r2 = dx * dx + dy * dy + dz * dz;
+        if (r2 <= cutoff2) {
+          fn(i, j, dx, dy, dz, r2);
+        }
+      }
+      return;
+    }
     const double *H = boxref_.data();
     for (std::size_t p = 0; p < vl.length; ++p) {
       const auto i = static_cast<int32_t>(vl.pairs[p][0]);
@@ -167,8 +198,10 @@ private:
   VesinNeighbors nl_;
   std::vector<double> Rref_;
   std::array<double, 9> boxref_{};
+  std::array<double, 3> micInv_{}; ///< 1/width per periodic dim, else 0
   Options opt_{};
   std::size_t n_{0};
+  bool mic_{false};
   bool built_{false};
 };
 

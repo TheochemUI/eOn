@@ -10,40 +10,20 @@ C https://github.com/TheochemUI/eOn
 C
 !force
       subroutine FEFORCE(nm,x0,y0,z0,ispec,fx,fy,fz,pe,ax,ay,az)
+      use vesin_fehe, only: vesin_fehe_build, vnl_row, vnl_jlist
           implicit  real*8 ( a-h,o-z )
-          integer*4       tv0001
 c***************************************************
 c
-      parameter (nmat=3,nnbrs=800)
-c      parameter (nlcx=7,nlcy=7,nlcz=7)
-c      parameter (nlcx=5,nlcy=5,nlcz=5)
-      parameter (nlcx=3,nlcy=3,nlcz=3)
-c      parameter (nlcx=1,nlcy=1,nlcz=1)
-      parameter (nlc=nlcx*nlcy*nlcz)
 c  Ackland Many body potential for a-Fe ***********
-      integer*4 nix(27),niy(27),niz(27)
-c Data block
-      data nix  / 0,-1,-1,-1,0,0,-1,1,-1, 0, 1,-1,0,1,
-     > 1, 1, 1, 0, 0,-1, 1,-1, 0, 1,-1, 0, 1/
-      data niy  / 0, 0,-1, 1,1,0, 0,0,-1,-1,-1, 1,1,1,
-     > 1, 0,-1,-1, 0, 0, 0,-1,-1,-1, 1, 1, 1/
-      data niz  / 0, 0, 0, 0,0,1, 1,1, 1, 1, 1, 1,1,1,
-     > 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1/
 c
       dimension x0(nm),y0(nm),z0(nm),ispec(nm)
-      dimension afrho(nm),dafrho(nm),dafnbr(nnbrs),rho(nm),
-     >       drho(nnbrs)
-      dimension afrhos(nm),dafrhos(nm),dafnbrs(nnbrs),rhos(nm),
-     >      drhos(nnbrs)
-      dimension fx(nm),fy(nm),fz(nm),dfx(nnbrs),dfy(nnbrs),dfz(nnbrs)
-     > ,fb(nmat,nmat)
+      dimension dafrho(nm),dafrhos(nm)
+      dimension fx(nm),fy(nm),fz(nm)
       common/potcut/rcutp_fe,rcutr_fe,rcut_he,rcut_her
       common/pothe/zeta1,zeta2,zeta3,zeta4,v1c,b_he(3),a_he(6),
      >             xhep(11)
       common/sband/dNs,psi,pi
       dimension etom(nm),emedtom(nm),emedtoms(nm)
-      dimension ltop(nlc),jaddr(nnbrs),link(nm)
-      dimension xnbr(nnbrs),ynbr(nnbrs),znbr(nnbrs)
 c
 c     write(6,796)
 c 796 format(2x,'into force of Fe')
@@ -64,6 +44,11 @@ c      enddo
       rcutr_fe = 4.2d0
       rcut_he = 3.9028d0
       rcut_her = 4.10d0
+      rcut_hehe = 5.4d0
+
+c the candidate list carries every species pair, so it spans the widest
+c of the four Fe-Fe / Fe-He ranges and the He-He pair range.
+      rcutmax = max(rcutp_fe,rcutr_fe,rcut_he,rcut_her,rcut_hehe)
 
 C He-He pair potentials
       herm = 2.9683d0
@@ -123,129 +108,55 @@ c      write(*,*) 'pos after -0.5 .. 0.5: '
 c      do i = 1,nm
 c        write(*,*) i,x0(i),y0(i),z0(i)
 c      enddo
-      call linvlc(nm,x0,y0,z0,ax,ay,az,ltop,link)
 c
+c vesin enumerates the candidate pairs (j > i) within rcutmax. The
+c atoms sit in -0.5*ax .. 0.5*ax after the fold above, so the
+c single-shot minimum image test in rhovlc and in the force loop below
+c reaches the nearest image of every candidate.
 c
-      call rhovlc(nm,x0,y0,z0,ispec,ax,ay,az,ltop,link,
+      call vesin_fehe_build(nm,x0,y0,z0,ax,ay,az,rcutmax,iverr)
+      if (iverr .ne. 0) then
+        write(6,*) 'feforce: vesin neighbour list build failed'
+        stop
+      endif
+c
+      call rhovlc(nm,x0,y0,z0,ispec,ax,ay,az,
      >            dafrho,dafrhos,emedtom,emedtoms)
 c
 c
-c modifications for the vectorised link cell method follow.
+c half of the box in each direction, for the minimum image test
 c
-      ix = 1
-      iy = 1
-      iz = 1
-      s = 1.0d0
+      axhalf = 0.5d0*ax
+      ayhalf = 0.5d0*ay
+      azhalf = 0.5d0*az
 c
-c primary loop over link cells
+c now do the particle-particle interactions, one row of the candidate
+c list per atom
 c
-      do 600 ic = 1,nlc
-      i = ltop(ic)
+      do 6001 ina = 1,nm
+      rxi = x0(ina)
+      ryi = y0(ina)
+      rzi = z0(ina)
+      dafim = dafrho(ina)
+      dafims = dafrhos(ina)
+      ssumx = 0.0d0
+      ssumy = 0.0d0
+      ssumz = 0.0d0
 c
-c bypass this cell if it is empty
-c the goto 599 corrects a bug in the original heyes-smith formulation.
-c the latter would have goto 600 thereby missing out the ix,iy,iz update
+      do 6002 k = vnl_row(ina),vnl_row(ina+1)-1
+      jna = vnl_jlist(k)
+      dx=rxi-x0(jna)
+      dy=ryi-y0(jna)
+      dz=rzi-z0(jna)
 c
-      if (i.eq.0) goto 599
-      m = 0
-99    m = m+1
-c ******* jmh dec 88 : this statement moved from later ****************
-c ******* point in routine - from alan foreman at harwell *************
-      if (m.gt.nnbrs) goto 999
-c *************** jmh dec 88 : end ************************************
-      jaddr(m) = i
-      xnbr(m) = x0(i)
-      ynbr(m) = y0(i)
-      znbr(m) = z0(i)
-      dafnbr(m) = dafrho(i)
-      dafnbrs(m) = dafrhos(i)
-      i = link(i)
-      if (i.gt.0) goto 99
-      mstart = m
+c minimum image convention, rectangular cell
 c
-c secondary loop over neighbouring cells
-c
-      do 4001 kc = 2,14
-      sx = 0.0d0
-      sy = 0.0d0
-      sz = 0.0d0
-      jx = ix + nix(kc)
-      jy = iy + niy(kc)
-      jz = iz + niz(kc)
-c
-c minimum image conversion
-c
-      if ((ix.eq.nlcx).and.(jx.gt.ix)) then
-      jx = 1
-      sx = s
-      elseif ((ix.eq.1).and.(jx.lt.ix)) then
-      jx = nlcx
-      sx = -s
-      endif
-      if ((iy.eq.nlcy).and.(jy.gt.iy)) then
-      jy = 1
-      sy = s
-      elseif ((iy.eq.1).and.(jy.lt.iy)) then
-      jy = nlcy
-      sy = -s
-      endif
-      if ((iz.eq.nlcz).and.(jz.gt.iz)) then
-      jz = 1
-      sz = s
-      elseif ((iz.eq.1).and.(jz.lt.iz)) then
-      jz = nlcz
-      sz = -s
-      endif
-c
-c index of neighbouring cell
-c
-      jc = jx + nlcx*( (jy-1) + nlcy*(jz-1) )
-      j  = ltop(jc)
-c
-c bypass this neighbouring cell if it is empty
-c
-      if (j.eq.0) goto 4001
-199   m = m+1
-c ******* jmh dec 88 : this statement moved from later ****************
-c ******* point in routine - from alan foreman at harwell *************
-      if (m.gt.nnbrs) goto 999
-c *************** jmh dec 88 : end ************************************
-      jaddr(m) = j
-      dafnbr(m) = dafrho(j)
-      dafnbrs(m) = dafrhos(j)
-      xnbr(m) = x0(j) + sx*ax
-      ynbr(m) = y0(j) + sy*ay
-      znbr(m) = z0(j) + sz*az
-      j = link(j)
-      if (j.gt.0) goto 199
-4001  continue
-c
-c we have now found all the neighbouring particles of cell ic.
-c
-      max = m
-c
-      tv0001  = mstart
-      if (max.eq.mstart) tv0001  = mstart-1
-      if (tv0001 .le.0) goto 599
-c
-c now do the particle-particle interactions
-c
-      do 6001 im = 1,tv0001
-      ina= jaddr(im)
-      rxi = xnbr(im)
-      ryi = ynbr(im)
-      rzi = znbr(im)
-      dafim = dafnbr(im)
-      dafims = dafnbrs(im)
-      mm  = 0
-c do the inner vectorised loop
-c
-      do 6002 m = im+1,max
-      jna=jaddr(m)
-      mm = mm+1
-      dx=rxi-xnbr(m)
-      dy=ryi-ynbr(m)
-      dz=rzi-znbr(m)
+      if (dx .gt. axhalf) dx = dx - ax
+      if (dx .lt.-axhalf) dx = dx + ax
+      if (dy .gt. ayhalf) dy = dy - ay
+      if (dy .lt.-ayhalf) dy = dy + ay
+      if (dz .gt. azhalf) dz = dz - az
+      if (dz .lt.-azhalf) dz = dz + az
 C change rijx... into Amgstron *************
       rxij=dx
       ryij=dy
@@ -350,7 +261,7 @@ C Pair potential of He-Fe interaction
  7766  continue
 C - He-He interaction
        ELSEIF(ipick1.EQ.3) THEN
-        if(r.gt.5.4d0) go to 7666 ! need to check
+        if(r.gt.rcut_hehe) go to 7666 ! need to check
          xrm=r/herm
          sumc=c6/xrm**6.0+c8/xrm**8.0+c10/xrm**10.0
          term=heaa*exp(-hea*xrm+heb*xrm*xrm)
@@ -394,61 +305,28 @@ c*******************many body part***************
         fcp = -psum/r
         fcps = -psums/r
 
-       fcp = fcp * ( dafim + dafnbr(m))
-       fcps = fcps * ( dafims +  dafnbrs(m))
+       fcp = fcp * ( dafim + dafrho(jna))
+       fcps = fcps * ( dafims +  dafrhos(jna))
 c
 c fp is (1/r)*(force on atom i from atom j)
 c
       fp = fpp + fcp + fcps
-      dfx(mm) = -dx*fp
-      dfy(mm) = -dy*fp
-      dfz(mm) = -dz*fp
+      dfxk = -dx*fp
+      dfyk = -dy*fp
+      dfzk = -dz*fp
+      ssumx = ssumx + dfxk
+      ssumy = ssumy + dfyk
+      ssumz = ssumz + dfzk
+      fx(jna) = fx(jna) + dfxk
+      fy(jna) = fy(jna) + dfyk
+      fz(jna) = fz(jna) + dfzk
 6002  continue
 c
-      mmax = mm
-c
-c**************** jmh nov '88 - begin *************************
-c******* replace cray intrinsic function ssum by : ************
-          ssumx = 0.d0
-          ssumy = 0.d0
-          ssumz = 0.d0
-          do 99000 is = 1,mmax
-          ssumx = ssumx + dfx(is)
-          ssumy = ssumy + dfy(is)
-          ssumz = ssumz + dfz(is)
-99000     continue
-      i = jaddr(im)
-c******* cray function ssum replaced in statements below : ****
-      fx(i) = fx(i) - ssumx
-      fy(i) = fy(i) - ssumy
-      fz(i) = fz(i) - ssumz
-c****************** jmh nov '88 - end *************************
-c
-c this loopis now vectorised.
-c
-*vocl loop,novrec
-      do 3422 kk=1,mmax
-      j = jaddr(im+kk)
-      fx(j) = fx(j) + dfx(kk)
-      fy(j) = fy(j) + dfy(kk)
-      fz(j) = fz(j) + dfz(kk)
-3422  continue
+      fx(ina) = fx(ina) - ssumx
+      fy(ina) = fy(ina) - ssumy
+      fz(ina) = fz(ina) - ssumz
 c
 6001  continue
-c
-c primary cell index update
-c
-599   continue
-      ix = ix+1
-      if (ix.gt.nlcx) then
-      ix = 1
-      iy = iy+1
-      if (iy.gt.nlcy) then
-      iy = 1
-      iz = iz+1
-      endif
-      endif
-600   continue
 
       do kl = 1, nm
          pe=pe+etom(kl)+emedtom(kl)+emedtoms(kl)
@@ -460,94 +338,22 @@ c        write(*,*) i,fx(i),fy(i),fz(i)
 c      enddo
 
       return
-999   write(idout,1004) m,nnbrs
-1004  format(' sorry user, the run is stopping now in "kravlc"',/,
-     >       ' because m=',i10,' which is greater than nnbrs=',i5,'.')
-      stop
       end
 c
-      subroutine linvlc(nm,x0,y0,z0,ax,ay,az,ltop,link)
-          implicit  real*8 ( a-h,o-z )
-c     *****************
-c
-c sets up the link cell map
-c
-c      parameter (nlcx=7,nlcy=7,nlcz=7)
-c      parameter (nlcx=5,nlcy=5,nlcz=5)
-      parameter (nlcx=3,nlcy=3,nlcz=3)
-c      parameter (nlcx=1,nlcy=1,nlcz=1)
-      parameter (nlc=nlcx*nlcy*nlcz)
-      parameter (hmeps=0.5d0-1d-9)
-      dimension x0(nm),y0(nm),z0(nm)
-      dimension ltop(nlc),link(nm)
-c     write(6,300)
-c300  format( '    enter subroutine linvlc to form linkage map')
-      fnlcx = dfloat(nlcx)
-      fnlcy = dfloat(nlcy)
-      fnlcz = dfloat(nlcz)
-      do 100 i=1,nlc
-      ltop(i)=0
-100   continue
-c
-c determine in which link cell atom i is situated.
-c the parameter 0.5-epsilon is used instead of 0.5 (which was in the
-c original program) for the assignment to link cells in case the int
-c function operates on an atom exactly at the box boundary, when in
-c the original version it would return an integer one greater than
-c the correct one.
-c
-c      write(*,*) 'link cells:'
-      do 110 i=1,nm
-      xx0 = x0(i)/ax
-      yy0 = y0(i)/ay
-      zz0 = z0(i)/az
-      ix = int( (xx0+hmeps)*fnlcx     ) + 1
-      iy = int( (yy0+hmeps)*fnlcy     )
-      iz = int( (zz0+hmeps)*fnlcz     )
-c      write(*,*) i,':',ix,iy,iz
-      ip = ix + nlcx*iy + nlcx*nlcy*iz
-c
-c assign atom i to link cell ip
-c
-      j = ltop(ip)
-      ltop(ip) = i
-      link(i) = j
-110   continue
-      return
-      end
-c
-      subroutine rhovlc(nm,x0,y0,z0,ispec,ax,ay,az,ltop,link,
+      subroutine rhovlc(nm,x0,y0,z0,ispec,ax,ay,az,
      >                  dafrho,dafrhos,emedtom,emedtoms)
+      use vesin_fehe, only: vnl_row, vnl_jlist
           implicit  real*8 ( a-h,o-z )
-          integer*4       tv0001
 c     *****************
-      parameter (nmat=3,nnbrs=800)
-c      parameter (nlcx=7,nlcy=7,nlcz=7)
-c      parameter (nlcx=5,nlcy=5,nlcz=5)
-      parameter (nlcx=3,nlcy=3,nlcz=3)
-c      parameter (nlcx=1,nlcy=1,nlcz=1)
-      parameter (nlc=nlcx*nlcy*nlcz)
-      integer*4 nix(27),niy(27),niz(27)
-cdata block
-      data nix  / 0,-1,-1,-1,0,0,-1,1,-1, 0, 1,-1,0,1,
-     > 1, 1, 1, 0, 0,-1, 1,-1, 0, 1,-1, 0, 1/
-      data niy  / 0, 0,-1, 1,1,0, 0,0,-1,-1,-1, 1,1,1,
-     > 1, 0,-1,-1, 0, 0, 0,-1,-1,-1, 1, 1, 1/
-      data niz  / 0, 0, 0, 0,0,1, 1,1, 1, 1, 1, 1,1,1,
-     > 0, 0, 0, 0,-1,-1,-1,-1,-1,-1,-1,-1,-1/
 c
       dimension x0(nm),y0(nm),z0(nm),ispec(nm)
-      dimension afrho(nm),dafrho(nm),dafnbr(nnbrs),rho(nm),
-     >             drho(nnbrs)
-      dimension afrhos(nm),dafrhos(nm),dafnbrs(nnbrs),rhos(nm),
-     >      drhos(nnbrs)
+      dimension afrho(nm),dafrho(nm),rho(nm)
+      dimension afrhos(nm),dafrhos(nm),rhos(nm)
       common/potcut/rcutp_fe,rcutr_fe,rcut_he,rcut_her
       common/pothe/zeta1,zeta2,zeta3,zeta4,v1c,b_he(3),a_he(6),
      >             xhep(11)
       common/sband/dNs,psi,pi
       dimension emedtom(nm),emedtoms(nm)
-      dimension ltop(nlc),jaddr(nnbrs),link(nm)
-      dimension xnbr(nnbrs),ynbr(nnbrs),znbr(nnbrs)
 **************************************** afc nov 91 end *************
       point5 = 0.5d0
       ab2 = a/2.0d0
@@ -561,118 +367,36 @@ c
        dafrho(i) = 0.0d0
       enddo
 c
-c modifications for the vectorised link cell method follow.
-      ix = 1
-      iy = 1
-      iz = 1
-      s  = 1.0d0
+c half of the box in each direction, for the minimum image test
 c
-c primary loop over link cells
+      axhalf = 0.5d0*ax
+      ayhalf = 0.5d0*ay
+      azhalf = 0.5d0*az
 c
-      do 600 ic = 1,nlc
-      i = ltop(ic)
+c now do the particle-particle interactions, one row of the candidate
+c list per atom. FEFORCE has already built the list.
 c
-c bypass this cell if it is empty
+      do 6001 ina = 1,nm
+      rxi = x0(ina)
+      ryi = y0(ina)
+      rzi = z0(ina)
+      ssumr = 0.0d0
+      ssumrs = 0.0d0
 c
-      if (i.eq.0) goto 599
-      m = 0
-99    m = m+1
-c ******* jmh dec 88 : this statement moved from later ****************
-c ******* point in routine - from alan foreman at harwell *************
-cRES3  info from HFD via AFC at Liverpool                               RES3
-cRES3 if (max.gt.nnbrs) goto 999                                        RES3
-      if (m.gt.nnbrs) goto 999                                          RES3
-c *************** jmh dec 88 : end ************************************
-      jaddr(m) = i
-      xnbr(m) = x0(i)
-      ynbr(m) = y0(i)
-      znbr(m) = z0(i)
-      i = link(i)
-      if (i.gt.0) goto 99
-      mstart = m
+      do 6002 k = vnl_row(ina),vnl_row(ina+1)-1
+      jna = vnl_jlist(k)
+      dx=rxi-x0(jna)
+      dy=ryi-y0(jna)
+      dz=rzi-z0(jna)
 c
-c secondary loop over neighbouring cells
+c minimum image convention, rectangular cell
 c
-      do 4001 kc = 2,14
-      sx = 0.0d0
-      sy = 0.0d0
-      sz = 0.0d0
-      jx = ix + nix(kc)
-      jy = iy + niy(kc)
-      jz = iz + niz(kc)
-c
-c minimum image conversion
-c
-      if ((ix.eq.nlcx).and.(jx.gt.ix)) then
-      jx = 1
-      sx = s
-      elseif ((ix.eq.1).and.(jx.lt.ix)) then
-      jx = nlcx
-      sx = -s
-      endif
-      if ((iy.eq.nlcy).and.(jy.gt.iy)) then
-      jy = 1
-      sy = s
-      elseif ((iy.eq.1).and.(jy.lt.iy)) then
-      jy = nlcy
-      sy = -s
-      endif
-      if ((iz.eq.nlcz).and.(jz.gt.iz)) then
-      jz = 1
-      sz = s
-      elseif ((iz.eq.1).and.(jz.lt.iz)) then
-      jz = nlcz
-      sz = -s
-      endif
-c
-c index of neighbouring cell
-c
-      jc = jx + nlcx*( (jy-1) + nlcy*(jz-1) )
-      j  = ltop(jc)
-c
-c bypass this neighbouring cell if it is empty
-c
-      if (j.eq.0) goto 4001
-199   m = m+1
-c ******* jmh dec 88 : this statement moved from later ****************
-c ******* point in routine - from alan foreman at harwell *************
-      if (m.gt.nnbrs) goto 999                                          RES3
-c *************** jmh dec 88 : end ************************************
-      jaddr(m) = j
-      xnbr(m) = x0(j) + sx*ax
-      ynbr(m) = y0(j) + sy*ay
-      znbr(m) = z0(j) + sz*az
-      j = link(j)
-      if (j.gt.0) goto 199
-4001  continue
-c
-c we have now found all the neighbouring particles of cell ic.
-c
-      max = m
-c *** if (max.gt.nnbrs) goto 999 *** jmh dec 88 : too late! ***********
-c *** so moved to earlier points in routine - from alan ***************
-c *** foreman at harwell. jmh dec 88 : end **<<  SEE RES3  >>*********
-      tv0001  = mstart
-      if (max.eq.mstart) tv0001  = mstart-1
-      if (tv0001 .le.0) goto 599
-c
-c now do the particle-particle interactions
-c
-      do 6001 im = 1,tv0001
-      ina= jaddr(im)
-      rxi = xnbr(im)
-      ryi = ynbr(im)
-      rzi = znbr(im)
-      mm  = 0
-c
-c do the inner vectorised loop
-c
-      do 6002 m = im+1,max
-      jna=jaddr(m)
-      mm = mm+1
-      dx=rxi-xnbr(m)
-      dy=ryi-ynbr(m)
-      dz=rzi-znbr(m)
+      if (dx .gt. axhalf) dx = dx - ax
+      if (dx .lt.-axhalf) dx = dx + ax
+      if (dy .gt. ayhalf) dy = dy - ay
+      if (dy .lt.-ayhalf) dy = dy + ay
+      if (dz .gt. azhalf) dz = dz - az
+      if (dz .lt.-azhalf) dz = dz + az
 c convert to a
       rxij=dx
       ryij=dy
@@ -697,50 +421,20 @@ c********new subroutine to calculate phi******************sjw may 91**
  7780 continue
       endif
 
-      drho(mm) = phi
-      drhos(mm) = phis
+      ssumr = ssumr + phi
+      ssumrs = ssumrs + phis
+      rho(jna) = rho(jna) + phi
+      rhos(jna) = rhos(jna) + phis
 
 6002  continue
 c
-      mmax = mm
-c**************** jmh nov '88 - begin *************************
-c******* replace cray intrinsic function ssum by : ************
-          ssumr = 0.d0
-          ssumrs = 0.0d0
-          do 99002 is = 1,mmax
-          ssumr = ssumr + drho(is)
-          ssumrs = ssumrs + drhos(is)
-99002     continue
-      i = jaddr(im)
-c******* cray function ssum replaced in statement  below : ****
-      rho(i) = rho(i) + ssumr
-      rhos(i) = rhos(i) + ssumrs
-c****************** jmh nov '88 - end *************************
-
+c rows are walked in ascending order and every neighbour has jna > ina,
+c so every contribution to rho(ina) from an earlier row is already in.
 c
-c this loop is now vectorised! :
-*vocl loop,novrec
-      do 3422 kk=1,mmax
-      j = jaddr(im+kk)
-      rho(j) = rho(j) + drho(kk)
-      rhos(j) = rhos(j) + drhos(kk)
-3422  continue
+      rho(ina) = rho(ina) + ssumr
+      rhos(ina) = rhos(ina) + ssumrs
 c
 6001  continue
-c
-c primary cell index update
-c
-599   continue
-      ix = ix+1
-      if (ix.gt.nlcx) then
-      ix = 1
-      iy = iy+1
-      if (iy.gt.nlcy) then
-      iy = 1
-      iz = iz+1
-      endif
-      endif
-600   continue
 
       do 110 i=1,nm
        rhoin = rho(i)
@@ -765,12 +459,6 @@ c
 110   continue
 
       return
-999   write(6,1004) m,nnbrs                                             RES3
-1004  format(' sorry user, the run is stopping now in "rhovlc"',/,      RES3
-     >       ' because m=',i10,' which is greater than nnbrs=',i5,'.',  RES3
-     > /,' increase either nnbrs or nlcx in the parameter statements')  RES3
-      stop
-c ***************** jmh dec 88 : end ******************************
       end
 
 c=======================================================================

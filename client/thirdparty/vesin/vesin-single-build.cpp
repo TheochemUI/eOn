@@ -443,6 +443,21 @@ void cell_list_neighbors(
     size_t& capacity
 );
 
+// eOn local patch (upstream candidate): CPU implementation of
+// VesinBruteForce. O(n^2) minimum-image pair search — one image per pair.
+// Faster than the cell list when the cutoff is comparable to the box (the
+// cell grid degenerates to a couple of cells and re-enumerates every pair
+// per periodic shift) and for small systems. Requires every periodic box
+// width to be at least twice the cutoff.
+void brute_force_neighbors(
+    const Vector* points,
+    size_t n_points,
+    BoundingBox box,
+    VesinOptions options,
+    VesinNeighborList& neighbors,
+    size_t& capacity
+);
+
 void neighbors(
     const Vector* points,
     size_t n_points,
@@ -888,8 +903,10 @@ static ExtraDataCpu& extra_data(VesinNeighborList& neighbors) {
 }
 
 static void validate_algorithm(VesinOptions options) {
-    if (options.algorithm != VesinAutoAlgorithm && options.algorithm != VesinCellList) {
-        throw std::runtime_error("only VesinAutoAlgorithm and VesinCellList are supported on CPU");
+    if (options.algorithm != VesinAutoAlgorithm &&
+        options.algorithm != VesinCellList &&
+        options.algorithm != VesinBruteForce) {
+        throw std::runtime_error("unknown algorithm on CPU");
     }
 }
 
@@ -917,6 +934,92 @@ struct ThreadLocalNeighborLists {
 static ThreadPool& global_thread_pool() {
     static auto pool = ThreadPool();
     return pool;
+}
+
+void vesin::cpu::brute_force_neighbors(
+    const Vector* points,
+    size_t n_points,
+    BoundingBox box,
+    VesinOptions options,
+    VesinNeighborList& raw_neighbors,
+    size_t& capacity
+) {
+    // Exactly one pair per (i, j) — the nearest periodic image. Callers own
+    // minimum-image validity: with a periodic width between one and two
+    // cutoffs, second images inside the cutoff are NOT reported (use the
+    // cell list when all images matter).
+    auto widths = box.distances_between_faces();
+    for (size_t k = 0; k < 3; k++) {
+        if (box.periodic(k) && widths[k] < options.cutoff) {
+            throw std::runtime_error(
+                "brute force algorithm requires every periodic box width to "
+                "be at least the cutoff; use the cell list instead"
+            );
+        }
+    }
+
+    auto matrix = box.matrix();
+    auto inverse = matrix.inverse();
+    auto cutoff2 = options.cutoff * options.cutoff;
+    auto any_periodic = box.periodic(0) || box.periodic(1) || box.periodic(2);
+
+    auto initial_capacity = std::max(capacity, raw_neighbors.length);
+    auto neighbors = GrowableNeighborList{raw_neighbors, initial_capacity, options};
+    neighbors.reset();
+
+    auto emit = [&](size_t first, size_t second, CellShift shift, Vector vector, double distance2) {
+        auto index = neighbors.length();
+        neighbors.set_pair(index, first, second);
+        if (options.return_shifts) {
+            neighbors.set_shift(index, shift);
+        }
+        if (options.return_distances) {
+            neighbors.set_distance(index, std::sqrt(distance2));
+        }
+        if (options.return_vectors) {
+            neighbors.set_vector(index, vector);
+        }
+        neighbors.increment_length();
+    };
+
+    for (size_t i = 0; i < n_points; i++) {
+        for (size_t j = i + 1; j < n_points; j++) {
+            auto vector = points[j] - points[i];
+
+            auto shift = CellShift();
+            if (any_periodic) {
+                auto fractional = vector * inverse;
+                for (size_t k = 0; k < 3; k++) {
+                    if (box.periodic(k)) {
+                        shift[k] = static_cast<int32_t>(-std::floor(fractional[k] + 0.5));
+                    }
+                }
+                if (shift[0] != 0 || shift[1] != 0 || shift[2] != 0) {
+                    auto cartesian_shift = Vector{
+                        static_cast<double>(shift[0]),
+                        static_cast<double>(shift[1]),
+                        static_cast<double>(shift[2]),
+                    } * matrix;
+                    vector = vector + cartesian_shift;
+                }
+            }
+
+            auto distance2 = vector.dot(vector);
+            if (distance2 < cutoff2) {
+                emit(i, j, shift, vector, distance2);
+                if (options.full) {
+                    emit(j, i, CellShift{-shift[0], -shift[1], -shift[2]},
+                         -1.0 * vector, distance2);
+                }
+            }
+        }
+    }
+
+    if (options.sorted) {
+        neighbors.sort();
+    }
+
+    capacity = neighbors.capacity;
 }
 
 void vesin::cpu::cell_list_neighbors(
@@ -1098,7 +1201,11 @@ void vesin::cpu::neighbors(
         delete extra.verlet_state;
         extra.verlet_state = nullptr;
 
-        cell_list_neighbors(points, n_points, std::move(box), options, raw_neighbors, extra.capacity);
+        if (options.algorithm == VesinBruteForce) {
+            brute_force_neighbors(points, n_points, std::move(box), options, raw_neighbors, extra.capacity);
+        } else {
+            cell_list_neighbors(points, n_points, std::move(box), options, raw_neighbors, extra.capacity);
+        }
     }
 }
 

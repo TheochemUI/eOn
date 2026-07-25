@@ -12,7 +12,7 @@
 !   for EAM version E     Feb 1994
 !   Tersoff potential:   Sept 14. 1993   based on EAMd version
 !      two components
-!      No neighborlist, no FPI chains
+!      Neighbour list from vesin, no FPI chains
 
 !     SUBROUTINE TO COMPUTE FORCE, ENERGY AND VIRIAL FOR A GROUP OF
 !     ATOMS INTERACTING WITH ANOTHER GROUP OF ATOMS.
@@ -23,6 +23,8 @@
 
 !AA      SUBROUTINE tersoff(NATOM,RA,FA,UTOT,ax, ay, az, MAXCOO)
       SUBROUTINE tersoff(NATOM,RA,FA,UTOT,ax, ay, az)
+
+      use vesin, only: NeighborList
 
       implicit real*8 (a-h,o-z)
 
@@ -35,7 +37,13 @@
 
       real*8 lamdaij,lamda,muij,kaij,nei,np,mu
       DIMENSION PL(3),drij(3),drik(3),XYZ(3,NATOM),FRC(3,NATOM),    &
-     &          ftj(3,NATOM),ftk(3,NATOM),lid(NATOM)
+     &          ftj(3,NATOM),ftk(3,NATOM),lid(NATOM),box(3,3)
+
+!   Per-atom neighbour indices within Sij.  numnei(i) is the count for atom
+!   i and neilist(1:numnei(i),i) holds the neighbour atom indices, ascending.
+      integer, allocatable :: numnei(:), neilist(:,:)
+      type(NeighborList), save :: nl
+      logical, save :: nl_ready = .false.
 
 !   ---------------------------------------------------------------------
 !   Function definitions:
@@ -84,6 +92,58 @@
       enddo
       k=0
 
+!   vesin builds a full list at S.  Fcfn vanishes at and beyond S and every
+!   term in the loops below is gated on rij < Sij or rik < Sij, both measured
+!   from atom i, so this one list covers the pair loop and both k sweeps.
+      if (.not.nl_ready) then
+         nl = NeighborList(cutoff=S, full=.true., sorted=.true.)
+         nl_ready = .true.
+      endif
+
+      box = 0.0d0
+      box(1,1) = ax
+      box(2,2) = ay
+      box(3,3) = az
+
+      call nl%compute(XYZ, box, periodic=[.true.,.true.,.true.],    &
+     &                status=ivstat)
+      if (ivstat.ne.0) then
+         write(6,*) 'Tersoff: vesin neighbour build failed: ',nl%errmsg
+         stop 1
+      endif
+
+!   First pass bounds the per-atom count, second pass fills.  Entries that
+!   repeat for one (i,j) differ only by periodic shift and the loops below
+!   re-fold XYZ per component, so one entry per neighbour index is what they
+!   consume.  The insertion keeps each list ascending, which holds the
+!   summation order of zeta, ENG, fik and fjk to the atom-index order.
+      allocate(numnei(natom))
+      numnei = 0
+      do ip=1,int(nl%length)
+         iat = int(nl%pairs(1,ip)) + 1
+         if (iat.eq.int(nl%pairs(2,ip))+1) cycle
+         numnei(iat) = numnei(iat) + 1
+      enddo
+      allocate(neilist(max(1,maxval(numnei)),natom))
+
+      numnei = 0
+      pair_loop: do ip=1,int(nl%length)
+         iat = int(nl%pairs(1,ip)) + 1
+         jat = int(nl%pairs(2,ip)) + 1
+         if (iat.eq.jat) cycle ! periodic self-image; MIC consumers reject it
+         do iq=1,numnei(iat)
+            if (neilist(iq,iat).eq.jat) cycle pair_loop
+         enddo
+         iq = numnei(iat)
+         do while (iq.ge.1)
+            if (neilist(iq,iat).lt.jat) exit
+            neilist(iq+1,iat) = neilist(iq,iat)
+            iq = iq - 1
+         enddo
+         neilist(iq+1,iat) = jat
+         numnei(iat) = numnei(iat) + 1
+      enddo pair_loop
+
       do 99 i=1,natom
          do 99 l=1,3
             FRC(l,i)=0.0
@@ -97,7 +157,8 @@
          hi=h
          beta=bt
          nei=np
-         do 101 j=1,natom
+         do 101 jn=1,numnei(i)
+            j=neilist(jn,i)
             if(j.eq.i) goto 101
             Aij=a
             Bij=b
@@ -129,7 +190,8 @@
             endif
 
             zeta=0.0
-            do 102 k=1,natom
+            do 102 kn=1,numnei(i)
+               k=neilist(kn,i)
                lid(k)=0
                if(k.eq.i.or.k.eq.j) goto 102
                RLD=r
@@ -197,7 +259,8 @@
             do 105 l=1,3
                fik=0.0
                fjk=0.0
-               do 103 k=1,natom
+               do 103 kn=1,numnei(i)
+                  k=neilist(kn,i)
                   if (lid(k).eq.0) goto 103
 
                   fik=fik+ftj(l,k)+ftk(l,k)
@@ -234,6 +297,8 @@
          FA(3*(i-1)+2)=-FRC(2,i)
          FA(3*(i-1)+3)=-FRC(3,i)
       enddo
+
+      deallocate(numnei,neilist)
 
       return
       end

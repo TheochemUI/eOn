@@ -401,14 +401,17 @@ if not vesin_dep.found()
     if vesin_omp_dep.found()
         vesin_int_deps += vesin_omp_dep
     endif
-    vesin_int = library(
+    # Static: one fewer shared object to relocate at eonclient startup
+    # (the ASV point fixture is startup-dominated).
+    vesin_int = static_library(
         'vesin_internal',
         ['thirdparty/vesin/vesin-single-build.cpp'],
         dependencies: vesin_int_deps,
-        install: true,
+        pic: true,
     )
     vesin_dep = declare_dependency(
         link_with: vesin_int,
+        dependencies: vesin_int_deps,
         include_directories: include_directories('thirdparty/vesin'),
     )
     message('vesin: using vendored thirdparty/vesin')
