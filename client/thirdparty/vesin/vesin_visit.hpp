@@ -44,6 +44,12 @@ inline void brute_force_visit(
     Visitor&& visit
 ) {
     pairs.clear();
+    if (pairs.capacity() == 0) {
+        // First build: skip the push_back growth-realloc ladder. ~100
+        // neighbours per atom covers dense metallic cutoffs; denser systems
+        // grow once.
+        pairs.reserve(n * 200);
+    }
     const double w0 = w[0], w1 = w[1], w2 = w[2];
     const double i0 = inv[0], i1 = inv[1], i2 = inv[2];
     for (std::size_t i = 0; i < n; i++) {
