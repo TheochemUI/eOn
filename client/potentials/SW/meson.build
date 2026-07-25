@@ -1,8 +1,10 @@
-# Fortran-only shared module: loaded at runtime via dlopen/LoadLibrary
+# Fortran-only shared module: loaded at runtime via dlopen/LoadLibrary.
+# Neighbour list built via the vendored vesin Fortran interface.
 eon_sw = shared_module(
     'eon_sw',
            'SWFortran.f90',
     fortran_args: _fargs,
+    dependencies: [vesin_f_dep],
     link_args: _fortran_pot_link_args
     + (
         is_windows ? [
@@ -19,12 +21,4 @@ eon_sw = shared_module(
     install: true,
 )
 
-# C++ wrapper (compiled into client, loads Fortran lib at runtime)
-sw_cpp = static_library(
-    'sw_cpp',
-    'SW.cpp',
-    dependencies: _deps,
-    cpp_args: _args,
-    link_with: _linkto,
-    include_directories: _incdirs,
-)
+# SW.cpp (dlopen wrapper) is compiled into eonclib via eonclib_sources.

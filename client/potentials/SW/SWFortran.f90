@@ -346,6 +346,7 @@
 ! pos is in box units, from -0.5 to 0.5
 !
   SUBROUTINE neighbours(NATOMS,x,y,z,bx,by,bz,MAXNATOMS,MAXNEI,numnei,nei,RSKIN)
+    USE vesin, ONLY: NeighborList
     IMPLICIT NONE
 
     INTEGER,INTENT(IN) :: NATOMS,MAXNATOMS,MAXNEI
@@ -354,39 +355,57 @@
     INTEGER,INTENT(INOUT),DIMENSION(MAXNATOMS) :: numnei
     INTEGER,INTENT(INOUT),DIMENSION(MAXNATOMS,MAXNEI) :: nei
 
-    integer i, i_ind, j, j_ind
-    REAL(8) :: xi, yi, zi, xij, yij, zij, rij2
+    TYPE(NeighborList),SAVE :: nl
+    LOGICAL,SAVE :: nl_ready=.FALSE.
+    REAL(8),SAVE :: nl_rskin=-1.0d0
+    REAL(8),ALLOCATABLE :: points(:,:)
+    REAL(8),DIMENSION(3,3) :: box
+    INTEGER :: p, q, i, j, vstatus
 
-    numnei = 0  ! Vectorial assignment
-    DO i=1, NATOMS
-!      i_ind = type(i)
-      i_ind=1
-      xi = x(i)
-      yi = y(i)
-      zi = z(i)
+    ! vesin builds the full list at RSKIN; the caller's check_neigbours skin
+    ! test decides when this runs, and the pair loops re-derive MIC vectors
+    ! from current positions, so the sw/vesin split matches the historical
+    ! Verlet behaviour exactly.
+    IF (.NOT. nl_ready .OR. nl_rskin /= RSKIN) THEN
+      nl = NeighborList(cutoff=RSKIN, full=.TRUE., sorted=.TRUE.)
+      nl_ready = .TRUE.
+      nl_rskin = RSKIN
+    END IF
 
-      DO j=i+1, NATOMS
-!        j_ind = type(j)
-        j_ind=1
+    ALLOCATE(points(3,NATOMS))
+    points(1,:) = x(1:NATOMS)
+    points(2,:) = y(1:NATOMS)
+    points(3,:) = z(1:NATOMS)
+    box = 0.0d0
+    box(1,1) = bx
+    box(2,2) = by
+    box(3,3) = bz
 
-        xij=x(j)-xi
-        yij=y(j)-yi
-        zij=z(j)-zi
-        xij=xij-bx*ANINT(xij/bx)
-        yij=yij-by*ANINT(yij/by)
-        zij=zij-bz*ANINT(zij/bz)
+    CALL nl%compute(points, box, periodic=[.TRUE.,.TRUE.,.TRUE.], &
+                    status=vstatus)
+    IF (vstatus /= 0) THEN
+      WRITE(*,*) 'SW: vesin neighbour build failed: ', nl%errmsg
+      STOP 1
+    END IF
+    DEALLOCATE(points)
 
-        rij2 = xij*xij + yij*yij + zij*zij
-
- !       IF (rij2 < rcut2(i_ind,j_ind) ) THEN
-        IF (rij2 < RSKIN**2) THEN
-          numnei(i) = numnei(i) + 1
-          numnei(j) = numnei(j) + 1
-          nei(i,numnei(i)) = j
-          nei(j,numnei(j)) = i
-        ENDIF
+    numnei(1:NATOMS) = 0
+    pair_loop: DO p = 1, INT(nl%length)
+      i = INT(nl%pairs(1,p)) + 1
+      j = INT(nl%pairs(2,p)) + 1
+      IF (i == j) CYCLE ! periodic self-image; MIC consumers cannot use it
+      ! Repeated (i,j) entries only differ by shift; the pair loops apply MIC
+      ! so one entry per neighbour index suffices.
+      DO q = 1, numnei(i)
+        IF (nei(i,q) == j) CYCLE pair_loop
       END DO
-    END DO
+      IF (numnei(i) >= MAXNEI) THEN
+        WRITE(*,*) 'SW: more than MAXNEI neighbours within RSKIN for atom ', i
+        STOP 1
+      END IF
+      numnei(i) = numnei(i) + 1
+      nei(i,numnei(i)) = j
+    END DO pair_loop
 
   END SUBROUTINE neighbours
 
