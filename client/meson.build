@@ -405,6 +405,9 @@ if not vesin_dep.found()
         'vesin_internal',
         ['thirdparty/vesin/vesin-single-build.cpp'],
         dependencies: vesin_int_deps,
+        # Consumers link statically; hiding the symbols keeps them out of
+        # the enclosing shared objects' dynamic tables (startup relocations).
+        cpp_args: cppc.get_supported_arguments(['-fvisibility=hidden']),
         pic: true,
     )
     vesin_dep = declare_dependency(

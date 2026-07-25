@@ -18,8 +18,9 @@
 #include <string>
 #include <vector>
 
-// Vendored / system vesin C API
+// Vendored / system vesin C API + header-only fused visitation
 #include "vesin.h"
+#include "vesin_visit.hpp"
 
 namespace eonc {
 
@@ -64,13 +65,6 @@ public:
   /// docs). Freeing before every ``compute`` is incorrect and expensive.
   void compute(const double *R, std::size_t n, const double *box,
                const Options &opt);
-
-  /// Build the list and, in the same scan, invoke ``visitor`` for every
-  /// pair within ``visit_cutoff`` (brute-force CPU path only — throws on
-  /// failure like ``compute``). See ``vesin_neighbors_visit``.
-  void computeVisit(const double *R, std::size_t n, const double *box,
-                    const Options &opt, double visit_cutoff,
-                    VesinPairVisitor visitor, void *user_data);
 
   [[nodiscard]] std::size_t size() const { return list_.length; }
 
@@ -140,13 +134,35 @@ public:
   void rebuild(const double *R, std::size_t n, const double *box,
                const Options &opt);
 
-  /// Rebuild and, when the MIC/brute regime applies, evaluate the visitor
-  /// in the same pair scan (vector handed to ``visitor`` is the raw vesin
-  /// ``r_j - r_i``). Returns true when the visitation happened; false means
-  /// the caller must evaluate via ``forEach`` afterwards (cell-list regime).
-  bool rebuildVisit(const double *R, std::size_t n, const double *box,
-                    const Options &opt, VesinPairVisitor visitor,
-                    void *user_data);
+  /// Rebuild and, in the MIC regime, evaluate ``fn`` inline during the
+  /// same fused pair scan (vesin's header visitation, fully inlined — no
+  /// indirect call per pair). Returns true when the evaluation happened;
+  /// false means the caller must evaluate via ``forEach`` afterwards
+  /// (cell-list regime).
+  template <typename Fn>
+  bool rebuildFused(const double *R, std::size_t n, const double *box,
+                    const Options &opt, Fn &&fn) {
+    setup(n, box, opt);
+    if (!mic_) {
+      rebuildCell(R, n, box, opt);
+      return false;
+    }
+    double w[3];
+    double inv[3];
+    for (int k = 0; k < 3; ++k) {
+      w[k] = box[4 * k];
+      inv[k] = (opt.periodic[static_cast<std::size_t>(k)] && w[k] != 0.0)
+                   ? 1.0 / w[k]
+                   : 0.0;
+    }
+    const double bc = opt.cutoff + opt.skin;
+    vesin::cpu::brute_force_visit(
+        R, n, w, inv, bc * bc, opt.cutoff * opt.cutoff, pairsIJ_,
+        [&](int32_t i, int32_t j, double dx, double dy, double dz,
+            double r2) { fn(i, j, -dx, -dy, -dz, r2); });
+    finishRebuild(R, n, box, opt);
+    return true;
+  }
 
   /// Visit every cached pair within the true cutoff of the current
   /// positions. ``fn(i, j, dx, dy, dz, r2)`` receives the *historical* eOn
@@ -162,13 +178,14 @@ public:
   ///   shift; every image is its own pair entry.
   template <typename Fn> void forEach(const double *R, Fn &&fn) const {
     const double cutoff2 = opt_.cutoff * opt_.cutoff;
-    const VesinNeighborList &vl = nl_.raw();
     if (mic_) {
+      const std::size_t np = pairsIJ_.size();
+      const int32_t *ij = pairsIJ_.data();
       if (micInv_[0] == 0.0 && micInv_[1] == 0.0 && micInv_[2] == 0.0) {
         // Free boundaries: no folds at all.
-        for (std::size_t p = 0; p < vl.length; ++p) {
-          const auto i = static_cast<int32_t>(vl.pairs[p][0]);
-          const auto j = static_cast<int32_t>(vl.pairs[p][1]);
+        for (std::size_t p = 0; p < np; p += 2) {
+          const int32_t i = ij[p];
+          const int32_t j = ij[p + 1];
           const double dx = R[3 * i] - R[3 * j];
           const double dy = R[3 * i + 1] - R[3 * j + 1];
           const double dz = R[3 * i + 2] - R[3 * j + 2];
@@ -181,9 +198,9 @@ public:
       }
       const double w0 = boxref_[0], w1 = boxref_[4], w2 = boxref_[8];
       const double i0 = micInv_[0], i1 = micInv_[1], i2 = micInv_[2];
-      for (std::size_t p = 0; p < vl.length; ++p) {
-        const auto i = static_cast<int32_t>(vl.pairs[p][0]);
-        const auto j = static_cast<int32_t>(vl.pairs[p][1]);
+      for (std::size_t p = 0; p < np; p += 2) {
+        const int32_t i = ij[p];
+        const int32_t j = ij[p + 1];
         double dx = R[3 * i] - R[3 * j];
         double dy = R[3 * i + 1] - R[3 * j + 1];
         double dz = R[3 * i + 2] - R[3 * j + 2];
@@ -198,6 +215,7 @@ public:
       }
       return;
     }
+    const VesinNeighborList &vl = nl_.raw();
     const double *H = boxref_.data();
     for (std::size_t p = 0; p < vl.length; ++p) {
       const auto i = static_cast<int32_t>(vl.pairs[p][0]);
@@ -222,7 +240,9 @@ public:
     }
   }
 
-  [[nodiscard]] std::size_t pairCount() const { return nl_.size(); }
+  [[nodiscard]] std::size_t pairCount() const {
+    return mic_ ? pairsIJ_.size() / 2 : nl_.size();
+  }
 
 private:
   /// Round to nearest via SSE2 truncate-cast: std::floor(t + 0.5) lowers to
@@ -236,13 +256,15 @@ private:
 
   /// Decide MIC vs shift mode for these inputs.
   void setup(std::size_t n, const double *box, const Options &opt);
-  /// Run the vesin build (optionally fused with a visitor) and record the
-  /// reference state.
-  void rebuildLists(const double *R, std::size_t n, const double *box,
-                    const Options &opt, VesinPairVisitor visitor,
-                    void *user_data);
+  /// Cell-list build into the vesin buffers (shift mode).
+  void rebuildCell(const double *R, std::size_t n, const double *box,
+                   const Options &opt);
+  /// Record reference positions/box/options after any build.
+  void finishRebuild(const double *R, std::size_t n, const double *box,
+                     const Options &opt);
 
-  VesinNeighbors nl_;
+  VesinNeighbors nl_;              ///< shift mode (cell list) storage
+  std::vector<int32_t> pairsIJ_;   ///< MIC mode storage: flat (i, j) pairs
   std::vector<double> Rref_;
   std::array<double, 9> boxref_{};
   std::array<double, 3> micInv_{}; ///< 1/width per periodic dim, else 0
@@ -307,8 +329,7 @@ public:
     }
 
     auto fresh = std::make_shared<CachedPairList>();
-    if (!fresh->rebuildVisit(R, n, box, opt, &visitTrampoline<Fn>,
-                             static_cast<void *>(&fn))) {
+    if (!fresh->rebuildFused(R, n, box, opt, fn)) {
       fresh->forEach(R, std::forward<Fn>(fn));
     }
 
@@ -324,16 +345,6 @@ public:
   static PairListCache &global();
 
 private:
-  /// vesin hands the visitor ``r_j - r_i (+ S @ H)``; eOn pair kernels take
-  /// ``d = r_i - r_j``.
-  template <typename Fn>
-  static void visitTrampoline(void *user_data, std::size_t i, std::size_t j,
-                              double dx, double dy, double dz, double r2) {
-    (*static_cast<Fn *>(user_data))(static_cast<int32_t>(i),
-                                    static_cast<int32_t>(j), -dx, -dy, -dz,
-                                    r2);
-  }
-
   std::mutex mu_;
   std::vector<std::shared_ptr<CachedPairList>> slots_; // MRU first
 };
