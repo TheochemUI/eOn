@@ -76,6 +76,39 @@ inline void brute_force_visit(
     }
 }
 
+/// Evaluation-only variant: same scan and fold, no pair collection. Serves
+/// first-sighting evaluations where list capture would be paid for nothing.
+template <typename Visitor>
+inline void brute_force_visit_only(
+    const double* points,
+    std::size_t n,
+    const double w[3],
+    const double inv[3],
+    double visit_cutoff2,
+    Visitor&& visit
+) {
+    const double w0 = w[0], w1 = w[1], w2 = w[2];
+    const double i0 = inv[0], i1 = inv[1], i2 = inv[2];
+    for (std::size_t i = 0; i < n; i++) {
+        const double xi = points[3 * i];
+        const double yi = points[3 * i + 1];
+        const double zi = points[3 * i + 2];
+        for (std::size_t j = i + 1; j < n; j++) {
+            double dx = points[3 * j] - xi;
+            double dy = points[3 * j + 1] - yi;
+            double dz = points[3 * j + 2] - zi;
+            dx -= w0 * visit_round(dx * i0);
+            dy -= w1 * visit_round(dy * i1);
+            dz -= w2 * visit_round(dz * i2);
+            const double r2 = dx * dx + dy * dy + dz * dz;
+            if (r2 <= visit_cutoff2) {
+                visit(static_cast<int32_t>(i), static_cast<int32_t>(j),
+                      dx, dy, dz, r2);
+            }
+        }
+    }
+}
+
 } // namespace cpu
 } // namespace vesin
 

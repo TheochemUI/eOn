@@ -58,7 +58,7 @@ void Morse::force(long N, const double *R, const int * /*atomicNrs*/, double *F,
   const double eCut = energyCutoff_;
   double energyAcc = 0.0;
 
-  eonc::PairListCache::global().ensureVisit(
+  eonc::PairListCache::global().evaluate(
       R, static_cast<std::size_t>(N), box, opt,
       [&](int32_t i, int32_t j, double dx, double dy, double dz, double r2) {
         const double r = std::sqrt(r2);

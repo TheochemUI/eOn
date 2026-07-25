@@ -66,19 +66,25 @@ TEST_CASE("Morse forces identical from cached and freshly built pair lists",
   matter->con2matter(std::string("reactant.con"));
 
   const AtomMatrix r0 = matter->getPositions();
-  (void)matter->getPotentialEnergy(); // builds and caches the list at r0
+  (void)matter->getPotentialEnergy(); // first sighting: phantom stamp only
+
+  // Second sighting captures the pair list (lazy capture) at r0b.
+  AtomMatrix r0b = r0;
+  r0b(3, 2) += 1.0e-3;
+  matter->setPositions(r0b);
+  (void)matter->getPotentialEnergy();
 
   // Displacement below skin/2 (0.5 A): this evaluation runs off the pair
-  // list built at r0, with vectors derived from the r1 positions.
-  AtomMatrix r1 = r0;
+  // list captured at r0b, with vectors derived from the r1 positions.
+  AtomMatrix r1 = r0b;
   r1(7, 0) += 0.31;
   r1(7, 1) -= 0.17;
   matter->setPositions(r1);
   const double e_cached = matter->getPotentialEnergy();
   const AtomMatrix f_cached = matter->getForces();
 
-  // Visit more distant geometries than the pool holds so the r0 slot is
-  // evicted (rigid translations move every atom past skin/2).
+  // Visit more distant geometries than the pool holds so the captured slot
+  // is evicted (rigid translations move every atom past skin/2).
   for (int k = 1; k <= 9; ++k) {
     AtomMatrix far = r0;
     far.col(2).array() += 2.0 * static_cast<double>(k);
@@ -86,8 +92,9 @@ TEST_CASE("Morse forces identical from cached and freshly built pair lists",
     (void)matter->getPotentialEnergy();
   }
 
-  // Same geometry again, now from a list rebuilt at r1 itself. The Verlet
-  // guarantee makes both evaluations use the identical in-cutoff pair set.
+  // Same geometry again, now from a direct scan at r1 itself (first
+  // sighting after eviction). The Verlet guarantee makes both evaluations
+  // use the identical in-cutoff pair set.
   matter->setPositions(r1);
   const double e_fresh = matter->getPotentialEnergy();
   const AtomMatrix f_fresh = matter->getForces();

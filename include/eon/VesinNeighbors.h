@@ -134,6 +134,38 @@ public:
   void rebuild(const double *R, std::size_t n, const double *box,
                const Options &opt);
 
+  /// First-sighting evaluation: in the MIC regime, run the fused scan
+  /// WITHOUT capturing the pair list and record only the reference
+  /// geometry (a phantom slot). A later matching sighting proves reuse and
+  /// triggers real capture. Returns false in the cell-list regime (caller
+  /// must build eagerly).
+  template <typename Fn>
+  bool visitOnly(const double *R, std::size_t n, const double *box,
+                 const Options &opt, Fn &&fn) {
+    setup(n, box, opt);
+    if (!mic_) {
+      return false;
+    }
+    double w[3];
+    double inv[3];
+    for (int k = 0; k < 3; ++k) {
+      w[k] = box[4 * k];
+      inv[k] = (opt.periodic[static_cast<std::size_t>(k)] && w[k] != 0.0)
+                   ? 1.0 / w[k]
+                   : 0.0;
+    }
+    vesin::cpu::brute_force_visit_only(
+        R, n, w, inv, opt.cutoff * opt.cutoff,
+        [&](int32_t i, int32_t j, double dx, double dy, double dz,
+            double r2) { fn(i, j, -dx, -dy, -dz, r2); });
+    pairsIJ_.clear();
+    finishRebuild(R, n, box, opt);
+    phantom_ = true;
+    return true;
+  }
+
+  [[nodiscard]] bool isPhantom() const { return phantom_; }
+
   /// Rebuild and, in the MIC regime, evaluate ``fn`` inline during the
   /// same fused pair scan (vesin's header visitation, fully inlined — no
   /// indirect call per pair). Returns true when the evaluation happened;
@@ -272,6 +304,7 @@ private:
   Options opt_{};
   std::size_t n_{0};
   bool mic_{false};
+  bool phantom_{false}; ///< geometry stamp only; no pairs captured yet
   /// MIC-mode candidate set that is the complete pair graph: valid for any
   /// positions with the same atoms/box/options (the eval fold re-derives
   /// exact geometry, and no pair can ever leave a complete candidate set).
@@ -312,7 +345,8 @@ public:
     {
       std::lock_guard<std::mutex> lock(mu_);
       for (std::size_t s = 0; s < slots_.size(); ++s) {
-        if (slots_[s]->valid(R, n, box, opt)) {
+        // Phantoms (lazy-capture stamps from evaluate()) carry no pairs.
+        if (!slots_[s]->isPhantom() && slots_[s]->valid(R, n, box, opt)) {
           if (s != 0) {
             auto slot = std::move(slots_[s]);
             slots_.erase(slots_.begin() + static_cast<std::ptrdiff_t>(s));
@@ -340,6 +374,64 @@ public:
       slots_.pop_back();
     }
     return fresh;
+  }
+
+  /// Single-pass evaluation with lazy list capture: a slot hit evaluates
+  /// from the cached pairs; the first sighting of a geometry family runs a
+  /// fused eval-only scan (exactly the historical per-call loop) and
+  /// records a phantom stamp; the second sighting captures the list. Pots
+  /// that need only one pass per force call (LJ, Morse, LJCluster) use
+  /// this — one-shot processes never pay list capture.
+  template <typename Fn>
+  void evaluate(const double *R, std::size_t n, const double *box,
+                const CachedPairList::Options &opt, Fn &&fn) {
+    std::shared_ptr<const CachedPairList> hit;
+    {
+      std::lock_guard<std::mutex> lock(mu_);
+      for (std::size_t s = 0; s < slots_.size(); ++s) {
+        if (slots_[s]->valid(R, n, box, opt)) {
+          if (s != 0) {
+            auto slot = std::move(slots_[s]);
+            slots_.erase(slots_.begin() + static_cast<std::ptrdiff_t>(s));
+            slots_.insert(slots_.begin(), std::move(slot));
+          }
+          hit = slots_.front();
+          break;
+        }
+      }
+    }
+
+    if (hit && !hit->isPhantom()) {
+      hit->forEach(R, std::forward<Fn>(fn));
+      return;
+    }
+
+    auto fresh = std::make_shared<CachedPairList>();
+    if (hit) {
+      // Second sighting: capture the list, evaluating in the same scan.
+      fresh->rebuildFused(R, n, box, opt, fn);
+    } else if (!fresh->visitOnly(R, n, box, opt, fn)) {
+      // Cell-list regime has no fused scan; build eagerly.
+      if (!fresh->rebuildFused(R, n, box, opt, fn)) {
+        fresh->forEach(R, std::forward<Fn>(fn));
+      }
+    }
+
+    std::lock_guard<std::mutex> lock(mu_);
+    if (hit) {
+      // The phantom served its purpose; drop it so it cannot shadow the
+      // captured slot.
+      for (std::size_t s = 0; s < slots_.size(); ++s) {
+        if (slots_[s] == hit) {
+          slots_.erase(slots_.begin() + static_cast<std::ptrdiff_t>(s));
+          break;
+        }
+      }
+    }
+    slots_.insert(slots_.begin(), fresh);
+    if (slots_.size() > kMaxSlots) {
+      slots_.pop_back();
+    }
   }
 
   /// Pool shared by all classical pair potentials.

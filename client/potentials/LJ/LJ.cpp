@@ -39,7 +39,7 @@ void LJ::force(long N, const double *R, const int * /*atomicNrs*/, double *F,
   opt.cutoff = cuttOffR;
   const double psi2 = psi * psi;
   double energyAcc = 0.0;
-  eonc::PairListCache::global().ensureVisit(
+  eonc::PairListCache::global().evaluate(
       R, static_cast<std::size_t>(N), box, opt,
       [&](int32_t i, int32_t j, double dx, double dy, double dz, double r2) {
         const double invR2 = 1.0 / r2;
