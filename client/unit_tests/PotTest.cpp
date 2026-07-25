@@ -86,9 +86,9 @@ TEST_CASE("Morse forces identical from cached and freshly built pair lists",
   // Visit more distant geometries than the pool holds so the captured slot
   // is evicted (rigid translations move every atom past skin/2).
   for (int k = 1; k <= 9; ++k) {
-    AtomMatrix far = r0;
-    far.col(2).array() += 2.0 * static_cast<double>(k);
-    matter->setPositions(far);
+    AtomMatrix shifted = r0;
+    shifted.col(2).array() += 2.0 * static_cast<double>(k);
+    matter->setPositions(shifted);
     (void)matter->getPotentialEnergy();
   }
 
