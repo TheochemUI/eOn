@@ -36,6 +36,13 @@ public:
     bool return_distances{true};
     bool return_vectors{true};
     std::array<bool, 3> periodic{{true, true, true}};
+    /// vesin 0.6 native Verlet skin: > 0 lets vesin cache the topology in
+    /// this list until an atom moves more than ``skin/2``. Single-geometry
+    /// consumers only — multi-image callers go through PairListCache.
+    double skin{0.0};
+    /// Threads for the vesin build; 1 keeps small builds deterministic and
+    /// spawn-free, 0 defers to OMP_NUM_THREADS / core count.
+    int32_t n_threads{1};
   };
 
   VesinNeighbors() = default;

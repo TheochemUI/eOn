@@ -412,6 +412,27 @@ else
 endif
 _deps += [vesin_dep]
 
+# vesin Fortran interface (upstream fortran/src, vendored at the same version
+# as thirdparty/vesin). Fortran pots consume `use vesin` through vesin_f_dep;
+# a system vesin must match the vendored ABI (0.6.x).
+vesin_f_dep = disabler()
+if use_fortran
+    vesin_fortran_lib = static_library(
+        'vesin_fortran',
+        [
+            'thirdparty/vesin/fortran/cdef.f90',
+            'thirdparty/vesin/fortran/vesin.f90',
+        ],
+        fortran_args: _fargs,
+        dependencies: vesin_dep,
+    )
+    vesin_f_dep = declare_dependency(
+        link_with: vesin_fortran_lib,
+        dependencies: vesin_dep,
+        include_directories: vesin_fortran_lib.private_dir_include(),
+    )
+endif
+
 eoncbase_sources = [
     'fpe_handler.cpp',
     'PotRegistry.cpp',
