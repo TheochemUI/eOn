@@ -528,6 +528,17 @@ else
     endif
     _rgpot_proj = subproject('rgpot', default_options: rgpot_opts)
     rgpot_dep = _rgpot_proj.get_variable('rgpot_dep')
+    # meson applies subproject default_options only on the first configure
+    # of a build directory, so a directory configured before this profile
+    # changed silently keeps the old values and drops potentials. Fail
+    # here instead, naming the fix.
+    if not _rgpot_proj.get_variable('has_fortran')
+        error(
+            'rgpot subproject built without Fortran potentials. '
+            + 'Reconfigure with -Drgpot:with_fortran_pots=enabled, '
+            + 'or wipe the build directory.',
+        )
+    endif
     if get_option('with_serve')
         ptlrpc_dep = _rgpot_proj.get_variable('ptlrpc_dep')
     endif
