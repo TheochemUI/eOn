@@ -30,6 +30,7 @@
 #include "eon/potentials/EMT/EffectiveMediumTheory.h"
 #include "eon/potentials/ExtPot/ExtPot.h"
 #include "eon/potentials/RgpotAdapter/RgpotAdapter.h"
+#include "rgpot/fortran/FortranPots.hpp"
 #include "rgpot/LennardJones/LJClusterPot.hpp"
 #include "rgpot/LennardJones/LJPot.hpp"
 #include "rgpot/Morse/MorsePot.hpp"
@@ -42,13 +43,6 @@
 #endif
 
 // Fortran potentials: always compiled, loaded at runtime via dlopen
-#include "eon/potentials/Aluminum/Aluminum.h"
-#include "eon/potentials/EDIP/EDIP.h"
-#include "eon/potentials/FeHe/FeHe.h"
-#include "eon/potentials/FortranPotLoader.h"
-#include "eon/potentials/Lenosky/Lenosky.h"
-#include "eon/potentials/SW/SW.h"
-#include "eon/potentials/Tersoff/Tersoff.h"
 
 #ifdef EMBED_PYTHON
 #ifdef WITH_ASE_POT
@@ -64,7 +58,6 @@
 
 // TODO: This should be guarded by WITH_FORTRAN as well
 #ifdef CUH2_POT
-#include "eon/potentials/CuH2/CuH2.h"
 #endif
 
 #ifndef _WIN32
@@ -93,7 +86,6 @@
 #ifdef WITH_WATER
 #include "eon/potentials/Water/Water.hpp"
 #ifdef WITH_FORTRAN
-#include "eon/potentials/Water_H/Tip4p_H.h"
 #endif
 #include "eon/potentials/Water_Pt/Tip4p_Pt.hpp"
 #endif
@@ -124,7 +116,7 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix &pos,
 namespace eonc::helpers {
 std::shared_ptr<Potential> makePotential(const Parameters &params) {
   // Inject config-file path before any potential constructor runs
-  FortranPotLoader::instance().add_config_paths(
+  PluginLoader::instance().add_config_paths(
       params.potential_options.potentialsPath);
   return makePotential(params.potential_options.potential, params);
 }
@@ -132,7 +124,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
                                          const Parameters &params) {
   // Inject config-file path before any potential constructor runs.
   // Called on every code path including Job::Job which uses this overload.
-  FortranPotLoader::instance().add_config_paths(
+  PluginLoader::instance().add_config_paths(
       params.potential_options.potentialsPath);
   switch (ptype) {
   // TODO: Every potential must know their own type
@@ -160,7 +152,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   }
 #ifdef CUH2_POT
   case PotType::CUH2: {
-    return (std::make_shared<CuH2>(params));
+    return makeRgpotDefault<rgpot::fortranpots::CuH2Pot>(PotType::CUH2, params);
     break;
   }
 #endif
@@ -179,34 +171,34 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
   case PotType::TIP4P_H: {
-    return (std::make_shared<Tip4p_H>(params));
+    return makeRgpotDefault<rgpot::fortranpots::WaterHPot>(PotType::TIP4P_H, params);
     break;
   }
 #endif
 #endif
   // Fortran potentials: always available, loaded at runtime via dlopen
   case PotType::EAM_AL: {
-    return (std::make_shared<Aluminum>(params));
+    return makeRgpotDefault<rgpot::fortranpots::EAMAlPot>(PotType::EAM_AL, params);
     break;
   }
   case PotType::EDIP: {
-    return (std::make_shared<EDIP>(params));
+    return makeRgpotDefault<rgpot::fortranpots::EDIPPot>(PotType::EDIP, params);
     break;
   }
   case PotType::FEHE: {
-    return (std::make_shared<FeHe>(params));
+    return makeRgpotDefault<rgpot::fortranpots::FeHePot>(PotType::FEHE, params);
     break;
   }
   case PotType::LENOSKY_SI: {
-    return (std::make_shared<Lenosky>(params));
+    return makeRgpotDefault<rgpot::fortranpots::LenoskyPot>(PotType::LENOSKY_SI, params);
     break;
   }
   case PotType::SW_SI: {
-    return (std::make_shared<SW>(params));
+    return makeRgpotDefault<rgpot::fortranpots::SWPot>(PotType::SW_SI, params);
     break;
   }
   case PotType::TERSOFF_SI: {
-    return (std::make_shared<Tersoff>(params));
+    return makeRgpotDefault<rgpot::fortranpots::TersoffPot>(PotType::TERSOFF_SI, params);
     break;
   }
 #ifndef _WIN32

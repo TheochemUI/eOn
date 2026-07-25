@@ -378,7 +378,7 @@ else
     message('Highway SIMD: disabled (not found)')
 endif
 
-# dl_dep needed for dlopen (FortranPotLoader, LammpsLoader)
+# dl_dep needed for dlopen (LammpsLoader, rgpot engine loaders)
 dl_dep = cppc.find_library('dl', required: false)
 _deps += dl_dep
 
@@ -447,8 +447,8 @@ endif
 eoncbase_sources = [
     'fpe_handler.cpp',
     'PotRegistry.cpp',
-    'potentials/FortranPotLoader.cpp',
     'VesinNeighbors.cpp',
+    'potentials/PluginLoader.cpp',
 ]
 
 eoncbase = library(
@@ -758,76 +758,17 @@ if get_option('with_mpi')
     _deps += [mpi_dep]
 endif
 
-# Fortran potential C++ wrappers: always compiled (load Fortran libs at runtime)
-# The C++ wrappers use dlopen via FortranPotLoader to find the Fortran shared
-# libraries at runtime, so the client binary does not need Fortran at link time.
-fortran_pot_cpp_sources = [
-    'potentials/Aluminum/Aluminum.cpp',
-    'potentials/EDIP/EDIP.cpp',
-    'potentials/FeHe/FeHe.cpp',
-    'potentials/Lenosky/Lenosky.cpp',
-    'potentials/SW/SW.cpp',
-    'potentials/Tersoff/Tersoff.cpp',
-]
-eonclib_sources += fortran_pot_cpp_sources
-
-# Fortran shared libraries: built only when a Fortran compiler is available,
-# installed separately, and loaded at runtime via dlopen.
-_fortran_pot_libs = []
-# Windows: conda-forge flang ships FortranRuntime*.lib but often no matching
-# .dll. Pot plugins are LoadLibrary'd; if they depend on FortranRuntime.dynamic
-# the load fails. Prefer static flang runtime objects inside each pot DLL.
-_fortran_pot_link_args = []
-if get_option('with_fortran') and is_windows and fc.get_id() in ['flang', 'llvm-flang', 'flang-new']
-    _fc_path = fc.cmd_array()[0]
-    _fc_dir = fs.parent(_fc_path)
-    _lib_root = fs.parent(_fc_dir)
-    _static_search = [join_paths(_lib_root, 'lib')]
-    if _flang_rt_dir != ''
-        _static_search += [_flang_rt_dir]
-    endif
-    foreach _static_frt : [
-        'FortranRuntime.static.lib',
-        'FortranDecimal.static.lib',
-    ]
-        foreach _sdir : _static_search
-            _probe = join_paths(_sdir, _static_frt)
-            if fs.is_file(_probe)
-                _fortran_pot_link_args += [_probe]
-                break
-            endif
-        endforeach
-    endforeach
-    if _fortran_pot_link_args.length() > 0
-        message(
-            'Fortran pot plugins: static flang_rt '
-            + ', '.join(_fortran_pot_link_args),
-        )
-    else
-        warning(
-            'Fortran pot plugins: no static flang_rt libs; LoadLibrary may need runtime DLLs',
-        )
-    endif
-endif
+# Fortran-backed potentials (SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe,
+# CuH2, TIP4P-H) are Fortran 2018 kernels inside librgpot, reached through
+# RgpotAdapter. eOn no longer builds, installs, or dlopens Fortran itself,
+# so the flang runtime handling and the per-pot .def export files retire
+# with them.
 if get_option('with_fortran')
-    subdir('potentials/Aluminum')
-    subdir('potentials/EDIP')
-    subdir('potentials/FeHe')
-    subdir('potentials/Lenosky')
-    subdir('potentials/SW')
-    subdir('potentials/Tersoff')
-    _fortran_pot_libs += [eon_aluminum, eon_edip, eon_fehe, eon_lenosky, eon_sw, eon_tersoff]
-    if get_option('with_water')
-        subdir('potentials/Water_H')
-        potentials += [water_h]
-    endif
     _args += ['-DWITH_FORTRAN']
 endif
 
 if get_option('with_cuh2')
-    subdir('potentials/CuH2')
-    potentials += [cuh2]
-    _args += ['-DCUH2_POT', '-DWITH_FORTRAN']
+    _args += ['-DCUH2_POT']
 endif
 
 if get_option('with_ase_orca')

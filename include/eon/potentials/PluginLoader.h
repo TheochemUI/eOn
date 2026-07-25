@@ -11,7 +11,12 @@
 */
 #pragma once
 
-/// Runtime loader for Fortran potential shared libraries.
+/// Runtime loader for engine plugin shared libraries.
+///
+/// Engines that ship as their own shared objects (the rgpot metatomic and
+/// xtb backends) are found by base name across a search path rather than
+/// by an absolute path, so a build, a wheel, and a conda prefix can each
+/// place them differently.
 ///
 /// Uses dlopen (POSIX) or LoadLibrary (Windows) to load Fortran potential
 /// libraries at runtime. The search order is:
@@ -33,10 +38,10 @@
 
 namespace eonc {
 
-class FortranPotLoader {
+class PluginLoader {
 public:
   /// Thread-safe singleton accessor (Meyer's pattern).
-  static FortranPotLoader &instance();
+  static PluginLoader &instance();
 
   /// Inject search paths from the eOn config file.
   /// @param colon_paths  colon-separated directory list (may be empty)
@@ -64,12 +69,12 @@ public:
     return m_search_paths;
   }
 
-  FortranPotLoader(const FortranPotLoader &) = delete;
-  FortranPotLoader &operator=(const FortranPotLoader &) = delete;
+  PluginLoader(const PluginLoader &) = delete;
+  PluginLoader &operator=(const PluginLoader &) = delete;
 
 private:
-  FortranPotLoader();
-  ~FortranPotLoader();
+  PluginLoader();
+  ~PluginLoader();
 
   dynlib::Handle open_lib(const char *lib_base);
   std::vector<std::string> lib_names(const char *lib_base) const;

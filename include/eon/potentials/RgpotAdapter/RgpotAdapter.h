@@ -32,6 +32,11 @@ public:
       : Potential(ptype, params),
         pot_(cfg) {}
 
+  /// Kernels with no configuration surface default-construct in place.
+  RgpotAdapter(PotType ptype, const Parameters &params)
+      : Potential(ptype, params),
+        pot_() {}
+
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override {
     rgpot::ForceInput in{static_cast<size_t>(N), R, atomicNrs, box};
@@ -58,6 +63,14 @@ public:
 private:
   RPot pot_;
 };
+
+/// Factory arm helper for kernels whose parameters are fixed tabulated
+/// data with no eOn-side configuration surface.
+template <class RPot>
+std::shared_ptr<Potential> makeRgpotDefault(PotType ptype,
+                                            const Parameters &params) {
+  return std::make_shared<RgpotAdapter<RPot>>(ptype, params);
+}
 
 /// Factory arm helper: construct the kernel from its config and wrap it.
 template <class RPot, class Cfg>

@@ -9,7 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "eon/potentials/FortranPotLoader.h"
+#include "eon/potentials/PluginLoader.h"
 
 #include <cstdlib>
 #include <filesystem>
@@ -17,12 +17,12 @@
 
 namespace eonc {
 
-FortranPotLoader &FortranPotLoader::instance() {
-  static FortranPotLoader loader;
+PluginLoader &PluginLoader::instance() {
+  static PluginLoader loader;
   return loader;
 }
 
-FortranPotLoader::FortranPotLoader() {
+PluginLoader::PluginLoader() {
   // Seed from EON_POTENTIALS_PATH env var (colon-separated on POSIX).
   // Config-file paths are prepended later via add_config_paths().
   const char *env = std::getenv("EON_POTENTIALS_PATH");
@@ -35,13 +35,13 @@ FortranPotLoader::FortranPotLoader() {
   }
 }
 
-FortranPotLoader::~FortranPotLoader() {
+PluginLoader::~PluginLoader() {
   for (auto &[name, handle] : m_handles) {
     dynlib::close(handle);
   }
 }
 
-void FortranPotLoader::append_paths(const std::string &path_str, char sep) {
+void PluginLoader::append_paths(const std::string &path_str, char sep) {
   std::string::size_type start = 0;
   while (start < path_str.size()) {
     auto pos = path_str.find(sep, start);
@@ -63,7 +63,7 @@ void FortranPotLoader::append_paths(const std::string &path_str, char sep) {
   }
 }
 
-void FortranPotLoader::add_config_paths(const std::string &colon_paths) {
+void PluginLoader::add_config_paths(const std::string &colon_paths) {
   if (colon_paths.empty())
     return;
   std::lock_guard<std::mutex> lock(m_mutex);
@@ -98,7 +98,7 @@ void FortranPotLoader::add_config_paths(const std::string &colon_paths) {
 }
 
 std::vector<std::string>
-FortranPotLoader::lib_names(const char *lib_base) const {
+PluginLoader::lib_names(const char *lib_base) const {
   std::vector<std::string> names;
 #ifdef _WIN32
   names.push_back(std::string(lib_base) + ".dll");
@@ -111,7 +111,7 @@ FortranPotLoader::lib_names(const char *lib_base) const {
   return names;
 }
 
-dynlib::Handle FortranPotLoader::open_lib(const char *lib_base) {
+dynlib::Handle PluginLoader::open_lib(const char *lib_base) {
   std::lock_guard<std::mutex> lock(m_mutex);
 
   auto it = m_handles.find(lib_base);
@@ -158,7 +158,7 @@ dynlib::Handle FortranPotLoader::open_lib(const char *lib_base) {
   return nullptr;
 }
 
-void FortranPotLoader::throw_not_found(const char *lib_base,
+void PluginLoader::throw_not_found(const char *lib_base,
                                        const char *description) const {
   auto names = lib_names(lib_base);
   std::ostringstream oss;
