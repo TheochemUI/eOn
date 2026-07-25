@@ -10,7 +10,6 @@
 #pragma once
 
 #include <memory>
-#include <utility>
 
 #include "eon/Potential.h"
 
@@ -26,9 +25,12 @@
 /// kernel's capability descriptor instead of per-type lists.
 template <class RPot> class RgpotAdapter final : public Potential {
 public:
-  RgpotAdapter(PotType ptype, const Parameters &params, RPot pot)
+  /// Kernels construct in place from their config: several hold mutexes
+  /// or other immovable state, so the adapter never copies or moves them.
+  template <class Cfg>
+  RgpotAdapter(PotType ptype, const Parameters &params, const Cfg &cfg)
       : Potential(ptype, params),
-        pot_(std::move(pot)) {}
+        pot_(cfg) {}
 
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override {
@@ -61,5 +63,5 @@ private:
 template <class RPot, class Cfg>
 std::shared_ptr<Potential> makeRgpot(PotType ptype, const Parameters &params,
                                      const Cfg &cfg) {
-  return std::make_shared<RgpotAdapter<RPot>>(ptype, params, RPot(cfg));
+  return std::make_shared<RgpotAdapter<RPot>>(ptype, params, cfg);
 }
