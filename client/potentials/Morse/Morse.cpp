@@ -44,11 +44,12 @@ void Morse::force(long N, const double *R, const int * /*atomicNrs*/, double *F,
     return;
   }
 
-  // Verlet-skin cached vesin pair list; the thread-local pool keeps one slot
-  // per nearby geometry so NEB images sharing this pot never thrash it.
+  // Verlet-skin cached vesin pair list; the global pool keeps one slot per
+  // nearby geometry so NEB images sharing this pot never thrash it, and the
+  // cache survives NEB's per-iteration worker threads.
   eonc::CachedPairList::Options opt;
   opt.cutoff = cutoff_;
-  const auto &nl = eonc::PairListCache::local().ensure(
+  const auto nl = eonc::PairListCache::global().ensure(
       R, static_cast<std::size_t>(N), box, opt);
 
   const double a = a_;
@@ -58,7 +59,7 @@ void Morse::force(long N, const double *R, const int * /*atomicNrs*/, double *F,
   const double eCut = energyCutoff_;
   double energyAcc = 0.0;
 
-  nl.forEach(R, [&](int32_t i, int32_t j, double dx, double dy, double dz,
+  nl->forEach(R, [&](int32_t i, int32_t j, double dx, double dy, double dz,
                     double r2) {
     const double r = std::sqrt(r2);
     const double d = 1.0 - std::exp(-a * (r - re));

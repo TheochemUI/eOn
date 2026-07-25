@@ -169,34 +169,40 @@ void CachedPairList::rebuild(VesinNeighbors &scratch, const double *R,
   built_ = true;
 }
 
-const CachedPairList &PairListCache::ensure(const double *R, std::size_t n,
-                                            const double *box,
-                                            const CachedPairList::Options &opt) {
-  for (std::size_t s = 0; s < slots_.size(); ++s) {
-    if (slots_[s]->valid(R, n, box, opt)) {
-      if (s != 0) {
-        auto slot = std::move(slots_[s]);
-        slots_.erase(slots_.begin() + static_cast<std::ptrdiff_t>(s));
-        slots_.insert(slots_.begin(), std::move(slot));
+std::shared_ptr<const CachedPairList>
+PairListCache::ensure(const double *R, std::size_t n, const double *box,
+                      const CachedPairList::Options &opt) {
+  {
+    std::lock_guard<std::mutex> lock(mu_);
+    for (std::size_t s = 0; s < slots_.size(); ++s) {
+      if (slots_[s]->valid(R, n, box, opt)) {
+        if (s != 0) {
+          auto slot = std::move(slots_[s]);
+          slots_.erase(slots_.begin() + static_cast<std::ptrdiff_t>(s));
+          slots_.insert(slots_.begin(), std::move(slot));
+        }
+        return slots_.front();
       }
-      return *slots_.front();
     }
   }
 
-  std::unique_ptr<CachedPairList> slot;
-  if (slots_.size() < kMaxSlots) {
-    slot = std::make_unique<CachedPairList>();
-  } else {
-    slot = std::move(slots_.back()); // recycle LRU (keeps its allocations)
-    slots_.pop_back();
+  // Build outside the pool lock; concurrent misses on the same geometry cost
+  // one duplicate build, never a wrong result. The scratch VesinNeighbors is
+  // per-thread so vesin re-uses its build buffers on long-lived threads.
+  auto fresh = std::make_shared<CachedPairList>();
+  thread_local VesinNeighbors scratch;
+  fresh->rebuild(scratch, R, n, box, opt);
+
+  std::lock_guard<std::mutex> lock(mu_);
+  slots_.insert(slots_.begin(), fresh);
+  if (slots_.size() > kMaxSlots) {
+    slots_.pop_back(); // readers holding the shared_ptr keep it alive
   }
-  slot->rebuild(scratch_, R, n, box, opt);
-  slots_.insert(slots_.begin(), std::move(slot));
-  return *slots_.front();
+  return fresh;
 }
 
-PairListCache &PairListCache::local() {
-  thread_local PairListCache cache;
+PairListCache &PairListCache::global() {
+  static PairListCache cache;
   return cache;
 }
 

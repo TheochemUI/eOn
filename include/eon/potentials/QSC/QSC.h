@@ -23,9 +23,9 @@
 ///   rho_i = sum_(j!=i) (a/r_ij)^m
 ///   V(r_ij) = (a/r_ij)^n
 ///
-/// Neighbor pairs come from the thread-local ``eonc::PairListCache`` (Verlet
-/// skin on top of vesin), so repeated force evaluations on nearby geometries
-/// skip the list rebuild without racing under NEB.
+/// Neighbor pairs come from the global ``eonc::PairListCache`` (Verlet skin
+/// on top of vesin), so repeated force evaluations on nearby geometries skip
+/// the list rebuild without racing under NEB.
 class QSC
 #ifndef QSC_STANDALONE
     : public Potential

@@ -14,7 +14,7 @@
 /// @brief Quantum Sutton-Chen potential implementation.
 ///
 /// EAM-type potential with density = (a/r)^m, pair = (a/r)^n,
-/// embedding = c * epsilon * sqrt(rho). Neighbor pairs via the thread-local
+/// embedding = c * epsilon * sqrt(rho). Neighbor pairs via the global
 /// eonc::PairListCache (Verlet-skin cached vesin lists; safe under NEB
 /// parallel).
 
@@ -78,13 +78,13 @@ void QSC::force(long N, const double *R, const int *atomicNrs, double *F,
   eonc::CachedPairList::Options opt;
   opt.cutoff = cutoff_;
   opt.skin = skin_;
-  const auto &nl = eonc::PairListCache::local().ensure(
+  const auto nl = eonc::PairListCache::global().ensure(
       R, static_cast<std::size_t>(N), box, opt);
   ++vlist_updates;
 
-  energy_from_nl(N, R, atomicNrs, U, nl);
+  energy_from_nl(N, R, atomicNrs, U, *nl);
 
-  nl.forEach(R, [&](int32_t i, int32_t j, double dx, double dy, double dz,
+  nl->forEach(R, [&](int32_t i, int32_t j, double dx, double dy, double dz,
                     double r2) {
     const double r_ij = std::sqrt(r2);
 

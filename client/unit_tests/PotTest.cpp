@@ -57,6 +57,45 @@ TEST_CASE("Morse potential energy matches SVN", "[pot][morse]") {
   REQUIRE(matter->getForces().allFinite());
 }
 
+TEST_CASE("Morse forces identical from cached and freshly built pair lists",
+          "[pot][morse][nlcache]") {
+  Parameters params;
+  params.potential_options.potential = PotType::MORSE_PT;
+  auto pot = eonc::helpers::makePotential(params);
+  auto matter = std::make_shared<Matter>(pot, params);
+  matter->con2matter(std::string("reactant.con"));
+
+  const AtomMatrix r0 = matter->getPositions();
+  (void)matter->getPotentialEnergy(); // builds and caches the list at r0
+
+  // Displacement below skin/2 (0.5 A): this evaluation runs off the pair
+  // list built at r0, with vectors derived from the r1 positions.
+  AtomMatrix r1 = r0;
+  r1(7, 0) += 0.31;
+  r1(7, 1) -= 0.17;
+  matter->setPositions(r1);
+  const double e_cached = matter->getPotentialEnergy();
+  const AtomMatrix f_cached = matter->getForces();
+
+  // Visit more distant geometries than the pool holds so the r0 slot is
+  // evicted (rigid translations move every atom past skin/2).
+  for (int k = 1; k <= 9; ++k) {
+    AtomMatrix far = r0;
+    far.col(2).array() += 2.0 * static_cast<double>(k);
+    matter->setPositions(far);
+    (void)matter->getPotentialEnergy();
+  }
+
+  // Same geometry again, now from a list rebuilt at r1 itself. The Verlet
+  // guarantee makes both evaluations use the identical in-cutoff pair set.
+  matter->setPositions(r1);
+  const double e_fresh = matter->getPotentialEnergy();
+  const AtomMatrix f_fresh = matter->getForces();
+
+  REQUIRE(e_cached == Catch::Approx(e_fresh).epsilon(1e-10));
+  REQUIRE((f_cached - f_fresh).cwiseAbs().maxCoeff() < 1e-9);
+}
+
 TEST_CASE("Different potentials give different energies", "[pot]") {
   Parameters params;
   params.potential_options.potential = PotType::LJ;

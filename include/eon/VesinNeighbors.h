@@ -12,6 +12,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -179,29 +180,32 @@ private:
   bool built_{false};
 };
 
-/// Small thread-local pool of CachedPairList slots, matched by geometry
-/// proximity. NEB evaluates several images through one shared Potential
-/// instance (serially or in parallel); a single cached list would thrash on
-/// alternating geometries. Each ``ensure`` call finds the slot whose reference
-/// positions are within skin/2 of ``R`` (MRU order) or rebuilds the least
-/// recently used slot. thread_local storage keeps this race-free under
-/// parallel image evaluation.
+/// Process-wide pool of CachedPairList slots, matched by geometry proximity.
+/// NEB evaluates several images through one shared Potential instance — and
+/// spawns fresh threads every iteration (NudgedElasticBand::updateForces), as
+/// does ImprovedDimer for one endpoint — so neither a per-instance cache
+/// (data race on the shared pot) nor thread_local storage (dies with each
+/// iteration's threads) survives. Each ``ensure`` call finds the slot whose
+/// reference positions are within skin/2 of ``R`` (MRU order) or builds a new
+/// slot. Slots are immutable after build and handed out as shared_ptr, so
+/// readers never race eviction; the pool mutex guards only the match/insert,
+/// never the force loops.
 class PairListCache {
 public:
   /// Slot count covers NEB default image counts; more images degrade to
   /// occasional rebuilds rather than incorrect results.
   static constexpr std::size_t kMaxSlots = 8;
 
-  const CachedPairList &ensure(const double *R, std::size_t n,
-                               const double *box,
-                               const CachedPairList::Options &opt);
+  std::shared_ptr<const CachedPairList>
+  ensure(const double *R, std::size_t n, const double *box,
+         const CachedPairList::Options &opt);
 
-  /// Per-thread pool shared by all classical pair potentials.
-  static PairListCache &local();
+  /// Pool shared by all classical pair potentials.
+  static PairListCache &global();
 
 private:
-  std::vector<std::unique_ptr<CachedPairList>> slots_; // MRU first
-  VesinNeighbors scratch_;
+  std::mutex mu_;
+  std::vector<std::shared_ptr<CachedPairList>> slots_; // MRU first
 };
 
 } // namespace eonc
