@@ -39,6 +39,8 @@ C
 
 c-------------------------------------------------------------------------------
 
+      use vesin_al, only: vesin_al_build, vnl_row, vnl_jlist
+
       implicit real*8 (a-h,o-z)
       logical IsatiFPI,IsatjFPI
 
@@ -54,7 +56,7 @@ c-------------------------------------------------------------------------------
 
       common /unscale/ RALOCAL(MAXCOO)
 c
-      DIMENSION DELTA(MAXCOO),phi(MAXPRS),phivirst(MAXPRS)
+      DIMENSION phi(MAXPRS),phivirst(MAXPRS)
       DIMENSION RA1(MAXCOO),RA2(MAXCOO),FA1(MAXCOO),FA2(MAXCOO)
 
 c ------------------------------------------------------------------------------
@@ -84,80 +86,67 @@ c  Update the list of interacting pairs:
       if(ipot .eq. mxipot) indupd=0
 c            if this is the last type of interaction then the list of
 c            interactions will not have to be updated in the next call.
-      INDX=0
+c   vesin enumerates the candidate pairs (j > i) within rskin; the separation
+c   vectors and the skin test below stay here so that delpr keeps its
+c   r_i - r_j sign convention and the rectangular minimum image convention
+c   used by the non-rebuild branch at label 600.
+
+      IF(ISAME.NE.1) THEN
+        write(lunout,220)
+220     format(/'   ERROR in gagafe:  the vesin list needs ISAME = 1')
+        stop
+      ENDIF
+
+      call vesin_al_build(natom1,ra1,ax,ay,az,rskin(ipot),maxprs,iverr)
+      if(iverr .eq. 1) stop
+      if(iverr .eq. 2) then
+        write(lunout,222) maxprs
+222     format(/'   ERROR in gagafe:  vesin pairs > maxprs, = ',i9)
+        stop
+      endif
+
       nintpr=0
 c                 nintpr counts the total number of interacting pairs.
       DO 500 I=1,NATOM1
-        iabs=i+iatshift1
-        JSTRT=1
-        IF(ISAME.EQ.1) JSTRT=I+1
-        NJATMS=NATOM2-JSTRT+1
-c
-        DO 300 J=1,NJATMS
-          DELTA(3*(J-1)+1)=RA1(INDX+1)-RA2(3*(J+JSTRT-2)+1)
-          DELTA(3*(J-1)+2)=RA1(INDX+2)-RA2(3*(J+JSTRT-2)+2)
-          DELTA(3*(J-1)+3)=RA1(INDX+3)-RA2(3*(J+JSTRT-2)+3)
-300     CONTINUE
-
-C     APPLY PERIODIC BOUNDARY CONDITIONS TO DELTA ARRAY  (only in x-y plane):
-
-c  Rectangular simulation cell:
-      DO 320 J=1,NJATMS
-c   First the y coordinate:
-          IF(DELTA(3*(j-1)+2) .GT. ayhalf)
-     +       DELTA(3*(j-1)+2)=DELTA(3*(j-1)+2)-ay
-          IF(DELTA(3*(j-1)+2) .LT.-ayhalf)
-     +       DELTA(3*(j-1)+2)=DELTA(3*(j-1)+2)+ay
-c   Then the x coordinate:
-          IF(DELTA(3*(j-1)+1) .GT. axhalf)
-     +       DELTA(3*(j-1)+1)=DELTA(3*(j-1)+1)-ax
-          IF(DELTA(3*(j-1)+1) .LT.-axhalf)
-     +       DELTA(3*(j-1)+1)=DELTA(3*(j-1)+1)+ax
-c   Finally the z coordinate:
-          IF(DELTA(3*(j-1)+3) .GT. azhalf)
-     +       DELTA(3*(j-1)+3)=DELTA(3*(j-1)+3)-az
-          IF(DELTA(3*(j-1)+3) .LT.-azhalf)
-     +       DELTA(3*(j-1)+3)=DELTA(3*(j-1)+3)+az
-320   CONTINUE
-c
-      do 371 J=1,NJATMS
-        R2st(j)=
-     +     DELTA(3*(J-1)+1)**2+DELTA(3*(J-1)+2)**2+DELTA(3*(J-1)+3)**2
-371   continue
-c
-      nintwi=0
+        iptpr1(i,ipot)=nintpr+1
+        nintwi=0
 c                  nintwi counts the number of atoms interacting with atom i.
+        DO 300 K=vnl_row(i),vnl_row(i+1)-1
+          J=vnl_jlist(k)
+          delx=ra1(3*i-2)-ra2(3*j-2)
+          dely=ra1(3*i-1)-ra2(3*j-1)
+          delz=ra1(3*i)  -ra2(3*j)
 
-      do 372 j=1,njatms
-        if(r2st(j) .gt. skinr2) go to 372
+C     APPLY PERIODIC BOUNDARY CONDITIONS.  Rectangular simulation cell:
+
+          if(delx .gt. axhalf) delx=delx-ax
+          if(delx .lt.-axhalf) delx=delx+ax
+          if(dely .gt. ayhalf) dely=dely-ay
+          if(dely .lt.-ayhalf) dely=dely+ay
+          if(delz .gt. azhalf) delz=delz-az
+          if(delz .lt.-azhalf) delz=delz+az
+
+          r2v=delx*delx+dely*dely+delz*delz
 c
 c   The maximum of R2 is RSKIN2 here to get effectively a neighbor list with
 c   buffer region (rskin2 should be larger than rcut2)
 c
+          if(r2v .gt. skinr2) go to 300
+c
 c        add atom j to the neighbor list of atom i:
           nintwi=nintwi+1
-          indpra(1,nintpr+ishift+nintwi)=i
-          indpra(2,nintpr+ishift+nintwi)=j
-372     continue
-
-        do 3722 k=nintpr+ishift+1,nintpr+ishift+nintwi
-          jd=indpra(2,k)
-          r2pr(k)=r2st(jd)
-          delpr(3*k-2)=delta(3*jd-2)
-          delpr(3*k-1)=delta(3*jd-1)
-          delpr(3*k)  =delta(3*jd)
-3722    continue
-        IF(ISAME.EQ.1) then
-          do 3723 k=nintpr+ishift+1,nintpr+ishift+nintwi
-            indpra(2,k)=indpra(2,k)+jstrt-1
-3723      continue
-        ENDIF
+          kpr=nintpr+ishift+nintwi
+          indpra(1,kpr)=i
+          indpra(2,kpr)=j
+          r2pr(kpr)=r2v
+          delpr(3*kpr-2)=delx
+          delpr(3*kpr-1)=dely
+          delpr(3*kpr)  =delz
+300     CONTINUE
 
         if(nintwi .gt. maxneb) maxneb=nintwi
-        iptpr1(i,ipot)=nintpr+1
         nintpr=nintpr+nintwi
         if(nintpr .gt. maxnpr) maxnpr=nintpr
-        indx=indx+3
 500   continue
 
       nintp(ipot) = nintpr

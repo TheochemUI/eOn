@@ -1,6 +1,8 @@
-# Fortran-only shared module: loaded at runtime via dlopen/LoadLibrary
+# Fortran-only shared module: loaded at runtime via dlopen/LoadLibrary.
+# Neighbour list built via the vendored vesin Fortran interface.
 eon_aluminum = shared_module(
     'eon_aluminum',
+           'vesin_al_helper.f90',
            'fofrhoDblexp.f',
            'dfrhoDblexp.f',
            'potinit.f',
@@ -9,6 +11,7 @@ eon_aluminum = shared_module(
            'embedenergy.f',
            'sumembforce.f',
     fortran_args: _fargs,
+    dependencies: [vesin_f_dep],
     link_args: _fortran_pot_link_args
     + (
         is_windows ? [
@@ -25,12 +28,4 @@ eon_aluminum = shared_module(
     install: true,
 )
 
-# C++ wrapper (compiled into client, loads Fortran lib at runtime)
-aluminum_cpp = static_library(
-    'aluminum_cpp',
-    'Aluminum.cpp',
-    dependencies: _deps,
-    cpp_args: _args,
-    link_with: _linkto,
-    include_directories: _incdirs,
-)
+# Aluminum.cpp (dlopen wrapper) is compiled into eonclib via eonclib_sources.

@@ -28,6 +28,10 @@
         nimrp=1
         ncoo=ndim
         natoms=natms(1)+natms(2)
+        if (natoms .gt. maxatoms) then
+          write(6,*) 'CuH2: natoms exceeds maxatoms: ', natoms, maxatoms
+          stop
+        end if
         PL(1)=box(1)
         PL(2)=box(2)
         PL(3)=box(3)
@@ -57,6 +61,8 @@
 
       subroutine eamh2cu()
 
+      use vesin_cuh2, only: vesin_cuh2_build, vnl_row, vnl_jlist
+
       IMPLICIT NONE
 
       include 'commonblks/combig.cmn'
@@ -68,6 +74,7 @@
       REAL*8 dfdrhoi,rhoi,embedi,embed,phi,sum2,fact
       INTEGER jcuq,im,icuq,jh,ih,ixyz,jcoo,iat,icoo,jcl,jat
       INTEGER  jcucl,icucl,icl
+      INTEGER kpr,ierr
 
 
 
@@ -85,12 +92,23 @@
       enddo
 
 
-      do iCuCl = 1,nCuCl       ! Loop over classical Cu atoms
-        icl = iCuCl
-        iat = iatclass(icl)         ! Atom corresponding to classical coord icl
-        do jCuCl = iCuCl+1,nCuCl    ! Loop over classical Cu atoms
-          jcl = jCuCl
-          jat = iatclass(jcl)
+! The pair list indexes atoms directly, which matches iatclass only for a
+! single image and with no quantum Cu atoms.
+      if (nCuQ .ne. 0 .or. nimpo*nimrp .ne. 1) then
+        write(6,*) 'CuH2: the vesin pair list needs nCuQ = 0, one image'
+        stop
+      endif
+
+      call vesin_cuh2_build(natoms, ra, PL, rskin, ierr)
+      if (ierr .ne. 0) stop
+
+! Rows are visited with iat ascending and jat ascending within a row. Cu
+! atoms hold indices 1..nCuCl and H atoms the rest, so each Cu row lists its
+! Cu neighbours before its H neighbours and the H rows come last: the same
+! Cu-Cu, Cu-H, H-H visiting order as the species-blocked sweeps.
+      do iat = 1,natoms
+        do kpr = vnl_row(iat),vnl_row(iat+1) - 1
+          jat = vnl_jlist(kpr)
           sum2 = 0.
           do ixyz = 1,3
             icoo = 3*(iat - 1) + ixyz
@@ -99,12 +117,13 @@
             if (ABS(del) .gt. 0.5*PL(ixyz))del = del*(1. - PL(ixyz)/ABS(del))
             sum2 = sum2 + del**2
             dr(ixyz) = del
-         enddo
+          enddo
 
           if (sum2 .le. 0.)  goto 999
-          if (sum2 .lt. rcut2) then
-             rij = SQRT(sum2)
+          if (sum2 .ge. rcut2) cycle
+          rij = SQRT(sum2)
 
+          if (iat .le. nCuCl .and. jat .le. nCuCl) then    ! Cu-Cu
             CALL EAMPhiCuCu(rij,phiij,dphiijdr_r)
             phi = phi + phiij
 
@@ -121,90 +140,44 @@
               fa(icoo) = fa(icoo) + f_phi
               fa(jcoo) = fa(jcoo) - f_phi
             enddo
+
+          else if (iat .le. nCuCl) then                    ! Cu-H
+            CALL EAMPhiHCu(rij,phiij,dphiijdr_r)
+            phi = phi + phiij*fact
+
+            CALL EAMRhoH (rij, rhoij, dummy, 0)
+
+            CALL EAMRhoCu (rij, rhoji, dummy, 0)
+
+            rho(iat) = rho(iat) + rhoij*fact
+            rho(jat) = rho(jat) + rhoji
+            do ixyz = 1,3
+              icoo = 3*(iat - 1) + ixyz
+              jcoo = 3*(jat - 1) + ixyz
+              f_phi = dr(ixyz)*dphiijdr_r*fact
+              fa(icoo) = fa(icoo) + f_phi
+              fa(jcoo) = fa(jcoo) - f_phi
+            enddo
+
+          else                                             ! H-H
+            CALL EAMPhiHH(rij,phiij,dphiijdr_r)
+            phi = phi + phiij*fact
+
+            CALL EAMRhoH (rij, rhoij, dummy, 0)
+            rhoji = rhoij
+            rho(iat) = rho(iat) + rhoij
+            rho(jat) = rho(jat) + rhoji
+
+            do ixyz = 1,3
+              icoo = 3*(iat - 1) + ixyz
+              jcoo = 3*(jat - 1) + ixyz
+              f_phi = dr(ixyz)*dphiijdr_r*fact
+              fa(icoo) = fa(icoo) + f_phi
+              fa(jcoo) = fa(jcoo) - f_phi
+            enddo
           endif
         enddo
-
-        do im = 1,nimpo*nimrp     ! Loop over all images in FPI chains
-          do jH = 1,nH            ! Loop over H atoms
-            jcl = nCuCl + nCuQ + jH
-            jat = iatclass(jcl) + (im - 1)
-            sum2 = 0.
-            do ixyz = 1,3
-              icoo = 3*(iat - 1) + ixyz
-              jcoo = 3*(jat - 1) + ixyz
-              del = ra(jcoo) - ra(icoo)
-              if (ABS(del) .gt. 0.5*PL(ixyz))del = del*(1. - PL(ixyz)/ABS(del))
-              sum2 = sum2 + del**2
-              dr(ixyz) = del
-           enddo
-
-            if (sum2 .le. 0.)  goto 999
-            if (sum2 .lt. rcut2) then
-               rij = SQRT(sum2)
-
-              CALL EAMPhiHCu(rij,phiij,dphiijdr_r)
-              phi = phi + phiij*fact
-
-              CALL EAMRhoH (rij, rhoij, dummy, 0)
-
-              CALL EAMRhoCu (rij, rhoji, dummy, 0)
-
-              rho(iat) = rho(iat) + rhoij*fact
-              rho(jat) = rho(jat) + rhoji
-              do ixyz = 1,3
-                icoo = 3*(iat - 1) + ixyz
-                jcoo = 3*(jat - 1) + ixyz
-                f_phi = dr(ixyz)*dphiijdr_r*fact
-                fa(icoo) = fa(icoo) + f_phi
-                fa(jcoo) = fa(jcoo) - f_phi
-              enddo
-            endif
-          enddo
-        enddo      ! End loop over images in MAP chains
-      enddo    ! End loop over classical Cu atoms
-
-
-
-      do im = 1,nimpo*nimrp    ! Loop again over images
-        do iH = 1,nH          ! Loop using H atoms as atom i
-          icl = nCuCl + nCuQ + iH
-          iat = iatclass(icl) + (im - 1)
-
-          do jH = iH+1,nH        ! Other H atoms
-            jcl = nCuCl + nCuQ + jH
-            jat = iatclass(jcl) + (im - 1)
-            sum2 = 0.
-            do ixyz = 1,3
-              icoo = 3*(iat - 1) + ixyz
-              jcoo = 3*(jat - 1) + ixyz
-              del = ra(jcoo) - ra(icoo)
-              if (ABS(del) .gt. 0.5*PL(ixyz))del = del*(1. - PL(ixyz)/ABS(del))
-              sum2 = sum2 + del**2
-              dr(ixyz) = del
-            enddo
-            if (sum2 .le. 0.)  goto 999
-
-            if (sum2 .lt. rcut2) then
-              rij = SQRT(sum2)
-              CALL EAMPhiHH(rij,phiij,dphiijdr_r)
-              phi = phi + phiij*fact
-
-              CALL EAMRhoH (rij, rhoij, dummy, 0)
-              rhoji = rhoij
-              rho(iat) = rho(iat) + rhoij
-              rho(jat) = rho(jat) + rhoji
-
-              do ixyz = 1,3
-                icoo = 3*(iat - 1) + ixyz
-                jcoo = 3*(jat - 1) + ixyz
-                f_phi = dr(ixyz)*dphiijdr_r*fact
-                fa(icoo) = fa(icoo) + f_phi
-                fa(jcoo) = fa(jcoo) - f_phi
-              enddo
-            endif
-          enddo
-        enddo        ! End loop using H atoms as atom i
-      enddo       ! End loop over images
+      enddo
 
       do iCuCl = 1,nCuCl
         icl = iCuCl
@@ -226,13 +199,10 @@
         enddo
       enddo
 
-      do iCuCl = 1,nCuCl
-        icl = iCuCl
-        iat = iatclass(icl)
-
-        do jCuCl = iCuCl+1,nCuCl    ! Loop over classical Cu atoms
-          jcl = jCuCl
-          jat = iatclass(jcl)
+! Second pass over the same half list, in the same visiting order.
+      do iat = 1,natoms
+        do kpr = vnl_row(iat),vnl_row(iat+1) - 1
+          jat = vnl_jlist(kpr)
           sum2 = 0.
           do ixyz = 1,3
             icoo = 3*(iat - 1) + ixyz
@@ -243,87 +213,30 @@
             dr(ixyz) = del
           enddo
 
-          if (sum2 .lt. rcut2) then
-            rij = SQRT(sum2)
+          if (sum2 .ge. rcut2) cycle
+          rij = SQRT(sum2)
+
+          if (iat .le. nCuCl .and. jat .le. nCuCl) then    ! Cu-Cu
             CALL EAMRhoCu (rij, dummy, drhoij_r, 1)   ! 1:  do calculate derivative
             drhoji_r = drhoij_r
-            do ixyz = 1,3
-              icoo = 3*(iat - 1) + ixyz
-              jcoo = 3*(jat - 1) + ixyz
-              f_rhoij = dr(ixyz)*drhoij_r*dFdrho(iat)
-              f_rhoji = -dr(ixyz)*drhoji_r*dFdrho(jat)
-              fa(icoo) = fa(icoo) + f_rhoij - f_rhoji
-              fa(jcoo) = fa(jcoo) - f_rhoij + f_rhoji
-            enddo
+
+          else if (iat .le. nCuCl) then                    ! Cu-H
+            CALL EAMRhoH (rij, dummy, drhoij_r, 1)
+            CALL EAMRhoCu (rij, dummy, drhoji_r, 1)
+            drhoij_r = drhoij_r*fact
+
+          else                                             ! H-H
+            CALL EAMRhoH (rij, dummy, drhoij_r, 1)
+            drhoji_r = drhoij_r
           endif
-        enddo
 
-        do im = 1,nimpo*nimrp
-          do jH = 1,nH            ! Loop over H atoms
-            jcl = nCuCl + nCuQ + jH
-            jat = iatclass(jcl) + (im - 1)
-            sum2 = 0.
-            do ixyz = 1,3
-              icoo = 3*(iat - 1) + ixyz
-              jcoo = 3*(jat - 1) + ixyz
-              del = ra(jcoo) - ra(icoo)
-              if (ABS(del) .gt. 0.5*PL(ixyz))del = del*(1. - PL(ixyz)/ABS(del))
-              sum2 = sum2 + del**2
-              dr(ixyz) = del
-            enddo
-
-            if (sum2 .lt. rcut2) then
-              rij = SQRT(sum2)
-              CALL EAMRhoH (rij, dummy, drhoij_r, 1)
-              CALL EAMRhoCu (rij, dummy, drhoji_r, 1)
-              drhoij_r = drhoij_r*fact
-              do ixyz = 1,3
-                icoo = 3*(iat - 1) + ixyz
-                jcoo = 3*(jat - 1) + ixyz
-                f_rhoij = dr(ixyz)*drhoij_r*dFdrho(iat)
-                f_rhoji = -dr(ixyz)*drhoji_r*dFdrho(jat)
-                fa(icoo) = fa(icoo) + f_rhoij - f_rhoji
-                fa(jcoo) = fa(jcoo) - f_rhoij + f_rhoji
-              enddo
-            endif
-          enddo
-        enddo
-      enddo
-
-      do im = 1,nimpo*nimrp
-        do iH = 1,nH
-          icl = nCuCl + nCuQ + iH
-          iat = iatclass(icl) + (im - 1)
-
-          do jH = iH+1,nH
-            jcl = nCuCl + nCuQ + jH
-            jat = iatclass(jcl) + (im - 1)
-            sum2 = 0.
-            do ixyz = 1,3
-              icoo = 3*(iat - 1) + ixyz
-              jcoo = 3*(jat - 1) + ixyz
-              del = ra(jcoo) - ra(icoo)
-              if (ABS(del) .gt. 0.5*PL(ixyz))del = del*(1. - PL(ixyz)/ABS(del))
-              sum2 = sum2 + del**2
-              dr(ixyz) = del
-            enddo
-
-            if (sum2 .lt. rcut2) then
-              rij = SQRT(sum2)
-              CALL EAMRhoH (rij, dummy, drhoij_r, 1)
-              drhoji_r = drhoij_r
-              do ixyz = 1,3
-                icoo = 3*(iat - 1) + ixyz
-                jcoo = 3*(jat - 1) + ixyz
-                f_rhoij = dr(ixyz)*drhoij_r*dFdrho(iat)
-                f_rhoji = -dr(ixyz)*drhoji_r*dFdrho(jat)
-                fa(icoo) = fa(icoo) + f_rhoij - f_rhoji
-                fa(jcoo) = fa(jcoo) - f_rhoij  + f_rhoji
-
-210   format(a15,3i6)
-211   format(a30,3g13.6)
-              enddo
-            endif
+          do ixyz = 1,3
+            icoo = 3*(iat - 1) + ixyz
+            jcoo = 3*(jat - 1) + ixyz
+            f_rhoij = dr(ixyz)*drhoij_r*dFdrho(iat)
+            f_rhoji = -dr(ixyz)*drhoji_r*dFdrho(jat)
+            fa(icoo) = fa(icoo) + f_rhoij - f_rhoji
+            fa(jcoo) = fa(jcoo) - f_rhoij + f_rhoji
           enddo
         enddo
       enddo
