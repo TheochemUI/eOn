@@ -12,7 +12,6 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
-#include <cstring>
 #include <memory>
 #include <mutex>
 #include <stdexcept>
@@ -149,23 +148,6 @@ public:
   template <typename Fn> void forEach(const double *R, Fn &&fn) const {
     const double cutoff2 = opt_.cutoff * opt_.cutoff;
     const VesinNeighborList &vl = nl_.raw();
-    // Evaluation at the exact build positions (the common one-shot case:
-    // point jobs, the first call after any rebuild) reads the distances and
-    // vectors vesin already computed during the build instead of re-scanning.
-    if (freshArrays_ &&
-        std::memcmp(R, Rref_.data(), Rref_.size() * sizeof(double)) == 0) {
-      for (std::size_t p = 0; p < vl.length; ++p) {
-        const double r = vl.distances[p];
-        if (r * r <= cutoff2) {
-          const auto i = static_cast<int32_t>(vl.pairs[p][0]);
-          const auto j = static_cast<int32_t>(vl.pairs[p][1]);
-          // stored vector is r_j - r_i (+ S @ H); eOn convention negates
-          fn(i, j, -vl.vectors[p][0], -vl.vectors[p][1], -vl.vectors[p][2],
-             r * r);
-        }
-      }
-      return;
-    }
     if (mic_) {
       if (micInv_[0] == 0.0 && micInv_[1] == 0.0 && micInv_[2] == 0.0) {
         // Free boundaries: no folds at all.
@@ -228,11 +210,6 @@ public:
   [[nodiscard]] std::size_t pairCount() const { return nl_.size(); }
 
 private:
-  /// Systems small enough to keep vesin's distance/vector arrays for the
-  /// fresh-evaluation path; larger lists would inflate peak memory for a
-  /// path that only serves the first call after a rebuild.
-  static constexpr std::size_t kFreshArraysMaxAtoms = 512;
-
   VesinNeighbors nl_;
   std::vector<double> Rref_;
   std::array<double, 9> boxref_{};
@@ -240,7 +217,6 @@ private:
   Options opt_{};
   std::size_t n_{0};
   bool mic_{false};
-  bool freshArrays_{false};
   /// MIC-mode candidate set that is the complete pair graph: valid for any
   /// positions with the same atoms/box/options (the eval fold re-derives
   /// exact geometry, and no pair can ever leave a complete candidate set).

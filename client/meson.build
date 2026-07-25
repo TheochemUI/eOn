@@ -395,12 +395,10 @@ if not vesin_dep.found() and is_windows
     vesin_dep = cppc.find_library('libvesin', required: false)
 endif
 if not vesin_dep.found()
-    # vesin 0.6 threads its builds (std::thread + OpenMP when available).
+    # vesin 0.6 threads its builds with std::thread only — do NOT add
+    # OpenMP here: an unused libgomp costs ~0.3ms of load/relocation on
+    # every eonclient start.
     vesin_int_deps = [dependency('threads')]
-    vesin_omp_dep = dependency('openmp', required: false)
-    if vesin_omp_dep.found()
-        vesin_int_deps += vesin_omp_dep
-    endif
     # Static: one fewer shared object to relocate at eonclient startup
     # (the ASV point fixture is startup-dominated).
     vesin_int = static_library(
