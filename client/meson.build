@@ -466,11 +466,9 @@ _linkto += eoncbase
 subdir('potentials/EAM')
 subdir('potentials/EMT')
 subdir('potentials/ExtPot')
-subdir('potentials/IMD')
 if not is_windows
     subdir('potentials/SocketNWChem')
 endif
-subdir('potentials/NewPot')
 
 # rgpot roles (see docs/user_guide/rgpot_integration.md):
 #   with_rgpot  -> nwchempot_dep + cpmdpot_dep (direct dlopen engines in eOn)
@@ -558,8 +556,6 @@ potentials = [
     eam,
     emt,
     extpot,
-    imd,
-    newpot,
 ]
 if not is_windows
     potentials += [socket_nwchem]
@@ -740,13 +736,11 @@ endif
 # LAMMPS: always compiled, loaded at runtime via dlopen
 subdir('potentials/LAMMPS')
 potentials += [lammps_pot]
+# features_list scans _args for -DLAMMPS_POT; the arm is unconditional.
+_args += ['-DLAMMPS_POT']
 
 if py_embed
     _args += ['-DEMBED_PYTHON']
-    # subdir('potentials/PyAMFF')
-    # pyamff,
-    # subdir('potentials/QSC')
-    # potentials += [ qsc ]
     if get_option('with_ase')
         pyb11f_deps = [dependency('pybind11')]
         _deps += [pyb11f_deps]

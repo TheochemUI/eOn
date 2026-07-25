@@ -57,22 +57,24 @@ FeHe
 EAM_Al
 : Embedded atom method parameterized for Aluminum.
 
-QSC {cite:p}`pot-kimuraQuantumSuttonChenManyBody1998`
-: Quantum Sutton-Chen potential, for FCC metals. Neighbor pairs via
-  [vesin](neighbor_lists.md) (no pot-local Verlet list).
-
 EMT
 : Effective medium theory, for metals.
 
 LJ {cite:p}`pot-jonesDeterminationMolecularFields1924`
-: Lennard-Jones in reduced units. Neighbor pairs via
+: Lennard-Jones in reduced units, served by `rgpot`. Neighbor pairs via
   [vesin](neighbor_lists.md); timed by ASV
   `TimeMinimizationLJCluster` (ljcluster).
 
+LJCluster {cite:p}`pot-jonesDeterminationMolecularFields1924`
+: Lennard-Jones cluster variant, served by `rgpot`.
+
 Morse_Pt
-: Hard sphere morse potential for Platinum. Neighbor pairs via
-  [vesin](neighbor_lists.md); timed by ASV `TimePointMorsePt` /
+: Hard sphere morse potential for Platinum, served by `rgpot`. Neighbor
+  pairs via [vesin](neighbor_lists.md); timed by ASV `TimePointMorsePt` /
   saddle / NEB Morse fixtures.
+
+ZBL
+: Ziegler-Biersack-Littmark screened nuclear repulsion, served by `rgpot`.
 
 Lenosky_Si {cite:p}`pot-lenoskyHighlyOptimizedEmpirical2000`
 : Lenosky potential, for silicon.
@@ -91,12 +93,6 @@ TIP4P {cite:p}`pot-jorgensenComparisonSimplePotential1983`
 
 SPCE {cite:p}`pot-berendsenMissingTermEffective1987`
 : Extended simple point charge model for water
-
-```{deprecated} 2.0
-These potentials are missing in the SVN sources..
-bopfox
-: Bond order potential, for metals
-```
 
 ## Configuration
 

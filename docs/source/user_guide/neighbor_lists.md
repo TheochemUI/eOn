@@ -2,7 +2,7 @@
 myst:
   html_meta:
     "description": "Neighbor lists in eOn: vesin as the single geometry backend; performance via ASV eonclient benches."
-    "keywords": "eOn, vesin, neighbor list, ASV, Morse, LJ, QSC"
+    "keywords": "eOn, vesin, neighbor list, ASV, Morse, LJ, rgpot"
 ---
 
 # Neighbor lists (vesin)
@@ -17,7 +17,7 @@ Verlet tables or O(N²) MIC loops for new work.
 |-------|-----|---------|
 | Python server geometry | `eon.geometry.neighbors.neighbor_list` | `vesin.NeighborList` |
 | Process-atom shells / displace | `eon.atoms` / `get_process_atoms` | same |
-| Classical C++ pair pots (LJ, Morse, LJCluster, QSC) | `eonc::PairListCache` (Verlet-skin cache over vesin) | `vesin_neighbors` (C) |
+| Classical C++ pair pots (LJ, Morse, LJCluster, ZBL) | `rgpot::nlist::PairListCache` (Verlet-skin cache over vesin, in the [rgpot](https://github.com/OmniPotentRPC/rgpot) repo) | `vesin_neighbors` (C) |
 | Metatomic | pot-local call into vesin C | same `libvesin` / vendored TU |
 | External engines (LAMMPS, VASP, ASE, …) | engine-owned | not eOn's NL |
 | Fortran pots (SW, EDIP, Lenosky, Aluminum, CuH2, FeHe, Tersoff) | `use vesin` / CSR helper modules | vendored `vesin_fortran` |
@@ -33,43 +33,33 @@ nl = neighbor_list(structure, cutoff=4.0)
 
 ## C++
 
-Pair potentials go through the Verlet-skin cache, not raw `VesinNeighbors`:
-
-```cpp
-#include "eon/VesinNeighbors.h"
-eonc::CachedPairList::Options opt;
-opt.cutoff = 5.0; // skin defaults to 1.0 Angstrom
-eonc::PairListCache::global().evaluate(
-    R, nAtoms, box9, opt,
-    [&](int32_t i, int32_t j, double dx, double dy, double dz, double r2) {
-      // d = r_i - r_j (minimum image applied), r2 = |d|^2 <= cutoff^2
-    });
-```
-
-`evaluate` captures the pair list lazily: the first sighting of a geometry
-family runs a fused eval-only scan (exactly the historical per-call loop)
-and records a phantom stamp; the second sighting captures the list. Pots
-that pass over the pairs more than once per force call (QSC) use
-`ensureVisit`, which captures eagerly and returns the slot for `forEach`.
+The classical pair pots (LJ, LJCluster, Morse, ZBL) live in **rgpot** and
+reach vesin through `rgpot::nlist::PairListCache`, the Verlet-skin cache in
+that repo. eOn consumes them through `RgpotAdapter`; the cache is not part
+of eOn's own surface. See the rgpot docs for `Options`, `evaluate`, and
+`ensureVisit`.
 
 The candidate list is built at `cutoff + skin`; while every atom stays
 within `skin/2` of its build position the cached pairs are re-used and the
 evaluation derives exact vectors from the *current* positions, filtered at
-the true cutoff — results match a fresh build bit-for-bit in pair content.
-On a slot miss in the MIC regime (orthorhombic box, cutoff within half the
-smallest periodic width) the kernel inlines into the build's single
-brute-force scan (`vesin_visit.hpp`); everything else builds through
-vesin's cell list and evaluates with the stored cell shifts. The pool
-(`PairListCache::global()`) matches slots by geometry proximity, so several
-NEB images sharing one pot instance each keep a live list on any
-thread-to-image assignment — including NEB's per-iteration worker threads,
-which would destroy any thread_local cache.
+the true cutoff — results match a fresh build in pair content. The pool
+matches slots by geometry proximity, so several NEB images sharing one pot
+instance each keep a live list on any thread-to-image assignment —
+including NEB's per-iteration worker threads, which would destroy any
+thread_local cache.
 
-`forEach` hands out the historical eOn convention **`d = r_i − r_j`** (the
-negated vesin vector). Raw `eonc::VesinNeighbors` (vesin convention
-`r_ij = r_j − r_i + S·H`) remains for consumers that need vesin's own
-buffers, e.g. Metatomic. `eoncbase` always links vesin (pkg-config / system
-/ vendored).
+`eonc::VesinNeighbors` (vesin convention `r_ij = r_j − r_i + S·H`) remains
+in eOn as the RAII wrapper for consumers that need vesin's own buffers:
+
+```cpp
+#include "eon/VesinNeighbors.h"
+eonc::VesinNeighbors nl;
+eonc::VesinNeighbors::Options opt;
+opt.cutoff = 5.0;
+nl.compute(R, nAtoms, box9, opt);
+```
+
+`eoncbase` always links vesin (pkg-config / system / vendored).
 
 **Do not** call `vesin_free` (or destroy a stack-local list) before every
 `compute`. Upstream documents that the same `VesinNeighborList` should be

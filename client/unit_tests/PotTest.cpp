@@ -93,8 +93,9 @@ TEST_CASE("Morse forces identical from cached and freshly built pair lists",
   }
 
   // Same geometry again, now from a direct scan at r1 itself (first
-  // sighting after eviction). The Verlet guarantee makes both evaluations
-  // use the identical in-cutoff pair set.
+  // sighting after eviction). The Verlet guarantee in
+  // rgpot::nlist::PairListCache makes both evaluations use the identical
+  // in-cutoff pair set.
   matter->setPositions(r1);
   const double e_fresh = matter->getPotentialEnergy();
   const AtomMatrix f_fresh = matter->getForces();

@@ -38,9 +38,6 @@ eon/version.py
 # /client/potentials/Morse/
 /client/potentials/Morse/*.a
 
-# /client/potentials/NewPot/
-/client/potentials/NewPot/*.a
-
 # /client/potentials/SW/
 /client/potentials/SW/*.a
 

@@ -89,8 +89,6 @@ Potential:
                 - ams_io
                 - ase_nwchem
                 - ase_orca
-                - bop
-                - bopfox
                 - cuh2
                 - eam_al
                 - edip
@@ -98,7 +96,6 @@ Potential:
                 - ext_pot
                 - fehe
                 - gpr
-                - imd
                 - lammps
                 - lenosky_Si
                 - lj
@@ -106,10 +103,6 @@ Potential:
                 - metatomic
                 - morse_pt
                 - mpi
-                - new_pot
-                - pyamff
-                - python
-                - qsc
                 - rgpot
                 - socket_nwchem
                 - spce
@@ -122,7 +115,6 @@ Potential:
                 - vasp
                 - xtb
                 - zbl
-                - zpice
 
         mpi_poll_period:
             kind: float

@@ -22,10 +22,6 @@
 #include "eon/potentials/CatLearnPot/CatLearnPot.h"
 #endif
 
-#ifdef IMD_POT
-#include "eon/potentials/IMD/IMD.h"
-#endif
-
 #ifdef WITH_GPRD
 #include "eon/potentials/GPRPotential/GPRPotential.h"
 #endif
@@ -55,15 +51,9 @@
 #include "eon/potentials/Tersoff/Tersoff.h"
 
 #ifdef EMBED_PYTHON
-
-#ifdef PYAMFF_POT
-#include "eon/potentials/PyAMFF/PyAMFF.h"
-#endif
 #ifdef WITH_ASE_POT
 #include "eon/potentials/ASE/ASE.h"
 #endif
-
-#include "eon/potentials/QSC/QSC.h"
 #endif
 
 #ifdef EONMPI
@@ -71,10 +61,6 @@
 #endif
 
 #include "eon/potentials/LAMMPS/LAMMPSPot.h"
-
-#ifdef NEW_POT
-#include "eon/potentials/NewPot/NewPot.h"
-#endif
 
 // TODO: This should be guarded by WITH_FORTRAN as well
 #ifdef CUH2_POT
@@ -172,21 +158,9 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
                                       rgpot::MorseConfig{});
     break;
   }
-#ifdef NEW_POT
-  case PotType::NEW: {
-    return (std::make_shared<NewPot>(params));
-    break;
-  }
-#endif
 #ifdef CUH2_POT
   case PotType::CUH2: {
     return (std::make_shared<CuH2>(params));
-    break;
-  }
-#endif
-#ifdef IMD_POT
-  case PotType::IMD: {
-    return (std::make_shared<IMD>(params));
     break;
   }
 #endif
@@ -253,22 +227,12 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   }
 #endif
 #ifdef EMBED_PYTHON
-#ifdef PYAMFF_POT
-  case PotType::PYAMFF: {
-    return (std::make_shared<PyAMFF>());
-    break;
-  }
-#endif
 #ifdef WITH_ASE_POT
   case PotType::ASE_POT: {
     return (std::make_shared<ASE>(params));
     break;
   }
 #endif
-  // case PotType::QSC: {
-  //   return (std::make_shared<QSC>());
-  //   break;
-  // }
 #endif
 #ifdef WITH_AMS
   case PotType::AMS: {
@@ -280,17 +244,6 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
 #endif
-#ifdef WITH_GPRD
-  // case PotType::GPR: {
-  //   return "gpr"s;
-  //   break;
-  // }
-#endif
-  // case PotType::PYTHON: {
-  //   TODO: Implement
-  //   return "python"s;
-  //   break;
-  // }
 #ifdef WITH_CATLEARN
   case PotType::CatLearn: {
     return (std::make_shared<CatLearnPot>(params));

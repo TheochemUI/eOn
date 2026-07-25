@@ -42,11 +42,6 @@ if get_option('with_catlearn')
     py_embed = true
 endif
 
-if get_option('with_qsc')
-    py_modules += ['cython']
-    py_embed = true
-endif
-
 if get_option('pip_metatomic')
     py_modules += ['vesin', 'metatensor', 'metatensor.torch', 'metatomic.torch']
     # We don't need the runtime, so we don't change py_embed
