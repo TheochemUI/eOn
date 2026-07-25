@@ -382,19 +382,42 @@ endif
 dl_dep = cppc.find_library('dl', required: false)
 _deps += dl_dep
 
-# rgpot discovery starts here because the vesin choice below depends on it:
-# a wrap-built rgpot carries its own patched vesin, and linking eOn's copy
-# next to it would define every vesin symbol twice.
+# rgpot resolution starts here because the vesin choice below depends on
+# it: a wrap-built rgpot carries its own patched vesin, and linking eOn's
+# copy next to it would define every vesin symbol twice. The roles the
+# resulting objects play are wired further down, once the pots exist.
 #
 # dependency('rgpot') with default allow_fallback configures the wrap once
 # with *default* options before eOn can pass its own; get_variable() then
 # fails for anything the default profile skipped. Force pkg-config-only.
+_rgpot_proj = []
 _rgpot_pkg = dependency(
     'rgpot',
     method: 'pkg-config',
     required: false,
     allow_fallback: false,
 )
+if not _rgpot_pkg.found()
+    # One profile must serve every eOn consumer in this configure: pots
+    # always; the RPC stack only when the RGPOT arm or serve mode asks
+    # (keeps capnp-rpc out of plain builds).
+    rgpot_opts = {
+        'with_rpc_client_only': false,
+        'pure_lib': true,
+        'with_tests': false,
+        'with_examples': false,
+        # engines stay runtime dlopen; do not force fat metatomic/xtb link
+        'with_xtb': false,
+        'with_metatomic': false,
+        # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H are
+        # Fortran kernels inside librgpot.
+        'with_fortran_pots': 'enabled',
+    }
+    if get_option('with_rgpot') or get_option('with_serve')
+        rgpot_opts += {'with_rpc': true}
+    endif
+    _rgpot_proj = subproject('rgpot', default_options: rgpot_opts)
+endif
 
 # vesin: single neighbor-list backend for classical pots + Metatomic.
 # Prefer pkg-config / system; else the rgpot subproject's vendored copy;
@@ -409,12 +432,10 @@ endif
 if not vesin_dep.found() and is_windows
     vesin_dep = cppc.find_library('libvesin', required: false)
 endif
-_vesin_from_rgpot = false
 if not vesin_dep.found() and not _rgpot_pkg.found()
-    # The rgpot subproject builds vesin already, with the local patches the
-    # Fortran interface binds to. Take that one; it arrives below, once the
-    # subproject exists.
-    _vesin_from_rgpot = true
+    # The rgpot subproject builds vesin already, with the local patches its
+    # Fortran interface binds to.
+    vesin_dep = _rgpot_proj.get_variable('vesin_dep')
     message('vesin: from the rgpot subproject')
 elif not vesin_dep.found()
     # vesin 0.6 threads its builds with std::thread only — do NOT add
@@ -443,9 +464,7 @@ else
     _incdirs += [include_directories('thirdparty/vesin')]
     message('vesin: using system / pkg-config')
 endif
-if not _vesin_from_rgpot
-    _deps += [vesin_dep]
-endif
+_deps += [vesin_dep]
 
 eoncbase_sources = [
     'fpe_handler.cpp',
@@ -483,7 +502,6 @@ endif
 # for matching standalone installs — no torch/xtb at link time):
 #   with_rpc_client_only=true, pure_lib=true, with_tests=false,
 #   with_examples=false  (+ with_xtb=false, with_metatomic=false for packages)
-_rgpot_proj = []
 ptlrpc_dep = disabler()
 nwchempot_dep = disabler()
 cpmdpot_dep = disabler()
@@ -502,31 +520,10 @@ if _rgpot_pkg.found()
     cpmdpot_dep = _rgpot_pkg
     ptlrpc_dep = _rgpot_pkg
 else
-    # 2) wrap / multi-source fallback. One profile must serve every eOn
-    # consumer in this configure: pots always; the RPC stack only when the
-    # RGPOT arm or serve mode asks (keeps capnp-rpc out of plain builds).
+    # 2) wrap / multi-source fallback, configured next to the vesin choice
+    # above; here it only takes on its eOn roles.
     message('rgpot: pkg-config not found; falling back to subproject wrap')
-    rgpot_opts = {
-        'with_rpc_client_only': false,
-        'pure_lib': true,
-        'with_tests': false,
-        'with_examples': false,
-        # engines stay runtime dlopen; do not force fat metatomic/xtb link
-        'with_xtb': false,
-        'with_metatomic': false,
-        # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H are
-        # Fortran kernels inside librgpot.
-        'with_fortran_pots': 'enabled',
-    }
-    if get_option('with_rgpot') or get_option('with_serve')
-        rgpot_opts += {'with_rpc': true}
-    endif
-    _rgpot_proj = subproject('rgpot', default_options: rgpot_opts)
     rgpot_dep = _rgpot_proj.get_variable('rgpot_dep')
-    if _vesin_from_rgpot
-        vesin_dep = _rgpot_proj.get_variable('vesin_dep')
-        _deps += [vesin_dep]
-    endif
     # meson applies subproject default_options only on the first configure
     # of a build directory, so a directory configured before this profile
     # changed silently keeps the old values and drops potentials. Fail
