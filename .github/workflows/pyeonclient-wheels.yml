@@ -18,9 +18,16 @@ on:
   workflow_dispatch:
     inputs:
       publish:
-        description: "Publish built wheels to PyPI"
+        description: "Publish built wheels"
         type: boolean
         default: false
+      target:
+        description: "Index to publish to (rehearse on TestPyPI first)"
+        type: choice
+        options:
+          - testpypi
+          - pypi
+        default: testpypi
       build_metatomic:
         description: "Also build CPU-metatomic wheels"
         type: boolean
@@ -263,8 +270,8 @@ jobs:
       || (github.event_name == 'workflow_dispatch' && inputs.publish)
     runs-on: ubuntu-latest
     environment:
-      name: pypi-pyeonclient
-      url: https://pypi.org/p/pyeonclient
+      name: ${{ (github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi') && 'testpypi-pyeonclient' || 'pypi-pyeonclient' }}
+      url: ${{ (github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi') && 'https://test.pypi.org/p/pyeonclient' || 'https://pypi.org/p/pyeonclient' }}
     permissions:
       contents: read
       id-token: write
@@ -289,9 +296,12 @@ jobs:
             ls upload | sort | uniq -d
             exit 1
           fi
-      - name: Publish to PyPI
+      # A tag publishes to PyPI; a manual run defaults to TestPyPI so the
+      # upload can be rehearsed before the irreversible one.
+      - name: Publish
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: upload/
+          repository-url: ${{ (github.event_name == 'workflow_dispatch' && inputs.target == 'testpypi') && 'https://test.pypi.org/legacy/' || '' }}
           skip-existing: true
           verbose: true
