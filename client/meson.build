@@ -519,6 +519,18 @@ if _rgpot_pkg.found()
     nwchempot_dep = _rgpot_pkg
     cpmdpot_dep = _rgpot_pkg
     ptlrpc_dep = _rgpot_pkg
+    # An installed rgpot can be built without the Fortran kernels, and then
+    # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H resolve to
+    # nothing at link time. rgpot.pc advertises them; say so plainly here
+    # rather than failing on undefined vtables.
+    if cppc.get_define('RGPOT_HAS_FORTRAN_POTS', dependencies: _rgpot_pkg) == ''
+        error(
+            'installed rgpot was built without Fortran potentials '
+            + '(rgpot.pc does not define RGPOT_HAS_FORTRAN_POTS). '
+            + 'Rebuild rgpot with -Dwith_fortran_pots=enabled, or point '
+            + 'PKG_CONFIG_PATH at one that has them.',
+        )
+    endif
 else
     # 2) wrap / multi-source fallback, configured next to the vesin choice
     # above; here it only takes on its eOn roles.
