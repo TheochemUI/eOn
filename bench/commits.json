@@ -70,11 +70,14 @@
     "7361": "Merge pull request #386 from HaoZeke/feat/vesin-unified-neighborlist",
     "7362": "style(lammps): clang-format worker survival fixes",
     "7364": "Merge pull request #387 from HaoZeke/fix/lammps-worker-survives-bad-geometry",
-    "7413": "docs(news): reconcile the vesin fragment with the rgpot cutover in the same release",
-    "7414": "chore(deps): advance the rgpot pin to the documented layout",
-    "7415": "fix(build): reject an installed rgpot without the Fortran potentials",
-    "7416": "chore(deps): pin rgpot to the v3.0.0 release tag",
-    "7417": "Merge pull request #389 from HaoZeke/feat/rgpot-pot-cutover-1"
+    "7412": "docs(news): reconcile the vesin fragment with the rgpot cutover in the same release",
+    "7413": "chore(deps): advance the rgpot pin to the documented layout",
+    "7414": "fix(build): reject an installed rgpot without the Fortran potentials",
+    "7415": "chore(deps): pin rgpot to the v3.0.0 release tag",
+    "7416": "Merge pull request #389 from HaoZeke/feat/rgpot-pot-cutover-1",
+    "7417": "chore(version): v3.0.0",
+    "7418": "fix(build): detect Fortran instead of requiring it",
+    "7421": "Merge pull request #390 from HaoZeke/release/3.0.0"
   },
   "dcbade17ecc8386a4ee5804354b4994c8ba1d6d8": "update lammps webpage",
   "292bc143343709b10fb7ed150ae5bb493748b289": "gitig: Update",
@@ -150,5 +153,8 @@
   "75452eee38a85aedef285a5b1aa3ba5b429442c8": "chore(deps): advance the rgpot pin to the documented layout",
   "32c2a6824a7497e46b34b08d1225c59a876271c9": "fix(build): reject an installed rgpot without the Fortran potentials",
   "16141ef4fab9f23e3ec1167268d8225abeb9fb58": "chore(deps): pin rgpot to the v3.0.0 release tag",
-  "3c58c9af5a2655ec3b3245605b8a79f386b9c6d6": "Merge pull request #389 from HaoZeke/feat/rgpot-pot-cutover-1"
+  "3c58c9af5a2655ec3b3245605b8a79f386b9c6d6": "Merge pull request #389 from HaoZeke/feat/rgpot-pot-cutover-1",
+  "043efe20c2e0ca115e38378a16f58284e3d02f4b": "chore(version): v3.0.0",
+  "1e3cb6ea2004d8003df1d587b87c2ccf1f86b521": "fix(build): detect Fortran instead of requiring it",
+  "e928825a420284a7f304be116b2cec1f0e2716df": "Merge pull request #390 from HaoZeke/release/3.0.0"
 }
