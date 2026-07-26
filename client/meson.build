@@ -14,12 +14,22 @@ add_languages('c', required: true)
 cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
 
+# eOn compiles no Fortran of its own: the kernels live in librgpot. The
+# language is still detected rather than required, because a wrap build
+# compiles rgpot's kernels (rgpot asks for the language itself) and the
+# Windows link against them needs the flang runtime paths found below.
+# A build against an installed rgpot needs no Fortran compiler at all --
+# requiring one here made every such consumer supply an unused toolchain.
+#
+# with_fortran / with_cuh2 stay as potential selectors: they gate the
+# RgpotAdapter arms in Potential.cpp, not any compilation here.
 use_fortran = false
 if get_option('with_fortran') or get_option('with_cuh2')
-    use_fortran = true
-    add_languages('fortran', required: true)
-    fc = meson.get_compiler('fortran')
-    _fargs += fc.get_supported_arguments(['-fno-implicit-none'])
+    use_fortran = add_languages('fortran', required: false)
+    if use_fortran
+        fc = meson.get_compiler('fortran')
+        _fargs += fc.get_supported_arguments(['-fno-implicit-none'])
+    endif
 endif
 
 if get_option('use_mkl')
@@ -64,72 +74,49 @@ if is_windows
         # path by default and fails with LNK1104 on FortranRuntime.dynamic.lib
         # / flang_rt.runtime.dynamic.lib. Feedstock also puts this dir on LIB.
         # flang-new reports id 'llvm-flang' or 'flang' depending on Meson.
-        if use_fortran and fc.get_id() in ['flang', 'llvm-flang', 'flang-new']
-            _flang_rt_candidates = []
-            _flang_rt_libpath = run_command(
-                fc,
-                '-print-resource-dir',
-                check: false,
-            )
-            if _flang_rt_libpath.returncode() == 0
-                _flang_rt_res = _flang_rt_libpath.stdout().strip()
-                # Normalize D:\... to D:/... so join_paths / fs.is_* work.
-                _flang_rt_res = _flang_rt_res.replace('\\', '/')
-                _flang_rt_candidates += [
-                    join_paths(_flang_rt_res, 'lib', 'x86_64-pc-windows-msvc'),
-                    join_paths(_flang_rt_res, 'lib'),
-                    _flang_rt_res,
-                ]
-            endif
-            # Fallback: conda/pixi layout under the compiler's bindir parents.
-            # win-64 flang often ships import libs in Library/lib (not only under
-            # the clang resource triple dir).
-            _fc_path = fc.cmd_array()[0]
-            _fc_dir = fs.parent(_fc_path)
-            # .../Library/bin/flang-new.exe -> .../Library
-            _lib_root = fs.parent(_fc_dir)
-            _flang_rt_candidates += [
-                join_paths(_lib_root, 'lib'),
-                join_paths(_lib_root, 'lib', 'clang'),
-                join_paths(_lib_root, 'bin'),
-            ]
-            _flang_rt_dir = ''
-            foreach _cand : _flang_rt_candidates
-                if _flang_rt_dir != ''
-                    break
-                endif
-                if not fs.is_dir(_cand)
-                    continue
-                endif
-                # Direct match or clang/<ver>/lib/x86_64-pc-windows-msvc under cand
-                foreach _probe : [
-                    _cand,
-                    join_paths(_cand, 'lib', 'x86_64-pc-windows-msvc'),
-                ]
-                    foreach _frt : [
-                        'flang_rt.runtime.dynamic.lib',
-                        'FortranRuntime.dynamic.lib',
-                        'flang_rt.dynamic.lib',
+        if use_fortran
+            if fc.get_id() in ['flang', 'llvm-flang', 'flang-new']
+                _flang_rt_candidates = []
+                _flang_rt_libpath = run_command(
+                    fc,
+                    '-print-resource-dir',
+                    check: false,
+                )
+                if _flang_rt_libpath.returncode() == 0
+                    _flang_rt_res = _flang_rt_libpath.stdout().strip()
+                    # Normalize D:\... to D:/... so join_paths / fs.is_* work.
+                    _flang_rt_res = _flang_rt_res.replace('\\', '/')
+                    _flang_rt_candidates += [
+                        join_paths(_flang_rt_res, 'lib', 'x86_64-pc-windows-msvc'),
+                        join_paths(_flang_rt_res, 'lib'),
+                        _flang_rt_res,
                     ]
-                        if fs.is_file(join_paths(_probe, _frt))
-                            _flang_rt_dir = _probe
-                            break
-                        endif
-                    endforeach
+                endif
+                # Fallback: conda/pixi layout under the compiler's bindir parents.
+                # win-64 flang often ships import libs in Library/lib (not only under
+                # the clang resource triple dir).
+                _fc_path = fc.cmd_array()[0]
+                _fc_dir = fs.parent(_fc_path)
+                # .../Library/bin/flang-new.exe -> .../Library
+                _lib_root = fs.parent(_fc_dir)
+                _flang_rt_candidates += [
+                    join_paths(_lib_root, 'lib'),
+                    join_paths(_lib_root, 'lib', 'clang'),
+                    join_paths(_lib_root, 'bin'),
+                ]
+                _flang_rt_dir = ''
+                foreach _cand : _flang_rt_candidates
                     if _flang_rt_dir != ''
                         break
                     endif
-                endforeach
-                # Walk clang version dirs one level if cand is .../lib/clang
-                if _flang_rt_dir == '' and fs.name(_cand) == 'clang'
-                    # Meson has no readdir; try common versions from recent flang.
-                    foreach _ver : ['21', '20', '19', '18', '17']
-                        _probe = join_paths(
-                            _cand,
-                            _ver,
-                            'lib',
-                            'x86_64-pc-windows-msvc',
-                        )
+                    if not fs.is_dir(_cand)
+                        continue
+                    endif
+                    # Direct match or clang/<ver>/lib/x86_64-pc-windows-msvc under cand
+                    foreach _probe : [
+                        _cand,
+                        join_paths(_cand, 'lib', 'x86_64-pc-windows-msvc'),
+                    ]
                         foreach _frt : [
                             'flang_rt.runtime.dynamic.lib',
                             'FortranRuntime.dynamic.lib',
@@ -144,25 +131,50 @@ if is_windows
                             break
                         endif
                     endforeach
-                endif
-            endforeach
-            if _flang_rt_dir != ''
-                _linkargs += ['/LIBPATH:' + _flang_rt_dir]
-                message('flang_rt LIBPATH: ' + _flang_rt_dir)
-                foreach _frt : [
-                    'flang_rt.runtime.dynamic.lib',
-                    'FortranRuntime.dynamic.lib',
-                    'flang_rt.dynamic.lib',
-                ]
-                    if fs.is_file(join_paths(_flang_rt_dir, _frt))
-                        _linkargs += [join_paths(_flang_rt_dir, _frt)]
-                        break
+                    # Walk clang version dirs one level if cand is .../lib/clang
+                    if _flang_rt_dir == '' and fs.name(_cand) == 'clang'
+                        # Meson has no readdir; try common versions from recent flang.
+                        foreach _ver : ['21', '20', '19', '18', '17']
+                            _probe = join_paths(
+                                _cand,
+                                _ver,
+                                'lib',
+                                'x86_64-pc-windows-msvc',
+                            )
+                            foreach _frt : [
+                                'flang_rt.runtime.dynamic.lib',
+                                'FortranRuntime.dynamic.lib',
+                                'flang_rt.dynamic.lib',
+                            ]
+                                if fs.is_file(join_paths(_probe, _frt))
+                                    _flang_rt_dir = _probe
+                                    break
+                                endif
+                            endforeach
+                            if _flang_rt_dir != ''
+                                break
+                            endif
+                        endforeach
                     endif
                 endforeach
-            else
-                warning(
-                    'flang_rt import lib dir not found; MSVC link may LNK1104',
-                )
+                if _flang_rt_dir != ''
+                    _linkargs += ['/LIBPATH:' + _flang_rt_dir]
+                    message('flang_rt LIBPATH: ' + _flang_rt_dir)
+                    foreach _frt : [
+                        'flang_rt.runtime.dynamic.lib',
+                        'FortranRuntime.dynamic.lib',
+                        'flang_rt.dynamic.lib',
+                    ]
+                        if fs.is_file(join_paths(_flang_rt_dir, _frt))
+                            _linkargs += [join_paths(_flang_rt_dir, _frt)]
+                            break
+                        endif
+                    endforeach
+                else
+                    warning(
+                        'flang_rt import lib dir not found; MSVC link may LNK1104',
+                    )
+                endif
             endif
         endif
     endif
