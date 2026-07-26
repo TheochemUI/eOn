@@ -20,7 +20,7 @@ Verlet tables or O(N²) MIC loops for new work.
 | Classical C++ pair pots (LJ, Morse, LJCluster, ZBL) | `rgpot::nlist::PairListCache` (Verlet-skin cache over vesin, in the [rgpot](https://github.com/OmniPotentRPC/rgpot) repo) | `vesin_neighbors` (C) |
 | Metatomic | pot-local call into vesin C | same `libvesin` / vendored TU |
 | External engines (LAMMPS, VASP, ASE, …) | engine-owned | not eOn's NL |
-| Fortran pots (SW, EDIP, Lenosky, Aluminum, CuH2, FeHe, Tersoff) | `use vesin` / CSR helper modules | vendored `vesin_fortran` |
+| Fortran pots (SW, EDIP, Lenosky, EAM-Al, CuH2, FeHe, Tersoff, TIP4P-H) | `rgpot_neighbors`, a CSR full-list table (in rgpot) | `vesin_fortran`, vendored in rgpot |
 
 ## Python
 
@@ -59,7 +59,11 @@ opt.cutoff = 5.0;
 nl.compute(R, nAtoms, box9, opt);
 ```
 
-`eoncbase` always links vesin (pkg-config / system / vendored).
+`eoncbase` always links vesin. It resolves in this order: an installed
+vesin (pkg-config, cmake, or plain library), else the copy the rgpot
+subproject already builds, else eOn's own vendored translation unit. The
+middle case matters when rgpot comes from the wrap: building both copies
+would put two definitions of every vesin symbol in one link.
 
 **Do not** call `vesin_free` (or destroy a stack-local list) before every
 `compute`. Upstream documents that the same `VesinNeighborList` should be
@@ -103,12 +107,14 @@ the PR workflow is the authoritative pair-wise run.
 
 ## Fortran
 
-The upstream vesin Fortran interface is vendored at
-`client/thirdparty/vesin/fortran/` and built as `vesin_fortran` under
-`with_fortran`; pot targets take it via `vesin_f_dep`. SW, EDIP, and
-Lenosky call `use vesin` directly for their per-atom lists; Aluminum,
-CuH2, and FeHe enumerate candidates through free-form CSR helper modules
-(`vesin_al` / `vesin_cuh2` / `vesin_fehe`) while their fixed-form kernels
-keep the MIC and sign conventions; Tersoff iterates per-atom lists instead
-of all-atom sweeps. Every Fortran pot remains orthorhombic-only (they take
-the box diagonal).
+eOn compiles no Fortran. The kernels and the vendored vesin Fortran
+interface both live in rgpot, where every one of them reaches vesin the
+same way: `rgpot_neighbors` builds a CSR full neighbour list carrying pair
+vectors and distances, with the C API's Verlet `skin` option, and the
+kernels read rows out of it. The per-pot CSR helper modules that used to
+sit beside the fixed-form kernels here (`vesin_al`, `vesin_cuh2`,
+`vesin_fehe`) are gone with them.
+
+Every Fortran pot remains orthorhombic-only (they take the box diagonal).
+For the porting rules and the neighbour-table cell convention, see
+`docs/orgmode/reference/fortran_potentials.org` in rgpot.

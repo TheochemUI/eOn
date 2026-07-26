@@ -49,10 +49,26 @@ evaluation then proceeds lock-free.
 
 | `isThreadSafe()` | `needsPerImageInstance()` | Behavior | Examples |
 |:-:|:-:|:--|:--|
-| `true` | `false` | Shared instance, parallel threads | LJ, Morse, SW, EMT |
+| `true` | `false` | Shared instance, parallel threads | LJ, Morse, LJCluster, EMT |
 | `false` | `true` | Per-image instances, parallel threads | XTB, ASE, metatomic |
 | `true` | `true` | Per-image instances, parallel threads | MetatomicPotential (mutex fallback) |
-| `false` | `false` | Sequential evaluation | (none currently) |
+| `false` | `false` | Sequential evaluation | SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, TIP4P-H |
+
+### Where the answers come from
+
+Potentials that reach eOn through `RgpotAdapter` do not hard-code either
+flag: the adapter reads `caps().reentrancy` from the rgpot kernel, so the
+answer lives next to the physics rather than in a list on the caller side.
+`SharedInstance` maps to `isThreadSafe()`, `PerInstance` to
+`needsPerImageInstance()`, and `ProcessSerial` to neither, which is the
+last row above.
+
+The Fortran kernels all declare `ProcessSerial` today. That matches how
+they were treated before the port -- they were on the old hard-coded
+thread-safety blacklist -- and it is deliberately the conservative
+starting point rather than a claim about the rewritten code: the kernels
+carry no mutable module state any more, so promoting one is a per-kernel
+exercise in proving it and adding a test, not a sweeping change.
 
 The parallel check in NEB is:
 ```cpp
