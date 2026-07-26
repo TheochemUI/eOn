@@ -63,6 +63,11 @@ meson setup bbdir-both -Dwith_rgpot=true -Dwith_serve=true
 | `with_rgpot` | `WITH_RGPOT` | `nwchempot_dep`, `cpmdpot_dep` (frontends + schema) |
 | `with_serve` | `WITH_SERVE_MODE` | `ptlrpc_dep` (RPC server stack) |
 
+Both are convenience archives inside rgpot's single versioned `librgpot`,
+so neither adds a shared object next to it at run time. Packagers shipping
+eOn against an installed rgpot need `librgpot` alone; the QM *engines* in
+the table below stay separate because eOn `dlopen`s them.
+
 Runtime for direct mode: set `NWCHEMC_LIBRARY` / `RGPOT_NWCHEMC_ENGINE` (or
 `[RgpotPot] engine_path`) to a real `libnwchemc.so` built with NWChem embed
 support.

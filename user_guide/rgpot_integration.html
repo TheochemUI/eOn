@@ -458,6 +458,10 @@ are unchanged so multi-step optimize/NEB stays competitive with the socket.</p>
 </tbody>
 </table>
 </div>
+<p>Both are convenience archives inside rgpot’s single versioned <code class="docutils literal notranslate"><span class="pre">librgpot</span></code>,
+so neither adds a shared object next to it at run time. Packagers shipping
+eOn against an installed rgpot need <code class="docutils literal notranslate"><span class="pre">librgpot</span></code> alone; the QM <em>engines</em> in
+the table below stay separate because eOn <code class="docutils literal notranslate"><span class="pre">dlopen</span></code>s them.</p>
 <p>Runtime for direct mode: set <code class="docutils literal notranslate"><span class="pre">NWCHEMC_LIBRARY</span></code> / <code class="docutils literal notranslate"><span class="pre">RGPOT_NWCHEMC_ENGINE</span></code> (or
 <code class="docutils literal notranslate"><span class="pre">[RgpotPot]</span> <span class="pre">engine_path</span></code>) to a real <code class="docutils literal notranslate"><span class="pre">libnwchemc.so</span></code> built with NWChem embed
 support.</p>
@@ -517,7 +521,7 @@ support.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=ac7e2bcc"></script>
+      <script src="../_static/documentation_options.js?v=acc74ff5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

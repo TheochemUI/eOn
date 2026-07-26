@@ -289,7 +289,10 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#needsperimageinstance"><code class="docutils literal notranslate"><span class="pre">needsPerImageInstance()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#decision-table">Decision Table</a></li>
+<li><a class="reference internal" href="#decision-table">Decision Table</a><ul>
+<li><a class="reference internal" href="#where-the-answers-come-from">Where the answers come from</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#affected-code-paths">Affected Code Paths</a></li>
 <li><a class="reference internal" href="#performance">Performance</a></li>
 <li><a class="reference internal" href="#adding-a-new-potential">Adding a New Potential</a></li>
@@ -439,7 +442,7 @@ evaluation then proceeds lock-free.</p>
 <tr class="row-even"><td class="text-center"><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
 <td class="text-center"><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
 <td class="text-left"><p>Shared instance, parallel threads</p></td>
-<td class="text-left"><p>LJ, Morse, SW, EMT</p></td>
+<td class="text-left"><p>LJ, Morse, LJCluster, EMT</p></td>
 </tr>
 <tr class="row-odd"><td class="text-center"><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
 <td class="text-center"><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
@@ -454,16 +457,31 @@ evaluation then proceeds lock-free.</p>
 <tr class="row-odd"><td class="text-center"><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
 <td class="text-center"><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
 <td class="text-left"><p>Sequential evaluation</p></td>
-<td class="text-left"><p>(none currently)</p></td>
+<td class="text-left"><p>SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, TIP4P-H</p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<section id="where-the-answers-come-from">
+<h3>Where the answers come from<a class="headerlink" href="#where-the-answers-come-from" title="Link to this heading">¶</a></h3>
+<p>Potentials that reach eOn through <code class="docutils literal notranslate"><span class="pre">RgpotAdapter</span></code> do not hard-code either
+flag: the adapter reads <code class="docutils literal notranslate"><span class="pre">caps().reentrancy</span></code> from the rgpot kernel, so the
+answer lives next to the physics rather than in a list on the caller side.
+<code class="docutils literal notranslate"><span class="pre">SharedInstance</span></code> maps to <code class="docutils literal notranslate"><span class="pre">isThreadSafe()</span></code>, <code class="docutils literal notranslate"><span class="pre">PerInstance</span></code> to
+<code class="docutils literal notranslate"><span class="pre">needsPerImageInstance()</span></code>, and <code class="docutils literal notranslate"><span class="pre">ProcessSerial</span></code> to neither, which is the
+last row above.</p>
+<p>The Fortran kernels all declare <code class="docutils literal notranslate"><span class="pre">ProcessSerial</span></code> today. That matches how
+they were treated before the port – they were on the old hard-coded
+thread-safety blacklist – and it is deliberately the conservative
+starting point rather than a claim about the rewritten code: the kernels
+carry no mutable module state any more, so promoting one is a per-kernel
+exercise in proving it and adding a test, not a sweeping change.</p>
 <p>The parallel check in NEB is:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kt">bool</span><span class="w"> </span><span class="n">canParallel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pot</span><span class="o">-&gt;</span><span class="n">isThreadSafe</span><span class="p">()</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">perImagePotentials_</span><span class="p">;</span>
 </span><span data-line="2"><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">numImages</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">.</span><span class="n">main_options</span><span class="p">.</span><span class="n">parallel</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">canParallel</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
 </span></pre></div>
 </div>
+</section>
 </section>
 <section id="affected-code-paths">
 <h2>Affected Code Paths<a class="headerlink" href="#affected-code-paths" title="Link to this heading">¶</a></h2>
@@ -565,7 +583,7 @@ Set <code class="docutils literal notranslate"><span class="pre">parallel</span>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=ac7e2bcc"></script>
+      <script src="../_static/documentation_options.js?v=acc74ff5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

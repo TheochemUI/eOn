@@ -288,7 +288,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#python">Python</a></li>
 <li><a class="reference internal" href="#c">C++</a></li>
 <li><a class="reference internal" href="#how-we-measure-asv-not-one-off-scripts">How we measure (ASV, not one-off scripts)</a></li>
-<li><a class="reference internal" href="#not-yet-unified">Not yet unified</a></li>
+<li><a class="reference internal" href="#fortran">Fortran</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
   data-type="github" data-user="TheochemUI" data-repo="eOn">
@@ -405,8 +405,8 @@ Verlet tables or O(N²) MIC loops for new work.</p>
 <td><p><code class="docutils literal notranslate"><span class="pre">eon.atoms</span></code> / <code class="docutils literal notranslate"><span class="pre">get_process_atoms</span></code></p></td>
 <td><p>same</p></td>
 </tr>
-<tr class="row-even"><td><p>Classical C++ pair pots (LJ, Morse, LJCluster, QSC)</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">eonc::VesinNeighbors</span></code></p></td>
+<tr class="row-even"><td><p>Classical C++ pair pots (LJ, Morse, LJCluster, ZBL)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rgpot::nlist::PairListCache</span></code> (Verlet-skin cache over vesin, in the <a class="reference external" href="https://github.com/OmniPotentRPC/rgpot">rgpot</a> repo)</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">vesin_neighbors</span></code> (C)</p></td>
 </tr>
 <tr class="row-odd"><td><p>Metatomic</p></td>
@@ -417,9 +417,9 @@ Verlet tables or O(N²) MIC loops for new work.</p>
 <td><p>engine-owned</p></td>
 <td><p>not eOn’s NL</p></td>
 </tr>
-<tr class="row-odd"><td><p>Legacy Fortran pots (SW, FeHe, …)</p></td>
-<td><p>still pot-local</p></td>
-<td><p>migrate via <a class="reference external" href="https://luthaf.fr/vesin/">vesin Fortran</a> (<code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">vesin</span></code>)</p></td>
+<tr class="row-odd"><td><p>Fortran pots (SW, EDIP, Lenosky, EAM-Al, CuH2, FeHe, Tersoff, TIP4P-H)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rgpot_neighbors</span></code>, a CSR full-list table (in rgpot)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">vesin_fortran</span></code>, vendored in rgpot</p></td>
 </tr>
 </tbody>
 </table>
@@ -435,15 +435,36 @@ Verlet tables or O(N²) MIC loops for new work.</p>
 </section>
 <section id="c">
 <h2>C++<a class="headerlink" href="#c" title="Link to this heading">¶</a></h2>
+<p>The classical pair pots (LJ, LJCluster, Morse, ZBL) live in <strong>rgpot</strong> and
+reach vesin through <code class="docutils literal notranslate"><span class="pre">rgpot::nlist::PairListCache</span></code>, the Verlet-skin cache in
+that repo. eOn consumes them through <code class="docutils literal notranslate"><span class="pre">RgpotAdapter</span></code>; the cache is not part
+of eOn’s own surface. See the rgpot docs for <code class="docutils literal notranslate"><span class="pre">Options</span></code>, <code class="docutils literal notranslate"><span class="pre">evaluate</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">ensureVisit</span></code>.</p>
+<p>The candidate list is built at <code class="docutils literal notranslate"><span class="pre">cutoff</span> <span class="pre">+</span> <span class="pre">skin</span></code>; while every atom stays
+within <code class="docutils literal notranslate"><span class="pre">skin/2</span></code> of its build position the cached pairs are re-used and the
+evaluation derives exact vectors from the <em>current</em> positions, filtered at
+the true cutoff — results match a fresh build in pair content. The pool
+matches slots by geometry proximity, so several NEB images sharing one pot
+instance each keep a live list on any thread-to-image assignment —
+including NEB’s per-iteration worker threads, which would destroy any
+thread_local cache.</p>
+<p><code class="docutils literal notranslate"><span class="pre">eonc::VesinNeighbors</span></code> (vesin convention <code class="docutils literal notranslate"><span class="pre">r_ij</span> <span class="pre">=</span> <span class="pre">r_j</span> <span class="pre">−</span> <span class="pre">r_i</span> <span class="pre">+</span> <span class="pre">S·H</span></code>) remains
+in eOn as the RAII wrapper for consumers that need vesin’s own buffers:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;eon/VesinNeighbors.h&quot;</span>
 </span><span data-line="2"><span class="n">eonc</span><span class="o">::</span><span class="n">VesinNeighbors</span><span class="w"> </span><span class="n">nl</span><span class="p">;</span>
-</span><span data-line="3"><span class="n">eonc</span><span class="o">::</span><span class="n">VesinNeighbors</span><span class="o">::</span><span class="n">Options</span><span class="w"> </span><span class="n">opt</span><span class="p">{.</span><span class="n">cutoff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">full</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
-</span><span data-line="4"><span class="w">                                  </span><span class="p">.</span><span class="n">return_distances</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">return_vectors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">};</span>
+</span><span data-line="3"><span class="n">eonc</span><span class="o">::</span><span class="n">VesinNeighbors</span><span class="o">::</span><span class="n">Options</span><span class="w"> </span><span class="n">opt</span><span class="p">;</span>
+</span><span data-line="4"><span class="n">opt</span><span class="p">.</span><span class="n">cutoff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">5.0</span><span class="p">;</span>
 </span><span data-line="5"><span class="n">nl</span><span class="p">.</span><span class="n">compute</span><span class="p">(</span><span class="n">R</span><span class="p">,</span><span class="w"> </span><span class="n">nAtoms</span><span class="p">,</span><span class="w"> </span><span class="n">box9</span><span class="p">,</span><span class="w"> </span><span class="n">opt</span><span class="p">);</span>
 </span></pre></div>
 </div>
-<p>Vector convention matches vesin: <strong><code class="docutils literal notranslate"><span class="pre">r_ij</span> <span class="pre">=</span> <span class="pre">r_j</span> <span class="pre">−</span> <span class="pre">r_i</span> <span class="pre">+</span> <span class="pre">S·H</span></code></strong>.
-<code class="docutils literal notranslate"><span class="pre">eoncbase</span></code> always links vesin (pkg-config / system / vendored).</p>
+<p><code class="docutils literal notranslate"><span class="pre">eoncbase</span></code> always links vesin. It resolves in this order: an installed
+vesin (pkg-config, cmake, or plain library), else the copy the rgpot
+subproject already builds, else eOn’s own vendored translation unit. The
+middle case matters when rgpot comes from the wrap: building both copies
+would put two definitions of every vesin symbol in one link.</p>
+<p><strong>Do not</strong> call <code class="docutils literal notranslate"><span class="pre">vesin_free</span></code> (or destroy a stack-local list) before every
+<code class="docutils literal notranslate"><span class="pre">compute</span></code>. Upstream documents that the same <code class="docutils literal notranslate"><span class="pre">VesinNeighborList</span></code> should be
+re-used across calls so allocations are recycled; free only when finished.</p>
 </section>
 <section id="how-we-measure-asv-not-one-off-scripts">
 <h2>How we measure (ASV, not one-off scripts)<a class="headerlink" href="#how-we-measure-asv-not-one-off-scripts" title="Link to this heading">¶</a></h2>
@@ -499,11 +520,18 @@ history, publishes with asv-tachyon →
 both commits’ clients (or sequential install) and use the same ASV class names;
 the PR workflow is the authoritative pair-wise run.</p>
 </section>
-<section id="not-yet-unified">
-<h2>Not yet unified<a class="headerlink" href="#not-yet-unified" title="Link to this heading">¶</a></h2>
-<p>Fortran Stillinger–Weber / FeHe / Aluminum / EDIP still build neighbors
-inside <code class="docutils literal notranslate"><span class="pre">.f</span></code>/<code class="docutils literal notranslate"><span class="pre">.f90</span></code>. Upstream vesin provides <code class="docutils literal notranslate"><span class="pre">fortran/src/vesin.f90</span></code>; wire under
-<code class="docutils literal notranslate"><span class="pre">with_fortran</span></code> and port pot generators next.</p>
+<section id="fortran">
+<h2>Fortran<a class="headerlink" href="#fortran" title="Link to this heading">¶</a></h2>
+<p>eOn compiles no Fortran. The kernels and the vendored vesin Fortran
+interface both live in rgpot, where every one of them reaches vesin the
+same way: <code class="docutils literal notranslate"><span class="pre">rgpot_neighbors</span></code> builds a CSR full neighbour list carrying pair
+vectors and distances, with the C API’s Verlet <code class="docutils literal notranslate"><span class="pre">skin</span></code> option, and the
+kernels read rows out of it. The per-pot CSR helper modules that used to
+sit beside the fixed-form kernels here (<code class="docutils literal notranslate"><span class="pre">vesin_al</span></code>, <code class="docutils literal notranslate"><span class="pre">vesin_cuh2</span></code>,
+<code class="docutils literal notranslate"><span class="pre">vesin_fehe</span></code>) are gone with them.</p>
+<p>Every Fortran pot remains orthorhombic-only (they take the box diagonal).
+For the porting rules and the neighbour-table cell convention, see
+<code class="docutils literal notranslate"><span class="pre">docs/orgmode/reference/fortran_potentials.org</span></code> in rgpot.</p>
 </section>
 </section>
 
@@ -550,7 +578,7 @@ inside <code class="docutils literal notranslate"><span class="pre">.f</span></c
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=ac7e2bcc"></script>
+      <script src="../_static/documentation_options.js?v=acc74ff5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

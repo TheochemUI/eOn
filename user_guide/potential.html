@@ -448,18 +448,19 @@ SocketNWChem</p>
 </dd>
 <dt>EAM_Al</dt><dd><p>Embedded atom method parameterized for Aluminum.</p>
 </dd>
-<dt>QSC <span id="id10">[<a class="reference internal" href="#id62" title="Yoshitaka Kimura, Yue Qi, Tahir Cagin, and William Goddard. The Quantum Sutton-Chen Many-Body Potential for Properties of fcc Metals. N/A, September 1998.">POT_KQCG98</a>]</span></dt><dd><p>Quantum Sutton-Chen potential, for FCC metals. Neighbor pairs via
-<a class="reference internal" href="neighbor_lists.html"><span class="std std-doc">vesin</span></a> (no pot-local Verlet list).</p>
-</dd>
 <dt>EMT</dt><dd><p>Effective medium theory, for metals.</p>
 </dd>
-<dt>LJ <span id="id11">[<a class="reference internal" href="#id56" title="Lennard Jones. On the determination of molecular fields. —II. From the equation of state of a gas. Proceedings of the Royal Society of London. Series A, Containing Papers of a Mathematical and Physical Character, 106(738):463–477, October 1924. doi:10.1098/rspa.1924.0082.">POT_Jon24</a>]</span></dt><dd><p>Lennard-Jones in reduced units. Neighbor pairs via
+<dt>LJ <span id="id10">[<a class="reference internal" href="#id56" title="Lennard Jones. On the determination of molecular fields. —II. From the equation of state of a gas. Proceedings of the Royal Society of London. Series A, Containing Papers of a Mathematical and Physical Character, 106(738):463–477, October 1924. doi:10.1098/rspa.1924.0082.">POT_Jon24</a>]</span></dt><dd><p>Lennard-Jones in reduced units, served by <code class="docutils literal notranslate"><span class="pre">rgpot</span></code>. Neighbor pairs via
 <a class="reference internal" href="neighbor_lists.html"><span class="std std-doc">vesin</span></a>; timed by ASV
 <code class="docutils literal notranslate"><span class="pre">TimeMinimizationLJCluster</span></code> (ljcluster).</p>
 </dd>
-<dt>Morse_Pt</dt><dd><p>Hard sphere morse potential for Platinum. Neighbor pairs via
-<a class="reference internal" href="neighbor_lists.html"><span class="std std-doc">vesin</span></a>; timed by ASV <code class="docutils literal notranslate"><span class="pre">TimePointMorsePt</span></code> /
+<dt>LJCluster <span id="id11">[<a class="reference internal" href="#id56" title="Lennard Jones. On the determination of molecular fields. —II. From the equation of state of a gas. Proceedings of the Royal Society of London. Series A, Containing Papers of a Mathematical and Physical Character, 106(738):463–477, October 1924. doi:10.1098/rspa.1924.0082.">POT_Jon24</a>]</span></dt><dd><p>Lennard-Jones cluster variant, served by <code class="docutils literal notranslate"><span class="pre">rgpot</span></code>.</p>
+</dd>
+<dt>Morse_Pt</dt><dd><p>Hard sphere morse potential for Platinum, served by <code class="docutils literal notranslate"><span class="pre">rgpot</span></code>. Neighbor
+pairs via <a class="reference internal" href="neighbor_lists.html"><span class="std std-doc">vesin</span></a>; timed by ASV <code class="docutils literal notranslate"><span class="pre">TimePointMorsePt</span></code> /
 saddle / NEB Morse fixtures.</p>
+</dd>
+<dt>ZBL</dt><dd><p>Ziegler-Biersack-Littmark screened nuclear repulsion, served by <code class="docutils literal notranslate"><span class="pre">rgpot</span></code>.</p>
 </dd>
 <dt>Lenosky_Si <span id="id12">[<a class="reference internal" href="#id71" title="Thomas J Lenosky, Babak Sadigh, Eduardo Alonso, Vasily V Bulatov, Tomas Diaz De La Rubia, Jeongnim Kim, Arthur F Voter, and Joel D Kress. Highly optimized empirical potential model of silicon. Modelling and Simulation in Materials Science and Engineering, 8(6):825–841, November 2000. doi:10.1088/0965-0393/8/6/305.">POT_LSA+00</a>]</span></dt><dd><p>Lenosky potential, for silicon.</p>
 </dd>
@@ -474,11 +475,6 @@ saddle / NEB Morse fixtures.</p>
 <dt>SPCE <span id="id17">[<a class="reference internal" href="#id28" title="H. J. C. Berendsen, J. R. Grigera, and T. P. Straatsma. The missing term in effective pair potentials. The Journal of Physical Chemistry, 91(24):6269–6271, November 1987. doi:10.1021/j100308a038.">POT_BGS87</a>]</span></dt><dd><p>Extended simple point charge model for water</p>
 </dd>
 </dl>
-<div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version 2.0: </span>These potentials are missing in the SVN sources..
-bopfox
-: Bond order potential, for metals</p>
-</div>
 </section>
 </section>
 <section id="configuration">
@@ -553,7 +549,8 @@ causing a connection failure with no clear error message.</p>
 <p>Rohit Goswami and Hannes Jónsson. Adaptive Pruning for Increased Robustness and Reduced Computational Overhead in Gaussian Process Accelerated Saddle Point Searches. <em>ChemPhysChem</em>, November 2025. <a class="reference external" href="https://doi.org/10.1002/cphc.202500730">doi:10.1002/cphc.202500730</a>.</p>
 </div>
 <div class="citation" id="id56" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">POT_Jon24</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span>POT_Jon24<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id10">1</a>,<a role="doc-backlink" href="#id11">2</a>)</span>
 <p>Lennard Jones. On the determination of molecular fields. —II. From the equation of state of a gas. <em>Proceedings of the Royal Society of London. Series A, Containing Papers of a Mathematical and Physical Character</em>, 106(738):463–477, October 1924. <a class="reference external" href="https://doi.org/10.1098/rspa.1924.0082">doi:10.1098/rspa.1924.0082</a>.</p>
 </div>
 <div class="citation" id="id58" role="doc-biblioentry">
@@ -563,10 +560,6 @@ causing a connection failure with no clear error message.</p>
 <div class="citation" id="id59" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id15">POT_JBK+98</a><span class="fn-bracket">]</span></span>
 <p>João F. Justo, Martin Z. Bazant, Efthimios Kaxiras, V. V. Bulatov, and Sidney Yip. Interatomic potential for silicon defects and disordered phases. <em>Physical Review B</em>, 58(5):2539–2550, August 1998. <a class="reference external" href="https://doi.org/10.1103/PhysRevB.58.2539">doi:10.1103/PhysRevB.58.2539</a>.</p>
-</div>
-<div class="citation" id="id62" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">POT_KQCG98</a><span class="fn-bracket">]</span></span>
-<p>Yoshitaka Kimura, Yue Qi, Tahir Cagin, and William Goddard. The Quantum Sutton-Chen Many-Body Potential for Properties of fcc Metals. <em>N/A</em>, September 1998.</p>
 </div>
 <div class="citation" id="id67" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">POT_KFurthmuller96</a><span class="fn-bracket">]</span></span>
@@ -653,7 +646,7 @@ causing a connection failure with no clear error message.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=ac7e2bcc"></script>
+      <script src="../_static/documentation_options.js?v=acc74ff5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
