@@ -3,7 +3,7 @@ directory = rgpot
 url = https://github.com/OmniPotentRPC/rgpot.git
 # Pot-hosting infra, batch-1 kernels (Morse, LJCluster, ZBL), and the
 # Fortran 2018 kernels (SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2,
-# TIP4P-H). Retarget to the v2.6.0 release tag when it exists; wrap pins
-# track release tags.
-revision = 16728c9afb6c32283b41ea69237cbb4b6a825820
+# TIP4P-H). v3.0.0 is the first release carrying them; the major is for the
+# packaging change (no libptlrpc.so, librgpot.so.3).
+revision = v3.0.0
 depth = 1
