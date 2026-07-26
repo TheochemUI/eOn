@@ -102,6 +102,17 @@
 
 ### Fixed
 
+- eOn no longer requires a Fortran compiler. It compiles no Fortran since the
+  kernels moved into ``librgpot``, but ``client/meson.build`` still asked for
+  the language with ``required: true`` whenever ``with_fortran`` or
+  ``with_cuh2`` was set -- both default on -- so every consumer had to supply
+  an unused toolchain. That bit hardest on builds against an *installed*
+  rgpot, which need none at all. The language is detected rather than
+  required now; a wrap build still finds it for rgpot's kernels, and the
+  Windows flang runtime discovery is gated on actually having one.
+
+  ``with_fortran`` and ``with_cuh2`` keep their meaning as potential
+  selectors: they gate the ``RgpotAdapter`` arms, not any compilation.
 - Local communicator writes client stderr to ``stderr.dat`` (no undrained
   ``PIPE`` deadlock). The FPE continue handler masks the fault class in the
   restored MXCSR so a single divide-by-zero cannot re-storm. The LAMMPS pot
