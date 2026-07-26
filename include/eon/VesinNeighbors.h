@@ -10,6 +10,7 @@
 
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <stdexcept>
 #include <string>
 
@@ -33,6 +34,16 @@ public:
     bool return_distances{true};
     bool return_vectors{true};
     std::array<bool, 3> periodic{{true, true, true}};
+    /// vesin 0.6 native Verlet skin: > 0 lets vesin cache the topology in
+    /// this list until an atom moves more than ``skin/2``. Single-geometry
+    /// consumers only — multi-image callers go through
+    /// ``rgpot::nlist::PairListCache``.
+    double skin{0.0};
+    /// Threads for the vesin build; 1 keeps small builds deterministic and
+    /// spawn-free, 0 defers to OMP_NUM_THREADS / core count.
+    int32_t n_threads{1};
+    /// vesin pair-search algorithm (auto / brute-force MIC / cell list).
+    VesinAlgorithm algorithm{VesinAutoAlgorithm};
   };
 
   VesinNeighbors() = default;
@@ -44,6 +55,10 @@ public:
 
   /// Build / rebuild the list. ``R`` is length ``3*n`` (x,y,z interleaved);
   /// ``box`` is length 9 (row-major cell vectors).
+  ///
+  /// Keep the same ``VesinNeighbors`` instance across force evaluations so
+  /// vesin can re-use pair/distance/vector allocations (see ``vesin_neighbors``
+  /// docs). Freeing before every ``compute`` is incorrect and expensive.
   void compute(const double *R, std::size_t n, const double *box,
                const Options &opt);
 

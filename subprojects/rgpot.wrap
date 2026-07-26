@@ -1,7 +1,9 @@
 [wrap-git]
 directory = rgpot
 url = https://github.com/OmniPotentRPC/rgpot.git
-# Packaged install exports rgpot.pc (headers + nwchempot/cpmdpot/ptlrpc).
-# eOn prefers dependency('rgpot') when installed; wrap is the fallback.
-revision = v2.5.2
+# Pot-hosting infra, batch-1 kernels (Morse, LJCluster, ZBL), and the
+# Fortran 2018 kernels (SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2,
+# TIP4P-H). v3.0.0 is the first release carrying them; the major is for the
+# packaging change (no libptlrpc.so, librgpot.so.3).
+revision = v3.0.0
 depth = 1

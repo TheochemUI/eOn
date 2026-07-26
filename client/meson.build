@@ -378,12 +378,51 @@ else
     message('Highway SIMD: disabled (not found)')
 endif
 
-# dl_dep needed for dlopen (FortranPotLoader, LammpsLoader)
+# dl_dep needed for dlopen (LammpsLoader, rgpot engine loaders)
 dl_dep = cppc.find_library('dl', required: false)
 _deps += dl_dep
 
+# rgpot resolution starts here because the vesin choice below depends on
+# it: a wrap-built rgpot carries its own patched vesin, and linking eOn's
+# copy next to it would define every vesin symbol twice. The roles the
+# resulting objects play are wired further down, once the pots exist.
+#
+# dependency('rgpot') with default allow_fallback configures the wrap once
+# with *default* options before eOn can pass its own; get_variable() then
+# fails for anything the default profile skipped. Force pkg-config-only.
+_rgpot_proj = []
+_rgpot_pkg = dependency(
+    'rgpot',
+    version: '>=3.0.0',
+    method: 'pkg-config',
+    required: false,
+    allow_fallback: false,
+)
+if not _rgpot_pkg.found()
+    # One profile must serve every eOn consumer in this configure: pots
+    # always; the RPC stack only when the RGPOT arm or serve mode asks
+    # (keeps capnp-rpc out of plain builds).
+    rgpot_opts = {
+        'with_rpc_client_only': false,
+        'pure_lib': true,
+        'with_tests': false,
+        'with_examples': false,
+        # engines stay runtime dlopen; do not force fat metatomic/xtb link
+        'with_xtb': false,
+        'with_metatomic': false,
+        # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H are
+        # Fortran kernels inside librgpot.
+        'with_fortran_pots': 'enabled',
+    }
+    if get_option('with_rgpot') or get_option('with_serve')
+        rgpot_opts += {'with_rpc': true}
+    endif
+    _rgpot_proj = subproject('rgpot', default_options: rgpot_opts)
+endif
+
 # vesin: single neighbor-list backend for classical pots + Metatomic.
-# Prefer pkg-config / system; else vendored thirdparty/vesin single TU.
+# Prefer pkg-config / system; else the rgpot subproject's vendored copy;
+# else eOn's own thirdparty/vesin single TU.
 vesin_dep = dependency('vesin', required: false)
 if not vesin_dep.found()
     vesin_dep = dependency('vesin', method: 'cmake', required: false)
@@ -394,14 +433,30 @@ endif
 if not vesin_dep.found() and is_windows
     vesin_dep = cppc.find_library('libvesin', required: false)
 endif
-if not vesin_dep.found()
-    vesin_int = library(
+if not vesin_dep.found() and not _rgpot_pkg.found()
+    # The rgpot subproject builds vesin already, with the local patches its
+    # Fortran interface binds to.
+    vesin_dep = _rgpot_proj.get_variable('vesin_dep')
+    message('vesin: from the rgpot subproject')
+elif not vesin_dep.found()
+    # vesin 0.6 threads its builds with std::thread only — do NOT add
+    # OpenMP here: an unused libgomp costs ~0.3ms of load/relocation on
+    # every eonclient start.
+    vesin_int_deps = [dependency('threads')]
+    # Static: one fewer shared object to relocate at eonclient startup
+    # (the ASV point fixture is startup-dominated).
+    vesin_int = static_library(
         'vesin_internal',
         ['thirdparty/vesin/vesin-single-build.cpp'],
-        install: true,
+        dependencies: vesin_int_deps,
+        # Consumers link statically; hiding the symbols keeps them out of
+        # the enclosing shared objects' dynamic tables (startup relocations).
+        cpp_args: cppc.get_supported_arguments(['-fvisibility=hidden']),
+        pic: true,
     )
     vesin_dep = declare_dependency(
         link_with: vesin_int,
+        dependencies: vesin_int_deps,
         include_directories: include_directories('thirdparty/vesin'),
     )
     message('vesin: using vendored thirdparty/vesin')
@@ -415,8 +470,8 @@ _deps += [vesin_dep]
 eoncbase_sources = [
     'fpe_handler.cpp',
     'PotRegistry.cpp',
-    'potentials/FortranPotLoader.cpp',
     'VesinNeighbors.cpp',
+    'potentials/PluginLoader.cpp',
 ]
 
 eoncbase = library(
@@ -434,15 +489,9 @@ _linkto += eoncbase
 subdir('potentials/EAM')
 subdir('potentials/EMT')
 subdir('potentials/ExtPot')
-subdir('potentials/IMD')
-subdir('potentials/LJ')
-subdir('potentials/LJCluster')
-subdir('potentials/Morse')
-subdir('potentials/ZBL')
 if not is_windows
     subdir('potentials/SocketNWChem')
 endif
-subdir('potentials/NewPot')
 
 # rgpot roles (see docs/user_guide/rgpot_integration.md):
 #   with_rgpot  -> nwchempot_dep + cpmdpot_dep (direct dlopen engines in eOn)
@@ -454,51 +503,60 @@ subdir('potentials/NewPot')
 # for matching standalone installs — no torch/xtb at link time):
 #   with_rpc_client_only=true, pure_lib=true, with_tests=false,
 #   with_examples=false  (+ with_xtb=false, with_metatomic=false for packages)
-_rgpot_proj = []
 ptlrpc_dep = disabler()
 nwchempot_dep = disabler()
 cpmdpot_dep = disabler()
 _rgpot_from_pkg = false
-if get_option('with_rgpot') or get_option('with_serve')
-    # 1) installed module only (never wrap fallback).
-    # dependency('rgpot') with default allow_fallback configures the wrap
-    # once with *default* options (with_rpc_client_only=false) before we
-    # can pass eOn's client-only opts; get_variable('nwchempot_dep') then
-    # fails because NWChemPot was never built. Force pkg-config-only here.
-    _rgpot_pkg = dependency(
-        'rgpot',
-        method: 'pkg-config',
-        required: false,
-        allow_fallback: false,
-    )
-    if _rgpot_pkg.found()
-        message('rgpot: using pkg-config (installed), not subproject wrap')
-        _rgpot_from_pkg = true
-        nwchempot_dep = _rgpot_pkg
-        cpmdpot_dep = _rgpot_pkg
-        ptlrpc_dep = _rgpot_pkg
-    else
-        # 2) wrap / multi-source fallback
-        message('rgpot: pkg-config not found; falling back to subproject wrap')
-        rgpot_opts = {
-            'with_rpc_client_only': true,
-            'pure_lib': true,
-            'with_tests': false,
-            'with_examples': false,
-            # engines stay runtime dlopen; do not force fat metatomic/xtb link
-            'with_xtb': false,
-            'with_metatomic': false,
-        }
-        _rgpot_proj = subproject('rgpot', default_options: rgpot_opts)
-        if get_option('with_serve')
-            ptlrpc_dep = _rgpot_proj.get_variable('ptlrpc_dep')
-        endif
-        if get_option('with_rgpot') and not is_windows
-            nwchempot_dep = _rgpot_proj.get_variable('nwchempot_dep')
-            cpmdpot_dep = _rgpot_proj.get_variable('cpmdpot_dep')
-        endif
+# rgpot is a hard dependency: the classical pair pots (LJ, LJCluster,
+# Morse, ZBL, ...) live in librgpot and eOn consumes them through the
+# RgpotAdapter. The QM frontends / RPC stack remain optional.
+#
+# 1) installed module first (never wrap fallback here); _rgpot_pkg is
+# probed above, next to the vesin choice that depends on it.
+if _rgpot_pkg.found()
+    message('rgpot: using pkg-config (installed), not subproject wrap')
+    _rgpot_from_pkg = true
+    rgpot_dep = _rgpot_pkg
+    nwchempot_dep = _rgpot_pkg
+    cpmdpot_dep = _rgpot_pkg
+    ptlrpc_dep = _rgpot_pkg
+    # An installed rgpot can be built without the Fortran kernels, and then
+    # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H resolve to
+    # nothing at link time. rgpot.pc advertises them; say so plainly here
+    # rather than failing on undefined vtables.
+    if cppc.get_define('RGPOT_HAS_FORTRAN_POTS', dependencies: _rgpot_pkg) == ''
+        error(
+            'installed rgpot was built without Fortran potentials '
+            + '(rgpot.pc does not define RGPOT_HAS_FORTRAN_POTS). '
+            + 'Rebuild rgpot with -Dwith_fortran_pots=enabled, or point '
+            + 'PKG_CONFIG_PATH at one that has them.',
+        )
+    endif
+else
+    # 2) wrap / multi-source fallback, configured next to the vesin choice
+    # above; here it only takes on its eOn roles.
+    message('rgpot: pkg-config not found; falling back to subproject wrap')
+    rgpot_dep = _rgpot_proj.get_variable('rgpot_dep')
+    # meson applies subproject default_options only on the first configure
+    # of a build directory, so a directory configured before this profile
+    # changed silently keeps the old values and drops potentials. Fail
+    # here instead, naming the fix.
+    if not _rgpot_proj.get_variable('has_fortran')
+        error(
+            'rgpot subproject built without Fortran potentials. '
+            + 'Reconfigure with -Drgpot:with_fortran_pots=enabled, '
+            + 'or wipe the build directory.',
+        )
+    endif
+    if get_option('with_serve')
+        ptlrpc_dep = _rgpot_proj.get_variable('ptlrpc_dep')
+    endif
+    if get_option('with_rgpot') and not is_windows
+        nwchempot_dep = _rgpot_proj.get_variable('nwchempot_dep')
+        cpmdpot_dep = _rgpot_proj.get_variable('cpmdpot_dep')
     endif
 endif
+_deps += [rgpot_dep]
 if get_option('with_serve')
     serve_capnp_dep = dependency('capnp-rpc', required: true)
     if not ptlrpc_dep.found()
@@ -514,16 +572,11 @@ if get_option('with_rgpot') and not is_windows
     subdir('potentials/Rgpot')
 endif
 
+# LJ, LJCluster, Morse, and ZBL live in librgpot (RgpotAdapter arms).
 potentials = [
     eam,
     emt,
     extpot,
-    imd,
-    lennard_jones,
-    lennard_jones_cluster,
-    morse,
-    newpot,
-    zbl,
 ]
 if not is_windows
     potentials += [socket_nwchem]
@@ -704,13 +757,11 @@ endif
 # LAMMPS: always compiled, loaded at runtime via dlopen
 subdir('potentials/LAMMPS')
 potentials += [lammps_pot]
+# features_list scans _args for -DLAMMPS_POT; the arm is unconditional.
+_args += ['-DLAMMPS_POT']
 
 if py_embed
     _args += ['-DEMBED_PYTHON']
-    # subdir('potentials/PyAMFF')
-    # pyamff,
-    # subdir('potentials/QSC')
-    # potentials += [ qsc ]
     if get_option('with_ase')
         pyb11f_deps = [dependency('pybind11')]
         _deps += [pyb11f_deps]
@@ -728,76 +779,17 @@ if get_option('with_mpi')
     _deps += [mpi_dep]
 endif
 
-# Fortran potential C++ wrappers: always compiled (load Fortran libs at runtime)
-# The C++ wrappers use dlopen via FortranPotLoader to find the Fortran shared
-# libraries at runtime, so the client binary does not need Fortran at link time.
-fortran_pot_cpp_sources = [
-    'potentials/Aluminum/Aluminum.cpp',
-    'potentials/EDIP/EDIP.cpp',
-    'potentials/FeHe/FeHe.cpp',
-    'potentials/Lenosky/Lenosky.cpp',
-    'potentials/SW/SW.cpp',
-    'potentials/Tersoff/Tersoff.cpp',
-]
-eonclib_sources += fortran_pot_cpp_sources
-
-# Fortran shared libraries: built only when a Fortran compiler is available,
-# installed separately, and loaded at runtime via dlopen.
-_fortran_pot_libs = []
-# Windows: conda-forge flang ships FortranRuntime*.lib but often no matching
-# .dll. Pot plugins are LoadLibrary'd; if they depend on FortranRuntime.dynamic
-# the load fails. Prefer static flang runtime objects inside each pot DLL.
-_fortran_pot_link_args = []
-if get_option('with_fortran') and is_windows and fc.get_id() in ['flang', 'llvm-flang', 'flang-new']
-    _fc_path = fc.cmd_array()[0]
-    _fc_dir = fs.parent(_fc_path)
-    _lib_root = fs.parent(_fc_dir)
-    _static_search = [join_paths(_lib_root, 'lib')]
-    if _flang_rt_dir != ''
-        _static_search += [_flang_rt_dir]
-    endif
-    foreach _static_frt : [
-        'FortranRuntime.static.lib',
-        'FortranDecimal.static.lib',
-    ]
-        foreach _sdir : _static_search
-            _probe = join_paths(_sdir, _static_frt)
-            if fs.is_file(_probe)
-                _fortran_pot_link_args += [_probe]
-                break
-            endif
-        endforeach
-    endforeach
-    if _fortran_pot_link_args.length() > 0
-        message(
-            'Fortran pot plugins: static flang_rt '
-            + ', '.join(_fortran_pot_link_args),
-        )
-    else
-        warning(
-            'Fortran pot plugins: no static flang_rt libs; LoadLibrary may need runtime DLLs',
-        )
-    endif
-endif
+# Fortran-backed potentials (SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe,
+# CuH2, TIP4P-H) are Fortran 2018 kernels inside librgpot, reached through
+# RgpotAdapter. eOn no longer builds, installs, or dlopens Fortran itself,
+# so the flang runtime handling and the per-pot .def export files retire
+# with them.
 if get_option('with_fortran')
-    subdir('potentials/Aluminum')
-    subdir('potentials/EDIP')
-    subdir('potentials/FeHe')
-    subdir('potentials/Lenosky')
-    subdir('potentials/SW')
-    subdir('potentials/Tersoff')
-    _fortran_pot_libs += [eon_aluminum, eon_edip, eon_fehe, eon_lenosky, eon_sw, eon_tersoff]
-    if get_option('with_water')
-        subdir('potentials/Water_H')
-        potentials += [water_h]
-    endif
     _args += ['-DWITH_FORTRAN']
 endif
 
 if get_option('with_cuh2')
-    subdir('potentials/CuH2')
-    potentials += [cuh2]
-    _args += ['-DCUH2_POT', '-DWITH_FORTRAN']
+    _args += ['-DCUH2_POT']
 endif
 
 if get_option('with_ase_orca')
@@ -1339,6 +1331,7 @@ if get_option('with_tests')
         ['strparse_run', 'StringHelpersTest.cpp', ''],
         ['test_matter', 'MatterTest.cpp', 'neb_morse'],
         ['test_pot', 'PotTest.cpp', 'neb_morse'],
+        ['test_rgpot_adapter', 'RgpotAdapterTest.cpp', 'neb_morse'],
         # ['approve_params', 'ApproveParams.cpp', ''], # needs to handle additional parameters
         ['test_zbl', 'ZBLPotTest.cpp', 'au_si'],
         ['test_extpot', 'ExtPotTest.cpp', 'extpot'],

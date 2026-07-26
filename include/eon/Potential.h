@@ -79,21 +79,11 @@ public:
   [[nodiscard]] virtual bool isThreadSafe() const noexcept { return true; }
 
   /// Conservative gate for sharing one Potential instance across threads.
-  /// Some legacy Fortran backends expose only global/common-block entry
-  /// points, so wrapper instances do not imply isolated state.
-  [[nodiscard]] bool isSharedInstanceThreadSafe() const noexcept {
-    switch (ptype) {
-    case PotType::EAM_AL:
-    case PotType::EDIP:
-    case PotType::FEHE:
-    case PotType::LENOSKY_SI:
-    case PotType::SW_SI:
-    case PotType::TERSOFF_SI:
-    case PotType::CUH2:
-      return false;
-    default:
-      return isThreadSafe();
-    }
+  /// Defaults to isThreadSafe(); backends whose state lives outside the
+  /// wrapper instance (global/common-block Fortran entry points) override
+  /// this to false on their own classes.
+  [[nodiscard]] virtual bool isSharedInstanceThreadSafe() const noexcept {
+    return isThreadSafe();
   }
 
   /// Whether NEB should create separate Potential instances per image

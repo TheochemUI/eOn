@@ -548,10 +548,10 @@ class PotentialConfig(BaseModel):
     potential: Literal[
         "ams",
         "ams_io",
+        # ase_nwcem is the historical misspelling; both spellings are accepted.
         "ase_nwcem",
+        "ase_nwchem",
         "ase_orca",
-        "bop",
-        "bopfox",
         "cuh2",
         "eam_al",
         "edip",
@@ -559,7 +559,6 @@ class PotentialConfig(BaseModel):
         "ext_pot",
         "fehe",
         "gpr",
-        "imd",
         "lammps",
         "lenosky_si",
         "lj",
@@ -567,10 +566,6 @@ class PotentialConfig(BaseModel):
         "metatomic",
         "morse_pt",
         "mpi",
-        "new_pot",
-        "pyamff",
-        "python",
-        "qsc",
         "rgpot",
         "socket_nwchem",
         "spce",
@@ -583,7 +578,6 @@ class PotentialConfig(BaseModel):
         "vasp",
         "xtb",
         "zbl",
-        "zpice",  # TODO(rg): probably not present anymore
     ] = Field(
         default="lj",
         description="Type of potential to execute.",
@@ -592,9 +586,8 @@ class PotentialConfig(BaseModel):
     Options:
      - ``ams``: Amsterdam Modeling Suite potential.
      - ``ams_io``: Amsterdam Modeling Suite via the I/O.
+     - ``ase_nwchem``: ASE interface for NWChem (``ase_nwcem`` is an accepted alias).
      - ``ase_orca``: ASE interface for ORCA quantum chemistry package.
-     - ``bop``: Bond order potential for metals. [unused]
-     - ``bopfox``: Bond order potential, for metals. [unused]
      - ``cuh2``: Potential for copper hydride systems.
      - ``eam_al``: Embedded atom method parameterized for aluminum.
      - ``edip``: Environment-Dependent Interatomic Potential, for carbon.
@@ -602,16 +595,12 @@ class PotentialConfig(BaseModel):
      - ``ext_pot``: External potential with system call interface.
      - ``fehe``: Potential for iron-hydrogen systems.
      - ``gpr``: Gaussian process regression potential.
-     - ``imd``: IMD simulation package interface.
      - ``lammps``: The LAMMPS potentials.
      - ``lenosky_si``: Lenosky potential, for silicon.
-     - ``lj``: Lennard-Jones potential in reduced units.
-     - ``ljcluster``: Lennard-Jones cluster potential.
-     - ``morse_pt``: Morse potential for platinum.
+     - ``lj``: Lennard-Jones potential in reduced units (served by rgpot).
+     - ``ljcluster``: Lennard-Jones cluster potential (served by rgpot).
+     - ``morse_pt``: Morse potential for platinum (served by rgpot).
      - ``mpi``: Communicate with an MPI process to calculate energy and forces.
-     - ``pyamff``: Python implementation of the AMFF potential.
-     - ``python``: Custom python potential.
-     - ``qsc``: Quantum Sutton-Chen potential, for FCC metals.
      - ``rgpot``: In-process rgpot backends (NWChem / CPMD / metatomic / xTB via dlopen).
      - ``spce``: Simple Point Charge model for water.
      - ``sw_si``: Stillinger-Weber potential, for silicon.
@@ -622,6 +611,7 @@ class PotentialConfig(BaseModel):
      - ``unknown``: Placeholder for unknown potential type.
      - ``vasp``: Vienna Ab-Initio Simulation Program (VASP) interface.
      - ``xtb``: Extended Tight Binding model.
+     - ``zbl``: Ziegler-Biersack-Littmark screened nuclear repulsion (served by rgpot).
     """
     log_potential: Optional[bool] = Field(
         default=None,
@@ -632,7 +622,7 @@ class PotentialConfig(BaseModel):
     def set_log_potential(cls, v, values):
         if v is None:
             potential = values.get("potential")
-            if potential in {"mpi", "vasp", "bop", "bopfox"}:
+            if potential in {"mpi", "vasp"}:
                 return True
             else:
                 return False

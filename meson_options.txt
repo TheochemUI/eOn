@@ -1,5 +1,4 @@
 # Booleans
-option('with_newpot', type : 'boolean', value : false)
 option('with_water', type : 'boolean', value : false)
 option('with_ams', type : 'boolean', value : false)
 option('with_mpi', type : 'boolean', value : false)
@@ -17,7 +16,6 @@ option('with_xtb', type : 'boolean', value : false)
 option('with_ase_orca', type : 'boolean', value : false)
 option('with_ase_nwchem', type : 'boolean', value : false)
 option('with_ase', type : 'boolean', value : false)
-option('with_qsc', type : 'boolean', value : false)
 option('use_mkl', type: 'boolean', value: false, description: 'Enable Intel MKL support')
 option('gprd_linalg_backend', type: 'combo', choices: ['eigen', 'cusolver', 'kokkos', 'stdpar'], value: 'eigen', description: 'Linear algebra backend for GPR-dimer hot-path operations')
 option('with_metatomic', type : 'boolean', value : false)

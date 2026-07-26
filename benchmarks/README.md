@@ -9,7 +9,8 @@ history on `asv-results`, dashboard at eondocs.org/bench.
 
 ## Which benches hit vesin-backed pots
 
-After the unified VesinNeighbors work (LJ / Morse / LJCluster / QSC force pairs):
+The classical pair pots (LJ / Morse / LJCluster / ZBL force pairs) are served
+by `rgpot` over vesin:
 
 | Class | Fixture | Potential |
 |-------|---------|-----------|
