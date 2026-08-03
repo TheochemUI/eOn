@@ -79,7 +79,7 @@
     "7418": "fix(build): detect Fortran instead of requiring it",
     "7420": "Merge pull request #390 from HaoZeke/release/3.0.0",
     "7421": "feat(pyeonclient): 0.4.0, and a TestPyPI rehearsal path for its wheels",
-    "7424": "Merge pull request #391 from HaoZeke/feat/pyeonclient-testpypi"
+    "7423": "Merge pull request #391 from HaoZeke/feat/pyeonclient-testpypi"
   },
   "dcbade17ecc8386a4ee5804354b4994c8ba1d6d8": "update lammps webpage",
   "292bc143343709b10fb7ed150ae5bb493748b289": "gitig: Update",
