@@ -80,8 +80,9 @@
     "7420": "Merge pull request #390 from HaoZeke/release/3.0.0",
     "7421": "feat(pyeonclient): 0.4.0, and a TestPyPI rehearsal path for its wheels",
     "7423": "Merge pull request #391 from HaoZeke/feat/pyeonclient-testpypi",
-    "7428": "fix(metatomic): load PET-MAD on metatensor-torch 0.10.3",
-    "7429": "Merge pull request #392 from HaoZeke/fix/metatomic-to-mts-buffer-names"
+    "7427": "fix(metatomic): load PET-MAD on metatensor-torch 0.10.3",
+    "7428": "Merge pull request #392 from HaoZeke/fix/metatomic-to-mts-buffer-names",
+    "7429": "chore(version): v3.1.0"
   },
   "dcbade17ecc8386a4ee5804354b4994c8ba1d6d8": "update lammps webpage",
   "292bc143343709b10fb7ed150ae5bb493748b289": "gitig: Update",
@@ -164,5 +165,6 @@
   "342555b5d937212e720473318e33b99e0b68ca6e": "feat(pyeonclient): 0.4.0, and a TestPyPI rehearsal path for its wheels",
   "b0c59e73eb5d13a85f9c27b061b6efdeb06a7fc3": "Merge pull request #391 from HaoZeke/feat/pyeonclient-testpypi",
   "c09c567cba38a0b6043a5dc598fcd163e1c7b3ee": "fix(metatomic): load PET-MAD on metatensor-torch 0.10.3",
-  "98cb0a49a885c0d39c0b45b5edf569498964ce49": "Merge pull request #392 from HaoZeke/fix/metatomic-to-mts-buffer-names"
+  "98cb0a49a885c0d39c0b45b5edf569498964ce49": "Merge pull request #392 from HaoZeke/fix/metatomic-to-mts-buffer-names",
+  "99b1a019a2bcaa60223a20e4a57d59321955ba54": "chore(version): v3.1.0"
 }
