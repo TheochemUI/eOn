@@ -1795,6 +1795,16 @@ package:
     sha256: b953d133d98f9aeae9084b56a3563fd2519dfc6ec33f61c9cd2c61ff243fb513
   category: main
   optional: false
+- name: xxhash
+  version: 3.8.1
+  manager: pip
+  platform: osx-64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/42/91/f65c34a7aa7b4e7cf4854f8e6ef3f7ee32ceac41d4f008da0780db0612f6/xxhash-3.8.1-cp312-cp312-macosx_10_13_x86_64.whl
+  hash:
+    sha256: e6e49370822c1f4d8d90e678b06dbcb08b51a026a7c4b55479e7d467f2e813bc
+  category: main
+  optional: false
 - name: vesin
   version: 0.6.0
   manager: pip
@@ -3886,6 +3896,16 @@ package:
     sha256: 13ddcbacac2e8e6924cfece51aeb1580196f9ed538bc1dd2dc1b446d25f5a98c
   category: main
   optional: false
+- name: xxhash
+  version: 3.8.1
+  manager: pip
+  platform: linux-64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/18/96/34db781c8f0cf99c544ca1f2bc2e5bf55426e1eb4ca6de8ea5da56a9f352/xxhash-3.8.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+  hash:
+    sha256: 82c0cedd280eab2e8291270e6c04894dbc096f8159a39dcf1807429f026ca3cc
+  category: main
+  optional: false
 - name: nanobind
   version: 2.13.0
   manager: pip
@@ -5912,6 +5932,16 @@ package:
   url: https://files.pythonhosted.org/packages/4a/0c/383a560420107beaacb841603ca0e08d2c6b7e1bee680a08c09178cbe60f/readcon-0.13.1-cp312-cp312-macosx_11_0_arm64.whl
   hash:
     sha256: a936ea60da1166b84c8b890f7ad5eacd8dac5bc318d5dd8b8b55fddaee538f64
+  category: main
+  optional: false
+- name: xxhash
+  version: 3.8.1
+  manager: pip
+  platform: osx-arm64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/57/04/b10a245a4c09a9cfa88f8e9ae755029413ad1ac17047f9a61906e5ae0799/xxhash-3.8.1-cp312-cp312-macosx_11_0_arm64.whl
+  hash:
+    sha256: 220d68130f83f7cc86d6edfdeab176adc73d7200bf3a8ec10c629e8cf605c215
   category: main
   optional: false
 - name: vesin

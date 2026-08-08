@@ -1401,6 +1401,16 @@ package:
     sha256: 850ba148bd908d7e2411587e247a1e4f0327839c40e2e5e6d05a007ecc69911d
   category: main
   optional: false
+- name: xxhash
+  version: 3.8.1
+  manager: pip
+  platform: linux-64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/18/96/34db781c8f0cf99c544ca1f2bc2e5bf55426e1eb4ca6de8ea5da56a9f352/xxhash-3.8.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+  hash:
+    sha256: 82c0cedd280eab2e8291270e6c04894dbc096f8159a39dcf1807429f026ca3cc
+  category: main
+  optional: false
 - name: metatensor-torch
   version: 0.10.0
   manager: pip
@@ -4408,6 +4418,16 @@ package:
     sha256: 85cef7cff222d8644161529808465972e51340599459b8ac3ccbac5a854e0d30
   category: main
   optional: false
+- name: xxhash
+  version: 3.8.1
+  manager: pip
+  platform: win-64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/ec/31/3fa0b807d7e21515cd975e7fe5c039d52ac3e9401a96d6ad68dae6305215/xxhash-3.8.1-cp312-cp312-win_amd64.whl
+  hash:
+    sha256: 2256e80e4960ee282f63428adb349cb7f8bd8efe4db770d88eb815f4b9860724
+  category: main
+  optional: false
 - name: python-dateutil
   version: 2.9.0.post0
   manager: pip
@@ -6304,6 +6324,16 @@ package:
   url: https://files.pythonhosted.org/packages/55/07/3d0c34c345043c6a398a5882e196b2220dc5861adfa18322448b90908f26/huggingface_hub-1.3.4-py3-none-any.whl
   hash:
     sha256: a0c526e76eb316e96a91e8a1a7a93cf66b0dd210be1a17bd5fc5ae53cba76bfd
+  category: main
+  optional: false
+- name: xxhash
+  version: 3.8.1
+  manager: pip
+  platform: osx-arm64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/57/04/b10a245a4c09a9cfa88f8e9ae755029413ad1ac17047f9a61906e5ae0799/xxhash-3.8.1-cp312-cp312-macosx_11_0_arm64.whl
+  hash:
+    sha256: 220d68130f83f7cc86d6edfdeab176adc73d7200bf3a8ec10c629e8cf605c215
   category: main
   optional: false
 - name: pydantic
