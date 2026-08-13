@@ -10,16 +10,16 @@ myst:
 ```{versionadded} 2.16.0
 ```
 
-When eOn is built with **`-Dwith_rgpot=true`**, potential type **`RGPOT`** links
-[rgpot](https://github.com/OmniPotentRPC/rgpot) **NWChemPot** / **CPMDPot** and
-loads `libnwchemc.so` / `libcpmdc.so` with **`dlopen` in the eOn process**.
+When eOn is built with `-Dwith_rgpot=true`, potential type `RGPOT` links
+[rgpot](https://github.com/OmniPotentRPC/rgpot) NWChemPot / CPMDPot and loads
+`libnwchemc.so` / `libcpmdc.so` with `dlopen` in the eOn process.
 
-This is **not**:
+`RGPOT` is separate from:
 
-- Cap'n Proto to **potserv** (that is an *external* RPC client role), nor
-- **`eonclient --serve`** (that is eOn acting as an *RPC server*; see
-  [Serve mode](project:serve_mode.md)), nor
-- **SocketNWChem** (i-PI socket to a standalone NWChem binary).
+- Cap'n Proto to potserv (an external RPC client role)
+- `eonclient --serve` (eOn as an RPC server; see
+  [Serve mode](project:serve_mode.md))
+- SocketNWChem (i-PI socket to a standalone NWChem binary)
 
 For the three-role overview, see [rgpot integration](project:rgpot_integration.md).
 
@@ -104,7 +104,7 @@ Optional `input_block` (or env `RGPOT_NWCHEM_INPUT_BLOCK`) supplies NWChem
 `scf_type` looks like an XC label (e.g. `b3lyp`), a minimal DFT block is
 emitted automatically.
 
-Installed **rgpot ≥ 2.5.0** is preferred via `pkg-config` (`dependency('rgpot')`);
+Installed rgpot ≥ 2.5.0 is preferred via `pkg-config` (`dependency('rgpot')`);
 the Meson wrap is the fallback for hermetic/dev builds.
 
 ## vs SocketNWChem

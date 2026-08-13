@@ -23,11 +23,11 @@ benchmark plot, see [Metatomic backends](project:rgpot_metatomic.md).
 
 ## Setup and Compilation
 
-The most robust way to handle the dependencies is to use `-Dwith_metatomic=True
--Dpip_metatomic=True -Dtorch_version=2.10` inside a `pixi` environment with the
-`metatomic` feature (for example `pixi run -e dev-mta` / `setupeon` + `mkeon`).
-That path expects **metatomic-torch >= 0.1.15** and **metatensor-torch >= 0.10**
-(pip layout `metatensor_torch/torch-<ver>/` for the shared library).
+Prefer `-Dwith_metatomic=True -Dpip_metatomic=True -Dtorch_version=2.10` inside
+a `pixi` environment with the `metatomic` feature (for example
+`pixi run -e dev-mta` / `setupeon` + `mkeon`). That path expects
+metatomic-torch >= 0.1.15 and metatensor-torch >= 0.10 (pip layout
+`metatensor_torch/torch-<ver>/` for the shared library).
 
 Some notes about this implementation:
 

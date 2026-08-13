@@ -7,8 +7,8 @@ myst:
 
 # Potential
 
-`eOn` supports a large number of potentials, some vendored within the executable
-and libraries and others via interfaces.
+`eOn` supports many potentials, some vendored within the executable and
+libraries and others via interfaces.
 
 ```{note}
 Some of these require compile-time flags, detailed in the [installation instructions](project:../install/index.md).

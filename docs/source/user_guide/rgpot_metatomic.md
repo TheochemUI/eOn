@@ -5,16 +5,16 @@ myst:
     "keywords": "eOn metatomic, RGPOT, ASE, PET-MAD, pyeonclient backends, benchmark"
 ---
 
-# Metatomic backends (fat · RGPOT · ASE)
+# Metatomic backends (fat, RGPOT, ASE)
 
-Three supported ways to evaluate the same Metatomic model (for example PET-MAD)
-from eOn / [pyeonclient](project:pyeonclient.md). **All three stay supported.**
+Three ways to evaluate the same Metatomic model (for example PET-MAD) from eOn /
+[pyeonclient](project:pyeonclient.md):
 
 | Path | How | Torch linked into host? | Use when |
 |------|-----|-------------------------|----------|
-| **Fat / native** | `potential = Metatomic` / `make_backend("metatomic")` | Yes (`-Dwith_metatomic`) | Default, conda-forge, lowest overhead |
-| **RGPOT / engine** | `potential = RGPOT`, `backend = metatomic` / `make_backend("rgpot_metatomic")` | No on thin hosts; torch lives in `libmetatomic_engine.so` | Optional plugin on base wheels |
-| **ASE wrap** | `metatomic_ase.MetatomicCalculator` → `make_backend("ase")` or `make_backend("ase_metatomic")` | Python `metatomic-torch` only | Cookbook / ASE workflows; same energies |
+| Fat / native | `potential = Metatomic` / `make_backend("metatomic")` | Yes (`-Dwith_metatomic`) | Default, conda-forge, lowest overhead |
+| RGPOT / engine | `potential = RGPOT`, `backend = metatomic` / `make_backend("rgpot_metatomic")` | No on thin hosts; torch lives in `libmetatomic_engine.so` | Optional plugin on base wheels |
+| ASE wrap | `metatomic_ase.MetatomicCalculator` → `make_backend("ase")` or `make_backend("ase_metatomic")` | Python `metatomic-torch` only | Cookbook / ASE workflows; same energies |
 
 rgpot is not on conda-forge, so the fat native path is the packaging default.
 The RGPOT engine is the thin-host path. ASE is the Python calculator path.
@@ -27,9 +27,9 @@ ASE agrees within ~10 µeV. Fat and RGPOT are ~10× faster per call than the ASE
 wrap on this workload (the ASE path pays Python / neighbor-list setup each
 evaluation).
 
-Numbers and figure are **generated at docs build time** from the committed
-JSON SSoT ({file}`../fig/data/metatomic_backend_bench.json`). Do not commit the
-SVG/PNG; ``sphinx-build`` runs ``scripts/plot_metatomic_backend_bench.py``.
+Numbers and figure are generated at docs build time from the committed JSON
+({file}`../fig/data/metatomic_backend_bench.json`). Do not commit the SVG/PNG;
+``sphinx-build`` runs ``scripts/plot_metatomic_backend_bench.py``.
 
 ```{figure} ../fig/generated/metatomic_backend_bench.svg
 :alt: Bar charts of single-point wall time and energy difference for fat, RGPOT dlopen, and ASE metatomic backends
@@ -42,9 +42,9 @@ time per force call. Right: energy relative to fat (µeV).
 ```{include} ../fig/generated/metatomic_backend_bench_table.md
 ```
 
-Treat timings as workload-specific (host CPU, torch build, warm vs cold
-neighbor lists). The plot is meant to show **order-of-magnitude packaging
-cost**, not a universal ranking.
+Timings depend on host CPU, torch build, and warm vs cold neighbor lists. The
+plot shows packaging cost on this workload (order of magnitude), not a general
+ranking.
 
 ```{note}
 Fat C++ Metatomic and the Python ``metatomic-torch`` extension both register
@@ -91,8 +91,8 @@ exported models (including PET-MAD) where upstream
 
 ## Reproducible bench (pixi)
 
-One-shot path from a clean tree (builds fat + ASE-safe pyeonclient, runs the
-three-way compare, writes the JSON SSoT and regenerates the figure):
+From a clean tree (builds fat + ASE-safe pyeonclient, runs the three-way
+compare, writes the JSON and regenerates the figure):
 
 ```{code-block} bash
 # PET-MAD + d016_pos.con live under subprojects/gpr_optim/bench_data/petmad/

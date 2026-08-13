@@ -1,15 +1,15 @@
 ---
 myst:
   html_meta:
-    "description": "Neighbor lists in eOn: vesin as the single geometry backend; performance via ASV eonclient benches."
+    "description": "Neighbor lists in eOn: vesin as the geometry backend; performance via the ASV eonclient suite."
     "keywords": "eOn, vesin, neighbor list, ASV, Morse, LJ, rgpot"
 ---
 
 # Neighbor lists (vesin)
 
-eOn uses **[vesin](https://luthaf.fr/vesin/)** as the neighbor-list engine
-wherever the code owns pair finding itself. Do not reintroduce pot-local
-Verlet tables or O(N²) MIC loops for new work.
+eOn uses [vesin](https://luthaf.fr/vesin/) for pair finding whenever the code
+owns that step. New work should not add pot-local Verlet tables or O(N²) MIC
+loops.
 
 ## Layers
 
@@ -17,10 +17,10 @@ Verlet tables or O(N²) MIC loops for new work.
 |-------|-----|---------|
 | Python server geometry | `eon.geometry.neighbors.neighbor_list` | `vesin.NeighborList` |
 | Process-atom shells / displace | `eon.atoms` / `get_process_atoms` | same |
-| Classical C++ pair pots (LJ, Morse, LJCluster, ZBL) | `rgpot::nlist::PairListCache` (Verlet-skin cache over vesin, in the [rgpot](https://github.com/OmniPotentRPC/rgpot) repo) | `vesin_neighbors` (C) |
+| Classical C++ pair pots (LJ, Morse, LJCluster, ZBL) | `rgpot::nlist::PairListCache` (Verlet-skin cache over vesin, in [rgpot](https://github.com/OmniPotentRPC/rgpot)) | `vesin_neighbors` (C) |
 | Metatomic | pot-local call into vesin C | same `libvesin` / vendored TU |
 | External engines (LAMMPS, VASP, ASE, …) | engine-owned | not eOn's NL |
-| Fortran pots (SW, EDIP, Lenosky, EAM-Al, CuH2, FeHe, Tersoff, TIP4P-H) | `rgpot_neighbors`, a CSR full-list table (in rgpot) | `vesin_fortran`, vendored in rgpot |
+| Fortran pots (SW, EDIP, Lenosky, EAM-Al, CuH2, FeHe, Tersoff, TIP4P-H) | `rgpot_neighbors`, CSR full-list table in rgpot | `vesin_fortran`, vendored in rgpot |
 
 ## Python
 
@@ -29,27 +29,25 @@ from eon.geometry import neighbor_list
 nl = neighbor_list(structure, cutoff=4.0)
 ```
 
-`brute=True` is API-compat only; the algorithm is always vesin.
+`brute=True` keeps API compatibility only. The algorithm is always vesin.
 
 ## C++
 
-The classical pair pots (LJ, LJCluster, Morse, ZBL) live in **rgpot** and
-reach vesin through `rgpot::nlist::PairListCache`, the Verlet-skin cache in
-that repo. eOn consumes them through `RgpotAdapter`; the cache is not part
-of eOn's own surface. See the rgpot docs for `Options`, `evaluate`, and
-`ensureVisit`.
+Classical pair pots (LJ, LJCluster, Morse, ZBL) live in **rgpot** and reach
+vesin through `rgpot::nlist::PairListCache`. eOn consumes them through
+`RgpotAdapter`; the cache is not part of eOn's public surface. See the rgpot
+docs for `Options`, `evaluate`, and `ensureVisit`.
 
-The candidate list is built at `cutoff + skin`; while every atom stays
-within `skin/2` of its build position the cached pairs are re-used and the
-evaluation derives exact vectors from the *current* positions, filtered at
-the true cutoff — results match a fresh build in pair content. The pool
-matches slots by geometry proximity, so several NEB images sharing one pot
-instance each keep a live list on any thread-to-image assignment —
-including NEB's per-iteration worker threads, which would destroy any
-thread_local cache.
+The candidate list is built at `cutoff + skin`. While every atom stays within
+`skin/2` of its build position, the cache reuses pairs and derives exact
+vectors from current positions, filtered at the true cutoff. Pair content
+matches a fresh build. The pool matches slots by geometry proximity, so
+several NEB images that share one pot instance each keep a live list under
+any thread-to-image assignment, including NEB's per-iteration worker threads.
+A `thread_local` cache would not survive that assignment.
 
-`eonc::VesinNeighbors` (vesin convention `r_ij = r_j − r_i + S·H`) remains
-in eOn as the RAII wrapper for consumers that need vesin's own buffers:
+`eonc::VesinNeighbors` (vesin convention `r_ij = r_j − r_i + S·H`) is the RAII
+wrapper for consumers that need vesin's own buffers:
 
 ```cpp
 #include "eon/VesinNeighbors.h"
@@ -59,39 +57,42 @@ opt.cutoff = 5.0;
 nl.compute(R, nAtoms, box9, opt);
 ```
 
-`eoncbase` always links vesin. It resolves in this order: an installed
-vesin (pkg-config, cmake, or plain library), else the copy the rgpot
-subproject already builds, else eOn's own vendored translation unit. The
-middle case matters when rgpot comes from the wrap: building both copies
-would put two definitions of every vesin symbol in one link.
+`eoncbase` always links vesin. Resolution order: an installed vesin
+(pkg-config, cmake, or plain library); else the copy the rgpot subproject
+already builds; else eOn's own vendored translation unit. When rgpot comes
+from the wrap, reusing its vesin avoids two definitions of every vesin symbol
+in one link.
 
-**Do not** call `vesin_free` (or destroy a stack-local list) before every
-`compute`. Upstream documents that the same `VesinNeighborList` should be
-re-used across calls so allocations are recycled; free only when finished.
+Do not call `vesin_free` (or destroy a stack-local list) before every
+`compute`. Upstream documents reusing the same `VesinNeighborList` across
+calls so allocations recycle; free only when finished.
 
-## How we measure (ASV, not one-off scripts)
+## ASV benchmarks
 
-Institutional timing is the **existing ASV suite** under `benchmarks/`:
+Wall-clock timing for client changes goes through the ASV suite under
+`benchmarks/`, not ad-hoc scripts.
 
-| ASV class | Fixture | Hits vesin-backed pot? |
-|-----------|---------|------------------------|
+| ASV class | Fixture | vesin pot path |
+|-----------|---------|----------------|
 | `TimePointMorsePt` | `data/point_morse_pt` | Morse force pairs |
 | `TimeMinimizationLJCluster` | `data/min_lj_cluster` | LJCluster force pairs (many force evals) |
 | `TimeSaddleSearchMorseDimer` | `data/one_pt_saddle_search` | Morse + saddle path |
 | `TimeNEBMorsePt` | `data/neb_morse_pt` | Morse band forces |
 
-Mechanism (already in CI):
+### CI
 
-1. **PR** — `Benchmark PR` workflow builds `eonclient` on **base SHA** and
-   **head SHA** with the **PR’s** `benchmarks/` tree, runs
+1. PR: the `Benchmark PR` workflow builds `eonclient` at the base SHA and the
+   head SHA with the PR's `benchmarks/` tree, runs
    `asv run --set-commit-hash … --quick`, then asv-perch comments the
-   main→PR comparison.
-2. **main** — `ASV dashboard` restores orphan branch `asv-results`, runs
-   history, publishes with asv-tachyon →
-   [eondocs.org/bench](https://eondocs.org/bench/) /
+   `main`→PR comparison.
+2. `main`: the `ASV dashboard` workflow restores the orphan branch
+   `asv-results`, runs history, and publishes with asv-tachyon to
+   [eondocs.org/bench](https://eondocs.org/bench/) and
    [bench.eondocs.org](https://bench.eondocs.org/).
 
-Local (same as `benchmarks/README.md`):
+### Local
+
+Same sequence as `benchmarks/README.md`:
 
 ```bash
 pixi run meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release
@@ -101,20 +102,19 @@ pixi run asv machine --yes
 pixi run asv run -E "existing:$(which python)" --quick
 ```
 
-To compare a vesin-NL branch to `main` without waiting for GHA: build+install
-both commits’ clients (or sequential install) and use the same ASV class names;
-the PR workflow is the authoritative pair-wise run.
+To compare a vesin-NL branch to `main` without waiting on GHA, build and
+install both clients (or install sequentially) and run the same ASV class
+names. Pair comparison for review uses the PR workflow.
 
 ## Fortran
 
-eOn compiles no Fortran. The kernels and the vendored vesin Fortran
-interface both live in rgpot, where every one of them reaches vesin the
-same way: `rgpot_neighbors` builds a CSR full neighbour list carrying pair
-vectors and distances, with the C API's Verlet `skin` option, and the
-kernels read rows out of it. The per-pot CSR helper modules that used to
-sit beside the fixed-form kernels here (`vesin_al`, `vesin_cuh2`,
-`vesin_fehe`) are gone with them.
+eOn compiles no Fortran. The kernels and the vendored vesin Fortran interface
+both live in rgpot. Every kernel reaches vesin the same way:
+`rgpot_neighbors` builds a CSR full neighbour list with pair vectors and
+distances (Verlet `skin` on the C API), and the kernels read rows out of it.
+The per-pot CSR helper modules that used to sit beside the fixed-form kernels
+here (`vesin_al`, `vesin_cuh2`, `vesin_fehe`) moved out with those kernels.
 
-Every Fortran pot remains orthorhombic-only (they take the box diagonal).
-For the porting rules and the neighbour-table cell convention, see
+Fortran pots take the box diagonal only (orthorhombic). Porting rules and the
+neighbour-table cell convention are in
 `docs/orgmode/reference/fortran_potentials.org` in rgpot.
