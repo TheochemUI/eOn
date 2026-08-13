@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    "description": "Fat Metatomic, RGPOT dlopen engine, and ASE MetatomicCalculator backends in eOn / pyeonclient — same science, different packaging paths."
+    "description": "Fat Metatomic, RGPOT dlopen engine, and ASE MetatomicCalculator backends in eOn / pyeonclient: same science, different packaging paths."
     "keywords": "eOn metatomic, RGPOT, ASE, PET-MAD, pyeonclient backends, benchmark"
 ---
 
