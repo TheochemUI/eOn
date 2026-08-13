@@ -8,8 +8,7 @@ myst:
 # Neighbor lists (vesin)
 
 eOn uses [vesin](https://luthaf.fr/vesin/) for pair finding whenever the code
-owns that step. New work should not add pot-local Verlet tables or O(N²) MIC
-loops.
+owns that step. New pair finding goes through vesin.
 
 ## Layers
 
@@ -19,7 +18,7 @@ loops.
 | Process-atom shells / displace | `eon.atoms` / `get_process_atoms` | same |
 | Classical C++ pair pots (LJ, Morse, LJCluster, ZBL) | `rgpot::nlist::PairListCache` (Verlet-skin cache over vesin, in [rgpot](https://github.com/OmniPotentRPC/rgpot)) | `vesin_neighbors` (C) |
 | Metatomic | pot-local call into vesin C | same `libvesin` / vendored TU |
-| External engines (LAMMPS, VASP, ASE, …) | engine-owned | not eOn's NL |
+| External engines (LAMMPS, VASP, ASE, …) | engine-owned | engine NL |
 | Fortran pots (SW, EDIP, Lenosky, EAM-Al, CuH2, FeHe, Tersoff, TIP4P-H) | `rgpot_neighbors`, CSR full-list table in rgpot | `vesin_fortran`, vendored in rgpot |
 
 ## Python
@@ -29,14 +28,14 @@ from eon.geometry import neighbor_list
 nl = neighbor_list(structure, cutoff=4.0)
 ```
 
-`brute=True` keeps API compatibility only. The algorithm is always vesin.
+`brute=True` exists for API compatibility. The algorithm is always vesin.
 
 ## C++
 
 Classical pair pots (LJ, LJCluster, Morse, ZBL) live in rgpot and reach vesin
 through `rgpot::nlist::PairListCache`. eOn consumes them through
-`RgpotAdapter`; the cache is not part of eOn's public surface. See the rgpot
-docs for `Options`, `evaluate`, and `ensureVisit`.
+`RgpotAdapter`; the cache API lives in rgpot. See the rgpot docs for
+`Options`, `evaluate`, and `ensureVisit`.
 
 The candidate list is built at `cutoff + skin`. While every atom stays within
 `skin/2` of its build position, the cache reuses pairs and derives exact
@@ -44,7 +43,7 @@ vectors from current positions, filtered at the true cutoff. Pair content
 matches a fresh build. The pool matches slots by geometry proximity, so
 several NEB images that share one pot instance each keep a live list under
 any thread-to-image assignment, including NEB's per-iteration worker threads.
-A `thread_local` cache would not survive that assignment.
+That assignment needs a proximity-matched pool; `thread_local` storage fails under worker reassignment.
 
 `eonc::VesinNeighbors` (vesin convention `r_ij = r_j − r_i + S·H`) is the RAII
 wrapper for consumers that need vesin's own buffers:
@@ -63,14 +62,13 @@ already builds; else eOn's own vendored translation unit. When rgpot comes
 from the wrap, reusing its vesin avoids two definitions of every vesin symbol
 in one link.
 
-Do not call `vesin_free` (or destroy a stack-local list) before every
-`compute`. Upstream documents reusing the same `VesinNeighborList` across
-calls so allocations recycle; free only when finished.
+Reuse the same `VesinNeighborList` across `compute` calls so allocations
+recycle. Free (or destroy a stack-local list) only when finished.
 
 ## ASV benchmarks
 
 Wall-clock timing for client changes goes through the ASV suite under
-`benchmarks/`, not ad-hoc scripts.
+`benchmarks/`.
 
 | ASV class | Fixture | vesin pot path |
 |-----------|---------|----------------|
@@ -102,14 +100,14 @@ pixi run asv machine --yes
 pixi run asv run -E "existing:$(which python)" --quick
 ```
 
-To compare a vesin-NL branch to `main` without waiting on GHA, build and
-install both clients (or install sequentially) and run the same ASV class
-names. Pair comparison for review uses the PR workflow.
+Local pair comparison: build and install both clients (or install
+sequentially) and run the same ASV class names. Review still uses the PR
+workflow.
 
 ## Fortran
 
-eOn compiles no Fortran. The kernels and the vendored vesin Fortran interface
-both live in rgpot. Every kernel reaches vesin the same way:
+Fortran kernels and the vendored vesin Fortran interface both live in rgpot.
+Every kernel reaches vesin the same way:
 `rgpot_neighbors` builds a CSR full neighbour list with pair vectors and
 distances (Verlet `skin` on the C API), and the kernels read rows out of it.
 The per-pot CSR helper modules that used to sit beside the fixed-form kernels

@@ -16,8 +16,8 @@ Three ways to evaluate the same Metatomic model (for example PET-MAD) from eOn /
 | RGPOT / engine | `potential = RGPOT`, `backend = metatomic` / `make_backend("rgpot_metatomic")` | No on thin hosts; torch lives in `libmetatomic_engine.so` | Optional plugin on base wheels |
 | ASE wrap | `metatomic_ase.MetatomicCalculator` → `make_backend("ase")` or `make_backend("ase_metatomic")` | Python `metatomic-torch` only | Cookbook / ASE workflows; same energies |
 
-rgpot is not on conda-forge, so the fat native path is the packaging default.
-The RGPOT engine is the thin-host path. ASE is the Python calculator path.
+conda-forge ships the fat native path. The RGPOT engine is the thin-host path.
+ASE is the Python calculator path.
 
 ## Benchmark (PET-MAD)
 
@@ -28,8 +28,8 @@ wrap on this workload (the ASE path pays Python / neighbor-list setup each
 evaluation).
 
 Numbers and figure are generated at docs build time from the committed JSON
-({file}`../fig/data/metatomic_backend_bench.json`). Do not commit the SVG/PNG;
-``sphinx-build`` runs ``scripts/plot_metatomic_backend_bench.py``.
+({file}`../fig/data/metatomic_backend_bench.json`). Commit the JSON; leave the
+SVG/PNG to ``sphinx-build`` via ``scripts/plot_metatomic_backend_bench.py``.
 
 ```{figure} ../fig/generated/metatomic_backend_bench.svg
 :alt: Bar charts of single-point wall time and energy difference for fat, RGPOT dlopen, and ASE metatomic backends
@@ -43,8 +43,7 @@ time per force call. Right: energy relative to fat (µeV).
 ```
 
 Timings depend on host CPU, torch build, and warm vs cold neighbor lists. The
-plot shows packaging cost on this workload (order of magnitude), not a general
-ranking.
+plot shows packaging cost on this workload to order of magnitude.
 
 ```{note}
 Fat C++ Metatomic and the Python ``metatomic-torch`` extension both register
@@ -107,8 +106,8 @@ pixi run -e mta-bench mta-backend-bench
 | `mta-backend-plot` | plot from committed JSON only (no C++ build) |
 
 Build trees: `bbdir-mta-bench/` (fat Metatomic + RGPOT engine) and
-`bbdir-mta-bench-ase/` (pyeonclient without C++ metatomic so ASE
-`metatomic-torch` does not double-register `TORCH_LIBRARY(metatomic)`).
+`bbdir-mta-bench-ase/` (pyeonclient built without C++ metatomic, so ASE
+`metatomic-torch` alone owns `TORCH_LIBRARY(metatomic)`).
 
 ```{code-block} bash
 # optional overrides
@@ -173,7 +172,7 @@ meson compile -C build-thin
 # engine still comes from a fat build or a packager that ships libmetatomic_engine.so
 ```
 
-Do **not** remove native Metatomic from eOn: it is the conda-forge path.
+Native Metatomic stays in eOn; it is the conda-forge path.
 
 ## Runtime notes
 

@@ -29,21 +29,21 @@ flowchart LR
 
 | Role | Meson option | What runs in eOn | Wire / load | Typical use |
 | --- | --- | --- | --- | --- |
-| Direct in-process | `-Dwith_rgpot=true` | Potential type `RGPOT`: links rgpot NWChemPot / CPMDPot | `dlopen` of `libnwchemc.so` / `libcpmdc.so` in the eOn address space | Production NWChem/CPMD forces without a second process |
+| Direct in-process | `-Dwith_rgpot=true` | Potential type `RGPOT`: links rgpot NWChemPot / CPMDPot | `dlopen` of `libnwchemc.so` / `libcpmdc.so` in the eOn address space | Production NWChem/CPMD forces in one process |
 | eOn as RPC server | `-Dwith_serve=true` | `eonclient --serve` implements rgpot's Potential RPC | Cap'n Proto server in eOn | ChemGP / other tools drive any eOn pot over the network |
-| RPC client to potserv | Not an eOn pot type | Code outside eOn connects to rgpot `potserv` | Cap'n Proto client to potserv, which then `dlopen`s engines | Debugging engines via potserv; not the usual eOn path for NWChem |
+| RPC client to potserv | Outside eOn | Code outside eOn connects to rgpot `potserv` | Cap'n Proto client to potserv, which then `dlopen`s engines | Engine debugging via potserv |
 
 ```{important}
-`RGPOT` in eOn is the direct in-process role. It does not speak Cap'n Proto to
-potserv. Potserv is an rgpot binary for hosting engines over RPC; eOn uses the
-same engines by linking NWChemPot/CPMDPot and loading the `.so` itself.
+`RGPOT` in eOn is the direct in-process role: it links NWChemPot/CPMDPot and
+loads the engine `.so` in the eOn process. Potserv is a separate rgpot binary
+that hosts the same engines over Cap'n Proto RPC.
 ```
 
-Compare also SocketNWChem (`potential = SocketNWChem`): eOn speaks the i-PI
-socket protocol to an external NWChem process (not rgpot, not potserv). That
-path stays warm across POSDATA because NWChem keeps its SCF state. Direct
-RGPOT relies on nwchemc skipping redundant RTDB resets when method params are
-unchanged so multi-step optimize/NEB stays competitive with the socket.
+SocketNWChem (`potential = SocketNWChem`) is a fourth path: eOn speaks the
+i-PI socket protocol to an external NWChem process. That path stays warm
+across POSDATA because NWChem keeps its SCF state. Direct RGPOT relies on
+nwchemc skipping redundant RTDB resets when method params are unchanged so
+multi-step optimize/NEB stays competitive with the socket.
 
 ## Build flags (summary)
 
@@ -77,5 +77,5 @@ support.
 - Direct pot: [RgpotPot](project:rgpot_pot.md)
 - RGPOT metatomic engine: [RGPOT Metatomic](project:rgpot_metatomic.md)
 - Serve mode: [Serve mode](project:serve_mode.md)
-- Socket NWChem (non-rgpot): [Potentials](project:potential.md)
+- Socket NWChem: [Potentials](project:potential.md)
 - External process pot pattern: [ExtPot](project:ext_pot.md)
