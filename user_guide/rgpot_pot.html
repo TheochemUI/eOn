@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>RgpotPot (direct in-process rgpot) - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Metatomic backends (fat · RGPOT · ASE)" href="rgpot_metatomic.html" /><link rel="prev" title="rgpot integration (three roles)" href="rgpot_integration.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>RgpotPot (direct in-process rgpot) - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Metatomic backends (fat, RGPOT, ASE)" href="rgpot_metatomic.html" /><link rel="prev" title="rgpot integration (three roles)" href="rgpot_integration.html" />
       <link rel="canonical" href="https://eondocs.org/user_guide/rgpot_pot.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -139,7 +139,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="kdb.html">Kinetic Database</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_integration.html">rgpot integration (three roles)</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">RgpotPot (direct in-process rgpot)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_metatomic.html">Metatomic backends (fat &#183; RGPOT &#183; ASE)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_metatomic.html">Metatomic backends (fat, RGPOT, ASE)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="serve_mode.html">Serve Mode</a></li>
 </ul>
 </li>
@@ -385,28 +385,23 @@ data-aria-dark="Switch to auto color mode">
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 2.16.0.</span></p>
 </div>
-<p>When eOn is built with <strong><code class="docutils literal notranslate"><span class="pre">-Dwith_rgpot=true</span></code></strong>, potential type <strong><code class="docutils literal notranslate"><span class="pre">RGPOT</span></code></strong> links
-<a class="reference external" href="https://github.com/OmniPotentRPC/rgpot">rgpot</a> <strong>NWChemPot</strong> / <strong>CPMDPot</strong> and
-loads <code class="docutils literal notranslate"><span class="pre">libnwchemc.so</span></code> / <code class="docutils literal notranslate"><span class="pre">libcpmdc.so</span></code> with <strong><code class="docutils literal notranslate"><span class="pre">dlopen</span></code> in the eOn process</strong>.</p>
-<p>This is <strong>not</strong>:</p>
-<ul class="simple">
-<li><p>Cap’n Proto to <strong>potserv</strong> (that is an <em>external</em> RPC client role), nor</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">eonclient</span> <span class="pre">--serve</span></code></strong> (that is eOn acting as an <em>RPC server</em>; see
-<a class="reference internal" href="serve_mode.html"><span class="std std-doc">Serve mode</span></a>), nor</p></li>
-<li><p><strong>SocketNWChem</strong> (i-PI socket to a standalone NWChem binary).</p></li>
-</ul>
-<p>For the three-role overview, see <a class="reference internal" href="rgpot_integration.html"><span class="std std-doc">rgpot integration</span></a>.</p>
+<p>When eOn is built with <code class="docutils literal notranslate"><span class="pre">-Dwith_rgpot=true</span></code>, potential type <code class="docutils literal notranslate"><span class="pre">RGPOT</span></code> links
+<a class="reference external" href="https://github.com/OmniPotentRPC/rgpot">rgpot</a> NWChemPot / CPMDPot and loads
+<code class="docutils literal notranslate"><span class="pre">libnwchemc.so</span></code> / <code class="docutils literal notranslate"><span class="pre">libcpmdc.so</span></code> with <code class="docutils literal notranslate"><span class="pre">dlopen</span></code> in the eOn process.</p>
+<p>Sibling roles live elsewhere: potserv Cap’n Proto clients, <code class="docutils literal notranslate"><span class="pre">eonclient</span> <span class="pre">--serve</span></code>
+(<a class="reference internal" href="serve_mode.html"><span class="std std-doc">Serve mode</span></a>), and SocketNWChem (i-PI to a standalone
+NWChem binary). Overview: <a class="reference internal" href="rgpot_integration.html"><span class="std std-doc">rgpot integration</span></a>.</p>
 <section id="build">
 <h2>Build<a class="headerlink" href="#build" title="Link to this heading">¶</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">meson<span class="w"> </span>setup<span class="w"> </span>bbdir-rgpot<span class="w"> </span>-Dwith_rgpot<span class="o">=</span><span class="nb">true</span><span class="w"> </span>-Dwith_tests<span class="o">=</span><span class="nb">true</span>
 </span><span data-line="2">meson<span class="w"> </span>compile<span class="w"> </span>-C<span class="w"> </span>bbdir-rgpot
 </span></pre></div>
 </div>
-<p>Requires Cap’n Proto <strong>headers/libs</strong> (method params are Cap’n Proto messages
+<p>Requires Cap’n Proto headers and libs (method params are Cap’n Proto messages
 passed into the C ABI) and the <code class="docutils literal notranslate"><span class="pre">rgpot</span></code> Meson subproject
-(<code class="docutils literal notranslate"><span class="pre">subprojects/rgpot.wrap</span></code>). The build pulls <code class="docutils literal notranslate"><span class="pre">nwchempot_dep</span></code> / <code class="docutils literal notranslate"><span class="pre">cpmdpot_dep</span></code>
-only — not <code class="docutils literal notranslate"><span class="pre">ptlrpc_dep</span></code> (that is for serve mode).</p>
-<p>Engines are resolved at <strong>runtime</strong>:</p>
+(<code class="docutils literal notranslate"><span class="pre">subprojects/rgpot.wrap</span></code>). The build pulls <code class="docutils literal notranslate"><span class="pre">nwchempot_dep</span></code> / <code class="docutils literal notranslate"><span class="pre">cpmdpot_dep</span></code>.
+Serve mode uses <code class="docutils literal notranslate"><span class="pre">ptlrpc_dep</span></code> under <code class="docutils literal notranslate"><span class="pre">-Dwith_serve</span></code>.</p>
+<p>Engines are resolved at runtime:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">NWCHEMC_LIBRARY</span></code> or <code class="docutils literal notranslate"><span class="pre">RGPOT_NWCHEMC_ENGINE</span></code> (NWChem embed library), or</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">[RgpotPot]</span> <span class="pre">engine_path</span></code> / <code class="docutils literal notranslate"><span class="pre">engine_library</span></code> in the config.</p></li>
@@ -467,7 +462,7 @@ locator); see rgpot NWChemPot.</p>
 <code class="docutils literal notranslate"><span class="pre">inputBlocks</span></code> (e.g. explicit <code class="docutils literal notranslate"><span class="pre">dft</span></code> / <code class="docutils literal notranslate"><span class="pre">xc</span></code> stanzas). When <code class="docutils literal notranslate"><span class="pre">theory=dft</span></code> and
 <code class="docutils literal notranslate"><span class="pre">scf_type</span></code> looks like an XC label (e.g. <code class="docutils literal notranslate"><span class="pre">b3lyp</span></code>), a minimal DFT block is
 emitted automatically.</p>
-<p>Installed <strong>rgpot ≥ 2.5.0</strong> is preferred via <code class="docutils literal notranslate"><span class="pre">pkg-config</span></code> (<code class="docutils literal notranslate"><span class="pre">dependency('rgpot')</span></code>);
+<p>Installed rgpot ≥ 2.5.0 is preferred via <code class="docutils literal notranslate"><span class="pre">pkg-config</span></code> (<code class="docutils literal notranslate"><span class="pre">dependency('rgpot')</span></code>);
 the Meson wrap is the fallback for hermetic/dev builds.</p>
 </section>
 <section id="vs-socketnwchem">
@@ -524,7 +519,7 @@ Hartree / Hartree·bohr⁻¹.</p></li>
     <a href="rgpot_metatomic.html">
       <div class="page-info">
         <span>Next</span>
-        <div class="title">Metatomic backends (fat · RGPOT · ASE)</div>
+        <div class="title">Metatomic backends (fat, RGPOT, ASE)</div>
       </div>
       <i class="i-lucide chevron-right"></i>
     </a>

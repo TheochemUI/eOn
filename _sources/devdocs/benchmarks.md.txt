@@ -61,8 +61,8 @@ uvx --from "asv-spyglass @ git+https://github.com/HaoZeke/asv_spyglass.git@enh-m
   .asv/results/$MACHINE/<hash2>*.json
 ```
 
-The `benchmarks.json` metadata file is auto-discovered from the results
-directory, providing units and parameter names. You can also export a single
+ASV auto-discovers the `benchmarks.json` metadata file from the results
+directory; it supplies units and parameter names. You can also export a single
 result to a DataFrame:
 
 ```bash

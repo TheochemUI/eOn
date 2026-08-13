@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Metatomic backends (fat · RGPOT · ASE) - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Serve Mode" href="serve_mode.html" /><link rel="prev" title="RgpotPot (direct in-process rgpot)" href="rgpot_pot.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Metatomic backends (fat, RGPOT, ASE) - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Serve Mode" href="serve_mode.html" /><link rel="prev" title="RgpotPot (direct in-process rgpot)" href="rgpot_pot.html" />
       <link rel="canonical" href="https://eondocs.org/user_guide/rgpot_metatomic.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -27,7 +27,7 @@
 </style>
     <meta property="og:type" content="website"/>
   <meta property="og:url" content="https://eondocs.org/user_guide/rgpot_metatomic.html"/>
-  <meta property="og:title" content="Metatomic backends (fat · RGPOT · ASE)"/>
+  <meta property="og:title" content="Metatomic backends (fat, RGPOT, ASE)"/>
     <meta name="twitter:card" content="summary"/>
   </head>
 <body><div class="sy-head">
@@ -139,7 +139,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="kdb.html">Kinetic Database</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_integration.html">rgpot integration (three roles)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Metatomic backends (fat &#183; RGPOT &#183; ASE)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Metatomic backends (fat, RGPOT, ASE)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="serve_mode.html">Serve Mode</a></li>
 </ul>
 </li>
@@ -338,7 +338,7 @@ data-aria-dark="Switch to auto color mode">
         <span>/</span>
         <meta itemprop="position" content="2" />
       </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <strong itemprop="name">Metatomic backends (fat · RGPOT · ASE)</strong>
+        <strong itemprop="name">Metatomic backends (fat, RGPOT, ASE)</strong>
         <meta itemprop="position" content="3" />
       </li></ol>
     <div class="xl:hidden ml-1">
@@ -387,9 +387,9 @@ data-aria-dark="Switch to auto color mode">
   </div>
 </div><article class="yue dark-code" role="main">
           <section id="metatomic-backends-fat-rgpot-ase">
-<h1>Metatomic backends (fat · RGPOT · ASE)<a class="headerlink" href="#metatomic-backends-fat-rgpot-ase" title="Link to this heading">¶</a></h1>
-<p>Three supported ways to evaluate the same Metatomic model (for example PET-MAD)
-from eOn / <a class="reference internal" href="pyeonclient.html"><span class="std std-doc">pyeonclient</span></a>. <strong>All three stay supported.</strong></p>
+<h1>Metatomic backends (fat, RGPOT, ASE)<a class="headerlink" href="#metatomic-backends-fat-rgpot-ase" title="Link to this heading">¶</a></h1>
+<p>Three ways to evaluate the same Metatomic model (for example PET-MAD) from eOn /
+<a class="reference internal" href="pyeonclient.html"><span class="std std-doc">pyeonclient</span></a>:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -400,17 +400,17 @@ from eOn / <a class="reference internal" href="pyeonclient.html"><span class="st
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>Fat / native</strong></p></td>
+<tr class="row-even"><td><p>Fat / native</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">potential</span> <span class="pre">=</span> <span class="pre">Metatomic</span></code> / <code class="docutils literal notranslate"><span class="pre">make_backend(&quot;metatomic&quot;)</span></code></p></td>
 <td><p>Yes (<code class="docutils literal notranslate"><span class="pre">-Dwith_metatomic</span></code>)</p></td>
 <td><p>Default, conda-forge, lowest overhead</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>RGPOT / engine</strong></p></td>
+<tr class="row-odd"><td><p>RGPOT / engine</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">potential</span> <span class="pre">=</span> <span class="pre">RGPOT</span></code>, <code class="docutils literal notranslate"><span class="pre">backend</span> <span class="pre">=</span> <span class="pre">metatomic</span></code> / <code class="docutils literal notranslate"><span class="pre">make_backend(&quot;rgpot_metatomic&quot;)</span></code></p></td>
 <td><p>No on thin hosts; torch lives in <code class="docutils literal notranslate"><span class="pre">libmetatomic_engine.so</span></code></p></td>
 <td><p>Optional plugin on base wheels</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>ASE wrap</strong></p></td>
+<tr class="row-even"><td><p>ASE wrap</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">metatomic_ase.MetatomicCalculator</span></code> → <code class="docutils literal notranslate"><span class="pre">make_backend(&quot;ase&quot;)</span></code> or <code class="docutils literal notranslate"><span class="pre">make_backend(&quot;ase_metatomic&quot;)</span></code></p></td>
 <td><p>Python <code class="docutils literal notranslate"><span class="pre">metatomic-torch</span></code> only</p></td>
 <td><p>Cookbook / ASE workflows; same energies</p></td>
@@ -418,8 +418,8 @@ from eOn / <a class="reference internal" href="pyeonclient.html"><span class="st
 </tbody>
 </table>
 </div>
-<p>rgpot is not on conda-forge, so the fat native path is the packaging default.
-The RGPOT engine is the thin-host path. ASE is the Python calculator path.</p>
+<p>conda-forge ships the fat native path. The RGPOT engine is the thin-host path.
+ASE is the Python calculator path.</p>
 <section id="benchmark-pet-mad">
 <h2>Benchmark (PET-MAD)<a class="headerlink" href="#benchmark-pet-mad" title="Link to this heading">¶</a></h2>
 <p>Single-point energy and force on a 14-atom PET-MAD geometry
@@ -427,9 +427,9 @@ The RGPOT engine is the thin-host path. ASE is the Python calculator path.</p>
 ASE agrees within ~10 µeV. Fat and RGPOT are ~10× faster per call than the ASE
 wrap on this workload (the ASE path pays Python / neighbor-list setup each
 evaluation).</p>
-<p>Numbers and figure are <strong>generated at docs build time</strong> from the committed
-JSON SSoT (<code class="file docutils literal notranslate"><span class="pre">../fig/data/metatomic_backend_bench.json</span></code>). Do not commit the
-SVG/PNG; <code class="docutils literal notranslate"><span class="pre">sphinx-build</span></code> runs <code class="docutils literal notranslate"><span class="pre">scripts/plot_metatomic_backend_bench.py</span></code>.</p>
+<p>Numbers and figure are generated at docs build time from the committed JSON
+(<code class="file docutils literal notranslate"><span class="pre">../fig/data/metatomic_backend_bench.json</span></code>). Commit the JSON; leave the
+SVG/PNG to <code class="docutils literal notranslate"><span class="pre">sphinx-build</span></code> via <code class="docutils literal notranslate"><span class="pre">scripts/plot_metatomic_backend_bench.py</span></code>.</p>
 <figure class="align-default" id="id1">
 <a class="reference internal image-reference" href="../_images/metatomic_backend_bench.svg"><img alt="Bar charts of single-point wall time and energy difference for fat, RGPOT dlopen, and ASE metatomic backends" src="../_images/metatomic_backend_bench.svg" style="width: 100%;" />
 </a>
@@ -466,9 +466,8 @@ time per force call. Right: energy relative to fat (µeV).</span><a class="heade
 </tbody>
 </table>
 </div>
-<p>Treat timings as workload-specific (host CPU, torch build, warm vs cold
-neighbor lists). The plot is meant to show <strong>order-of-magnitude packaging
-cost</strong>, not a universal ranking.</p>
+<p>Timings depend on host CPU, torch build, and warm vs cold neighbor lists. The
+plot shows packaging cost on this workload to order of magnitude.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Fat C++ Metatomic and the Python <code class="docutils literal notranslate"><span class="pre">metatomic-torch</span></code> extension both register
@@ -514,8 +513,8 @@ exported models (including PET-MAD) where upstream
 </section>
 <section id="reproducible-bench-pixi">
 <h2>Reproducible bench (pixi)<a class="headerlink" href="#reproducible-bench-pixi" title="Link to this heading">¶</a></h2>
-<p>One-shot path from a clean tree (builds fat + ASE-safe pyeonclient, runs the
-three-way compare, writes the JSON SSoT and regenerates the figure):</p>
+<p>From a clean tree (builds fat + ASE-safe pyeonclient, runs the three-way
+compare, writes the JSON and regenerates the figure):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># PET-MAD + d016_pos.con live under subprojects/gpr_optim/bench_data/petmad/</span>
 </span><span data-line="2"><span class="c1"># (rsynced from ../gpr_optim when missing). Override with EON_PET_MAD_*.</span>
 </span><span data-line="3">pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>mta-bench<span class="w"> </span>mta-backend-bench
@@ -542,8 +541,8 @@ three-way compare, writes the JSON SSoT and regenerates the figure):</p>
 </table>
 </div>
 <p>Build trees: <code class="docutils literal notranslate"><span class="pre">bbdir-mta-bench/</span></code> (fat Metatomic + RGPOT engine) and
-<code class="docutils literal notranslate"><span class="pre">bbdir-mta-bench-ase/</span></code> (pyeonclient without C++ metatomic so ASE
-<code class="docutils literal notranslate"><span class="pre">metatomic-torch</span></code> does not double-register <code class="docutils literal notranslate"><span class="pre">TORCH_LIBRARY(metatomic)</span></code>).</p>
+<code class="docutils literal notranslate"><span class="pre">bbdir-mta-bench-ase/</span></code> (pyeonclient built without C++ metatomic, so ASE
+<code class="docutils literal notranslate"><span class="pre">metatomic-torch</span></code> alone owns <code class="docutils literal notranslate"><span class="pre">TORCH_LIBRARY(metatomic)</span></code>).</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># optional overrides</span>
 </span><span data-line="2"><span class="nb">export</span><span class="w"> </span><span class="nv">EON_PET_MAD_MODEL</span><span class="o">=</span>/path/to/pet-mad-s-v1.5.0.pt
 </span><span data-line="3"><span class="nb">export</span><span class="w"> </span><span class="nv">EON_PET_MAD_POS</span><span class="o">=</span>/path/to/pos.con
@@ -604,7 +603,7 @@ three-way compare, writes the JSON SSoT and regenerates the figure):</p>
 </span><span data-line="10"><span class="c1"># engine still comes from a fat build or a packager that ships libmetatomic_engine.so</span>
 </span></pre></div>
 </div>
-<p>Do <strong>not</strong> remove native Metatomic from eOn: it is the conda-forge path.</p>
+<p>Native Metatomic stays in eOn; it is the conda-forge path.</p>
 </section>
 <section id="runtime-notes">
 <h2>Runtime notes<a class="headerlink" href="#runtime-notes" title="Link to this heading">¶</a></h2>

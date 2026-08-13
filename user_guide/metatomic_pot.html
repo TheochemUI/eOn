@@ -139,7 +139,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="kdb.html">Kinetic Database</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_integration.html">rgpot integration (three roles)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_metatomic.html">Metatomic backends (fat &#183; RGPOT &#183; ASE)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_metatomic.html">Metatomic backends (fat, RGPOT, ASE)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="serve_mode.html">Serve Mode</a></li>
 </ul>
 </li>
@@ -409,17 +409,18 @@ with the <code class="docutils literal notranslate"><span class="pre">metatensor
 benchmark plot, see <a class="reference internal" href="rgpot_metatomic.html"><span class="std std-doc">Metatomic backends</span></a>.</p>
 <section id="setup-and-compilation">
 <h2>Setup and Compilation<a class="headerlink" href="#setup-and-compilation" title="Link to this heading">¶</a></h2>
-<p>The most robust way to handle the dependencies is to use <code class="docutils literal notranslate"><span class="pre">-Dwith_metatomic=True</span> <span class="pre">-Dpip_metatomic=True</span> <span class="pre">-Dtorch_version=2.10</span></code> inside a <code class="docutils literal notranslate"><span class="pre">pixi</span></code> environment with the
-<code class="docutils literal notranslate"><span class="pre">metatomic</span></code> feature (for example <code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">run</span> <span class="pre">-e</span> <span class="pre">dev-mta</span></code> / <code class="docutils literal notranslate"><span class="pre">setupeon</span></code> + <code class="docutils literal notranslate"><span class="pre">mkeon</span></code>).
-That path expects <strong>metatomic-torch &gt;= 0.1.15</strong> and <strong>metatensor-torch &gt;= 0.10</strong>
-(pip layout <code class="docutils literal notranslate"><span class="pre">metatensor_torch/torch-&lt;ver&gt;/</span></code> for the shared library).</p>
-<p>Some notes about this implementation:</p>
+<p>Prefer <code class="docutils literal notranslate"><span class="pre">-Dwith_metatomic=True</span> <span class="pre">-Dpip_metatomic=True</span> <span class="pre">-Dtorch_version=2.10</span></code> inside
+a <code class="docutils literal notranslate"><span class="pre">pixi</span></code> environment with the <code class="docutils literal notranslate"><span class="pre">metatomic</span></code> feature (for example
+<code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">run</span> <span class="pre">-e</span> <span class="pre">dev-mta</span></code> / <code class="docutils literal notranslate"><span class="pre">setupeon</span></code> + <code class="docutils literal notranslate"><span class="pre">mkeon</span></code>). That path expects
+metatomic-torch &gt;= 0.1.15 and metatensor-torch &gt;= 0.10 (pip layout
+<code class="docutils literal notranslate"><span class="pre">metatensor_torch/torch-&lt;ver&gt;/</span></code> for the shared library).</p>
+<p>Notes:</p>
 <ul class="simple">
-<li><p>Unlike the <code class="docutils literal notranslate"><span class="pre">python</span></code> potentials, using <code class="docutils literal notranslate"><span class="pre">pip_metatomic</span></code> does not share a <code class="docutils literal notranslate"><span class="pre">guard</span></code>
-across the client</p></li>
-<li><p>These models are typically stored in <code class="docutils literal notranslate"><span class="pre">.pt</span></code> files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pip_metatomic</span></code> keeps a private client process; it skips the shared <code class="docutils literal notranslate"><span class="pre">guard</span></code>
+used by the pure-Python potentials</p></li>
+<li><p>Models are usually <code class="docutils literal notranslate"><span class="pre">.pt</span></code> files</p></li>
 <li><p>Prefer <code class="docutils literal notranslate"><span class="pre">device</span> <span class="pre">=</span> <span class="pre">cuda</span></code> (or <code class="docutils literal notranslate"><span class="pre">auto</span></code>) on a GPU host; CPU remains the default when
-unset in the INI reader legacy path.</p></li>
+unset in the INI reader legacy path</p></li>
 </ul>
 <p>For more details including building from source, refer to the <a class="reference external" href="https://docs.metatensor.org/latest/index.html">upstream documentation</a>.</p>
 </section>
@@ -620,8 +621,8 @@ requests the NC force output.</p></li>
 </span><span data-line="4"><span class="na">variant_force</span><span class="w"> </span><span class="o">=</span><span class="w">   </span><span class="c1"># empty -&gt; same as energy variant / variant_base</span>
 </span></pre></div>
 </div>
-<p>Use non-conservative forces for speed only when the model documents them; they
-are not guaranteed to be energy-conserving in MD or long NEB runs.</p>
+<p>Use non-conservative forces for speed only when the model documents them.
+Energy conservation in MD or long NEB runs is then model-dependent.</p>
 </section>
 <section id="random-rotations-and-symmetrization">
 <h2>Random rotations and symmetrization<a class="headerlink" href="#random-rotations-and-symmetrization" title="Link to this heading">¶</a></h2>

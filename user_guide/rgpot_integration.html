@@ -139,7 +139,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="kdb.html">Kinetic Database</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">rgpot integration (three roles)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_metatomic.html">Metatomic backends (fat &#183; RGPOT &#183; ASE)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="rgpot_metatomic.html">Metatomic backends (fat, RGPOT, ASE)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="serve_mode.html">Serve Mode</a></li>
 </ul>
 </li>
@@ -380,9 +380,9 @@ data-aria-dark="Switch to auto color mode">
 </div><article class="yue dark-code" role="main">
           <section id="rgpot-integration-three-roles">
 <h1>rgpot integration (three roles)<a class="headerlink" href="#rgpot-integration-three-roles" title="Link to this heading">¶</a></h1>
-<p>eOn and <a class="reference external" href="https://github.com/OmniPotentRPC/rgpot">rgpot</a> meet in <strong>three
-independent roles</strong>. They are different Meson options, different binaries or
-symbols, and different runtime topologies. Do not conflate them.</p>
+<p>eOn and <a class="reference external" href="https://github.com/OmniPotentRPC/rgpot">rgpot</a> meet in three
+independent roles: different Meson options, different binaries or symbols,
+and different runtime topologies.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -394,38 +394,38 @@ symbols, and different runtime topologies. Do not conflate them.</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>Direct in-process</strong></p></td>
+<tr class="row-even"><td><p>Direct in-process</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">-Dwith_rgpot=true</span></code></p></td>
-<td><p>Potential type <strong><code class="docutils literal notranslate"><span class="pre">RGPOT</span></code></strong>: links rgpot <strong>NWChemPot</strong> / <strong>CPMDPot</strong></p></td>
+<td><p>Potential type <code class="docutils literal notranslate"><span class="pre">RGPOT</span></code>: links rgpot NWChemPot / CPMDPot</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">dlopen</span></code> of <code class="docutils literal notranslate"><span class="pre">libnwchemc.so</span></code> / <code class="docutils literal notranslate"><span class="pre">libcpmdc.so</span></code> in the eOn address space</p></td>
-<td><p>Production NWChem/CPMD forces without a second process</p></td>
+<td><p>Production NWChem/CPMD forces in one process</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>eOn as RPC server</strong></p></td>
+<tr class="row-odd"><td><p>eOn as RPC server</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">-Dwith_serve=true</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">eonclient</span> <span class="pre">--serve</span></code> implements rgpot’s Potential RPC</p></td>
-<td><p>Cap’n Proto <strong>server</strong> in eOn</p></td>
-<td><p>ChemGP / other tools drive <em>any</em> eOn pot over the network</p></td>
+<td><p>Cap’n Proto server in eOn</p></td>
+<td><p>ChemGP / other tools drive any eOn pot over the network</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>RPC client → potserv</strong></p></td>
-<td><p><em>Not</em> an eOn pot type</p></td>
-<td><p>Something <em>outside</em> eOn (or a thin harness) connects to <strong>rgpot <code class="docutils literal notranslate"><span class="pre">potserv</span></code></strong></p></td>
-<td><p>Cap’n Proto <strong>client</strong> → potserv, which then <code class="docutils literal notranslate"><span class="pre">dlopen</span></code>s engines</p></td>
-<td><p>Debugging engines via potserv; not the preferred eOn path for NWChem</p></td>
+<tr class="row-even"><td><p>RPC client to potserv</p></td>
+<td><p>Outside eOn</p></td>
+<td><p>Code outside eOn connects to rgpot <code class="docutils literal notranslate"><span class="pre">potserv</span></code></p></td>
+<td><p>Cap’n Proto client to potserv, which then <code class="docutils literal notranslate"><span class="pre">dlopen</span></code>s engines</p></td>
+<td><p>Engine debugging via potserv</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p><strong>RGPOT in eOn is the direct in-process role.</strong> It does <strong>not</strong> speak Cap’n
-Proto to potserv. Potserv is an rgpot binary for hosting engines over RPC; eOn
-uses the same engines by linking NWChemPot/CPMDPot and loading the <code class="docutils literal notranslate"><span class="pre">.so</span></code> itself.</p>
+<p><code class="docutils literal notranslate"><span class="pre">RGPOT</span></code> in eOn is the direct in-process role: it links NWChemPot/CPMDPot and
+loads the engine <code class="docutils literal notranslate"><span class="pre">.so</span></code> in the eOn process. Potserv is a separate rgpot binary
+that hosts the same engines over Cap’n Proto RPC.</p>
 </div>
-<p>Compare also <strong>SocketNWChem</strong> (<code class="docutils literal notranslate"><span class="pre">potential</span> <span class="pre">=</span> <span class="pre">SocketNWChem</span></code>): eOn speaks the i-PI
-socket protocol to an external <strong>NWChem process</strong> (not rgpot, not potserv).
-That path stays warm across POSDATA because NWChem keeps its SCF state. Direct
-RGPOT relies on <strong>nwchemc</strong> skipping redundant RTDB resets when method params
-are unchanged so multi-step optimize/NEB stays competitive with the socket.</p>
+<p>SocketNWChem (<code class="docutils literal notranslate"><span class="pre">potential</span> <span class="pre">=</span> <span class="pre">SocketNWChem</span></code>) is a fourth path: eOn speaks the
+i-PI socket protocol to an external NWChem process. That path stays warm
+across POSDATA because NWChem keeps its SCF state. Direct RGPOT relies on
+nwchemc skipping redundant RTDB resets when method params are unchanged so
+multi-step optimize/NEB stays competitive with the socket.</p>
 <section id="build-flags-summary">
 <h2>Build flags (summary)<a class="headerlink" href="#build-flags-summary" title="Link to this heading">¶</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Direct NWChem/CPMD via rgpot frontends (dlopen engines)</span>
@@ -470,9 +470,9 @@ support.</p>
 <h2>Docs map<a class="headerlink" href="#docs-map" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Direct pot: <a class="reference internal" href="rgpot_pot.html"><span class="std std-doc">RgpotPot</span></a></p></li>
-<li><p>RGPOT metatomic engine (optional; keep fat Metatomic): <a class="reference internal" href="rgpot_metatomic.html"><span class="std std-doc">RGPOT Metatomic</span></a></p></li>
+<li><p>RGPOT metatomic engine: <a class="reference internal" href="rgpot_metatomic.html"><span class="std std-doc">RGPOT Metatomic</span></a></p></li>
 <li><p>Serve mode: <a class="reference internal" href="serve_mode.html"><span class="std std-doc">Serve mode</span></a></p></li>
-<li><p>Socket NWChem (non-rgpot): <a class="reference internal" href="potential.html"><span class="std std-doc">Potentials</span></a></p></li>
+<li><p>Socket NWChem: <a class="reference internal" href="potential.html"><span class="std std-doc">Potentials</span></a></p></li>
 <li><p>External process pot pattern: <a class="reference internal" href="ext_pot.html"><span class="std std-doc">ExtPot</span></a></p></li>
 </ul>
 </section>

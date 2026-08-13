@@ -23,19 +23,19 @@ benchmark plot, see [Metatomic backends](project:rgpot_metatomic.md).
 
 ## Setup and Compilation
 
-The most robust way to handle the dependencies is to use `-Dwith_metatomic=True
--Dpip_metatomic=True -Dtorch_version=2.10` inside a `pixi` environment with the
-`metatomic` feature (for example `pixi run -e dev-mta` / `setupeon` + `mkeon`).
-That path expects **metatomic-torch >= 0.1.15** and **metatensor-torch >= 0.10**
-(pip layout `metatensor_torch/torch-<ver>/` for the shared library).
+Prefer `-Dwith_metatomic=True -Dpip_metatomic=True -Dtorch_version=2.10` inside
+a `pixi` environment with the `metatomic` feature (for example
+`pixi run -e dev-mta` / `setupeon` + `mkeon`). That path expects
+metatomic-torch >= 0.1.15 and metatensor-torch >= 0.10 (pip layout
+`metatensor_torch/torch-<ver>/` for the shared library).
 
-Some notes about this implementation:
+Notes:
 
-- Unlike the `python` potentials, using `pip_metatomic` does not share a `guard`
-  across the client
-- These models are typically stored in `.pt` files.
+- `pip_metatomic` keeps a private client process; it skips the shared `guard`
+  used by the pure-Python potentials
+- Models are usually `.pt` files
 - Prefer `device = cuda` (or `auto`) on a GPU host; CPU remains the default when
-  unset in the INI reader legacy path.
+  unset in the INI reader legacy path
 
 For more details including building from source, refer to the [upstream documentation](https://docs.metatensor.org/latest/index.html).
 
@@ -167,7 +167,7 @@ eOn will automatically target the corresponding variant key (e.g.,
 ````{margin}
 ```{note}
 
-* These are **not** force uncertainities and **may not** be correlated to accuracy.
+* Force uncertainties are separate; these scalars need not track accuracy.
 
 ```
 ````
@@ -265,8 +265,8 @@ non_conservative = true
 variant_force =   # empty -> same as energy variant / variant_base
 ```
 
-Use non-conservative forces for speed only when the model documents them; they
-are not guaranteed to be energy-conserving in MD or long NEB runs.
+Use non-conservative forces for speed only when the model documents them.
+Energy conservation in MD or long NEB runs is then model-dependent.
 
 ## Random rotations and symmetrization
 

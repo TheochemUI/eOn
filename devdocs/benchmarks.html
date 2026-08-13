@@ -139,7 +139,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/kdb.html">Kinetic Database</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/rgpot_integration.html">rgpot integration (three roles)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/rgpot_metatomic.html">Metatomic backends (fat &#183; RGPOT &#183; ASE)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/rgpot_metatomic.html">Metatomic backends (fat, RGPOT, ASE)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/serve_mode.html">Serve Mode</a></li>
 </ul>
 </li>
@@ -448,8 +448,8 @@ sampling (controlled by each class’s <code class="docutils literal notranslate
 </span><span data-line="6"><span class="w">  </span>.asv/results/<span class="nv">$MACHINE</span>/&lt;hash2&gt;*.json
 </span></pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">benchmarks.json</span></code> metadata file is auto-discovered from the results
-directory, providing units and parameter names. You can also export a single
+<p>ASV auto-discovers the <code class="docutils literal notranslate"><span class="pre">benchmarks.json</span></code> metadata file from the results
+directory; it supplies units and parameter names. You can also export a single
 result to a DataFrame:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uvx<span class="w"> </span>asv-spyglass<span class="w"> </span>to-df<span class="w"> </span>.asv/results/<span class="nv">$MACHINE</span>/&lt;hash&gt;*.json<span class="w"> </span>--csv<span class="w"> </span>results.csv
 </span></pre></div>
