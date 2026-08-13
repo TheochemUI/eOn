@@ -33,8 +33,8 @@ nl = neighbor_list(structure, cutoff=4.0)
 
 ## C++
 
-Classical pair pots (LJ, LJCluster, Morse, ZBL) live in **rgpot** and reach
-vesin through `rgpot::nlist::PairListCache`. eOn consumes them through
+Classical pair pots (LJ, LJCluster, Morse, ZBL) live in rgpot and reach vesin
+through `rgpot::nlist::PairListCache`. eOn consumes them through
 `RgpotAdapter`; the cache is not part of eOn's public surface. See the rgpot
 docs for `Options`, `evaluate`, and `ensureVisit`.
 
