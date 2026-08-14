@@ -3,6 +3,7 @@
 
 import os
 import shutil
+import tempfile
 import logging
 logger = logging.getLogger('state')
 from configparser import ConfigParser
@@ -42,16 +43,43 @@ class State:
         if not os.path.isdir(self.path):
             if reactant_path is None:
                 raise IOError("State needs a reactant_path when it is being instantiated to disk")
-            os.mkdir(self.path)
-            os.mkdir(self.procdata_path)
-            shutil.copy(reactant_path, self.reactant_path)
-            self.info.set("MetaData", "previous state", previous_state_num)
-            f = open(self.proctable_path, 'w')
-            f.write(self.processtable_header)
-            f.close()
-            f = open(self.search_result_path, 'w')
-            f.write(self.search_result_header)
-            f.close()
+            self._create_on_disk(reactant_path, previous_state_num)
+
+    def _create_on_disk(self, reactant_path, previous_state_num):
+        """ Populate a staging directory and rename it into place.
+
+        A state directory is judged to exist by its name alone, so a
+        directory left half populated is read as a state with no reactant
+        and no processes. Everything lands in a sibling directory that is
+        renamed once complete, leaving the state either whole or absent.
+        """
+        parent = os.path.dirname(os.path.abspath(self.path))
+        staging = tempfile.mkdtemp(dir=parent,
+                                   prefix=".%s-" % os.path.basename(self.path))
+        try:
+            def staged(path):
+                return os.path.join(staging, os.path.basename(path))
+
+            os.mkdir(staged(self.procdata_path))
+            shutil.copy(reactant_path, staged(self.reactant_path))
+            info = io.ini(staged(self.info.filenames))
+            info.set("MetaData", "previous state", previous_state_num)
+            with open(staged(self.proctable_path), 'w') as f:
+                f.write(self.processtable_header)
+            with open(staged(self.search_result_path), 'w') as f:
+                f.write(self.search_result_header)
+            os.chmod(staging, io.DEFAULT_DIR_MODE)
+        except BaseException:
+            shutil.rmtree(staging, ignore_errors=True)
+            raise
+
+        try:
+            os.rename(staging, self.path)
+        except OSError:
+            shutil.rmtree(staging, ignore_errors=True)
+            if not os.path.isdir(self.path):
+                raise
+            # Another process finished this state first; keep its copy.
 
     def __repr__(self):
         return "State #%i" % self.number
