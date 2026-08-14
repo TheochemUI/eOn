@@ -18,8 +18,38 @@ import readcon
 from eon.geometry.cell import box_to_length_angle, length_angle_to_box
 
 
+def structure_order(atom_ids: np.ndarray) -> np.ndarray:
+    """Permutation taking file order to :class:`Structure` order.
+
+    ``Structure`` orders its atoms by ascending ``atom_id``; a ``.con`` file
+    orders them by species block, because CON header lines 7 and 8 are a type
+    count and per-type counts. Ascending ids therefore survive the grouping the
+    writer applies and are what puts the atoms back where an index into
+    :attr:`Structure.r` finds the same atom it found before the write.
+
+    Ids that repeat carry no permutation to invert (a writer that numbers each
+    species from 1 produces those), so file order stands.
+    """
+    ids = np.asarray(atom_ids)
+    n = ids.shape[0]
+    if n < 2:
+        return np.arange(n)
+    if bool(np.all(ids[1:] > ids[:-1])):
+        return np.arange(n)
+    if np.unique(ids).shape[0] != n:
+        return np.arange(n)
+    return np.argsort(ids, kind="stable")
+
+
 class Structure:
     """Mutable atomic configuration (numpy-backed).
+
+    Atoms sit in ascending :attr:`atom_ids` order, which is the order a
+    from-scratch ``Structure`` builds them in and the order every index-coupled
+    sidecar (``mode.dat``, ``masses.dat``, ``direction.dat``, the Hessian,
+    ``Prefactor.movedAtoms``) is written in. ``.con`` files store atoms grouped
+    by species, so :meth:`from_conframe` undoes the grouping through the ids
+    rather than taking file order as given.
 
     Attributes
     ----------
@@ -33,9 +63,12 @@ class Structure:
         Chemical symbols, length N.
     mass : (N,) float
         Atomic masses.
+    atom_ids : (N,) uint64
+        Per-atom identity, CON column 5. ``1..N`` for a Structure built from
+        scratch; whatever the file carried for one read off disk.
     """
 
-    __slots__ = ("r", "free", "box", "names", "mass")
+    __slots__ = ("r", "free", "box", "names", "mass", "atom_ids")
 
     def __init__(self, n_atoms: int = 0):
         self.r = np.zeros((n_atoms, 3), dtype=float)
@@ -43,6 +76,7 @@ class Structure:
         self.box = np.zeros((3, 3), dtype=float)
         self.names: List[str] = [""] * n_atoms
         self.mass = np.zeros(n_atoms, dtype=float)
+        self.atom_ids = np.arange(1, n_atoms + 1, dtype=np.uint64)
 
     def __len__(self) -> int:
         return int(self.r.shape[0])
@@ -54,7 +88,21 @@ class Structure:
         p.box = self.box.copy()
         p.names = list(self.names)
         p.mass = self.mass.copy()
+        p.atom_ids = self.atom_ids.copy()
         return p
+
+    def ids_or_sequential(self) -> np.ndarray:
+        """Atom ids, or ``1..N`` when the id array is out of step with the geometry.
+
+        Callers that grow ``r`` / ``names`` / ``mass`` field by field leave the
+        ids behind; a short or long id array carries no identity to preserve,
+        so the sequential numbering stands in.
+        """
+        n = len(self)
+        ids = np.asarray(self.atom_ids, dtype=np.uint64).reshape(-1)
+        if ids.shape[0] == n:
+            return ids
+        return np.arange(1, n + 1, dtype=np.uint64)
 
     def free_r(self) -> np.ndarray:
         """Positions of free (unfixed) atoms only."""
@@ -66,17 +114,32 @@ class Structure:
     def fixed_mask(self) -> np.ndarray:
         return ~self.free_mask()
 
-    def append(self, r, free, name, mass) -> None:
+    def append(self, r, free, name, mass, atom_id: Optional[int] = None) -> None:
+        """Add one atom at the end.
+
+        An atom_id of None takes one past the largest in use, keeping the ids
+        distinct and ascending so the appended atom stays last across a save
+        and load cycle.
+        """
+        if atom_id is None:
+            atom_id = int(self.atom_ids.max()) + 1 if len(self.atom_ids) else 1
         self.r = np.append(self.r, [r], 0)
         self.free = np.append(self.free, free)
         self.names.append(name)
         self.mass = np.append(self.mass, mass)
+        self.atom_ids = np.concatenate(
+            (self.atom_ids, np.array([atom_id], dtype=np.uint64))
+        )
 
     # --- readcon ConFrame bridge (canonical I/O type) ---
 
     @classmethod
     def from_conframe(cls, frame: "readcon.ConFrame") -> "Structure":
-        """Build a Structure from a readcon ConFrame (live API)."""
+        """Build a Structure from a readcon ConFrame (live API).
+
+        The frame holds atoms grouped by species; :func:`structure_order` puts
+        them back in ``atom_id`` order.
+        """
         n = len(frame)
         p = cls(n)
         boxlengths = np.asarray(list(frame.cell), dtype=float)
@@ -92,11 +155,27 @@ class Structure:
         except Exception:
             for i, atom in enumerate(frame.atoms):
                 p.r[i] = [atom.x, atom.y, atom.z]
+        try:
+            ids = np.asarray(frame.atom_ids_array(), dtype=np.uint64)
+            if ids.shape != (n,):
+                raise ValueError("atom_ids shape")
+        except Exception:
+            ids = np.array(
+                [atom.atom_id for atom in frame.atoms], dtype=np.uint64
+            ).reshape(n)
+        p.atom_ids = ids
         for i, atom in enumerate(frame.atoms):
             p.names[i] = atom.symbol
             p.mass[i] = atom.mass if atom.mass is not None else 0.0
             fixed = atom.fixed
             p.free[i] = 0.0 if (fixed is not None and any(fixed)) else 1.0
+        order = structure_order(p.atom_ids)
+        if not np.array_equal(order, np.arange(n)):
+            p.r = p.r[order]
+            p.free = p.free[order]
+            p.mass = p.mass[order]
+            p.atom_ids = p.atom_ids[order]
+            p.names = [p.names[j] for j in order]
         return p
 
     def to_conframe(
@@ -104,8 +183,14 @@ class Structure:
         prebox_header: Optional[Sequence[str]] = None,
         postbox_header: Optional[Sequence[str]] = None,
     ) -> "readcon.ConFrame":
-        """Convert to a readcon ConFrame for writing."""
+        """Convert to a readcon ConFrame for writing.
+
+        Atoms go out in Structure order carrying their own ids. The writer
+        groups them by species; the ids are what :meth:`from_conframe` reads
+        the grouping back out of.
+        """
         lengths, angles = box_to_length_angle(self.box)
+        atom_ids = self.ids_or_sequential()
         atom_list = []
         for i in range(len(self)):
             is_fixed = bool(self.free[i] == 0)
@@ -116,7 +201,7 @@ class Structure:
                     y=float(self.r[i][1]),
                     z=float(self.r[i][2]),
                     fixed=[is_fixed, is_fixed, is_fixed],
-                    atom_id=i + 1,
+                    atom_id=int(atom_ids[i]),
                     mass=float(self.mass[i]),
                 )
             )
