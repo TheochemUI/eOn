@@ -688,11 +688,14 @@ class AKMCState(state.State):
         if store:
             if not os.path.isdir(self.bad_procdata_path):
                 os.mkdir(self.bad_procdata_path)
-            open(os.path.join(self.bad_procdata_path, "reactant_%d.con" % result['wuid']), 'w').writelines(result['reactant.con'].getvalue())
-            open(os.path.join(self.bad_procdata_path, "product_%d.con" % result['wuid']), 'w').writelines(result['product.con'].getvalue())
-            open(os.path.join(self.bad_procdata_path, "mode_%d.dat" % result['wuid']), 'w').writelines(result['mode.dat'].getvalue())
-            open(os.path.join(self.bad_procdata_path, "results_%d.dat" % result['wuid']), 'w').writelines(result['results.dat'].getvalue())
-            open(os.path.join(self.bad_procdata_path, "saddle_%d.con" % result['wuid']), 'w').writelines(result['saddle.con'].getvalue())
+            for name, key in (("reactant_%d.con", 'reactant.con'),
+                              ("product_%d.con", 'product.con'),
+                              ("mode_%d.dat", 'mode.dat'),
+                              ("results_%d.dat", 'results.dat'),
+                              ("saddle_%d.con", 'saddle.con')):
+                path = os.path.join(self.bad_procdata_path, name % result['wuid'])
+                with io.atomic_write(path) as f:
+                    f.writelines(result[key].getvalue())
 
 
     # Utility functions for loading process .con and mode files.

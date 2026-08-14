@@ -63,9 +63,11 @@ class PRState(state.State):
         #self.inc_proc_repeat_count(id)
 
         # Move the relevant files into the procdata directory.
-        open(self.proc_reactant_path(id), 'w').writelines(result['reactant.con'].getvalue())
-        open(self.proc_product_path(id), 'w').writelines(product_bytes)
-        open(self.proc_results_path(id), 'w').writelines(result['results.dat'].getvalue())
+        for path, content in ((self.proc_reactant_path(id), result['reactant.con'].getvalue()),
+                              (self.proc_product_path(id), product_bytes),
+                              (self.proc_results_path(id), result['results.dat'].getvalue())):
+            with io.atomic_write(path) as f:
+                f.writelines(content)
 
         # Append this barrier to the process table (in memory and on disk).
         self.append_process_table(id =                id,
