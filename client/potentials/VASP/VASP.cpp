@@ -62,8 +62,8 @@ constexpr const char *kHandshakeFiles[] = {kForceFile, kNewCarFile,
 // WAVECAR, CHGCAR and TMPCAR the wavefunction and charge density a restart
 // reads under ISTART and ICHARG.
 constexpr const char *kStaleFiles[] = {
-    "TMPCAR", "CHG",    "CHGCAR", "CONTCAR", "DOSCAR",  "EIGENVAL",
-    "IBZKPT", "OSZICAR", "OUTCAR", "PCDAT",  "WAVECAR", "XDATCAR"};
+    "TMPCAR", "CHG",     "CHGCAR", "CONTCAR", "DOSCAR",  "EIGENVAL",
+    "IBZKPT", "OSZICAR", "OUTCAR", "PCDAT",   "WAVECAR", "XDATCAR"};
 
 // A species and how many atoms it covers.
 using SpeciesRun = std::pair<int, long>;
