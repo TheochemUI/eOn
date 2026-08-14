@@ -295,7 +295,11 @@ void bind_sampling(nb::module_ &m) {
         nb::gil_scoped_release release;
         reactant->relax(true);
       }
-      double E0 = reactant->getPotentialEnergy();
+      double E0 = 0.0;
+      {
+        nb::gil_scoped_release release;
+        E0 = reactant->getPotentialEnergy();
+      }
       auto saddle = std::make_shared<Matter>(*reactant);
       double mag = params.saddle_search_options.displace_magnitude;
       if (mag > 0.0) {
