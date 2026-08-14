@@ -2,6 +2,7 @@
 import os
 import shutil
 import numpy
+from eon import fileio as io
 from eon.mcamc import mcamc
 import logging
 logger = logging.getLogger('superbasin')
@@ -150,12 +151,9 @@ class Superbasin:
 
     def write_data(self):
         logger.debug('saving data to %s' %self.path)
-        f = open(self.path, 'w')
-        try:
+        with io.atomic_write(self.path) as f:
             for number in self.state_numbers:
                 f.write("%d " % number)
-        finally:
-            f.close()
 
     def read_data(self, get_state):
         logger.debug('reading data from %s' % self.path)

@@ -530,15 +530,14 @@ class AKMCState(state.State):
     def save_process_table(self):
         """ If the processtable is present in memory, writes it to disk. """
         if self.procs != None:
-            f = open(self.proctable_path, 'w')
-            f.write(self.processtable_header)
-            for id in list(self.procs.keys()):
-                proc = self.procs[id]
-                f.write(self.processtable_line % (id, proc['saddle_energy'], proc['prefactor'],
-                                                  proc['product'], proc['product_energy'],
-                                                  proc['product_prefactor'], proc['barrier'],
-                                                  proc['rate'], proc['repeats']))
-            f.close()
+            with io.atomic_write(self.proctable_path) as f:
+                f.write(self.processtable_header)
+                for id in list(self.procs.keys()):
+                    proc = self.procs[id]
+                    f.write(self.processtable_line % (id, proc['saddle_energy'], proc['prefactor'],
+                                                      proc['product'], proc['product_energy'],
+                                                      proc['product_prefactor'], proc['barrier'],
+                                                      proc['rate'], proc['repeats']))
 
 
     def append_process_table(self, id, saddle_energy, prefactor, product, product_energy,
