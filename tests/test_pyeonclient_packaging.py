@@ -150,9 +150,25 @@ def test_base_wheel_build_and_import(tmp_path):
     # this script.
     repair = ROOT / "scripts" / "pyeonclient_repair_wheel.sh"
     if repair.is_file():
+        # The script walks NEEDED entries to a fixpoint, but resolves each one
+        # through ldd, which searches the default loader path. capnp's own
+        # dependencies (libkj, libkj-async) live in the environment's lib
+        # directory, so without a search path it reports "cannot resolve
+        # NEEDED libkj-async" and leaves them out of the wheel.
+        repair_env = os.environ.copy()
+        prefix = os.environ.get("CONDA_PREFIX")
+        if prefix:
+            search = os.pathsep.join(
+                p for p in (
+                    repair_env.get("PYEONCLIENT_VENDOR_SEARCH_PATHS"),
+                    os.path.join(prefix, "lib"),
+                ) if p
+            )
+            repair_env["PYEONCLIENT_VENDOR_SEARCH_PATHS"] = search
         rep = subprocess.run(
             ["bash", str(repair), str(whl)],
             cwd=str(ROOT),
+            env=repair_env,
             capture_output=True,
             text=True,
         )
