@@ -54,8 +54,16 @@ void bind_saddle(nb::module_ &m) {
       .value("OPTIMIZER_ERROR", MinModeSaddleSearch::STATUS_OPTIMIZER_ERROR)
       .value("DIMER_LOST_MODE", MinModeSaddleSearch::STATUS_DIMER_LOST_MODE)
       .value("DIMER_RESTORED_BEST",
-             MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST)
-      .export_values();
+             MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST);
+
+  // Overloaded so both the typed status properties and the raw int codes
+  // returned by run() resolve.
+  m.def(
+      "saddle_status_message",
+      [](MinModeSaddleSearch::Status status) {
+        return std::string(MinModeSaddleSearch::statusMessage(status));
+      },
+      nb::arg("status"), "Human-readable MinModeSaddleSearch status string");
 
   m.def(
       "saddle_status_message",
@@ -78,7 +86,8 @@ void bind_saddle(nb::module_ &m) {
           nb::gil_scoped_release release;
           status = ss.run();
         }
-        return nb::make_tuple(work, status);
+        return nb::make_tuple(work,
+                              static_cast<MinModeSaddleSearch::Status>(status));
       },
       nb::arg("matter"), nb::arg("mode"), nb::arg("reactant_energy"),
       nb::arg("parameters"), nb::arg("potential"), nb::arg("inplace") = false,
@@ -152,9 +161,13 @@ void bind_saddle(nb::module_ &m) {
           "clear_climb_frames",
           [](MinModeSaddleSearch &self) { self.clearClimbFrames(); },
           "Drop retained climb frames.")
-      .def_prop_ro(
-          "status",
-          [](const MinModeSaddleSearch &self) { return self.getStatus(); })
+      // getStatus() is int on the SaddleSearchMethod interface; typed here so
+      // `search.status == SaddleStatus.GOOD` compares against the same type.
+      .def_prop_ro("status",
+                   [](const MinModeSaddleSearch &self) {
+                     return static_cast<MinModeSaddleSearch::Status>(
+                         self.getStatus());
+                   })
       .def_prop_ro("status_message",
                    [](const MinModeSaddleSearch &self) {
                      return std::string(
