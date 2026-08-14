@@ -133,13 +133,13 @@ void ExtPot::prepareExchangeDir() {
     // one carries a different process id, and a second potential in this
     // process a different index, so no two of them name the same file.
     static std::atomic<long> instanceCount{0};
-    const std::filesystem::path named{std::format(
-        "extpot_{}_{}", processId(), instanceCount.fetch_add(1))};
+    const std::filesystem::path named{
+        std::format("extpot_{}_{}", processId(), instanceCount.fetch_add(1))};
     exchangeDir = std::filesystem::absolute(named, ec);
     if (ec) {
       exchangeDir.clear();
-      throw std::runtime_error(std::format(
-          "Could not resolve {}: {}", named.string(), ec.message()));
+      throw std::runtime_error(std::format("Could not resolve {}: {}",
+                                           named.string(), ec.message()));
     }
   }
   std::filesystem::create_directory(exchangeDir, ec);
@@ -216,8 +216,8 @@ void ExtPot::recieveFromSystem(long N, double *F, double *U)
   }
 
   if (!(in >> *U)) {
-    throw std::runtime_error(std::format("Could not read the energy from {}",
-                                         fromExtPot.string()));
+    throw std::runtime_error(
+        std::format("Could not read the energy from {}", fromExtPot.string()));
   }
 
   for (long i = 0; i < N; i++) {
