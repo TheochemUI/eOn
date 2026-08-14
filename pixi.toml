@@ -122,13 +122,18 @@ ase = "*"
 [feature.develop.dependencies]
 ipython = ">=9.3.0,<10"
 # Test runner for tests/. pytest-datadir supplies the datadir/shared_datadir
-# fixtures, sh drives the installed eonclient/eon binaries.
+# fixtures.
 pytest = ">=8"
 pytest-datadir = ">=1.5"
-sh = ">=2"
 # test_pyeonclient_packaging builds a -Dwith_rgpot=true wheel, which turns on
 # rgpot's RPC arm: capnp-rpc.pc and the capnp program are both required there.
 capnproto = ">=1.0,<2"
+
+# sh drives the installed eonclient/eon binaries in tests/test_akmc_pt.py and
+# tests/test_one_pt.py. It requires __unix, so scoping it to the unix targets
+# keeps the win-64 environments solvable; those two tests do not run there.
+[feature.develop.target.unix.dependencies]
+sh = ">=2"
 
 [feature.lammps]
 platforms = ["linux-64", "osx-64", "osx-arm64"]
