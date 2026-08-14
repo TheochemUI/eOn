@@ -24,6 +24,14 @@ public:
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
+  /// One instance owns one exchange directory, so two threads in force() on
+  /// it write the same structure file and read the same result.
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+  /// The external program runs as a subprocess and each instance runs it in
+  /// a directory of its own, so separate instances are independent.
+  [[nodiscard]] bool needsPerImageInstance() const noexcept override {
+    return true;
+  }
 
 private:
   void passToSystem(long N, const double *R, const int *atomicNrs,

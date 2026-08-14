@@ -25,6 +25,14 @@ public:
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
+  /// force() writes POSCAR, signals through NEWCAR and waits on FU, all at
+  /// fixed names in the working directory, so two threads in it swap results.
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+  /// Every instance drives the one VASP process named by the static vaspPID
+  /// through the one set of files, so a second instance buys no parallelism.
+  [[nodiscard]] bool needsPerImageInstance() const noexcept override {
+    return false;
+  }
   //!< Delete the results and restart files VASP writes into the working
   //!< directory, so a calculation starts from an empty one.
   //!<
