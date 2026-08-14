@@ -24,6 +24,8 @@
 #include "magic_enum/magic_enum.hpp"
 
 #include "eon/EonLogger.h"
+#include <format>
+#include <stdexcept>
 #include <thread>
 using namespace eonc::helpers;
 namespace fs = std::filesystem;
@@ -127,6 +129,8 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
       E_ref{0.0} {
 
   log = eonc::log::get();
+  eonc::helpers::requireKnownConvergenceMetric(
+      params.optimizer_options.convergence_metric, "[Nudged Elastic Band]");
   this->status = NEBStatus::INIT;
   numImages = params.neb_options.image_count;
   atoms = initPath.front().numberOfAtoms();
@@ -453,7 +457,9 @@ double NudgedElasticBand::convergenceForce() {
       QUILL_LOG_CRITICAL(
           log, "[Nudged Elastic Band] unknown opt_convergence_metric: {}",
           params.optimizer_options.convergence_metric);
-      std::exit(1);
+      throw std::invalid_argument(
+          std::format("[Nudged Elastic Band] unknown convergence_metric: {}",
+                      params.optimizer_options.convergence_metric));
     }
   }
   return fmax;
