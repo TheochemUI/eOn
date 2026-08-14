@@ -13,12 +13,14 @@
 
 #include "eon/Potential.h"
 
+#include <string>
+
 class ExtPot : public Potential {
 
 public:
   ExtPot(const Parameters &p)
       : Potential(p),
-        eon_extpot_path{p.potential_options.extPotPath.c_str()} {};
+        eon_extpot_path{p.potential_options.extPotPath} {};
   ~ExtPot();
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
@@ -28,5 +30,7 @@ private:
   void passToSystem(long N, const double *R, const int *atomicNrs,
                     const double *box);
   void recieveFromSystem(long N, double *F, double *U);
-  const char *eon_extpot_path;
+  // Owned by value: the Parameters this was built from may go out of scope
+  // long before the potential does.
+  std::string eon_extpot_path;
 };
