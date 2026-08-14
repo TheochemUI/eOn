@@ -499,9 +499,32 @@ class AKMCState(state.State):
             self.info.set('MetaData', 'kT', self.statelist.kT)
             return
         if abs(kT - self.statelist.kT) > 1e-8:
+            reactant_energy = self.get_energy()
             for id, proc in list(self.procs.items()):
-                proc['rate'] = proc['prefactor'] * math.exp(-proc['barrier'] / self.statelist.kT)
+                proc['rate'] = self.rate_at_kT(proc, reactant_energy)
             self.save_process_table()
+            self.info.set('MetaData', 'kT', self.statelist.kT)
+
+    def rate_at_kT(self, proc, reactant_energy):
+        """Forward rate for *proc* at the statelist kT.
+
+        Applies the ``akmc_eq_rate`` clamp on the same terms as
+        :meth:`add_process`. The process table stores only the resulting
+        rate, so a clamped process is indistinguishable from an unclamped
+        one on disk and a plain Arrhenius recompute would silently lift the
+        clamp. Falls back to the Arrhenius rate when the clamp is off or the
+        reactant energy is unknown.
+        """
+        forward_rate = proc['prefactor'] * math.exp(-proc['barrier'] / self.statelist.kT)
+        if self.config.akmc_eq_rate <= 0 or reactant_energy is None:
+            return forward_rate
+        reverse_barrier = proc['barrier'] - (proc['product_energy'] - reactant_energy)
+        reverse_rate = proc['product_prefactor'] * math.exp(-reverse_barrier / self.statelist.kT)
+        if forward_rate > self.config.akmc_eq_rate and reverse_rate > self.config.akmc_eq_rate:
+            if forward_rate < reverse_rate:
+                return self.config.akmc_eq_rate
+            return self.config.akmc_eq_rate * (forward_rate / reverse_rate)
+        return forward_rate
 
 
     def save_process_table(self):
