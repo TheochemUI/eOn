@@ -143,6 +143,9 @@ vector_to_numpy(const Eigen::MatrixBase<Derived> &v) {
   return nb::ndarray<nb::numpy, double, nb::c_contig>(buf, {n}, owner);
 }
 
+/// int64 is the canonical width for _core integer arrays: it round trips
+/// through vectori_from_numpy_i64 and matches the numpy default integer.
+/// VectorXi storage is int32, so the two differ by a narrowing copy.
 inline nb::ndarray<nb::numpy, int64_t, nb::c_contig>
 vectori_to_numpy(const VectorXi &v) {
   const size_t n = static_cast<size_t>(v.size());

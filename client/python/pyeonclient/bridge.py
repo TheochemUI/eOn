@@ -9,7 +9,15 @@ from typing import Any
 
 import numpy as np
 
-# Minimal Z table for common eOn fixtures; extended via elements int keys when available.
+# Minimal Z table for common eOn fixtures; extended via eon.atoms.elements when
+# the server package is installed alongside.
+#
+# readcon-core carries the full table (helpers.rs symbol_to_atomic_number /
+# atomic_number_to_symbol) and exposes it to C++ as rkr_symbol_to_z /
+# rkr_z_to_symbol, which is what client/ConFileIO.cpp calls. The readcon
+# pymodule registers neither, so a pyeonclient-only install (readcon is a
+# dependency, eon is not) is limited to the symbols listed here. Delete this
+# table once readcon exports the two helpers.
 _SYMBOL_Z = {
     "H": 1,
     "He": 2,
@@ -54,9 +62,7 @@ def _symbol_to_z(sym: str) -> int:
 
         info = elements.get(s) or elements.get(t)
         if info is not None:
-            for k, v in elements.items():
-                if isinstance(k, int) and v is info:
-                    return int(k)
+            return int(info["number"])
     except Exception:
         pass
     raise KeyError(
@@ -76,19 +82,36 @@ def _z_to_symbol(z: int) -> str:
     for sym, zi in _SYMBOL_Z.items():
         if zi == int(z):
             return sym
-    return f"Z{int(z)}"
+    raise KeyError(
+        f"no chemical symbol for Z={int(z)}; extend pyeonclient.bridge._SYMBOL_Z"
+    )
 
 
-def structure_to_matter(structure: Any, potential: Any, parameters: Any) -> Any:
-    """Build a live :class:`Matter` from a server Structure/Atoms-like object."""
+def structure_to_matter(
+    structure: Any,
+    potential: Any,
+    parameters: Any,
+    periodic: bool | None = None,
+) -> Any:
+    """Build a live :class:`Matter` from a server Structure/Atoms-like object.
+
+    *periodic* defaults to the ``periodic`` attribute of *structure* when it
+    has one, and to True otherwise (the .con convention). Pass False for a
+    cluster, so later ``setPositions`` calls do not wrap through
+    ``applyPeriodicBoundary``.
+    """
     from pyeonclient import Matter
 
+    if periodic is None:
+        periodic = bool(getattr(structure, "periodic", True))
     n = len(structure)
     m = Matter(potential, parameters)
     m.resize(n)
     # Cell before positions: default Matter cell is Zero; with PBC on, setting
     # positions first would wrap through a singular cell.
     m.cell = np.ascontiguousarray(structure.box, dtype=np.float64)
+    # Periodicity before positions, for the same reason.
+    m.periodic = periodic
     m.positions = np.ascontiguousarray(structure.r, dtype=np.float64)
     m.masses = np.ascontiguousarray(structure.mass, dtype=np.float64)
     free = np.asarray(structure.free, dtype=np.float64).reshape(-1)
@@ -97,7 +120,6 @@ def structure_to_matter(structure: Any, potential: Any, parameters: Any) -> Any:
     for i, name in enumerate(structure.names):
         z[i] = _symbol_to_z(name)
     m.atomic_numbers = z
-    m.periodic = True
     return m
 
 

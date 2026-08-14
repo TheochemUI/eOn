@@ -19,8 +19,7 @@ void bind_enums(nb::module_ &m) {
       .value("WriteError", eonc::io::IoStatus::WriteError)
       .value("AppendError", eonc::io::IoStatus::AppendError)
       .value("OpenError", eonc::io::IoStatus::OpenError)
-      .value("InvalidArgument", eonc::io::IoStatus::InvalidArgument)
-      .export_values();
+      .value("InvalidArgument", eonc::io::IoStatus::InvalidArgument);
 
   m.def(
       "io_ok", [](eonc::io::IoStatus s) { return eonc::io::io_ok(s); },
@@ -34,8 +33,7 @@ void bind_enums(nb::module_ &m) {
 
   nb::enum_<eonc::PbcConvention>(m, "PbcConvention")
       .value("Legacy", eonc::PbcConvention::Legacy)
-      .value("MinimumImage", eonc::PbcConvention::MinimumImage)
-      .export_values();
+      .value("MinimumImage", eonc::PbcConvention::MinimumImage);
 
   // Full PotType surface (matches config names / magic_enum)
   nb::enum_<eonc::PotType>(m, "PotType")
@@ -70,8 +68,7 @@ void bind_enums(nb::module_ &m) {
       .value("METATOMIC", eonc::PotType::METATOMIC)
       .value("ZBL", eonc::PotType::ZBL)
       .value("SocketNWChem", eonc::PotType::SocketNWChem)
-      .value("RGPOT", eonc::PotType::RGPOT)
-      .export_values();
+      .value("RGPOT", eonc::PotType::RGPOT);
 
   m.def(
       "pot_type_from_name",
@@ -108,8 +105,7 @@ void bind_enums(nb::module_ &m) {
       .value("Structure_Comparison", eonc::JobType::Structure_Comparison)
       .value("Monte_Carlo", eonc::JobType::Monte_Carlo)
       .value("Test", eonc::JobType::Test)
-      .value("GP_Surrogate", eonc::JobType::GP_Surrogate)
-      .export_values();
+      .value("GP_Surrogate", eonc::JobType::GP_Surrogate);
 
   m.def(
       "job_type_from_name",
@@ -133,8 +129,7 @@ void bind_enums(nb::module_ &m) {
       .value("CG", eonc::OptType::CG)
       .value("LBFGS", eonc::OptType::LBFGS)
       .value("FIRE", eonc::OptType::FIRE)
-      .value("SD", eonc::OptType::SD)
-      .export_values();
+      .value("SD", eonc::OptType::SD);
 
   nb::enum_<eonc::NEBInit>(m, "NEBInit")
       .value("LINEAR", eonc::NEBInit::LINEAR)
@@ -142,14 +137,12 @@ void bind_enums(nb::module_ &m) {
       .value("IDPP_COLLECTIVE", eonc::NEBInit::IDPP_COLLECTIVE)
       .value("SIDPP", eonc::NEBInit::SIDPP)
       .value("SIDPP_ZBL", eonc::NEBInit::SIDPP_ZBL)
-      .value("FILE", eonc::NEBInit::FILE)
-      .export_values();
+      .value("FILE", eonc::NEBInit::FILE);
 
   nb::enum_<eonc::RunStatus>(m, "RunStatus")
       .value("GOOD", eonc::RunStatus::GOOD)
       .value("FAIL_MAX_ITERATIONS", eonc::RunStatus::FAIL_MAX_ITERATIONS)
-      .value("FAIL_POTENTIAL_FAILED", eonc::RunStatus::FAIL_POTENTIAL_FAILED)
-      .export_values();
+      .value("FAIL_POTENTIAL_FAILED", eonc::RunStatus::FAIL_POTENTIAL_FAILED);
 }
 
 } // namespace eonc::pybind

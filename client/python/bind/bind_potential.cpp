@@ -17,6 +17,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <vector>
 
 namespace eonc::pybind {
@@ -377,7 +378,19 @@ void bind_potential(nb::module_ &m) {
             VectorXi atmnrs(n);
             for (Eigen::Index i = 0; i < n; ++i)
               atmnrs(i) = static_cast<int>(z.data()[i]);
-            auto [energy, forces] = self.get_ef(R, atmnrs, cell);
+            // Torch autograd in RGPOT metatomic engines refuses the GIL.
+            // Release around the evaluation only; argument validation above
+            // and result construction below touch Python objects.
+            // An ASE-backed potential re-enters Python from force(), where
+            // nb::gil_scoped_acquire re-takes the GIL on this thread.
+            double energy = 0.0;
+            AtomMatrix forces;
+            {
+              nb::gil_scoped_release release;
+              auto ef = self.get_ef(R, atmnrs, cell);
+              energy = std::get<0>(ef);
+              forces = std::move(std::get<1>(ef));
+            }
             const size_t rows = static_cast<size_t>(forces.rows());
             const size_t cols = 3;
             double *buf = new double[rows * cols];

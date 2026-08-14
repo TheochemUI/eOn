@@ -49,8 +49,7 @@ void bind_neb(nb::module_ &m) {
       .value("BAD_MAX_ITERATIONS",
              NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS)
       .value("RUNNING", NudgedElasticBand::NEBStatus::RUNNING)
-      .value("MAX_UNCERTAINTY", NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY)
-      .export_values();
+      .value("MAX_UNCERTAINTY", NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY);
 
   nb::class_<NudgedElasticBand>(
       m, "NudgedElasticBand", "NEB band: path images, compute, forces, extrema")

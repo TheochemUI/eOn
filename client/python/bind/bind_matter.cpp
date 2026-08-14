@@ -157,7 +157,11 @@ void bind_matter(nb::module_ &m) {
             matter_set_z_buf(self, reinterpret_cast<const int *>(arr.data()),
                              self.numberOfAtoms());
           },
-          nb::rv_policy::move, "Atomic numbers (Z)")
+          nb::rv_policy::move,
+          "Atomic numbers (Z), int64 in and out. int64 is the canonical "
+          "width across _core integer arrays (free_atom_indices, "
+          "resolve_mobile_atoms); the int32 step is the narrowing to the "
+          "C++ VectorXi storage.")
       .def(
           "get_fixed",
           [](const Matter &self, long atom) { return self.getFixed(atom); },
@@ -192,7 +196,9 @@ void bind_matter(nb::module_ &m) {
                                  reinterpret_cast<const int *>(arr.data()),
                                  self.numberOfAtoms());
           },
-          nb::rv_policy::move, "Fixed flags (1=fixed, 0=free)")
+          nb::rv_policy::move,
+          "Fixed flags (1=fixed, 0=free), int64 in and out; see "
+          "atomic_numbers for the width convention.")
 
       // --- free mask ---
       .def_prop_ro(
@@ -357,8 +363,14 @@ void bind_matter(nb::module_ &m) {
 
       .def("__len__", &Matter::numberOfAtoms)
       .def("__repr__", [](const Matter &self) {
+        // Never trigger a force call: repr runs on every REPL echo, and a
+        // stale cache would evaluate the potential with the GIL held.
+        // Read potential_energy when the number is wanted.
+        const std::string energy =
+            self.needsForceUpdate() ? std::string("stale")
+                                    : std::to_string(self.getPotentialEnergy());
         return "<Matter n=" + std::to_string(self.numberOfAtoms()) +
-               " E=" + std::to_string(self.getPotentialEnergy()) + ">";
+               " E=" + energy + ">";
       });
 }
 
