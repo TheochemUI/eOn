@@ -124,7 +124,7 @@ class AKMCState(state.State):
                 io.loadcon(result['saddle.con'])
             if 'product' not in result:
                 io.loadcon(result['product.con'])
-        except:
+        except (OSError, ValueError, IndexError, KeyError):
             logger.exception("Mode, reactant, saddle, or product has incorrect format")
             return None
 
@@ -152,11 +152,13 @@ class AKMCState(state.State):
             logger.debug("new event %3i found at time %f fs" % (id, current_time))
 
         # Move the relevant files into the procdata directory.
-        open(self.proc_reactant_path(id), 'w').writelines(result['reactant.con'].getvalue())
-        open(self.proc_mode_path(id), 'w').writelines(result['mode.dat'].getvalue())
-        open(self.proc_product_path(id), 'w').writelines(result['product.con'].getvalue())
-        open(self.proc_saddle_path(id), 'w').writelines(result['saddle.con'].getvalue())
-        open(self.proc_results_path(id), 'w').writelines(result['results.dat'].getvalue())
+        for path, key in ((self.proc_reactant_path(id), 'reactant.con'),
+                          (self.proc_mode_path(id), 'mode.dat'),
+                          (self.proc_product_path(id), 'product.con'),
+                          (self.proc_saddle_path(id), 'saddle.con'),
+                          (self.proc_results_path(id), 'results.dat')):
+            with io.atomic_write(path) as f:
+                f.writelines(result[key].getvalue())
 
         # Set maximum rate, if defined
 #        forward_rate = resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT)
