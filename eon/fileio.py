@@ -130,7 +130,11 @@ def load_mode(modefilein):
     lines = f.readlines()
     mode = []
     for line in lines:
-        l = line.strip().split()
+        l = line.split()
+        if not l:
+            continue
+        if len(l) < 3:
+            raise IOError("Malformed mode.dat line, expected three columns: %r" % line)
         for j in range(3):
             mode.append(float(l[j]))
     return numpy.array(mode).reshape(len(mode)//3, 3)
