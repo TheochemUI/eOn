@@ -1027,9 +1027,10 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
             ]
         endif
     endif
-    # Fat Metatomic (potential = Metatomic) + deps for RGPOT engine .so.
+    # Fat Metatomic (potential = Metatomic).
     # vesin already on _deps (eoncbase VesinNeighbors + classical pots).
-    mta_plugin_deps = _deps + [mts_dep, torch_deps]
+    # mta_plugin_deps, for the RGPOT engine .so, is taken further down once
+    # _deps stops growing.
     _deps += [mts_dep, torch_deps]
     _args += ['-DWITH_METATOMIC']
     metatomic_pot = library(
@@ -1208,6 +1209,15 @@ if is_windows
     _deps += [readcon_compile_dep]
 else
     _deps += [readcon_dep]
+endif
+
+if get_option('with_metatomic')
+    # The RGPOT metatomic engine .so compiles the same translation units as
+    # eonclib, so it needs every dependency eonclib has. readcon above is the
+    # last append to _deps, hence the snapshot lives here and not next to the
+    # metatomic block, which would miss tbb, artn, ira, the capnp deps and
+    # readcon itself. mts_dep and torch_deps are already on _deps.
+    mta_plugin_deps = _deps
 endif
 
 # version.h FEATURES must see every -DWITH_* appended by the blocks above.
