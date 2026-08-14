@@ -56,6 +56,7 @@ json to_json(const Parameters &p) {
       {"finite_difference", p.main_options.finiteDifference},
       {"max_force_calls", p.main_options.maxForceCalls},
       {"remove_net_force", p.main_options.removeNetForce},
+      {"write_con_forces", p.main_options.writeConForces},
   };
 
   // [Potential]
@@ -220,6 +221,7 @@ void from_json(const json &j, Parameters &p) {
     JSON_OPT(m, "finite_difference", p.main_options.finiteDifference);
     JSON_OPT(m, "max_force_calls", p.main_options.maxForceCalls);
     JSON_OPT(m, "remove_net_force", p.main_options.removeNetForce);
+    JSON_OPT(m, "write_con_forces", p.main_options.writeConForces);
   }
 
   // [Potential]
