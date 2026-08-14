@@ -690,3 +690,6 @@ packages/eon-schema/build/
 # Docs figures generated from JSON at sphinx-build time (SSoT is fig/data/*.json)
 docs/source/fig/generated/
 bbdir-mta-bench*/
+
+# ExtPot exchange directories, retained when an external-program call fails
+extpot_*/
