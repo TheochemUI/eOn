@@ -126,6 +126,9 @@ ipython = ">=9.3.0,<10"
 pytest = ">=8"
 pytest-datadir = ">=1.5"
 sh = ">=2"
+# test_pyeonclient_packaging builds a -Dwith_rgpot=true wheel, which turns on
+# rgpot's RPC arm: capnp-rpc.pc and the capnp program are both required there.
+capnproto = ">=1.0,<2"
 
 [feature.lammps]
 platforms = ["linux-64", "osx-64", "osx-arm64"]
