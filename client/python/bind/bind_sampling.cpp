@@ -345,13 +345,20 @@ void bind_sampling(nb::module_ &m) {
         return static_cast<MinModeSaddleSearch::Status>(s.status);
       });
 
-  // --- Structure helpers (free is fine — pure predicates) ---
+  // --- Structure helpers (predicates; neither argument is modified) ---
   m.def(
       "structures_equal",
-      [](Matter &a, Matter &b, bool indistinguishable) {
-        return a.compare(b, indistinguishable);
+      [](const Matter &a, const Matter &b, bool indistinguishable) {
+        // Matter::compare is non-const: with remove_translation set it runs
+        // translationRemove, which calls setPositions on its left operand,
+        // translating and PBC-wrapping it and invalidating the force cache.
+        // A predicate must not do that to the caller, so it runs on a copy.
+        Matter probe(a);
+        return probe.compare(b, indistinguishable);
       },
-      nb::arg("a"), nb::arg("b"), nb::arg("indistinguishable") = false);
+      nb::arg("a"), nb::arg("b"), nb::arg("indistinguishable") = false,
+      "True when the two structures match under Parameters.structure_"
+      "comparison. Neither argument is modified.");
 
   m.def(
       "structure_distance",
