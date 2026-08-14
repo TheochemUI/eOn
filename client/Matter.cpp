@@ -48,8 +48,21 @@ const Matter &Matter::operator=(const Matter &matter) {
 
   potential = matter.potential;
   potentialEnergy = matter.potentialEnergy;
+  energyVariance = matter.energyVariance;
+  forceCalls = matter.forceCalls;
   recomputePotential = matter.recomputePotential;
-  recomputeFreeMask = true; // Force cache rebuild after assignment
+  // Both caches describe the forces this object held before the assignment.
+  // resize() above already raises them; state it here alongside the members
+  // this function owns.
+  recomputeFreeMask = true;
+  recomputeMaskedForces = true;
+
+  // A BondBoost binds to one Matter (BondBoost.h:32 takes a Matter *), so a
+  // copy cannot share the source's: boosting through it would drive the
+  // original. The copy starts without one and re-establishes it through
+  // setBiasPotential. biasForces is zeroed by the resize above, which is the
+  // state that matches having no bias potential.
+  biasPotential = nullptr;
 
   headerCon = matter.headerCon;
   // ConFrame is move-only; copy does not retain movie trajectory.
