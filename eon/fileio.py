@@ -153,6 +153,8 @@ def save_mode(modefileout, displace_vector):
 def save_results_dat(fileout, results):
     '''
     Saves a results.dat file from a dictionary
+        fileout: may be either a filename or a file-like object
+        results: dictionary of values, written one "<value> <key>" line each
     '''
     if hasattr(fileout, 'write'):
         f = fileout
@@ -160,8 +162,7 @@ def save_results_dat(fileout, results):
         f = open(fileout, 'w')
 
     for key in results:
-        #print(results[key], key, con)  #GH: this made no sense to me - replaced with the following
-        f.write(results[key], key)
+        f.write("%s %s\n" % (results[key], key))
 
 def modify_config(config_path, changes):
     parser = configparser.ConfigParser()
