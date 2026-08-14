@@ -192,15 +192,12 @@ def parse_results(filein):
             try:
                 results[line[1]] = float(line[0])
             except ValueError:
-                logger.warning("Couldn't parse float in results.dat: %s", line)
+                results[line[1]] = line[0]
         else:
             try:
                 results[line[1]] = int(line[0])
             except ValueError:
-                try:
-                    results[line[1]] = line[0]
-                except ValueError:
-                    logger.warning("Couldn't parse string in results.dat: %s", line)
+                results[line[1]] = line[0]
 
     return results
 
