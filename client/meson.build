@@ -1286,7 +1286,13 @@ if get_option('with_metatomic')
 endif
 
 # Full deps including readcon link_args (for executables and tests only)
-_exe_deps = _deps + [readcon_dep] + _gprd_extra_deps
+_exe_deps = _deps + _gprd_extra_deps
+if is_windows
+    # _deps carries only readcon's partial dependency there (see the
+    # partial_dependency block above); executables need the link_args too.
+    # Elsewhere _deps already holds the full readcon_dep.
+    _exe_deps += [readcon_dep]
+endif
 
 # Export variable
 eclib_dep = declare_dependency(
