@@ -638,4 +638,185 @@ TEST_CASE("ConFileIO metadata_from_frame exposes NEB and potential fields",
   std::filesystem::remove(tmpfile);
 }
 
+namespace {
+std::string read_file_text(const std::string &path) {
+  std::ifstream in(path, std::ios::binary);
+  return std::string((std::istreambuf_iterator<char>(in)),
+                     std::istreambuf_iterator<char>());
+}
+
+std::shared_ptr<Matter> make_reactant(Parameters &params,
+                                      std::shared_ptr<Potential> &pot) {
+  params.potential_options.potential = PotType::LJ;
+  pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto m = std::make_shared<Matter>(pot, params);
+  m->con2matter(std::string("reactant.con"));
+  return m;
+}
+} // namespace
+
+TEST_CASE("ConFileIO append leaves a complete movie after every frame",
+          "[confileio][append]") {
+  Parameters params;
+  std::shared_ptr<Potential> pot;
+  auto m = make_reactant(params, pot);
+
+  const std::string tmpfile =
+      (std::filesystem::temp_directory_path() / "_test_stream_append.con")
+          .string();
+  std::filesystem::remove(tmpfile);
+
+  constexpr int kFrames = 5;
+  for (int i = 0; i < kFrames; ++i) {
+    eonc::io::ConFrameMetadata meta;
+    meta.frame_index = static_cast<uint64_t>(i);
+    REQUIRE(eonc::io::io_ok(m->matter2con(tmpfile, i > 0, &meta)));
+    // Every intermediate state on disk parses, with exactly the frames
+    // written so far: nothing waits in a buffer for a later flush.
+    const auto frames = readcon::read_all_frames(tmpfile);
+    REQUIRE(frames.size() == static_cast<size_t>(i + 1));
+    REQUIRE(frames.back().frame_index() == static_cast<uint64_t>(i));
+  }
+
+  std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE("ConFileIO streaming append matches a whole-file rewrite",
+          "[confileio][append]") {
+  Parameters params;
+  std::shared_ptr<Potential> pot;
+  auto m = make_reactant(params, pot);
+
+  const auto dir = std::filesystem::temp_directory_path();
+  const std::string appended = (dir / "_test_append_bytes.con").string();
+  const std::string rewritten = (dir / "_test_rewrite_bytes.con").string();
+  std::filesystem::remove(appended);
+  std::filesystem::remove(rewritten);
+
+  eonc::io::ConFrameMetadata meta;
+  meta.frame_index = 0;
+  meta.energy = -12.5;
+  meta.scalars.push_back({"step_size", 0.25});
+
+  constexpr int kFrames = 3;
+  for (int i = 0; i < kFrames; ++i) {
+    REQUIRE(eonc::io::io_ok(m->matter2con(appended, i > 0, &meta)));
+  }
+
+  // Same frames, one call, one writer. Matter is untouched in between so the
+  // builder sees identical state.
+  std::vector<readcon::ConFrame> frames;
+  for (int i = 0; i < kFrames; ++i) {
+    frames.push_back(eonc::io::matterToConFrame(*m, &meta));
+  }
+  REQUIRE(eonc::io::io_ok(eonc::io::writeConFrames(rewritten, frames)));
+
+  REQUIRE(read_file_text(appended) == read_file_text(rewritten));
+
+  std::filesystem::remove(appended);
+  std::filesystem::remove(rewritten);
+}
+
+TEST_CASE("ConFileIO append extends frames written outside eOn",
+          "[confileio][append]") {
+  Parameters params;
+  std::shared_ptr<Potential> pot;
+  auto m = make_reactant(params, pot);
+
+  const std::string tmpfile =
+      (std::filesystem::temp_directory_path() / "_test_foreign_append.con")
+          .string();
+  std::filesystem::remove(tmpfile);
+
+  {
+    std::vector<readcon::ConFrame> seed;
+    seed.push_back(eonc::io::matterToConFrame(*m, nullptr));
+    seed.push_back(eonc::io::matterToConFrame(*m, nullptr));
+    readcon::ConFrameWriter writer(
+        tmpfile, readcon::ConFrameWriter::Compression::None, 17);
+    writer.extend(seed);
+  }
+
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmpfile, true)));
+  REQUIRE(readcon::read_all_frames(tmpfile).size() == 3);
+
+  std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE("ConFileIO append re-checks a target replaced behind it",
+          "[confileio][append][errors]") {
+  Parameters params;
+  std::shared_ptr<Potential> pot;
+  auto m = make_reactant(params, pot);
+
+  const std::string tmpfile =
+      (std::filesystem::temp_directory_path() / "_test_replaced_append.con")
+          .string();
+  std::filesystem::remove(tmpfile);
+
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmpfile, false)));
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmpfile, true)));
+
+  // Replace the movie with junk. The next append must parse it rather than
+  // trust the frames eOn wrote earlier.
+  {
+    std::ofstream out(tmpfile, std::ios::binary | std::ios::trunc);
+    out << "not a valid con file\n";
+  }
+  const std::string before = read_file_text(tmpfile);
+
+  REQUIRE_FALSE(eonc::io::io_ok(m->matter2con(tmpfile, true)));
+  REQUIRE(read_file_text(tmpfile) == before);
+
+  std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE(
+    "ConFileIO append creates a missing target and survives a state reset",
+    "[confileio][append]") {
+  Parameters params;
+  std::shared_ptr<Potential> pot;
+  auto m = make_reactant(params, pot);
+
+  const std::string tmpfile =
+      (std::filesystem::temp_directory_path() / "_test_missing_append.con")
+          .string();
+  std::filesystem::remove(tmpfile);
+
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmpfile, true)));
+  REQUIRE(std::filesystem::exists(tmpfile));
+  REQUIRE(readcon::read_all_frames(tmpfile).size() == 1);
+
+  eonc::io::resetConAppendState();
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmpfile, true)));
+  REQUIRE(readcon::read_all_frames(tmpfile).size() == 2);
+
+  std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE("ConFileIO append leaves no scratch files behind",
+          "[confileio][append]") {
+  Parameters params;
+  std::shared_ptr<Potential> pot;
+  auto m = make_reactant(params, pot);
+
+  const auto dir =
+      std::filesystem::temp_directory_path() / "_test_append_scratch_dir";
+  std::filesystem::remove_all(dir);
+  std::filesystem::create_directories(dir);
+  const std::string tmpfile = (dir / "movie.con").string();
+
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmpfile, false)));
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmpfile, true)));
+
+  size_t entries = 0;
+  for (const auto &entry : std::filesystem::directory_iterator(dir)) {
+    static_cast<void>(entry);
+    ++entries;
+  }
+  REQUIRE(entries == 1);
+
+  std::filesystem::remove_all(dir);
+}
+
 } /* namespace tests */
