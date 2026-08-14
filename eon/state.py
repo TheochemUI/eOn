@@ -6,7 +6,6 @@ import shutil
 import logging
 logger = logging.getLogger('state')
 from configparser import ConfigParser
-import tarfile
 
 from eon import fileio as io
 
@@ -94,17 +93,6 @@ class State:
         return os.path.join(self.procdata_path, "results_%d.dat" % id)
     def proc_stdout_path(self, id):
         return os.path.join(self.procdata_path, "stdout_%d.dat" % id)
-
-    def tar_procdata(self):
-        if not self.procdata_tarred:
-            tar = tarfile.TarFile(self.tar_path, 'w')
-            for i in os.listdir(self.procdata_path):
-                tar.add(i)
-                os.unlink(i)
-            tar.close()
-        else:
-            logger.warning("Attempted to tar an already tarred procdata")
-        self.procdata_tarred = True
 
     def get_process(self, id):
         self.load_process_table()
