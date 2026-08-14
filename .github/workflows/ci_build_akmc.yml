@@ -35,7 +35,7 @@ jobs:
         shell: pixi run bash -e {0}
         run: |
           meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release
-          meson install -C bbdir
+          meson install --skip-subprojects -C bbdir
 
       - name: Activate MSVC (Windows)
         if: runner.os == 'Windows'
@@ -83,7 +83,7 @@ jobs:
           # (flang pots + MSVC C++; /STACK:16M in meson for GAGAFE; CuH2 on).
           meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release \
             --default-library=static -Dwith_fortran=true -Dwith_cuh2=true
-          meson install -C bbdir
+          meson install --skip-subprojects -C bbdir
 
       - name: Run Catch2 unit tests [unix]
         if: runner.os != 'Windows'
