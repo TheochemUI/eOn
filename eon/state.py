@@ -94,7 +94,8 @@ class State:
         if 'stdout.dat' in result:
             raw = result['stdout.dat'].getvalue()
             id = self.allocate_process_id(b"stdout", raw)
-            open(self.proc_stdout_path(id), 'w').writelines(raw)
+            with io.atomic_write(self.proc_stdout_path(id)) as f:
+                f.writelines(raw)
 
     def get_energy(self):
         return self.info.get("MetaData", "reactant energy", None)
