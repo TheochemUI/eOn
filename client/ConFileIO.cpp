@@ -24,9 +24,13 @@
 #include <filesystem>
 #include <format>
 #include <fstream>
+#include <mutex>
 #include <numeric>
+#include <optional>
 #include <stdexcept>
 #include <string>
+#include <system_error>
+#include <unordered_map>
 #include <vector>
 
 namespace {
@@ -170,6 +174,137 @@ std::vector<size_t> matter_order(const std::vector<readcon::Atom> &atoms) {
   std::stable_sort(order.begin(), order.end(),
                    [&ids](size_t a, size_t b) { return ids[a] < ids[b]; });
   return order;
+}
+
+/// On-disk fingerprint of a .con this process wrote. A streaming append
+/// trusts its own tail only while both fields still match, so a file
+/// replaced behind our back is re-parsed before anything is added to it.
+struct FileStamp {
+  std::uintmax_t size{0};
+  fs::file_time_type mtime{};
+  friend bool operator==(const FileStamp &, const FileStamp &) = default;
+};
+
+std::optional<FileStamp> stamp_file(const fs::path &path) {
+  std::error_code ec;
+  const auto size = fs::file_size(path, ec);
+  if (ec) {
+    return std::nullopt;
+  }
+  const auto mtime = fs::last_write_time(path, ec);
+  if (ec) {
+    return std::nullopt;
+  }
+  return FileStamp{size, mtime};
+}
+
+/// Absolute, symlink-resolved key so "movie.con" and "./movie.con" from the
+/// same working directory share one entry, and the same relative name under a
+/// different working directory does not.
+std::string append_key(const fs::path &path) {
+  std::error_code ec;
+  auto resolved = fs::weakly_canonical(path, ec);
+  if (ec || resolved.empty()) {
+    resolved = fs::absolute(path, ec);
+    if (ec) {
+      return path.lexically_normal().string();
+    }
+  }
+  return resolved.lexically_normal().string();
+}
+
+/// Guards both the stamp table and the append critical section: two threads
+/// concatenating onto one .con would interleave frame bodies.
+std::mutex &append_mutex() {
+  static std::mutex m;
+  return m;
+}
+
+std::unordered_map<std::string, FileStamp> &append_stamps() {
+  static std::unordered_map<std::string, FileStamp> stamps;
+  return stamps;
+}
+
+/// Call under append_mutex(), after the writer closed the file.
+void remember_stamp(const std::string &key, const fs::path &path) {
+  if (auto stamp = stamp_file(path)) {
+    append_stamps()[key] = *stamp;
+  } else {
+    append_stamps().erase(key);
+  }
+}
+
+/// Call under append_mutex(). True when the file still matches the state this
+/// process left behind, so its frames need no re-parse.
+bool tail_is_ours(const std::string &key, const fs::path &path) {
+  const auto it = append_stamps().find(key);
+  if (it == append_stamps().end()) {
+    return false;
+  }
+  const auto stamp = stamp_file(path);
+  return stamp.has_value() && *stamp == it->second;
+}
+
+/// Concatenate frames onto an existing uncompressed .con.
+///
+/// ConFrameWriter emits self-contained frames with no file-level preamble and
+/// no cross-frame state in the output, so bytes serialized one frame at a time
+/// equal the bytes of a whole-file rewrite. Serialization goes through a
+/// scratch file next to the target because readcon-core v0.13.1 exposes no
+/// writer over a caller-owned stream and no flush on an open writer; the
+/// target itself is opened in append mode and flushed before returning, which
+/// keeps the file complete and parseable after every call.
+eonc::io::IoStatus append_frames(const fs::path &path,
+                                 const std::vector<readcon::ConFrame> &frames,
+                                 uint8_t precision) {
+  static std::atomic<uint64_t> scratch_counter{0};
+  const auto scratch =
+      path.parent_path() /
+      std::format(".{}.eon-append-{}.tmp", path.filename().string(),
+                  scratch_counter.fetch_add(1, std::memory_order_relaxed));
+
+  std::string bytes;
+  try {
+    {
+      readcon::ConFrameWriter writer(
+          scratch, readcon::ConFrameWriter::Compression::None, precision);
+      writer.extend(frames);
+    }
+    std::ifstream in(scratch, std::ios::binary | std::ios::ate);
+    if (!in) {
+      throw std::runtime_error("serialized frame not readable back");
+    }
+    const auto len = static_cast<std::streamoff>(in.tellg());
+    if (len <= 0) {
+      throw std::runtime_error("serialized frame is empty");
+    }
+    bytes.resize(static_cast<size_t>(len));
+    in.seekg(0);
+    if (!in.read(bytes.data(), static_cast<std::streamsize>(len))) {
+      throw std::runtime_error("short read of serialized frame");
+    }
+  } catch (const std::exception &e) {
+    std::error_code ec;
+    fs::remove(scratch, ec);
+    EONC_LOG_ERROR("Failed to serialize frame for {}: {}", path.string(),
+                   e.what());
+    return eonc::io::IoStatus::WriteError;
+  }
+  std::error_code ec;
+  fs::remove(scratch, ec);
+
+  std::ofstream out(path, std::ios::binary | std::ios::app);
+  if (!out) {
+    EONC_LOG_ERROR("Failed to open {} for append", path.string());
+    return eonc::io::IoStatus::WriteError;
+  }
+  out.write(bytes.data(), static_cast<std::streamsize>(bytes.size()));
+  out.flush();
+  if (!out) {
+    EONC_LOG_ERROR("Failed to append to {}", path.string());
+    return eonc::io::IoStatus::WriteError;
+  }
+  return eonc::io::IoStatus::Ok;
 }
 
 /// Seed a builder with identity fields (symbol/fixed/mass/id) and cell headers.
@@ -323,22 +458,52 @@ cell_to_lengths_angles(const Matter &m) {
   return {lengths, angles};
 }
 
+void resetConAppendState() {
+  const std::lock_guard<std::mutex> guard(append_mutex());
+  append_stamps().clear();
+}
+
 IoStatus matter2con(Matter &m, std::string filename, bool append,
                     const ConFrameMetadata *metadata) {
   filename = ensure_extension(std::move(filename), ".con");
 
   m.applyPeriodicBoundaryIfEnabled();
 
-  // ConFrame is move-only (no default ctor).
-  // Append rewrites the full multi-frame file (read_all + write_frames) so
-  // compression-aware writers need no seek-append. Cost is O(N) frames per
-  // append (O(N^2) for long MD movies); NEB bands use writeNebPath instead.
+  const fs::path path(filename);
+  const auto compression =
+      readcon::ConFrameWriter::compression_from_extension(path);
+  const bool streamable =
+      compression == readcon::ConFrameWriter::Compression::None;
+
+  // The lock covers the stamp table and the read-then-extend window on one
+  // path. Nothing under it evaluates a potential: frame_from_matter reads
+  // cached energy and forces only while the pot is clean.
+  const std::lock_guard<std::mutex> guard(append_mutex());
+  const auto key = append_key(path);
+  const bool exists = fs::exists(path);
+  const bool concatenate = append && exists && streamable;
+
+  // ConFrame is move-only (no default ctor), so frames carries the new frame
+  // either way. A gzip or zstd target cannot be concatenated: readcon-core
+  // v0.13.1 reads a single gzip member, so appended members would be invisible
+  // on read-back, and the streaming writers cannot be flushed frame by frame.
+  // Those targets keep the whole-file rewrite, which stays O(N) per append.
   std::vector<readcon::ConFrame> frames;
-  if (append && fs::exists(filename)) {
+  if (append && exists && !streamable) {
     try {
       // Prefer read_all_frames (single ownership hand-off) over the iterator
       // path for append rewrite; simpler lifetime for ASAN/CI envs.
-      frames = readcon::read_all_frames(filename);
+      frames = readcon::read_all_frames(path);
+    } catch (const std::exception &e) {
+      EONC_LOG_ERROR("Failed to append to {}: {}", filename, e.what());
+      return IoStatus::AppendError;
+    }
+  } else if (concatenate && !tail_is_ours(key, path)) {
+    // Refuse to extend a file eOn cannot parse, matching the rewrite path:
+    // the target keeps its bytes and the caller sees AppendError. Frames this
+    // process wrote and nobody touched since need no such check.
+    try {
+      [[maybe_unused]] const auto existing = readcon::read_all_frames(path);
     } catch (const std::exception &e) {
       EONC_LOG_ERROR("Failed to append to {}: {}", filename, e.what());
       return IoStatus::AppendError;
@@ -350,7 +515,15 @@ IoStatus matter2con(Matter &m, std::string filename, bool append,
     EONC_LOG_ERROR("Failed to build frame for {}: {}", filename, e.what());
     return IoStatus::InvalidArgument;
   }
-  return write_frames(filename, frames, kConPrecision);
+
+  const auto status = concatenate ? append_frames(path, frames, kConPrecision)
+                                  : write_frames(path, frames, kConPrecision);
+  if (io_ok(status)) {
+    remember_stamp(key, path);
+  } else {
+    append_stamps().erase(key);
+  }
+  return status;
 }
 
 IoStatus con2matter(Matter &m, std::string filename) {
@@ -644,7 +817,16 @@ IoStatus writeConFrames(std::string filename,
     return IoStatus::InvalidArgument;
   }
   filename = ensure_extension(std::move(filename), ".con");
-  return write_frames(filename, frames, kConPrecision);
+  const fs::path path(filename);
+  const std::lock_guard<std::mutex> guard(append_mutex());
+  const auto key = append_key(path);
+  const auto status = write_frames(path, frames, kConPrecision);
+  if (io_ok(status)) {
+    remember_stamp(key, path);
+  } else {
+    append_stamps().erase(key);
+  }
+  return status;
 }
 
 IoStatus writeNebPath(std::string filename,
