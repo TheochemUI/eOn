@@ -30,7 +30,10 @@ void bind_matter(nb::module_ &m) {
            nb::keep_alive<1, 3>(),
            "Create empty Matter bound to a potential and parameters "
            "(Parameters must outlive Matter)")
-      .def(nb::init<const Matter &>(), nb::arg("other"), "Copy construct")
+      // The copy shares `other`'s non-owning Parameters pointer, so it has to
+      // hold `other`, which in turn holds the Parameters.
+      .def(nb::init<const Matter &>(), nb::arg("other"), nb::keep_alive<1, 2>(),
+           "Copy construct")
       .def("resize", &Matter::resize, nb::arg("n_atoms"))
       .def_prop_ro("n_atoms", &Matter::numberOfAtoms)
       .def_prop_ro("n_free", &Matter::numberOfFreeAtoms)
@@ -286,7 +289,11 @@ void bind_matter(nb::module_ &m) {
               ok = out.relax(quiet, write_movie, checkpoint, prefix_movie,
                              prefix_checkpoint, retain_frames);
             }
-            return nb::make_tuple(std::move(out), ok);
+            // out shares self's Parameters pointer, and keep_alive cannot
+            // reach into the tuple.
+            nb::object out_obj = nb::cast(std::move(out));
+            tie_lifetime(out_obj, matter_object(self));
+            return nb::make_tuple(out_obj, ok);
           },
           nb::arg("inplace") = false, nb::arg("quiet") = false,
           nb::arg("write_movie") = false, nb::arg("checkpoint") = false,
