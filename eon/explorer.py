@@ -383,7 +383,7 @@ class ServerMinModeExplorer(MinModeExplorer):
         MinModeExplorer.__init__(self, states, previous_state, state, superbasin, config=config)
 
     def save(self):
-        f = open("explorer.pickle", "w")
+        f = open("explorer.pickle", "wb")
         d = self.__dict__.copy()
         del d['states']
         del d['previous_state']
