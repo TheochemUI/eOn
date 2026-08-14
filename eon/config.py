@@ -1,3 +1,4 @@
+import ast
 import configparser
 import numpy
 import os.path
@@ -254,7 +255,7 @@ class ConfigClass:
         self.displace_water_weight = parser.getfloat('Saddle Search', 'displace_water_weight') # undocumented
         self.stdev_translation = parser.getfloat('Saddle Search', 'stdev_translation') # undocumented
         self.stdev_rotation = parser.getfloat('Saddle Search', 'stdev_rotation') # undocumented
-        self.molecule_list = eval(parser.get('Saddle Search', 'molecule_list')) # undocumented
+        self.molecule_list = ast.literal_eval(parser.get('Saddle Search', 'molecule_list')) # undocumented
         self.disp_at_random = parser.getint('Saddle Search', 'disp_at_random') # undocumented
         self.disp_magnitude= parser.getfloat('Saddle Search', 'displace_magnitude')
         self.disp_radius = parser.getfloat('Saddle Search', 'displace_radius')
