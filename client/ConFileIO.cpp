@@ -199,6 +199,24 @@ bool tail_is_ours(const std::string &key, const fs::path &path) {
   return stamp.has_value() && *stamp == it->second;
 }
 
+/// True for an empty file too: nothing needs separating from the first frame.
+bool ends_with_newline(const fs::path &path) {
+  std::ifstream in(path, std::ios::binary | std::ios::ate);
+  if (!in) {
+    return true;
+  }
+  const auto len = static_cast<std::streamoff>(in.tellg());
+  if (len <= 0) {
+    return true;
+  }
+  in.seekg(len - 1);
+  char last = '\n';
+  if (!in.get(last)) {
+    return true;
+  }
+  return last == '\n';
+}
+
 /// Concatenate frames onto an existing uncompressed .con.
 ///
 /// ConFrameWriter emits self-contained frames with no file-level preamble and
@@ -251,6 +269,11 @@ eonc::io::IoStatus append_frames(const fs::path &path,
   if (!out) {
     EONC_LOG_ERROR("Failed to open {} for append", path.string());
     return eonc::io::IoStatus::WriteError;
+  }
+  // A frame header must start its own line. eOn's own frames end in a
+  // newline; a hand-written or foreign tail may not.
+  if (!ends_with_newline(path)) {
+    out.put('\n');
   }
   out.write(bytes.data(), static_cast<std::streamsize>(bytes.size()));
   out.flush();

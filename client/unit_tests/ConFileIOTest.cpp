@@ -794,6 +794,33 @@ TEST_CASE(
   std::filesystem::remove(tmpfile);
 }
 
+TEST_CASE("ConFileIO append separates a target that lacks a final newline",
+          "[confileio][append]") {
+  Parameters params;
+  std::shared_ptr<Potential> pot;
+  auto m = make_reactant(params, pot);
+
+  const std::string tmpfile =
+      (std::filesystem::temp_directory_path() / "_test_seam_append.con")
+          .string();
+  std::filesystem::remove(tmpfile);
+
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmpfile, false)));
+  std::string trimmed = read_file_text(tmpfile);
+  while (!trimmed.empty() && trimmed.back() == '\n') {
+    trimmed.pop_back();
+  }
+  {
+    std::ofstream out(tmpfile, std::ios::binary | std::ios::trunc);
+    out << trimmed;
+  }
+
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmpfile, true)));
+  REQUIRE(readcon::read_all_frames(tmpfile).size() == 2);
+
+  std::filesystem::remove(tmpfile);
+}
+
 TEST_CASE("ConFileIO append leaves no scratch files behind",
           "[confileio][append]") {
   Parameters params;
