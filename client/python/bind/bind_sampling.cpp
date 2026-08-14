@@ -118,6 +118,23 @@ struct SeededAlgo {
   }
 };
 
+/// Hand a Matter back to Python holding the seed's wrapper, which owns the
+/// Parameters the two share (Matter keeps only a non-owning pointer).
+///
+/// The patient is the seed, not the algorithm object. The algorithm already
+/// holds the seed through nb::keep_alive<1, 2> on its constructor, so an
+/// algorithm-as-patient edge closes an uncollectable cycle whenever the result
+/// *is* the seed: every inplace=True run, and every `matter` read before the
+/// first run. Tying to the seed makes that case a self-tie, which
+/// tie_lifetime skips, and leaves no edge back from the seed to the result.
+template <typename Algo>
+nb::object algo_matter_out(const Algo &self,
+                           std::shared_ptr<eonc::Matter> out) {
+  nb::object obj = nb::cast(out);
+  tie_lifetime(obj, matter_object(*self.seed));
+  return obj;
+}
+
 } // namespace
 
 void bind_sampling(nb::module_ &m) {
@@ -166,12 +183,16 @@ void bind_sampling(nb::module_ &m) {
            nb::arg("matter"), nb::arg("parameters"),
            nb::arg("potential") = nb::none(), nb::keep_alive<1, 2>(),
            nb::keep_alive<1, 4>())
-      .def("run", &PyMD::run, nb::arg("inplace") = false,
-           nb::keep_alive<0, 1>(),
-           "Run MD; returns Matter. inplace=True mutates seed.")
-      .def_prop_ro(
-          "matter", [](const PyMD &s) { return s.result ? s.result : s.seed; },
-          nb::keep_alive<0, 1>());
+      .def(
+          "run",
+          [](PyMD &self, bool inplace) {
+            return algo_matter_out(self, self.run(inplace));
+          },
+          nb::arg("inplace") = false,
+          "Run MD; returns Matter. inplace=True mutates seed.")
+      .def_prop_ro("matter", [](const PyMD &s) {
+        return algo_matter_out(s, s.result ? s.result : s.seed);
+      });
 
   // --- MonteCarlo ---
   struct PyMC : SeededAlgo {
@@ -199,11 +220,15 @@ void bind_sampling(nb::module_ &m) {
            nb::arg("matter"), nb::arg("parameters"),
            nb::arg("potential") = nb::none(), nb::keep_alive<1, 2>(),
            nb::keep_alive<1, 4>())
-      .def("run", &PyMC::run, nb::arg("inplace") = false,
-           nb::keep_alive<0, 1>())
-      .def_prop_ro(
-          "matter", [](const PyMC &s) { return s.result ? s.result : s.seed; },
-          nb::keep_alive<0, 1>());
+      .def(
+          "run",
+          [](PyMC &self, bool inplace) {
+            return algo_matter_out(self, self.run(inplace));
+          },
+          nb::arg("inplace") = false)
+      .def_prop_ro("matter", [](const PyMC &s) {
+        return algo_matter_out(s, s.result ? s.result : s.seed);
+      });
 
   // --- BasinHopping ---
   struct PyBH : SeededAlgo {
@@ -266,11 +291,15 @@ void bind_sampling(nb::module_ &m) {
                     std::shared_ptr<Potential>>(),
            nb::arg("matter"), nb::arg("parameters"), nb::arg("potential"),
            nb::keep_alive<1, 2>(), nb::keep_alive<1, 4>())
-      .def("run", &PyBH::run, nb::arg("inplace") = false,
-           nb::keep_alive<0, 1>())
-      .def_prop_ro(
-          "matter", [](const PyBH &s) { return s.result ? s.result : s.seed; },
-          nb::keep_alive<0, 1>());
+      .def(
+          "run",
+          [](PyBH &self, bool inplace) {
+            return algo_matter_out(self, self.run(inplace));
+          },
+          nb::arg("inplace") = false)
+      .def_prop_ro("matter", [](const PyBH &s) {
+        return algo_matter_out(s, s.result ? s.result : s.seed);
+      });
 
   // --- ProcessSearch ---
   struct PyProcessSearch {
@@ -393,11 +422,15 @@ void bind_sampling(nb::module_ &m) {
            nb::arg("matter"), nb::arg("parameters"),
            nb::arg("potential") = nb::none(), nb::keep_alive<1, 2>(),
            nb::keep_alive<1, 4>())
-      .def("run", &PyTAD::run, nb::arg("inplace") = false,
-           nb::keep_alive<0, 1>())
-      .def_prop_ro(
-          "matter", [](const PyTAD &s) { return s.result ? s.result : s.seed; },
-          nb::keep_alive<0, 1>());
+      .def(
+          "run",
+          [](PyTAD &self, bool inplace) {
+            return algo_matter_out(self, self.run(inplace));
+          },
+          nb::arg("inplace") = false)
+      .def_prop_ro("matter", [](const PyTAD &s) {
+        return algo_matter_out(s, s.result ? s.result : s.seed);
+      });
 
   // Mechanical shells for PR family (not product focus)
   auto bind_pr_like = [&](const char *name, auto make_and_run) {
@@ -432,8 +465,12 @@ void bind_sampling(nb::module_ &m) {
            nb::arg("matter"), nb::arg("parameters"),
            nb::arg("potential") = nb::none(), nb::keep_alive<1, 2>(),
            nb::keep_alive<1, 4>())
-      .def("run", &PyPR::run, nb::arg("inplace") = false,
-           nb::keep_alive<0, 1>());
+      .def(
+          "run",
+          [](PyPR &self, bool inplace) {
+            return algo_matter_out(self, self.run(inplace));
+          },
+          nb::arg("inplace") = false);
 
   struct PySH : SeededAlgo {
     using SeededAlgo::SeededAlgo;
@@ -460,8 +497,12 @@ void bind_sampling(nb::module_ &m) {
            nb::arg("matter"), nb::arg("parameters"),
            nb::arg("potential") = nb::none(), nb::keep_alive<1, 2>(),
            nb::keep_alive<1, 4>())
-      .def("run", &PySH::run, nb::arg("inplace") = false,
-           nb::keep_alive<0, 1>());
+      .def(
+          "run",
+          [](PySH &self, bool inplace) {
+            return algo_matter_out(self, self.run(inplace));
+          },
+          nb::arg("inplace") = false);
 
   struct PyREX : SeededAlgo {
     using SeededAlgo::SeededAlgo;
@@ -488,8 +529,12 @@ void bind_sampling(nb::module_ &m) {
            nb::arg("matter"), nb::arg("parameters"),
            nb::arg("potential") = nb::none(), nb::keep_alive<1, 2>(),
            nb::keep_alive<1, 4>())
-      .def("run", &PyREX::run, nb::arg("inplace") = false,
-           nb::keep_alive<0, 1>());
+      .def(
+          "run",
+          [](PyREX &self, bool inplace) {
+            return algo_matter_out(self, self.run(inplace));
+          },
+          nb::arg("inplace") = false);
 }
 
 } // namespace eonc::pybind
