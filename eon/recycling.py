@@ -1,4 +1,5 @@
 
+import ast
 import os
 import numpy
 from eon import atoms
@@ -95,7 +96,7 @@ class SB_Recycling:
                 if os.path.isfile(os.path.join(self.path, "current_sb_states")):
                     fi = open(os.path.join(self.path, "current_sb_states"), "r")
                     fi.readline() # The header
-                    self.sb_state_nums = eval(fi.readline())
+                    self.sb_state_nums = ast.literal_eval(fi.readline())
                     fi.close()
                     # If the previous state was not in the last superbasin
                     if self.previous_state.number not in self.sb_state_nums:
@@ -184,8 +185,8 @@ class SB_Recycling:
         else:
             fi = open(data_path, "r")
             fi.readline() # The header
-            self.sb_state_nums  = eval(fi.readline().split("=")[1])
-            self.in_progress    = eval(fi.readline().strip().split()[2])
+            self.sb_state_nums  = ast.literal_eval(fi.readline().split("=")[1])
+            self.in_progress    = ast.literal_eval(fi.readline().strip().split()[2])
             fi.close()
 
     def generate_corresponding_states(self):
@@ -426,9 +427,9 @@ class Recycling:
             self.ref_state = self.states.get_state(ref_state_num)
         self.process_number = int(lines[1].split('=')[1].strip())
         self.num_procs = int(lines[2].split('=')[1].strip())
-        self.moved = eval(lines[3].split('=')[1].strip())
-        self.unmoved = eval(lines[4].split('=')[1].strip())
-        self.process_atoms = eval(lines[5].split('=')[1].strip())
+        self.moved = ast.literal_eval(lines[3].split('=')[1].strip())
+        self.unmoved = ast.literal_eval(lines[4].split('=')[1].strip())
+        self.process_atoms = ast.literal_eval(lines[5].split('=')[1].strip())
         # Rebuild dense index -> process id map from the live table (ids may
         # be sparse content hashes; metadata only stores the ordinal).
         self.ref_state.load_process_table()

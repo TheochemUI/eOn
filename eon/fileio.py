@@ -11,15 +11,18 @@ import contextlib
 #from io import BytesIO as StringIO
 from io import StringIO
 import logging
-logger = logging.getLogger('io')
 import numpy
 import os
 
 import pickle as pickle
 import readcon
+import stat
+import tempfile
 
 from eon.geometry.cell import box_to_length_angle, length_angle_to_box
 from eon.structure import Structure
+
+logger = logging.getLogger('io')
 
 def save_prng_state():
     state = numpy.random.get_state()
@@ -33,6 +36,53 @@ def get_prng_state():
 
 # Re-export cell helpers (used by callers / POSCAR path)
 __all_cell__ = ("length_angle_to_box", "box_to_length_angle")
+
+
+def _process_umask():
+    mask = os.umask(0)
+    os.umask(mask)
+    return mask
+
+
+# What open() and os.mkdir() give a new file or directory. mkstemp and
+# mkdtemp ignore the umask and use 0600 / 0700, so anything staged through
+# them is widened back to these before being moved into place.
+_UMASK = _process_umask()
+DEFAULT_FILE_MODE = 0o666 & ~_UMASK
+DEFAULT_DIR_MODE = 0o777 & ~_UMASK
+
+
+@contextlib.contextmanager
+def atomic_write(path, mode='w'):
+    '''
+    Rewrite a file in one step, for callers that truncate and rewrite whole.
+        path: destination file
+        mode: 'w' or 'wb'
+    The body writes to a temporary file in the destination's own directory,
+    which is renamed over the destination on a clean exit. A reader sees
+    either the old contents or the new ones, and a write that fails partway
+    (a full disk, a killed process) leaves the destination as it was.
+    mkstemp opens at 0600, so the destination's own mode carries over, or
+    the umask default for a file that does not exist yet.
+    '''
+    directory = os.path.dirname(os.path.abspath(path))
+    fd, temp_path = tempfile.mkstemp(dir=directory,
+                                     prefix='.' + os.path.basename(path) + '.',
+                                     suffix='.tmp')
+    try:
+        with os.fdopen(fd, mode) as f:
+            yield f
+        try:
+            os.chmod(temp_path, stat.S_IMODE(os.stat(path).st_mode))
+        except OSError:
+            os.chmod(temp_path, DEFAULT_FILE_MODE)
+        os.replace(temp_path, path)
+    except BaseException:
+        try:
+            os.unlink(temp_path)
+        except OSError:
+            pass
+        raise
 
 
 def _maybe_open(target, mode, attr):
@@ -211,60 +261,57 @@ def loadposcar(filein):
     '''
     Load the POSCAR file named filename and returns an atoms object
     '''
-    if hasattr(filein, 'readline'):
-        f = filein
-    else:
-        f = open(filein, 'r')
-    # Line 1: Atom types
-    AtomTypes = f.readline().split()
-    # Line 2: scaling of coordinates
-    scale = float(f.readline())
-    # Lines 3-5: the box
-    box = numpy.zeros((3, 3))
-    for i in range(3):
-        line = f.readline().split()
-        box[i] = numpy.array([float(line[0]), float(line[1]), float(line[2])]) * scale
-    # Line 6: number of atoms of each type.
-    line = f.readline().split()
-    NumAtomsPerType = []
-    for l in line:
-        NumAtomsPerType.append(int(l))
-    # Now have enough info to make the Structure object.
-    num_atoms = sum(NumAtomsPerType)
-    p = Structure(num_atoms)
-    # Fill in the box.
-    p.box = box
-    # Line 7: selective or cartesian
-    sel = f.readline()[0]
-    selective_flag = (sel == 's' or sel == 'S')
-    if not selective_flag:
-        car = sel
-    else:
-        car = f.readline()[0]
-    direct_flag = not (car == 'c' or car == 'C' or car == 'k' or car == 'K')
-    atom_index = 0
-    for i in range(len(NumAtomsPerType)):
-        for j in range(NumAtomsPerType[i]):
-            p.names[atom_index] = AtomTypes[i]
+    with _maybe_open(filein, 'r', 'readline') as f:
+        # Line 1: Atom types
+        AtomTypes = f.readline().split()
+        # Line 2: scaling of coordinates
+        scale = float(f.readline())
+        # Lines 3-5: the box
+        box = numpy.zeros((3, 3))
+        for i in range(3):
             line = f.readline().split()
-            if(selective_flag):
-                assert len(line) >= 6
-            else:
-                assert len(line) >= 3
-            pos = line[0:3]
-            if selective_flag:
-                sel = line[3:7]
-                if sel[0] == 'T' or sel[0] == 't':
-                    p.free[atom_index] = 1
-                elif sel[0] == 'F' or sel[0] == 'f':
-                    p.free[atom_index] = 0
-            p.r[atom_index] = numpy.array([float(q) for q in pos])
-            if direct_flag:
-                p.r[atom_index] = numpy.dot(p.r[atom_index], p.box)
-            else:
-                p.r[atom_index] *= scale
-            atom_index += 1
-    return p
+            box[i] = numpy.array([float(line[0]), float(line[1]), float(line[2])]) * scale
+        # Line 6: number of atoms of each type.
+        line = f.readline().split()
+        NumAtomsPerType = []
+        for l in line:
+            NumAtomsPerType.append(int(l))
+        # Now have enough info to make the Structure object.
+        num_atoms = sum(NumAtomsPerType)
+        p = Structure(num_atoms)
+        # Fill in the box.
+        p.box = box
+        # Line 7: selective or cartesian
+        sel = f.readline()[0]
+        selective_flag = (sel == 's' or sel == 'S')
+        if not selective_flag:
+            car = sel
+        else:
+            car = f.readline()[0]
+        direct_flag = not (car == 'c' or car == 'C' or car == 'k' or car == 'K')
+        atom_index = 0
+        for i in range(len(NumAtomsPerType)):
+            for j in range(NumAtomsPerType[i]):
+                p.names[atom_index] = AtomTypes[i]
+                line = f.readline().split()
+                if(selective_flag):
+                    assert len(line) >= 6
+                else:
+                    assert len(line) >= 3
+                pos = line[0:3]
+                if selective_flag:
+                    sel = line[3:7]
+                    if sel[0] == 'T' or sel[0] == 't':
+                        p.free[atom_index] = 1
+                    elif sel[0] == 'F' or sel[0] == 'f':
+                        p.free[atom_index] = 0
+                p.r[atom_index] = numpy.array([float(q) for q in pos])
+                if direct_flag:
+                    p.r[atom_index] = numpy.dot(p.r[atom_index], p.box)
+                else:
+                    p.r[atom_index] *= scale
+                atom_index += 1
+        return p
 
 
 def saveposcar(fileout, p, w='w', direct = False):
@@ -274,40 +321,37 @@ def saveposcar(fileout, p, w='w', direct = False):
         point:    atoms object to save
         w:        write/append flag
     '''
-    if hasattr(fileout, 'write'):
-        poscar = fileout
-    else:
-        poscar = open(fileout, w)
-    atom_types = []
-    num_each_type = {}
-    for name in p.names:
-        if not name in atom_types:
-            atom_types.append(name)
-            num_each_type[name] = 1
+    with _maybe_open(fileout, w, 'write') as poscar:
+        atom_types = []
+        num_each_type = {}
+        for name in p.names:
+            if not name in atom_types:
+                atom_types.append(name)
+                num_each_type[name] = 1
+            else:
+                num_each_type[name] += 1
+        poscar.write(" ".join(atom_types)+'\n') #Line 1: Atom type
+        poscar.write("1.0\n") #Line 2: scaling
+        for i in range(3):
+            poscar.write(" ".join(['%20.14f' % s for s in p.box[i]])+'\n')  #lines 3-5: box
+        poscar.write(" ".join(atom_types)+'\n') #Line 6: Atom type
+        poscar.write(" ".join(['%s' % num_each_type[key] for key in atom_types])+'\n')
+        poscar.write('Selective Dynamics\n') #line 7: selective dynamics
+        if direct:
+            poscar.write('Direct\n')  #line 8 cartesian coordinates
+            ibox = numpy.linalg.inv(numpy.array(p.box))
+            positions = numpy.dot(p.r, ibox)
         else:
-            num_each_type[name] += 1
-    poscar.write(" ".join(atom_types)+'\n') #Line 1: Atom type
-    poscar.write("1.0\n") #Line 2: scaling
-    for i in range(3):
-        poscar.write(" ".join(['%20.14f' % s for s in p.box[i]])+'\n')  #lines 3-5: box
-    poscar.write(" ".join(atom_types)+'\n') #Line 6: Atom type
-    poscar.write(" ".join(['%s' % num_each_type[key] for key in atom_types])+'\n')
-    poscar.write('Selective Dynamics\n') #line 7: selective dynamics
-    if direct:
-        poscar.write('Direct\n')  #line 8 cartesian coordinates
-        ibox = numpy.linalg.inv(numpy.array(p.box))
-        positions = numpy.dot(p.r, ibox)
-    else:
-        poscar.write('Cartesian\n') #line 8 cartesian coordinates
-        positions = p.r
-    for i in range(len(p)):
-            posline = " ".join(['%20.14f' % s for s in positions[i]]) + " "
-            for j in range(3):
-                if(p.free[i]):
-                    posline+='   T'
-                else:
-                    posline+='   F'
-            poscar.write(posline+'\n')
+            poscar.write('Cartesian\n') #line 8 cartesian coordinates
+            positions = p.r
+        for i in range(len(p)):
+                posline = " ".join(['%20.14f' % s for s in positions[i]]) + " "
+                for j in range(3):
+                    if(p.free[i]):
+                        posline+='   T'
+                    else:
+                        posline+='   F'
+                poscar.write(posline+'\n')
 
 
 from configparser import ConfigParser as SCP
@@ -365,10 +409,8 @@ class ini(SCP):
             name = self.filenames
         else:
             name = self.filenames[-1]
-#        configfile = open(name, 'wb')
-        configfile = open(name, 'w')
-        self.write(configfile)
-        configfile.close()
+        with atomic_write(name) as configfile:
+            self.write(configfile)
 
 
 class Dynamics:
@@ -561,10 +603,9 @@ class Table:
     def write(self):
         if not self.initialized:
             self.init()
-        f = open(self.filename, "w")
         #print("into table write: ",self.filename)
-        self.writefilehandle(f)
-        f.close()
+        with atomic_write(self.filename) as f:
+            self.writefilehandle(f)
 
     def writefilehandle(self, filehandle):
         f = filehandle
