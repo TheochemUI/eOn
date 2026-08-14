@@ -21,8 +21,8 @@ SCHEMA_MODELS = (
 GENERATED = [
     REPO / "schema" / "eon_params_catalog.json",
     REPO / "eon" / "_params_ssot_catalog.py",
-    REPO / "client" / "generated" / "ParametersSSOTDefaults.h",
-    REPO / "client" / "generated" / "ParametersSSOTFieldIndex.inc",
+    REPO / "include" / "eon" / "generated" / "ParametersSSOTDefaults.h",
+    REPO / "include" / "eon" / "generated" / "ParametersSSOTFieldIndex.inc",
 ]
 
 
@@ -215,7 +215,7 @@ def test_parity_parameters_h_main_members():
     """Parameters.h main_options_t members map into SSoT Main snakes."""
     from eon import params_ssot
 
-    text = (REPO / "client" / "Parameters.h").read_text()
+    text = (REPO / "include" / "eon" / "Parameters.h").read_text()
     m = re.search(r"struct main_options_t \{(.*?)\}\s*main_options;", text, re.S)
     assert m, "main_options_t not found"
     body = m.group(1)
@@ -245,7 +245,7 @@ def test_parity_parameters_h_main_members():
 
 
 def test_field_index_inc_is_codegen_output():
-    inc = (REPO / "client" / "generated" / "ParametersSSOTFieldIndex.inc").read_text()
+    inc = (REPO / "include" / "eon" / "generated" / "ParametersSSOTFieldIndex.inc").read_text()
     assert "AUTO-GENERATED" in inc
     assert '"Main.temperature"' in inc
     assert '"Optimizer.lbfgs_memory"' in inc  # flat alias
@@ -290,7 +290,7 @@ def test_real_drift_injection_fails_then_restores(tmp_path):
 
 
 def test_codegen_header_exists_and_mentions_temperature():
-    h = (REPO / "client" / "generated" / "ParametersSSOTDefaults.h").read_text()
+    h = (REPO / "include" / "eon" / "generated" / "ParametersSSOTDefaults.h").read_text()
     assert "MAIN_TEMPERATURE" in h
     assert "300.0" in h
     assert "AUTO-GENERATED" in h
