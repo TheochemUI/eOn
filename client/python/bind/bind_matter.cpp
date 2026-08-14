@@ -51,7 +51,12 @@ void bind_matter(nb::module_ &m) {
                                      self.numberOfAtoms());
           },
           nb::rv_policy::reference_internal,
-          "Cartesian positions (n,3) float64 — zero-copy view of C++ storage")
+          "Cartesian positions (n,3) float64 — zero-copy view of C++ storage. "
+          "The view keeps this Matter alive but not the buffer: resize(), "
+          "con2matter() and convel2matter() reallocate, and a view taken "
+          "before one of those is dangling afterwards. Take np.array(...) of "
+          "it to outlive a reallocation; assign through the property (or "
+          "in place) to write.")
       .def_prop_ro(
           "positions_free",
           [](const Matter &self) {
@@ -100,7 +105,12 @@ void bind_matter(nb::module_ &m) {
             return view_n3(matter_forces_ptr(self), self.numberOfAtoms());
           },
           nb::rv_policy::reference_internal,
-          "Forces with fixed atoms zeroed (zero-copy view of cache)")
+          "Forces with fixed atoms zeroed (zero-copy view of cache). The view "
+          "aliases Matter's maskedForces cache, which the next force "
+          "evaluation overwrites in place, and resize()/con2matter() "
+          "reallocate it. Take np.array(...) of it to keep a value. Matter "
+          "serialises nothing: on a free-threaded build two threads driving "
+          "one Matter race on this cache.")
       .def_prop_ro(
           "forces_raw",
           [](Matter &self) {
@@ -110,7 +120,9 @@ void bind_matter(nb::module_ &m) {
             }
             return view_n3(matter_forces_raw_ptr(self), self.numberOfAtoms());
           },
-          nb::rv_policy::reference_internal)
+          nb::rv_policy::reference_internal,
+          "Forces without the fixed-atom mask (zero-copy view). Same "
+          "invalidation and threading caveats as forces.")
       .def_prop_ro(
           "forces_free",
           [](Matter &self) {
