@@ -37,14 +37,18 @@ def get_prng_state():
 __all_cell__ = ("length_angle_to_box", "box_to_length_angle")
 
 
-def _default_file_mode():
-    """The mode open() gives a new file under the current umask."""
+def _process_umask():
     mask = os.umask(0)
     os.umask(mask)
-    return 0o666 & ~mask
+    return mask
 
 
-_DEFAULT_FILE_MODE = _default_file_mode()
+# What open() and os.mkdir() give a new file or directory. mkstemp and
+# mkdtemp ignore the umask and use 0600 / 0700, so anything staged through
+# them is widened back to these before being moved into place.
+_UMASK = _process_umask()
+DEFAULT_FILE_MODE = 0o666 & ~_UMASK
+DEFAULT_DIR_MODE = 0o777 & ~_UMASK
 
 
 @contextlib.contextmanager
@@ -70,7 +74,7 @@ def atomic_write(path, mode='w'):
         try:
             os.chmod(temp_path, stat.S_IMODE(os.stat(path).st_mode))
         except OSError:
-            os.chmod(temp_path, _DEFAULT_FILE_MODE)
+            os.chmod(temp_path, DEFAULT_FILE_MODE)
         os.replace(temp_path, path)
     except BaseException:
         try:
