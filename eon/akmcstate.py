@@ -1,6 +1,7 @@
 
 """ The state module. """
 
+import ast
 import os
 import math
 import configparser
@@ -430,7 +431,7 @@ class AKMCState(state.State):
                 return max(0.0, 1.0 - 1.0/(alpha*Nr))
 
     def get_proc_random_count(self):
-        return eval(self.info.get("MetaData", "proc repeat count", "{}"))
+        return ast.literal_eval(self.info.get("MetaData", "proc repeat count", "{}"))
 
     def inc_proc_random_count(self, procid):
         prc = self.get_proc_random_count()
