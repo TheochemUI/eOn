@@ -262,8 +262,20 @@ void bind_matter(nb::module_ &m) {
           nb::arg("other"), nb::arg("index"))
       .def("distance_to", &Matter::distanceTo, nb::arg("other"))
       .def("per_atom_norm", &Matter::perAtomNorm, nb::arg("other"))
-      .def("compare", &Matter::compare, nb::arg("other"),
-           nb::arg("indistinguishable") = false)
+      .def(
+          "compare",
+          [](const Matter &self, const Matter &other, bool indistinguishable) {
+            // Matter::compare is non-const: with remove_translation set it
+            // runs translationRemove, which calls setPositions on its left
+            // operand, translating and PBC-wrapping it and invalidating the
+            // force cache. A query must not do that to self, so it runs on
+            // a copy.
+            Matter probe(self);
+            return probe.compare(other, indistinguishable);
+          },
+          nb::arg("other"), nb::arg("indistinguishable") = false,
+          "True when the structures match under "
+          "Parameters.structure_comparison. Neither Matter is modified.")
 
       // --- relax (default non-mutating; inplace=True mutates self) ---
       .def(
