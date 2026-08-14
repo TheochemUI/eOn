@@ -90,8 +90,25 @@ _nb_incs = [
     include_directories('bind'),
 ]
 
+# _core.__version__ tracks the pyeonclient distribution version, so the
+# wheel metadata and the module attribute cannot drift apart.
+_pyec_version = run_command(
+    py,
+    '-c',
+    '''
+import pathlib, re, sys
+text = pathlib.Path(sys.argv[1]).read_text()
+m = re.search(r'^version\s*=\s*"([^"]+)"', text, re.M)
+print(m.group(1) if m else "0.0.0")
+''',
+    meson.project_source_root() / 'pyproject-pyeonclient.toml',
+    check: true,
+).stdout().strip()
+message('pyeonclient: version @0@'.format(_pyec_version))
+
 _nb_cpp_args = _args + [
     '-DNB_DOMAIN=pyeonclient',
+    '-DPYEONCLIENT_VERSION="' + _pyec_version + '"',
     '-Wno-unused-parameter',
 ]
 
