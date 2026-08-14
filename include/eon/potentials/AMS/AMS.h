@@ -28,6 +28,7 @@
 #include <format>
 #include <fstream>
 #include <string>
+#include <vector>
 
 class AMS : public Potential {
 
@@ -45,6 +46,10 @@ private:
                     const double *box);
   void smallSys(long N, const double *R, const int *atomicNrs,
                 const double *box);
+  //!< Flush, close and make the run script executable
+  void finishRunScript(std::ofstream &out);
+  //!< Copy 3N gradient components into the caller's force array
+  void copyForces(long N, const std::vector<double> &frc, double *F);
   // Switch between jobs
   void switchjob();
   // Write restart files

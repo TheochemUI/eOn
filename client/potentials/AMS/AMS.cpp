@@ -14,7 +14,9 @@
 #include <format>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <stdexcept>
+#include <vector>
 
 namespace bp = boost::process;
 
@@ -75,6 +77,9 @@ AMS::~AMS() { cleanMemory(); }
 
 namespace {
 
+// The driver script, written afresh before every AMS invocation.
+constexpr const char *kRunScript = "run_AMS.sh";
+
 const char *elementArray[] = {
     "Unknown", "H",  "He", "Li", "Be", "B",  "C",  "N",  "O",  "F",  "Ne", "Na",
     "Mg",      "Al", "Si", "P",  "S",  "Cl", "Ar", "K",  "Ca", "Sc", "Ti", "V",
@@ -103,17 +108,28 @@ int symbol2atomicNumber(char const *symbol) {
   return -1;
 }
 
-char const *atomicNumber2symbol(int n) { return elementArray[n]; }
+char const *atomicNumber2symbol(int n) {
+  // The trailing NULL terminates the table, so it bounds the valid range.
+  if (n < 0 || static_cast<size_t>(n) + 1 >= std::size(elementArray)) {
+    throw std::runtime_error(
+        std::format("AMS knows no element symbol for atomic number {}", n));
+  }
+  return elementArray[n];
+}
 } // namespace
 
 void AMS::runAMS() {
   boost::asio::io_context amsRun;
   std::future<std::string> run_out_future, run_err_future;
   std::string runout, runerr;
-  chmod("run_AMS.sh", S_IRWXU);
+  if (chmod(kRunScript, S_IRWXU) != 0) {
+    throw std::runtime_error(
+        std::format("Could not make {} executable", kRunScript));
+  }
   nativenv["AMS_JOBNAME"] = cjob;
   // assert(validate_order() == true);         // TODO: Debug only
-  bp::child c("run_AMS.sh", nativenv,       // set the input
+  bp::child c(std::string(kRunScript),
+              nativenv,                     // set the input
               bp::std_in.close(),           // no input
               bp::std_out > run_out_future, // STDOUT
               bp::std_err > run_err_future, // STDERR
@@ -172,6 +188,11 @@ double AMS::extract_scalar_rkf(std::string key) {
   // [2] = "         1         1         2"
   // [3] = "   0.135012547958282714E+000"
   // [4] = ""
+  if (execDat.size() < 4) {
+    throw std::runtime_error(
+        std::format("\n AMS returned {} lines for {}, too few to hold a value",
+                    execDat.size(), key));
+  }
   if (absl::SimpleAtod(execDat[3], &x)) {
     xval = x * this->energyConversion;
     // std::cout << std::format(
@@ -301,11 +322,19 @@ void AMS::updateCoord(long N, const double *R) {
   absl::StrAppend(&coordDump, pjob, ".results/ams.rkf <<EOF\n", newCoord,
                   "EOF");
   // std::cout << coordDump;
-  updCoord.open("updCoord.sh");
+  updCoord.open("updCoord.sh", std::ios::trunc);
+  if (!updCoord) {
+    throw std::runtime_error("Could not open updCoord.sh for writing");
+  }
   updCoord << coordDump;
   updCoord.close();
+  if (!updCoord) {
+    throw std::runtime_error("Could not write the coordinates to updCoord.sh");
+  }
   // bp::spawn("chmod +x updCoord.sh");
-  chmod("updCoord.sh", S_IRWXU);
+  if (chmod("updCoord.sh", S_IRWXU) != 0) {
+    throw std::runtime_error("Could not make updCoord.sh executable");
+  }
   bp::child cuprog("updCoord.sh", nativenv, bp::std_err > bp::null);
   cuprog.wait();
   return;
@@ -341,10 +370,30 @@ void AMS::write_restart() {
   )";
   }
   std::string restart_data = std::format(restart_formatter, pjob, engine_lower);
-  restartFrom.open("myrestart.in");
+  restartFrom.open("myrestart.in", std::ios::trunc);
+  if (!restartFrom) {
+    throw std::runtime_error("Could not open myrestart.in for writing");
+  }
   restartFrom << restart_data;
   restartFrom.close();
+  if (!restartFrom) {
+    throw std::runtime_error("Could not write the restart block to "
+                             "myrestart.in");
+  }
   return;
+}
+
+void AMS::copyForces(long N, const std::vector<double> &frc, double *F) {
+  // A short AMS run yields fewer than 3N values; copying blindly would hand
+  // the optimizer whatever lies past the end of the vector.
+  if (frc.size() < static_cast<size_t>(3 * N)) {
+    throw std::runtime_error(
+        std::format("\n AMS returned {} gradient components, expected {}",
+                    frc.size(), 3 * N));
+  }
+  for (long i = 0; i < 3 * N; i++) {
+    F[i] = frc[i];
+  }
 }
 
 void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
@@ -356,13 +405,7 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
     // engine supports being restarted, the first run needs this
     passToSystem(N, R, atomicNrs, box);
     runAMS();
-    std::vector<double> frc = extract_cartesian_rkf("Gradients");
-    double *ftest = frc.data();
-    for (int i = 0; i < N; i++) {
-      F[3 * i] = ftest[3 * i];
-      F[3 * i + 1] = ftest[3 * i + 1];
-      F[3 * i + 2] = ftest[3 * i + 2];
-    }
+    copyForces(N, extract_cartesian_rkf("Gradients"), F);
     *U = extract_scalar_rkf("Energy");
     // Update, will still not matter for those without restarts
     if (can_restart) {
@@ -385,13 +428,7 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
     updateCoord(N, R);              // updates coordinates in previous job
     write_restart();                // writes restart file using previous job
     runAMS();
-    std::vector<double> frc = extract_cartesian_rkf("Gradients");
-    double *ftest = frc.data();
-    for (int i = 0; i < N; i++) {
-      F[3 * i] = ftest[3 * i];
-      F[3 * i + 1] = ftest[3 * i + 1];
-      F[3 * i + 2] = ftest[3 * i + 2];
-    }
+    copyForces(N, extract_cartesian_rkf("Gradients"), F);
     *U = extract_scalar_rkf("Energy");
     switchjob(); // toggles the jobs
     return;
@@ -404,40 +441,43 @@ void AMS::passToSystem(long N, const double *R, const int *atomicNrs,
                        const double *box)
 // Creating the standard input file that the AMS driver reads
 {
-  FILE *out;
-  out = fopen("run_AMS.sh", "w");
+  std::ofstream out(kRunScript, std::ios::trunc);
+  if (!out) {
+    throw std::runtime_error(
+        std::format("Could not open {} for writing", kRunScript));
+  }
 
-  fprintf(out, "#!/bin/sh\n");
-  fprintf(out, "export AMS_JOBNAME=%s\n", cjob.c_str());
-  fprintf(out, "$AMSBIN/ams --delete-old-results <<eor\n");
-  fprintf(out, "Task SinglePoint\n");
-  fprintf(out, "System\n");
-  fprintf(out, " Atoms\n");
-  for (int i = 0; i < N; i++) {
-    fprintf(out, "  %s\t%.19f\t%.19f\t%.19f\n",
-            atomicNumber2symbol(atomicNrs[i]), R[i * 3 + 0], R[i * 3 + 1],
-            R[i * 3 + 2]);
+  out << "#!/bin/sh\n";
+  out << std::format("export AMS_JOBNAME={}\n", cjob);
+  out << "$AMSBIN/ams --delete-old-results <<eor\n";
+  out << "Task SinglePoint\n";
+  out << "System\n";
+  out << " Atoms\n";
+  for (long i = 0; i < N; i++) {
+    out << std::format("  {}\t{:.19f}\t{:.19f}\t{:.19f}\n",
+                       atomicNumber2symbol(atomicNrs[i]), R[i * 3 + 0],
+                       R[i * 3 + 1], R[i * 3 + 2]);
   }
-  fprintf(out, " End\n");
+  out << " End\n";
   if (not model.empty() || not forcefield.empty()) {
-    fprintf(out, " Lattice\n");
+    out << " Lattice\n";
     for (int i = 0; i < 3; i++) {
-      fprintf(out, "  %.19f\t%.19f\t%.19f\n", box[i * 3 + 0], box[i * 3 + 1],
-              box[i * 3 + 2]);
+      out << std::format("  {:.19f}\t{:.19f}\t{:.19f}\n", box[i * 3 + 0],
+                         box[i * 3 + 1], box[i * 3 + 2]);
     }
-    fprintf(out, " End\n");
+    out << " End\n";
   }
-  fprintf(out, "End\n");
-  fprintf(out, "%s", engine_setup.c_str());
-  fprintf(out, "Properties\n");
-  fprintf(out, " Gradients\n");
-  fprintf(out, "End\n");
+  out << "End\n";
+  out << engine_setup;
+  out << "Properties\n";
+  out << " Gradients\n";
+  out << "End\n";
   if (can_restart and not first_run) {
-    fprintf(out, "@include myrestart.in\n");
+    out << "@include myrestart.in\n";
   }
-  fprintf(out, "eor");
-  fclose(out);
-  chmod("run_AMS.sh", S_IRWXU);
+  out << "eor";
+
+  finishRunScript(out);
   return;
 }
 
@@ -445,22 +485,37 @@ void AMS::smallSys(long N, const double *R, const int *atomicNrs,
                    const double *box)
 // Creating the truncated input file that the AMS driver reads
 {
-  FILE *out;
-  out = fopen("run_AMS.sh", "w");
+  std::ofstream out(kRunScript, std::ios::trunc);
+  if (!out) {
+    throw std::runtime_error(
+        std::format("Could not open {} for writing", kRunScript));
+  }
 
-  fprintf(out, "#!/bin/sh\n");
-  fprintf(out, "export AMS_JOBNAME=%s\n", cjob.c_str());
-  fprintf(out, "$AMSBIN/ams --delete-old-results <<eor\n");
-  fprintf(out, "Task SinglePoint\n");
-  fprintf(out, "%s", engine_setup.c_str());
-  fprintf(out, "Properties\n");
-  fprintf(out, " Gradients\n");
-  fprintf(out, "End\n");
-  fprintf(out, "@include myrestart.in\n");
-  fprintf(out, "eor");
-  fclose(out);
-  chmod("run_AMS.sh", S_IRWXU);
+  out << "#!/bin/sh\n";
+  out << std::format("export AMS_JOBNAME={}\n", cjob);
+  out << "$AMSBIN/ams --delete-old-results <<eor\n";
+  out << "Task SinglePoint\n";
+  out << engine_setup;
+  out << "Properties\n";
+  out << " Gradients\n";
+  out << "End\n";
+  out << "@include myrestart.in\n";
+  out << "eor";
+
+  finishRunScript(out);
   return;
+}
+
+void AMS::finishRunScript(std::ofstream &out) {
+  out.close();
+  if (!out) {
+    throw std::runtime_error(
+        std::format("Could not write the AMS input to {}", kRunScript));
+  }
+  if (chmod(kRunScript, S_IRWXU) != 0) {
+    throw std::runtime_error(
+        std::format("Could not make {} executable", kRunScript));
+  }
 }
 
 std::string AMS::generate_run(const Parameters &p) {
