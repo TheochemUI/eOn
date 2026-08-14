@@ -294,11 +294,12 @@ def saveposcar(fileout, p, w='w', direct = False):
     if direct:
         poscar.write('Direct\n')  #line 8 cartesian coordinates
         ibox = numpy.linalg.inv(numpy.array(p.box))
-        p.r = numpy.dot(p.r, ibox)
+        positions = numpy.dot(p.r, ibox)
     else:
         poscar.write('Cartesian\n') #line 8 cartesian coordinates
+        positions = p.r
     for i in range(len(p)):
-            posline = " ".join(['%20.14f' % s for s in p.r[i]]) + " "
+            posline = " ".join(['%20.14f' % s for s in positions[i]]) + " "
             for j in range(3):
                 if(p.free[i]):
                     posline+='   T'
