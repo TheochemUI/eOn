@@ -11,18 +11,45 @@
 */
 
 #include "eon/potentials/AMS_IO/AMS_IO.h"
+#include "eon/potentials/ExternalCommand.h"
+
+#include <cstring>
+#include <format>
+#include <fstream>
 #include <iostream>
+#include <iterator>
+#include <stdexcept>
 #include <string>
 #ifndef _WIN32
+#include <sys/stat.h>
 #include <unistd.h>
 #endif
 
+namespace {
+
+// The driver script and its output, both relative to the working directory.
+constexpr const char *kRunScript = "run_AMS_IO.sh";
+constexpr const char *kOutputFile = "ams_output";
+// Truncating rather than appending keeps the previous call's block out of the
+// parse, so a failed run cannot hand back stale forces.
+constexpr const char *kRunCommand = "./run_AMS_IO.sh > ams_output";
+
+// Lines that precede the two blocks of interest in the AMS output.
+constexpr const char *kEnergyMarker = "     CALCULATION RESULTS";
+constexpr const char *kGradientMarker =
+    "  Index   Atom            d/dx            d/dy            d/dz";
+
+constexpr double kHartreeToEv = 27.2114;
+constexpr double kHartreeBohrToEvAngstrom = 51.4220862;
+
+} // namespace
+
 AMS_IO::AMS_IO(const Parameters &p)
     : Potential(PotType::AMS_IO, p) {
-  engine = p.ams_options.engine.c_str();
-  forcefield = p.ams_options.forcefield.c_str();
-  model = p.ams_options.model.c_str();
-  xc = p.ams_options.xc.c_str();
+  engine = p.ams_options.engine;
+  forcefield = p.ams_options.forcefield;
+  model = p.ams_options.model;
+  xc = p.ams_options.xc;
   return;
 }
 
@@ -60,17 +87,23 @@ int symbol2atomicNumber(char const *symbol) {
   return -1;
 }
 
-char const *atomicNumber2symbol(int n) { return elementArray[n]; }
+char const *atomicNumber2symbol(int n) {
+  // The trailing NULL terminates the table, so it bounds the valid range.
+  if (n < 0 || static_cast<size_t>(n) + 1 >= std::size(elementArray)) {
+    throw std::runtime_error(
+        std::format("AMS_IO knows no element symbol for atomic number {}", n));
+  }
+  return elementArray[n];
+}
 } // namespace
 
 void AMS_IO::force(long N, const double *R, const int *atomicNrs, double *F,
                    double *U, double *variance, const double *box) {
   variance = nullptr;
   passToSystem(N, R, atomicNrs, box);
-  system("chmod +x run_AMS_IO.sh");
-  system(
-      "./run_AMS_IO.sh >> ams_output"); // Run a single point AMS_IO calculation
-                                        // and write the results into ams_output
+  // Run a single point AMS_IO calculation and write the results into
+  // ams_output
+  eonc::pot::runOrThrow(kRunCommand);
   recieveFromSystem(N, F, U);
   return;
 }
@@ -79,88 +112,120 @@ void AMS_IO::passToSystem(long N, const double *R, const int *atomicNrs,
                           const double *box)
 // Creating the standard input file that will be read by the AMS_IO driver
 {
-  FILE *out;
-  out = fopen("run_AMS_IO.sh", "w");
+  std::ofstream out(kRunScript, std::ios::trunc);
+  if (!out) {
+    throw std::runtime_error(
+        std::format("Could not open {} for writing", kRunScript));
+  }
 
-  fprintf(out, "#!/bin/sh\n");
-  fprintf(out, "ams --delete-old-results <<eor\n");
-  fprintf(out, "Task SinglePoint\n");
-  fprintf(out, "System\n");
-  fprintf(out, " Atoms\n");
-  for (int i = 0; i < N; i++) {
-    fprintf(out, "  %s\t%.19f\t%.19f\t%.19f\n",
-            atomicNumber2symbol(atomicNrs[i]), R[i * 3 + 0], R[i * 3 + 1],
-            R[i * 3 + 2]);
+  out << "#!/bin/sh\n";
+  out << "ams --delete-old-results <<eor\n";
+  out << "Task SinglePoint\n";
+  out << "System\n";
+  out << " Atoms\n";
+  for (long i = 0; i < N; i++) {
+    out << std::format("  {}\t{:.19f}\t{:.19f}\t{:.19f}\n",
+                       atomicNumber2symbol(atomicNrs[i]), R[i * 3 + 0],
+                       R[i * 3 + 1], R[i * 3 + 2]);
   }
-  fprintf(out, " End\n");
-  if (strlen(model) > 0 || strlen(forcefield)) {
-    fprintf(out, " Lattice\n");
+  out << " End\n";
+  if (!model.empty() || !forcefield.empty()) {
+    out << " Lattice\n";
     for (int i = 0; i < 3; i++) {
-      fprintf(out, "  %.19f\t%.19f\t%.19f\n", box[i * 3 + 0], box[i * 3 + 1],
-              box[i * 3 + 2]);
+      out << std::format("  {:.19f}\t{:.19f}\t{:.19f}\n", box[i * 3 + 0],
+                         box[i * 3 + 1], box[i * 3 + 2]);
     }
-    fprintf(out, " End\n");
+    out << " End\n";
   }
-  fprintf(out, "End\n");
-  fprintf(out, "Engine %s\n", engine);
-  if (strlen(forcefield) > 0) {
-    fprintf(out, "     Forcefield %s\n", forcefield);
+  out << "End\n";
+  out << std::format("Engine {}\n", engine);
+  if (!forcefield.empty()) {
+    out << std::format("     Forcefield {}\n", forcefield);
   }
-  if (strlen(model) > 0) {
-    fprintf(out, "     Model %s\n", model);
+  if (!model.empty()) {
+    out << std::format("     Model {}\n", model);
   }
-  if (strlen(xc) > 0) {
-    fprintf(out, "xc %s\n", xc);
-    fprintf(out, "     hybrid %s\n",
-            xc); // basis set not specified (default = DZ)
-    fprintf(out, "end\n");
+  if (!xc.empty()) {
+    out << std::format("xc {}\n", xc);
+    // basis set not specified (default = DZ)
+    out << std::format("     hybrid {}\n", xc);
+    out << "end\n";
   }
-  fprintf(out, "EndEngine\n");
-  fprintf(out, "Properties\n");
-  fprintf(out, " Gradients\n");
-  fprintf(out, "End\n");
-  fprintf(out, "eor");
-  fclose(out);
+  out << "EndEngine\n";
+  out << "Properties\n";
+  out << " Gradients\n";
+  out << "End\n";
+  out << "eor";
+
+  out.close();
+  if (!out) {
+    throw std::runtime_error(
+        std::format("Could not write the AMS input to {}", kRunScript));
+  }
+
+#ifndef _WIN32
+  if (chmod(kRunScript, S_IRWXU) != 0) {
+    throw std::runtime_error(
+        std::format("Could not make {} executable", kRunScript));
+  }
+#endif
   return;
 }
 
 void AMS_IO::recieveFromSystem(long N, double *F, double *U) {
+  std::ifstream in(kOutputFile);
+  if (!in) {
+    throw std::runtime_error(
+        std::format("Could not open {}; AMS left no output", kOutputFile));
+  }
 
-  FILE *in;
-  double junkF;
-  char junkChar[256];
-  double forceX;
-  double forceY;
-  double forceZ;
-  double index;
-  char line[256];
+  bool haveEnergy = false;
+  bool haveGradients = false;
+  std::string line;
 
-  in = fopen("ams_output", "r");
+  while (std::getline(in, line)) {
 
-  while (fgets(line, sizeof(line), in)) {
-
-    if (strcmp(line, "     CALCULATION RESULTS\n") ==
-        0) { // Finding the Energy in the output file
-
-      fscanf(in, "%s %s %s %lf", junkChar, junkChar, junkChar, U);
-      *U = *U * 27.2114; // Energy in hartree to eV
-    }
-    if (strcmp(line, "  Index   Atom            d/dx            d/dy           "
-                     " d/dz\n") == 0) { // Finding the forces
-      for (int i = 0; i < N; i++) {
-        fscanf(in, "%lf %s %lf %lf %lf", &index, &junkChar, &forceX, &forceY,
-               &forceZ);
-        F[int(i) * 3 + 0] = -forceX;
-        F[int(i) * 3 + 1] = -forceY;
-        F[int(i) * 3 + 2] =
-            -forceZ; // AMS_IO gives gradients, not forces, hence the change.
+    if (line == kEnergyMarker) { // Finding the Energy in the output file
+      std::string junk;
+      if (!(in >> junk >> junk >> junk >> *U)) {
+        throw std::runtime_error(
+            std::format("Could not read the energy following \"{}\" in {}",
+                        kEnergyMarker, kOutputFile));
       }
+      *U = *U * kHartreeToEv; // Energy in hartree to eV
+      haveEnergy = true;
+    }
+
+    if (line == kGradientMarker) { // Finding the forces
+      double index;
+      std::string symbol;
+      for (long i = 0; i < N; i++) {
+        if (!(in >> index >> symbol >> F[i * 3 + 0] >> F[i * 3 + 1] >>
+              F[i * 3 + 2])) {
+          throw std::runtime_error(
+              std::format("{} holds gradients for {} atoms, expected {}",
+                          kOutputFile, i, N));
+        }
+        // AMS_IO gives gradients, not forces, hence the change.
+        F[i * 3 + 0] = -F[i * 3 + 0];
+        F[i * 3 + 1] = -F[i * 3 + 1];
+        F[i * 3 + 2] = -F[i * 3 + 2];
+      }
+      haveGradients = true;
     }
   }
-  for (int i = 0; i < 3 * N; i++) {
-    F[i] = F[i] * 51.4220862; // Forces from hartree/bohr to eV/Angstrom
+
+  if (!haveEnergy || !haveGradients) {
+    throw std::runtime_error(std::format(
+        "{} holds no {}", kOutputFile,
+        !haveEnergy ? (!haveGradients ? "energy and no gradient block"
+                                      : "energy")
+                    : "gradient block"));
   }
 
-  fclose(in);
+  for (long i = 0; i < 3 * N; i++) {
+    F[i] = F[i] * kHartreeBohrToEvAngstrom; // Forces from hartree/bohr to
+                                            // eV/Angstrom
+  }
   return;
 }
