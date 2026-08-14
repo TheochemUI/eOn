@@ -34,6 +34,15 @@ trap cleanup EXIT
 
 python -m pip install -U pip build nanobind 'numpy>=1.26.4' meson ninja meson-python
 
+# A conda or pixi environment ships its .pc files under $CONDA_PREFIX but
+# leaves PKG_CONFIG_PATH empty, so pkg-config finds none of them. The base
+# wheel builds with -Dwith_rgpot=true, which turns on rgpot's RPC arm and
+# needs capnp-rpc; without this the build stops at
+# subprojects/rgpot/CppCore/rgpot/rpc/meson.build.
+if [ -n "${CONDA_PREFIX:-}" ] && [ -d "${CONDA_PREFIX}/lib/pkgconfig" ]; then
+  export PKG_CONFIG_PATH="${CONDA_PREFIX}/lib/pkgconfig${PKG_CONFIG_PATH:+:${PKG_CONFIG_PATH}}"
+fi
+
 # readcon-core wrap needs cbindgen (same as manylinux before-all)
 export PATH="${HOME}/.cargo/bin:/root/.cargo/bin:${PATH:-}"
 if ! command -v cbindgen >/dev/null 2>&1; then
