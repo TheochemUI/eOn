@@ -16,12 +16,15 @@
 #include "eon/Matter.h"
 #include "eon/SafeMath.h"
 
+#include <algorithm>
 #include <atomic>
 #include <cmath>
+#include <cstdint>
 #include <cstring>
 #include <filesystem>
 #include <format>
 #include <fstream>
+#include <numeric>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -123,6 +126,50 @@ eonc::io::IoStatus write_frames(const fs::path &path,
     EONC_LOG_ERROR("Failed to write {}: {}", path.string(), e.what());
     return eonc::io::IoStatus::WriteError;
   }
+}
+
+/// Permutation taking .con file order to Matter order.
+///
+/// A .con file groups atoms by species, because header lines 7 and 8 are a
+/// type count and per-type counts. A configuration whose species interleave
+/// therefore lands in the file in a different order than the one its
+/// index-coupled sidecars (mode.dat, direction.dat, the Hessian) are written
+/// in. Column 5 is the atom id, which survives the grouping untouched, and
+/// ascending ids put the atoms back.
+///
+/// Ids that repeat carry no permutation to invert, so file order stands.
+std::vector<size_t> matter_order(const std::vector<readcon::Atom> &atoms) {
+  const size_t n = atoms.size();
+  std::vector<size_t> order(n);
+  std::iota(order.begin(), order.end(), size_t{0});
+  if (n < 2) {
+    return order;
+  }
+  const bool ascending =
+      std::is_sorted(atoms.begin(), atoms.end(),
+                     [](const readcon::Atom &a, const readcon::Atom &b) {
+                       return a.atom_id < b.atom_id;
+                     }) &&
+      std::adjacent_find(atoms.begin(), atoms.end(),
+                         [](const readcon::Atom &a, const readcon::Atom &b) {
+                           return a.atom_id == b.atom_id;
+                         }) == atoms.end();
+  if (ascending) {
+    return order;
+  }
+  std::vector<uint64_t> ids;
+  ids.reserve(n);
+  for (const auto &atom : atoms) {
+    ids.push_back(atom.atom_id);
+  }
+  std::vector<uint64_t> sorted(ids);
+  std::sort(sorted.begin(), sorted.end());
+  if (std::adjacent_find(sorted.begin(), sorted.end()) != sorted.end()) {
+    return order;
+  }
+  std::stable_sort(order.begin(), order.end(),
+                   [&ids](size_t a, size_t b) { return ids[a] < ids[b]; });
+  return order;
 }
 
 /// Seed a builder with identity fields (symbol/fixed/mass/id) and cell headers.
@@ -365,6 +412,10 @@ IoStatus con2matter(Matter &m, const readcon::ConFrame &frame,
   const auto n = static_cast<Eigen::Index>(atoms.size());
   m.resize(static_cast<long>(atoms.size()));
 
+  // Undo the species grouping the .con format imposes, so an index into
+  // Matter addresses the same atom as the matching row of mode.dat.
+  const std::vector<size_t> order = matter_order(atoms);
+
   AtomMatrix positions = AtomMatrix::Zero(n, 3);
   AtomMatrix forces = AtomMatrix::Zero(n, 3);
   AtomMatrix velocities = AtomMatrix::Zero(n, 3);
@@ -374,7 +425,7 @@ IoStatus con2matter(Matter &m, const readcon::ConFrame &frame,
   bool any_velocity = false;
 
   for (Eigen::Index i = 0; i < n; ++i) {
-    const auto &atom = atoms[static_cast<size_t>(i)];
+    const auto &atom = atoms[order[static_cast<size_t>(i)]];
     positions(i, 0) = atom.x;
     positions(i, 1) = atom.y;
     positions(i, 2) = atom.z;
@@ -383,7 +434,8 @@ IoStatus con2matter(Matter &m, const readcon::ConFrame &frame,
     const auto fixed = atom.fixed_mask();
     m.setFixed(static_cast<long>(i),
                (fixed[0] || fixed[1] || fixed[2]) ? 1 : 0);
-    m.setAtomIndex(static_cast<long>(i), static_cast<int>(atom.atom_id));
+    m.setAtomIndex(static_cast<long>(i),
+                   static_cast<std::int64_t>(atom.atom_id));
 
     if (auto vel = atom.velocity()) {
       any_velocity = true;
