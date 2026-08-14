@@ -43,6 +43,16 @@ if [ -n "${CONDA_PREFIX:-}" ] && [ -d "${CONDA_PREFIX}/lib/pkgconfig" ]; then
   export PKG_CONFIG_PATH="${CONDA_PREFIX}/lib/pkgconfig${PKG_CONFIG_PATH:+:${PKG_CONFIG_PATH}}"
 fi
 
+# The readcon-core wrap builds Rust with whatever rustflags the host
+# ~/.cargo/config.toml carries. Those are chosen for the host toolchain: a
+# developer pointing rustc at an absolute linker ('-fuse-ld=/usr/bin/mold',
+# say) makes cargo pass it to the conda cc that meson selects here, which
+# rejects it, and the wheel build stops at libreadcon_core.a. A wheel is a
+# redistributable artifact, so it is built without host-tuned flags either
+# way. RUSTFLAGS present but empty is what tells cargo to ignore the config
+# ones; unset would let them back in.
+export RUSTFLAGS="${PYEONCLIENT_RUSTFLAGS:-}"
+
 # readcon-core wrap needs cbindgen (same as manylinux before-all)
 export PATH="${HOME}/.cargo/bin:/root/.cargo/bin:${PATH:-}"
 if ! command -v cbindgen >/dev/null 2>&1; then

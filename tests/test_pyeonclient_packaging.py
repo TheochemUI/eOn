@@ -64,6 +64,10 @@ def test_build_wheel_script_variants_disambiguated():
     rtext = repair.read_text()
     assert "patchelf" in rtext
     assert "libcapnp" in rtext or "vendor" in rtext
+    # A host ~/.cargo/config.toml naming an absolute linker reaches the
+    # readcon-core wrap through cargo and the conda cc rejects it, so the
+    # script exports RUSTFLAGS rather than inheriting the host's.
+    assert "export RUSTFLAGS=" in text
 
 
 def test_workflow_publish_excludes_metatomic_local_version():
