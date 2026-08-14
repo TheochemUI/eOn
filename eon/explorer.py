@@ -449,6 +449,10 @@ class ServerMinModeExplorer(MinModeExplorer):
             id = int(result['name'].split("_")[1]) + result['number']
             searchdata_id = "%d_%d" % (state_num, id)
 
+            if id not in self.wuid_to_search_id:
+                logger.warning("No search id for result %s; skipping",
+                               searchdata_id)
+                continue
             search_id = self.wuid_to_search_id[id]
             if search_id not in self.process_searches:
                 continue
