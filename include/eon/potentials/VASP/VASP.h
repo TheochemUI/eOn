@@ -19,29 +19,17 @@ public:
   VASP(const Parameters &p)
       : Potential(p) {
     vaspRunCount++;
-    // deleting leftovers from previous run
-    system("rm -f TMPCAR");
-    system("rm -f CHG");
-    system("rm -f CHGCAR");
-    system("rm -f CONTCAR");
-    system("rm -f DOSCAR");
-    system("rm -f EIGENVAL");
-    system("rm -f IBZKPT");
-    system("rm -f NEWCAR");
-    system("rm -f FU");
-    system("rm -f OSZICAR");
-    system("rm -f OUTCAR");
-    system("rm -f PCDAT");
-    system("rm -f POSCAR");
-    system("rm -f TMPCAR");
-    system("rm -f WAVECAR");
-    system("rm -f XDATCAR");
+    removeStaleFiles();
   }
   ~VASP() { cleanMemory(); }
   void initialize() {};
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
+  //!< Delete VASP output left in the working directory by an earlier run.
+  //!< Called from the constructor, so constructing a VASP potential in a
+  //!< directory that holds results deletes them.
+  static void removeStaleFiles();
 
 private:
   void writePOSCAR(long N, const double *R, const int *atomicNrs,

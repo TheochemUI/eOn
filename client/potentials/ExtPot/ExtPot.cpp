@@ -89,9 +89,8 @@ void ExtPot::recieveFromSystem(long N, double *F, double *U)
 
   for (long i = 0; i < N; i++) {
     if (!(in >> F[i * 3 + 0] >> F[i * 3 + 1] >> F[i * 3 + 2])) {
-      throw std::runtime_error(
-          std::format("{} holds forces for {} atoms, expected {}", kFromExtPot,
-                      i, N));
+      throw std::runtime_error(std::format(
+          "{} holds forces for {} atoms, expected {}", kFromExtPot, i, N));
     }
   }
   return;
