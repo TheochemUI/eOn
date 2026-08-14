@@ -17,6 +17,8 @@ import os
 
 import pickle as pickle
 import readcon
+import stat
+import tempfile
 
 from eon.geometry.cell import box_to_length_angle, length_angle_to_box
 from eon.structure import Structure
@@ -33,6 +35,49 @@ def get_prng_state():
 
 # Re-export cell helpers (used by callers / POSCAR path)
 __all_cell__ = ("length_angle_to_box", "box_to_length_angle")
+
+
+def _default_file_mode():
+    """The mode open() gives a new file under the current umask."""
+    mask = os.umask(0)
+    os.umask(mask)
+    return 0o666 & ~mask
+
+
+_DEFAULT_FILE_MODE = _default_file_mode()
+
+
+@contextlib.contextmanager
+def atomic_write(path, mode='w'):
+    '''
+    Rewrite a file in one step, for callers that truncate and rewrite whole.
+        path: destination file
+        mode: 'w' or 'wb'
+    The body writes to a temporary file in the destination's own directory,
+    which is renamed over the destination on a clean exit. A reader sees
+    either the old contents or the new ones, and a write that fails partway
+    (a full disk, a killed process) leaves the destination as it was.
+    mkstemp opens at 0600, so the destination's own mode carries over, or
+    the umask default for a file that does not exist yet.
+    '''
+    directory = os.path.dirname(os.path.abspath(path))
+    fd, temp_path = tempfile.mkstemp(dir=directory,
+                                     prefix='.' + os.path.basename(path) + '.',
+                                     suffix='.tmp')
+    try:
+        with os.fdopen(fd, mode) as f:
+            yield f
+        try:
+            os.chmod(temp_path, stat.S_IMODE(os.stat(path).st_mode))
+        except OSError:
+            os.chmod(temp_path, _DEFAULT_FILE_MODE)
+        os.replace(temp_path, path)
+    except BaseException:
+        try:
+            os.unlink(temp_path)
+        except OSError:
+            pass
+        raise
 
 
 def _maybe_open(target, mode, attr):
@@ -365,10 +410,8 @@ class ini(SCP):
             name = self.filenames
         else:
             name = self.filenames[-1]
-#        configfile = open(name, 'wb')
-        configfile = open(name, 'w')
-        self.write(configfile)
-        configfile.close()
+        with atomic_write(name) as configfile:
+            self.write(configfile)
 
 
 class Dynamics:
@@ -561,10 +604,9 @@ class Table:
     def write(self):
         if not self.initialized:
             self.init()
-        f = open(self.filename, "w")
         #print("into table write: ",self.filename)
-        self.writefilehandle(f)
-        f.close()
+        with atomic_write(self.filename) as f:
+            self.writefilehandle(f)
 
     def writefilehandle(self, filehandle):
         f = filehandle
