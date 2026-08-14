@@ -34,8 +34,7 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
     atoms = movedAtoms(parameters, min1, saddle, min2);
   }
 
-  int size = 3 * atoms.rows();
-  assert(size > 0);
+  assert(atoms.rows() > 0);
 
   // calculate min1 frequencies
   Hessian hessian(parameters, min1);
@@ -88,8 +87,11 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   logFreqs(min2Freqs, "minimum 2");
 
   // check for correct number of negative modes
+  // Bound each loop by its own vector: removeZeroFreqs returns a shorter
+  // vector than the 3N it was handed, and each of the three is shrunk by a
+  // separate call.
   int numNegFreq = 0;
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < min1Freqs.size(); i++) {
     if (min1Freqs(i) < 0) {
       EONC_LOG_DEBUG("[Prefactor] min1 had negative mode of {}", min1Freqs(i));
       numNegFreq++;
@@ -101,7 +103,7 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   }
 
   numNegFreq = 0;
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < saddleFreqs.size(); i++) {
     if (saddleFreqs(i) < 0) {
       numNegFreq++;
     }
@@ -112,7 +114,7 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   }
 
   numNegFreq = 0;
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < min2Freqs.size(); i++) {
     if (min2Freqs(i) < 0) {
       numNegFreq++;
     }
