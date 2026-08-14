@@ -14,6 +14,8 @@
 #include "eon/Matter.h"
 #include "eon/Potential.h"
 
+#include <string>
+
 class AMS_IO : public Potential {
 
 public:
@@ -28,8 +30,10 @@ private:
   void passToSystem(long N, const double *R, const int *atomicNrs,
                     const double *box);
   void recieveFromSystem(long N, double *F, double *U);
-  const char *engine;
-  const char *model;
-  const char *forcefield;
-  const char *xc;
+  // Owned by value: the Parameters these came from may go out of scope long
+  // before the potential does.
+  std::string engine;
+  std::string model;
+  std::string forcefield;
+  std::string xc;
 };
