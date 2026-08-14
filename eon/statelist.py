@@ -53,7 +53,7 @@ class StateList:
 
     def get_num_states(self):
         """ Returns the number of lines in the state_table file. """
-        self.load_state_table()
+        self.load_state_table(force=True)
         return len(self.state_table)
 
     def get_product_state(self, state_number, process_id):
@@ -133,14 +133,24 @@ class StateList:
         self.states[state_number] = st
         return st
 
-    def load_state_table(self):
-        if self.state_table is None:
-            f = open(self.state_table_path, 'r')
+    def load_state_table(self, force=False):
+        """Load the state table from disk.
+
+        If already loaded and *force* is false, do nothing. When *force* is
+        true (used by :meth:`get_num_states`), re-read so states appended by
+        another process are seen; a stale count would mint a state number
+        that is already taken.
+        """
+        if self.state_table is not None and not force:
+            return
+        with open(self.state_table_path, 'r') as f:
             lines = f.readlines()
-            f.close()
-            self.state_table = []
-            for l in lines:
-                self.state_table.append(float(l.strip().split()[1]))
+        self.state_table = []
+        for l in lines:
+            parts = l.split()
+            if not parts:
+                continue
+            self.state_table.append(float(parts[1]))
 
     def save_state_table(self):
         if self.state_table != None:
