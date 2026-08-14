@@ -2,12 +2,13 @@
 """ The statelist module. """
 
 import logging
-logger = logging.getLogger('statelist')
 import os
 
 from eon import atoms
 from eon import fileio as io
 from eon.config import ConfigClass # Typing
+
+logger = logging.getLogger('statelist')
 
 
 class StateList:
