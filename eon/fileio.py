@@ -327,12 +327,19 @@ def saveposcar(fileout, p, w='w', direct = False):
     with _maybe_open(fileout, w, 'write') as poscar:
         atom_types = []
         num_each_type = {}
-        for name in p.names:
+        rows_each_type = {}
+        for i, name in enumerate(p.names):
             if not name in atom_types:
                 atom_types.append(name)
                 num_each_type[name] = 1
+                rows_each_type[name] = [i]
             else:
                 num_each_type[name] += 1
+                rows_each_type[name].append(i)
+        # Lines 1 and 6 declare one count per type, so the coordinate block
+        # runs type by type. A configuration whose species interleave writes
+        # its atoms in a different order than it holds them.
+        order = [i for name in atom_types for i in rows_each_type[name]]
         poscar.write(" ".join(atom_types)+'\n') #Line 1: Atom type
         poscar.write("1.0\n") #Line 2: scaling
         for i in range(3):
@@ -347,7 +354,7 @@ def saveposcar(fileout, p, w='w', direct = False):
         else:
             poscar.write('Cartesian\n') #line 8 cartesian coordinates
             positions = p.r
-        for i in range(len(p)):
+        for i in order:
                 posline = " ".join(['%20.14f' % s for s in positions[i]]) + " "
                 for j in range(3):
                     if(p.free[i]):
