@@ -254,6 +254,14 @@ void commandLine(int argc, char **argv) {
     std::exit(EXIT_FAILURE);
   }
 
+  if (cflag && confileout.empty()) {
+    std::cerr << colorizer.error(
+        "Comparison needs two structure files: the input con file and the "
+        "one to compare it against\n");
+    std::cerr << colorizer.warning(parser.formatUsage(progname)) << '\n';
+    std::exit(EXIT_FAILURE);
+  }
+
 #ifdef WITH_SERVE_MODE
   // Load config file if provided (for potential-specific parameters
   // like model_path, device, length_unit, etc.)
@@ -354,6 +362,10 @@ void commandLine(int argc, char **argv) {
   } else if (mflag) {
     minimize(std::move(matter), confileout);
   } else if (cflag) {
+    if (!eonc::io::io_ok(matter2->con2matter(confileout))) {
+      std::cerr << "Failed to load " << confileout << std::endl;
+      std::exit(EXIT_FAILURE);
+    }
     params.structure_comparison_options.check_rotation = true;
     if (matter->compare(*matter2, true)) {
       std::cout << "Structures match\n";
