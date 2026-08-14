@@ -4,9 +4,10 @@ import copy
 
 import numpy
 import logging
-logger = logging.getLogger('askmc')
 
 from eon import fileio as io
+
+logger = logging.getLogger('askmc')
 
 ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = list(range(9))
 processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %7s\n"

@@ -11,7 +11,6 @@ import contextlib
 #from io import BytesIO as StringIO
 from io import StringIO
 import logging
-logger = logging.getLogger('io')
 import numpy
 import os
 
@@ -22,6 +21,8 @@ import tempfile
 
 from eon.geometry.cell import box_to_length_angle, length_angle_to_box
 from eon.structure import Structure
+
+logger = logging.getLogger('io')
 
 def save_prng_state():
     state = numpy.random.get_state()
