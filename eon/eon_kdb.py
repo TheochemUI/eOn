@@ -58,13 +58,12 @@ def make_suggestion(config):
             number = dones[0].split("_")[1]
             try:
                 displacement = io.loadcon(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s" % number))
-            except FloatingPointError:
+            except OSError:
+                # readcon reports a parse failure as an OSError subclass; the
+                # match may be a POSCAR instead.
                 displacement = io.loadposcar(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s" % number))
-            except ValueError:
-                displacement = io.loadposcar(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s" % number))
-            mode = [[float(i) for i in l.strip().split()] for l in
-                    open(os.path.join(config.kdb_scratch_path, "kdbmatches",
-                    "MODE_%s" % number), 'r').readlines()[:]]
+            mode = io.load_mode(os.path.join(config.kdb_scratch_path, "kdbmatches",
+                                             "MODE_%s" % number))
             os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", ".done_%s" % number))
             os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s" % number))
             os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", "MODE_%s" % number))
