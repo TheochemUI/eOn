@@ -86,7 +86,11 @@ void bind_saddle(nb::module_ &m) {
           nb::gil_scoped_release release;
           status = ss.run();
         }
-        return nb::make_tuple(work,
+        // work shares matter's Parameters pointer when it is a copy, and
+        // keep_alive cannot reach into the tuple.
+        nb::object work_obj = nb::cast(work);
+        tie_lifetime(work_obj, matter_object(*matter));
+        return nb::make_tuple(work_obj,
                               static_cast<MinModeSaddleSearch::Status>(status));
       },
       nb::arg("matter"), nb::arg("mode"), nb::arg("reactant_energy"),

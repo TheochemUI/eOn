@@ -247,7 +247,8 @@ void bind_neb(nb::module_ &m) {
             throw std::runtime_error("failed to load NEB frame: " + f);
           path.push_back(std::move(m));
         }
-        return path;
+        // Every frame holds a non-owning pointer to params.
+        return matter_path_to_python(std::move(path), nb::find(params));
       },
       nb::arg("files"), nb::arg("potential"), nb::arg("parameters"),
       "Load list of .con files into Matter frames for NEB path constructor");
@@ -256,8 +257,9 @@ void bind_neb(nb::module_ &m) {
       "neb_linear_path",
       [](const Matter &initial, const Matter &final_state,
          long n_intermediate) {
-        return eonc::helpers::neb_paths::linearPath(
+        auto path = eonc::helpers::neb_paths::linearPath(
             initial, final_state, static_cast<size_t>(n_intermediate));
+        return matter_path_to_python(std::move(path), matter_object(initial));
       },
       nb::arg("initial"), nb::arg("final"), nb::arg("n_intermediate"),
       "Linear interpolate n_intermediate images between endpoints "
@@ -268,9 +270,10 @@ void bind_neb(nb::module_ &m) {
       "neb_idpp_path",
       [](const Matter &initial, const Matter &final_state, long n_intermediate,
          const Parameters &params, bool use_zbl) {
-        return eonc::helpers::neb_paths::idppPath(
+        auto path = eonc::helpers::neb_paths::idppPath(
             initial, final_state, static_cast<size_t>(n_intermediate), params,
             use_zbl);
+        return matter_path_to_python(std::move(path), matter_object(initial));
       },
       nb::arg("initial"), nb::arg("final"), nb::arg("n_intermediate"),
       nb::arg("parameters"), nb::arg("use_zbl") = false,
@@ -281,9 +284,10 @@ void bind_neb(nb::module_ &m) {
       "neb_idpp_collective_path",
       [](const Matter &initial, const Matter &final_state, long n_intermediate,
          const Parameters &params, bool use_zbl) {
-        return eonc::helpers::neb_paths::idppCollectivePath(
+        auto path = eonc::helpers::neb_paths::idppCollectivePath(
             initial, final_state, static_cast<size_t>(n_intermediate), params,
             use_zbl);
+        return matter_path_to_python(std::move(path), matter_object(initial));
       },
       nb::arg("initial"), nb::arg("final"), nb::arg("n_intermediate"),
       nb::arg("parameters"), nb::arg("use_zbl") = false,
@@ -293,9 +297,10 @@ void bind_neb(nb::module_ &m) {
       "neb_sidpp_path",
       [](const Matter &initial, const Matter &final_state, long n_intermediate,
          const Parameters &params, bool use_zbl) {
-        return eonc::helpers::neb_paths::sidppPath(
+        auto path = eonc::helpers::neb_paths::sidppPath(
             initial, final_state, static_cast<size_t>(n_intermediate), params,
             use_zbl);
+        return matter_path_to_python(std::move(path), matter_object(initial));
       },
       nb::arg("initial"), nb::arg("final"), nb::arg("n_intermediate"),
       nb::arg("parameters"), nb::arg("use_zbl") = false,
@@ -308,27 +313,34 @@ void bind_neb(nb::module_ &m) {
         using eonc::NEBInit;
         const auto method = params.neb_options.initialization.method;
         const size_t n = static_cast<size_t>(n_intermediate);
+        std::vector<Matter> path;
         switch (method) {
         case NEBInit::IDPP:
-          return eonc::helpers::neb_paths::idppPath(initial, final_state, n,
+          path = eonc::helpers::neb_paths::idppPath(initial, final_state, n,
                                                     params, false);
+          break;
         case NEBInit::IDPP_COLLECTIVE:
-          return eonc::helpers::neb_paths::idppCollectivePath(
+          path = eonc::helpers::neb_paths::idppCollectivePath(
               initial, final_state, n, params, false);
+          break;
         case NEBInit::SIDPP:
-          return eonc::helpers::neb_paths::sidppPath(initial, final_state, n,
+          path = eonc::helpers::neb_paths::sidppPath(initial, final_state, n,
                                                      params, false);
+          break;
         case NEBInit::SIDPP_ZBL:
-          return eonc::helpers::neb_paths::sidppPath(initial, final_state, n,
+          path = eonc::helpers::neb_paths::sidppPath(initial, final_state, n,
                                                      params, true);
+          break;
         case NEBInit::FILE:
           throw std::runtime_error(
               "neb_initial_path: FILE init needs neb_load_path_from_files / "
               "endpoint NEB constructor with input_path");
         case NEBInit::LINEAR:
         default:
-          return eonc::helpers::neb_paths::linearPath(initial, final_state, n);
+          path = eonc::helpers::neb_paths::linearPath(initial, final_state, n);
+          break;
         }
+        return matter_path_to_python(std::move(path), matter_object(initial));
       },
       nb::arg("initial"), nb::arg("final"), nb::arg("n_intermediate"),
       nb::arg("parameters"),
