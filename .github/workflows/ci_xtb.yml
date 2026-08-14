@@ -35,7 +35,7 @@ jobs:
           --libdir=lib                     \
           -Dwith_xtb=True            \
           -Dwith_tests=True
-          meson install -C bbdir
+          meson install --skip-subprojects -C bbdir
       - name: Run tests
         shell: pixi run bash -e {0}
         run: |
