@@ -119,6 +119,35 @@ meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib \
 `client/meson.build` carries the same note beside the `nlohmann_json`
 dependency lookup.
 
+### Troubleshooting: a global cargo linker setting
+
+readcon-core is built by cargo, which reads `~/.cargo/config.toml` in addition
+to the environment. A `rustflags` entry there applies to every crate eOn builds,
+including inside a conda or pixi environment where the compiler is
+conda-forge's rather than the system one.
+
+The case that comes up is a linker override. `-C link-arg=-fuse-ld=mold` works
+with a system GCC new enough to resolve `mold` by name, but the absolute form
+`-fuse-ld=/usr/bin/mold` is rejected by conda-forge's GCC 13:
+
+```text
+error: linking with `x86_64-conda-linux-gnu-cc` failed: exit status: 1
+  = note: x86_64-conda-linux-gnu-cc: error: unrecognized command-line option
+          '-fuse-ld=/usr/bin/mold'
+error: could not compile `zmij` (build script)
+FAILED: subprojects/readcon-core/libreadcon_core.a
+```
+
+`RUSTFLAGS` overrides `build.rustflags` from the config file, so clearing it for
+the build leaves the global setting alone:
+
+```{code-block} bash
+RUSTFLAGS= meson compile -C bbdir
+```
+
+The same applies to `scripts/pyeonclient_build_wheel.sh`, which builds
+readcon-core through cargo as part of the wheel.
+
 ### Optional packages
 
 The full listing of options is found in the `meson_options.txt` file. These can
