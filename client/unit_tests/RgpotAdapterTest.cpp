@@ -85,10 +85,13 @@ TEST_CASE("Adapter forceBatch agrees with per-system force calls",
   params.potential_options.potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(params);
 
+  // Checked, because the displacement below indexes the first atom: an
+  // unread file would leave an empty matrix and turn this into a segfault
+  // instead of a failure naming the missing input.
   Matter m0(pot, params);
-  m0.con2matter(std::string("reactant.con"));
+  REQUIRE(eonc::io::io_ok(m0.con2matter(std::string("reactant.con"))));
   Matter m1(pot, params);
-  m1.con2matter(std::string("reactant.con"));
+  REQUIRE(eonc::io::io_ok(m1.con2matter(std::string("reactant.con"))));
   AtomMatrix displaced = m1.getPositionsCopy();
   displaced(0, 0) += 0.15;
   m1.setPositions(displaced);
