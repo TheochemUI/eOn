@@ -260,60 +260,57 @@ def loadposcar(filein):
     '''
     Load the POSCAR file named filename and returns an atoms object
     '''
-    if hasattr(filein, 'readline'):
-        f = filein
-    else:
-        f = open(filein, 'r')
-    # Line 1: Atom types
-    AtomTypes = f.readline().split()
-    # Line 2: scaling of coordinates
-    scale = float(f.readline())
-    # Lines 3-5: the box
-    box = numpy.zeros((3, 3))
-    for i in range(3):
-        line = f.readline().split()
-        box[i] = numpy.array([float(line[0]), float(line[1]), float(line[2])]) * scale
-    # Line 6: number of atoms of each type.
-    line = f.readline().split()
-    NumAtomsPerType = []
-    for l in line:
-        NumAtomsPerType.append(int(l))
-    # Now have enough info to make the Structure object.
-    num_atoms = sum(NumAtomsPerType)
-    p = Structure(num_atoms)
-    # Fill in the box.
-    p.box = box
-    # Line 7: selective or cartesian
-    sel = f.readline()[0]
-    selective_flag = (sel == 's' or sel == 'S')
-    if not selective_flag:
-        car = sel
-    else:
-        car = f.readline()[0]
-    direct_flag = not (car == 'c' or car == 'C' or car == 'k' or car == 'K')
-    atom_index = 0
-    for i in range(len(NumAtomsPerType)):
-        for j in range(NumAtomsPerType[i]):
-            p.names[atom_index] = AtomTypes[i]
+    with _maybe_open(filein, 'r', 'readline') as f:
+        # Line 1: Atom types
+        AtomTypes = f.readline().split()
+        # Line 2: scaling of coordinates
+        scale = float(f.readline())
+        # Lines 3-5: the box
+        box = numpy.zeros((3, 3))
+        for i in range(3):
             line = f.readline().split()
-            if(selective_flag):
-                assert len(line) >= 6
-            else:
-                assert len(line) >= 3
-            pos = line[0:3]
-            if selective_flag:
-                sel = line[3:7]
-                if sel[0] == 'T' or sel[0] == 't':
-                    p.free[atom_index] = 1
-                elif sel[0] == 'F' or sel[0] == 'f':
-                    p.free[atom_index] = 0
-            p.r[atom_index] = numpy.array([float(q) for q in pos])
-            if direct_flag:
-                p.r[atom_index] = numpy.dot(p.r[atom_index], p.box)
-            else:
-                p.r[atom_index] *= scale
-            atom_index += 1
-    return p
+            box[i] = numpy.array([float(line[0]), float(line[1]), float(line[2])]) * scale
+        # Line 6: number of atoms of each type.
+        line = f.readline().split()
+        NumAtomsPerType = []
+        for l in line:
+            NumAtomsPerType.append(int(l))
+        # Now have enough info to make the Structure object.
+        num_atoms = sum(NumAtomsPerType)
+        p = Structure(num_atoms)
+        # Fill in the box.
+        p.box = box
+        # Line 7: selective or cartesian
+        sel = f.readline()[0]
+        selective_flag = (sel == 's' or sel == 'S')
+        if not selective_flag:
+            car = sel
+        else:
+            car = f.readline()[0]
+        direct_flag = not (car == 'c' or car == 'C' or car == 'k' or car == 'K')
+        atom_index = 0
+        for i in range(len(NumAtomsPerType)):
+            for j in range(NumAtomsPerType[i]):
+                p.names[atom_index] = AtomTypes[i]
+                line = f.readline().split()
+                if(selective_flag):
+                    assert len(line) >= 6
+                else:
+                    assert len(line) >= 3
+                pos = line[0:3]
+                if selective_flag:
+                    sel = line[3:7]
+                    if sel[0] == 'T' or sel[0] == 't':
+                        p.free[atom_index] = 1
+                    elif sel[0] == 'F' or sel[0] == 'f':
+                        p.free[atom_index] = 0
+                p.r[atom_index] = numpy.array([float(q) for q in pos])
+                if direct_flag:
+                    p.r[atom_index] = numpy.dot(p.r[atom_index], p.box)
+                else:
+                    p.r[atom_index] *= scale
+                atom_index += 1
+        return p
 
 
 def saveposcar(fileout, p, w='w', direct = False):
@@ -323,40 +320,37 @@ def saveposcar(fileout, p, w='w', direct = False):
         point:    atoms object to save
         w:        write/append flag
     '''
-    if hasattr(fileout, 'write'):
-        poscar = fileout
-    else:
-        poscar = open(fileout, w)
-    atom_types = []
-    num_each_type = {}
-    for name in p.names:
-        if not name in atom_types:
-            atom_types.append(name)
-            num_each_type[name] = 1
+    with _maybe_open(fileout, w, 'write') as poscar:
+        atom_types = []
+        num_each_type = {}
+        for name in p.names:
+            if not name in atom_types:
+                atom_types.append(name)
+                num_each_type[name] = 1
+            else:
+                num_each_type[name] += 1
+        poscar.write(" ".join(atom_types)+'\n') #Line 1: Atom type
+        poscar.write("1.0\n") #Line 2: scaling
+        for i in range(3):
+            poscar.write(" ".join(['%20.14f' % s for s in p.box[i]])+'\n')  #lines 3-5: box
+        poscar.write(" ".join(atom_types)+'\n') #Line 6: Atom type
+        poscar.write(" ".join(['%s' % num_each_type[key] for key in atom_types])+'\n')
+        poscar.write('Selective Dynamics\n') #line 7: selective dynamics
+        if direct:
+            poscar.write('Direct\n')  #line 8 cartesian coordinates
+            ibox = numpy.linalg.inv(numpy.array(p.box))
+            positions = numpy.dot(p.r, ibox)
         else:
-            num_each_type[name] += 1
-    poscar.write(" ".join(atom_types)+'\n') #Line 1: Atom type
-    poscar.write("1.0\n") #Line 2: scaling
-    for i in range(3):
-        poscar.write(" ".join(['%20.14f' % s for s in p.box[i]])+'\n')  #lines 3-5: box
-    poscar.write(" ".join(atom_types)+'\n') #Line 6: Atom type
-    poscar.write(" ".join(['%s' % num_each_type[key] for key in atom_types])+'\n')
-    poscar.write('Selective Dynamics\n') #line 7: selective dynamics
-    if direct:
-        poscar.write('Direct\n')  #line 8 cartesian coordinates
-        ibox = numpy.linalg.inv(numpy.array(p.box))
-        positions = numpy.dot(p.r, ibox)
-    else:
-        poscar.write('Cartesian\n') #line 8 cartesian coordinates
-        positions = p.r
-    for i in range(len(p)):
-            posline = " ".join(['%20.14f' % s for s in positions[i]]) + " "
-            for j in range(3):
-                if(p.free[i]):
-                    posline+='   T'
-                else:
-                    posline+='   F'
-            poscar.write(posline+'\n')
+            poscar.write('Cartesian\n') #line 8 cartesian coordinates
+            positions = p.r
+        for i in range(len(p)):
+                posline = " ".join(['%20.14f' % s for s in positions[i]]) + " "
+                for j in range(3):
+                    if(p.free[i]):
+                        posline+='   T'
+                    else:
+                        posline+='   F'
+                poscar.write(posline+'\n')
 
 
 from configparser import ConfigParser as SCP
