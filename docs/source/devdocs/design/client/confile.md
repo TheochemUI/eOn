@@ -49,7 +49,7 @@ metadata, and an escape hatch for raw JSON.
 
 ### Multi-frame (append)
 
-For multi-frame output, eOn currently uses correctness-first append semantics:
+For multi-frame output, `append=true` extends the file in place:
 
 ```cpp
 if (!path[i]->matter2con(filename, /*append=*/i > 0, &metadata)) {
@@ -57,9 +57,26 @@ if (!path[i]->matter2con(filename, /*append=*/i > 0, &metadata)) {
 }
 ```
 
-`append=true` reads the existing frames, appends the new frame in memory, and
-rewrites the file. If the target file exists but cannot be parsed, the append
-fails instead of truncating the history.
+The new frame is serialized on its own and its bytes are concatenated onto the
+target, so an N-frame trajectory costs N frame writes rather than N(N+1)/2.
+`ConFrameWriter` emits self-contained frames with no file-level preamble, which
+makes the concatenated result identical to the same frames written in one call.
+Serialization goes through a scratch file next to the target because
+readcon-core exposes neither a writer over a caller-owned stream nor a flush on
+an open writer; the target itself is opened in append mode and flushed before
+the call returns, so every intermediate state on disk is a complete multi-frame
+`.con` that a reader or a `tail` can parse.
+
+If the target file exists but cannot be parsed, the append fails rather than
+truncating the history. That check runs when eOn did not write the file, or
+when its size or modification time moved since eOn wrote it; frames this
+process wrote and nobody touched since are extended without a re-parse.
+`eonc::io::resetConAppendState()` drops that bookkeeping for a file replaced
+with same-sized content inside one filesystem timestamp tick.
+
+Gzip and zstd targets keep the read-all-and-rewrite path. A compressed member
+cannot be extended in place, and readcon-core reads a single gzip member, so
+appended members would be invisible on read-back.
 
 NEB path writers use a small helper wrapper so that per-image metadata stays
 consistent across `neb.con`, `neb_path_*.con`, and related outputs:
