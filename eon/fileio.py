@@ -206,10 +206,12 @@ def save_mode(modefileout, displace_vector):
     Saves an Nx3 numpy array into a mode.dat file.
         modefileout:     may be either a filename or file-like object
         displace_vector: the mode (Nx3 numpy array)
+    17 significant digits round trip a double exactly, and match what the
+    client's printf writers emit for the same value.
     '''
     with _maybe_open(modefileout, 'w', 'write') as f:
         for i in range(len(displace_vector)):
-            f.write("%.3f %.3f %.3f\n" % (displace_vector[i][0],
+            f.write("%.17g %.17g %.17g\n" % (displace_vector[i][0],
                 displace_vector[i][1], displace_vector[i][2]))
 
 
