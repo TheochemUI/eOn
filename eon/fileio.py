@@ -65,11 +65,10 @@ def loadcon(filein, reset = True):
         if reset:
             filein.seek(0)
         frames = readcon.read_con_string(content)
-    else:
-        frames = readcon.read_con(filein)
-    if not frames:
-        raise IOError("No frames found in con data")
-    return _frame_to_atoms(frames[0])
+        if not frames:
+            raise IOError("No frames found in con data")
+        return _frame_to_atoms(frames[0])
+    return _frame_to_atoms(readcon.read_first_frame(filein))
 
 def _atoms_to_frame(p):
     """Convert a Structure (or Structure-like) to a readcon.ConFrame."""
