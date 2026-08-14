@@ -154,16 +154,19 @@ class StateList:
 
     def save_state_table(self):
         if self.state_table != None:
-            f = open(self.state_table_path, 'w')
-            for i in range(len(self.state_table)):
-                f.write("% 7d %16.5f\n" % (i, self.state_table[i]))
-            f.close()
+            with open(self.state_table_path, 'w') as f:
+                for i in range(len(self.state_table)):
+                    f.write("% 7d %16.5f\n" % (i, self.state_table[i]))
 
     def append_state_table(self, energy):
         number = self.get_num_states()
-        f = open(self.state_table_path, 'a')
-        f.write("% 7d %16.5f\n" % (number, energy))
-        f.close()
+        if energy is None:
+            raise IOError(
+                "State %i has no reactant energy in its info file; it cannot "
+                "be added to the state table" % number
+            )
+        with open(self.state_table_path, 'a') as f:
+            f.write("% 7d %16.5f\n" % (number, energy))
         if self.state_table != None:
             self.state_table.append(energy)
 
