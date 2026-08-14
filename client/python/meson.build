@@ -163,6 +163,7 @@ py.install_sources(
         'pyeonclient/backends.py',
         'pyeonclient/bridge.py',
         'pyeonclient/ase_bridge.py',
+        'pyeonclient/gpr_overlay.py',
         'pyeonclient/models.py',
         'pyeonclient/steps.py',
     ],
