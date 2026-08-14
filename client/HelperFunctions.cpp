@@ -204,7 +204,8 @@ void eonc::helpers::saveMode(FILE *modeFile, std::shared_ptr<Matter> matter,
     if (matter->getFixed(i)) {
       fprintf(modeFile, "0 0 0\n");
     } else {
-      fprintf(modeFile, "%lf\t%lf \t%lf\n", mode(i, 0), mode(i, 1), mode(i, 2));
+      fprintf(modeFile, "%.17g\t%.17g\t%.17g\n", mode(i, 0), mode(i, 1),
+              mode(i, 2));
     }
   }
   return;
@@ -220,7 +221,7 @@ void eonc::helpers::saveMode(const std::string &filename,
     if (matter->getFixed(i)) {
       out << "0 0 0\n";
     } else {
-      out << std::format("{:f}\t{:f} \t{:f}\n", mode(i, 0), mode(i, 1),
+      out << std::format("{:.17g}\t{:.17g}\t{:.17g}\n", mode(i, 0), mode(i, 1),
                          mode(i, 2));
     }
   }
