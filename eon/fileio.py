@@ -45,13 +45,14 @@ def loadcons(filename):
 
 
 def loadposcars(filename):
-    filein = open(filename, 'r')
     p = []
-    while True:
-        try:
-            p.append(loadposcar(filein))
-        except:
-            return p
+    with open(filename, 'r') as filein:
+        while True:
+            try:
+                p.append(loadposcar(filein))
+            except (ValueError, IndexError):
+                # End of file: the next header line is empty.
+                return p
 
 
 def loadcon(filein, reset = True):
