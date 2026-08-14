@@ -18,6 +18,7 @@
 #include "SurrogatePotential.h"
 #include <array>
 #include <cmath>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -282,10 +283,14 @@ public:
   Eigen::Matrix<double, Eigen::Dynamic, 1> getMasses() const;
 
   /// .con column-5 index (pre-grouping); public for I/O / bindings.
-  [[nodiscard]] int getAtomIndex(long int atom) const {
+  /// Held 64-bit wide: readcon carries the column as a uint64_t, and a
+  /// 32-bit slot drops the high half of any id past 2^31.
+  [[nodiscard]] std::int64_t getAtomIndex(long int atom) const {
     return atomIndex(atom);
   }
-  void setAtomIndex(long int atom, int index) { atomIndex(atom) = index; }
+  void setAtomIndex(long int atom, std::int64_t index) {
+    atomIndex(atom) = index;
+  }
 
   /// CON header lines (indices 0..4); public for I/O / bindings.
   [[nodiscard]] const std::array<std::string, 5> &getHeaderCon() const {
@@ -355,7 +360,8 @@ private:
   VectorXd masses;
   VectorXi atomicNrs;
   VectorXi isFixed;   // array of bool, false for movable atom, true for fixed
-  VectorXi atomIndex; // original atom index from .con column 5
+  Eigen::Matrix<std::int64_t, Eigen::Dynamic, 1>
+      atomIndex; // original atom index from .con column 5
   mutable AtomMatrix freeMask; // cached Nx3 mask (1.0 for free, 0.0 for fixed)
   mutable AtomMatrix maskedForces;      // cached forces with fixed atoms zeroed
   mutable std::vector<int> freeIndices; // cached indices of free atoms

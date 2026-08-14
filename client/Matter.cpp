@@ -200,7 +200,7 @@ void Matter::resize(const long int length) {
 
   atomIndex.resize(length);
   for (long i = 0; i < length; i++)
-    atomIndex(i) = static_cast<int>(i); // default: sequential
+    atomIndex(i) = static_cast<std::int64_t>(i); // default: sequential
   recomputePotential = true;
   recomputeMaskedForces = true;
   recomputeFreeMask = true;
