@@ -31,7 +31,7 @@ public:
   //!< Destructive, and nothing in the client calls it: a caller invokes it
   //!< when it means to discard an earlier calculation's output. A caller
   //!< that means to restart from WAVECAR or CHGCAR must not, and neither
-  //!< must one that wants the earlier OUTCAR. The shipped
+  //!< must one that wants the earlier OUTCAR. The
   //!< examples/akmc-vasp-slurm scripts do the same removals in shell, at the
   //!< point where the user asks for them.
   static void removeStaleFiles();
