@@ -350,12 +350,9 @@ int load_ini(INIReader &ini, Parameters &params) {
   params.optimizer_options.convergence_metric =
       toLowerCase(ini.Get("Optimizer", "convergence_metric",
                           params.optimizer_options.convergence_metric));
-  if (params.optimizer_options.convergence_metric == "max_atom") {
-    params.optimizer_options.convergence_metric_label = "Max atom force";
-  } else if (params.optimizer_options.convergence_metric == "max_component") {
-    params.optimizer_options.convergence_metric_label = "Max force comp";
-  } else if (params.optimizer_options.convergence_metric == "norm") {
-    params.optimizer_options.convergence_metric_label = "||Force||";
+  if (auto label = eonc::helpers::convergenceMetricLabel(
+          params.optimizer_options.convergence_metric)) {
+    params.optimizer_options.convergence_metric_label = *label;
   } else {
     EONC_LOG_ERROR("unknown convergence_metric {}",
                    params.optimizer_options.convergence_metric);

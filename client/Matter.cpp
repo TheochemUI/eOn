@@ -158,33 +158,36 @@ double Matter::perAtomNorm(const Matter &matter) {
 }
 
 void Matter::resize(const long int length) {
-  if (length > 0) {
-    nAtoms = length;
-    positions.resize(length, 3);
-    positions.setZero();
-
-    velocities.resize(length, 3);
-    velocities.setZero();
-
-    biasForces.resize(length, 3);
-    biasForces.setZero();
-
-    forces.resize(length, 3);
-    forces.setZero();
-
-    masses.resize(length);
-    masses.setZero();
-
-    atomicNrs.resize(length);
-    atomicNrs.setZero();
-
-    isFixed.resize(length);
-    isFixed.setZero();
-
-    atomIndex.resize(length);
-    for (long i = 0; i < length; i++)
-      atomIndex(i) = static_cast<int>(i); // default: sequential
+  if (length < 0) {
+    throw std::invalid_argument("Matter::resize: negative atom count");
   }
+  // Zero is a real size: leaving nAtoms at the old value there sends
+  // setMasses and every other nAtoms loop off the end of an empty array.
+  nAtoms = length;
+  positions.resize(length, 3);
+  positions.setZero();
+
+  velocities.resize(length, 3);
+  velocities.setZero();
+
+  biasForces.resize(length, 3);
+  biasForces.setZero();
+
+  forces.resize(length, 3);
+  forces.setZero();
+
+  masses.resize(length);
+  masses.setZero();
+
+  atomicNrs.resize(length);
+  atomicNrs.setZero();
+
+  isFixed.resize(length);
+  isFixed.setZero();
+
+  atomIndex.resize(length);
+  for (long i = 0; i < length; i++)
+    atomIndex(i) = static_cast<int>(i); // default: sequential
   recomputePotential = true;
   recomputeMaskedForces = true;
   recomputeFreeMask = true;

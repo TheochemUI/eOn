@@ -95,6 +95,7 @@ void commandLine(int argc, char **argv) {
   double optConvergedForce = 0.001;
   std::string potential;
   std::string confile;
+  std::string confileout;
   std::string optimizer("cg");
   std::optional<std::string> config_path;
 
@@ -219,49 +220,25 @@ void commandLine(int argc, char **argv) {
                  }));
 #endif
 
+  // One value each: the partitioner hands a greedy zeroOrMoreTimes positional
+  // every remaining argument, which leaves confileout empty and overwrites
+  // confile with the last one.
   parser.add(
       Positional("confile")
           .help("Input structure file")
-          .occurs(zeroOrMoreTimes)
+          .occurs(zeroOrOneTime)
           .handler([&](const std::string_view &value) { confile = value; }));
 
-  parser.add(Positional("confileout")
-                 .help("Output structure file (optional)")
-                 .occurs(zeroOrMoreTimes)
-                 .handler([&](const std::string_view &value) {
-                   // confileout will be set after confile
-                 }));
+  parser.add(
+      Positional("confileout")
+          .help("Output structure file (optional)")
+          .occurs(zeroOrOneTime)
+          .handler([&](const std::string_view &value) { confileout = value; }));
 
   try {
     parser.parse(argc, argv);
   } catch (const ParsingException &ex) {
     std::cerr << colorizer.error(ex.message()) << '\n';
-    std::cerr << colorizer.warning(parser.formatUsage(progname)) << '\n';
-    std::exit(EXIT_FAILURE);
-  }
-
-  // Re-parse positional arguments since argum handles them in order
-  // We need to manually extract confile and confileout
-  // Reset and re-parse for positional args
-  confile.clear();
-  std::string confileout;
-  int positional_count = 0;
-  for (int i = 1; i < argc; ++i) {
-    std::string arg = argv[i];
-    if (arg.starts_with("-")) {
-      continue;
-    }
-    if (positional_count == 0) {
-      confile = arg;
-    } else if (positional_count == 1) {
-      confileout = arg;
-    }
-    ++positional_count;
-  }
-
-  if (confile.empty()) {
-    std::cerr << colorizer.error(
-        "At least one non-option argument is required: the con file\n");
     std::cerr << colorizer.warning(parser.formatUsage(progname)) << '\n';
     std::exit(EXIT_FAILURE);
   }
@@ -274,6 +251,14 @@ void commandLine(int argc, char **argv) {
 
   if (!pflag && (sflag || mflag)) {
     std::cerr << colorizer.error("Must specify a potential\n");
+    std::exit(EXIT_FAILURE);
+  }
+
+  if (cflag && confileout.empty()) {
+    std::cerr << colorizer.error(
+        "Comparison needs two structure files: the input con file and the "
+        "one to compare it against\n");
+    std::cerr << colorizer.warning(parser.formatUsage(progname)) << '\n';
     std::exit(EXIT_FAILURE);
   }
 
@@ -337,6 +322,14 @@ void commandLine(int argc, char **argv) {
   }
 #endif
 
+  // Serve modes take no structure file and have already exited above.
+  if (confile.empty()) {
+    std::cerr << colorizer.error(
+        "At least one non-option argument is required: the con file\n");
+    std::cerr << colorizer.warning(parser.formatUsage(progname)) << '\n';
+    std::exit(EXIT_FAILURE);
+  }
+
   if (!cflag) {
     for (auto &ch : potential) {
       ch = std::tolower(static_cast<unsigned char>(ch));
@@ -364,16 +357,15 @@ void commandLine(int argc, char **argv) {
     std::exit(EXIT_FAILURE);
   }
 
-  if (confileout.empty() && confile.empty()) {
-    // confileout was not provided as second positional arg
-    // It's empty, which is fine for single point/minimize
-  }
-
   if (sflag) {
     singlePoint(std::move(matter));
   } else if (mflag) {
     minimize(std::move(matter), confileout);
   } else if (cflag) {
+    if (!eonc::io::io_ok(matter2->con2matter(confileout))) {
+      std::cerr << "Failed to load " << confileout << std::endl;
+      std::exit(EXIT_FAILURE);
+    }
     params.structure_comparison_options.check_rotation = true;
     if (matter->compare(*matter2, true)) {
       std::cout << "Structures match\n";

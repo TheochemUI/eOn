@@ -24,6 +24,7 @@
 #include <format>
 #include <fstream>
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 using namespace eonc::helpers;
@@ -156,7 +157,9 @@ public:
     } else {
       EONC_LOG_CRITICAL("[MinModeSaddleSearch] unknown convergence metric: {}",
                         params.optimizer_options.convergence_metric);
-      std::exit(1);
+      throw std::invalid_argument(
+          std::format("[MinModeSaddleSearch] unknown convergence_metric: {}",
+                      params.optimizer_options.convergence_metric));
     }
   }
 
@@ -172,6 +175,8 @@ MinModeSaddleSearch::MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
                                          std::shared_ptr<Potential> potPassed)
     : SaddleSearchMethod(potPassed, parametersPassed),
       matter{matterPassed} {
+  eonc::helpers::requireKnownConvergenceMetric(
+      params.optimizer_options.convergence_metric, "[MinModeSaddleSearch]");
   reactantEnergy = reactantEnergyPassed;
   mode = modePassed;
   initialTangent_ = modePassed;

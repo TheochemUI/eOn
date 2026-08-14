@@ -11,13 +11,15 @@
 */
 
 #include "eon/Bundling.h"
+#include "eon/EonLogger.h"
 
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
-#include <iostream>
+#include <system_error>
+#include <utility>
 
 namespace fs = std::filesystem;
 
@@ -112,18 +114,24 @@ std::vector<std::string> unbundle(int number) {
     }
 
     std::string baseName = originalFilename.substr(0, upos);
-    std::string ext = originalFilename.substr(dpos + 1);
-    std::string newFilename = baseName + "." + ext;
+    // Drop the "_<n>" token and keep everything after it, so a compound
+    // extension (".con.gz", ".con.zst") survives whichever side of the
+    // underscore it sits on.
+    size_t extStart =
+        originalFilename.find_first_not_of("0123456789", upos + 1);
+    if (extStart == std::string::npos) {
+      extStart = originalFilename.size();
+    }
+    std::string newFilename = baseName + originalFilename.substr(extStart);
 
     try {
       fs::copy_file(originalFilename, newFilename,
                     fs::copy_options::overwrite_existing);
+      filenames.push_back(newFilename);
     } catch (const fs::filesystem_error &e) {
-      std::cerr << "error: unbundle: problem copying " << originalFilename
-                << " to " << newFilename << ": " << e.what() << '\n';
+      EONC_LOG_ERROR("unbundle: problem copying {} to {}: {}", originalFilename,
+                     newFilename, e.what());
     }
-
-    filenames.push_back(newFilename);
   }
 
   return filenames;
@@ -131,32 +139,53 @@ std::vector<std::string> unbundle(int number) {
 
 void deleteUnbundledFiles(const std::vector<std::string> &unbundledFilenames) {
   for (const auto &filename : unbundledFilenames) {
-    fs::remove(filename);
+    std::error_code ec;
+    fs::remove(filename, ec);
+    if (ec) {
+      EONC_LOG_ERROR("deleteUnbundledFiles: cannot remove {}: {}", filename,
+                     ec.message());
+    }
   }
 }
+
+namespace {
+
+/// Split off the extension the bundle number has to be inserted before.
+/// Compression suffixes are carried with the extension they wrap, so
+/// "results.con.gz" splits as {"results", ".con.gz"} and the bundled name
+/// stays a readable .con.gz rather than "results.con_3.gz".
+std::pair<std::string, std::string>
+splitBundleExtension(const std::string &name) {
+  const size_t pos = name.find_last_of('.');
+  if (pos == std::string::npos) {
+    return {name, ""};
+  }
+  const std::string tail = name.substr(pos);
+  if (pos > 0 && (tail == ".gz" || tail == ".zst")) {
+    const size_t inner = name.find_last_of('.', pos - 1);
+    if (inner != std::string::npos) {
+      return {name.substr(0, inner), name.substr(inner)};
+    }
+  }
+  return {name.substr(0, pos), tail};
+}
+
+} // namespace
 
 void bundle(int number, const std::vector<std::string> &filenames,
             std::vector<std::string> *bundledFilenames) {
   for (const auto &filename : filenames) {
-    std::string newFilename = filename;
-
-    size_t pos = newFilename.find_last_of('.');
-    if (pos != std::string::npos) {
-      std::string fileEnding = newFilename.substr(pos + 1);
-      newFilename = newFilename.substr(0, pos) + "_" + std::to_string(number) +
-                    "." + fileEnding;
-    } else {
-      newFilename = newFilename + "_" + std::to_string(number);
-    }
+    const auto [baseName, ext] = splitBundleExtension(filename);
+    const std::string newFilename =
+        baseName + "_" + std::to_string(number) + ext;
 
     try {
       fs::rename(filename, newFilename);
+      bundledFilenames->push_back(newFilename);
     } catch (const fs::filesystem_error &e) {
-      std::cerr << "error: bundle: cannot rename " << filename << " to "
-                << newFilename << ": " << e.what() << '\n';
+      EONC_LOG_ERROR("bundle: cannot rename {} to {}: {}", filename,
+                     newFilename, e.what());
     }
-
-    bundledFilenames->push_back(newFilename);
   }
 }
 

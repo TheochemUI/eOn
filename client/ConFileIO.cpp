@@ -319,121 +319,126 @@ IoStatus con2matter(Matter &m, std::string filename) {
 
 IoStatus con2matter(Matter &m, const readcon::ConFrame &frame,
                     ConFrameMetadata *out_metadata) {
-  const auto &atoms = frame.atoms();
-  const auto &lengths = frame.cell();
-  const auto &angles_deg = frame.angles();
-  const auto &prebox = frame.prebox_header();
-  const auto &postbox = frame.postbox_header();
+  try {
+    const auto &atoms = frame.atoms();
+    const auto &lengths = frame.cell();
+    const auto &angles_deg = frame.angles();
+    const auto &prebox = frame.prebox_header();
+    const auto &postbox = frame.postbox_header();
 
-  m.headerCon[0] = prebox[0] + "\n";
-  m.headerCon[1] = prebox[1] + "\n";
-  m.headerCon[3] = postbox[0] + "\n";
-  m.headerCon[4] = postbox[1] + "\n";
+    m.headerCon[0] = prebox[0] + "\n";
+    m.headerCon[1] = prebox[1] + "\n";
+    m.headerCon[3] = postbox[0] + "\n";
+    m.headerCon[4] = postbox[1] + "\n";
 
-  double angles[3] = {angles_deg[0], angles_deg[1], angles_deg[2]};
-  if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
-    Matrix3d cell = Matrix3d::Zero();
-    cell(0, 0) = lengths[0];
-    cell(1, 1) = lengths[1];
-    cell(2, 2) = lengths[2];
-    m.setCell(cell);
-  } else {
-    angles[0] *= eonc::helpers::pi / 180.0;
-    angles[1] *= eonc::helpers::pi / 180.0;
-    angles[2] *= eonc::helpers::pi / 180.0;
+    double angles[3] = {angles_deg[0], angles_deg[1], angles_deg[2]};
+    if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
+      Matrix3d cell = Matrix3d::Zero();
+      cell(0, 0) = lengths[0];
+      cell(1, 1) = lengths[1];
+      cell(2, 2) = lengths[2];
+      m.setCell(cell);
+    } else {
+      angles[0] *= eonc::helpers::pi / 180.0;
+      angles[1] *= eonc::helpers::pi / 180.0;
+      angles[2] *= eonc::helpers::pi / 180.0;
 
-    Matrix3d cell = Matrix3d::Zero();
-    cell(0, 0) = 1.0;
-    cell(1, 0) = cos(angles[0]);
-    cell(1, 1) = sin(angles[0]);
-    cell(2, 0) = cos(angles[1]);
-    cell(2, 1) = (cos(angles[2]) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
-    cell(2, 2) = eonc::safemath::safe_sqrt(1.0 - pow(cell(2, 0), 2) -
-                                           pow(cell(2, 1), 2));
+      Matrix3d cell = Matrix3d::Zero();
+      cell(0, 0) = 1.0;
+      cell(1, 0) = cos(angles[0]);
+      cell(1, 1) = sin(angles[0]);
+      cell(2, 0) = cos(angles[1]);
+      cell(2, 1) = (cos(angles[2]) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
+      cell(2, 2) = eonc::safemath::safe_sqrt(1.0 - pow(cell(2, 0), 2) -
+                                             pow(cell(2, 1), 2));
 
-    cell(0, 0) *= lengths[0];
-    cell(1, 0) *= lengths[1];
-    cell(1, 1) *= lengths[1];
-    cell(2, 0) *= lengths[2];
-    cell(2, 1) *= lengths[2];
-    cell(2, 2) *= lengths[2];
-    m.setCell(cell);
-  }
-  m.headerCon[2] =
-      std::format("{} {} {}\n", angles_deg[0], angles_deg[1], angles_deg[2]);
-
-  const auto n = static_cast<Eigen::Index>(atoms.size());
-  m.resize(static_cast<long>(atoms.size()));
-
-  AtomMatrix positions = AtomMatrix::Zero(n, 3);
-  AtomMatrix forces = AtomMatrix::Zero(n, 3);
-  AtomMatrix velocities = AtomMatrix::Zero(n, 3);
-  VectorXd masses = VectorXd::Zero(n);
-  VectorXi atomic_nrs = VectorXi::Zero(n);
-  bool any_force = false;
-  bool any_velocity = false;
-
-  for (Eigen::Index i = 0; i < n; ++i) {
-    const auto &atom = atoms[static_cast<size_t>(i)];
-    positions(i, 0) = atom.x;
-    positions(i, 1) = atom.y;
-    positions(i, 2) = atom.z;
-    masses(i) = atom.mass;
-    atomic_nrs(i) = static_cast<int>(atom.atomic_number);
-    const auto fixed = atom.fixed_mask();
-    m.setFixed(static_cast<long>(i),
-               (fixed[0] || fixed[1] || fixed[2]) ? 1 : 0);
-    m.setAtomIndex(static_cast<long>(i), static_cast<int>(atom.atom_id));
-
-    if (auto vel = atom.velocity()) {
-      any_velocity = true;
-      velocities(i, 0) = (*vel)[0];
-      velocities(i, 1) = (*vel)[1];
-      velocities(i, 2) = (*vel)[2];
+      cell(0, 0) *= lengths[0];
+      cell(1, 0) *= lengths[1];
+      cell(1, 1) *= lengths[1];
+      cell(2, 0) *= lengths[2];
+      cell(2, 1) *= lengths[2];
+      cell(2, 2) *= lengths[2];
+      m.setCell(cell);
     }
-    if (auto force = atom.force()) {
-      any_force = true;
-      forces(i, 0) = (*force)[0];
-      forces(i, 1) = (*force)[1];
-      forces(i, 2) = (*force)[2];
+    m.headerCon[2] =
+        std::format("{} {} {}\n", angles_deg[0], angles_deg[1], angles_deg[2]);
+
+    const auto n = static_cast<Eigen::Index>(atoms.size());
+    m.resize(static_cast<long>(atoms.size()));
+
+    AtomMatrix positions = AtomMatrix::Zero(n, 3);
+    AtomMatrix forces = AtomMatrix::Zero(n, 3);
+    AtomMatrix velocities = AtomMatrix::Zero(n, 3);
+    VectorXd masses = VectorXd::Zero(n);
+    VectorXi atomic_nrs = VectorXi::Zero(n);
+    bool any_force = false;
+    bool any_velocity = false;
+
+    for (Eigen::Index i = 0; i < n; ++i) {
+      const auto &atom = atoms[static_cast<size_t>(i)];
+      positions(i, 0) = atom.x;
+      positions(i, 1) = atom.y;
+      positions(i, 2) = atom.z;
+      masses(i) = atom.mass;
+      atomic_nrs(i) = static_cast<int>(atom.atomic_number);
+      const auto fixed = atom.fixed_mask();
+      m.setFixed(static_cast<long>(i),
+                 (fixed[0] || fixed[1] || fixed[2]) ? 1 : 0);
+      m.setAtomIndex(static_cast<long>(i), static_cast<int>(atom.atom_id));
+
+      if (auto vel = atom.velocity()) {
+        any_velocity = true;
+        velocities(i, 0) = (*vel)[0];
+        velocities(i, 1) = (*vel)[1];
+        velocities(i, 2) = (*vel)[2];
+      }
+      if (auto force = atom.force()) {
+        any_force = true;
+        forces(i, 0) = (*force)[0];
+        forces(i, 1) = (*force)[1];
+        forces(i, 2) = (*force)[2];
+      }
     }
+
+    m.setMasses(masses);
+    m.setAtomicNrs(atomic_nrs);
+    m.setPositions(positions);
+
+    if (any_velocity || frame.has_velocities()) {
+      m.setVelocities(velocities);
+    }
+
+    const auto meta = metadata_from_frame(frame);
+    if (out_metadata != nullptr) {
+      *out_metadata = meta;
+    }
+
+    // Trust file energy+forces only when both are present. Energy-only must not
+    // mark the pot clean with a zero force matrix (optimizer footgun). Prefer
+    // writing raw forces (friend) so fixed-atom components survive RT; then
+    // mark clean without setComputedPotential's net-force adjustment on zeros.
+    const bool has_force_section = any_force || frame.has_forces();
+    if (meta.energy && has_force_section) {
+      m.forces = forces;
+      m.potentialEnergy = *meta.energy;
+      m.energyVariance = 0.0;
+      m.recomputePotential = false;
+      m.recomputeMaskedForces = true;
+    } else if (has_force_section) {
+      m.forces = forces;
+      m.recomputePotential = true;
+      m.recomputeMaskedForces = true;
+    } else {
+      // Classic geometry-only files: always recompute pot (main-era behavior).
+      m.recomputePotential = true;
+    }
+
+    // setPositions already applied PBC when enabled; no second wrap here.
+    return IoStatus::Ok;
+  } catch (const std::exception &e) {
+    EONC_LOG_ERROR("Failed to convert frame to matter: {}", e.what());
+    return IoStatus::ReadError;
   }
-
-  m.setMasses(masses);
-  m.setAtomicNrs(atomic_nrs);
-  m.setPositions(positions);
-
-  if (any_velocity || frame.has_velocities()) {
-    m.setVelocities(velocities);
-  }
-
-  const auto meta = metadata_from_frame(frame);
-  if (out_metadata != nullptr) {
-    *out_metadata = meta;
-  }
-
-  // Trust file energy+forces only when both are present. Energy-only must not
-  // mark the pot clean with a zero force matrix (optimizer footgun). Prefer
-  // writing raw forces (friend) so fixed-atom components survive RT; then mark
-  // clean without setComputedPotential's net-force adjustment on zeros.
-  const bool has_force_section = any_force || frame.has_forces();
-  if (meta.energy && has_force_section) {
-    m.forces = forces;
-    m.potentialEnergy = *meta.energy;
-    m.energyVariance = 0.0;
-    m.recomputePotential = false;
-    m.recomputeMaskedForces = true;
-  } else if (has_force_section) {
-    m.forces = forces;
-    m.recomputePotential = true;
-    m.recomputeMaskedForces = true;
-  } else {
-    // Classic geometry-only files: always recompute pot (main-era behavior).
-    m.recomputePotential = true;
-  }
-
-  // setPositions already applied PBC when enabled; no second wrap here.
-  return IoStatus::Ok;
 }
 
 IoStatus matter2convel(Matter &m, std::string filename) {
@@ -483,27 +488,53 @@ IoStatus matter2xyz(Matter &m, std::string filename, bool append) {
                        symbol_for_z(m.getAtomicNr(i)), pos(i, 0), pos(i, 1),
                        pos(i, 2));
   }
-  return out ? IoStatus::Ok : IoStatus::WriteError;
+  // Close before testing: the destructor's flush is where a full disk or a
+  // short write surfaces, and by then the state is gone.
+  out.close();
+  if (!out) {
+    EONC_LOG_ERROR("matter2xyz: failed to write {}", filename);
+    return IoStatus::WriteError;
+  }
+  return IoStatus::Ok;
 }
 
 IoStatus writeTibble(Matter &m, std::string fname) {
-  const AtomMatrix fSys = m.getForces();
-  const double eSys = m.getPotentialEnergy();
+  // getForces()/getPotentialEnergy() run computePotential() on a dirty pot,
+  // which would charge a debug dump to the force-call count reported in
+  // results.dat. Cached values only; the header drops the columns it cannot
+  // fill.
+  const bool have_forces = !m.needsForceUpdate();
+  if (!have_forces) {
+    EONC_LOG_WARNING(
+        "writeTibble: pot is dirty, {} omits the force and energy columns",
+        fname);
+  }
   const AtomMatrix pos = m.getPositions();
   std::ofstream out(fname);
   if (!out) {
     EONC_LOG_ERROR("writeTibble: cannot open {}", fname);
     return IoStatus::OpenError;
   }
-  out << "x y z fx fy fz energy mass symbol atmID fixed\n";
+  out << (have_forces ? "x y z fx fy fz energy mass symbol atmID fixed\n"
+                      : "x y z mass symbol atmID fixed\n");
+  const AtomMatrix fSys = have_forces ? m.getForces() : AtomMatrix();
+  const double eSys = have_forces ? m.getPotentialEnergy() : 0.0;
   for (long idx = 0; idx < m.numberOfAtoms(); ++idx) {
-    out << std::format("{} {} {} {} {} {} {} {} {} {} {}\n", pos(idx, 0),
-                       pos(idx, 1), pos(idx, 2), fSys(idx, 0), fSys(idx, 1),
-                       fSys(idx, 2), eSys, m.getMass(idx),
-                       symbol_for_z(m.getAtomicNr(idx)), (idx + 1),
+    out << std::format("{} {} {}", pos(idx, 0), pos(idx, 1), pos(idx, 2));
+    if (have_forces) {
+      out << std::format(" {} {} {} {}", fSys(idx, 0), fSys(idx, 1),
+                         fSys(idx, 2), eSys);
+    }
+    out << std::format(" {} {} {} {}\n", m.getMass(idx),
+                       symbol_for_z(m.getAtomicNr(idx)), m.getAtomIndex(idx),
                        m.getFixed(idx));
   }
-  return out ? IoStatus::Ok : IoStatus::WriteError;
+  out.close();
+  if (!out) {
+    EONC_LOG_ERROR("writeTibble: failed to write {}", fname);
+    return IoStatus::WriteError;
+  }
+  return IoStatus::Ok;
 }
 
 std::vector<readcon::ConFrame>
