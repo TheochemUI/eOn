@@ -141,6 +141,30 @@ def test_base_wheel_build_and_import(tmp_path):
     whl = whls[-1]
     assert "+metatomic" not in whl.name, whl.name
 
+    # The build script produces the wheel; vendoring the non-system shared
+    # libraries into it is a separate step, which is why the script itself
+    # reports "repair may have been skipped". The probe below strips
+    # LD_LIBRARY_PATH to check the wheel stands on its own, so it has to run
+    # against the repaired artifact, the one that ships. This mirrors
+    # .github/workflows/pyeonclient-wheels.yml, which runs auditwheel and then
+    # this script.
+    repair = ROOT / "scripts" / "pyeonclient_repair_wheel.sh"
+    if repair.is_file():
+        rep = subprocess.run(
+            ["bash", str(repair), str(whl)],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+        )
+        (tmp_path / "wheel-repair.log").write_text(rep.stdout + "\n" + rep.stderr)
+        if rep.returncode != 0:
+            pytest.fail(
+                f"wheel repair failed rc={rep.returncode}\n"
+                f"{(rep.stdout + rep.stderr)[-4000:]}"
+            )
+        whls = sorted((ROOT / "dist").glob("pyeonclient-*.whl"))
+        whl = whls[-1]
+
     venv = tmp_path / "venv"
     subprocess.run([sys.executable, "-m", "venv", str(venv)], check=True)
     pip = venv / "bin" / "pip"
