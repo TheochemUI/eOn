@@ -205,3 +205,32 @@ def test_structure_like_without_ids_writes_sequential_ids():
     frame = io._atoms_to_frame(Bare())
     assert [a.atom_id for a in frame.atoms] == [1, 2]
     assert [a.symbol for a in frame.atoms] == ["Cu", "H"]
+
+
+def test_saveposcar_body_matches_its_own_declared_counts(tmp_path: Path):
+    """The header declares per-type counts; the coordinate block must agree.
+
+    Parsed without assuming where the counts line sits, so this stays true
+    whichever POSCAR convention saveposcar settles on.
+    """
+    s = interleaved_cu_h()
+    out = tmp_path / "POSCAR"
+    io.saveposcar(str(out), s)
+
+    lines = out.read_text().splitlines()
+    marker = next(
+        i for i, line in enumerate(lines) if line.strip().lower().startswith("selective")
+    )
+    types = lines[0].split()
+    counts = [int(c) for c in lines[marker - 1].split()]
+    assert types == ["Cu", "H"]
+    assert counts == [2, 2]
+
+    body = lines[marker + 2 : marker + 2 + sum(counts)]
+    assert len(body) == len(s)
+    read_names = [t for t, c in zip(types, counts) for _ in range(c)]
+    read_x = [float(line.split()[0]) for line in body]
+
+    # x doubles as each atom's identity in the fixture.
+    for name, x in zip(read_names, read_x):
+        assert s.names[int(round(x))] == name

@@ -336,9 +336,10 @@ def saveposcar(fileout, p, w='w', direct = False):
             else:
                 num_each_type[name] += 1
                 rows_each_type[name].append(i)
-        # Lines 1 and 6 declare one count per type, so the coordinate block
-        # runs type by type. A configuration whose species interleave writes
-        # its atoms in a different order than it holds them.
+        # The header names the types once and then gives one count per type,
+        # so a reader walks the coordinate block type by type. A configuration
+        # whose species interleave writes its atoms in a different order than
+        # it holds them.
         order = [i for name in atom_types for i in rows_each_type[name]]
         poscar.write(" ".join(atom_types)+'\n') #Line 1: Atom type
         poscar.write("1.0\n") #Line 2: scaling
