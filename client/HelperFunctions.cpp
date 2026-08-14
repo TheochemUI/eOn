@@ -121,7 +121,11 @@ AtomMatrix eonc::helpers::loadMode(FILE *modeFile, int nAtoms) {
   mode.resize(nAtoms, 3);
   mode.setZero();
   for (int i = 0; i < nAtoms; i++) {
-    fscanf(modeFile, "%lf %lf %lf", &mode(i, 0), &mode(i, 1), &mode(i, 2));
+    if (fscanf(modeFile, "%lf %lf %lf", &mode(i, 0), &mode(i, 1),
+               &mode(i, 2)) != 3) {
+      EONC_LOG_CRITICAL("Mode file ended after {} of {} atoms", i, nAtoms);
+      std::exit(1);
+    }
   }
   return mode;
 }
@@ -145,6 +149,12 @@ bool eonc::helpers::loadOrSynthesizeDisplacement(
     Matter &target, const Matter &initial, const std::string &displacementPath,
     const std::string &modePath, double scale) {
   if (eonc::io::io_ok(target.con2matter(displacementPath))) {
+    if (target.numberOfAtoms() != initial.numberOfAtoms()) {
+      EONC_LOG_ERROR("{} holds {} atoms, the initial structure has {}",
+                     displacementPath, target.numberOfAtoms(),
+                     initial.numberOfAtoms());
+      return false;
+    }
     // displacement.con may carry stale fixed-atom coordinates from a prior run.
     const AtomMatrix &initPos = initial.getPositions();
     AtomMatrix pos = target.getPositionsCopy();
