@@ -11,6 +11,7 @@
 */
 
 #include "eon/potentials/AMS/AMS.h"
+#include <cstddef>
 #include <format>
 #include <fstream>
 #include <iostream>
@@ -110,7 +111,7 @@ int symbol2atomicNumber(char const *symbol) {
 
 char const *atomicNumber2symbol(int n) {
   // The trailing NULL terminates the table, so it bounds the valid range.
-  if (n < 0 || static_cast<size_t>(n) + 1 >= std::size(elementArray)) {
+  if (n < 0 || static_cast<std::size_t>(n) + 1 >= std::size(elementArray)) {
     throw std::runtime_error(
         std::format("AMS knows no element symbol for atomic number {}", n));
   }
@@ -386,7 +387,7 @@ void AMS::write_restart() {
 void AMS::copyForces(long N, const std::vector<double> &frc, double *F) {
   // A short AMS run yields fewer than 3N values; copying blindly would hand
   // the optimizer whatever lies past the end of the vector.
-  if (frc.size() < static_cast<size_t>(3 * N)) {
+  if (frc.size() < static_cast<std::size_t>(3 * N)) {
     throw std::runtime_error(
         std::format("\n AMS returned {} gradient components, expected {}",
                     frc.size(), 3 * N));

@@ -13,6 +13,7 @@
 #include "eon/potentials/AMS_IO/AMS_IO.h"
 #include "eon/potentials/ExternalCommand.h"
 
+#include <cstddef>
 #include <cstring>
 #include <format>
 #include <fstream>
@@ -89,7 +90,7 @@ int symbol2atomicNumber(char const *symbol) {
 
 char const *atomicNumber2symbol(int n) {
   // The trailing NULL terminates the table, so it bounds the valid range.
-  if (n < 0 || static_cast<size_t>(n) + 1 >= std::size(elementArray)) {
+  if (n < 0 || static_cast<std::size_t>(n) + 1 >= std::size(elementArray)) {
     throw std::runtime_error(
         std::format("AMS_IO knows no element symbol for atomic number {}", n));
   }
@@ -218,9 +219,9 @@ void AMS_IO::recieveFromSystem(long N, double *F, double *U) {
   if (!haveEnergy || !haveGradients) {
     throw std::runtime_error(std::format(
         "{} holds no {}", kOutputFile,
-        !haveEnergy ? (!haveGradients ? "energy and no gradient block"
-                                      : "energy")
-                    : "gradient block"));
+        !haveEnergy
+            ? (!haveGradients ? "energy and no gradient block" : "energy")
+            : "gradient block"));
   }
 
   for (long i = 0; i < 3 * N; i++) {
