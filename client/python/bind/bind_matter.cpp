@@ -357,8 +357,14 @@ void bind_matter(nb::module_ &m) {
 
       .def("__len__", &Matter::numberOfAtoms)
       .def("__repr__", [](const Matter &self) {
+        // Never trigger a force call: repr runs on every REPL echo, and a
+        // stale cache would evaluate the potential with the GIL held.
+        // Read potential_energy when the number is wanted.
+        const std::string energy =
+            self.needsForceUpdate() ? std::string("stale")
+                                    : std::to_string(self.getPotentialEnergy());
         return "<Matter n=" + std::to_string(self.numberOfAtoms()) +
-               " E=" + std::to_string(self.getPotentialEnergy()) + ">";
+               " E=" + energy + ">";
       });
 }
 
