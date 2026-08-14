@@ -156,7 +156,9 @@ class LocalInProcess(Communicator):
             self._finished.append(
                 {
                     "id": jid,
-                    "number": jid,
+                    # Bundle index within the job, as the file-based
+                    # communicators set it; one task per job here.
+                    "number": 0,
                     "name": str(jid),
                     "min.con": min_io,
                     "results.dat": results,

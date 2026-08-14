@@ -383,7 +383,7 @@ class ServerMinModeExplorer(MinModeExplorer):
         MinModeExplorer.__init__(self, states, previous_state, state, superbasin, config=config)
 
     def save(self):
-        f = open("explorer.pickle", "w")
+        f = open("explorer.pickle", "wb")
         d = self.__dict__.copy()
         del d['states']
         del d['previous_state']
@@ -449,6 +449,10 @@ class ServerMinModeExplorer(MinModeExplorer):
             id = int(result['name'].split("_")[1]) + result['number']
             searchdata_id = "%d_%d" % (state_num, id)
 
+            if id not in self.wuid_to_search_id:
+                logger.warning("No search id for result %s; skipping",
+                               searchdata_id)
+                continue
             search_id = self.wuid_to_search_id[id]
             if search_id not in self.process_searches:
                 continue
