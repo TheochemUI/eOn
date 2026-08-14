@@ -26,6 +26,7 @@
 #include <iostream>
 #include <memory>
 #include <sstream>
+#include <stdexcept>
 
 #ifndef _WIN32
 #include <sys/resource.h>
@@ -98,7 +99,7 @@ VectorXd eonc::helpers::loadMasses(string filename, int nAtoms) {
   ifstream massFile(filename.c_str());
   if (!massFile.is_open()) {
     EONC_LOG_CRITICAL("File {} was not found", filename);
-    std::exit(1);
+    throw std::runtime_error(std::format("cannot open {}", filename));
   }
 
   VectorXd masses(nAtoms);
@@ -106,7 +107,8 @@ VectorXd eonc::helpers::loadMasses(string filename, int nAtoms) {
     double mass;
     if (!(massFile >> mass)) {
       EONC_LOG_CRITICAL("Error reading {}", filename);
-      std::exit(1);
+      throw std::runtime_error(
+          std::format("{} ended after {} of {} masses", filename, i, nAtoms));
     }
     masses(i) = mass;
   }
@@ -124,7 +126,8 @@ AtomMatrix eonc::helpers::loadMode(FILE *modeFile, int nAtoms) {
     if (fscanf(modeFile, "%lf %lf %lf", &mode(i, 0), &mode(i, 1),
                &mode(i, 2)) != 3) {
       EONC_LOG_CRITICAL("Mode file ended after {} of {} atoms", i, nAtoms);
-      std::exit(1);
+      throw std::runtime_error(
+          std::format("mode file ended after {} of {} atoms", i, nAtoms));
     }
   }
   return mode;
@@ -139,8 +142,8 @@ AtomMatrix eonc::helpers::loadMode(string filename, int nAtoms) {
   std::unique_ptr<FILE, decltype(closer)> modeFile(
       std::fopen(filename.c_str(), "rb"), closer);
   if (!modeFile) {
-    EONC_LOG_CRITICAL("File {} was not found\n Stopping", filename);
-    std::exit(1);
+    EONC_LOG_CRITICAL("File {} was not found", filename);
+    throw std::runtime_error(std::format("cannot open {}", filename));
   }
   return loadMode(modeFile.get(), nAtoms);
 }
@@ -248,13 +251,39 @@ std::vector<int> eonc::helpers::split_string_int(std::string s,
   return list;
 }
 
+std::optional<std::string_view>
+eonc::helpers::convergenceMetricLabel(std::string_view metric) {
+  if (metric == "max_atom") {
+    return "Max atom force";
+  }
+  if (metric == "max_component") {
+    return "Max force comp";
+  }
+  if (metric == "norm") {
+    return "||Force||";
+  }
+  return std::nullopt;
+}
+
+void eonc::helpers::requireKnownConvergenceMetric(std::string_view metric,
+                                                  std::string_view context) {
+  if (convergenceMetricLabel(metric)) {
+    return;
+  }
+  throw std::invalid_argument(
+      std::format("{} unknown convergence_metric: {}", context, metric));
+}
+
 namespace {
 class MatterObjectiveFunction : public ObjectiveFunction {
   Matter &m_matter; // non-owning reference, avoids copy
 public:
   MatterObjectiveFunction(Matter &mat, const Parameters &parametersPassed)
       : ObjectiveFunction(parametersPassed),
-        m_matter{mat} {}
+        m_matter{mat} {
+    eonc::helpers::requireKnownConvergenceMetric(
+        params.optimizer_options.convergence_metric, "[Matter]");
+  }
   ~MatterObjectiveFunction() = default;
   double getEnergy() { return m_matter.getPotentialEnergy(); }
   VectorXd getGradient(bool fdstep = false) {
@@ -276,7 +305,9 @@ public:
     } else {
       EONC_LOG_CRITICAL("{} Unknown opt_convergence_metric: {}", "[Matter]",
                         params.optimizer_options.convergence_metric);
-      std::exit(1);
+      throw std::invalid_argument(
+          std::format("[Matter] unknown convergence_metric: {}",
+                      params.optimizer_options.convergence_metric));
     }
   }
   VectorXd difference(const VectorXd &a, const VectorXd &b) {
