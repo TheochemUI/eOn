@@ -223,6 +223,14 @@ def test_base_wheel_build_and_import(tmp_path):
             "assert 'not found' not in ldd, ldd\n"
             "print('BASE_WHEEL_INSTALL_OK')\n",
         ],
+        # The probe exists to test the wheel installed in this venv. A
+        # PYTHONPATH inherited from the caller shadows it with the source
+        # tree, whose extension resolves its libraries from a build
+        # directory, so the probe would report on the wrong package.
+        env={
+            k: v for k, v in os.environ.items()
+            if k not in ("PYTHONPATH", "LD_LIBRARY_PATH", "LIBRARY_PATH")
+        },
         capture_output=True,
         text=True,
         check=False,
