@@ -6,6 +6,8 @@ import numpy
 import logging
 logger = logging.getLogger('askmc')
 
+from eon import fileio as io
+
 ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = list(range(9))
 processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %7s\n"
 mod_processtable_head_fmt = "%7s %16s %11s %9s %16s %17s %8s %12s %12s\n"
@@ -157,20 +159,19 @@ class ASKMC:
     def save_modified_process_table(self, current_state, current_state_mod_procs):
         """ Write the modified process table for the current state to disk. """
         mod_proctable_path = os.path.join(current_state.path,"askmc_processtable")
-        fo = open(mod_proctable_path,"w")
-        fo.write(mod_processtable_header)
-        for process_id in list(current_state_mod_procs.keys()):
-            proc = current_state_mod_procs[process_id]
-            fo.write(processtable_line % (process_id,
-                                         proc['saddle_energy'],
-                                         proc['prefactor'],
-                                         proc['product'],
-                                         proc['product_energy'],
-                                         proc['product_prefactor'],
-                                         proc['barrier'],
-                                         proc['rate'],
-                                         proc['view_count']))
-        fo.close()
+        with io.atomic_write(mod_proctable_path) as fo:
+            fo.write(mod_processtable_header)
+            for process_id in list(current_state_mod_procs.keys()):
+                proc = current_state_mod_procs[process_id]
+                fo.write(processtable_line % (process_id,
+                                             proc['saddle_energy'],
+                                             proc['prefactor'],
+                                             proc['product'],
+                                             proc['product_energy'],
+                                             proc['product_prefactor'],
+                                             proc['barrier'],
+                                             proc['rate'],
+                                             proc['view_count']))
 
     def append_modified_process_table(self, current_state, process_id, saddle_energy, prefactor, product, product_energy, product_prefactor, barrier, rate, view_count):
         """ Append a single line to the modified process table on disk. """

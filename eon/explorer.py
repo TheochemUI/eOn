@@ -51,9 +51,8 @@ class Explorer:
                 self.wuid = self.superbasin.id * 1000000
 
     def save_wuid(self):
-        f = open(self.wuid_path, 'w')
-        f.write("%i\n" % self.wuid)
-        f.close()
+        with io.atomic_write(self.wuid_path) as f:
+            f.write("%i\n" % self.wuid)
 
 
 class MinModeExplorer(Explorer):

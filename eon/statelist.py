@@ -6,6 +6,7 @@ logger = logging.getLogger('statelist')
 import os
 
 from eon import atoms
+from eon import fileio as io
 from eon.config import ConfigClass # Typing
 
 
@@ -154,7 +155,7 @@ class StateList:
 
     def save_state_table(self):
         if self.state_table != None:
-            with open(self.state_table_path, 'w') as f:
+            with io.atomic_write(self.state_table_path) as f:
                 for i in range(len(self.state_table)):
                     f.write("% 7d %16.5f\n" % (i, self.state_table[i]))
 
