@@ -282,7 +282,6 @@ std::vector<std::string> BasinHoppingJob::run() {
   /* Save Results */
 
   std::string resultsFilename("results.dat");
-  returnFiles.push_back(resultsFilename);
 
   if (params.debug_options.write_movies) {
     std::string movieFilename("movie.xyz");
@@ -291,30 +290,39 @@ std::vector<std::string> BasinHoppingJob::run() {
 
   {
     std::ofstream out(resultsFilename, std::ios::binary);
-    if (out) {
-      out << std::format("{} termination_reason\n", 0);
-      out << "GOOD termination_reason_text\n";
-      out << std::format("{:.6f} minimum_energy\n", minimumEnergy);
-      out << std::format("{} random_seed\n", params.main_options.randomSeed);
-      out << std::format("{:.3f} acceptance_ratio\n",
-                         totalAccept / params.basin_hopping_options.steps);
-      if (params.basin_hopping_options.swap_probability > 0) {
-        out << std::format("{:.3f} swap_acceptance_ratio\n",
-                           swap_accept / static_cast<double>(swap_count));
-      }
-      out << std::format("{} total_normal_displacement_steps\n",
-                         disp_count - jump_count -
-                             params.basin_hopping_options.quenching_steps);
-      out << std::format("{} total_jump_steps\n", jump_count);
-      out << std::format("{} total_swap_steps\n", swap_count);
-      out << std::format("{} total_force_calls\n",
-                         PotRegistry::get().total_force_calls());
+    if (!out) {
+      QUILL_LOG_CRITICAL(log, "Failed to open {}", resultsFilename);
+      throw std::runtime_error("failed to open " + resultsFilename);
     }
+    out << std::format("{} termination_reason\n", 0);
+    out << "GOOD termination_reason_text\n";
+    out << std::format("{:.6f} minimum_energy\n", minimumEnergy);
+    out << std::format("{} random_seed\n", params.main_options.randomSeed);
+    out << std::format("{:.3f} acceptance_ratio\n",
+                       totalAccept / params.basin_hopping_options.steps);
+    if (params.basin_hopping_options.swap_probability > 0) {
+      out << std::format("{:.3f} swap_acceptance_ratio\n",
+                         swap_accept / static_cast<double>(swap_count));
+    }
+    out << std::format("{} total_normal_displacement_steps\n",
+                       disp_count - jump_count -
+                           params.basin_hopping_options.quenching_steps);
+    out << std::format("{} total_jump_steps\n", jump_count);
+    out << std::format("{} total_swap_steps\n", swap_count);
+    out << std::format("{} total_force_calls\n",
+                       PotRegistry::get().total_force_calls());
+    out.close();
+    if (!out) {
+      QUILL_LOG_CRITICAL(log, "Failed to write {}", resultsFilename);
+      throw std::runtime_error("failed to write " + resultsFilename);
+    }
+    returnFiles.push_back(resultsFilename);
   }
 
   std::string productFilename("min.con");
-  returnFiles.push_back(productFilename);
-  if (!eonc::io::io_ok(minimumEnergyStructure->matter2con(productFilename))) {
+  if (eonc::io::io_ok(minimumEnergyStructure->matter2con(productFilename))) {
+    returnFiles.push_back(productFilename);
+  } else {
     QUILL_LOG_ERROR(log, "Failed to write {}", productFilename);
   }
 
