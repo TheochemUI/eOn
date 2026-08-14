@@ -633,7 +633,7 @@ void bind_neb(nb::module_ &m) {
               if (!modeOut)
                 throw std::runtime_error("neb_write_results: " + peakModeFile);
               for (long row = 0; row < peakMode.rows(); ++row) {
-                modeOut << std::format("{:12.6f} {:12.6f} {:12.6f}\n",
+                modeOut << std::format("{:.17g} {:.17g} {:.17g}\n",
                                        peakMode(row, 0), peakMode(row, 1),
                                        peakMode(row, 2));
               }

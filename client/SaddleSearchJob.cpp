@@ -170,7 +170,7 @@ void SaddleSearchJob::saveData(int status) {
     if (modeOut) {
       auto eigenvec = saddleSearch->getEigenvector();
       for (long row = 0; row < eigenvec.rows(); ++row) {
-        modeOut << std::format("{:12.6f} {:12.6f} {:12.6f}\n", eigenvec(row, 0),
+        modeOut << std::format("{:.17g} {:.17g} {:.17g}\n", eigenvec(row, 0),
                                eigenvec(row, 1), eigenvec(row, 2));
       }
     }
