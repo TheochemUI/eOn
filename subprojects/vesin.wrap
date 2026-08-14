@@ -1,5 +1,7 @@
 [wrap-git]
 directory=vesin
 url=https://github.com/luthaf/vesin.git
-revision = head
+# Newest upstream tag under the <0.7 cap that pixi.toml and pyproject.toml
+# already carry; thirdparty/vesin vendors the 0.6.0 single TU.
+revision = v0.6.1
 depth = 1
