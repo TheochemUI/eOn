@@ -103,9 +103,35 @@ void set_write_con_forces(bool enabled) noexcept;
 [[nodiscard]] IoStatus convel2matter(Matter &m, std::string filename);
 
 // Writing
+
+/**
+ * Append a frame to a .con, or truncate and write one frame.
+ *
+ * With `append`, an uncompressed target is extended in place: the new frame is
+ * serialized on its own and concatenated, so N appends cost N frame writes
+ * rather than N(N+1)/2. Earlier frames are never re-serialized, and the file
+ * is flushed before the call returns, so every intermediate state on disk is a
+ * complete multi-frame .con.
+ *
+ * A target that eOn did not write, or that changed size or mtime since eOn
+ * last wrote it, is parsed once before anything is added; an unparseable
+ * target yields IoStatus::AppendError with its bytes untouched. Gzip and zstd
+ * targets keep the read-all-and-rewrite path because a compressed member
+ * cannot be extended in place.
+ */
 [[nodiscard]] IoStatus matter2con(Matter &m, std::string filename,
                                   bool append = false,
                                   const ConFrameMetadata *metadata = nullptr);
+
+/**
+ * Drop the per-path bookkeeping that lets append-mode writes skip re-parsing
+ * frames this process wrote.
+ *
+ * Appends already re-parse a target whose size or mtime moved, so this only
+ * matters when a file is replaced with different content of the same size
+ * inside one filesystem timestamp tick.
+ */
+void resetConAppendState();
 [[nodiscard]] IoStatus matter2convel(Matter &m, std::string filename);
 [[nodiscard]] IoStatus matter2xyz(Matter &m, std::string filename,
                                   bool append = false);
