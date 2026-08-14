@@ -7,6 +7,7 @@ Con(figuration) i/o library.
 :class:`eon.structure.Structure` (alias ``Atoms``).
 '''
 import configparser
+import contextlib
 #from io import BytesIO as StringIO
 from io import StringIO
 import logging
@@ -22,16 +23,30 @@ from eon.structure import Structure
 
 def save_prng_state():
     state = numpy.random.get_state()
-    fh = open('prng.pkl', 'wb')
-    pickle.dump(state, fh, pickle.HIGHEST_PROTOCOL)
+    with open('prng.pkl', 'wb') as fh:
+        pickle.dump(state, fh, pickle.HIGHEST_PROTOCOL)
 
 def get_prng_state():
-    fh = open('prng.pkl', 'rb')
-    state = pickle.load(fh)
+    with open('prng.pkl', 'rb') as fh:
+        state = pickle.load(fh)
     numpy.random.set_state(state)
 
 # Re-export cell helpers (used by callers / POSCAR path)
 __all_cell__ = ("length_angle_to_box", "box_to_length_angle")
+
+
+def _maybe_open(target, mode, attr):
+    '''
+    Context manager over a filename or an already open file-like object.
+        target: filename or file-like object
+        mode:   mode passed to open() when target is a filename
+        attr:   attribute marking target as file-like ('readline' or 'write')
+    A handle opened here is closed on exit; one passed in by the caller is
+    left open.
+    '''
+    if hasattr(target, attr):
+        return contextlib.nullcontext(target)
+    return open(target, mode)
 
 
 def _frame_to_atoms(frame):
@@ -121,13 +136,10 @@ def load_mode(modefilein):
     Reads a mode.dat file into an N by 3 numpy array
         modefilein: may be either a file-like object of a filename
     '''
-    if hasattr(modefilein, 'readline'):
-        f = modefilein
-    else:
-        f = open(modefilein, 'r')
-    if len(f.readline().split()) == 3:
-        f.seek(0);
-    lines = f.readlines()
+    with _maybe_open(modefilein, 'r', 'readline') as f:
+        if len(f.readline().split()) == 3:
+            f.seek(0)
+        lines = f.readlines()
     mode = []
     for line in lines:
         l = line.split()
@@ -145,13 +157,10 @@ def save_mode(modefileout, displace_vector):
         modefileout:     may be either a filename or file-like object
         displace_vector: the mode (Nx3 numpy array)
     '''
-    if hasattr(modefileout, 'write'):
-        f = modefileout
-    else:
-        f = open(modefileout, 'w')
-    for i in range(len(displace_vector)):
-        f.write("%.3f %.3f %.3f\n" % (displace_vector[i][0],
-            displace_vector[i][1], displace_vector[i][2]))
+    with _maybe_open(modefileout, 'w', 'write') as f:
+        for i in range(len(displace_vector)):
+            f.write("%.3f %.3f %.3f\n" % (displace_vector[i][0],
+                displace_vector[i][1], displace_vector[i][2]))
 
 
 def save_results_dat(fileout, results):
@@ -160,13 +169,9 @@ def save_results_dat(fileout, results):
         fileout: may be either a filename or a file-like object
         results: dictionary of values, written one "<value> <key>" line each
     '''
-    if hasattr(fileout, 'write'):
-        f = fileout
-    else:
-        f = open(fileout, 'w')
-
-    for key in results:
-        f.write("%s %s\n" % (results[key], key))
+    with _maybe_open(fileout, 'w', 'write') as f:
+        for key in results:
+            f.write("%s %s\n" % (results[key], key))
 
 def modify_config(config_path, changes):
     parser = configparser.ConfigParser()
@@ -182,26 +187,23 @@ def parse_results(filein):
     '''
     Reads a results.dat file and gives a dictionary of the values contained therein
     '''
-    if hasattr(filein, 'readline'):
-        f = filein
-        f.seek(0)
-    else:
-        f = open(filein)
     results = {}
-    for line in f:
-        line = line.split()
-        if len(line) < 2:
-            continue
-        if '.' in line[0]:
-            try:
-                results[line[1]] = float(line[0])
-            except ValueError:
-                results[line[1]] = line[0]
-        else:
-            try:
-                results[line[1]] = int(line[0])
-            except ValueError:
-                results[line[1]] = line[0]
+    with _maybe_open(filein, 'r', 'readline') as f:
+        f.seek(0)
+        for line in f:
+            line = line.split()
+            if len(line) < 2:
+                continue
+            if '.' in line[0]:
+                try:
+                    results[line[1]] = float(line[0])
+                except ValueError:
+                    results[line[1]] = line[0]
+            else:
+                try:
+                    results[line[1]] = int(line[0])
+                except ValueError:
+                    results[line[1]] = line[0]
 
     return results
 
