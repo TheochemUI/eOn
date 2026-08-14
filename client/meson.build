@@ -1185,6 +1185,7 @@ readcon_dep = dependency(
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
+        version: '>=0.13.1',
         default_options: {
             'with_tests': false,
             'with_examples': false,
