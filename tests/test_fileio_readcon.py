@@ -40,9 +40,20 @@ def _readable_con_fixtures():
 
 
 def test_fileio_imports_and_calls_readcon():
-    """Structural: shipped fileio binds the real readcon APIs (not a private parser)."""
-    src = Path(io.__file__).read_text(encoding="utf-8")
-    assert "import readcon" in src
+    """Structural: the shipped .con path binds the real readcon APIs (not a private parser).
+
+    Frame construction lives in eon.structure and the file-level readers and
+    writers in eon.fileio, so the pair is checked together: asserting every
+    call sits in one module would only pin where the split happens to fall.
+    """
+    from eon import structure as structmod
+
+    fileio_src = Path(io.__file__).read_text(encoding="utf-8")
+    structure_src = Path(structmod.__file__).read_text(encoding="utf-8")
+    src = fileio_src + structure_src
+
+    assert "import readcon" in fileio_src
+    assert "import readcon" in structure_src
     for api in (
         "readcon.read_con",
         "readcon.read_con_string",
@@ -51,7 +62,7 @@ def test_fileio_imports_and_calls_readcon():
         "readcon.Atom",
         "readcon.ConFrame",
     ):
-        assert api in src, f"fileio must use {api}"
+        assert api in src, f"the .con path must use {api}"
     # No chemfiles on the server .con path
     assert "chemfiles" not in src.lower()
     assert "read_chemfiles" not in src
