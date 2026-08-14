@@ -326,7 +326,11 @@ void bind_sampling(nb::module_ &m) {
            nb::arg("matter"), nb::arg("mode"), nb::arg("parameters"),
            nb::arg("potential"), nb::keep_alive<1, 2>(), nb::keep_alive<1, 5>())
       .def("run", &PyProcessSearch::run, nb::arg("inplace") = false)
-      .def_prop_ro("status", [](const PyProcessSearch &s) { return s.status; });
+      // Typed so `search.status == SaddleStatus.GOOD` compares against the
+      // same type; run() keeps returning the raw int code.
+      .def_prop_ro("status", [](const PyProcessSearch &s) {
+        return static_cast<MinModeSaddleSearch::Status>(s.status);
+      });
 
   // --- Structure helpers (free is fine — pure predicates) ---
   m.def(
