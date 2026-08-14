@@ -44,12 +44,26 @@ namespace {
 // them resolve against the working directory of the calling process.
 constexpr const char *kVaspScript = "runvasp.sh";
 constexpr const char *kForceFile = "FU";
+constexpr const char *kNewCarFile = "NEWCAR";
+constexpr const char *kStopCarFile = "STOPCAR";
 
-// Output VASP leaves behind that a fresh run must not inherit.
+// The interactive handshake: eOn writes POSCAR and touches NEWCAR, VASP
+// answers with FU, and eOn writes STOPCAR to end the run. Each of these left
+// behind by an earlier client in the same directory breaks the next one, so
+// a run clears them before starting VASP. A stale FU is read as this run's
+// first forces, a stale NEWCAR feeds VASP a POSCAR eOn has not written yet,
+// and a stale STOPCAR aborts VASP on its first ionic step.
+constexpr const char *kHandshakeFiles[] = {kForceFile, kNewCarFile,
+                                           kStopCarFile};
+
+// Results and restart data VASP writes. VASP overwrites every one of them on
+// its next run and eOn reads none of them, so removing them buys a
+// calculation nothing; it discards the record of the previous one, and with
+// WAVECAR, CHGCAR and TMPCAR the wavefunction and charge density a restart
+// reads under ISTART and ICHARG.
 constexpr const char *kStaleFiles[] = {
-    "TMPCAR",   "CHG",    "CHGCAR", "CONTCAR", "DOSCAR",
-    "EIGENVAL", "IBZKPT", "NEWCAR", "FU",      "OSZICAR",
-    "OUTCAR",   "PCDAT",  "POSCAR", "WAVECAR", "XDATCAR"};
+    "TMPCAR", "CHG",     "CHGCAR", "CONTCAR", "DOSCAR",  "EIGENVAL",
+    "IBZKPT", "OSZICAR", "OUTCAR", "PCDAT",   "WAVECAR", "XDATCAR"};
 
 // A species and how many atoms it covers.
 using SpeciesRun = std::pair<int, long>;
@@ -87,9 +101,19 @@ bool VASP::firstRun = true;
 long VASP::vaspRunCount = 0;
 pid_t VASP::vaspPID = 0;
 
+void VASP::clearHandshakeFiles() {
+  for (const char *name : kHandshakeFiles) {
+    std::error_code ec;
+    if (std::filesystem::remove(name, ec)) {
+      EONC_LOG_INFO("VASP cleared leftover {}", name);
+    } else if (ec) {
+      EONC_LOG_WARNING("VASP could not clear leftover {}: {}", name,
+                       ec.message());
+    }
+  }
+}
+
 void VASP::removeStaleFiles() {
-  // Destructive, and relative to the working directory: constructing a VASP
-  // potential in a directory that holds real VASP output deletes it.
   for (const char *name : kStaleFiles) {
     std::error_code ec;
     if (std::filesystem::remove(name, ec)) {
@@ -105,21 +129,26 @@ void VASP::cleanMemory(void) {
   vaspRunCount--;
   if (vaspRunCount < 1) {
     // Runs from a destructor, so it reports rather than throws.
-    std::ofstream stopcar("STOPCAR", std::ios::trunc);
+    std::ofstream stopcar(kStopCarFile, std::ios::trunc);
     if (!stopcar) {
-      EONC_LOG_WARNING("Could not open STOPCAR to stop VASP");
+      EONC_LOG_WARNING("Could not open {} to stop VASP", kStopCarFile);
       return;
     }
     stopcar << "LABORT = .TRUE.\n";
     stopcar.close();
     if (!stopcar) {
-      EONC_LOG_WARNING("Could not write STOPCAR to stop VASP");
+      EONC_LOG_WARNING("Could not write {} to stop VASP", kStopCarFile);
     }
   }
   return;
 }
 
 void VASP::spawnVASP() {
+  // Runs once per client, since vaspPID stays set for the life of the
+  // process. The POSCAR eOn just wrote stays, and the first call writes no
+  // NEWCAR, so nothing here discards a signal this run has sent.
+  clearHandshakeFiles();
+
   // execlp resolves a relative path against whatever directory the process
   // last changed to, which under the MPI dispatcher is not necessarily the
   // one holding the run. Resolve it in the parent, where a failure can still
@@ -259,13 +288,15 @@ void VASP::writePOSCAR(long N, const double *R, const int *atomicNrs,
     firstRun = false;
   } else {
     // An empty NEWCAR tells the running VASP that a new POSCAR is ready.
-    std::ofstream newcar("NEWCAR", std::ios::trunc);
+    std::ofstream newcar(kNewCarFile, std::ios::trunc);
     if (!newcar) {
-      throw std::runtime_error("Could not open NEWCAR to signal VASP");
+      throw std::runtime_error(
+          std::format("Could not open {} to signal VASP", kNewCarFile));
     }
     newcar.close();
     if (!newcar) {
-      throw std::runtime_error("Could not write NEWCAR to signal VASP");
+      throw std::runtime_error(
+          std::format("Could not write {} to signal VASP", kNewCarFile));
     }
   }
 

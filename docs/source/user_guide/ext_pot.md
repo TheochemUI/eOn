@@ -29,9 +29,30 @@ that are **not** enabled in the `conda-forge` build.
 
 When the client needs an energy/force evaluation it:
 
-1. Writes the file `from_eon_to_extpot` in the working directory.
-2. Calls the executable (or script) specified by `ext_pot_path` via `system()`.
-3. Reads the file `from_extpot_to_eon` that the script must create.
+1. Creates a private exchange directory named `extpot_<pid>_<n>` beside the
+   working directory, where `<pid>` is the client's process id and `<n>`
+   counts the potentials it built.
+2. Writes the file `from_eon_to_extpot` in that directory.
+3. Calls the executable (or script) specified by `ext_pot_path` via
+   `system()`, with the exchange directory as the command's working
+   directory.
+4. Reads the file `from_extpot_to_eon` that the script must create there.
+
+The two filenames do not change, so a wrapper that opens them by relative
+name, as every example below does, needs no edit. The exchange directory is
+what keeps two clients started in one directory from reading each other's
+numbers; the client removes it once the exchange files are consumed, and
+leaves it in place when a call fails so its contents can be inspected.
+
+```{important}
+`ext_pot_path` is resolved against the directory eOn runs in when it names an
+existing file, so `./ext_pot` and an absolute path both work. A command line
+with arguments (`python wrapper.py`) or a name looked up on `PATH` is passed
+to the shell unchanged and therefore has to be written so it resolves from
+the exchange directory: give the script an absolute path. A wrapper that
+needs to reach files in the directory eOn runs in finds that directory in the
+environment variable `EON_EXTPOT_RUN_DIR`.
+```
 
 ### Input file (`from_eon_to_extpot`)
 
