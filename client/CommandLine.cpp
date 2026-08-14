@@ -349,6 +349,12 @@ void commandLine(int argc, char **argv) {
     params.optimizer_options.converged_force = optConvergedForce;
   }
 
+  if (cflag) {
+    // Matter copies structure_comparison_options into its own structComp in
+    // the constructor, so the flag has to be set before the two below.
+    params.structure_comparison_options.check_rotation = true;
+  }
+
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_unique<Matter>(pot, params);
   auto matter2 = std::make_unique<Matter>(pot, params);
@@ -366,7 +372,6 @@ void commandLine(int argc, char **argv) {
       std::cerr << "Failed to load " << confileout << std::endl;
       std::exit(EXIT_FAILURE);
     }
-    params.structure_comparison_options.check_rotation = true;
     if (matter->compare(*matter2, true)) {
       std::cout << "Structures match\n";
     } else {
