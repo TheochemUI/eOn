@@ -1027,9 +1027,10 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
             ]
         endif
     endif
-    # Fat Metatomic (potential = Metatomic) + deps for RGPOT engine .so.
+    # Fat Metatomic (potential = Metatomic).
     # vesin already on _deps (eoncbase VesinNeighbors + classical pots).
-    mta_plugin_deps = _deps + [mts_dep, torch_deps]
+    # mta_plugin_deps, for the RGPOT engine .so, is taken further down once
+    # _deps stops growing.
     _deps += [mts_dep, torch_deps]
     _args += ['-DWITH_METATOMIC']
     metatomic_pot = library(
@@ -1185,6 +1186,7 @@ readcon_dep = dependency(
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
+        version: '>=0.13.1',
         default_options: {
             'with_tests': false,
             'with_examples': false,
@@ -1207,6 +1209,15 @@ if is_windows
     _deps += [readcon_compile_dep]
 else
     _deps += [readcon_dep]
+endif
+
+if get_option('with_metatomic')
+    # The RGPOT metatomic engine .so compiles the same translation units as
+    # eonclib, so it needs every dependency eonclib has. readcon above is the
+    # last append to _deps, hence the snapshot lives here and not next to the
+    # metatomic block, which would miss tbb, artn, ira, the capnp deps and
+    # readcon itself. mts_dep and torch_deps are already on _deps.
+    mta_plugin_deps = _deps
 endif
 
 # version.h FEATURES must see every -DWITH_* appended by the blocks above.
@@ -1275,7 +1286,13 @@ if get_option('with_metatomic')
 endif
 
 # Full deps including readcon link_args (for executables and tests only)
-_exe_deps = _deps + [readcon_dep] + _gprd_extra_deps
+_exe_deps = _deps + _gprd_extra_deps
+if is_windows
+    # _deps carries only readcon's partial dependency there (see the
+    # partial_dependency block above); executables need the link_args too.
+    # Elsewhere _deps already holds the full readcon_dep.
+    _exe_deps += [readcon_dep]
+endif
 
 # Export variable
 eclib_dep = declare_dependency(

@@ -95,4 +95,25 @@ C++ side for trajectory outputs and downstream visualization tooling.
 - **Meson** >= 1.8.0
 
 The `readcon-core` library is fetched as a Meson subproject via
-`subprojects/readcon-core.wrap` and linked statically.
+`subprojects/readcon-core.wrap` and linked statically. The wrap pins release
+tag v0.13.1, and `client/meson.build` asks for `>=0.13.1` on both resolution
+paths, the pkg-config one and the subproject fallback. `eon/fileio.py` needs
+the companion `readcon` package at `>=0.13.1,<0.14`. That cap draws a
+wire-format bound: readcon 0.14 writes `con_spec_version` 3 files, which a
+0.13.1 parser rejects.
+
+## Updating the subproject
+
+Meson uses an existing `subprojects/readcon-core/` directory unchanged and does
+not re-fetch it when the wrap revision changes. After pulling a commit that
+moves the wrap, reset the checkout:
+
+```bash
+meson subprojects update --reset readcon-core
+```
+
+Skipping the reset leaves the build configuring against whatever tag sits on
+disk. The version constraint on the `subproject()` call catches that at
+configure time and names `readcon-core`, so a version complaint about the
+subproject points at a stale checkout rather than at anything in
+`client/ConFileIO.cpp`.
