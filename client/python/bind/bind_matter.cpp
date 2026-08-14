@@ -157,7 +157,11 @@ void bind_matter(nb::module_ &m) {
             matter_set_z_buf(self, reinterpret_cast<const int *>(arr.data()),
                              self.numberOfAtoms());
           },
-          nb::rv_policy::move, "Atomic numbers (Z)")
+          nb::rv_policy::move,
+          "Atomic numbers (Z), int64 in and out. int64 is the canonical "
+          "width across _core integer arrays (free_atom_indices, "
+          "resolve_mobile_atoms); the int32 step is the narrowing to the "
+          "C++ VectorXi storage.")
       .def(
           "get_fixed",
           [](const Matter &self, long atom) { return self.getFixed(atom); },
@@ -192,7 +196,9 @@ void bind_matter(nb::module_ &m) {
                                  reinterpret_cast<const int *>(arr.data()),
                                  self.numberOfAtoms());
           },
-          nb::rv_policy::move, "Fixed flags (1=fixed, 0=free)")
+          nb::rv_policy::move,
+          "Fixed flags (1=fixed, 0=free), int64 in and out; see "
+          "atomic_numbers for the width convention.")
 
       // --- free mask ---
       .def_prop_ro(
