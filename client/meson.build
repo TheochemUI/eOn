@@ -1179,14 +1179,14 @@ _linkto += potentials
 # ConFileIO needs 0.13+ (clone, bulk set_*_from_flat, compression_from_extension).
 readcon_dep = dependency(
     'readcon-core',
-    version: '>=0.14.1',
+    version: '>=0.14.2',
     method: 'pkg-config',
     required: false,
 )
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
-        version: '>=0.14.1',
+        version: '>=0.14.2',
         default_options: {
             'with_tests': false,
             'with_examples': false,
