@@ -319,13 +319,15 @@ TEST_CASE_METHOD(ConFileIOFixture,
   REQUIRE(eonc::io::io_ok(eonc::io::matter2xyz(*original, tmpbase)));
   std::string tmpfile = tmpbase + ".xyz";
 
-  std::ifstream f(tmpfile);
   std::string count_line;
   std::string comment;
   std::string atom_line;
-  REQUIRE(static_cast<bool>(std::getline(f, count_line)));
-  REQUIRE(static_cast<bool>(std::getline(f, comment)));
-  REQUIRE(static_cast<bool>(std::getline(f, atom_line)));
+  {
+    std::ifstream f(tmpfile);
+    REQUIRE(static_cast<bool>(std::getline(f, count_line)));
+    REQUIRE(static_cast<bool>(std::getline(f, comment)));
+    REQUIRE(static_cast<bool>(std::getline(f, atom_line)));
+  }
 
   REQUIRE(comment.find("Lattice=\"") != std::string::npos);
   REQUIRE(comment.find("Properties=species:S:1:pos:R:3") != std::string::npos);
@@ -354,9 +356,11 @@ TEST_CASE_METHOD(ConFileIOFixture, "XYZ append rejects a different atom count",
   REQUIRE(original->numberOfAtoms() != 1);
   REQUIRE(eonc::io::matter2xyz(*original, tmppath.string(), true) ==
           eonc::io::IoStatus::InvalidArgument);
-  std::ifstream in(tmpfile);
-  const std::string after((std::istreambuf_iterator<char>(in)),
-                          std::istreambuf_iterator<char>());
+  const std::string after = [&tmpfile]() {
+    std::ifstream in(tmpfile);
+    return std::string((std::istreambuf_iterator<char>(in)),
+                       std::istreambuf_iterator<char>());
+  }();
   REQUIRE(after == before);
   std::filesystem::remove(tmpfile);
 }
@@ -369,19 +373,21 @@ TEST_CASE_METHOD(ConFileIOFixture, "XYZ append concatenates a matching frame",
   REQUIRE(
       eonc::io::io_ok(eonc::io::matter2xyz(*original, tmppath.string(), true)));
   std::string tmpfile = tmppath.string() + ".xyz";
-  std::ifstream f(tmpfile);
   int first = 0;
   int second = 0;
-  std::string skip;
-  REQUIRE(static_cast<bool>(f >> first));
-  REQUIRE(first == original->numberOfAtoms());
-  std::getline(f, skip);
-  std::getline(f, skip);
-  for (long i = 0; i < original->numberOfAtoms(); ++i) {
+  {
+    std::ifstream f(tmpfile);
+    std::string skip;
+    REQUIRE(static_cast<bool>(f >> first));
+    REQUIRE(first == original->numberOfAtoms());
     std::getline(f, skip);
+    std::getline(f, skip);
+    for (long i = 0; i < original->numberOfAtoms(); ++i) {
+      std::getline(f, skip);
+    }
+    REQUIRE(static_cast<bool>(f >> second));
+    REQUIRE(second == original->numberOfAtoms());
   }
-  REQUIRE(static_cast<bool>(f >> second));
-  REQUIRE(second == original->numberOfAtoms());
   std::filesystem::remove(tmpfile);
 }
 
@@ -774,11 +780,13 @@ TEST_CASE("ConFileIO writeTibble uses atom ids and skips a dirty pot",
   const std::string tmpfile = tmppath.string();
   REQUIRE(eonc::io::io_ok(eonc::io::writeTibble(*m, tmpfile)));
 
-  std::ifstream in(tmpfile);
   std::string header;
   std::string row;
-  REQUIRE(static_cast<bool>(std::getline(in, header)));
-  REQUIRE(static_cast<bool>(std::getline(in, row)));
+  {
+    std::ifstream in(tmpfile);
+    REQUIRE(static_cast<bool>(std::getline(in, header)));
+    REQUIRE(static_cast<bool>(std::getline(in, row)));
+  }
   REQUIRE(header.find("fx") == std::string::npos);
   REQUIRE(header.find("atmID") != std::string::npos);
   // x y z mass symbol atmID fixed -- id is the second-to-last field.
