@@ -1291,7 +1291,22 @@ if is_windows
     # _deps carries only readcon's partial dependency there (see the
     # partial_dependency block above); executables need the link_args too.
     # Elsewhere _deps already holds the full readcon_dep.
-    _exe_deps += [readcon_dep]
+    #
+    # Everything except sources. readcon-core declares
+    # `sources: readcon_cargo`, and on Windows that array holds the DLL
+    # alongside the import library. Meson hands a dependency's sources to
+    # the linker, and link rejects a DLL as input:
+    #   readcon_core.dll : fatal error LNK1107: invalid or corrupt file
+    # link_args already names the import library by full path, which is the
+    # half MSVC wants.
+    _exe_deps += [
+        readcon_dep.partial_dependency(
+            includes: true,
+            compile_args: true,
+            link_args: true,
+            links: true,
+        ),
+    ]
 endif
 
 # Export variable
