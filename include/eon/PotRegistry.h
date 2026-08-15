@@ -48,6 +48,9 @@ private:
   std::atomic<uint64_t> m_next_id{1};
 
 public:
+  /// Process-lifetime singleton. The instance is allocated on the heap
+  /// and never destroyed, so Potential destructors can still record
+  /// teardown after C++ static destruction.
   static PotRegistry &get() noexcept;
   void reset();
 

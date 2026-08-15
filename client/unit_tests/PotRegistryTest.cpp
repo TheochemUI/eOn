@@ -33,6 +33,13 @@ public:
   }
 };
 
+TEST_CASE("PotRegistry get returns a stable process-lifetime instance",
+          "[PotRegistry][lifecycle]") {
+  auto &a = PotRegistry::get();
+  auto &b = PotRegistry::get();
+  REQUIRE(&a == &b);
+}
+
 TEST_CASE("PotRegistry tracks creation and destruction",
           "[PotRegistry][lifecycle]") {
   PotRegistry::get().reset();

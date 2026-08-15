@@ -1,4 +1,5 @@
 #include "eon/ConFileIO.h"
+#include "eon/HelperFunctions.h"
 #include "eon/Parameters.h"
 
 #include <magic_enum/magic_enum.hpp>
@@ -137,6 +138,22 @@ void bind_parameters(nb::module_ &m) {
           [](eonc::Parameters &s, double v) {
             s.optimizer_options.max_move = v;
           })
+      .def_prop_rw(
+          "opt_convergence_metric",
+          [](const eonc::Parameters &s) {
+            return s.optimizer_options.convergence_metric;
+          },
+          [](eonc::Parameters &s, const std::string &v) {
+            if (auto label = eonc::helpers::convergenceMetricLabel(v)) {
+              s.optimizer_options.convergence_metric = v;
+              s.optimizer_options.convergence_metric_label =
+                  std::string(*label);
+            } else {
+              throw std::invalid_argument(
+                  "unknown opt_convergence_metric: " + v);
+            }
+          },
+          "norm | max_atom | max_component")
       // --- Debug ---
       .def_prop_rw(
           "write_movies",

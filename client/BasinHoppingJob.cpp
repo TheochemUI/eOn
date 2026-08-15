@@ -52,7 +52,8 @@ std::vector<std::string> BasinHoppingJob::run() {
     QUILL_LOG_CRITICAL(log,
                        "error: [Basin Hopping] swap move probability must be "
                        "zero if there is only one element type\n");
-    std::exit(1);
+    throw std::invalid_argument(
+        "[Basin Hopping] swap_probability must be zero with one element type");
   }
 
   double randomProb =
@@ -369,7 +370,9 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
       } else {
         log = eonc::log::traceback();
         QUILL_LOG_CRITICAL(log, "Unknown displacement_algorithm\n");
-        std::exit(1);
+        throw std::invalid_argument(
+            std::format("[Basin Hopping] unknown displacement_algorithm: {}",
+                        params.basin_hopping_options.displacement_algorithm));
       }
       for (int j = 0; j < 3; j++) {
         if (params.basin_hopping_options.displacement_distribution ==
@@ -381,7 +384,9 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
         } else {
           log = eonc::log::traceback();
           QUILL_LOG_CRITICAL(log, "Unknown displacement_distribution\n");
-          std::exit(1);
+          throw std::invalid_argument(std::format(
+              "[Basin Hopping] unknown displacement_distribution: {}",
+              params.basin_hopping_options.displacement_distribution));
         }
       }
     }

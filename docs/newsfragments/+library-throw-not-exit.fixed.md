@@ -1,0 +1,1 @@
+Library code no longer calls `std::exit` on a bad `convergence_metric`, FIRE time-step collapse, or basin-hopping / global-optimization enum typo. Those errors throw, so a Python caller inside `gil_scoped_release` gets an exception instead of a silent interpreter kill. Unknown enumerated strings are rejected when `Parameters` is loaded.

@@ -1,0 +1,1 @@
+Potential loaders probe plugin libraries on disk before `dlopen`, and `LammpsLoader` no longer loads `liblammps` just to ask whether it is present. Availability checks therefore skip the banner-printing static initializers those libraries run on load.
