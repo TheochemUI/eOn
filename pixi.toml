@@ -36,8 +36,8 @@ rust = ">=1.88"
 
 [pypi-dependencies]
 towncrier = ">=25.8.0, <26"
-# eOn 2.16 / plot stack (rgpycrumbs>=1.9) need readcon IoStatus API.
-readcon = ">=0.13.1,<0.14"
+# Lockstep with the C++ wrap (readcon-core 0.14 / spec 3).
+readcon = ">=0.14.1"
 vesin = ">=0.5.2, <0.7"
 nanobind = ">=2.4.0, <3"  # pyeonclient (stable ABI / free-threaded); not pybind11
 xxhash = ">=3.4.0, <4"
