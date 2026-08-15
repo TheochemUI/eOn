@@ -174,11 +174,10 @@ TEST_CASE("Con file preserves per-axis fixed mask", "[confileio][fixed]") {
   original.setMass(1, 63.5);
   original.setAtomicNr(0, 29);
   original.setAtomicNr(1, 29);
-  // Every column-4 value except 1. Bit0=x, bit1=y, bit2=z. Value 1 means
-  // x-only, which readcon-core decodes as fully fixed for compatibility
-  // with CON files older than the bitmask, so it cannot survive a round
-  // trip; the next case pins the refusal instead.
-  const std::array<std::array<bool, 3>, 6> masks{{{false, true, false},
+  // All eight column-4 values. Bit0=x, bit1=y, bit2=z. Spec 2 decodes
+  // 1 as x-only (readcon-core #25).
+  const std::array<std::array<bool, 3>, 7> masks{{{true, false, false},
+                                                  {false, true, false},
                                                   {true, true, false},
                                                   {false, false, true},
                                                   {true, false, true},
@@ -208,8 +207,7 @@ TEST_CASE("Con file preserves per-axis fixed mask", "[confileio][fixed]") {
   }
 }
 
-TEST_CASE("Con write refuses an x-only constraint it cannot encode",
-          "[confileio][fixed]") {
+TEST_CASE("Con write round-trips an x-only constraint", "[confileio][fixed]") {
   Parameters params;
   params.potential_options.potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
@@ -223,12 +221,14 @@ TEST_CASE("Con write refuses an x-only constraint it cannot encode",
   m.setAtomicNr(0, 29);
   m.setFixedMask(0, {true, false, false});
 
-  // Writing 1 to column 4 produces a file every reader takes as fully
-  // fixed, so the write reports instead of silently changing the
-  // constraints. Lifting this needs readcon-core to stop decoding 1 as
-  // all-fixed.
   const std::string tmpfile = "_test_x_only.con";
-  REQUIRE_FALSE(eonc::io::io_ok(m.matter2con(tmpfile)));
+  REQUIRE(eonc::io::io_ok(m.matter2con(tmpfile)));
+  Matter loaded(pot, params);
+  REQUIRE(eonc::io::io_ok(loaded.con2matter(tmpfile)));
+  const auto mask = loaded.getFixedMask(0);
+  REQUIRE(mask[0]);
+  REQUIRE_FALSE(mask[1]);
+  REQUIRE_FALSE(mask[2]);
   std::filesystem::remove(tmpfile);
 }
 

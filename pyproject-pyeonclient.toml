@@ -10,9 +10,7 @@ license = {text = "BSD-3-Clause"}
 requires-python = ">=3.12"
 dependencies = [
     "numpy>=1.26.4",
-    # Matches subprojects/readcon-core.wrap and pixi.toml. readcon 0.14 writes
-    # CON_SPEC_VERSION 3, which a 0.13.1 readcon-core parser rejects.
-    "readcon>=0.13.1,<0.14",
+    "readcon>=0.14.1",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
