@@ -79,6 +79,9 @@ struct ConFrameMetadata {
   std::vector<ConMetadataValue> scalars;
   std::vector<ConMetadataText> strings;
   std::optional<std::string> raw_json;
+  /// When set, this write includes or omits force sections regardless of
+  /// Parameters.main_options.writeConForces or the process-wide flag.
+  std::optional<bool> write_con_forces;
 };
 
 /// Extract known frame-level fields from a parsed readcon frame.
@@ -91,6 +94,8 @@ ConFrameMetadata metadata_from_frame(const readcon::ConFrame &frame);
  * restarts without re-evaluating the potential) but are not part of the
  * classic con layout: external readers such as ASE's eon parser reject
  * frames that carry them. Off unless [Main] write_con_forces enables it.
+ * A ConFrameMetadata.write_con_forces value, then the Matter Parameters
+ * field, override this process-wide flag for a single write.
  * Reading force-bearing frames is always supported regardless of this flag.
  */
 void set_write_con_forces(bool enabled) noexcept;

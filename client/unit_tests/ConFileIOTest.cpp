@@ -600,6 +600,64 @@ TEST_CASE("ConFileIO force and energy sections round-trip via readcon API",
   std::filesystem::remove(tmpfile);
 }
 
+TEST_CASE("ConFileIO writes forces from Parameters without the process flag",
+          "[confileio][forces]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  params.main_options.writeConForces = true;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto m = std::make_shared<Matter>(pot, params);
+  m->con2matter(std::string("reactant.con"));
+  (void)m->getPotentialEnergy();
+  REQUIRE_FALSE(eonc::io::write_con_forces());
+
+  auto tmppath =
+      std::filesystem::temp_directory_path() / "_test_forces_params.con";
+  const std::string tmpfile = tmppath.string();
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmpfile, false)));
+  const auto frames = readcon::read_all_frames(tmpfile);
+  REQUIRE(frames.size() == 1);
+  REQUIRE(frames[0].has_forces());
+  std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE("ConFileIO metadata.write_con_forces overrides process flag",
+          "[confileio][forces]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto m = std::make_shared<Matter>(pot, params);
+  m->con2matter(std::string("reactant.con"));
+  (void)m->getPotentialEnergy();
+
+  auto tmp_on =
+      std::filesystem::temp_directory_path() / "_test_forces_meta_on.con";
+  auto tmp_off =
+      std::filesystem::temp_directory_path() / "_test_forces_meta_off.con";
+
+  eonc::io::ConFrameMetadata on;
+  on.write_con_forces = true;
+  eonc::io::ConFrameMetadata off;
+  off.write_con_forces = false;
+
+  REQUIRE_FALSE(eonc::io::write_con_forces());
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmp_on.string(), false, &on)));
+
+  eonc::io::set_write_con_forces(true);
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmp_off.string(), false, &off)));
+  eonc::io::set_write_con_forces(false);
+
+  const auto frames_on = readcon::read_all_frames(tmp_on.string());
+  const auto frames_off = readcon::read_all_frames(tmp_off.string());
+  REQUIRE(frames_on.size() == 1);
+  REQUIRE(frames_off.size() == 1);
+  REQUIRE(frames_on[0].has_forces());
+  REQUIRE_FALSE(frames_off[0].has_forces());
+
+  std::filesystem::remove(tmp_on);
+  std::filesystem::remove(tmp_off);
+}
+
 TEST_CASE("ConFileIO metadata_from_frame exposes NEB and potential fields",
           "[confileio][metadata]") {
   Parameters params;

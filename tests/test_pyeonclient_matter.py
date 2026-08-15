@@ -203,11 +203,24 @@ def test_regression_matter_vs_readcon_structure(pot, lj_params):
 # --- bridge Structure <-> Matter ---
 
 
+def test_write_con_forces_from_parameters(matter_h2, lj_params, tmp_path):
+    """params.write_con_forces must emit force sections without a global flag."""
+    readcon = pytest.importorskip("readcon")
+    _ = float(matter_h2.potential_energy)
+    assert matter_h2.needs_force_update is False
+    lj_params.write_con_forces = True
+    path = tmp_path / "h2_forces.con"
+    assert pyec.io_ok(matter_h2.matter2con(str(path)))
+    frames = readcon.read_con(str(path))
+    assert len(frames) == 1
+    assert frames[0].has_forces
+
+
 def test_structure_bridge_roundtrip(matter_h2, pot, lj_params):
     pytest.importorskip("eon.structure")
     s = pyec.matter_to_structure(matter_h2)
     assert len(s) == 2
-    assert s.names[0] in ("H", "Z1")
+    assert s.names[0] == "H"
     m2 = pyec.structure_to_matter(s, pot, lj_params)
     assert m2.n_atoms == 2
     np.testing.assert_allclose(m2.positions, matter_h2.positions, atol=1e-12)

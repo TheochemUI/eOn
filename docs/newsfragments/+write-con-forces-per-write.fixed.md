@@ -1,0 +1,1 @@
+Setting ``params.write_con_forces`` on a pyeonclient Parameters object now writes force sections for that Matter. A ``ConFrameMetadata.write_con_forces`` value overrides the process-wide flag so two writers can disagree.
