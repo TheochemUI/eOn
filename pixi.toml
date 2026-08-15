@@ -36,10 +36,7 @@ rust = ">=1.88"
 
 [pypi-dependencies]
 towncrier = ">=25.8.0, <26"
-# 0.14 is tagged on GitHub; PyPI still stops at 0.13.1. Git pin matches
-# the C++ wrap (0.14.1 + readcon-core#25). Switch to >=0.14.2 on PyPI
-# when that release exists.
-readcon = { git = "https://github.com/lode-org/readcon-core.git", rev = "80285270" }
+readcon = ">=0.14.2"
 vesin = ">=0.5.2, <0.7"
 nanobind = ">=2.4.0, <3"  # pyeonclient (stable ABI / free-threaded); not pybind11
 xxhash = ">=3.4.0, <4"

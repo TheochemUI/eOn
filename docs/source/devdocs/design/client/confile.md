@@ -114,8 +114,8 @@ the C++ client for trajectory outputs and downstream visualization tooling.
 The `readcon-core` library is fetched as a Meson subproject via
 `subprojects/readcon-core.wrap` and linked statically. The wrap pins release
 the 0.14 line (spec 3, x-only decode from readcon-core #25), and
-`client/meson.build` asks for `>=0.14.1` on both resolution paths.
-`eon/fileio.py` needs the companion `readcon` package at `>=0.14.1`.
+`client/meson.build` asks for `>=0.14.2` on both resolution paths.
+`eon/fileio.py` needs the companion `readcon` package at `>=0.14.2`.
 
 ## Updating the subproject
 

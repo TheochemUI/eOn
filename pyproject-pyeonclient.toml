@@ -10,7 +10,7 @@ license = {text = "BSD-3-Clause"}
 requires-python = ">=3.12"
 dependencies = [
     "numpy>=1.26.4",
-    "readcon @ git+https://github.com/lode-org/readcon-core.git@80285270",
+    "readcon>=0.14.2",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",

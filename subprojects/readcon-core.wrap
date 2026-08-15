@@ -1,8 +1,7 @@
 [wrap-git]
 directory = readcon-core
 url = https://github.com/lode-org/readcon-core.git
-revision = 80285270
-# 0.14.1 plus the spec-2 x-only decode (#25). Switch to v0.14.2 when tagged.
+revision = v0.14.2
 depth = 1
 
 [provide]

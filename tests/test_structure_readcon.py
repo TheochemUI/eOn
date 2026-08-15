@@ -81,6 +81,19 @@ def test_per_axis_con_mask_survives_roundtrip():
     assert list(back.atoms[1].fixed) == [False, True, False]
 
 
+def test_x_only_constraint_survives_savecon(tmp_path: Path):
+    s = Structure(1)
+    s.box = np.diag([10.0, 10.0, 10.0])
+    s.names = ["Cu"]
+    s.r = np.array([[0.0, 0.0, 0.0]])
+    s.free = np.array([[0.0, 1.0, 1.0]])
+    s.mass = np.array([63.546])
+    out = tmp_path / "x_only.con"
+    io.savecon(str(out), s)
+    back = io.loadcon(str(out))
+    np.testing.assert_array_equal(back.free[0], [0.0, 1.0, 1.0])
+
+
 def test_from_to_conframe_roundtrip_free_fixed():
     frame = readcon.ConFrame(
         cell=[10.0, 10.0, 10.0],
