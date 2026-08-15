@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Parallel Force Evaluation - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Working with the documentation" href="docbuild.html" /><link rel="prev" title="Benchmarks" href="benchmarks.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Parallel force evaluation - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Working with the documentation" href="docbuild.html" /><link rel="prev" title="Benchmarks" href="benchmarks.html" />
       <link rel="canonical" href="https://eondocs.org/devdocs/parallel-potentials.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -27,7 +27,7 @@
 </style>
     <meta property="og:type" content="website"/>
   <meta property="og:url" content="https://eondocs.org/devdocs/parallel-potentials.html"/>
-  <meta property="og:title" content="Parallel Force Evaluation"/>
+  <meta property="og:title" content="Parallel force evaluation"/>
     <meta name="twitter:card" content="summary"/>
   </head>
 <body><div class="sy-head">
@@ -81,7 +81,7 @@ data-aria-dark="Switch to auto color mode">
       <div class="sy-scrollbar p-6">
         <div class="globaltoc" data-expand-depth="2"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
 <ul class="current">
-<li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn Team</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../team.html">eOn team</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html">Installation</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html#obtaining-sources">Obtaining sources</a></li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../install/index.html#licenses">Licenses</a></li>
@@ -94,59 +94,60 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/akmc.html">AKMC Tutorial</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/parrep.html">Running a Parallel Replica Job</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/displacement_scripts.html">Targeted Displacement for Saddle Searches</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/displacement_scripts.html">Targeted displacement for saddle searches</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/dict_config.html">Dictionary-Style Configuration</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/visualization.html">Visualizing Optimization Trajectories</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/visualization.html">Visualizing optimization trajectories</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/index.html">CECAM Workshop 2024</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/CECAM_LTS_MAP_2024/troubleshooting.html">Virtualbox Troublshooting</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1 _expand"><a class="reference internal" href="../user_guide/index.html">User Guide</a><ul>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/pyeonclient.html">pyeonclient (Python client API)</a></li>
+<li class="toctree-l1 _expand"><a class="reference internal" href="../user_guide/index.html">User guide</a><ul>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/ext_pot.html">External Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/ext_pot.html">External potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/ase_pot.html">ASE Interface</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/metatomic_pot.html">Metatomic Interface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/ase_pot.html">ASE interface</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/metatomic_pot.html">Metatomic interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/quip.html">QUIP with LAMMPS</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/mpi_potential.html">MPI Potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/mpi_potential.html">MPI potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/algorithm_selection.html">Choosing an algorithm</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/main.html">General Simulation Parameters</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/main.html">General simulation parameters</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/potential.html">Potential</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/structure_comparison.html">Structure Comparison</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/structure_comparison.html">Structure comparison</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/optimizer.html">Optimizer</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/minimization.html">Minimization</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/neb.html">Nudged Elastic Band</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/neb.html">Nudged elastic band</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/dimer.html">Dimer method</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/lanczos.html">Lanczos</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/artn.html">ARTn (Activation-Relaxation Technique nouveau)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/hessian.html">Hessian</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/prefactor.html">Prefactor</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/akmc.html">Adaptive Kinetic Monte Carlo</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/saddle_search.html">Saddle Search</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/basin_hopping.html">Basin Hopping</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/process_search.html">Process Search</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/akmc.html">Adaptive kinetic Monte Carlo</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/saddle_search.html">Saddle search</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/basin_hopping.html">Basin hopping</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/process_search.html">Process search</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/recycling.html">Recycling</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/coarse_graining.html">Coarse Graining</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/coarse_graining.html">Coarse graining</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/dynamics.html">Dynamics</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/parallel_replica.html">Parallel Replica</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/parallel_replica.html">Parallel replica</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/hyperdynamics.html">Hyperdynamics</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/communicator.html">Communicator</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/debug.html">Debug</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/paths.html">Paths</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/kdb.html">Kinetic Database</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/kdb.html">Kinetic database</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/rgpot_integration.html">rgpot integration (three roles)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/rgpot_pot.html">RgpotPot (direct in-process rgpot)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/rgpot_metatomic.html">Metatomic backends (fat, RGPOT, ASE)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/serve_mode.html">Serve Mode</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/serve_mode.html">Serve mode</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Development Documentation</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Development documentation</a><ul class="current">
 <li class="toctree-l2 _expand"><a class="reference internal" href="testing.html">Tests</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="benchmarks.html">Benchmarks</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Parallel Force Evaluation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Parallel force evaluation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="docbuild.html">Working with the documentation</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="svn.html">Subversion</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="svn-migration.html">Migrating from SVN</a></li>
@@ -159,49 +160,49 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../apidocs/index.html">API Reference</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../apidocs/eon/eon.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.mcamc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.mcamc</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.mcamc.test.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mcamc.test</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.geometry.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.process.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.process</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.neighbors.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.neighbors</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.pbc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="../apidocs/eon/eon.geometry.cell.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.geometry.cell</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_id.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_id</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.params_ssot.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.params_ssot</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.mpiwait.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.mpiwait</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.process_id.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.process_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.atoms.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.atoms</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.state.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.state</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstate</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.askmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.askmc</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.config.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.config</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.statelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.statelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.basinhopping.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.basinhopping</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator_inprocess.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator_inprocess</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.structure.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.structure</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmcstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmcstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.recycling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.recycling</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.pyeonclient_bridge.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.pyeonclient_bridge</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasinscheme.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasinscheme</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.communicator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.communicator</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.movie.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.eon_kdb.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.eon_kdb</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.explorer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.explorer</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.escaperate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.escaperate</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.fileio.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.fileio</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.amsel_superbasin_gate.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.amsel_superbasin_gate</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.prstatelist.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.prstatelist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.displace.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.displace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.akmc.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.akmc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.parallelreplica.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.parallelreplica</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.locking.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.locking</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.superbasin.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.superbasin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../apidocs/eon/eon.server.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.server</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -254,7 +255,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.9.0/index.html">[v2.9.0] - 2026-01-27</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.9.0/release-notes.html">Release notes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../releases/v2.9.0/publications.html">Related Publications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.9.0/publications.html">Related publications</a></li>
 </ul>
 </li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.8.2/index.html">[v2.8.2] - 2025-12-01</a><ul>
@@ -268,7 +269,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v2.8.0/index.html">[v2.8.0] - 2025-09-04</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/release-notes.html">Release notes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/publications.html">Related Publications</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v2.8.0/publications.html">Related publications</a></li>
 </ul>
 </li>
 </ul>
@@ -284,16 +285,16 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
-<li><a class="reference internal" href="#threading-model">Threading Model</a><ul>
+<li><a class="reference internal" href="#threading-model">Threading model</a><ul>
 <li><a class="reference internal" href="#isthreadsafe"><code class="docutils literal notranslate"><span class="pre">isThreadSafe()</span></code></a></li>
 <li><a class="reference internal" href="#needsperimageinstance"><code class="docutils literal notranslate"><span class="pre">needsPerImageInstance()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#decision-table">Decision Table</a><ul>
+<li><a class="reference internal" href="#decision-table">Decision table</a><ul>
 <li><a class="reference internal" href="#where-the-answers-come-from">Where the answers come from</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#affected-code-paths">Affected Code Paths</a></li>
+<li><a class="reference internal" href="#affected-code-paths">Affected code paths</a></li>
 <li><a class="reference internal" href="#performance">Performance</a></li>
 <li><a class="reference internal" href="#adding-a-new-potential">Adding a New Potential</a></li>
 </ul>
@@ -336,11 +337,11 @@ data-aria-dark="Switch to auto color mode">
         <span>/</span>
         <meta itemprop="position" content="1" />
       </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <a itemprop="item" href="index.html"><span itemprop="name">Development Documentation</span></a>
+        <a itemprop="item" href="index.html"><span itemprop="name">Development documentation</span></a>
         <span>/</span>
         <meta itemprop="position" content="2" />
       </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <strong itemprop="name">Parallel Force Evaluation</strong>
+        <strong itemprop="name">Parallel force evaluation</strong>
         <meta itemprop="position" content="3" />
       </li></ol>
     <div class="xl:hidden ml-1">
@@ -389,12 +390,12 @@ data-aria-dark="Switch to auto color mode">
   </div>
 </div><article class="yue dark-code" role="main">
           <section id="parallel-force-evaluation">
-<h1>Parallel Force Evaluation<a class="headerlink" href="#parallel-force-evaluation" title="Link to this heading">¶</a></h1>
+<h1>Parallel force evaluation<a class="headerlink" href="#parallel-force-evaluation" title="Link to this heading">¶</a></h1>
 <p>eOn supports parallel force evaluation in NEB, Dimer/ImprovedDimer, and
 ProcessSearchJob. The threading model uses <code class="docutils literal notranslate"><span class="pre">std::thread</span></code> with per-image
 potential ownership.</p>
 <section id="threading-model">
-<h2>Threading Model<a class="headerlink" href="#threading-model" title="Link to this heading">¶</a></h2>
+<h2>Threading model<a class="headerlink" href="#threading-model" title="Link to this heading">¶</a></h2>
 <p>Two virtual methods on <code class="docutils literal notranslate"><span class="pre">Potential</span></code> control the behavior:</p>
 <section id="isthreadsafe">
 <h3><code class="docutils literal notranslate"><span class="pre">isThreadSafe()</span></code><a class="headerlink" href="#isthreadsafe" title="Link to this heading">¶</a></h3>
@@ -408,7 +409,7 @@ return <code class="docutils literal notranslate"><span class="pre">true</span><
 <section id="needsperimageinstance">
 <h3><code class="docutils literal notranslate"><span class="pre">needsPerImageInstance()</span></code><a class="headerlink" href="#needsperimageinstance" title="Link to this heading">¶</a></h3>
 <p>Returns whether NEB should create a <em>separate</em> <code class="docutils literal notranslate"><span class="pre">Potential</span></code> instance per
-image via <code class="docutils literal notranslate"><span class="pre">makePotential()</span></code>. This is needed for potentials where:</p>
+image via <code class="docutils literal notranslate"><span class="pre">makePotential()</span></code>. Needed for potentials where:</p>
 <ul class="simple">
 <li><p>The same instance cannot be called concurrently (internal state, caches)</p></li>
 <li><p>But separate instances CAN run in parallel (each has its own state)</p></li>
@@ -416,7 +417,7 @@ image via <code class="docutils literal notranslate"><span class="pre">makePoten
 <p>Examples:</p>
 <ul class="simple">
 <li><p><strong>MetatomicPotential</strong>: PyTorch model has internal caches. Same instance
-needs a mutex; separate instances run truly in parallel. Returns
+needs a mutex; separate instances run independently. Returns
 <code class="docutils literal notranslate"><span class="pre">needsPerImageInstance()</span> <span class="pre">=</span> <span class="pre">true</span></code>.</p></li>
 <li><p><strong>XTBPot</strong>: Fortran library has per-instance state (<code class="docutils literal notranslate"><span class="pre">xtb_TEnvironment</span></code>,
 <code class="docutils literal notranslate"><span class="pre">xtb_TCalculator</span></code>). Same instance is not thread-safe; separate instances
@@ -428,7 +429,7 @@ evaluation then proceeds lock-free.</p>
 </section>
 </section>
 <section id="decision-table">
-<h2>Decision Table<a class="headerlink" href="#decision-table" title="Link to this heading">¶</a></h2>
+<h2>Decision table<a class="headerlink" href="#decision-table" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -464,18 +465,18 @@ evaluation then proceeds lock-free.</p>
 </div>
 <section id="where-the-answers-come-from">
 <h3>Where the answers come from<a class="headerlink" href="#where-the-answers-come-from" title="Link to this heading">¶</a></h3>
-<p>Potentials that reach eOn through <code class="docutils literal notranslate"><span class="pre">RgpotAdapter</span></code> do not hard-code either
-flag: the adapter reads <code class="docutils literal notranslate"><span class="pre">caps().reentrancy</span></code> from the rgpot kernel, so the
-answer lives next to the physics rather than in a list on the caller side.
+<p>Potentials that reach eOn through <code class="docutils literal notranslate"><span class="pre">RgpotAdapter</span></code> take both flags from
+<code class="docutils literal notranslate"><span class="pre">caps().reentrancy</span></code> on the rgpot kernel, so the answer lives next to the
+physics.
 <code class="docutils literal notranslate"><span class="pre">SharedInstance</span></code> maps to <code class="docutils literal notranslate"><span class="pre">isThreadSafe()</span></code>, <code class="docutils literal notranslate"><span class="pre">PerInstance</span></code> to
 <code class="docutils literal notranslate"><span class="pre">needsPerImageInstance()</span></code>, and <code class="docutils literal notranslate"><span class="pre">ProcessSerial</span></code> to neither, which is the
 last row above.</p>
 <p>The Fortran kernels all declare <code class="docutils literal notranslate"><span class="pre">ProcessSerial</span></code> today. That matches how
 they were treated before the port – they were on the old hard-coded
 thread-safety blacklist – and it is deliberately the conservative
-starting point rather than a claim about the rewritten code: the kernels
+starting point. The kernels
 carry no mutable module state any more, so promoting one is a per-kernel
-exercise in proving it and adding a test, not a sweeping change.</p>
+exercise in checking the kernel and adding a test.</p>
 <p>The parallel check in NEB is:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kt">bool</span><span class="w"> </span><span class="n">canParallel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pot</span><span class="o">-&gt;</span><span class="n">isThreadSafe</span><span class="p">()</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">perImagePotentials_</span><span class="p">;</span>
 </span><span data-line="2"><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">numImages</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">.</span><span class="n">main_options</span><span class="p">.</span><span class="n">parallel</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">canParallel</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
@@ -484,7 +485,7 @@ exercise in proving it and adding a test, not a sweeping change.</p>
 </section>
 </section>
 <section id="affected-code-paths">
-<h2>Affected Code Paths<a class="headerlink" href="#affected-code-paths" title="Link to this heading">¶</a></h2>
+<h2>Affected code paths<a class="headerlink" href="#affected-code-paths" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -521,7 +522,7 @@ force evaluation gives a <strong>2.3x speedup</strong> over SVN sequential.</p>
 <p>With PET-MAD-S ML potential (14-atom Claisen, 10 NEB images):</p>
 <ul class="simple">
 <li><p>Mutex-serialized (shared instance): 192 seconds</p></li>
-<li><p>Per-image instances (true parallel): 69 seconds (<strong>2.8x speedup</strong>)</p></li>
+<li><p>Per-image instances (lock-free): 69 seconds (<strong>2.8x speedup</strong>)</p></li>
 </ul>
 </section>
 <section id="adding-a-new-potential">
@@ -532,7 +533,7 @@ same instance but supports independent instances:</p>
 <li><p>Override <code class="docutils literal notranslate"><span class="pre">isThreadSafe()</span></code> to return <code class="docutils literal notranslate"><span class="pre">true</span></code> (with internal mutex as
 fallback) or <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
 <li><p>Override <code class="docutils literal notranslate"><span class="pre">needsPerImageInstance()</span></code> to return <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
-<li><p>Ensure the constructor (called by <code class="docutils literal notranslate"><span class="pre">makePotential()</span></code>) creates an
+<li><p>The constructor (called by <code class="docutils literal notranslate"><span class="pre">makePotential()</span></code>) must create an
 independent instance (no shared static state)</p></li>
 </ol>
 <p>The <code class="docutils literal notranslate"><span class="pre">[Main]</span> <span class="pre">parallel</span> <span class="pre">=</span> <span class="pre">true</span></code> config option (default) enables threading.

@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn serve mode, RPC server, rgpot, Cap'n Proto, ChemGP, potential serving"
 ---
 
-# Serve Mode
+# Serve mode
 
 ```{versionadded} 2.2
 ```
@@ -21,10 +21,8 @@ potential as an
 tools (e.g. [ChemGP](https://github.com/HaoZeke/ChemGP)) can evaluate energies
 and forces without embedding C++.
 
-This is **not** the direct in-process **RGPOT** pot (`-Dwith_rgpot`,
-`dlopen` of `libnwchemc` / `libcpmdc` via rgpot NWChemPot/CPMDPot), and **not**
-an eOn client connecting to **potserv**. See
-[rgpot integration](project:rgpot_integration.md) for the three roles.
+The three roles (in-process RGPOT, this RPC server, potserv client) are in
+[rgpot integration](project:rgpot_integration.md).
 
 ## Compilation
 
@@ -51,10 +49,10 @@ meson compile -C builddir
 ## Usage
 
 Serve mode supports four modes of operation: single-potential, replicated,
-gateway, and multi-model. Each mode is selected by the combination of CLI flags
+`--gateway` pool, and multi-model. Each mode is selected by the combination of CLI flags
 provided.
 
-### Single-Potential
+### Single potential
 
 The simplest usage serves one potential on a single port:
 
@@ -83,9 +81,9 @@ This starts 4 independent servers on ports 12345 through 12348, each with its
 own potential instance and event loop. Useful when clients can load-balance
 across known ports.
 
-### Gateway
+### Gateway pool
 
-Gateway mode exposes a single port backed by a pool of potential instances.
+`--gateway` exposes a single port backed by a pool of potential instances.
 Incoming requests are dispatched round-robin across the pool, so clients only
 need to know one address:
 
@@ -98,7 +96,7 @@ Each incoming RPC call is routed to the next available instance. This is the
 recommended mode for high-throughput use cases where clients should not need to
 track multiple ports.
 
-### Multi-Model
+### Multi-model
 
 The `--serve` flag accepts a comma-separated specification of
 `potential:port` or `potential:host:port` pairs, each served concurrently
@@ -114,7 +112,7 @@ With explicit hosts:
 eonclient --serve "lj:0.0.0.0:12345,eam_al:0.0.0.0:12346"
 ```
 
-## Potential Configuration
+## Potential configuration
 
 Potentials that require parameters (Metatomic, XTB, etc.) can be configured
 via the `--config` flag, which loads an INI-format config file:
@@ -141,10 +139,10 @@ paramset = GFN2xTB
 accuracy = 1.0
 ```
 
-## Config-Driven Serve
+## Config-driven serve
 
-The `[Serve]` section allows fully config-driven serving without CLI flags
-beyond `--config`:
+The `[Serve]` section selects host, port, replicas, and `gateway_port` without CLI
+flags beyond `--config`:
 
 ```{code-block} ini
 [Potential]
@@ -164,14 +162,14 @@ eonclient --config serve.ini
 The dispatch logic when serving from config:
 
 1. If `endpoints` is set, each endpoint is served in its own thread.
-2. If `gateway_port > 0`, a single gateway port is opened backed by a pool
+2. If `gateway_port > 0`, a single pool port is opened backed by a pool
    of `replicas` potential instances.
 3. Otherwise, `replicas` independent servers are started on sequential ports
    beginning at `port`.
 
 ### Examples
 
-Gateway with a Metatomic model:
+`--gateway` with a Metatomic model:
 
 ```{code-block} ini
 [Potential]
@@ -257,7 +255,7 @@ oracle = make_rpc_oracle(pot)
 
 See the [ChemGP RPC tutorial](https://github.com/HaoZeke/ChemGP) for details.
 
-## Architecture Notes
+## Architecture notes
 
 The serve mode uses a `ForceCallback` (flat-array `std::function`) interface
 internally, completely decoupling the eOn potential from the capnp server.
@@ -268,14 +266,14 @@ translation unit. The capnp schema code is compiled in a separate TU
 more on the integration pattern, see the
 [rgpot integration guide](https://rgpot.rgoswami.me/integration_guide.html).
 
-## Command Reference
+## Command reference
 
 | Flag | Description |
 |------|-------------|
 | `--serve <spec>` | Multi-model serve spec: `pot:port` or `pot:host:port`, comma-separated |
 | `--serve-host <host>` | Host for single-potential mode (default: `localhost`) |
 | `--serve-port <port>` | Port for single-potential mode with `-p` (default: `12345`) |
-| `--replicas <N>` | Number of server instances or gateway pool size (default: `1`) |
-| `--gateway` | Enable gateway mode (single port, round-robin pool) |
+| `--replicas <N>` | Number of server instances or `--gateway` pool size (default: `1`) |
+| `--gateway` | Single port, round-robin pool |
 | `--config <file>` | INI config file for potential and serve parameters |
 | `-p <potential>` | Potential type (used with `--serve-port`) |

@@ -30,7 +30,7 @@ See {doc}`../../user_guide/serve_mode` for full documentation.
 #### rgpycrumbs configuration examples
 
 The user guide now includes dictionary-style configuration examples using
-rgpycrumbs, demonstrating programmatic config generation alongside INI files.
+rgpycrumbs, so configs can be built in Python as well as written as INI files.
 
 ### Developer
 
@@ -51,7 +51,7 @@ serve spec parsing.
 #### Windows torch_global_deps
 
 Skip `torch_global_deps` on Windows where the conda-forge libtorch package
-does not ship it.
+does not include it.
 
 #### Serve mode AtomMatrix collision
 

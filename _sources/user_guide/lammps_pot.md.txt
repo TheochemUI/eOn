@@ -15,12 +15,12 @@ is installed, without requiring LAMMPS at build time.
 
 ```{admonition} conda-forge availability
 :class: tip
-The `conda-forge` eOn package works with LAMMPS out of the box. Simply install
+The `conda-forge` eOn package works with LAMMPS after you install
 LAMMPS in the same environment: `conda install lammps`. eOn will find and load
 `liblammps` automatically at runtime.
 ```
 
-## How It Works
+## How it works
 
 eOn uses a singleton `LammpsLoader` that searches for the LAMMPS shared library
 at the first potential evaluation. The search order is:
@@ -71,7 +71,7 @@ pair_modify shift yes #shift the potential to be zero at the cutoff
 
 ## Troubleshooting
 
-If eOn reports "LAMMPS library not found", ensure that:
+If eOn reports "LAMMPS library not found", check:
 
 1. `liblammps.so` (or `.dylib`/`.dll`) is on the library search path
    (`LD_LIBRARY_PATH` on Linux, `DYLD_LIBRARY_PATH` on macOS)

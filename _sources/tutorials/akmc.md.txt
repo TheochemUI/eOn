@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    "description": "A step-by-step tutorial on running an Adaptive Kinetic Monte Carlo (aKMC) simulation with eOn, demonstrated with a Pt heptamer island on a Pt(111) surface."
+    "description": "Tutorial: Adaptive Kinetic Monte Carlo (aKMC) on a Pt heptamer island on Pt(111)."
     "keywords": "eOn aKMC tutorial, Kinetic Monte Carlo, Pt(111), saddle search, simulation"
 ---
 
