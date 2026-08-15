@@ -5,12 +5,12 @@ myst:
     "keywords": "eOn coarse graining, MCAMC, AS-KMC, superbasins, accelerated simulation"
 ---
 
-# Coarse Graining
+# Coarse graining
 
 In aKMC simulations where there are vastly different rates, the simulation can
-get stuck in a group of states connected by relatively fast rates. In order to
-explore slower transitions, a prohibitively large number of KMC steps may be
-needed. In order to circumvent this problem, `eOn` implements two methods.
+get stuck in a group of states connected by relatively fast rates. Exploring
+slower transitions can take a prohibitively large number of KMC steps.
+`eOn` implements two methods that skip those fast recrossings.
 
 ```{note}
 AS-KMC and MCAMC cannot be used simultaneously.
@@ -59,15 +59,15 @@ Several parameters dictate the functioning of the AS-KMC method. These
 parameters dictate how much the barriers are raised each time the Superbasin
 Criterion
 passes({any}`eon.schema.CoarseGrainingConfig.askmc_barrier_raise_param`), what
-defines a “low-barrier” for use in the Superbasin
+defines a "low-barrier" for use in the Superbasin
 Criterion({any}`eon.schema.CoarseGrainingConfig.askmc_high_barrier_def`), and
 the approximate amount of error the user might expect in eventual superbasin
 exit direction and time compared to normal KMC simulation
 ({any}`eon.schema.CoarseGrainingConfig.askmc_confidence`).
 
-## Optional AMSEl discover/decide gate
+## Optional AMSEl discover/decide hook
 
-When MCAMC superbasins are active, an optional pre-step gate can call
+When MCAMC superbasins are active, an optional pre-step can call
 `amsel.discover_decide_status` on the superbasin process graph before
 `Superbasin.step`. Enable it under **[amsel]** (default off):
 
@@ -80,7 +80,7 @@ e_min_floor = 0.05
 cv_threshold = 10.0
 ```
 
-If the `amsel` Python package is not installed, the gate is a no-op and legacy
+If the `amsel` Python package is not installed, the hook is a no-op and legacy
 MCAMC behaviour is unchanged. Status outcomes:
 
 - **accepted** / **retightened** — proceed with MCAMC as usual

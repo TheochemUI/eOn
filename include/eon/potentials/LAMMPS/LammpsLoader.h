@@ -44,7 +44,7 @@ public:
   using open_mpi_fn = void *(*)(int, char **, MPI_Comm, void **);
 #endif
 
-  /// Thread-safe singleton accessor (Meyer's pattern).
+  /// Thread-safe singleton accessor (Meyer's pattern). Does not dlopen.
   static LammpsLoader &instance();
 
   // Loaded function pointers (null if library not found)
@@ -58,20 +58,27 @@ public:
   open_mpi_fn open_mpi{nullptr};
 #endif
 
-  /// True if liblammps was successfully loaded.
+  /// True if liblammps was successfully dlopened and the C ABI resolved.
   [[nodiscard]] bool is_loaded() const noexcept { return m_loaded; }
 
-  /// Throws std::runtime_error if liblammps is not available.
-  void require_loaded() const;
+  /// Filesystem probe: a candidate liblammps file is visible without
+  /// dlopen, so LAMMPS static initializers (the banner) do not run.
+  [[nodiscard]] bool available() const;
+
+  /// Load on first use, then throw if liblammps is not available.
+  void require_loaded();
 
   LammpsLoader(const LammpsLoader &) = delete;
   LammpsLoader &operator=(const LammpsLoader &) = delete;
 
 private:
-  LammpsLoader();
+  LammpsLoader() = default;
   ~LammpsLoader();
 
+  void ensure_loaded();
+
   bool m_loaded{false};
+  bool m_tried{false};
   dynlib::Handle m_handle{};
 
   /// Try to load a symbol; returns nullptr on failure.

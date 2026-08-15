@@ -49,14 +49,11 @@ leaves it in place when a call fails so its contents can be inspected.
 existing file, so `./ext_pot` and an absolute path both work. A command line
 with arguments (`python wrapper.py`) or a name looked up on `PATH` is passed
 to the shell unchanged and therefore has to be written so it resolves from
-the exchange directory: give the script an absolute path. A wrapper that
-needs to reach files in the directory eOn runs in finds that directory in the
-environment variable `EON_EXTPOT_RUN_DIR`.
-
-On Windows, `system()` runs through `cmd.exe`, which will not execute an
-extensionless file. A resolved path that names a Python script (a `python`
-or `python3` shebang, or a `.py` suffix) is invoked as `python <path>`.
-Write a native `.exe`, `.bat`, or `.cmd` if the wrapper is not Python.
+the exchange directory: give the script an absolute path. On Windows,
+`cmd.exe` does not honor a shebang: a resolved script whose first line names
+python, or whose name ends in `.py`, is invoked as `python <script>`. A
+wrapper that needs to reach files in the directory eOn runs in finds that
+directory in the environment variable `EON_EXTPOT_RUN_DIR`.
 ```
 
 ### Input file (`from_eon_to_extpot`)

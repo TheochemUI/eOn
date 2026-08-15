@@ -239,7 +239,7 @@ class ClientMinModeExplorer(MinModeExplorer):
                 io.savecon(dispIO, displacement)
                 search['displacement.con'] = dispIO
                 modeIO = io.StringIO()
-                io.save_mode(modeIO, mode)
+                io.save_mode(modeIO, mode, getattr(self.reactant, "free", None))
                 search['direction.dat'] = modeIO
 
             searches.append(search)
@@ -820,7 +820,7 @@ class ProcessSearch:
         job['displacement.con'] = dispIO
 
         modeIO = io.StringIO()
-        io.save_mode(modeIO, self.mode)
+        io.save_mode(modeIO, self.mode, getattr(self.reactant, "free", None))
         job['direction.dat'] = modeIO
 
         reactIO = io.StringIO()

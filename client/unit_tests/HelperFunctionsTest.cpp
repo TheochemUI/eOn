@@ -22,6 +22,8 @@
 
 #include <cmath>
 #include <cstdio>
+#include <stdexcept>
+#include <string>
 
 namespace tests {
 
@@ -130,6 +132,34 @@ TEST_CASE("HelperFunctions: maxAtomMotionV", "[helpers]") {
   v << 1.0, 0.0, 0.0, 0.0, 3.0, 4.0;
   double maxMotion = eonc::helpers::maxAtomMotionV(v);
   REQUIRE(maxMotion == Catch::Approx(5.0));
+}
+
+TEST_CASE("HelperFunctions: convergenceMetricLabel known spellings",
+          "[helpers][convergence]") {
+  REQUIRE(eonc::helpers::convergenceMetricLabel("norm") == "||Force||");
+  REQUIRE(eonc::helpers::convergenceMetricLabel("max_atom") ==
+          "Max atom force");
+  REQUIRE(eonc::helpers::convergenceMetricLabel("max_component") ==
+          "Max force comp");
+  REQUIRE_FALSE(eonc::helpers::convergenceMetricLabel("typo").has_value());
+}
+
+TEST_CASE("HelperFunctions: requireKnownConvergenceMetric throws on typo",
+          "[helpers][convergence]") {
+  REQUIRE_NOTHROW(
+      eonc::helpers::requireKnownConvergenceMetric("norm", "[test]"));
+  REQUIRE_THROWS_AS(
+      eonc::helpers::requireKnownConvergenceMetric("nope", "[test]"),
+      std::invalid_argument);
+  try {
+    eonc::helpers::requireKnownConvergenceMetric("nope", "[test]");
+    FAIL("expected throw");
+  } catch (const std::invalid_argument &e) {
+    REQUIRE_THAT(std::string(e.what()), Catch::Matchers::ContainsSubstring(
+                                            "unknown convergence_metric"));
+    REQUIRE_THAT(std::string(e.what()),
+                 Catch::Matchers::ContainsSubstring("nope"));
+  }
 }
 
 } // namespace tests

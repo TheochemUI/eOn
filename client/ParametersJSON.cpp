@@ -10,10 +10,13 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/ParametersJSON.h"
+#include "eon/HelperFunctions.h"
 #include "eon/Parameters.h"
 #include "eon/ParametersINI.h"
 #include "magic_enum/magic_enum.hpp"
 
+#include <cctype>
+#include <format>
 #include <nlohmann/json.hpp>
 #include <stdexcept>
 
@@ -263,6 +266,17 @@ void from_json(const json &j, Parameters &p) {
       p.optimizer_options.method =
           enum_from_json(s.at("opt_method"), p.optimizer_options.method);
     JSON_OPT(s, "convergence_metric", p.optimizer_options.convergence_metric);
+    for (char &c : p.optimizer_options.convergence_metric) {
+      c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    }
+    if (auto label = eonc::helpers::convergenceMetricLabel(
+            p.optimizer_options.convergence_metric)) {
+      p.optimizer_options.convergence_metric_label = std::string(*label);
+    } else {
+      throw std::invalid_argument(
+          std::format("unknown convergence_metric: {}",
+                      p.optimizer_options.convergence_metric));
+    }
     JSON_OPT(s, "max_iterations", p.optimizer_options.max_iterations);
     JSON_OPT(s, "max_move", p.optimizer_options.max_move);
     JSON_OPT(s, "converged_force", p.optimizer_options.converged_force);
@@ -378,6 +392,8 @@ int load_json(const std::string &json_str, Parameters &params) {
     from_json(j, params);
     return 0;
   } catch (const json::exception &e) {
+    return 1;
+  } catch (const std::invalid_argument &) {
     return 1;
   }
 }

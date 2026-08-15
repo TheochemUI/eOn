@@ -33,7 +33,7 @@ svn log --xml --quiet | grep author | sort -u | \
 ```
 
 Now, the `authors.txt` file can be edited to map to existing GitHub users. It is
-also useful to grab the `loggy` file to try to timestamp when each user was
+also useful to grab the `loggy` file to timestamp when each user was
 active.
 
 ## Importing history
@@ -47,7 +47,7 @@ git config svn.authorsfile ../authors.txt
 git svn fetch
 ```
 
-This will take much longer, since `fetch`, unlike `checkout` downloads all
+`fetch` takes much longer than `checkout` because it downloads all
 changes. Cross-reference with the "fuller" variant from here:
 
 ```{code-block} bash
@@ -60,8 +60,8 @@ sub(" $", "", $2); print $2" = "$2" <"$2">"}' | sort -u > authors-transform.txt
 By project convention, if the command fails with an author not defined use
 `username = username <username@NODATA>`, then retry the `git svn fetch`.
 
-Also note that it is by far preferably to use Github handles for email
-addresses, `<haozeke@users.noreply.github.com>` to reduce leaking personally
+Prefer Github handles for email addresses,
+`<haozeke@users.noreply.github.com>`, to reduce leaking personally
 identifiable information.
 
 ## Merging upstream
@@ -74,7 +74,7 @@ required.
 ```
 
 Since we already have `svn` as a branch and even tags, it is a bit of a pain to
-take updates. Essentially we will have to rebase onto the "new" commits.
+take updates. Rebase onto the incoming commits.
 
 ```{code-block} bash
 git branch -d main # extraneous
@@ -103,8 +103,8 @@ git rebase --ignore-whitespace --rebase-merges --onto main_fin 0e26312^ c267e1c
 git push origin HEAD:main_fin
 ```
 
-Note that the `ignore-whitespace` option might be problematic for Python
-changes, but for C++ only changesets it should be fine.
+The `ignore-whitespace` option can break Python changesets; C++-only
+changesets usually survive it.
 
 Documentation only commits are ported separately, and skipped during the rebase, since these will be in files "deleted by us".
 

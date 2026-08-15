@@ -28,7 +28,7 @@ def test_free_r_matches_mask():
     p = _fcc_cell(3)
     p.free[::2] = 0
     fr = p.free_r()
-    expected = p.r[p.free.astype(bool)]
+    expected = p.r[p.atom_is_free()]
     assert fr.shape == expected.shape
     np.testing.assert_allclose(fr, expected)
 

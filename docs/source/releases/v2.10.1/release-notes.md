@@ -22,9 +22,9 @@ uses across the codebase were not updated, causing them to revert to Eigen's
 default column-major layout.
 
 Row-major layout is required so that `.data()` yields
-`[x0, y0, z0, x1, y1, z1, ...]`, which is what the Fortran potentials and
+`[x0, y0, z0, x1, y1, z1, ...]`, the layout the Fortran potentials and
 `VectorXd::Map` round-trips expect.  The column-major matrices stored
-`[x0, x1, ..., y0, y1, ..., z0, z1, ...]` instead, silently corrupting force
+`[x0, x1, ..., y0, y1, ..., z0, z1, ...]` instead, corrupting force
 projections and causing the NEB to diverge from the first step.
 
 The fix removes `using namespace Eigen;` from `client/Eigen.h` (which would

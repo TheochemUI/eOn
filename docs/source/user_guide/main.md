@@ -5,15 +5,14 @@ myst:
     "keywords": "eOn main config, general parameters, job type, temperature, settings"
 ---
 
-# General Simulation Parameters
+# General simulation parameters
 
 The following contains general options which specify the calculation to be done
 and general parameters which are shared between job types.
 
 ## Jobs
 
-More details are in subsequent sections, but a brief overview of the jobs are as
-grouped below.
+The jobs are grouped below. Details follow in later sections.
 
 ### aKMC
 
@@ -88,7 +87,7 @@ with acceleration provided by Gaussian Process Regression or neural networks.
 
 ## Miscellaneous
 
-Finally we note the following overview of some other sections
+Other sections:
 
 Main
 : which has options not specific to a single job type.
@@ -106,13 +105,13 @@ Prefactor
 : which has options to control the calculation of harmonic transition state (hTST) prefactors
 
 Structure Comparison
-: which configures the computation of similarity measures and equivalence thresholds
+: which configures the computation of similarity measures and equivalence cutoffs
 
 Paths
 : which enumerate directories in which calculations will be run
 
 Debug
-: which holds options for additional output
+: which lists extra output options
 
 ## Configuration
 

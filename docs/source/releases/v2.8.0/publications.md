@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn publications, citations, research papers, scientific articles"
 ---
 
-# Related Publications
+# Related publications
 
 eOn is actively used by groups across the world, we limit ourselves to a few
 here, pull requests are welcome.
@@ -37,7 +37,7 @@ here, pull requests are welcome.
 
 ## [Lab-COSMO](https://www.epfl.ch/labs/cosmo/)
 
-- Demonstration of RO-NEB-CI in
+- RO-NEB-CI in
   {cite:t}`2.8.0-bigiMetatensorMetatomicFoundational2025` which covers the
   [metatensor ecosystem](https://docs.metatensor.org/latest/index.html).
   + [ArXiV preprint](https://arxiv.org/abs/2508.15704)
@@ -57,7 +57,7 @@ here, pull requests are welcome.
 - **Application ::** Atomistic mechanisms of binary alloy surface segregation {cite:t}`2.8.0-garzaAtomisticMechanismsBinary2022`.
 - **Method/Software ::** Atom-centered machine-learning force field package {cite:t}`2.8.0-liAtomcenteredMachinelearningForce2023`.
 
-## Other Relevant Publications
+## Other publications
 
 - **Application ::** Evaluation of force fields for anthracene crystal growth
   {cite:t}`2.8.0-grancicEvaluationAllatomForce2015`.

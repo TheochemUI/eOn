@@ -48,8 +48,13 @@ std::string json_escape(std::string_view sv) {
 } // namespace
 
 PotRegistry &PotRegistry::get() noexcept {
-  static PotRegistry instance;
-  return instance;
+  // Heap-allocated and never deleted. Potential destructors call
+  // on_destroyed, and those objects can outlive C++ static
+  // destructors (interpreter finalization, leaked shared_ptrs). A
+  // function-local static would already be destroyed on those paths,
+  // so on_destroyed would lock a destroyed mutex.
+  static PotRegistry *instance = new PotRegistry;
+  return *instance;
 }
 
 void PotRegistry::reset() {

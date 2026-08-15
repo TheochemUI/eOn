@@ -19,13 +19,13 @@ atomic coordinates) is used for:
 - **Saddle verification**: A first-order saddle point has exactly one negative
   Hessian eigenvalue.
 
-## How It Works
+## How it works
 
 eOn computes the Hessian numerically with a selectable finite-difference scheme
 on the **mobile** (displaced) atoms: non-fixed atoms in `pos.con`, optionally
 restricted by `[Hessian] phva_atoms` (comma-separated indices, or `All`). That
-list is the hybrid/PHVA-class *active set* — atoms that are moved in FD, not
-the frozen environment (Li & Jensen, *Theor. Chem. Acc.* **107**, 211, 2002).
+list is the hybrid/PHVA-class *active set*: atoms moved in FD. The remaining
+atoms stay frozen (Li & Jensen, *Theor. Chem. Acc.* **107**, 211, 2002).
 
 Step size is `Main.finite_difference` (historically also called finite-difference
 displacement; default \(0.01\,\text{Å}\)).
@@ -67,7 +67,7 @@ fd_scheme = one_sided
 zero_freq_value = 1e-6
 ```
 
-The output `results.dat` records force-call counts; `hessian.dat` holds the
+The output `results.dat` records force-call counts; `hessian.dat` contains the
 mass-weighted matrix when `quiet = false`. Eigenvalues (squared frequencies)
 are obtained by diagonalizing the symmetrized matrix (ColMajor eigen solve in
 the client).

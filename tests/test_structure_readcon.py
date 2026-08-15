@@ -33,8 +33,52 @@ def interleaved_cu_h() -> Structure:
     return s
 
 
+def test_con_angles_are_alpha_beta_gamma():
+    """CON header line 4 is alpha beta gamma, not gamma beta alpha."""
+    frame = readcon.ConFrame(
+        cell=[10.0, 11.0, 12.0],
+        angles=[80.0, 85.0, 95.0],
+        atoms=[readcon.Atom("Cu", 0.0, 0.0, 0.0, [False, False, False], 1, 63.5)],
+        prebox_header=["t", ""],
+    )
+    s = Structure.from_conframe(frame)
+    a, b, c = s.box
+
+    def ang(u, v):
+        return float(
+            np.degrees(
+                np.arccos(np.dot(u, v) / (np.linalg.norm(u) * np.linalg.norm(v)))
+            )
+        )
+
+    assert ang(b, c) == pytest.approx(80.0, abs=1e-6)
+    assert ang(a, c) == pytest.approx(85.0, abs=1e-6)
+    assert ang(a, b) == pytest.approx(95.0, abs=1e-6)
+    back = s.to_conframe()
+    np.testing.assert_allclose(back.angles, [80.0, 85.0, 95.0], atol=1e-6)
+
+
 def test_atoms_alias_is_structure():
     assert Atoms is Structure
+
+
+def test_per_axis_con_mask_survives_roundtrip():
+    """CON column 4 is per-axis; x-only fixed must not become fully frozen."""
+    frame = readcon.ConFrame(
+        cell=[10.0, 10.0, 10.0],
+        angles=[90.0, 90.0, 90.0],
+        atoms=[
+            readcon.Atom("Cu", 0.0, 0.0, 0.0, [True, False, False], 1, 63.5),
+            readcon.Atom("Cu", 1.5, 0.0, 0.0, [False, True, False], 2, 63.5),
+        ],
+        prebox_header=["t", ""],
+    )
+    s = Structure.from_conframe(frame)
+    np.testing.assert_array_equal(s.free[0], [0.0, 1.0, 1.0])
+    np.testing.assert_array_equal(s.free[1], [1.0, 0.0, 1.0])
+    back = s.to_conframe()
+    assert list(back.atoms[0].fixed) == [True, False, False]
+    assert list(back.atoms[1].fixed) == [False, True, False]
 
 
 def test_from_to_conframe_roundtrip_free_fixed():
@@ -49,8 +93,8 @@ def test_from_to_conframe_roundtrip_free_fixed():
     )
     s = Structure.from_conframe(frame)
     assert len(s) == 2
-    assert s.free[0] == 0.0
-    assert s.free[1] == 1.0
+    np.testing.assert_array_equal(s.free[0], [0.0, 0.0, 0.0])
+    np.testing.assert_array_equal(s.free[1], [1.0, 1.0, 1.0])
     assert s.names == ["Cu", "Cu"]
     back = s.to_conframe()
     assert list(back.atoms[0].fixed) == [True, True, True]
@@ -177,6 +221,15 @@ def test_an_index_into_r_addresses_the_same_atom_after_a_reload(tmp_path: Path):
         assert back.names[i] == s.names[i]
 
 
+def test_save_mode_zeros_fixed_axes(tmp_path: Path):
+    mode = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+    free = np.array([[0.0, 1.0, 1.0], [1.0, 1.0, 1.0]])
+    out = tmp_path / "mode.dat"
+    io.save_mode(str(out), mode, free)
+    back = io.load_mode(str(out))
+    np.testing.assert_allclose(back, [[0.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+
+
 def test_savecon_preserves_the_ids_a_file_arrived_with(tmp_path: Path):
     path = DATA / "server" / "Pt_Heptamer_oneLayer" / "pos.con"
     original_ids = [a.atom_id for a in readcon.read_con(str(path))[0].atoms]
@@ -234,3 +287,16 @@ def test_saveposcar_body_matches_its_own_declared_counts(tmp_path: Path):
     # x doubles as each atom's identity in the fixture.
     for name, x in zip(read_names, read_x):
         assert s.names[int(round(x))] == name
+
+
+def test_poscar_selective_dynamics_is_per_axis(tmp_path: Path):
+    s = Structure(1)
+    s.box = np.diag([10.0, 10.0, 10.0])
+    s.names = ["Cu"]
+    s.r = np.array([[1.0, 2.0, 3.0]])
+    s.free = np.array([[0.0, 1.0, 1.0]])
+    s.mass = np.array([63.546])
+    out = tmp_path / "POSCAR"
+    io.saveposcar(str(out), s)
+    flags = out.read_text().strip().splitlines()[-1].split()[3:6]
+    assert flags == ["F", "T", "T"]

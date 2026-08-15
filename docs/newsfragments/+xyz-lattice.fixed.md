@@ -1,0 +1,1 @@
+`matter2xyz` writes extended XYZ: the comment carries `Lattice="..."` so a reader can reconstruct the cell, and coordinates use 17 significant digits to match the CON path. Appending a frame whose atom count differs from the last frame in the file is rejected and leaves the file unchanged.

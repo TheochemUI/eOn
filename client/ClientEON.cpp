@@ -27,6 +27,7 @@
 #include "version.h"
 #include <cstdlib>
 #include <exception>
+#include <format>
 #include <fstream>
 #include <iostream>
 #include <string_view>
@@ -465,7 +466,19 @@ static int eonClientMain(int argc, char **argv) {
 
       job.reset(); // Force Potential destruction so PotRegistry records entries
       PotRegistry::get().write_summary();
-      filenames.push_back(std::string("client.log"));
+      filenames.push_back(std::string("_potcalls.json"));
+      filenames.push_back(std::string("client_quill.log"));
+      filenames.push_back(std::string("client_traceback.log"));
+
+      {
+        std::ofstream manifest("return_files.dat");
+        if (manifest) {
+          for (const auto &fn : filenames) {
+            manifest << fn << "\n";
+          }
+        }
+        filenames.push_back(std::string("return_files.dat"));
+      }
 
       // Finalize Timing Information
       auto end_time = std::chrono::steady_clock::now();
@@ -483,10 +496,10 @@ static int eonClientMain(int argc, char **argv) {
       // eon.fileio.parse_results / eon_schema.jobs adapters).
       std::ofstream result_file("results.dat", std::ios::app);
       if (result_file.is_open()) {
-        result_file << elapsed.count() << " time_seconds\n";
+        result_file << std::format("{:.12e} time_seconds\n", elapsed.count());
 #ifndef _WIN32
-        result_file << utime << " user_time\n";
-        result_file << stime << " system_time\n";
+        result_file << std::format("{:.12e} user_time\n", utime);
+        result_file << std::format("{:.12e} system_time\n", stime);
 #endif
       } else {
         QUILL_LOG_ERROR(logger, "Failed to write timing to results.dat");

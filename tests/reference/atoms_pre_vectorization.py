@@ -18,11 +18,16 @@ def free_r_scalar(atoms) -> numpy.ndarray:
     float free array yields ``numpy.float64``, which is not a valid shape dim.
     Semantics match the pre-#368 loop (truthy free flags).
     """
-    nfree = int(sum(atoms.free))
+    free = numpy.asarray(atoms.free)
+    if free.ndim == 2:
+        atom_free = free.any(axis=1)
+    else:
+        atom_free = numpy.asarray(free, dtype=bool)
+    nfree = int(sum(atom_free))
     temp = numpy.zeros((nfree, 3))
     index = 0
     for i in range(len(atoms.r)):
-        if atoms.free[i]:
+        if atom_free[i]:
             temp[index] = atoms.r[i]
             index += 1
     return temp

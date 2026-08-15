@@ -59,7 +59,7 @@ def parallelreplica(config: ConfigClass = None):
     parser = configparser.RawConfigParser()
     write_pr_metadata(parser, current_state.number, time, wuid)
     parser.write(open(metafile, 'w'))
-    io.save_prng_state()
+    io.save_prng_state(io.prng_state_path(config))
 
 def step(current_time, current_state, states, transition, config: ConfigClass = None):
     if config is None:
@@ -119,6 +119,133 @@ def write_pr_metadata(parser, current_state_num, time, wuid):
     parser.set('Simulation Information', 'time_simulated', str(time))
     parser.set('Simulation Information', 'current_state', str(current_state_num))
 
+
+def end_state_table_path(config, state_number):
+    """Escape-rate table for one reactant state, under ConfigClass.path_states."""
+    return os.path.join(config.path_states, str(state_number), "end_state_table")
+
+
+def load_end_state_table(path):
+    """Read the end-state table. The file is opened for reading from the start."""
+    rows = []
+    if not os.path.isfile(path):
+        return rows
+    with open(path, "r") as f:
+        lines = f.readlines()
+    for line in lines[1:]:
+        parts = line.split()
+        if len(parts) < 4:
+            continue
+        row = {
+            "state": int(parts[0]),
+            "views": int(parts[1]),
+            "rate": float(parts[2]),
+            "time": float(parts[3]),
+        }
+        if len(parts) >= 5:
+            row["process_id"] = int(parts[4])
+        rows.append(row)
+    return rows
+
+
+def save_end_state_table(path, rows):
+    parent = os.path.dirname(path)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
+    with io.atomic_write(path) as g:
+        g.write("state       views         rate        time        process_id\n")
+        for row in rows:
+            g.write(
+                "%s             %s             %s             %s             %s\n"
+                % (
+                    row["state"],
+                    row["views"],
+                    row["rate"],
+                    row["time"],
+                    row.get("process_id", -1),
+                )
+            )
+
+
+def find_matching_process(product, state, config):
+    """Return the process id whose stored product matches *product*, or None.
+
+    Products live at product_<xxh64>.con via State.proc_product_path, not
+    product_0.con / product_1.con.
+    """
+    state.load_process_table()
+    if not state.procs:
+        return None
+    for pid in state.procs:
+        ppath = state.proc_product_path(pid)
+        if not os.path.isfile(ppath):
+            continue
+        product2 = io.loadcon(ppath)
+        if atoms.match(
+            product,
+            product2,
+            config.comp_eps_r,
+            config.comp_neighbor_cutoff,
+            True,
+            check_rotation=config.comp_check_rotation,
+            use_identical=config.comp_use_identical,
+        ):
+            return pid
+    return None
+
+
+def accumulate_end_state(product, state, result, config):
+    """Fold one transition into the end-state table. Return the process id.
+
+    A repeat product updates views/time/rate and does not call add_process,
+    because process ids are content-addressed and a second add would collide.
+    """
+    table_path = end_state_table_path(config, state.number)
+    rows = load_end_state_table(table_path)
+    trans_time = float(result["results"]["transition_time_s"])
+    time_check = max((float(r["time"]) for r in rows), default=0.0)
+    matched_pid = find_matching_process(product, state, config)
+
+    if matched_pid is not None:
+        updated = False
+        for row in rows:
+            if row.get("process_id") == matched_pid:
+                row["views"] = int(row["views"]) + 1
+                row["time"] = float(row["time"]) + trans_time
+                row["rate"] = (
+                    float(row["views"]) / float(row["time"]) if row["time"] else 0.0
+                )
+                updated = True
+                break
+        if not updated:
+            next_state = max((int(r["state"]) for r in rows), default=-1) + 1
+            rows.append(
+                {
+                    "state": next_state,
+                    "views": 1,
+                    "rate": (1.0 / trans_time) if trans_time else 0.0,
+                    "time": trans_time,
+                    "process_id": matched_pid,
+                }
+            )
+        process_id = matched_pid
+    else:
+        process_id = state.add_process(result)
+        next_state = max((int(r["state"]) for r in rows), default=-1) + 1
+        new_time = time_check + trans_time
+        rows.append(
+            {
+                "state": next_state,
+                "views": 1,
+                "rate": (1.0 / new_time) if new_time else 0.0,
+                "time": new_time,
+                "process_id": process_id,
+            }
+        )
+
+    save_end_state_table(table_path, rows)
+    return process_id
+
 def make_searches(comm, current_state, wuid, config: ConfigClass = None):
     if config is None:
         raise TypeError("make_searches requires a ConfigClass instance")
@@ -175,8 +302,6 @@ def register_results(comm, current_state, states, config: ConfigClass = None):
     transition = None
     num_registered = 0
     speedup = 0
-    number_state = []
-    numres = 0
     for result in comm.get_results(config.path_jobs_in, keep_result):
         # The result dictionary contains the following key-value pairs:
         # reactant.con - an array of strings containing the reactant
@@ -187,9 +312,7 @@ def register_results(comm, current_state, states, config: ConfigClass = None):
         # The reactant, product, and mode are passed as lines of the files because
         # the information contained in them is not needed for registering results
 
-
         state_num = int(result['name'].split("_")[0])
-        id = int(result['name'].split("_")[1]) + result['number']
 
         state = states.get_state(state_num)
 
@@ -198,64 +321,9 @@ def register_results(comm, current_state, states, config: ConfigClass = None):
         speedup += result['results']['speedup']
         if result['results']['transition_found'] == 1:
             result['results']['transition_time_s'] += state.get_time()
-            a = result['results']['potential_energy_product']
-            f = open (os.path.join("states", "0", "end_state_table"),"a+")
-            lines = f.readlines()
-            f.close()
-            proc = []
-            number_state.append(0)
-            count = 0
-            state_match = 0
-            flag = 0
-            product = io.loadcon (result['product.con'])
-
-
-            for i in range(0, numres):
-                product2 = io.loadcon (os.path.join("states", "0", "procdata", "product_%i.con" % i))
-                if atoms.match(product, product2, config.comp_eps_r, config.comp_neighbor_cutoff, True, check_rotation=config.comp_check_rotation, use_identical=config.comp_use_identical):
-                    if flag == 0:
-                        state_match = number_state[i]
-                        number_state[numres] = state_match
-                        flag = 1
-                        break
-            count = 0
-            time_to_state = 0
-            time_check = 0
-            for line in lines[1:]:
-                l = line.split()
-                proc.append({'state': l[0], 'views': l[1], 'rate': l[2], 'time': l[3]})
-                if float(l[3]) > time_check:
-                    time_check = float(l[3])
-                if flag == 0:
-                    number_state[numres] = int(l[0])+1
-                else:
-                    if state_match == int(l[0]):
-                        proc[count]['views'] = str(int(l[1]) + 1)
-                        time_to_state = float(l[3]) + result['results']['transition_time_s']
-                        proc[count]['time'] = str(time_to_state)
-                        proc[count]['rate'] = str(1/(time_to_state/float(proc[count]['views'])))
-                count += 1
-
-
-            if flag == 0:
-                proc.append({'state': number_state[numres],  'views': 1, 'rate': 1/(float(time_check+result['results']['transition_time_s'])) , 'time': time_check + result['results']['transition_time_s']})
-
-
-            g = open (os.path.join("states", "0", "end_state_table"),"w")
-            g.write('state       views         rate        time \n')
-            for j in range(0,len(proc)):
-                g.write(str(proc[j]['state']))
-                g.write("             ")
-                g.write(str(proc[j]['views']))
-                g.write("             ")
-                g.write(str(proc[j]['rate']))
-                g.write("             ")
-                g.write(str(proc[j]['time']))
-                g.write("\n")
-            g.close()
-            numres += 1
+            product = io.loadcon(result['product.con'])
+            process_id = accumulate_end_state(product, state, result, config)
             time = result['results']['transition_time_s']
-            process_id = state.add_process(result)
             logger.info("Found transition with time %.3e", time)
             if not transition and current_state.number==state.number:
                 transition = {'process_id':process_id, 'time':time}
@@ -315,7 +383,7 @@ def main(config: ConfigClass = None):
             dynamics_path = os.path.join(config.path_results, "dynamics.txt")
             info_path = os.path.join(config.path_results, "info.txt")
             log_path = os.path.join(config.path_results, "pr.log")
-            prng_path = os.path.join(config.path_results, "prng.pkl")
+            prng_path = io.prng_state_path(config)
             for i in [info_path, dynamics_path, log_path, prng_path]:
                 if os.path.isfile(i):
                     os.remove(i)

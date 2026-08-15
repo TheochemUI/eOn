@@ -14,10 +14,12 @@
 #include "eon/HelperFunctions.h"
 #include "eon/Hessian.h"
 #include "eon/Matter.h"
+#include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 #include "eon/Prefactor.h"
 
 #include <cmath>
+#include <filesystem>
 #include <format>
 #include <fstream>
 #include <stdexcept>
@@ -110,8 +112,14 @@ std::vector<std::string> PrefactorJob::run() {
   std::ofstream outFreq(freq_file, std::ios::binary);
 
   if (outResults) {
+    outResults << std::format("{} termination_reason\n", failed ? 1 : 0);
+    outResults << std::format("{} termination_reason_text\n",
+                              failed ? "fail" : "good");
+    outResults << "prefactor job_type\n";
     outResults << std::format("{} good\n", failed ? "false" : "true");
     outResults << std::format("{} force_calls\n",
+                              PotRegistry::get().total_force_calls());
+    outResults << std::format("{} total_force_calls\n",
                               PotRegistry::get().total_force_calls());
   }
 
@@ -127,6 +135,13 @@ std::vector<std::string> PrefactorJob::run() {
                                    (2 * eonc::helpers::pi * 10.18e-15));
       }
     }
+  }
+
+  if (std::filesystem::exists("freqs.dat")) {
+    returnFiles.push_back("freqs.dat");
+  }
+  if (std::filesystem::exists("hessian.dat")) {
+    returnFiles.push_back("hessian.dat");
   }
 
   return returnFiles;

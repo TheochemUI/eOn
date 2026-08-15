@@ -21,6 +21,9 @@
 #include "eon/Quickmin.h"
 #include "eon/SteepestDescent.h"
 
+#include <stdexcept>
+#include <string>
+
 namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
@@ -82,6 +85,26 @@ static Parameters makeOptParams() {
   params.main_options.finiteDifference = 0.01;
   params.saddle_search_options.confine_positive.bowl_breakout = false;
   return params;
+}
+
+TEST_CASE("FIRE throws when the time step collapses", "[optimizer][fire]") {
+  auto params = makeOptParams();
+  params.optimizer_options.time_step = 1e-7;
+  auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
+  VectorXd start(2);
+  start << 5.0, 3.0;
+  objf->setPositions(start);
+
+  FIRE opt(objf, params);
+  REQUIRE_THROWS_AS(opt.step(params.optimizer_options.max_move),
+                    std::runtime_error);
+  try {
+    opt.step(params.optimizer_options.max_move);
+    FAIL("expected throw");
+  } catch (const std::runtime_error &e) {
+    REQUIRE_THAT(std::string(e.what()),
+                 Catch::Matchers::ContainsSubstring("m_dt is too small"));
+  }
 }
 
 TEST_CASE("FIRE optimizer converges on quadratic", "[optimizer][fire]") {

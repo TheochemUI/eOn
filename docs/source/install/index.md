@@ -76,7 +76,7 @@ pixi s -e dev-lite
 
 Other environments can be found by inspecting the `pixi.toml` file.
 
-This leads to the most robust installation approach:
+This is the installation path that fails least often:
 
 ```{code-block} bash
 # conda-compilers may try to install to
@@ -154,8 +154,8 @@ The full listing of options is found in the `meson_options.txt` file. These can
 all be turned on and off at the command line. As an example see the [LAMMPS
 integration instructions](project:../user_guide/lammps_pot.md).
 
-For optional wrapped dependencies such as ARTn and IRA, make sure the
-subproject sources are present before configuring:
+For optional wrapped dependencies such as ARTn and IRA, download the
+subproject sources before configuring:
 
 ```{code-block} bash
 meson subprojects download artn-plugin ira
