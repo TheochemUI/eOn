@@ -1208,7 +1208,18 @@ if is_windows
     )
     _deps += [readcon_compile_dep]
 else
-    _deps += [readcon_dep]
+    # The wrap custom_target emits both the cdylib and the archive. Meson
+    # forwards a dependency's sources to the linker, so a shared consumer
+    # records NEEDED libreadcon_core.so. link_args already names the
+    # archive when default_library=static.
+    _deps += [
+        readcon_dep.partial_dependency(
+            includes: true,
+            compile_args: true,
+            link_args: true,
+            links: true,
+        ),
+    ]
 endif
 
 if get_option('with_metatomic')
