@@ -123,10 +123,16 @@ dynlib::Handle PluginLoader::open_lib(const char *lib_base) {
   std::string last_err;
   bool any_file = false;
 
-  // Try each search path (config paths precede env-var paths in m_search_paths)
+  // Probe the filesystem first. dlopen of a present plugin runs that
+  // library's static initializers (Fortran / LAMMPS banners), so skip
+  // names that are not on disk.
   for (const auto &dir : m_search_paths) {
     for (const auto &name : names) {
       std::string full = (std::filesystem::path(dir) / name).string();
+      std::error_code ec;
+      if (!std::filesystem::exists(full, ec))
+        continue;
+      any_file = true;
       h = dynlib::open(full.c_str());
       if (h) {
         m_handles[lib_base] = h;
@@ -134,8 +140,6 @@ dynlib::Handle PluginLoader::open_lib(const char *lib_base) {
       }
       // Capture immediately after LoadLibrary/dlopen (GetLastError/dlerror).
       last_err = dynlib::error();
-      if (std::filesystem::exists(full))
-        any_file = true;
     }
   }
 
@@ -155,6 +159,19 @@ dynlib::Handle PluginLoader::open_lib(const char *lib_base) {
   m_last_load_saw_file = any_file;
   m_handles[lib_base] = nullptr;
   return nullptr;
+}
+
+bool PluginLoader::lib_present(const char *lib_base) const {
+  std::lock_guard<std::mutex> lock(m_mutex);
+  auto names = lib_names(lib_base);
+  for (const auto &dir : m_search_paths) {
+    for (const auto &name : names) {
+      std::error_code ec;
+      if (std::filesystem::exists(std::filesystem::path(dir) / name, ec))
+        return true;
+    }
+  }
+  return false;
 }
 
 void PluginLoader::throw_not_found(const char *lib_base,

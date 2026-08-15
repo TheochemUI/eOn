@@ -64,6 +64,11 @@ public:
   [[noreturn]] void throw_not_found(const char *lib_base,
                                     const char *description) const;
 
+  /// Filesystem probe: a matching library file is on the configured
+  /// search path. Does not dlopen, so plugin static initializers
+  /// (banners) do not run.
+  [[nodiscard]] bool lib_present(const char *lib_base) const;
+
   /// Get the current search paths (for diagnostics).
   [[nodiscard]] const std::vector<std::string> &search_paths() const noexcept {
     return m_search_paths;
@@ -81,7 +86,7 @@ private:
   void append_paths(const std::string &path_str, char sep);
 
   std::vector<std::string> m_search_paths;
-  std::mutex m_mutex;
+  mutable std::mutex m_mutex;
   std::unordered_map<std::string, dynlib::Handle> m_handles;
   /// Last dynlib::error() from a failed open (for throw_not_found).
   std::string m_last_load_error;

@@ -18,6 +18,7 @@
 #include <filesystem>
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <stdexcept>
 
 namespace tests {
 
@@ -221,6 +222,69 @@ neighbor_cutoff = 4.0
           Catch::Approx(0.2));
 
   std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE("JSON from_json rejects unknown convergence_metric",
+          "[params][json]") {
+  nlohmann::json j = nlohmann::json::object();
+  j["Optimizer"]["convergence_metric"] = "typo";
+  Parameters p;
+  REQUIRE_THROWS_AS(eonc::config::from_json(j, p), std::invalid_argument);
+  REQUIRE(eonc::config::load_json(j.dump(), p) != 0);
+}
+
+TEST_CASE("JSON from_json accepts known convergence_metric", "[params][json]") {
+  nlohmann::json j = nlohmann::json::object();
+  j["Optimizer"]["convergence_metric"] = "Max_Atom";
+  Parameters p;
+  eonc::config::from_json(j, p);
+  REQUIRE(p.optimizer_options.convergence_metric == "max_atom");
+  REQUIRE(p.optimizer_options.convergence_metric_label == "Max atom force");
+}
+
+TEST_CASE("Parameters.load rejects unknown enumerated strings",
+          "[params][ini]") {
+  const auto tmpdir = std::filesystem::temp_directory_path();
+  {
+    const auto tmpfile = tmpdir / "eon_bad_metric.ini";
+    {
+      std::ofstream ofs(tmpfile);
+      ofs << "[Optimizer]\nconvergence_metric = typo\n";
+    }
+    Parameters p;
+    REQUIRE(p.load(tmpfile.string()) != 0);
+    std::filesystem::remove(tmpfile);
+  }
+  {
+    const auto tmpfile = tmpdir / "eon_bad_disp_algo.ini";
+    {
+      std::ofstream ofs(tmpfile);
+      ofs << "[Basin Hopping]\ndisplacement_algorithm = spiral\n";
+    }
+    Parameters p;
+    REQUIRE(p.load(tmpfile.string()) != 0);
+    std::filesystem::remove(tmpfile);
+  }
+  {
+    const auto tmpfile = tmpdir / "eon_bad_disp_dist.ini";
+    {
+      std::ofstream ofs(tmpfile);
+      ofs << "[Basin Hopping]\ndisplacement_distribution = cauchy\n";
+    }
+    Parameters p;
+    REQUIRE(p.load(tmpfile.string()) != 0);
+    std::filesystem::remove(tmpfile);
+  }
+  {
+    const auto tmpfile = tmpdir / "eon_bad_decision.ini";
+    {
+      std::ofstream ofs(tmpfile);
+      ofs << "[Global Optimization]\ndecision_method = coin_flip\n";
+    }
+    Parameters p;
+    REQUIRE(p.load(tmpfile.string()) != 0);
+    std::filesystem::remove(tmpfile);
+  }
 }
 
 } /* namespace tests */
