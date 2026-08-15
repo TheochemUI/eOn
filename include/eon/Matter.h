@@ -368,7 +368,7 @@ private:
   AtomMatrix velocities;
   mutable AtomMatrix forces;
   AtomMatrix biasForces;
-  BondBoost *biasPotential;
+  BondBoost *biasPotential{nullptr};
   VectorXd masses;
   VectorXi atomicNrs;
   AtomMatrix isFixed; // Nx3; 1.0 if that axis is fixed, 0.0 if free
