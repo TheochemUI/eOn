@@ -106,8 +106,7 @@ readcon_order = custom_target(
     output: 'readcon_order.c',
     command: [
         _py,
-        '-c',
-        'from pathlib import Path; import sys; Path(sys.argv[1]).write_text("/* readcon-core cargo outputs ready */\\n")',
+        files('scripts/write_order_stamp.py'),
         '@OUTPUT@',
     ],
     depends: [readcon_cargo],
