@@ -66,8 +66,13 @@ std::string read_master(const std::string &name) {
 }
 
 std::shared_ptr<Matter> load_reactant() {
-  Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  // Matter stores a raw Parameters*; this helper's Matter outlives the
+  // function, so the Parameters cannot be a local.
+  static Parameters params = [] {
+    Parameters p;
+    p.potential_options.potential = PotType::LJ;
+    return p;
+  }();
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   REQUIRE(eonc::io::io_ok(m->con2matter(std::string("reactant.con"))));
