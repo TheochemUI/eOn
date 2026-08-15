@@ -83,10 +83,15 @@
     "7427": "fix(metatomic): load PET-MAD on metatensor-torch 0.10.3",
     "7428": "Merge pull request #392 from HaoZeke/fix/metatomic-to-mts-buffer-names",
     "7429": "chore(version): v3.1.0",
-    "7435": "docs: rewrite ASV and pot guides without AI-isms",
-    "7436": "docs: drop remaining bold and em dashes in neighbor list guide",
-    "7437": "docs: replace em dash in metatomic backends meta description",
-    "7438": "docs: drop X-not-Y contrast frames in pot and ASV guides"
+    "7434": "docs: rewrite ASV and pot guides without AI-isms",
+    "7435": "docs: drop remaining bold and em dashes in neighbor list guide",
+    "7436": "docs: replace em dash in metatomic backends meta description",
+    "7437": "docs: drop X-not-Y contrast frames in pot and ASV guides",
+    "7442": "docs: point Readme.org at the aiida-eon user guide",
+    "7443": "docs: rewrite remaining Sphinx pages off house-rule tells",
+    "7444": "docs: drop remaining X-not-Y contrast frames",
+    "7445": "docs: sentence-case headings and drop emoji section titles",
+    "7446": "Merge pull request #396 from HaoZeke/docs/aiida-eon"
   },
   "dcbade17ecc8386a4ee5804354b4994c8ba1d6d8": "update lammps webpage",
   "292bc143343709b10fb7ed150ae5bb493748b289": "gitig: Update",
@@ -174,5 +179,10 @@
   "85d106a3323b134882501021ad6cfec8e7a44517": "docs: rewrite ASV and pot guides without AI-isms",
   "c13024ed19a8b7c880c2f8a79b99874d292168b8": "docs: drop remaining bold and em dashes in neighbor list guide",
   "554f0845054d53094903da7b88c8439c40289534": "docs: replace em dash in metatomic backends meta description",
-  "4002c9d89390ed1920e8004e5753b587f3daff62": "docs: drop X-not-Y contrast frames in pot and ASV guides"
+  "4002c9d89390ed1920e8004e5753b587f3daff62": "docs: drop X-not-Y contrast frames in pot and ASV guides",
+  "2402bf44b7af391ae4898d1b8bb1767234ff6d9c": "docs: point Readme.org at the aiida-eon user guide",
+  "225a72d360896d29ff914306167dbfd43c00bf9d": "docs: rewrite remaining Sphinx pages off house-rule tells",
+  "3833585bd8255709d040e99aad2199c7516dff06": "docs: drop remaining X-not-Y contrast frames",
+  "912e8f4ac572ce701b49b1aaf89ff40e10ec16be": "docs: sentence-case headings and drop emoji section titles",
+  "2cc799f881ef146c4d58e2107f2c2634052f13b1": "Merge pull request #396 from HaoZeke/docs/aiida-eon"
 }
