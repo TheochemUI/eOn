@@ -24,13 +24,22 @@ from eon.structure import Structure
 
 logger = logging.getLogger('io')
 
-def save_prng_state():
+def prng_state_path(config):
+    '''Path of the persisted numpy PRNG pickle.
+
+    ConfigClass.init restores from this file under path_root, so every
+    writer and reset must use the same location rather than the process CWD.
+    '''
+    return os.path.join(config.path_root, 'prng.pkl')
+
+
+def save_prng_state(path):
     state = numpy.random.get_state()
-    with open('prng.pkl', 'wb') as fh:
+    with open(path, 'wb') as fh:
         pickle.dump(state, fh, pickle.HIGHEST_PROTOCOL)
 
-def get_prng_state():
-    with open('prng.pkl', 'rb') as fh:
+def get_prng_state(path):
+    with open(path, 'rb') as fh:
         state = pickle.load(fh)
     numpy.random.set_state(state)
 
@@ -242,6 +251,22 @@ def modify_config(config_path, changes):
     config_str_io.seek(0)
     return config_str_io
 
+def _coerce_results_value(token):
+    '''Parse one results.dat value token.
+
+    Integers stay int. Everything float() accepts (1.0, 1e-5, nan, inf)
+    becomes float. Dotted identifiers and other non-numerics stay str so
+    the key is present for the caller.
+    '''
+    body = token.lstrip('+-')
+    if body.isdigit():
+        return int(token)
+    try:
+        return float(token)
+    except ValueError:
+        return token
+
+
 def parse_results(filein):
     '''
     Reads a results.dat file and gives a dictionary of the values contained therein
@@ -253,16 +278,7 @@ def parse_results(filein):
             line = line.split()
             if len(line) < 2:
                 continue
-            if '.' in line[0]:
-                try:
-                    results[line[1]] = float(line[0])
-                except ValueError:
-                    results[line[1]] = line[0]
-            else:
-                try:
-                    results[line[1]] = int(line[0])
-                except ValueError:
-                    results[line[1]] = line[0]
+            results[line[1]] = _coerce_results_value(line[0])
 
     return results
 

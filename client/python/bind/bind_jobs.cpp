@@ -21,6 +21,7 @@
 #include <nanobind/stl/vector.h>
 
 #include <chrono>
+#include <format>
 #include <fstream>
 #include <memory>
 #include <stdexcept>
@@ -92,10 +93,10 @@ void bind_jobs(nb::module_ &m) {
                                    path);
         // results.dat contract: "<value> <key>" (parse_results /
         // eon_schema.jobs)
-        out << elapsed_seconds << " time_seconds\n";
+        out << std::format("{:.12e} time_seconds\n", elapsed_seconds);
 #ifndef _WIN32
-        out << user_time << " user_time\n";
-        out << system_time << " system_time\n";
+        out << std::format("{:.12e} user_time\n", user_time);
+        out << std::format("{:.12e} system_time\n", system_time);
 #endif
       },
       nb::arg("path") = "results.dat", nb::arg("elapsed_seconds"),

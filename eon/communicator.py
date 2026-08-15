@@ -106,6 +106,67 @@ class EONClientError(Exception):
     pass
 
 
+RETURN_FILES_MANIFEST = "return_files.dat"
+# Legacy harvest (no manifest) keeps these suffixes. A manifest overrides
+# the filter so declared .json / .log files arrive and undeclared files do not.
+_HARVEST_EXTENSIONS = (".con", ".dat", ".json", ".log")
+
+
+def read_return_files_manifest(jobpath):
+    """Return the filenames listed in return_files.dat, or None if absent."""
+    manifest = os.path.join(jobpath, RETURN_FILES_MANIFEST)
+    if not os.path.isfile(manifest):
+        return None
+    names = []
+    with open(manifest, "r") as f:
+        for line in f:
+            name = line.strip()
+            if not name or name.startswith("#"):
+                continue
+            names.append(os.path.basename(name))
+    return names
+
+
+def _read_result_file(path):
+    with open(path, "r") as f:
+        return StringIO(f.read())
+
+
+def harvest_job_files(jobpath):
+    """Harvest one non-bundled job directory into {filename: StringIO}.
+
+    When return_files.dat is present, only those names (plus results.dat)
+    are kept, any extension. A listed file that was never written is
+    logged and omitted. Without a manifest, keep .con/.dat/.json/.log.
+    """
+    listed = read_return_files_manifest(jobpath)
+    files = {}
+    if listed is None:
+        for filename in glob.glob(os.path.join(jobpath, "*.*")):
+            if filename.endswith(_HARVEST_EXTENSIONS):
+                fname = os.path.basename(filename)
+                files[fname] = _read_result_file(filename)
+        return files
+    wanted = list(listed)
+    if "results.dat" not in wanted:
+        wanted.append("results.dat")
+    seen = set()
+    for fname in wanted:
+        if fname in seen:
+            continue
+        seen.add(fname)
+        path = os.path.join(jobpath, fname)
+        if not os.path.isfile(path):
+            logger.warning(
+                "returnFiles lists %s but it is missing under %s",
+                fname,
+                jobpath,
+            )
+            continue
+        files[fname] = _read_result_file(path)
+    return files
+
+
 class Communicator:
     def __init__(self, scratchpath, bundle_size=1, config: ConfigClass = None):
         if config is None:
@@ -182,24 +243,14 @@ class Communicator:
 
             if not is_bundle:
                 # Only a single task inside this job, no need to unbundle.
-                for filename in glob.glob(os.path.join(jobpath, "*.*")):
-                    if not (filename.endswith(".con") or
-                            filename.endswith(".dat")):
-                        continue
-                    rootname, fname = os.path.split(filename)
-                    f = open(filename,'r')
-                    filedata = StringIO(f.read())
-                    f.close()
-
-                    # add result to results
-                    results[0][fname] = filedata
-                    results[0]['number'] = 0
+                harvested = harvest_job_files(jobpath)
+                results[0].update(harvested)
+                results[0]['number'] = 0
             else:
                 # Several tasks bundled inside this job, we need to unbundle.
                 filenames = glob.glob(os.path.join(jobpath,"*_[0-9]*.*"))
                 for filename in filenames:
-                    if not (filename.endswith(".con") or
-                            filename.endswith(".dat")):
+                    if not filename.endswith(_HARVEST_EXTENSIONS):
                         continue
 
                     # parse filename

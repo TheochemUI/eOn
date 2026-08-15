@@ -14,6 +14,7 @@
 #include "eon/EpiCenters.h"
 #include "eon/HelperFunctions.h"
 #include "eon/Matter.h"
+#include "eon/PotRegistry.h"
 
 #include <format>
 #include <fstream>
@@ -53,7 +54,14 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
   displacement.normalize();
 
   std::ofstream results("results.dat");
-  results << std::format("{:>14s}    {:>14s}\n", "dR", "curvature");
+  results << "0 termination_reason\n";
+  results << "GOOD termination_reason_text\n";
+  results << "finite_difference job_type\n";
+  results << std::format("{} total_force_calls\n",
+                         PotRegistry::get().total_force_calls());
+
+  std::ofstream table("curvature.dat");
+  table << std::format("{:>14s}    {:>14s}\n", "dR", "curvature");
   printf("%14s    %14s\n", "dR", "curvature");
   AtomMatrix posB;
   AtomMatrix forceB;
@@ -63,11 +71,15 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
     reactant->setPositions(posB);
     forceB = reactant->getForces();
     curvature = matDot(forceB - forceA, displacement) / dRs[dRi];
-    results << std::format("{:14.8f}    {:14.8f}\n", dRs[dRi], curvature);
+    table << std::format("{:14.8f}    {:14.8f}\n", dRs[dRi], curvature);
+    results << std::format("{:.12e} dR_{}\n", dRs[dRi], dRi);
+    results << std::format("{:.12e} curvature_{}\n", curvature, dRi);
     printf("%14.8f    %14.8f\n", dRs[dRi], curvature);
-    results.flush();
+    table.flush();
   }
 
-  std::vector<std::string> empty;
-  return empty;
+  std::vector<std::string> returnFiles;
+  returnFiles.push_back("results.dat");
+  returnFiles.push_back("curvature.dat");
+  return returnFiles;
 }

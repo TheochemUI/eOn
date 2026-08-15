@@ -89,7 +89,6 @@ std::vector<std::string> BasinHoppingJob::run() {
   int nsteps = params.basin_hopping_options.steps +
                params.basin_hopping_options.quenching_steps;
   long totalfc;
-  std::ofstream bhFile("bh.dat");
 
   QUILL_LOG_DEBUG(
       log, "[Basin Hopping] {:4s} {:12s} {:12s} {:12s} {:4s} {:5s} {:5s}",
@@ -278,14 +277,12 @@ std::vector<std::string> BasinHoppingJob::run() {
       recentAccept = 0;
     }
   }
-  bhFile.close();
-
   /* Save Results */
 
   std::string resultsFilename("results.dat");
 
   if (params.debug_options.write_movies) {
-    std::string movieFilename("movie.xyz");
+    std::string movieFilename("movie.con");
     returnFiles.push_back(movieFilename);
   }
 
@@ -297,13 +294,16 @@ std::vector<std::string> BasinHoppingJob::run() {
     }
     out << std::format("{} termination_reason\n", 0);
     out << "GOOD termination_reason_text\n";
-    out << std::format("{:.6f} minimum_energy\n", minimumEnergy);
+    out << "basin_hopping job_type\n";
+    out << std::format("{:.12e} minimum_energy\n", minimumEnergy);
     out << std::format("{} random_seed\n", params.main_options.randomSeed);
+    const double nsteps_ratio = params.basin_hopping_options.steps;
     out << std::format("{:.3f} acceptance_ratio\n",
-                       totalAccept / params.basin_hopping_options.steps);
+                       nsteps_ratio ? totalAccept / nsteps_ratio : 0.0);
     if (params.basin_hopping_options.swap_probability > 0) {
       out << std::format("{:.3f} swap_acceptance_ratio\n",
-                         swap_accept / static_cast<double>(swap_count));
+                         swap_count ? swap_accept / static_cast<double>(swap_count)
+                                    : 0.0);
     }
     out << std::format("{} total_normal_displacement_steps\n",
                        disp_count - jump_count -
@@ -326,9 +326,6 @@ std::vector<std::string> BasinHoppingJob::run() {
   } else {
     QUILL_LOG_ERROR(log, "Failed to write {}", productFilename);
   }
-
-  std::string bhFilename("bh.dat");
-  returnFiles.push_back(bhFilename);
 
   // minTrial and swapTrial automatically cleaned up by unique_ptr
   return returnFiles;
