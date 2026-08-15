@@ -869,6 +869,7 @@ TEST_CASE_METHOD(JobIntegrationFixture, "ReplicaExchangeJob runs on LJ cluster",
 job = replica_exchange
 temperature = 300
 random_seed = 42
+parallel = false
 
 [Potential]
 potential = lj
