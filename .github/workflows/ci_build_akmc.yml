@@ -165,7 +165,11 @@ jobs:
         if: runner.os != 'Windows'
         shell: pixi run bash -e {0}
         run: |
+          python tools/gitversion.py --write eon/version.py
           python -m pip install -q 'pytest>=8' 'pytest-datadir>=1.5' 'sh>=2'
+          # Wheel rebuild lives in pyeonclient-wheels.yml; this job already
+          # compiled the client and does not ship capnp-rpc.pc.
+          export PYEONCLIENT_SKIP_WHEEL_BUILD=1
           python -m pytest tests/ -q --ignore=tests/release
 
       - name: Run server smoke tests
