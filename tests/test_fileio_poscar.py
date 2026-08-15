@@ -52,7 +52,10 @@ def test_loadposcar_reads_vasp4_kdb_layout(tmp_path: Path):
     assert list(s.names) == ["Cu", "H"]
     np.testing.assert_allclose(s.r[0], [0.25, 0.0, 0.0], atol=1e-12)
     np.testing.assert_allclose(s.r[1], [1.5, 0.5, 0.25], atol=1e-12)
-    np.testing.assert_array_equal(s.free, [1.0, 0.0])
+    # free is (N, 3): POSCAR selective dynamics is per Cartesian axis, and
+    # this fixture frees every axis of the first atom and fixes every axis
+    # of the second.
+    np.testing.assert_array_equal(s.free, [[1.0, 1.0, 1.0], [0.0, 0.0, 0.0]])
     np.testing.assert_allclose(s.box, np.diag([10.0, 11.0, 12.0]), atol=1e-12)
 
 
