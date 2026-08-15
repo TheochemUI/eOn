@@ -1,4 +1,4 @@
-The readcon wrap overlay builds only the static archive as a single
-custom_target output, so Meson waits for libreadcon_core.a before
-linking eonclib and shared objects do not record NEEDED
-libreadcon_core.so.
+The readcon wrap overlay still cargo-builds both crate types. A generated
+.c that depends on that custom_target is the ninja order edge, so eonclib
+does not link before the outputs exist and does not record NEEDED
+libreadcon_core.so or pass the DLL to MSVC.
