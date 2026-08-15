@@ -1176,17 +1176,17 @@ _linkto += potentials
 # Prefer cargo-c / pkg-config install (conda-forge host package); fall back to
 # the meson subproject when the system package is not available. Upstreaming
 # this removes the need for use_readcon_pkgconfig.patch on the feedstock.
-# ConFileIO needs 0.14+ (CON spec 3, canonical writer, chemfiles C ingress).
+# ConFileIO needs 0.13+ (clone, bulk set_*_from_flat, compression_from_extension).
 readcon_dep = dependency(
     'readcon-core',
-    version: '>=0.14.0',
+    version: '>=0.13.1',
     method: 'pkg-config',
     required: false,
 )
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
-        version: '>=0.14.0',
+        version: '>=0.13.1',
         default_options: {
             'with_tests': false,
             'with_examples': false,

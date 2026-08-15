@@ -7,9 +7,9 @@ authors = [
 ]
 dependencies = [
     "numpy>=1.26.4",
-    # Client wrap is readcon-core v0.14.0 (CON spec 3). Keep the Python
-    # writer on the same major so server movies stay readable by the client.
-    "readcon>=0.14,<0.15",
+    # Upper cap is a wire-format bound: readcon 0.14 writes CON_SPEC_VERSION 3
+    # files that a client linked against readcon-core 0.13.1 rejects.
+    "readcon>=0.13.1,<0.14",
     "vesin>=0.6.0",
     "eon-schema>=0.2.0",
     "xxhash>=3.4.0",

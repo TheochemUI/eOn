@@ -38,10 +38,12 @@ TEST_CASE("LammpsLoader: singleton returns consistent instance",
 TEST_CASE("LammpsLoader: available probes without loading",
           "[lammps][loader]") {
   auto &loader = eonc::LammpsLoader::instance();
-  // Filesystem probe must not dlopen. A later require_loaded() in this
-  // process may have already loaded; the probe itself is side-effect free.
-  (void)loader.available();
-  SUCCEED();
+  // Filesystem probe must not dlopen, so it cannot move the loader from
+  // unloaded to loaded. Probing twice must also agree with itself.
+  const bool loaded_before = loader.is_loaded();
+  const bool present = loader.available();
+  REQUIRE(loader.is_loaded() == loaded_before);
+  REQUIRE(loader.available() == present);
 }
 
 TEST_CASE("LammpsLoader: require_loaded is consistent with is_loaded",
@@ -55,17 +57,19 @@ TEST_CASE("LammpsLoader: require_loaded is consistent with is_loaded",
     REQUIRE(loader.scatter_atoms != nullptr);
     REQUIRE(loader.extract_variable != nullptr);
     REQUIRE_NOTHROW(loader.require_loaded());
+  } else if (loader.available()) {
+    // On disk but not yet loaded: the lazy load must succeed and fill in
+    // every entry point.
+    REQUIRE_NOTHROW(loader.require_loaded());
+    REQUIRE(loader.is_loaded());
+    REQUIRE(loader.open_no_mpi != nullptr);
   } else {
-    try {
-      loader.require_loaded();
-      REQUIRE(loader.is_loaded());
-      REQUIRE(loader.open_no_mpi != nullptr);
-    } catch (const std::runtime_error &e) {
-      REQUIRE_THAT(std::string(e.what()),
-                   Catch::Matchers::ContainsSubstring("liblammps not found"));
-      REQUIRE_FALSE(loader.is_loaded());
-      REQUIRE(loader.open_no_mpi == nullptr);
-    }
+    // Absent from disk: the loader refuses by name and stays unloaded.
+    REQUIRE_THROWS_WITH(
+        loader.require_loaded(),
+        Catch::Matchers::ContainsSubstring("liblammps not found"));
+    REQUIRE_FALSE(loader.is_loaded());
+    REQUIRE(loader.open_no_mpi == nullptr);
   }
 }
 

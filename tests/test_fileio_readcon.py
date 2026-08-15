@@ -84,12 +84,18 @@ def test_readcon_version_and_chemfiles_status():
     """Record readcon pin; eOn server I/O does not require chemfiles extra."""
     ver = getattr(readcon, "__version__", None)
     assert ver is not None
-    # eOn pins readcon >=0.14,<0.15 in pyproject.toml, pyproject-pyeonclient.toml
-    # and pixi.toml, matching subprojects/readcon-core.wrap v0.14.0. Client and
-    # server must share CON spec 3.
+    # eOn pins readcon >=0.13.1,<0.14 in pyproject.toml,
+    # pyproject-pyeonclient.toml and pixi.toml, matching
+    # subprojects/readcon-core.wrap. The floor is the ConFileIO API (clone,
+    # bulk set_*_from_flat, compression_from_extension). The cap is a
+    # wire-format bound: readcon 0.14 writes con_spec_version 3, which the
+    # readcon-core 0.13.1 parser the C++ client links against rejects with
+    # UnsupportedSpecVersion, so the server would emit .con files its own
+    # client cannot read. Moving the cap needs readcon 0.14 published to
+    # PyPI, which has not happened: the index stops at 0.13.1.
     parts = _version_tuple(ver)
-    assert parts >= (0, 14, 0), ver
-    assert parts < (0, 15, 0), ver
+    assert parts >= (0, 13, 1), ver
+    assert parts < (0, 14, 0), ver
     has_cf = readcon.has_chemfiles_support()
     # Default install (no [chemfiles] extra): False. Document either way.
     assert isinstance(has_cf, bool)
