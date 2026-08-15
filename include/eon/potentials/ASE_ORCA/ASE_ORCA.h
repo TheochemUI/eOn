@@ -14,6 +14,8 @@
 
 #include "eon/Potential.h"
 
+#include <filesystem>
+
 #include <pybind11/eigen.h>
 #include <pybind11/embed.h>
 #include <pybind11/pybind11.h>
@@ -26,14 +28,12 @@ class ASEOrcaPot : public Potential {
 private:
   py::object calc;
   py::object ase;
+  std::filesystem::path workDir;
   size_t counter{0};
 
 public:
   ASEOrcaPot(const Parameters &a_params);
-  virtual ~ASEOrcaPot() {
-    QUILL_LOG_INFO(eonc::log::get(), "[ASEOrca] called potential {} times",
-                   counter);
-  }
+  virtual ~ASEOrcaPot();
 
   // Functions
   void force(long nAtoms, const double *R, const int *atomicNrs, double *F,

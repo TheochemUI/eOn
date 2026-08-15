@@ -304,6 +304,8 @@ void Matter::setPositionsFreeV(const VectorXd &pos) {
 
 AtomMatrix Matter::getBiasForces() {
   if (biasPotential != nullptr) {
+    // Evaluate the current bias only. The MD job advances the bond-boost
+    // schedule once per step via BondBoost::advance().
     biasPotential->boost();
   }
   return biasForces.array() * getFree().array();

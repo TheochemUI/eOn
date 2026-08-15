@@ -97,6 +97,7 @@ int SafeHyperJob::dynamics() {
     if ((params.hyperdynamics_options.bias_potential ==
          Hyperdynamics::BOND_BOOST) &&
         !newStateFlag) {
+      bondBoost.advance();
       boostPotential = bondBoost.boost();
       QUILL_LOG_TRACE_L1(log, "step= {} , boost = {:.5f}", step,
                          boostPotential);

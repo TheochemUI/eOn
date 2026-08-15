@@ -84,27 +84,44 @@ void BondBoost::initialize() {
   QUILL_LOG_DEBUG(log, "BondBoost Used !\n");
 }
 
-double BondBoost::boost() {
-  long RMDS = static_cast<long>(parameters.hyperdynamics_options.rmd_time /
-                                parameters.dynamics_options.time_step);
-  double biasPot = 0.0;
+long BondBoost::rmdSteps() const {
+  return static_cast<long>(parameters.hyperdynamics_options.rmd_time /
+                           parameters.dynamics_options.time_step);
+}
 
+void BondBoost::advance() {
+  const long RMDS = rmdSteps();
   if (nReg <= RMDS) {
-    // Equilibration phase: accumulate average bond lengths
+    // Equilibration: sample bond lengths once per MD step.
     Matrix<double, Eigen::Dynamic, 1> TABL_tmp = Rmdsteps();
     TABLList = TABLList + (1.0 / RMDS) * TABL_tmp;
     nReg++;
-  } else {
-    // Boost phase
     if (nReg == RMDS + 1) {
       nBBs = BondSelect();
     }
-    Epsr_Q.resize(nBBs);
-    CBBLList.setZero(nBBs, 1);
-    biasPot = Booststeps();
-    nReg++;
-    Epsr_Q.clear();
+    return;
   }
+  if (nReg == RMDS + 1) {
+    nBBs = BondSelect();
+  }
+  nReg++;
+}
+
+double BondBoost::boost() {
+  const long RMDS = rmdSteps();
+  if (nReg <= RMDS) {
+    return 0.0;
+  }
+  // RMDS == 0 and a caller that never advance()s still has to select bonds
+  // on the first evaluation; SafeHyper / ParallelReplica call advance()
+  // first and reach BondSelect there.
+  if (nBBs == 0) {
+    nBBs = BondSelect();
+  }
+  Epsr_Q.resize(nBBs);
+  CBBLList.setZero(nBBs, 1);
+  const double biasPot = Booststeps();
+  Epsr_Q.clear();
   return biasPot;
 }
 
