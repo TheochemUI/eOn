@@ -1196,9 +1196,22 @@ int load_ini(INIReader &ini, Parameters &params) {
   params.basin_hopping_options.displacement_algorithm =
       toLowerCase(ini.Get("Basin Hopping", "displacement_algorithm",
                           params.basin_hopping_options.displacement_algorithm));
+  if (params.basin_hopping_options.displacement_algorithm != "standard" &&
+      params.basin_hopping_options.displacement_algorithm != "linear" &&
+      params.basin_hopping_options.displacement_algorithm != "quadratic") {
+    EONC_LOG_ERROR("unknown displacement_algorithm {}",
+                   params.basin_hopping_options.displacement_algorithm);
+    error = 1;
+  }
   params.basin_hopping_options.displacement_distribution = toLowerCase(
       ini.Get("Basin Hopping", "displacement_distribution",
               params.basin_hopping_options.displacement_distribution));
+  if (params.basin_hopping_options.displacement_distribution != "uniform" &&
+      params.basin_hopping_options.displacement_distribution != "gaussian") {
+    EONC_LOG_ERROR("unknown displacement_distribution {}",
+                   params.basin_hopping_options.displacement_distribution);
+    error = 1;
+  }
   params.basin_hopping_options.swap_probability =
       ini.GetReal("Basin Hopping", "swap_probability",
                   params.basin_hopping_options.swap_probability);
@@ -1232,6 +1245,12 @@ int load_ini(INIReader &ini, Parameters &params) {
   params.global_optimization_options.decision_method =
       toLowerCase(ini.Get("Global Optimization", "decision_method",
                           params.global_optimization_options.decision_method));
+  if (params.global_optimization_options.decision_method != "npew" &&
+      params.global_optimization_options.decision_method != "boltzmann") {
+    EONC_LOG_ERROR("unknown decision_method {}",
+                   params.global_optimization_options.decision_method);
+    error = 1;
+  }
   params.global_optimization_options.steps = ini.GetInteger(
       "Global Optimization", "steps", params.global_optimization_options.steps);
   params.global_optimization_options.beta = ini.GetReal(

@@ -172,6 +172,9 @@ void ReplicaExchangeJob::saveData() {
 
   std::ofstream out(resultsFilename, std::ios::binary);
   if (out) {
+    out << std::format("{} termination_reason\n", 0);
+    out << "GOOD termination_reason_text\n";
+    out << "replica_exchange job_type\n";
     out << std::format("{} random_seed\n", params.main_options.randomSeed);
     out << std::format(
         "{} potential_type\n",
@@ -181,6 +184,9 @@ void ReplicaExchangeJob::saveData() {
 
   std::string posFilename("pos_out.con");
   returnFiles.push_back(posFilename);
-  // Note: original code opened the file but wrote nothing to it
-  std::ofstream posOut(posFilename, std::ios::binary);
+  if (pos) {
+    if (!eonc::io::io_ok(pos->matter2con(posFilename))) {
+      QUILL_LOG_ERROR(log, "Failed to write {}", posFilename);
+    }
+  }
 }

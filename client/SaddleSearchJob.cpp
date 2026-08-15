@@ -165,16 +165,7 @@ void SaddleSearchJob::saveData(int status) {
 
   std::string modeFilename("mode.dat");
   returnFiles.push_back(modeFilename);
-  {
-    std::ofstream modeOut(modeFilename, std::ios::binary);
-    if (modeOut) {
-      auto eigenvec = saddleSearch->getEigenvector();
-      for (long row = 0; row < eigenvec.rows(); ++row) {
-        modeOut << std::format("{:.17g} {:.17g} {:.17g}\n", eigenvec(row, 0),
-                               eigenvec(row, 1), eigenvec(row, 2));
-      }
-    }
-  }
+  eonc::helpers::saveMode(modeFilename, saddle, saddleSearch->getEigenvector());
 
   std::string saddleFilename("saddle.con");
   returnFiles.push_back(saddleFilename);

@@ -13,6 +13,8 @@
 #include "eon/HelperFunctions.h"
 
 #include <algorithm>
+#include <format>
+#include <stdexcept>
 
 int FIRE::step(double a_maxMove) {
   double P = 0;
@@ -57,7 +59,8 @@ int FIRE::step(double a_maxMove) {
   if (m_dt < 1e-6) {
     QUILL_LOG_CRITICAL(m_log, "[FIRE] [critical] m_dt is too small: {:.4f}",
                        m_dt);
-    std::exit(1);
+    throw std::runtime_error(
+        std::format("[FIRE] m_dt is too small: {:.4f}", m_dt));
   }
 
   m_iteration++;

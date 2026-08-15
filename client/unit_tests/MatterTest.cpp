@@ -126,6 +126,18 @@ TEST_CASE("setPositions marks forces stale", "[MatterTest][force_cache]") {
   REQUIRE(e1 != e2);
 }
 
+TEST_CASE("getFree respects per-axis constraints", "[MatterTest][fixed]") {
+  auto [m1, params] = makeLJCluster();
+  m1->setFixedMask(0, {true, false, false});
+  AtomMatrix free = m1->getFree();
+  REQUIRE(free(0, 0) == Catch::Approx(0.0));
+  REQUIRE(free(0, 1) == Catch::Approx(1.0));
+  REQUIRE(free(0, 2) == Catch::Approx(1.0));
+  REQUIRE(m1->getFixed(0) == 0);
+  REQUIRE(m1->getFixed(0, 0) == 1);
+  REQUIRE(m1->getFixed(0, 1) == 0);
+}
+
 TEST_CASE("getForces zeroes fixed atoms", "[MatterTest][forces]") {
   auto [m1, params] = makeLJCluster();
   m1->setFixed(0, true);

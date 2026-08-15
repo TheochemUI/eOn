@@ -1,0 +1,1 @@
+`loadposcar` accepts both VASP 4 (integer counts after the cell, as the kdb tool writes) and VASP 5 (species names then counts, as `saveposcar` and the server movie files write). eOn can read back `movie.poscar`, `dynamics.poscar`, and the other `movie.py` outputs it wrote.

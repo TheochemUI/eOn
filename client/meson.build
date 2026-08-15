@@ -1179,14 +1179,15 @@ _linkto += potentials
 # ConFileIO needs 0.13+ (clone, bulk set_*_from_flat, compression_from_extension).
 readcon_dep = dependency(
     'readcon-core',
-    version: '>=0.13.1',
+    version: '>=0.14.2',
     method: 'pkg-config',
     required: false,
 )
+readcon_order_srcs = []
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
-        version: '>=0.13.1',
+        version: '>=0.14.2',
         default_options: {
             'with_tests': false,
             'with_examples': false,
@@ -1194,14 +1195,15 @@ if not readcon_dep.found()
         },
     )
     readcon_dep = readcon_proj.get_variable('readcon_dep')
+    # Order stamp: cargo still emits cdylib+staticlib. partial_dependency
+    # drops declare_dependency.sources, so attach the stamp here.
+    readcon_order_srcs += readcon_proj.get_variable('readcon_order')
 endif
 if is_windows
-    # On Windows with the meson subproject path, readcon_dep's sources
-    # (custom_target .lib) get passed to llvm-ar which misinterprets the .lib
-    # as the archive output name. Strip sources and link_args for the static
-    # library; the full dep with link_args goes to executables via _exe_deps.
-    # With cargo-c/pkg-config there are no custom_target sources, so partial
-    # dependency still works (includes + compile_args only).
+    # On Windows, do not put cargo .lib/.dll on eonclib: llvm-ar treats
+    # the .lib as an archive name, and link rejects the DLL (LNK1107).
+    # The order stamp is attached on eclib sources; link_args stay on
+    # executables via _exe_deps. cargo-c/pkg-config has no custom_target.
     readcon_compile_dep = readcon_dep.partial_dependency(
         includes: true,
         compile_args: true,
@@ -1253,7 +1255,7 @@ configure_file(
 
 eclib = library(
     'eonclib',
-    sources: eonclib_sources,
+    sources: eonclib_sources + readcon_order_srcs,
     include_directories: _incdirs,
     dependencies: _deps + _gprd_extra_deps,
     link_with: _linkto,
@@ -1273,7 +1275,8 @@ if get_option('with_metatomic')
         [
             'potentials/Metatomic/MetatomicPotential.cpp',
             'potentials/Metatomic/MetatomicEngineAbi.cpp',
-        ],
+        ]
+        + readcon_order_srcs,
         dependencies: mta_plugin_deps,
         cpp_args: _args + ['-DRGPOT_MTA_ENGINE_BUILD'],
         link_with: [eclib, eoncbase],
@@ -1291,7 +1294,22 @@ if is_windows
     # _deps carries only readcon's partial dependency there (see the
     # partial_dependency block above); executables need the link_args too.
     # Elsewhere _deps already holds the full readcon_dep.
-    _exe_deps += [readcon_dep]
+    #
+    # Everything except sources. readcon-core declares
+    # `sources: readcon_cargo`, and on Windows that array holds the DLL
+    # alongside the import library. Meson hands a dependency's sources to
+    # the linker, and link rejects a DLL as input:
+    #   readcon_core.dll : fatal error LNK1107: invalid or corrupt file
+    # link_args already names the import library by full path, which is the
+    # half MSVC wants.
+    _exe_deps += [
+        readcon_dep.partial_dependency(
+            includes: true,
+            compile_args: true,
+            link_args: true,
+            links: true,
+        ),
+    ]
 endif
 
 # Export variable

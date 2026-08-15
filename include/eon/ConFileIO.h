@@ -79,6 +79,9 @@ struct ConFrameMetadata {
   std::vector<ConMetadataValue> scalars;
   std::vector<ConMetadataText> strings;
   std::optional<std::string> raw_json;
+  /// When set, this write includes or omits force sections regardless of
+  /// Parameters.main_options.writeConForces or the process-wide flag.
+  std::optional<bool> write_con_forces;
 };
 
 /// Extract known frame-level fields from a parsed readcon frame.
@@ -91,6 +94,8 @@ ConFrameMetadata metadata_from_frame(const readcon::ConFrame &frame);
  * restarts without re-evaluating the potential) but are not part of the
  * classic con layout: external readers such as ASE's eon parser reject
  * frames that carry them. Off unless [Main] write_con_forces enables it.
+ * A ConFrameMetadata.write_con_forces value, then the Matter Parameters
+ * field, override this process-wide flag for a single write.
  * Reading force-bearing frames is always supported regardless of this flag.
  */
 void set_write_con_forces(bool enabled) noexcept;
@@ -133,8 +138,20 @@ void set_write_con_forces(bool enabled) noexcept;
  */
 void resetConAppendState();
 [[nodiscard]] IoStatus matter2convel(Matter &m, std::string filename);
+
+/**
+ * Write one extended-XYZ frame: Lattice= cell and 17-digit coordinates.
+ *
+ * `append` concatenates another frame. A target whose last frame has a
+ * different atom count yields InvalidArgument and is left unchanged.
+ * Chemfiles in readcon is ingress (XYZ/PDB/GRO into ConFrame), not
+ * XYZ egress, so this writer emits the Lattice= comment ASE and
+ * chemfiles already read.
+ */
 [[nodiscard]] IoStatus matter2xyz(Matter &m, std::string filename,
                                   bool append = false);
+
+/// Debug table (positions, optional cached forces). Not a structure format.
 [[nodiscard]] IoStatus writeTibble(Matter &m, std::string filename);
 
 /**
@@ -178,7 +195,7 @@ writeNebPath(std::string filename,
              const std::vector<std::shared_ptr<Matter>> &path,
              const std::vector<ConFrameMetadata> &metadata_per_image);
 
-// Helper
+// Cell lengths and CON header-line-4 angles (alpha, beta, gamma) in degrees.
 std::pair<std::array<double, 3>, std::array<double, 3>>
 cell_to_lengths_angles(const Matter &m);
 

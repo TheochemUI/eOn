@@ -13,12 +13,18 @@
 #include "eon/ConFileIO.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/HelperFunctions.h"
 #include "eon/Matter.h"
 #include "eon/NEBSplineExtrema.h"
 #include "eon/Parameters.h"
+#include <cmath>
 #include <cstdio>
 #include <filesystem>
+#include <format>
 #include <fstream>
+#include <iterator>
+#include <sstream>
+#include <string>
 
 namespace tests {
 
@@ -151,6 +157,120 @@ TEST_CASE_METHOD(ConFileIOFixture,
   REQUIRE(loaded->getPositions().isApprox(original->getPositions(), 1e-6));
 }
 
+TEST_CASE("Con file preserves per-axis fixed mask", "[confileio][fixed]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter original(pot, params);
+  original.resize(2);
+  original.setCell(10.0 * Matrix3d::Identity());
+  original.setPosition(0, 0, 0.0);
+  original.setPosition(0, 1, 0.0);
+  original.setPosition(0, 2, 0.0);
+  original.setPosition(1, 0, 1.5);
+  original.setPosition(1, 1, 0.0);
+  original.setPosition(1, 2, 0.0);
+  original.setMass(0, 63.5);
+  original.setMass(1, 63.5);
+  original.setAtomicNr(0, 29);
+  original.setAtomicNr(1, 29);
+  // All eight column-4 values. Bit0=x, bit1=y, bit2=z. Spec 2 decodes
+  // 1 as x-only (readcon-core #25).
+  const std::array<std::array<bool, 3>, 7> masks{{{true, false, false},
+                                                  {false, true, false},
+                                                  {true, true, false},
+                                                  {false, false, true},
+                                                  {true, false, true},
+                                                  {false, true, true},
+                                                  {true, true, true}}};
+
+  const std::string tmpfile = "_test_per_axis.con";
+  for (const auto &mask : masks) {
+    original.setFixedMask(0, mask);
+    original.setFixedMask(1, {false, false, false});
+    REQUIRE(eonc::io::io_ok(original.matter2con(tmpfile)));
+    Matter loaded(pot, params);
+    REQUIRE(eonc::io::io_ok(loaded.con2matter(tmpfile)));
+    const auto m0 = loaded.getFixedMask(0);
+    const auto m1 = loaded.getFixedMask(1);
+    CAPTURE(mask[0], mask[1], mask[2]);
+    REQUIRE(m0[0] == mask[0]);
+    REQUIRE(m0[1] == mask[1]);
+    REQUIRE(m0[2] == mask[2]);
+    REQUIRE_FALSE(m1[0]);
+    REQUIRE_FALSE(m1[1]);
+    REQUIRE_FALSE(m1[2]);
+    // Whole-atom view stays the conjunction of the three axes.
+    const bool all = mask[0] && mask[1] && mask[2];
+    REQUIRE(loaded.getFixed(0) == (all ? 1 : 0));
+    std::filesystem::remove(tmpfile);
+  }
+}
+
+TEST_CASE("Con write round-trips an x-only constraint", "[confileio][fixed]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter m(pot, params);
+  m.resize(1);
+  m.setCell(10.0 * Matrix3d::Identity());
+  m.setPosition(0, 0, 0.0);
+  m.setPosition(0, 1, 0.0);
+  m.setPosition(0, 2, 0.0);
+  m.setMass(0, 63.5);
+  m.setAtomicNr(0, 29);
+  m.setFixedMask(0, {true, false, false});
+
+  const std::string tmpfile = "_test_x_only.con";
+  REQUIRE(eonc::io::io_ok(m.matter2con(tmpfile)));
+  Matter loaded(pot, params);
+  REQUIRE(eonc::io::io_ok(loaded.con2matter(tmpfile)));
+  const auto mask = loaded.getFixedMask(0);
+  REQUIRE(mask[0]);
+  REQUIRE_FALSE(mask[1]);
+  REQUIRE_FALSE(mask[2]);
+  std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE("Con triclinic angles are alpha beta gamma", "[confileio][cell]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter original(pot, params);
+  original.resize(1);
+  original.setMass(0, 63.5);
+  original.setAtomicNr(0, 29);
+  original.setPosition(0, 0, 0.0);
+  original.setPosition(0, 1, 0.0);
+  original.setPosition(0, 2, 0.0);
+  // a along x, b in xy at 95 deg (gamma), c with alpha=80, beta=85
+  const double deg = eonc::helpers::pi / 180.0;
+  const double alpha = 80.0 * deg;
+  const double beta = 85.0 * deg;
+  const double gamma = 95.0 * deg;
+  Matrix3d cell = Matrix3d::Zero();
+  cell(0, 0) = 10.0;
+  cell(1, 0) = 11.0 * std::cos(gamma);
+  cell(1, 1) = 11.0 * std::sin(gamma);
+  cell(2, 0) = 12.0 * std::cos(beta);
+  cell(2, 1) = 12.0 * (std::cos(alpha) - std::cos(gamma) * std::cos(beta)) /
+               std::sin(gamma);
+  cell(2, 2) = 12.0 * std::sqrt(1.0 - std::pow(cell(2, 0) / 12.0, 2) -
+                                std::pow(cell(2, 1) / 12.0, 2));
+  original.setCell(cell);
+
+  const std::string tmpfile = "_test_triclinic.con";
+  REQUIRE(eonc::io::io_ok(original.matter2con(tmpfile)));
+  auto [lengths, angles] = eonc::io::cell_to_lengths_angles(original);
+  REQUIRE(angles[0] == Catch::Approx(80.0).margin(1e-6));
+  REQUIRE(angles[1] == Catch::Approx(85.0).margin(1e-6));
+  REQUIRE(angles[2] == Catch::Approx(95.0).margin(1e-6));
+  Matter loaded(pot, params);
+  REQUIRE(eonc::io::io_ok(loaded.con2matter(tmpfile)));
+  REQUIRE(loaded.getCell().isApprox(cell, 1e-6));
+  std::filesystem::remove(tmpfile);
+}
+
 TEST_CASE_METHOD(ConFileIOFixture, "Con file preserves fixed-atom flags",
                  "[confileio]") {
   // Set some atoms as fixed
@@ -187,6 +307,88 @@ TEST_CASE_METHOD(ConFileIOFixture, "XYZ output is finite and non-empty",
   }
 
   std::remove(tmpfile.c_str());
+}
+
+TEST_CASE_METHOD(ConFileIOFixture,
+                 "XYZ comment carries the cell and full coords",
+                 "[confileio][xyz]") {
+  original->setPosition(0, 0, 1.234567891234567);
+
+  auto tmppath = std::filesystem::temp_directory_path() / "_test_xyz_cell";
+  std::string tmpbase = tmppath.string();
+  REQUIRE(eonc::io::io_ok(eonc::io::matter2xyz(*original, tmpbase)));
+  std::string tmpfile = tmpbase + ".xyz";
+
+  std::string count_line;
+  std::string comment;
+  std::string atom_line;
+  {
+    std::ifstream f(tmpfile);
+    REQUIRE(static_cast<bool>(std::getline(f, count_line)));
+    REQUIRE(static_cast<bool>(std::getline(f, comment)));
+    REQUIRE(static_cast<bool>(std::getline(f, atom_line)));
+  }
+
+  REQUIRE(comment.find("Lattice=\"") != std::string::npos);
+  REQUIRE(comment.find("Properties=species:S:1:pos:R:3") != std::string::npos);
+  const Matrix3d cell = original->getCell();
+  REQUIRE(comment.find(std::format("{:.17g}", cell(0, 0))) !=
+          std::string::npos);
+  REQUIRE(atom_line.find(std::format("{:.17g}", original->getPosition(0, 0))) !=
+          std::string::npos);
+
+  std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE_METHOD(ConFileIOFixture, "XYZ append rejects a different atom count",
+                 "[confileio][xyz]") {
+  auto tmppath = std::filesystem::temp_directory_path() / "_test_xyz_append";
+  std::string tmpfile = tmppath.string() + ".xyz";
+  {
+    std::ofstream out(tmpfile);
+    out << "1\ncomment\nH 0 0 0\n";
+  }
+  const std::string before = [&tmpfile]() {
+    std::ifstream in(tmpfile);
+    return std::string((std::istreambuf_iterator<char>(in)),
+                       std::istreambuf_iterator<char>());
+  }();
+  REQUIRE(original->numberOfAtoms() != 1);
+  REQUIRE(eonc::io::matter2xyz(*original, tmppath.string(), true) ==
+          eonc::io::IoStatus::InvalidArgument);
+  const std::string after = [&tmpfile]() {
+    std::ifstream in(tmpfile);
+    return std::string((std::istreambuf_iterator<char>(in)),
+                       std::istreambuf_iterator<char>());
+  }();
+  REQUIRE(after == before);
+  std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE_METHOD(ConFileIOFixture, "XYZ append concatenates a matching frame",
+                 "[confileio][xyz]") {
+  auto tmppath = std::filesystem::temp_directory_path() / "_test_xyz_two";
+  REQUIRE(eonc::io::io_ok(
+      eonc::io::matter2xyz(*original, tmppath.string(), false)));
+  REQUIRE(
+      eonc::io::io_ok(eonc::io::matter2xyz(*original, tmppath.string(), true)));
+  std::string tmpfile = tmppath.string() + ".xyz";
+  int first = 0;
+  int second = 0;
+  {
+    std::ifstream f(tmpfile);
+    std::string skip;
+    REQUIRE(static_cast<bool>(f >> first));
+    REQUIRE(first == original->numberOfAtoms());
+    std::getline(f, skip);
+    std::getline(f, skip);
+    for (long i = 0; i < original->numberOfAtoms(); ++i) {
+      std::getline(f, skip);
+    }
+    REQUIRE(static_cast<bool>(f >> second));
+    REQUIRE(second == original->numberOfAtoms());
+  }
+  std::filesystem::remove(tmpfile);
 }
 
 TEST_CASE_METHOD(ConFileIOFixture,
@@ -563,6 +765,44 @@ TEST_CASE("ConFileIO writeTibble produces valid output",
   std::filesystem::remove(tmpfile);
 }
 
+TEST_CASE("ConFileIO writeTibble uses atom ids and skips a dirty pot",
+          "[confileio][tibble]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto m = std::make_shared<Matter>(pot, params);
+  m->con2matter(std::string("reactant.con"));
+  REQUIRE(m->needsForceUpdate());
+  m->setAtomIndex(0, 41);
+
+  auto tmppath =
+      std::filesystem::temp_directory_path() / "_test_tibble_ids.dat";
+  const std::string tmpfile = tmppath.string();
+  REQUIRE(eonc::io::io_ok(eonc::io::writeTibble(*m, tmpfile)));
+
+  std::string header;
+  std::string row;
+  {
+    std::ifstream in(tmpfile);
+    REQUIRE(static_cast<bool>(std::getline(in, header)));
+    REQUIRE(static_cast<bool>(std::getline(in, row)));
+  }
+  REQUIRE(header.find("fx") == std::string::npos);
+  REQUIRE(header.find("atmID") != std::string::npos);
+  // x y z mass symbol atmID fixed -- id is the second-to-last field.
+  std::istringstream fields(row);
+  std::string tok;
+  std::string prev;
+  std::string last;
+  while (fields >> tok) {
+    prev = last;
+    last = tok;
+  }
+  REQUIRE(prev == "41");
+
+  std::filesystem::remove(tmpfile);
+}
+
 TEST_CASE("ConFileIO force and energy sections round-trip via readcon API",
           "[confileio][forces]") {
   Parameters params;
@@ -598,6 +838,64 @@ TEST_CASE("ConFileIO force and energy sections round-trip via readcon API",
   REQUIRE(F.isApprox(m2->getForcesRaw(), 1e-6));
 
   std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE("ConFileIO writes forces from Parameters without the process flag",
+          "[confileio][forces]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  params.main_options.writeConForces = true;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto m = std::make_shared<Matter>(pot, params);
+  m->con2matter(std::string("reactant.con"));
+  (void)m->getPotentialEnergy();
+  REQUIRE_FALSE(eonc::io::write_con_forces());
+
+  auto tmppath =
+      std::filesystem::temp_directory_path() / "_test_forces_params.con";
+  const std::string tmpfile = tmppath.string();
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmpfile, false)));
+  const auto frames = readcon::read_all_frames(tmpfile);
+  REQUIRE(frames.size() == 1);
+  REQUIRE(frames[0].has_forces());
+  std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE("ConFileIO metadata.write_con_forces overrides process flag",
+          "[confileio][forces]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto m = std::make_shared<Matter>(pot, params);
+  m->con2matter(std::string("reactant.con"));
+  (void)m->getPotentialEnergy();
+
+  auto tmp_on =
+      std::filesystem::temp_directory_path() / "_test_forces_meta_on.con";
+  auto tmp_off =
+      std::filesystem::temp_directory_path() / "_test_forces_meta_off.con";
+
+  eonc::io::ConFrameMetadata on;
+  on.write_con_forces = true;
+  eonc::io::ConFrameMetadata off;
+  off.write_con_forces = false;
+
+  REQUIRE_FALSE(eonc::io::write_con_forces());
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmp_on.string(), false, &on)));
+
+  eonc::io::set_write_con_forces(true);
+  REQUIRE(eonc::io::io_ok(m->matter2con(tmp_off.string(), false, &off)));
+  eonc::io::set_write_con_forces(false);
+
+  const auto frames_on = readcon::read_all_frames(tmp_on.string());
+  const auto frames_off = readcon::read_all_frames(tmp_off.string());
+  REQUIRE(frames_on.size() == 1);
+  REQUIRE(frames_off.size() == 1);
+  REQUIRE(frames_on[0].has_forces());
+  REQUIRE_FALSE(frames_off[0].has_forces());
+
+  std::filesystem::remove(tmp_on);
+  std::filesystem::remove(tmp_off);
 }
 
 TEST_CASE("ConFileIO metadata_from_frame exposes NEB and potential fields",

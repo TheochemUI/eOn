@@ -61,7 +61,7 @@ def test_structure_to_ase_roundtrip():
     s2 = pyec.ase_to_structure(atoms)
     assert s2.names[0] == "Cu"
     np.testing.assert_allclose(s2.r, s.r)
-    assert s2.free[1] == 0.0
+    np.testing.assert_array_equal(s2.free[1], [0.0, 0.0, 0.0])
 
 
 def test_matter_to_conframe_roundtrip(pot_params):

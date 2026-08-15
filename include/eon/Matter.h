@@ -110,7 +110,7 @@ public:
         biasPotential{nullptr},
         masses{Eigen::VectorXd::Zero(0)},
         atomicNrs{Eigen::VectorXi::Zero(0)},
-        isFixed{Eigen::VectorXi::Zero(0)},
+        isFixed{AtomMatrix::Zero(0, 3)},
         cell{Matrix3d::Zero()},
         cellInverse{Matrix3d::Zero()},
         energyVariance{0.0},
@@ -214,10 +214,17 @@ public:
   VectorXi getAtomicNrsFree() const;         // Get the vector of atomic numbers
   void setAtomicNrs(const VectorXi &atmnrs); // set the vector of atomic numbers
 
-  int getFixed(long int atom)
-      const; // return true if the atom is fixed, false if it is movable
-  void setFixed(long int atom,
-                int isFixed); // set the atom to fixed (true) or movable (false)
+  /// 1 if every Cartesian axis of the atom is fixed, else 0.
+  int getFixed(long int atom) const;
+  /// 1 if this atom's axis is fixed, else 0. axis is 0=x, 1=y, 2=z.
+  int getFixed(long int atom, int axis) const;
+  /// Per-axis CON column-4 mask (bit0=x, bit1=y, bit2=z).
+  [[nodiscard]] std::array<bool, 3> getFixedMask(long int atom) const;
+  /// Broadcast a whole-atom flag onto all three axes.
+  void setFixed(long int atom, int isFixed);
+  /// Set one Cartesian axis. axis is 0=x, 1=y, 2=z.
+  void setFixed(long int atom, int axis, int isFixed);
+  void setFixedMask(long int atom, std::array<bool, 3> mask);
   double getEnergyVariance() const;
   double getPotentialEnergy() const;
 
@@ -249,6 +256,11 @@ public:
   void resetForceCalls(); // zeroing the value of force calls
 
   double maxForce(void) const;
+
+  /// Parameters.main_options.writeConForces for this Matter, if bound.
+  [[nodiscard]] bool getWriteConForces() const noexcept {
+    return parameters != nullptr && parameters->main_options.writeConForces;
+  }
 
   // I/O delegates to eonc::io free functions (IoStatus for bindings).
   [[nodiscard]] io::IoStatus writeTibble(std::string filename) {
@@ -359,7 +371,7 @@ private:
   BondBoost *biasPotential{nullptr};
   VectorXd masses;
   VectorXi atomicNrs;
-  VectorXi isFixed;   // array of bool, false for movable atom, true for fixed
+  AtomMatrix isFixed; // Nx3; 1.0 if that axis is fixed, 0.0 if free
   Eigen::Matrix<std::int64_t, Eigen::Dynamic, 1>
       atomIndex; // original atom index from .con column 5
   mutable AtomMatrix freeMask; // cached Nx3 mask (1.0 for free, 0.0 for fixed)

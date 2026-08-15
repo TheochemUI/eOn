@@ -1,4 +1,12 @@
 
+"""AKMC movie writers.
+
+Visualization output is VASP 5 POSCAR (`movie.poscar`, `dynamics.poscar`,
+and the other names below). That is the one structure format that does
+not go through readcon: external viewers read POSCAR, and `loadposcar`
+accepts both this VASP 5 layout and the VASP 4 files kdb produces.
+"""
+
 import os
 import sys
 import glob
@@ -73,15 +81,19 @@ def make_movie(movie_type, path_root, states, separate_files=False):
 
 
 def get_trajectory(trajectory_path):
-    f = open(trajectory_path)
     trajectory = [0]
-    f.readline()
-    f.readline()
-    for line in f:
-        fields = line.split()
-        statenr = int(fields[3])
-        trajectory.append(statenr)
-
+    with open(trajectory_path) as f:
+        header = f.readline().split()
+        f.readline()
+        try:
+            product_col = header.index("product-id")
+        except ValueError:
+            product_col = 3
+        for line in f:
+            fields = line.split()
+            if len(fields) <= product_col:
+                continue
+            trajectory.append(int(fields[product_col]))
     return trajectory
 
 def processes(states, statenr, limit):

@@ -156,7 +156,7 @@ def write_minimization_results(
         f"{int(pot.force_call_counter)} total_force_calls",
     ]
     if status != RunStatus.FAIL_POTENTIAL_FAILED:
-        lines.append(f"{matter.potential_energy} potential_energy")
+        lines.append(f"{matter.potential_energy:.12e} potential_energy")
     Path(path).write_text("\n".join(lines) + "\n")
 
 

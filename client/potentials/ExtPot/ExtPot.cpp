@@ -13,7 +13,6 @@
 #include "eon/potentials/ExtPot/ExtPot.h"
 #include "eon/potentials/ExternalCommand.h"
 
-#include <algorithm>
 #include <atomic>
 #include <cctype>
 #include <filesystem>
@@ -71,25 +70,39 @@ std::string shellQuote(const std::string &text) {
 }
 
 #ifdef _WIN32
-bool isWindowsNativeProgram(const std::filesystem::path &path) {
-  std::string ext = path.extension().string();
-  std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) {
-    return static_cast<char>(std::tolower(c));
-  });
-  return ext == ".exe" || ext == ".bat" || ext == ".cmd" || ext == ".com";
+std::string asciiLower(std::string text) {
+  for (char &c : text) {
+    c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+  }
+  return text;
 }
 
-/// \brief cmd.exe will not honor a shebang. The default ext_pot wrapper is a
-/// Python script with no suffix, so launch it with python.
-std::string windowsLaunch(const std::string &command,
-                          const std::string &quotedCommand) {
+/// \brief cmd.exe cannot run a shebang script or a quoted path that has no
+/// PATHEXT suffix. A regular file that is a Python wrapper is invoked as
+/// `python "path"`; a native Windows program is quoted as-is; a command
+/// line with arguments is left alone.
+std::string windowsCommand(const std::string &command) {
   std::error_code ec;
   const std::filesystem::path named{command};
-  if (!std::filesystem::is_regular_file(named, ec) || ec ||
-      isWindowsNativeProgram(named)) {
-    return quotedCommand;
+  if (!std::filesystem::is_regular_file(named, ec) || ec) {
+    return command;
   }
-  return std::format("python {}", quotedCommand);
+  const std::string ext = asciiLower(named.extension().string());
+  if (ext == ".exe" || ext == ".com" || ext == ".bat" || ext == ".cmd") {
+    return shellQuote(command);
+  }
+  bool pythonScript = ext == ".py" || ext == ".pyw";
+  if (!pythonScript) {
+    std::ifstream in(named);
+    std::string line;
+    pythonScript = static_cast<bool>(std::getline(in, line)) &&
+                   line.rfind("#!", 0) == 0 &&
+                   line.find("python") != std::string::npos;
+  }
+  if (pythonScript) {
+    return std::format("python {}", shellQuote(command));
+  }
+  return shellQuote(command);
 }
 #endif
 
@@ -102,6 +115,11 @@ std::string windowsLaunch(const std::string &command,
 std::string composeCommand(const std::string &workDir,
                            const std::string &runDir,
                            const std::string &command) {
+#ifdef _WIN32
+  // cmd.exe: quotes around name=value so the value does not include them.
+  return std::format("cd /d {} && set \"{}={}\" && {}", shellQuote(workDir),
+                     kRunDirVariable, runDir, windowsCommand(command));
+#else
   // A resolved single-file path (the default ./ext_pot after
   // resolveCommand) has to be quoted so spaces and metacharacters
   // survive system(). A command line with arguments is left alone.
@@ -110,12 +128,6 @@ std::string composeCommand(const std::string &workDir,
       std::filesystem::is_regular_file(command, quoteEc) && !quoteEc
           ? shellQuote(command)
           : command;
-#ifdef _WIN32
-  // cmd.exe: quotes around name=value so the value does not include them.
-  return std::format("cd /d {} && set \"{}={}\" && {}", shellQuote(workDir),
-                     kRunDirVariable, runDir,
-                     windowsLaunch(command, quotedCommand));
-#else
   return std::format("cd {} && export {}={} && {}", shellQuote(workDir),
                      kRunDirVariable, shellQuote(runDir), quotedCommand);
 #endif

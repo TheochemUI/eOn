@@ -195,7 +195,7 @@ void Matter::resize(const long int length) {
   atomicNrs.resize(length);
   atomicNrs.setZero();
 
-  isFixed.resize(length);
+  isFixed.resize(length, 3);
   isFixed.setZero();
 
   atomIndex.resize(length);
@@ -304,6 +304,8 @@ void Matter::setPositionsFreeV(const VectorXd &pos) {
 
 AtomMatrix Matter::getBiasForces() {
   if (biasPotential != nullptr) {
+    // Evaluate the current bias only. The MD job advances the bond-boost
+    // schedule once per step via BondBoost::advance().
     biasPotential->boost();
   }
   return biasForces.array() * getFree().array();
@@ -397,10 +399,41 @@ void Matter::setAtomicNr(long int indexAtom, long atomicNr) {
   recomputeMaskedForces = true;
 }
 
-int Matter::getFixed(long int indexAtom) const { return (isFixed[indexAtom]); }
+int Matter::getFixed(long int indexAtom) const {
+  return (isFixed(indexAtom, 0) > 0.5 && isFixed(indexAtom, 1) > 0.5 &&
+          isFixed(indexAtom, 2) > 0.5)
+             ? 1
+             : 0;
+}
+
+int Matter::getFixed(long int indexAtom, int axis) const {
+  return isFixed(indexAtom, axis) > 0.5 ? 1 : 0;
+}
+
+std::array<bool, 3> Matter::getFixedMask(long int indexAtom) const {
+  return {isFixed(indexAtom, 0) > 0.5, isFixed(indexAtom, 1) > 0.5,
+          isFixed(indexAtom, 2) > 0.5};
+}
 
 void Matter::setFixed(long int indexAtom, int isFixed_passed) {
-  isFixed[indexAtom] = isFixed_passed;
+  const double v = isFixed_passed ? 1.0 : 0.0;
+  isFixed(indexAtom, 0) = v;
+  isFixed(indexAtom, 1) = v;
+  isFixed(indexAtom, 2) = v;
+  recomputeFreeMask = true;
+  recomputeMaskedForces = true;
+}
+
+void Matter::setFixed(long int indexAtom, int axis, int isFixed_passed) {
+  isFixed(indexAtom, axis) = isFixed_passed ? 1.0 : 0.0;
+  recomputeFreeMask = true;
+  recomputeMaskedForces = true;
+}
+
+void Matter::setFixedMask(long int indexAtom, std::array<bool, 3> mask) {
+  isFixed(indexAtom, 0) = mask[0] ? 1.0 : 0.0;
+  isFixed(indexAtom, 1) = mask[1] ? 1.0 : 0.0;
+  isFixed(indexAtom, 2) = mask[2] ? 1.0 : 0.0;
   recomputeFreeMask = true;
   recomputeMaskedForces = true;
 }
@@ -419,23 +452,29 @@ double Matter::getPotentialEnergy() const {
 }
 
 double Matter::getKineticEnergy() const {
-  // Vectorized: 0.5 * sum(mass_i * |v_i|^2) for free atoms
-  // Use free mask (1-isFixed) to zero out fixed atom contributions
-  Eigen::VectorXd speed2(nAtoms);
-  for (long i = 0; i < nAtoms; i++) {
-    speed2[i] = velocities.row(i).squaredNorm();
-  }
-  auto freeMask = (1 - isFixed.array()).cast<double>();
-  return 0.5 * (masses.array() * freeMask * speed2.array()).sum();
+  // 0.5 * sum(mass_i * |v_i,free|^2); a constrained axis does not contribute.
+  AtomMatrix vfree = velocities.array() * getFree().array();
+  Eigen::VectorXd speed2 = vfree.rowwise().squaredNorm();
+  return 0.5 * (masses.array() * speed2.array()).sum();
 }
 
 double Matter::getMechanicalEnergy() const {
   return getPotentialEnergy() + getKineticEnergy();
 }
 
-long int Matter::numberOfFreeAtoms() const { return nAtoms - isFixed.sum(); }
+long int Matter::numberOfFixedAtoms() const {
+  long n = 0;
+  for (long i = 0; i < nAtoms; ++i) {
+    if (getFixed(i)) {
+      ++n;
+    }
+  }
+  return n;
+}
 
-long int Matter::numberOfFixedAtoms() const { return isFixed.sum(); }
+long int Matter::numberOfFreeAtoms() const {
+  return nAtoms - numberOfFixedAtoms();
+}
 
 long Matter::getForceCalls() const { return (forceCalls); }
 
@@ -472,7 +511,7 @@ void Matter::computePotential() const {
       this->potentialEnergy = freePE;
       this->energyVariance = vari;
       for (long idx{0}, jdx{0}; idx < nAtoms; idx++) {
-        if (!isFixed(idx)) {
+        if (!getFixed(idx)) {
           forces.row(idx) = freeForces.row(jdx);
           jdx++;
         }
@@ -489,7 +528,7 @@ void Matter::computePotential() const {
     forceCalls = forceCalls + 1;
     recomputePotential = false;
 
-    if (isFixed.sum() == 0 && removeNetForce) {
+    if (isFixed.maxCoeff() < 0.5 && removeNetForce) {
       Vector3d tempForce = forces.colwise().sum() / nAtoms;
       for (long int i = 0; i < nAtoms; i++) {
         forces.row(i) -= tempForce.transpose();
@@ -516,13 +555,13 @@ double Matter::maxForce() const {
   // Ensures that the forces are up to date
   computePotential();
 
-  // I think this can be done in one line with the rowwise method
+  const AtomMatrix &f = getForces();
   double maxForce = 0.0;
   for (int i = 0; i < nAtoms; i++) {
     if (getFixed(i)) {
       continue;
     }
-    maxForce = std::max(forces.row(i).norm(), maxForce);
+    maxForce = std::max(f.row(i).norm(), maxForce);
   }
   return maxForce;
 }
@@ -541,15 +580,13 @@ void Matter::setAtomicNrs(const VectorXi &atmnrs) {
 AtomMatrix Matter::getFree() const {
   if (recomputeFreeMask) {
     freeMask.resize(nAtoms, 3);
+    freeMask = 1.0 - isFixed.array();
     freeIndices.clear();
-    freeIndices.reserve(nAtoms);
+    freeIndices.reserve(static_cast<size_t>(nAtoms));
     for (long i = 0; i < nAtoms; i++) {
-      double val = isFixed(i) ? 0.0 : 1.0;
-      freeMask(i, 0) = val;
-      freeMask(i, 1) = val;
-      freeMask(i, 2) = val;
-      if (!isFixed(i))
+      if (freeMask.row(i).sum() > 0.5) {
         freeIndices.push_back(static_cast<int>(i));
+      }
     }
     recomputeFreeMask = false;
   }
@@ -611,7 +648,7 @@ void Matter::setComputedPotential(double energy, double variance) {
   forceCalls++;
 
   // Apply the same net force removal as computePotential()
-  if (isFixed.sum() == 0 && removeNetForce) {
+  if (isFixed.maxCoeff() < 0.5 && removeNetForce) {
     Vector3d tempForce = forces.colwise().sum() / nAtoms;
     for (long int i = 0; i < nAtoms; i++) {
       forces.row(i) -= tempForce.transpose();

@@ -199,14 +199,11 @@ bool eonc::helpers::loadOrSynthesizeDisplacement(
 
 void eonc::helpers::saveMode(FILE *modeFile, std::shared_ptr<Matter> matter,
                              AtomMatrix mode) {
+  const AtomMatrix free = matter->getFree();
   long const nAtoms = matter->numberOfAtoms();
   for (long i = 0; i < nAtoms; ++i) {
-    if (matter->getFixed(i)) {
-      fprintf(modeFile, "0 0 0\n");
-    } else {
-      fprintf(modeFile, "%.17g\t%.17g\t%.17g\n", mode(i, 0), mode(i, 1),
-              mode(i, 2));
-    }
+    fprintf(modeFile, "%.17g\t%.17g\t%.17g\n", free(i, 0) * mode(i, 0),
+            free(i, 1) * mode(i, 1), free(i, 2) * mode(i, 2));
   }
   return;
 }
@@ -216,14 +213,11 @@ void eonc::helpers::saveMode(const std::string &filename,
   std::ofstream out(filename);
   if (!out)
     return;
+  const AtomMatrix free = matter->getFree();
   long const nAtoms = matter->numberOfAtoms();
   for (long i = 0; i < nAtoms; ++i) {
-    if (matter->getFixed(i)) {
-      out << "0 0 0\n";
-    } else {
-      out << std::format("{:.17g}\t{:.17g}\t{:.17g}\n", mode(i, 0), mode(i, 1),
-                         mode(i, 2));
-    }
+    out << std::format("{:.17g}\t{:.17g}\t{:.17g}\n", free(i, 0) * mode(i, 0),
+                       free(i, 1) * mode(i, 1), free(i, 2) * mode(i, 2));
   }
 }
 

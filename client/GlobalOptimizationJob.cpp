@@ -1,5 +1,4 @@
 /*
-#include <stdexcept>
 ** This file is part of eOn.
 **
 ** SPDX-License-Identifier: BSD-3-Clause
@@ -16,6 +15,7 @@
 
 #include <format>
 #include <memory>
+#include <stdexcept>
 // #include "eon/MinimizationJob.h"
 #include "eon/Dynamics.h"
 #include "eon/HelperFunctions.h"
@@ -117,7 +117,8 @@ void GlobalOptimizationJob::analyze(Matter &matter_cur, Matter &matter_hop) {
     QUILL_LOG_CRITICAL(
         log,
         "ERROR: new minimum is neither accepted nor rejected: client stops.");
-    std::exit(1);
+    throw std::runtime_error(
+        "[Global Optimization] new minimum is neither accepted nor rejected");
   }
 }
 
@@ -155,7 +156,8 @@ void GlobalOptimizationJob::applyMoveFeedbackMD() {
     QUILL_LOG_CRITICAL(log,
                        "ERROR: client does not know what to do with ekin.");
     QUILL_LOG_CRITICAL(log, "ERROR: client stops in applyMoveFeedbackMD.");
-    std::exit(1);
+    throw std::runtime_error(std::format(
+        "[Global Optimization] unknown hoppingResult: {}", hoppingResult));
   }
 }
 
@@ -217,7 +219,9 @@ void GlobalOptimizationJob::decisionStep(Matter &matter_cur,
     log = eonc::log::traceback();
     QUILL_LOG_CRITICAL(
         log, "ERROR: accept/reject method not specified. client stops.");
-    std::exit(1);
+    throw std::invalid_argument(
+        std::format("[Global Optimization] unknown decision_method: {}",
+                    params.global_optimization_options.decision_method));
   }
   applyDecisionFeedback();
 }
@@ -297,7 +301,9 @@ void GlobalOptimizationJob::randomMove(Matter &matter) {
         } else {
           log = eonc::log::traceback();
           QUILL_LOG_CRITICAL(log, "Unknown displacement_distribution");
-          std::exit(1);
+          throw std::invalid_argument(std::format(
+              "[Global Optimization] unknown displacement_distribution: {}",
+              params.basin_hopping_options.displacement_distribution));
         }
       }
     }

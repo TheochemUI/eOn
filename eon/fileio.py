@@ -24,13 +24,22 @@ from eon.structure import Structure
 
 logger = logging.getLogger('io')
 
-def save_prng_state():
+def prng_state_path(config):
+    '''Path of the persisted numpy PRNG pickle.
+
+    ConfigClass.init restores from this file under path_root, so every
+    writer and reset must use the same location rather than the process CWD.
+    '''
+    return os.path.join(config.path_root, 'prng.pkl')
+
+
+def save_prng_state(path):
     state = numpy.random.get_state()
-    with open('prng.pkl', 'wb') as fh:
+    with open(path, 'wb') as fh:
         pickle.dump(state, fh, pickle.HIGHEST_PROTOCOL)
 
-def get_prng_state():
-    with open('prng.pkl', 'rb') as fh:
+def get_prng_state(path):
+    with open(path, 'rb') as fh:
         state = pickle.load(fh)
     numpy.random.set_state(state)
 
@@ -109,7 +118,35 @@ def loadcons(filename):
     return [_frame_to_atoms(f) for f in frames]
 
 
+def loadxyz(filename):
+    '''
+    Load the first frame of an XYZ/PDB/GRO file via readcon chemfiles ingress.
+
+    Requires a chemfiles-linked readcon (``pip install readcon-chemfiles``).
+    The .con path stays on readcon-core; this is the foreign-format edge.
+    '''
+    if not getattr(readcon, "has_chemfiles_support", lambda: False)():
+        raise RuntimeError(
+            "loadxyz needs a chemfiles-linked readcon "
+            "(pip install readcon-chemfiles)"
+        )
+    return _frame_to_atoms(readcon.read_chemfiles_first(filename))
+
+
+def _tokens_are_ints(tokens):
+    """True when every token parses as an int (VASP 4 counts line)."""
+    if not tokens:
+        return False
+    for tok in tokens:
+        try:
+            int(tok)
+        except ValueError:
+            return False
+    return True
+
+
 def loadposcars(filename):
+    '''Load every POSCAR frame from filename (VASP 4 or VASP 5).'''
     p = []
     with open(filename, 'r') as filein:
         while True:
@@ -146,7 +183,7 @@ def _as_structure(p):
     s = Structure(n)
     s.box = numpy.asarray(p.box, dtype=float).reshape(3, 3).copy()
     s.r = numpy.asarray(p.r, dtype=float).reshape(n, 3).copy()
-    s.free = numpy.asarray(p.free, dtype=float).reshape(n).copy()
+    s.free = numpy.asarray(p.free, dtype=float)
     s.names = list(p.names)
     s.mass = numpy.asarray(p.mass, dtype=float).reshape(n).copy()
     ids = getattr(p, 'atom_ids', None)
@@ -162,24 +199,52 @@ def _atoms_to_frame(p):
     return p.to_conframe()
 
 
+def _path_is_compressed_con(path):
+    name = os.path.basename(path).lower()
+    return name.endswith(".gz") or name.endswith(".zst")
+
+
+def _file_ends_with_newline(path):
+    """True for an empty file too: nothing needs separating from the first frame."""
+    try:
+        with open(path, "rb") as fh:
+            fh.seek(0, os.SEEK_END)
+            if fh.tell() == 0:
+                return True
+            fh.seek(-1, os.SEEK_END)
+            return fh.read(1) == b"\n"
+    except OSError:
+        return True
+
+
 def savecon(fileout, p, w = 'w'):
     '''
     Save a con file via readcon.
         fileout: can be either a file name or a file-like object
         p:       Structure (or Structure-like) to save
         w:       write/append flag
+
+    Append of an uncompressed file concatenates one serialized frame. A
+    gzip or zstd target cannot be extended in place, so those still
+    read the existing frames and rewrite the file.
     '''
     frame = _atoms_to_frame(p)
     if hasattr(fileout, 'write'):
         text = readcon.write_con_string([frame])
         fileout.write(text)
-    else:
-        if w == 'a' and os.path.exists(fileout):
+    elif w == 'a' and os.path.exists(fileout) and os.path.getsize(fileout) > 0:
+        if _path_is_compressed_con(fileout):
             existing = readcon.read_con(fileout)
             existing.append(frame)
             readcon.write_con(fileout, existing)
         else:
-            readcon.write_con(fileout, [frame])
+            text = readcon.write_con_string([frame])
+            with open(fileout, 'a') as fh:
+                if not _file_ends_with_newline(fileout):
+                    fh.write('\n')
+                fh.write(text)
+    else:
+        readcon.write_con(fileout, [frame])
 
 
 def load_mode(modefilein):
@@ -202,18 +267,24 @@ def load_mode(modefilein):
             mode.append(float(l[j]))
     return numpy.array(mode).reshape(len(mode)//3, 3)
 
-def save_mode(modefileout, displace_vector):
+def save_mode(modefileout, displace_vector, free=None):
     '''
     Saves an Nx3 numpy array into a mode.dat file.
         modefileout:     may be either a filename or file-like object
         displace_vector: the mode (Nx3 numpy array)
+        free:            optional (N,) or (N,3) mask; a 0 axis is written as 0
     17 significant digits round trip a double exactly, and match what the
     client's printf writers emit for the same value.
     '''
+    vec = numpy.asarray(displace_vector, dtype=float)
+    if free is not None:
+        mask = numpy.asarray(free, dtype=float)
+        if mask.ndim == 1:
+            mask = numpy.repeat(mask.reshape(-1, 1), 3, axis=1)
+        vec = vec * (mask > 0.5)
     with _maybe_open(modefileout, 'w', 'write') as f:
-        for i in range(len(displace_vector)):
-            f.write("%.17g %.17g %.17g\n" % (displace_vector[i][0],
-                displace_vector[i][1], displace_vector[i][2]))
+        for i in range(len(vec)):
+            f.write("%.17g %.17g %.17g\n" % (vec[i][0], vec[i][1], vec[i][2]))
 
 
 def save_results_dat(fileout, results):
@@ -236,6 +307,22 @@ def modify_config(config_path, changes):
     config_str_io.seek(0)
     return config_str_io
 
+def _coerce_results_value(token):
+    '''Parse one results.dat value token.
+
+    Integers stay int. Everything float() accepts (1.0, 1e-5, nan, inf)
+    becomes float. Dotted identifiers and other non-numerics stay str so
+    the key is present for the caller.
+    '''
+    body = token.lstrip('+-')
+    if body.isdigit():
+        return int(token)
+    try:
+        return float(token)
+    except ValueError:
+        return token
+
+
 def parse_results(filein):
     '''
     Reads a results.dat file and gives a dictionary of the values contained therein
@@ -247,25 +334,24 @@ def parse_results(filein):
             line = line.split()
             if len(line) < 2:
                 continue
-            if '.' in line[0]:
-                try:
-                    results[line[1]] = float(line[0])
-                except ValueError:
-                    results[line[1]] = line[0]
-            else:
-                try:
-                    results[line[1]] = int(line[0])
-                except ValueError:
-                    results[line[1]] = line[0]
+            results[line[1]] = _coerce_results_value(line[0])
 
     return results
 
 def loadposcar(filein):
     '''
-    Load the POSCAR file named filename and returns an atoms object
+    Load a VASP POSCAR (or one frame of a multi-frame movie).
+
+    POSCAR is the one structure format that does not go through readcon:
+    the kdb tool emits VASP 4, and movie.py writes VASP 5 for external
+    viewers. The reader accepts both. After the cell, a line of integer
+    counts is VASP 4 (species taken from the comment); a line of species
+    names followed by the counts is VASP 5.
+
+    filein: filename or file-like object
     '''
     with _maybe_open(filein, 'r', 'readline') as f:
-        # Line 1: Atom types
+        # Line 1: comment, often the species names.
         AtomTypes = f.readline().split()
         # Line 2: scaling of coordinates
         scale = float(f.readline())
@@ -274,17 +360,21 @@ def loadposcar(filein):
         for i in range(3):
             line = f.readline().split()
             box[i] = numpy.array([float(line[0]), float(line[1]), float(line[2])]) * scale
-        # Line 6: number of atoms of each type.
+        # Line 6 is either VASP 4 counts or VASP 5 species names.
         line = f.readline().split()
-        NumAtomsPerType = []
-        for l in line:
-            NumAtomsPerType.append(int(l))
+        if _tokens_are_ints(line):
+            NumAtomsPerType = [int(tok) for tok in line]
+        else:
+            if line:
+                AtomTypes = line
+            counts_line = f.readline().split()
+            NumAtomsPerType = [int(tok) for tok in counts_line]
         # Now have enough info to make the Structure object.
         num_atoms = sum(NumAtomsPerType)
         p = Structure(num_atoms)
         # Fill in the box.
         p.box = box
-        # Line 7: selective or cartesian
+        # Selective Dynamics (optional) or Cartesian/Direct.
         sel = f.readline()[0]
         selective_flag = (sel == 's' or sel == 'S')
         if not selective_flag:
@@ -303,11 +393,13 @@ def loadposcar(filein):
                     assert len(line) >= 3
                 pos = line[0:3]
                 if selective_flag:
-                    sel = line[3:7]
-                    if sel[0] == 'T' or sel[0] == 't':
-                        p.free[atom_index] = 1
-                    elif sel[0] == 'F' or sel[0] == 'f':
-                        p.free[atom_index] = 0
+                    sel = line[3:6]
+                    flags = []
+                    for flag in sel:
+                        flags.append(1.0 if flag in ('T', 't') else 0.0)
+                    while len(flags) < 3:
+                        flags.append(flags[0] if flags else 1.0)
+                    p.free[atom_index] = flags
                 p.r[atom_index] = numpy.array([float(q) for q in pos])
                 if direct_flag:
                     p.r[atom_index] = numpy.dot(p.r[atom_index], p.box)
@@ -319,10 +411,12 @@ def loadposcar(filein):
 
 def saveposcar(fileout, p, w='w', direct = False):
     '''
-    Save a POSCAR
+    Save a VASP 5 POSCAR (species on the comment line and again before
+    the counts). movie.py uses this for visualization; loadposcar reads
+    this layout and the VASP 4 layout kdb produces.
         fileout: name to save it under
-        point:    atoms object to save
-        w:        write/append flag
+        p:       Structure (or Structure-like) to save
+        w:       write/append flag
     '''
     with _maybe_open(fileout, w, 'write') as poscar:
         atom_types = []
@@ -355,13 +449,15 @@ def saveposcar(fileout, p, w='w', direct = False):
         else:
             poscar.write('Cartesian\n') #line 8 cartesian coordinates
             positions = p.r
+        free = numpy.asarray(p.free, dtype=float)
         for i in order:
                 posline = " ".join(['%20.14f' % s for s in positions[i]]) + " "
-                for j in range(3):
-                    if(p.free[i]):
-                        posline+='   T'
-                    else:
-                        posline+='   F'
+                if free.ndim == 1:
+                    axis_free = (free[i] > 0.5, free[i] > 0.5, free[i] > 0.5)
+                else:
+                    axis_free = (free[i, 0] > 0.5, free[i, 1] > 0.5, free[i, 2] > 0.5)
+                for flag in axis_free:
+                    posline += '   T' if flag else '   F'
                 poscar.write(posline+'\n')
 
 

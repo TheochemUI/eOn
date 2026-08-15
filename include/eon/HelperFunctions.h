@@ -74,6 +74,7 @@ AtomMatrix loadMode(std::string filename, int nAtoms);
 bool loadOrSynthesizeDisplacement(Matter &target, const Matter &initial,
                                   const std::string &displacementPath,
                                   const std::string &modePath, double scale);
+/// Write a mode; constrained axes are emitted as 0.
 void saveMode(FILE *modeFile, std::shared_ptr<Matter> matter, AtomMatrix mode);
 void saveMode(const std::string &filename, std::shared_ptr<Matter> matter,
               AtomMatrix mode);

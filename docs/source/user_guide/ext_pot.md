@@ -5,24 +5,24 @@ myst:
     "keywords": "eOn external potential, ext_pot, MLIP, DeePMD, wrapper script, file interface"
 ---
 
-# External potential
+# External Potential
 
 ```{admonition} conda-forge availability
 :class: tip
 Included in the `conda-forge` package. Always compiled in; no build flags required.
 ```
 
-The external potential (`ext_pot`) wraps **any** energy and force calculator
-through files and a system call. Because it requires no compile-time
-dependencies, `ext_pot` is available in every eOn build, including the
-`conda-forge` package.
+The external potential (`ext_pot`) interface allows eOn to use **any** energy and
+force calculator by communicating through files and a system call. Because it
+requires no compile-time dependencies, `ext_pot` is always available in every eOn
+build, including the `conda-forge` package.
 
 ```{tip}
-If you installed eOn from `conda-forge` and need an MLIP (DeePMD, MACE,
+If you installed eOn from `conda-forge` and want to use an MLIP (DeePMD, MACE,
 etc.) that is not available through the [Metatomic](project:metatomic_pot.md)
-interface, use `ext_pot` or [LAMMPS](project:lammps_pot.md).
-The [ASE](project:ase_pot.md) potentials need `-Dwith_ase` at compile time.
-The `conda-forge` build leaves that flag off.
+interface, `ext_pot` or [LAMMPS](project:lammps_pot.md) is the recommended path.
+The [ASE](project:ase_pot.md) potentials require additional compile-time flags
+that are **not** enabled in the `conda-forge` build.
 ```
 
 ## Protocol
@@ -49,9 +49,11 @@ leaves it in place when a call fails so its contents can be inspected.
 existing file, so `./ext_pot` and an absolute path both work. A command line
 with arguments (`python wrapper.py`) or a name looked up on `PATH` is passed
 to the shell unchanged and therefore has to be written so it resolves from
-the exchange directory: give the script an absolute path. A wrapper that
-needs to reach files in the directory eOn runs in finds that directory in the
-environment variable `EON_EXTPOT_RUN_DIR`.
+the exchange directory: give the script an absolute path. On Windows,
+`cmd.exe` does not honor a shebang: a resolved script whose first line names
+python, or whose name ends in `.py`, is invoked as `python <script>`. A
+wrapper that needs to reach files in the directory eOn runs in finds that
+directory in the environment variable `EON_EXTPOT_RUN_DIR`.
 ```
 
 ### Input file (`from_eon_to_extpot`)
