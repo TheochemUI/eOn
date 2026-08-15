@@ -74,8 +74,8 @@ max_iterations = 20
 ```
 
 `max_iterations` controls how many Lanczos iterations are performed per
-eigenmode computation. Unlike the dimer's `rotations_max`, each Lanczos
-iteration costs exactly 1 gradient evaluation.
+eigenmode computation. Each Lanczos iteration costs exactly 1 gradient
+evaluation. Dimer rotation uses `rotations_max`.
 
 ## Configuration
 

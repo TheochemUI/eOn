@@ -8,8 +8,7 @@ myst:
 # pyeonclient (Python client API)
 
 ```{versionadded} 2.16
-In-process client: algorithm objects on :class:`~pyeonclient.Matter`,
-not a working directory and not the `eonclient` binary alone.
+In-process client: algorithm objects on :class:`~pyeonclient.Matter`.
 ```
 
 [pyeonclient](https://pypi.org/project/pyeonclient/) exposes the eOn **C++
@@ -70,7 +69,7 @@ API, packaging notes, and a PET-MAD single-point benchmark plot.
 
 ## Mutation policy (`inplace`)
 
-Algorithms that change geometry **do not mutate caller-owned Matter by default**.
+Algorithms that change geometry leave caller-owned Matter unchanged by default.
 Pass ``inplace=True`` to write into the input object.
 
 ```{code-block} python
@@ -180,10 +179,8 @@ Parameters: `saddle_method`, `saddle_minmode_method`, `saddle_max_iterations`,
 
 ## NEB
 
-Use **eOn-native** path initializers (IDPP / SIDPP / linear). Do not pull
-ASE ``interpolate("idpp")`` into a pyeonclient band — the same engines live
-in ``helpers::neb_paths`` and are already what the endpoint NEB constructor
-uses.
+Path initializers are IDPP / SIDPP / linear from ``helpers::neb_paths``,
+the same engines the endpoint NEB constructor uses.
 
 Typed knobs live on :class:`~pyeonclient.NebSpec`. Compose the same steps as a
 workdir job without a package alias:
@@ -238,9 +235,8 @@ Helpers: ``neb_linear_path``, ``neb_idpp_path``, ``neb_idpp_collective_path``,
 ``neb_sidpp_path``, ``neb_initial_path``. See {doc}`neb` for energy-weighted
 springs and OCINEB (``neb_ci_mmf``, …).
 
-GP-surrogate NEB is still the same **NEB** idea with a GP accelerant on the
-band engine (``WITH_GP_SURROGATE``), not a separate product noun — and **not**
-prefactor / Parallel Replica.
+GP-surrogate NEB is NEB with a GP accelerant on the band engine
+(``WITH_GP_SURROGATE``).
 
 ## Hessian and prefactors
 

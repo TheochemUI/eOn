@@ -21,8 +21,8 @@ dependencies, `ext_pot` is available in every eOn build, including the
 If you installed eOn from `conda-forge` and need an MLIP (DeePMD, MACE,
 etc.) that is not available through the [Metatomic](project:metatomic_pot.md)
 interface, use `ext_pot` or [LAMMPS](project:lammps_pot.md).
-The [ASE](project:ase_pot.md) potentials require additional compile-time flags
-that are **not** enabled in the `conda-forge` build.
+The [ASE](project:ase_pot.md) potentials need `-Dwith_ase` at compile time.
+The `conda-forge` build leaves that flag off.
 ```
 
 ## Protocol

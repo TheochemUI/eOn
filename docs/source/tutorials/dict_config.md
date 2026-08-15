@@ -18,8 +18,8 @@ Optimizer, Structure Comparison, Process Search) are authored in
 {file}`schema/eon_params.capnp` and projected into {mod}`eon.schema` for docs
 and validation. The user guide pages (e.g. {doc}`/user_guide/main`,
 {doc}`/user_guide/neb`) still render the Pydantic models. You continue to write
-ordinary ``config.ini`` files (or generate them as below); Cap'n Proto is the
-field-graph author, not a required on-disk format for end users.
+ordinary ``config.ini`` files (or generate them as below). Cap'n Proto
+authors the field graph.
 
 ## Installation
 

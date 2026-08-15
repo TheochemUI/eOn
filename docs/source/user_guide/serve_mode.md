@@ -21,10 +21,8 @@ potential as an
 tools (e.g. [ChemGP](https://github.com/HaoZeke/ChemGP)) can evaluate energies
 and forces without embedding C++.
 
-This is **not** the direct in-process **RGPOT** pot (`-Dwith_rgpot`,
-`dlopen` of `libnwchemc` / `libcpmdc` via rgpot NWChemPot/CPMDPot), and **not**
-an eOn client connecting to **potserv**. See
-[rgpot integration](project:rgpot_integration.md) for the three roles.
+The three roles (in-process RGPOT, this RPC server, potserv client) are in
+[rgpot integration](project:rgpot_integration.md).
 
 ## Compilation
 

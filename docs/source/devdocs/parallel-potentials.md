@@ -56,9 +56,9 @@ evaluation then proceeds lock-free.
 
 ### Where the answers come from
 
-Potentials that reach eOn through `RgpotAdapter` do not hard-code either
-flag: the adapter reads `caps().reentrancy` from the rgpot kernel, so the
-answer lives next to the physics rather than in a list on the caller side.
+Potentials that reach eOn through `RgpotAdapter` take both flags from
+`caps().reentrancy` on the rgpot kernel, so the answer lives next to the
+physics.
 `SharedInstance` maps to `isThreadSafe()`, `PerInstance` to
 `needsPerImageInstance()`, and `ProcessSerial` to neither, which is the
 last row above.
@@ -66,9 +66,9 @@ last row above.
 The Fortran kernels all declare `ProcessSerial` today. That matches how
 they were treated before the port -- they were on the old hard-coded
 thread-safety blacklist -- and it is deliberately the conservative
-starting point rather than a claim about the rewritten code: the kernels
+starting point. The kernels
 carry no mutable module state any more, so promoting one is a per-kernel
-exercise in checking the kernel and adding a test, not a sweeping change.
+exercise in checking the kernel and adding a test.
 
 The parallel check in NEB is:
 ```cpp

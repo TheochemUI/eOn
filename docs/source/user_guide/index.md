@@ -14,8 +14,7 @@ within `eOn`.
 ## Python client (pyeonclient)
 
 For **in-process** client work (minimization, NEB, Matter objects) use the pip
-package `pyeonclient` — an ASE-shaped API where the path is a
-`list[Matter]`, not a working directory:
+package `pyeonclient`: an ASE-shaped API on a `list[Matter]`.
 
 ```{toctree}
 :maxdepth: 1
@@ -32,8 +31,7 @@ See also the [API reference](../apidocs/pyeonclient.md) and the
 
 Schedule `eonclient` through AiiDA with the
 [aiida-eon](https://pypi.org/project/aiida-eon/) plugin
-({doc}`aiida`). That is the workdir binary, not the in-process
-Python API.
+({doc}`aiida`). That plugin schedules the `eonclient` workdir binary.
 
 ```{toctree}
 :maxdepth: 1

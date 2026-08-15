@@ -206,8 +206,8 @@ show_plot(min_profile)
 
 ### 2D optimization landscape
 
-One landscape for this job only (do not overlay unrelated endpoints on a shared
-`(s, d)` frame). The title and strip use the `--label`.
+One landscape for this job only. Each trajectory defines its own RMSD basis
+on a `(s, d)` frame. The title and strip use the `--label`.
 
 ```{code-cell} python
 min_landscape = plot_dir / "min_landscape.png"

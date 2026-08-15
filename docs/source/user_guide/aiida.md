@@ -16,8 +16,7 @@ The Python adaptive kinetic Monte Carlo (AKMC) server
 (`python -m eon.server`) is a different process.
 `WorkflowFactory("eon.akmc")` submits independent `process_search`
 clients; superbasin kinetic Monte Carlo still belongs on the server.
-In-process Matter work is [pyeonclient](pyeonclient.md), not this
-plugin.
+In-process Matter work is [pyeonclient](pyeonclient.md).
 
 ```{seealso}
 Plugin repository: [HaoZeke/aiida-eon](https://github.com/HaoZeke/aiida-eon).
@@ -95,7 +94,7 @@ Each workchain pins the `job` key and exposes the CalcJob ports under
 `calc`. Serve mode (`eonclient --serve-*`) and `forceBatch` are not
 jobs.
 
-## What the plugin does not run
+## Related surfaces
 
 | Token | Where it lives |
 |---|---|

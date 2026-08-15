@@ -9,7 +9,7 @@ myst:
 
 Runtime configuration for the eOn **C++ client** lives in the `Parameters`
 class. Field **names, types, and defaults** for the high-traffic option groups
-are authored in a Cap'n Proto schema, not hand-synced across three peer files.
+are authored in a Cap'n Proto schema.
 
 ## Authoring SSoT (Cap'n Proto L0)
 
@@ -17,7 +17,7 @@ are authored in a Cap'n Proto schema, not hand-synced across three peer files.
 |-------|------|------|
 | **Authoring SSoT** | {file}`schema/eon_params.capnp` | Sole place to add/rename covered fields and defaults |
 | **Codegen** | `python tools/params_ssot/codegen.py` | Emits catalog + C++ defaults + field index |
-| **Generated** | `schema/eon_params_catalog.json`, `eon/_params_ssot_catalog.py`, `client/generated/*` | Do not hand-edit |
+| **Generated** | `schema/eon_params_catalog.json`, `eon/_params_ssot_catalog.py`, `client/generated/*` | Edit the schema and re-run codegen |
 | **Runtime store** | `client/Parameters.h` | Option-group structs; covered defaults applied via `apply_ssot_defaults()` |
 | **Adapters** | `ParametersINI.cpp`, `ParametersJSON.cpp` | Load/save user `config.ini` / JSON |
 | **Docs / validation** | `eon/schema.py`, `eon/config.yaml` | Must stay field-parity with SSoT for covered groups (`tests/test_params_ssot.py`) |
@@ -30,11 +30,11 @@ in `Parameters.h` until folded into the schema (see `schema/README.md`).
 
 1. Edit {file}`schema/eon_params.capnp` (new field, type, default, ordinal).
 2. Run `python tools/params_ssot/codegen.py`.
-3. Wire any INI/JSON load path if needed; do **not** invent the same field only
-   in `config.yaml` / `schema.py` / `Parameters.h` without the Cap'n Proto update.
+3. Wire any INI/JSON load path if needed. Add the field in the Cap'n Proto
+   schema first, then in `config.yaml` / `schema.py` / `Parameters.h`.
 
-Users still write ordinary **`config.ini`** (or JSON) files. Cap'n Proto is the
-**field-graph author**, not a requirement that end users distribute binary messages.
+Users still write ordinary **`config.ini`** (or JSON) files. Cap'n Proto
+authors the field graph.
 
 ## Runtime architecture
 

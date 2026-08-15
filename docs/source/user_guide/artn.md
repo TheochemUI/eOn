@@ -16,11 +16,11 @@ a saddle point search method that uses an explicit push phase followed by
 Lanczos eigenvalue computation and perpendicular relaxation. It is implemented
 via the [pARTn](https://gitlab.com/mammasmias/artn-plugin) Fortran library.
 
-## How ARTn differs from Dimer/Lanczos
+## Push-based exploration
 
-Unlike the [dimer](project:dimer.md) and [Lanczos](project:lanczos.md)
-methods, which follow the lowest eigenmode from a given starting point, ARTn
-actively *pushes* the system away from a local minimum before searching for the
+The [dimer](project:dimer.md) and [Lanczos](project:lanczos.md)
+methods follow the lowest eigenmode from a given starting point. ARTn
+*pushes* the system away from a local minimum before searching for the
 saddle:
 
 1. **Push phase**: displace atoms away from the minimum by `push_step_size`
@@ -29,7 +29,7 @@ saddle:
 4. **Convergence check**: iterate until force threshold is met or saddle found
 
 This push-based exploration can find saddles that gradient-following methods
-miss, making ARTn complementary to Dimer/Lanczos rather than a replacement.
+miss.
 
 ## Force call costs
 

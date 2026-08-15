@@ -40,7 +40,7 @@ from eon import pyeonclient_bridge as br
 # br.from_matter(matter)
 ```
 
-## Why not pybind11 embed for ASE?
+## Python embed for ASE
 
 pybind11 was used only so **standalone `eonclient`** could *embed* a Python
 interpreter and call ASE calculators. nanobind has no public
@@ -51,9 +51,9 @@ interpreter and call ASE calculators. nanobind has no public
 | **Server + pyeonclient** | Python process | Matter in-process; ASE calculators can live as Python objects (no C++ embed) |
 | **Standalone eonclient** | C++ process | Prefer C++ pots, or `NbGuard` + CPython init; migrate ASE pots off pybind11 |
 
-`client/NbGuard.h` initializes the interpreter with `Py_InitializeEx` (no
-pybind11). ASE pot migration to nanobind marshalling is follow-on work; new
-code should not add pybind11 surfaces.
+`client/NbGuard.h` initializes the interpreter with `Py_InitializeEx`.
+ASE pot migration to nanobind marshalling is follow-on work. New embed
+code uses nanobind marshalling.
 
 ## Matter through-and-through
 

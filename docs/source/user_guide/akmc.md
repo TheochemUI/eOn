@@ -47,11 +47,9 @@ determine the connecting states. The prefactor for the transition is also
 calculated by finite difference and the hTST rate is calculated. These data are
 reported back to the server.
 
-Unlike traditional Kinetic Monte Carlo (KMC) methods,
-adaptive (a), or off-lattice KMC {cite:p}`ak-trochetOffLatticeKineticMonte2020`
-does not require a lattice of predetermined points in configuration space. The
-method builds a rate table from local atomic movements and energy barriers, so
-systems whose atoms are not pinned to a grid stay on-lattice-free. The
+Adaptive (a), or off-lattice KMC {cite:p}`ak-trochetOffLatticeKineticMonte2020`
+works in continuous configuration space. The method builds a rate table from
+local atomic movements and energy barriers, so atoms can sit off a grid. The
 confidence scheme and thermal accessibility settings restrict accepted
 transitions to those that meet the documented thresholds.
 

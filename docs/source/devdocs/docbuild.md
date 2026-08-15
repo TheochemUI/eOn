@@ -66,8 +66,7 @@ uvx pdm add -dG docs "sphinxcontrib-bibtex"
 
 ## Adding citations
 
-Citations are handled in a `.bib` file which is exported via `better-bibtex`
-with Zotero. Kindly do not modify these by hand.
+Citations live in a `.bib` file exported from Zotero via `better-bibtex`.
 
 Local bibliographies, as noted in [the
 documentation](https://sphinxcontrib-bibtex.readthedocs.io/en/latest/usage.html#local-bibliographies),

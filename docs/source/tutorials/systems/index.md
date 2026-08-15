@@ -50,8 +50,8 @@ These conventions match the production `rgpycrumbs` / `chemparseplot` tools:
 
 - Require movies: `[Debug] write_movies = true` (and optionally
   `write_deprecated_outs = true` for legacy `.dat` sidecars)
-- **One 2D landscape per endpoint**: do not overlay reactant and product on a
-  shared `(s, d)` frame; each trajectory defines its own RMSD basis
+- **One 2D landscape per endpoint**. Each trajectory defines its own RMSD basis
+  on a `(s, d)` frame.
 - Use `--label reactant` / `--label product` so titles read
   *Reactant minimization* / *Product minimization* with **initial** /
   **minimized** endpoint captions
