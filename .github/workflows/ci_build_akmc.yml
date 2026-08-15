@@ -165,7 +165,7 @@ jobs:
         if: runner.os != 'Windows'
         shell: pixi run bash -e {0}
         run: |
-          python -m pip install -q 'pytest>=8' 'pytest-datadir>=1.5'
+          python -m pip install -q 'pytest>=8' 'pytest-datadir>=1.5' 'sh>=2'
           python -m pytest tests/ -q --ignore=tests/release
 
       - name: Run server smoke tests
