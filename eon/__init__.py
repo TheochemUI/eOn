@@ -14,3 +14,8 @@ except ModuleNotFoundError:
         __version__ = _pkg_version("eon")
     except PackageNotFoundError:
         __version__ = "0.0.0+unknown"
+
+# Job modules import `from eon import version`. That name is the same
+# string as __version__, whether it came from generated version.py or
+# the fallback above.
+version = __version__

@@ -18,7 +18,7 @@ from pathlib import Path
 
 numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
 
-from eon.version import version
+from eon import version
 from eon.config import ConfigClass
 from eon import communicator
 from eon import locking

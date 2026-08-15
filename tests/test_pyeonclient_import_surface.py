@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import pytest
+
+pytest.importorskip("pyeonclient")
+
 
 def test_direct_imports_from_package_root():
     from pyeonclient import (  # noqa: F401
