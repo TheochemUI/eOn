@@ -120,5 +120,5 @@ def ase_calc():
 
 If you installed eOn from conda-forge or prefer not to build from source, the
 [external potential](project:ext_pot.md) interface provides the same calculator
-flexibility through file-based communication. It works out of the box with any
+flexibility through file-based communication. It works with any
 eOn install at the cost of per-call process overhead.

@@ -49,7 +49,7 @@ not count.
 ## When to Use Lanczos vs Dimer
 
 Both methods find the same lowest eigenmode. The Lanczos method is generally
-more efficient (fewer force calls) while the Dimer is more robust and
+more efficient (fewer force calls) while the Dimer fails less often and
 integrates with GP acceleration:
 
 - **Lanczos**: 1 gradient evaluation per iteration. Fewer total force calls.

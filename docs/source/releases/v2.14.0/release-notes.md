@@ -10,7 +10,7 @@ myst:
 ## [v2.14.0] - 2026-04-24
 
 See the [CHANGELOG](project:../changelog.md) for the fragment-by-fragment
-list; this page picks out the user-facing highlights.
+list; this page picks out the user-facing changes.
 
 ### Trajectory output
 
@@ -80,8 +80,8 @@ Contributing commit:
 
 Legacy Fortran-backed potentials (EAM_Al, FeHe, Lenosky_Si, Morse_Pt,
 SW_Si, Tersoff_Si, EMT, XTB when built without the reentrant flag)
-are now gated out of the shared-instance parallel path. The prior
-code assumed every `Potential` could be called from multiple threads
+are excluded from the shared-instance parallel path. The prior
+code treated every `Potential` as callable from multiple threads
 against a single instance, which broke potentials whose Fortran
 backend carries module-level state. These potentials now fall back
 to the serial code path under `parallel = true` rather than
@@ -89,7 +89,7 @@ corrupting internal buffers.
 
 Contributing commit:
 
-- `fix(parallel): gate shared-instance threading for legacy Fortran potentials`
+- `fix(parallel): exclude shared-instance threading for legacy Fortran potentials`
 
 ### Parameters
 
@@ -97,7 +97,7 @@ Contributing commit:
 
 `ParametersJSON::to_json` always emitted a `Debug` section but
 `from_json` had no matching handler, so `write_movies`,
-`write_movies_interval`, and `write_deprecated_outs` were silently
+`write_movies_interval`, and `write_deprecated_outs` were
 dropped on any JSON deserialization. The round-trip is now
 symmetric and the new `test_params_json` case enforces it.
 

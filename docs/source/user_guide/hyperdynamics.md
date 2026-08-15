@@ -8,7 +8,7 @@ myst:
 # Hyperdynamics
 
 The hyperdynamics method uses a bias potential which should be zero at
-transition states and positive in minima in order to accelerate the rate of
+transition states and positive in minima to accelerate the rate of
 transitions as noted by {cite:t}`hd-voterHyperdynamicsAcceleratedMolecular1997`.
 
 The hyperdynamics time step {math}`\delta t` can be obtained from the molecular

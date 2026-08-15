@@ -10,7 +10,7 @@ myst:
 `eOn` has a server client architecture for running its calculations. The
 simulation data is stored on the server and clients are sent jobs and return the
 results. Each time `eOn` is run it first checks to see if any results have come
-back from clients and processes them accordingly and then submits more jobs if
+back from clients and processes them, then submits more jobs if
 needed. In `eOn` there are several different ways to run jobs. One can run them
 locally on the server, via MPI,  or using a job queuing system such as
 [SGE](http://www.oracle.com/us/products/tools/oracle-grid-engine-075549.html).
@@ -70,8 +70,7 @@ variable `eOn_NUMBER_OF_CLIENTS` determines how many of the ranks
 should become clients and `eOn_SERVER_PATH` is the path to the
 server Python script. In MPI mode the clients need to be started
 instead of the server and one of them will become the server process.
-Currently only AKMC is supported. Below is an example of running using
-the MPI communicator:
+Currently only AKMC is supported. Example MPI communicator run:
 
 ```{code-block} bash
 #!/bin/bash

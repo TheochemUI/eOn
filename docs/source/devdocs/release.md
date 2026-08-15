@@ -35,7 +35,7 @@ eOn surfaces (`pyproject.toml`, `pixi.toml`, `condaEnvs/`, meson via
 Do **not** hand-edit a `## [X.Y.Z]` block above the towncrier marker; fragments
 under `docs/newsfragments/` are the only input for the next section.
 
-Gate locally or in CI:
+Run `release_assert.py` locally or in CI:
 
 ```bash
 python3 scripts/release_assert.py              # pyproject == pixi semver
@@ -49,10 +49,10 @@ python3 scripts/release_assert.py 2.14.0 --notes /tmp/release_notes.md
 |------|------|
 | [cocogitto](https://docs.cocogitto.io) (`cog`) 7+ | Bump, version commit, annotated tag |
 | [towncrier](https://towncrier.readthedocs.io) | `CHANGELOG.md` from `docs/newsfragments/` |
-| `scripts/release_assert.py` | Lockstep + optional CHANGELOG section gate (rgpot `potctl release assert` analogue) |
-| `.github/workflows/release.yml` | On `v*`: gate → tarball → GH release → PyPI (stable only) |
+| `scripts/release_assert.py` | Lockstep + optional CHANGELOG section check (rgpot `potctl release assert` analogue) |
+| `.github/workflows/release.yml` | On `v*`: `release_assert` → tarball → GH release → PyPI (stable only) |
 | `.github/workflows/release-prepare.yml` | Advisory dry-run on PRs / `workflow_dispatch` |
-| `.github/workflows/towncrier.yml` | `towncrier check` when shipped paths change |
+| `.github/workflows/towncrier.yml` | `towncrier check` when listed paths change |
 | `SECURITY.md` | Supported versions + report path |
 | `.github/CODEOWNERS` | Release-surface review hints |
 
@@ -89,7 +89,7 @@ Do once per GitHub repo (Settings):
 | Secret / config | Used by |
 |-----------------|---------|
 | `PYPI_API_TOKEN` or trusted publisher (PyPI → GitHub, environment `release`) | `release.yml` job `pypi` |
-| Optional environment `release` with required reviewers | Gate publishes |
+| Optional environment `release` with required reviewers | Required reviewers before publish |
 | GPG/signing keys on maintainer machines | Prefer `git tag -s` / signed commits; GHA does not replace maintainer GPG |
 
 **PyPI first-time (`eon-akmc`; do **not** use `eon` — already taken by EoN epidemics):**
@@ -117,14 +117,14 @@ Do once per GitHub repo (Settings):
 
 ## Multi-package monorepo: fat tarball vs splits
 
-One monorepo, two distribution shapes (both can ship from the same tag train):
+One monorepo, two distribution shapes (both can publish from the same tag train):
 
 | Shape | Artifact | Primary consumer |
 |-------|----------|------------------|
 | **Fat tree** | `eon-vX.Y.Z.tar.xz` (`git archive` of the full tag) | **conda-forge `eon-feedstock`**, EasyBuild, source builds |
 | **Splits** | PyPI `eon-akmc`, `pyeonclient`, `eon-schema`, … | pip/uv focused installs |
 
-Schema/package layout may be cleaned up over time. The release contract is:
+Schema/package layout may be cleaned up over time. The release rule is:
 **always produce one complete fat archive for the conda-forge recipe**, and
 **also** publish splits when those packages have independent consumers.
 
@@ -163,7 +163,7 @@ list / staged recipes process.
 
 ## Windows and conda-forge (issue #15)
 
-win-64 must ship **in-tree Fortran** (EAM/GAGAFE-class pots), not a Fortran-free
+win-64 must include **in-tree Fortran** (EAM/GAGAFE-class pots), not a Fortran-free
 stub. See [conda-forge/eon-feedstock#15](https://github.com/conda-forge/eon-feedstock/issues/15),
 feedstock `build.bat`, and [Windows Compatibility and Scientific Computing](https://rgoswami.me/posts/windows-compat-sci-cpp/)
 (stack sizes, MinGW/MSVC ABI, xtb import libs).
@@ -230,7 +230,7 @@ Happy path on `main` (cocogitto 7+):
 ```bash
 cog bump --auto --annotated 'Release v<X.Y.Z>
 
-<one-paragraph body listing headline features>
+<one-paragraph body listing main features>
 See CHANGELOG.md.'
 ```
 
@@ -284,7 +284,7 @@ Defined in `cog.toml`:
    Expect: version bumps in `pyproject.toml`/`pixi.toml`, regenerated
    `condaEnvs/*.conda-lock.yml`, new `CHANGELOG.md` section, consumed
    newsfragments deleted, plus your curated `docs/source/releases/vX.Y.Z/`
-   pages if you added them in the same commit or just before.
+   pages if you added them in the same commit or the one before it.
 
 2. Push the commit and tag together:
 
@@ -293,7 +293,7 @@ Defined in `cog.toml`:
    ```
 
 3. **GitHub Actions** (`release.yml`) on the tag:
-   - **gate**: checkout, `release_assert.py $VERSION --require-changelog`, emit
+   - **release_assert**: checkout, `release_assert.py $VERSION --require-changelog`, emit
      notes artifact (CHANGELOG section or curated `release-notes.md`).
    - **tarball**: `git archive` → `eon-vX.Y.Z.tar.xz` artifact.
    - **gh-release**: create/update GitHub Release with tarball attached and
@@ -310,7 +310,7 @@ Defined in `cog.toml`:
      --notes-file docs/source/releases/v<X.Y.Z>/release-notes.md
    ```
 
-   The feedstock URL assumes this exact asset name; do not rename it.
+   The feedstock URL requires this exact asset name; do not rename it.
 
 4. Confirm channels before feedstock PR:
 
@@ -369,7 +369,7 @@ Checklist:
 
 eOn has had cuts where **version / tag / CHANGELOG / release-notes exist** but
 **GitHub release asset, PyPI, and/or feedstock were never finished**, and/or
-**commits landed on `main` after the version chore** without a new semver.
+**commits reached `main` after the version chore** without a new semver.
 
 Example state at process-nail-down time: tip may report `2.14.0` in
 `pyproject.toml`/`pixi.toml` with tag `v2.14.0` and a `CHANGELOG` section, while
@@ -391,7 +391,7 @@ Is there a tag vN.M.P on origin?
    └─ NO (missing GH asset and/or PyPI and/or feedstock)
         ├─ main tip is still the release commit (or only trivial fixes you accept as N.M.P)
         │    → FINALIZE N.M.P (below); do not cog-bump a new version yet
-        └─ main has diverged with commits that must ship as a newer semver
+        └─ main has diverged with commits that must cut as a newer semver
              → SUPERSEDE: document N.M.P as partially published; cut N.M.P+1 (or minor)
                with fragments covering post-tag work; finalize missing N.M.P channels
                only if consumers need that exact tag (usually: finish tarball/GH for
@@ -419,7 +419,7 @@ on the index (metadata must match the tag tree). If post-tag `main` differs and
 you already decided to supersede, **skip** PyPI for `N.M.P` and publish only the
 new semver.
 
-Feedstock: open/update PR only for the version you want conda-forge to ship
+Feedstock: open/update PR only for the version you want conda-forge to publish
 (usually the semver you fully finalized, often the newest complete cut).
 
 ### Supersede with a new semver
@@ -476,14 +476,14 @@ git archive --format=tar v<X.Y.Z> | xz -9 > eon-v<X.Y.Z>.tar.xz
 
 Then [§3](#3-post-bump-actions) push and channel completion.
 
-## 8. API / Doxygen documentation gate
+## 8. API / Doxygen documentation check
 
 rgpot maintains `docs/source/Doxyfile_*.cfg` and integrates Doxygen output into
-the Sphinx site. **eOn does not yet ship an equivalent in-tree Doxygen pipeline**
+the Sphinx site. **eOn does not yet include an equivalent in-tree Doxygen pipeline**
 for the C++ `client/` tree; Python API docs use Sphinx autodoc/autodoc2 in the
 existing `docs/` build (`ci_docs.yml` / `docs/source/devdocs/docbuild.md`).
 
-**Release gate (current policy):**
+**Release check (current policy):**
 
 - [ ] Sphinx docs build is green on `main` (`ci_docs.yml` or local
   `pixi r -e docs …` / project-documented doc target).
@@ -519,7 +519,7 @@ uvx towncrier create
 Types (`towncrier.toml`): `security`, `removed`, `deprecated`, `added`, `dev`,
 `changed`, `fixed`. Preview: `uvx towncrier build --draft`.
 
-CI runs `towncrier check` on PRs when shipped paths change (`towncrier.yml`).
+CI runs `towncrier check` on PRs when listed paths change (`towncrier.yml`).
 Pure `docs` / `ci` / `chore` commits may omit fragments if they avoid those
 paths.
 

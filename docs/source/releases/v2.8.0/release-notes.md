@@ -9,22 +9,17 @@ myst:
 
 ## [2.8.0] - 2025-09-04
 
-This is a landmark release for eOn, representing over five years of dedicated
-development. The entire framework has been modernized to be more powerful,
-easier to use, and more accessible to researchers across all major platforms.
-This release introduces cutting-edge simulation methods, a vast expansion of
-supported computational chemistry codes, and a complete overhaul of the build
-and installation process.
+Five years of work: new transition-state methods, more potential
+interfaces, and a Meson build that runs on Linux, macOS, and Windows.
 
 ### ✨ Major New Features
 
-  * **Advanced Transition State Finding with RO-NEB-CI**: Implemented the novel
-    RO-NEB-CI method, providing a powerful new tool for accurately locating
-    complex transition states.
+  * **RO-NEB-CI**: climbing-image NEB with a rotating-orbit refinement for
+    locating complex transition states.
     ([\#239](https://github.com/theochemui/eongit/issues/239))
   * **Machine-Learned Potentials with `metatomic`**: Integrated full support for
     `metatomic` potentials, enabling high-performance simulations with
-    state-of-the-art models from the [metatensor
+    current models from the [metatensor
     ecosystem](https://docs.metatensor.org/latest/index.html).
     ([\#201](https://github.com/theochemui/eongit/issues/201))
   * **Expanded Potential Interfaces**: Drastically increased interoperability by
@@ -39,10 +34,9 @@ and installation process.
         tight-binding methods.
       * **ASE**: General-purpose interface to any calculator supported by the
         Atomic Simulation Environment (ASE).
-  * **Input Validation and Schema**: Implemented a comprehensive Pydantic schema
-    for all configuration files. This provides automatic input validation,
-    clearer error messages for users, and a robust foundation for auto-generated
-    documentation.
+  * **Input Validation and Schema**: A Pydantic schema for all configuration
+    files. Automatic input validation, clearer error messages, and a
+    base for auto-generated documentation.
   * **ZBL Universal Potential**: Added support for the Ziegler-Biersack-Littmark
     (ZBL) universal screening potential, ideal for simulating high-energy
     collision cascades and ion-implantation effects.
@@ -68,19 +62,17 @@ and installation process.
 ### 🛠️ Build, Installation & Developer Experience
 
   * **Modernized Build System with Meson**: The entire project has been ported
-    to the Meson build system. This provides a significantly faster, more
-    reliable, and truly cross-platform installation experience on Linux, macOS,
-    and Windows. This work also lays the foundation for a future pure Python
-    `eon-server` package.
+    to the Meson build system. One build on Linux, macOS, and Windows. The
+    same tree is the base for a later pure-Python `eon-server` package.
     ([\#124](https://github.com/theochemui/eongit/issues/124))
   * **Cross-Platform CI & Support**:
-      * Established a robust Continuous Integration (CI) pipeline, automatically
+      * Continuous Integration (CI) pipeline, automatically
         testing builds and features across Linux, Windows, and macOS (Intel &
         Apple Silicon ARM).
       * Official support for Apple Silicon (M1/M2/M3) machines.
       * The command-line interface is now fully compatible with Windows
         environments.
-  * **Streamlined Dependency Management**: Added official support for Conda and
+  * **Dependency Management**: Added official support for Conda and
     Mamba, allowing for simple, one-command environment setup.
   * **High-Performance Logging**: Replaced the internal logging system with
     `spdlog` for asynchronous, configurable, and more informative output with
@@ -94,5 +86,5 @@ and installation process.
 
 ### 📚 Documentation
 
-  * Added comprehensive documentation for the Nudged Elastic Band (NEB) module,
+  * Added documentation for the Nudged Elastic Band (NEB) module,
     covering theory, keywords, and practical examples.

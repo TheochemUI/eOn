@@ -20,10 +20,10 @@ changelog entry for a release.
 
 ## Creating News Fragments
 
-For each pull request that introduces a user-facing or noteworthy change, you
+For each pull request that introduces a user-facing change, you
 must add a news fragment.
 
-- Navigate to the fragments directory: All fragments are stored in `docs/newsfragments/`.
+- Fragments live in `docs/newsfragments/`.
 
 - Create a new file: The filename must follow the format `PR_NUMBER.KEY.TYPE`.
 

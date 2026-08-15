@@ -152,9 +152,8 @@ def show_plot(path):
 
 ## Minimization
 
-We start by minimizing a slightly distorted vinyl alcohol molecule to
-demonstrate the single-ended optimization outputs consumed by
-`rgpycrumbs eon plt-min`.
+We start by minimizing a slightly distorted vinyl alcohol molecule.
+`rgpycrumbs eon plt-min` reads those single-ended optimization outputs.
 
 ```{code-cell} python
 :tags: [remove-cell]
@@ -377,7 +376,7 @@ For producing your own NEB trajectories beyond this tutorial:
   saddle systems (recommended for docs / CI)
 - The [`eon-pet-neb`](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html)
   example in the [lab-cosmo/atomistic-cookbook](https://github.com/lab-cosmo/atomistic-cookbook):
-  a step-by-step PET-MAD NEB walkthrough using ASE for path setup. This is
+  a PET-MAD NEB example that uses ASE for path setup. This is
   the canonical metatomic-consumer integration test for eOn.
 - [HaoZeke/eon_orchestrator](https://github.com/HaoZeke/eon_orchestrator):
   Snakemake-orchestrated workflow for batches of NEB calculations with

@@ -27,8 +27,8 @@ majority of publications are reported in the major release.
 
 ## [Lab-COSMO](https://www.epfl.ch/labs/cosmo/)
 
-- Demonstration of RO-NEB-CI with IRA in
-  {cite:t}`2.8.1-bigiMetatensorMetatomicFoundational2025` which covers the
+- RO-NEB-CI with IRA in
+  {cite:t}`2.8.1-bigiMetatensorMetatomicFoundational2025`, which covers the
   [metatensor ecosystem](https://docs.metatensor.org/latest/index.html).
   + [ArXiV preprint](https://arxiv.org/abs/2508.15704)
   <!-- todo(rg): setup kudos -->

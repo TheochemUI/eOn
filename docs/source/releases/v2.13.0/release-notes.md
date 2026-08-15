@@ -10,7 +10,7 @@ myst:
 ## [v2.13.0] - 2026-04-18
 
 See the [CHANGELOG](project:../changelog.md) for the full fragment-by-fragment
-list; this page picks out the user-facing highlights.
+list; this page picks out the user-facing changes.
 
 ### Saddle search
 
@@ -62,7 +62,7 @@ config and covered by its own test suite.
 #### Parallel image evaluation
 
 NEB image forces now evaluate concurrently through `std::thread` (not
-`std::jthread` -- Apple Clang's libc++ does not yet ship `jthread`).
+`std::jthread` -- Apple Clang's libc++ does not yet provide `jthread`).
 Opt in via `parallel = true` in `[Main]` when the potential is
 thread-safe or supports per-image instances. Achieves ~2.5x speedup
 on a 5-image NEB with a Morse potential on the SVN reference setup.

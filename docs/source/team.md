@@ -77,7 +77,7 @@ collaborators in Canada:
     - The k-ART[^3]  group of [Prof. Normand
       Mousseau](https://phys.umontreal.ca/repertoire-departement/professeurs/professeur/in/in14441/sg/Normand%20Mousseau/)
       (University of Montreal) contributed to discussions on project's
-      high-level design.
+      overall design.
 
 Rohit also acknowledges funding support from
 [lab-COSMO](https://www.epfl.ch/labs/cosmo/), for supporting

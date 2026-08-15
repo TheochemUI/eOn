@@ -8,7 +8,7 @@ myst:
 # pyeonclient (Python client API)
 
 ```{versionadded} 2.16
-In-process client: first-class algorithm objects on :class:`~pyeonclient.Matter`,
+In-process client: algorithm objects on :class:`~pyeonclient.Matter`,
 not a working directory and not the `eonclient` binary alone.
 ```
 
@@ -34,12 +34,12 @@ call — the same engines the binary uses.
 | Parallel replica | `run_parallel_replica` → `ParallelReplicaJob` | `job = parallel_replica` |
 | Safe hyperdynamics | `run_safe_hyperdynamics` → `SafeHyperJob` | `job = safe_hyperdynamics` |
 | Replica exchange | `run_replica_exchange` → `ReplicaExchangeJob` | `job = replica_exchange` |
-| GP surrogate NEB | `run_gp_surrogate_neb` → `GPSurrogateJob` (gated) | `WITH_GP_SURROGATE` |
+| GP surrogate NEB | `run_gp_surrogate_neb` → `GPSurrogateJob` (`WITH_GP_SURROGATE`) | `WITH_GP_SURROGATE` |
 | Opaque batch | `make_job` + `Job.run` | any `JobType` via factory |
 
 `make_job(params)` still constructs every `JobType` the C++ factory supports
 (process search, dynamics, basin hopping, TAD, …) for workdir-oriented runs.
-Prefer the first-class classes when you want Matter in / Matter out.
+Prefer the Matter-first classes for Matter-in / Matter-out work.
 
 ## Install
 
@@ -287,7 +287,7 @@ pyec.write_potcall_summary()
 
 Use this for process search, dynamics, basin hopping, TAD, parallel replica,
 Monte Carlo, GP surrogate, structure comparison, etc., until those gain
-dedicated Matter-first classes. The algorithms above are already first-class.
+dedicated Matter-first classes. The algorithms above already take Matter.
 
 ## ASE bridge
 
@@ -298,7 +298,7 @@ matter = pyec.from_ase(atoms, pot, params)
 atoms = pyec.to_ase(matter)
 ```
 
-**Seamless calculator** — wrap a live ASE Calculator as the Matter PEF
+**ASE calculator** — wrap a live ASE Calculator as the Matter PEF
 (no file script, no ``-Dwith_ase``)::
 
 ```{code-block} python

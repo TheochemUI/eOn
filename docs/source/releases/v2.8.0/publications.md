@@ -37,7 +37,7 @@ here, pull requests are welcome.
 
 ## [Lab-COSMO](https://www.epfl.ch/labs/cosmo/)
 
-- Demonstration of RO-NEB-CI in
+- RO-NEB-CI in
   {cite:t}`2.8.0-bigiMetatensorMetatomicFoundational2025` which covers the
   [metatensor ecosystem](https://docs.metatensor.org/latest/index.html).
   + [ArXiV preprint](https://arxiv.org/abs/2508.15704)

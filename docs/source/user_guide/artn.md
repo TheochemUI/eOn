@@ -46,8 +46,8 @@ OptBench):
 | ARTn | 426 | 269 | 10 |
 | Dimer | 523 | 359 | 0 |
 
-On this benchmark ARTn is faster than Dimer when it converges but less robust
-on non-periodic clusters (10% failure rate from the push phase causing "box
+On this benchmark ARTn is faster than Dimer when it converges but fails more
+often on non-periodic clusters (10% failure rate from the push phase causing "box
 explosion" on systems without periodic boundary conditions). Treat these
 numbers as workload-specific rather than universal performance guarantees; for
 periodic bulk and surface systems, which are ARTn's design target, the failure

@@ -16,7 +16,7 @@ Three ways to evaluate the same Metatomic model (for example PET-MAD) from eOn /
 | RGPOT / engine | `potential = RGPOT`, `backend = metatomic` / `make_backend("rgpot_metatomic")` | No on thin hosts; torch lives in `libmetatomic_engine.so` | Optional plugin on base wheels |
 | ASE wrap | `metatomic_ase.MetatomicCalculator` → `make_backend("ase")` or `make_backend("ase_metatomic")` | Python `metatomic-torch` only | Cookbook / ASE workflows; same energies |
 
-conda-forge ships the fat native path. The RGPOT engine is the thin-host path.
+conda-forge distributes the fat native path. The RGPOT engine is the thin-host path.
 ASE is the Python calculator path.
 
 ## Benchmark (PET-MAD)
@@ -169,7 +169,7 @@ meson compile -C build-mta
 # Thin host: RGPOT only; no torch at link time
 meson setup build-thin -Dwith_metatomic=false -Dwith_rgpot=true
 meson compile -C build-thin
-# engine still comes from a fat build or a packager that ships libmetatomic_engine.so
+# engine still comes from a fat build or a packager that includes libmetatomic_engine.so
 ```
 
 Native Metatomic stays in eOn; it is the conda-forge path.

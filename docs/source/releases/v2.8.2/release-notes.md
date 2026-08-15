@@ -2,7 +2,7 @@
 myst:
   html_meta:
     "description": "Detailed release notes for eOn v2.8.2, covering Metatomic uncertainty features, build system updates, and dependency changes."
-    "keywords": "eOn v2.8.2 release notes, new features, enhancements, bug fixes"
+    "keywords": "eOn v2.8.2 release notes, new features, bug fixes"
 ---
 
 # Release notes
@@ -24,12 +24,12 @@ infrastructure.
     * The **variance** is now automatically populated using the mean of these
         per-atom uncertainties if available.
 * **Pixi Build System:** Added new environments (`rel`, `eon`) and tasks to
-    `pixi.toml` to streamline the release process and simplify local builds.
+    `pixi.toml` to simplify the release process and local builds.
 
-### 🚀 Enhancements
+### 🚀 Changes
 
-* **Device Selection:** The Metatomic potential now utilizes the
-    `metatomic_torch::pick_device` API for more robust device selection (CPU/GPU)
+* **Device Selection:** The Metatomic potential now uses the
+    `metatomic_torch::pick_device` API for device selection (CPU/GPU)
     based on model capabilities.
 * **Model Loading:** Updated the internal loading mechanism to use
     `metatensor_torch::Module` for better compatibility with recent Metatensor

@@ -12,7 +12,7 @@ myst:
 
 **eon-schema** is the single Python home for eOn parameter surfaces used by both
 **eon-akmc** and **pyeonclient**. It is a PyPI split (`pip install eon-schema`);
-the conda-forge fat tarball still ships the full monorepo (including this package
+the conda-forge fat tarball still includes the full monorepo (including this package
 under `packages/eon-schema/` and the authoring Cap’n Proto under `schema/`).
 
 ## What it owns

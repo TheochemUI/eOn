@@ -43,8 +43,8 @@ from eon import pyeonclient_bridge as br
 ## Why not pybind11 embed for ASE?
 
 pybind11 was used only so **standalone `eonclient`** could *embed* a Python
-interpreter and call ASE calculators. nanobind does **not** ship a first-class
-`embed.h` API; the modern polarity is inverted:
+interpreter and call ASE calculators. nanobind has no public
+`embed.h` API; the polarity is inverted:
 
 | Mode | Who owns Python | ASE / Matter |
 |------|-----------------|--------------|

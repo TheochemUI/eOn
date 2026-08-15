@@ -2,7 +2,7 @@
 
 `pyeonclient` is a **separate** PyPI project from `eon-akmc`. Distribution follows
 the **torch model**: wheels and sdist on PyPI; optional fat Metatomic builds
-against **PyPI torch**, not a conda-forge gate.
+against **PyPI torch**, not a conda-forge requirement.
 
 | Project | Import | Contents |
 |---------|--------|----------|

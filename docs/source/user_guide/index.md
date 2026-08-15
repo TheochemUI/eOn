@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    "description": "Comprehensive user guide for the eOn software, detailing all algorithms, configuration settings, and job types."
+    "description": "User guide for eOn: algorithms, configuration settings, and job types."
     "keywords": "eOn user guide, documentation, configuration, algorithms, tutorials"
 ---
 

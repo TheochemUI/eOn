@@ -12,7 +12,7 @@ libraries and others via interfaces.
 
 ```{note}
 Some of these require compile-time flags, detailed in the [installation instructions](project:../install/index.md).
-The `conda-forge` package (`conda install -c conda-forge eon`) ships with
+The `conda-forge` package (`conda install -c conda-forge eon`) includes
 **Metatomic**, **XTB**, **EXT_POT**, and the vendored potentials.
 LAMMPS, ASE, VASP, AMS, and MPI potentials require building from source with
 the corresponding `-Dwith_*` flags.
@@ -143,8 +143,8 @@ increases in speed compared to file or ASE interfaces
 NWChem's Fortran i-PI socket driver truncates UNIX socket names to approximately
 30 characters. The full socket path is ``/tmp/ipi_<unix_socket_path>``, so
 ``unix_socket_path`` should be kept short (under ~20 characters). For example,
-``eon_nwchem`` works but ``eon_nwchem_test_socket`` will be silently truncated,
-causing a connection failure with no clear error message.
+``eon_nwchem`` works but ``eon_nwchem_test_socket`` is truncated,
+and the connection fails with no clear error message.
 ```
 
 An older ASE interface exists as well.

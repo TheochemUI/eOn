@@ -19,7 +19,7 @@ Details may be found in {cite:t}`neb-jonssonNudgedElasticBand1998`,
 {cite:t}`neb-sheppardPathsWhichNudged2011`, and
 {cite:t}`neb-asgeirssonExploringPotentialEnergy2018`.
 
-In order to run a nudged elastic band calculation, set **job** to
+To run a nudged elastic band calculation, set **job** to
 *nudged_elastic_band* in the **[Main]** section. Details of the optimizer can be
 set as per the <project:optimizer.md> document.
 
@@ -144,7 +144,7 @@ Far from the minimum energy path, second order optimizers like those using the
 LBFGS may not be optimal. In these situations, to traverse uninteresting
 sections of the potential energy surface rapidly, it is best to use an
 accelerating optimizer like QuickMin to begin with and transition to LBFGS
-later. To facilitate this, the `[Refine]` section has been introduced.
+later. The `[Refine]` section does that switch.
 
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.RefineConfig

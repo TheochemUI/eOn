@@ -51,7 +51,7 @@ meson compile -C builddir
 ## Usage
 
 Serve mode supports four modes of operation: single-potential, replicated,
-gateway, and multi-model. Each mode is selected by the combination of CLI flags
+`--gateway` pool, and multi-model. Each mode is selected by the combination of CLI flags
 provided.
 
 ### Single-Potential
@@ -83,9 +83,9 @@ This starts 4 independent servers on ports 12345 through 12348, each with its
 own potential instance and event loop. Useful when clients can load-balance
 across known ports.
 
-### Gateway
+### `--gateway` pool
 
-Gateway mode exposes a single port backed by a pool of potential instances.
+`--gateway` exposes a single port backed by a pool of potential instances.
 Incoming requests are dispatched round-robin across the pool, so clients only
 need to know one address:
 
@@ -143,8 +143,8 @@ accuracy = 1.0
 
 ## Config-Driven Serve
 
-The `[Serve]` section allows fully config-driven serving without CLI flags
-beyond `--config`:
+The `[Serve]` section selects host, port, replicas, and `gateway_port` without CLI
+flags beyond `--config`:
 
 ```{code-block} ini
 [Potential]
@@ -164,14 +164,14 @@ eonclient --config serve.ini
 The dispatch logic when serving from config:
 
 1. If `endpoints` is set, each endpoint is served in its own thread.
-2. If `gateway_port > 0`, a single gateway port is opened backed by a pool
+2. If `gateway_port > 0`, a single pool port is opened backed by a pool
    of `replicas` potential instances.
 3. Otherwise, `replicas` independent servers are started on sequential ports
    beginning at `port`.
 
 ### Examples
 
-Gateway with a Metatomic model:
+`--gateway` with a Metatomic model:
 
 ```{code-block} ini
 [Potential]
@@ -275,7 +275,7 @@ more on the integration pattern, see the
 | `--serve <spec>` | Multi-model serve spec: `pot:port` or `pot:host:port`, comma-separated |
 | `--serve-host <host>` | Host for single-potential mode (default: `localhost`) |
 | `--serve-port <port>` | Port for single-potential mode with `-p` (default: `12345`) |
-| `--replicas <N>` | Number of server instances or gateway pool size (default: `1`) |
-| `--gateway` | Enable gateway mode (single port, round-robin pool) |
+| `--replicas <N>` | Number of server instances or `--gateway` pool size (default: `1`) |
+| `--gateway` | Single port, round-robin pool |
 | `--config <file>` | INI config file for potential and serve parameters |
 | `-p <potential>` | Potential type (used with `--serve-port`) |

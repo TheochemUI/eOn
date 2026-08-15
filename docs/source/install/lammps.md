@@ -9,7 +9,7 @@ myst:
 
 ```{versionchanged} 2.12
 LAMMPS is no longer a build-time dependency. eOn loads `liblammps` at
-runtime via `dlopen`. Simply install LAMMPS in the same environment.
+runtime via `dlopen`. Install LAMMPS in the same environment.
 ```
 
 ## Quick Install

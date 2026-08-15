@@ -51,7 +51,7 @@ LCHARG=.FALSE.
 
 ### Example
 
-Here is an example of a script that will run 8 VASP ranks and 1 client rank::
+Example script that runs 8 VASP ranks and 1 client rank:
 
 ```{code-block} bash
 #!/bin/sh

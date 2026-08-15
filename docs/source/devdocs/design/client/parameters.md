@@ -34,7 +34,7 @@ in `Parameters.h` until folded into the schema (see `schema/README.md`).
    in `config.yaml` / `schema.py` / `Parameters.h` without the Cap'n Proto update.
 
 Users still write ordinary **`config.ini`** (or JSON) files. Cap'n Proto is the
-**field-graph author**, not a requirement that end users ship binary messages.
+**field-graph author**, not a requirement that end users distribute binary messages.
 
 ## Runtime architecture
 
@@ -79,7 +79,7 @@ still pass the full `Parameters` object.
 ## JSON serialization
 
 `ParametersJSON.cpp` provides round-trip JSON serialization using
-[nlohmann/json](https://github.com/nlohmann/json). This enables:
+[nlohmann/json](https://github.com/nlohmann/json). JSON covers:
 
 - **Library usage**: configure eOn programmatically without INI files
 - **RPC transport**: send config as JSON text via capnp serve mode
@@ -104,6 +104,6 @@ groups.
 
 The v3c branch (2024) attempted to switch from INI to TOML and restructure
 all parameters simultaneously. It was abandoned because it changed too many
-axes at once. Later work added NSDMI defaults, JSON I/O, and narrow passing.
+fields at once. Later work added NSDMI defaults, JSON I/O, and narrow passing.
 The Cap'n Proto L0 field graph unifies **authoring** for the core groups without
 forcing a pure-binary config format on users.

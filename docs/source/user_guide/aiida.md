@@ -75,8 +75,8 @@ The `job` key selects which input files the client expects.
 Aliases such as `neb` become `nudged_elastic_band` before `config.ini`
 is written. A nudged elastic band (NEB) needs `reactant` and
 `product`. Extra potfiles (LAMMPS, Vienna Ab initio Simulation Package)
-go in the `potfiles` `FolderData` port and land in the client working
-directory.
+go in the `potfiles` `FolderData` port and are copied into the client
+working directory.
 
 ## Workchains
 

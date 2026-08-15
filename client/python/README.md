@@ -1,6 +1,6 @@
 # pyeonclient
 
-In-process eOn client for Python. First-class algorithm objects on **Matter**
+In-process eOn client for Python. Algorithm objects on **Matter**
 (not a workdir wrapper).
 
 | Class / function | Role |

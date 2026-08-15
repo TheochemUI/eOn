@@ -28,14 +28,14 @@ When `true`, NEB spawns one thread per image and all threads call
 ### `needsPerImageInstance()`
 
 Returns whether NEB should create a *separate* `Potential` instance per
-image via `makePotential()`. This is needed for potentials where:
+image via `makePotential()`. Needed for potentials where:
 
 - The same instance cannot be called concurrently (internal state, caches)
 - But separate instances CAN run in parallel (each has its own state)
 
 Examples:
 - **MetatomicPotential**: PyTorch model has internal caches. Same instance
-  needs a mutex; separate instances run truly in parallel. Returns
+  needs a mutex; separate instances run independently. Returns
   `needsPerImageInstance() = true`.
 - **XTBPot**: Fortran library has per-instance state (`xtb_TEnvironment`,
   `xtb_TCalculator`). Same instance is not thread-safe; separate instances
@@ -68,7 +68,7 @@ they were treated before the port -- they were on the old hard-coded
 thread-safety blacklist -- and it is deliberately the conservative
 starting point rather than a claim about the rewritten code: the kernels
 carry no mutable module state any more, so promoting one is a per-kernel
-exercise in proving it and adding a test, not a sweeping change.
+exercise in checking the kernel and adding a test, not a sweeping change.
 
 The parallel check in NEB is:
 ```cpp
@@ -92,7 +92,7 @@ force evaluation gives a **2.3x speedup** over SVN sequential.
 
 With PET-MAD-S ML potential (14-atom Claisen, 10 NEB images):
 - Mutex-serialized (shared instance): 192 seconds
-- Per-image instances (true parallel): 69 seconds (**2.8x speedup**)
+- Per-image instances (lock-free): 69 seconds (**2.8x speedup**)
 
 ## Adding a New Potential
 
@@ -102,7 +102,7 @@ same instance but supports independent instances:
 1. Override `isThreadSafe()` to return `true` (with internal mutex as
    fallback) or `false`
 2. Override `needsPerImageInstance()` to return `true`
-3. Ensure the constructor (called by `makePotential()`) creates an
+3. The constructor (called by `makePotential()`) must create an
    independent instance (no shared static state)
 
 The `[Main] parallel = true` config option (default) enables threading.

@@ -67,7 +67,7 @@ fd_scheme = one_sided
 zero_freq_value = 1e-6
 ```
 
-The output `results.dat` records force-call counts; `hessian.dat` holds the
+The output `results.dat` records force-call counts; `hessian.dat` contains the
 mass-weighted matrix when `quiet = false`. Eigenvalues (squared frequencies)
 are obtained by diagonalizing the symmetrized matrix (ColMajor eigen solve in
 the client).

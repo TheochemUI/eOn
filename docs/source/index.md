@@ -22,7 +22,7 @@ hyperdyamics, adaptive kinetic Monte Carlo, and basin hopping.
 ## Supported systems
 
 eOn can handle both molecular systems (e.g. gas-phase reactions) and extended
-(surface) systems, with robust periodic image boundary support.
+(surface) systems, with periodic image boundary conditions.
 
 ```{figure} fig/esys_trans.png
 ---
@@ -30,7 +30,7 @@ alt: Collection of systems which can be modeled
 class: full-width
 align: center
 ---
-An overview of some systems modeled with eOn
+Some systems modeled with eOn
 ```
 
 However, the systems which are best modeled using eOn are those in which the

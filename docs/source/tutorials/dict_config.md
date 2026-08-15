@@ -93,8 +93,8 @@ Compared to editing INI files by hand, the dictionary approach provides:
 - **Parameterization**: loop over temperatures, spring constants, or image
   counts without duplicating INI files.
 - **Validation reference**: option names and types are defined in
-  {mod}`eon.schema`. Typos that would silently fall back to defaults in an INI
-  file become obvious when compared against the schema documentation.
+  {mod}`eon.schema`. Typos that would fall back to defaults without a warning
+  in an INI file become obvious when compared against the schema documentation.
 - **Notebook integration**: generate and run eOn configurations within Jupyter
   notebooks. The
   [atomistic cookbook](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html)
@@ -191,8 +191,8 @@ initialization, off-path CI with MMF), see
 ### AKMC with Displacement Script
 
 The Cu vacancy example shows how dictionary config works alongside a
-displacement script (`ptmdisp.py`). The script path is just another string
-parameter:
+displacement script (`ptmdisp.py`). The script path is a string parameter
+like the rest:
 
 ```python
 "Saddle Search": {
@@ -243,13 +243,13 @@ The authoritative documentation for every configuration option lives in the
 Pydantic models in {mod}`eon.schema`. The user guide pages render these models
 automatically:
 
-- {doc}`/user_guide/main` -- general simulation parameters
-- {doc}`/user_guide/akmc` -- adaptive kinetic Monte Carlo
-- {doc}`/user_guide/neb` -- nudged elastic band
-- {doc}`/user_guide/saddle_search` -- saddle search methods
-- {doc}`/user_guide/optimizer` -- optimization algorithms
-- {doc}`/user_guide/potential` -- interatomic potentials
-- {doc}`/user_guide/dynamics` -- molecular dynamics
-- {doc}`/user_guide/parallel_replica` -- parallel replica dynamics
-- {doc}`/user_guide/basin_hopping` -- basin hopping
-- {doc}`/user_guide/communicator` -- job communicators
+- {doc}`/user_guide/main`: general simulation parameters
+- {doc}`/user_guide/akmc`: adaptive kinetic Monte Carlo
+- {doc}`/user_guide/neb`: nudged elastic band
+- {doc}`/user_guide/saddle_search`: saddle search methods
+- {doc}`/user_guide/optimizer`: optimization algorithms
+- {doc}`/user_guide/potential`: interatomic potentials
+- {doc}`/user_guide/dynamics`: molecular dynamics
+- {doc}`/user_guide/parallel_replica`: parallel replica dynamics
+- {doc}`/user_guide/basin_hopping`: basin hopping
+- {doc}`/user_guide/communicator`: job communicators

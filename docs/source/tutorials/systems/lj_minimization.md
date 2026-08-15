@@ -203,6 +203,6 @@ python -m rgpycrumbs.cli eon plt-min \
 
 ## See also
 
-- {doc}`morse_pt_neb` — built-in NEB + `plt-neb`
+- {doc}`morse_pt_neb`: built-in NEB + `plt-neb`
 - {doc}`/user_guide/minimization`
-- {doc}`../visualization` — PET-MAD vinyl alcohol visualization
+- {doc}`../visualization`: PET-MAD vinyl alcohol visualization
