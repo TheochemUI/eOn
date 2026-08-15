@@ -18,6 +18,34 @@ import readcon
 from eon.geometry.cell import box_to_length_angle, length_angle_to_box
 
 
+def coerce_free(value, n: int) -> np.ndarray:
+    """Normalize a free-flag array to shape ``(n, 3)``.
+
+    A length-``n`` vector is the whole-atom form and is broadcast onto every
+    Cartesian axis. ``1.0`` is free, ``0.0`` is fixed.
+    """
+    arr = np.asarray(value, dtype=float)
+    if n == 0:
+        return np.zeros((0, 3), dtype=float)
+    if arr.shape == (n, 3):
+        return np.array(arr, dtype=float, copy=True)
+    if arr.shape == (n,):
+        return np.repeat(arr.reshape(n, 1), 3, axis=1)
+    if arr.shape == (3,) and n == 1:
+        return np.array(arr, dtype=float, copy=True).reshape(1, 3)
+    raise ValueError(f"free must have shape ({n},) or ({n}, 3), got {arr.shape}")
+
+
+def as_atom_free(free) -> np.ndarray:
+    """Per-atom free flag: True if any Cartesian axis is free."""
+    f = np.asarray(free, dtype=float)
+    if f.ndim == 1:
+        return f > 0.5
+    if f.ndim == 2 and f.shape[-1] == 3:
+        return (f > 0.5).any(axis=1)
+    raise ValueError(f"free must be shape (N,) or (N, 3), got {f.shape}")
+
+
 def structure_order(atom_ids: np.ndarray) -> np.ndarray:
     """Permutation taking file order to :class:`Structure` order.
 
@@ -55,8 +83,9 @@ class Structure:
     ----------
     r : (N, 3) float
         Cartesian positions.
-    free : (N,) float
-        1.0 if free to move, 0.0 if fixed (eOn convention).
+    free : (N, 3) float
+        Per-axis free flags (1.0 free, 0.0 fixed). A length-N assignment
+        broadcasts onto all three axes. CON column 4 is this mask.
     box : (3, 3) float
         Cell matrix with lattice vectors as **rows** (ASE/vesin convention).
     names : list[str]
@@ -68,15 +97,23 @@ class Structure:
         scratch; whatever the file carried for one read off disk.
     """
 
-    __slots__ = ("r", "free", "box", "names", "mass", "atom_ids")
+    __slots__ = ("r", "_free", "box", "names", "mass", "atom_ids")
 
     def __init__(self, n_atoms: int = 0):
         self.r = np.zeros((n_atoms, 3), dtype=float)
-        self.free = np.ones(n_atoms, dtype=float)
+        self._free = np.ones((n_atoms, 3), dtype=float)
         self.box = np.zeros((3, 3), dtype=float)
         self.names: List[str] = [""] * n_atoms
         self.mass = np.zeros(n_atoms, dtype=float)
         self.atom_ids = np.arange(1, n_atoms + 1, dtype=np.uint64)
+
+    @property
+    def free(self) -> np.ndarray:
+        return self._free
+
+    @free.setter
+    def free(self, value) -> None:
+        self._free = coerce_free(value, len(self))
 
     def __len__(self) -> int:
         return int(self.r.shape[0])
@@ -104,12 +141,16 @@ class Structure:
             return ids
         return np.arange(1, n + 1, dtype=np.uint64)
 
+    def atom_is_free(self) -> np.ndarray:
+        """True for atoms that have at least one free Cartesian axis."""
+        return as_atom_free(self._free)
+
     def free_r(self) -> np.ndarray:
-        """Positions of free (unfixed) atoms only."""
-        return self.r[np.asarray(self.free, dtype=bool)]
+        """Positions of atoms that have at least one free axis."""
+        return self.r[self.atom_is_free()]
 
     def free_mask(self) -> np.ndarray:
-        return np.asarray(self.free, dtype=bool)
+        return np.asarray(self._free, dtype=float) > 0.5
 
     def fixed_mask(self) -> np.ndarray:
         return ~self.free_mask()
@@ -124,7 +165,15 @@ class Structure:
         if atom_id is None:
             atom_id = int(self.atom_ids.max()) + 1 if len(self.atom_ids) else 1
         self.r = np.append(self.r, [r], 0)
-        self.free = np.append(self.free, free)
+        free_row = np.asarray(free, dtype=float).reshape(-1)
+        if free_row.size == 1:
+            free_row = np.repeat(free_row, 3)
+        elif free_row.size != 3:
+            raise ValueError("free must be a scalar or length-3")
+        if self._free.shape[0] == 0:
+            self._free = free_row.reshape(1, 3)
+        else:
+            self._free = np.vstack((self._free, free_row.reshape(1, 3)))
         self.names.append(name)
         self.mass = np.append(self.mass, mass)
         self.atom_ids = np.concatenate(
@@ -168,7 +217,10 @@ class Structure:
             p.names[i] = atom.symbol
             p.mass[i] = atom.mass if atom.mass is not None else 0.0
             fixed = atom.fixed
-            p.free[i] = 0.0 if (fixed is not None and any(fixed)) else 1.0
+            if fixed is None:
+                p._free[i] = (1.0, 1.0, 1.0)
+            else:
+                p._free[i] = tuple(0.0 if flag else 1.0 for flag in fixed)
         order = structure_order(p.atom_ids)
         if not np.array_equal(order, np.arange(n)):
             p.r = p.r[order]
@@ -193,14 +245,13 @@ class Structure:
         atom_ids = self.ids_or_sequential()
         atom_list = []
         for i in range(len(self)):
-            is_fixed = bool(self.free[i] == 0)
             atom_list.append(
                 readcon.Atom(
                     symbol=self.names[i],
                     x=float(self.r[i][0]),
                     y=float(self.r[i][1]),
                     z=float(self.r[i][2]),
-                    fixed=[is_fixed, is_fixed, is_fixed],
+                    fixed=[bool(self._free[i, a] < 0.5) for a in range(3)],
                     atom_id=int(atom_ids[i]),
                     mass=float(self.mass[i]),
                 )

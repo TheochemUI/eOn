@@ -114,6 +114,7 @@ def ase_to_matter(
 def structure_to_ase(structure: Any, *, pbc: bool = True) -> "AseAtoms":
     """Convert eOn server :class:`~eon.structure.Structure` to ``ase.Atoms``."""
     _, Atoms, FixAtoms = _require_ase()
+    from ase.constraints import FixCartesian
 
     from pyeonclient.bridge import _symbol_to_z
 
@@ -121,7 +122,9 @@ def structure_to_ase(structure: Any, *, pbc: bool = True) -> "AseAtoms":
     numbers = np.array(
         [_symbol_to_z(name) for name in structure.names], dtype=int
     )
-    free = np.asarray(structure.free, dtype=float).reshape(-1)
+    free = np.asarray(structure.free, dtype=float)
+    if free.ndim == 1:
+        free = np.repeat(free.reshape(n, 1), 3, axis=1)
     atoms = Atoms(
         numbers=numbers,
         positions=np.asarray(structure.r, dtype=float),
@@ -129,9 +132,18 @@ def structure_to_ase(structure: Any, *, pbc: bool = True) -> "AseAtoms":
         pbc=pbc,
         masses=np.asarray(structure.mass, dtype=float),
     )
-    mask = free < 0.5
-    if np.any(mask):
-        atoms.set_constraint(FixAtoms(mask=mask.tolist()))
+    constraints = []
+    fully_fixed = []
+    for i in range(n):
+        fx = free[i] < 0.5
+        if bool(fx.all()):
+            fully_fixed.append(i)
+        elif bool(fx.any()):
+            constraints.append(FixCartesian(i, mask=tuple(int(v) for v in fx)))
+    if fully_fixed:
+        constraints.append(FixAtoms(indices=fully_fixed))
+    if constraints:
+        atoms.set_constraint(constraints)
     return atoms
 
 
@@ -141,6 +153,7 @@ def ase_to_structure(atoms: "AseAtoms") -> Any:
     from pyeonclient.bridge import _z_to_symbol
 
     _, _, FixAtoms = _require_ase()
+    from ase.constraints import FixCartesian
 
     n = len(atoms)
     s = Structure(n)
@@ -150,10 +163,14 @@ def ase_to_structure(atoms: "AseAtoms") -> Any:
     z = np.asarray(atoms.get_atomic_numbers(), dtype=int)
     s.names = [_z_to_symbol(int(zi)) for zi in z]
 
-    free = np.ones(n, dtype=float)
+    free = np.ones((n, 3), dtype=float)
     for c in atoms.constraints:
         if isinstance(c, FixAtoms):
             free[np.asarray(c.get_indices(), dtype=int)] = 0.0
+        elif isinstance(c, FixCartesian):
+            idx = int(c.a)
+            mask = np.asarray(c.mask, dtype=bool).reshape(-1)
+            free[idx, mask] = 0.0
     s.free = free
     return s
 

@@ -202,18 +202,25 @@ void bind_matter(nb::module_ &m) {
             nb::object cont =
                 np.attr("ascontiguousarray")(obj, nb::arg("dtype") = "int32");
             auto arr = nb::cast<NpI32>(cont);
-            if (arr.ndim() != 1 ||
-                static_cast<long>(arr.shape(0)) != self.numberOfAtoms()) {
-              throw std::invalid_argument(
-                  "fixed mask must be 1-d int array of length n_atoms");
+            const long n = self.numberOfAtoms();
+            if (arr.ndim() == 1 && static_cast<long>(arr.shape(0)) == n) {
+              matter_set_fixed_buf(self,
+                                   reinterpret_cast<const int *>(arr.data()),
+                                   n);
+              return;
             }
-            matter_set_fixed_buf(self,
-                                 reinterpret_cast<const int *>(arr.data()),
-                                 self.numberOfAtoms());
+            if (arr.ndim() == 2 && static_cast<long>(arr.shape(0)) == n &&
+                static_cast<long>(arr.shape(1)) == 3) {
+              matter_set_fixed_axes_buf(
+                  self, reinterpret_cast<const int *>(arr.data()), n);
+              return;
+            }
+            throw std::invalid_argument(
+                "fixed mask must be shape (n_atoms,) or (n_atoms, 3)");
           },
           nb::rv_policy::move,
-          "Fixed flags (1=fixed, 0=free), int64 in and out; see "
-          "atomic_numbers for the width convention.")
+          "Fixed flags (1=fixed, 0=free). A 1-d array is whole-atom; an "
+          "Nx3 array is per-axis. Getter stays 1-d (all axes fixed).")
 
       // --- free mask ---
       .def_prop_ro(

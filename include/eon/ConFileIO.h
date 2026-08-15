@@ -178,7 +178,7 @@ writeNebPath(std::string filename,
              const std::vector<std::shared_ptr<Matter>> &path,
              const std::vector<ConFrameMetadata> &metadata_per_image);
 
-// Helper
+// Cell lengths and CON header-line-4 angles (alpha, beta, gamma) in degrees.
 std::pair<std::array<double, 3>, std::array<double, 3>>
 cell_to_lengths_angles(const Matter &m);
 

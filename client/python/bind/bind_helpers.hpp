@@ -164,4 +164,14 @@ inline void matter_set_fixed_buf(eonc::Matter &m, const int *fx, long n) {
   }
 }
 
+inline void matter_set_fixed_axes_buf(eonc::Matter &m, const int *fx, long n) {
+  if (n != m.numberOfAtoms()) {
+    throw std::invalid_argument("fixed n != n_atoms");
+  }
+  for (long i = 0; i < n; ++i) {
+    const long base = i * 3;
+    m.setFixedMask(i, {fx[base] != 0, fx[base + 1] != 0, fx[base + 2] != 0});
+  }
+}
+
 } // namespace eonc::pybind

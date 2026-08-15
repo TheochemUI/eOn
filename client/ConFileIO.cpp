@@ -346,9 +346,8 @@ readcon::ConFrameBuilder seed_builder(Matter &m,
     throw std::invalid_argument("seed_builder: atom_ids size mismatch");
   }
   for (long i = 0; i < n; ++i) {
-    const bool fixed = m.getFixed(i) != 0;
-    builder.add_atom(symbol_for_z(m.getAtomicNr(i)), 0.0, 0.0, 0.0,
-                     std::array<bool, 3>{fixed, fixed, fixed},
+    const auto mask = m.getFixedMask(i);
+    builder.add_atom(symbol_for_z(m.getAtomicNr(i)), 0.0, 0.0, 0.0, mask,
                      atom_ids[static_cast<size_t>(i)], m.getMass(i));
   }
   return builder;
@@ -468,15 +467,17 @@ cell_to_lengths_angles(const Matter &m) {
   lengths[0] = cell.row(0).norm();
   lengths[1] = cell.row(1).norm();
   lengths[2] = cell.row(2).norm();
+  // CON header line 4 is alpha beta gamma:
+  // alpha = angle(b,c), beta = angle(a,c), gamma = angle(a,b).
   std::array<double, 3> angles;
   angles[0] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
-                  cell.row(0).dot(cell.row(1)), lengths[0] * lengths[1])) *
+                  cell.row(1).dot(cell.row(2)), lengths[1] * lengths[2])) *
               180.0 / eonc::helpers::pi;
   angles[1] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
                   cell.row(0).dot(cell.row(2)), lengths[0] * lengths[2])) *
               180.0 / eonc::helpers::pi;
   angles[2] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
-                  cell.row(1).dot(cell.row(2)), lengths[1] * lengths[2])) *
+                  cell.row(0).dot(cell.row(1)), lengths[0] * lengths[1])) *
               180.0 / eonc::helpers::pi;
   return {lengths, angles};
 }
@@ -585,13 +586,16 @@ IoStatus con2matter(Matter &m, const readcon::ConFrame &frame,
       angles[0] *= eonc::helpers::pi / 180.0;
       angles[1] *= eonc::helpers::pi / 180.0;
       angles[2] *= eonc::helpers::pi / 180.0;
+      const double alpha = angles[0];
+      const double beta = angles[1];
+      const double gamma = angles[2];
 
       Matrix3d cell = Matrix3d::Zero();
       cell(0, 0) = 1.0;
-      cell(1, 0) = cos(angles[0]);
-      cell(1, 1) = sin(angles[0]);
-      cell(2, 0) = cos(angles[1]);
-      cell(2, 1) = (cos(angles[2]) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
+      cell(1, 0) = cos(gamma);
+      cell(1, 1) = sin(gamma);
+      cell(2, 0) = cos(beta);
+      cell(2, 1) = (cos(alpha) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
       cell(2, 2) = eonc::safemath::safe_sqrt(1.0 - pow(cell(2, 0), 2) -
                                              pow(cell(2, 1), 2));
 
@@ -629,8 +633,8 @@ IoStatus con2matter(Matter &m, const readcon::ConFrame &frame,
       masses(i) = atom.mass;
       atomic_nrs(i) = static_cast<int>(atom.atomic_number);
       const auto fixed = atom.fixed_mask();
-      m.setFixed(static_cast<long>(i),
-                 (fixed[0] || fixed[1] || fixed[2]) ? 1 : 0);
+      m.setFixedMask(static_cast<long>(i),
+                     {fixed[0], fixed[1], fixed[2]});
       m.setAtomIndex(static_cast<long>(i),
                      static_cast<std::int64_t>(atom.atom_id));
 
@@ -773,9 +777,11 @@ IoStatus writeTibble(Matter &m, std::string fname) {
       out << std::format(" {} {} {} {}", fSys(idx, 0), fSys(idx, 1),
                          fSys(idx, 2), eSys);
     }
+    const auto mask = m.getFixedMask(idx);
+    const int fixed_bits = (mask[0] ? 1 : 0) | (mask[1] ? 2 : 0) | (mask[2] ? 4 : 0);
     out << std::format(" {} {} {} {}\n", m.getMass(idx),
                        symbol_for_z(m.getAtomicNr(idx)), m.getAtomIndex(idx),
-                       m.getFixed(idx));
+                       fixed_bits);
   }
   out.close();
   if (!out) {

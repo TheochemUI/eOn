@@ -146,7 +146,7 @@ def _as_structure(p):
     s = Structure(n)
     s.box = numpy.asarray(p.box, dtype=float).reshape(3, 3).copy()
     s.r = numpy.asarray(p.r, dtype=float).reshape(n, 3).copy()
-    s.free = numpy.asarray(p.free, dtype=float).reshape(n).copy()
+    s.free = numpy.asarray(p.free, dtype=float)
     s.names = list(p.names)
     s.mass = numpy.asarray(p.mass, dtype=float).reshape(n).copy()
     ids = getattr(p, 'atom_ids', None)
@@ -202,18 +202,24 @@ def load_mode(modefilein):
             mode.append(float(l[j]))
     return numpy.array(mode).reshape(len(mode)//3, 3)
 
-def save_mode(modefileout, displace_vector):
+def save_mode(modefileout, displace_vector, free=None):
     '''
     Saves an Nx3 numpy array into a mode.dat file.
         modefileout:     may be either a filename or file-like object
         displace_vector: the mode (Nx3 numpy array)
+        free:            optional (N,) or (N,3) mask; a 0 axis is written as 0
     17 significant digits round trip a double exactly, and match what the
     client's printf writers emit for the same value.
     '''
+    vec = numpy.asarray(displace_vector, dtype=float)
+    if free is not None:
+        mask = numpy.asarray(free, dtype=float)
+        if mask.ndim == 1:
+            mask = numpy.repeat(mask.reshape(-1, 1), 3, axis=1)
+        vec = vec * (mask > 0.5)
     with _maybe_open(modefileout, 'w', 'write') as f:
-        for i in range(len(displace_vector)):
-            f.write("%.17g %.17g %.17g\n" % (displace_vector[i][0],
-                displace_vector[i][1], displace_vector[i][2]))
+        for i in range(len(vec)):
+            f.write("%.17g %.17g %.17g\n" % (vec[i][0], vec[i][1], vec[i][2]))
 
 
 def save_results_dat(fileout, results):
@@ -303,11 +309,13 @@ def loadposcar(filein):
                     assert len(line) >= 3
                 pos = line[0:3]
                 if selective_flag:
-                    sel = line[3:7]
-                    if sel[0] == 'T' or sel[0] == 't':
-                        p.free[atom_index] = 1
-                    elif sel[0] == 'F' or sel[0] == 'f':
-                        p.free[atom_index] = 0
+                    sel = line[3:6]
+                    flags = []
+                    for flag in sel:
+                        flags.append(1.0 if flag in ('T', 't') else 0.0)
+                    while len(flags) < 3:
+                        flags.append(flags[0] if flags else 1.0)
+                    p.free[atom_index] = flags
                 p.r[atom_index] = numpy.array([float(q) for q in pos])
                 if direct_flag:
                     p.r[atom_index] = numpy.dot(p.r[atom_index], p.box)
@@ -355,13 +363,15 @@ def saveposcar(fileout, p, w='w', direct = False):
         else:
             poscar.write('Cartesian\n') #line 8 cartesian coordinates
             positions = p.r
+        free = numpy.asarray(p.free, dtype=float)
         for i in order:
                 posline = " ".join(['%20.14f' % s for s in positions[i]]) + " "
-                for j in range(3):
-                    if(p.free[i]):
-                        posline+='   T'
-                    else:
-                        posline+='   F'
+                if free.ndim == 1:
+                    axis_free = (free[i] > 0.5, free[i] > 0.5, free[i] > 0.5)
+                else:
+                    axis_free = (free[i, 0] > 0.5, free[i, 1] > 0.5, free[i, 2] > 0.5)
+                for flag in axis_free:
+                    posline += '   T' if flag else '   F'
                 poscar.write(posline+'\n')
 
 

@@ -114,8 +114,8 @@ def structure_to_matter(
     m.periodic = periodic
     m.positions = np.ascontiguousarray(structure.r, dtype=np.float64)
     m.masses = np.ascontiguousarray(structure.mass, dtype=np.float64)
-    free = np.asarray(structure.free, dtype=np.float64).reshape(-1)
-    m.fixed = (free < 0.5).astype(np.int64)
+    free = np.asarray(structure.free, dtype=np.float64)
+    m.fixed = (free < 0.5).astype(np.int32)
     z = np.empty(n, dtype=np.int64)
     for i, name in enumerate(structure.names):
         z[i] = _symbol_to_z(name)
@@ -132,8 +132,11 @@ def matter_to_structure(matter: Any) -> Any:
     s.r = np.asarray(matter.positions, dtype=float).copy()
     s.box = np.asarray(matter.cell, dtype=float).copy()
     s.mass = np.asarray(matter.masses, dtype=float).copy()
-    fixed = np.asarray(matter.fixed, dtype=np.int64).reshape(-1)
-    s.free = np.where(fixed != 0, 0.0, 1.0)
+    if hasattr(matter, "free_mask"):
+        s.free = np.asarray(matter.free_mask, dtype=float)
+    else:
+        fixed = np.asarray(matter.fixed, dtype=np.int64).reshape(-1)
+        s.free = np.where(fixed != 0, 0.0, 1.0)
     z = np.asarray(matter.atomic_numbers, dtype=np.int64).reshape(-1)
     s.names = [_z_to_symbol(int(z[i])) for i in range(n)]
     return s

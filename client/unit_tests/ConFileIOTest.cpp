@@ -13,9 +13,11 @@
 #include "eon/ConFileIO.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/HelperFunctions.h"
 #include "eon/Matter.h"
 #include "eon/NEBSplineExtrema.h"
 #include "eon/Parameters.h"
+#include <cmath>
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
@@ -149,6 +151,82 @@ TEST_CASE_METHOD(ConFileIOFixture,
 
   REQUIRE(loaded->numberOfAtoms() == original->numberOfAtoms());
   REQUIRE(loaded->getPositions().isApprox(original->getPositions(), 1e-6));
+}
+
+TEST_CASE("Con file preserves per-axis fixed mask", "[confileio][fixed]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter original(pot, params);
+  original.resize(2);
+  original.setCell(10.0 * Matrix3d::Identity());
+  original.setPosition(0, 0, 0.0);
+  original.setPosition(0, 1, 0.0);
+  original.setPosition(0, 2, 0.0);
+  original.setPosition(1, 0, 1.5);
+  original.setPosition(1, 1, 0.0);
+  original.setPosition(1, 2, 0.0);
+  original.setMass(0, 63.5);
+  original.setMass(1, 63.5);
+  original.setAtomicNr(0, 29);
+  original.setAtomicNr(1, 29);
+  original.setFixedMask(0, {true, false, false});
+  original.setFixedMask(1, {false, true, false});
+
+  const std::string tmpfile = "_test_per_axis.con";
+  REQUIRE(eonc::io::io_ok(original.matter2con(tmpfile)));
+  Matter loaded(pot, params);
+  REQUIRE(eonc::io::io_ok(loaded.con2matter(tmpfile)));
+  auto m0 = loaded.getFixedMask(0);
+  auto m1 = loaded.getFixedMask(1);
+  REQUIRE(m0[0]);
+  REQUIRE_FALSE(m0[1]);
+  REQUIRE_FALSE(m0[2]);
+  REQUIRE_FALSE(m1[0]);
+  REQUIRE(m1[1]);
+  REQUIRE_FALSE(m1[2]);
+  REQUIRE(loaded.getFixed(0) == 0);
+  REQUIRE(loaded.getFixed(1) == 0);
+  std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE("Con triclinic angles are alpha beta gamma", "[confileio][cell]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter original(pot, params);
+  original.resize(1);
+  original.setMass(0, 63.5);
+  original.setAtomicNr(0, 29);
+  original.setPosition(0, 0, 0.0);
+  original.setPosition(0, 1, 0.0);
+  original.setPosition(0, 2, 0.0);
+  // a along x, b in xy at 95 deg (gamma), c with alpha=80, beta=85
+  const double deg = eonc::helpers::pi / 180.0;
+  const double alpha = 80.0 * deg;
+  const double beta = 85.0 * deg;
+  const double gamma = 95.0 * deg;
+  Matrix3d cell = Matrix3d::Zero();
+  cell(0, 0) = 10.0;
+  cell(1, 0) = 11.0 * std::cos(gamma);
+  cell(1, 1) = 11.0 * std::sin(gamma);
+  cell(2, 0) = 12.0 * std::cos(beta);
+  cell(2, 1) = 12.0 * (std::cos(alpha) - std::cos(gamma) * std::cos(beta)) /
+               std::sin(gamma);
+  cell(2, 2) = 12.0 * std::sqrt(1.0 - std::pow(cell(2, 0) / 12.0, 2) -
+                                std::pow(cell(2, 1) / 12.0, 2));
+  original.setCell(cell);
+
+  const std::string tmpfile = "_test_triclinic.con";
+  REQUIRE(eonc::io::io_ok(original.matter2con(tmpfile)));
+  auto [lengths, angles] = eonc::io::cell_to_lengths_angles(original);
+  REQUIRE(angles[0] == Catch::Approx(80.0).margin(1e-6));
+  REQUIRE(angles[1] == Catch::Approx(85.0).margin(1e-6));
+  REQUIRE(angles[2] == Catch::Approx(95.0).margin(1e-6));
+  Matter loaded(pot, params);
+  REQUIRE(eonc::io::io_ok(loaded.con2matter(tmpfile)));
+  REQUIRE(loaded.getCell().isApprox(cell, 1e-6));
+  std::filesystem::remove(tmpfile);
 }
 
 TEST_CASE_METHOD(ConFileIOFixture, "Con file preserves fixed-atom flags",

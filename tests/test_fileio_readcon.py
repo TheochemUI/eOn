@@ -133,13 +133,16 @@ def test_loadcon_matches_live_readcon_frame(path: Path):
         [a.mass if a.mass is not None else 0.0 for a in ref.atoms], dtype=float
     )
     np.testing.assert_allclose(atoms.mass, ref_mass, rtol=0, atol=1e-9)
-    # Free / fixed: free[i]==0 iff any fixed flag
+    # Free / fixed: per-axis, 0.0 if that CON flag is set
     for i, a in enumerate(ref.atoms):
-        expect_free = 0 if any(a.fixed) else 1
-        assert int(atoms.free[i]) == expect_free
-    # Box from cell lengths + angles
-    box_lens = np.linalg.norm(atoms.box, axis=1)
+        expect = [0.0 if flag else 1.0 for flag in a.fixed]
+        np.testing.assert_array_equal(atoms.free[i], expect)
+    # Box from cell lengths + angles (alpha, beta, gamma)
+    from eon.geometry.cell import box_to_length_angle
+
+    box_lens, box_angs = box_to_length_angle(atoms.box)
     np.testing.assert_allclose(box_lens, np.array(list(ref.cell), dtype=float), rtol=1e-6, atol=1e-6)
+    np.testing.assert_allclose(box_angs, np.array(list(ref.angles), dtype=float), rtol=1e-6, atol=1e-6)
 
 
 def test_loadcon_server_fixture_first_atom_content():
@@ -181,6 +184,7 @@ def test_loadcon_savecon_roundtrip(path: Path, tmp_path: Path):
     np.testing.assert_allclose(again.mass, original.mass, rtol=0, atol=1e-6)
     np.testing.assert_array_equal(again.free.astype(int), original.free.astype(int))
     np.testing.assert_allclose(again.box, original.box, rtol=1e-6, atol=1e-6)
+    np.testing.assert_array_equal(again.free, original.free)
 
 
 def test_loadcons_multi_frame_via_readcon(tmp_path: Path):

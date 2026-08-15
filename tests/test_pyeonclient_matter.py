@@ -196,7 +196,7 @@ def test_regression_matter_vs_readcon_structure(pot, lj_params):
     fixed = np.asarray(m.fixed, dtype=np.int64)
     free = np.asarray(s.free)
     for i in range(len(s)):
-        expect_fixed = 1 if free[i] < 0.5 else 0
+        expect_fixed = 1 if np.all(free[i] < 0.5) else 0
         assert int(fixed[i]) == expect_fixed
 
 
