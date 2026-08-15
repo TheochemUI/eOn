@@ -124,7 +124,6 @@ eonc::io::IoStatus write_frames(const fs::path &path,
     const auto compression =
         readcon::ConFrameWriter::compression_from_extension(path);
     readcon::ConFrameWriter writer(path, compression, precision);
-    writer.set_canonical(true);
     writer.extend(frames);
     return eonc::io::IoStatus::Ok;
   } catch (const std::exception &e) {
@@ -322,7 +321,6 @@ eonc::io::IoStatus append_frames(const fs::path &path,
     {
       readcon::ConFrameWriter writer(
           scratch, readcon::ConFrameWriter::Compression::None, precision);
-      writer.set_canonical(true);
       writer.extend(frames);
     }
     std::ifstream in(scratch, std::ios::binary | std::ios::ate);
