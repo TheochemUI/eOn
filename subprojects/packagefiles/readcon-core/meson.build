@@ -119,9 +119,11 @@ install_headers(
     'include/readcon-metatensor.h',
 )
 
-_link_idx = get_option('default_library') == 'static' ? 1 : 0
+# C++ consumers always take the staticlib. meson-python sets
+# default_library=shared, which would otherwise put the cdylib on
+# link_args and record NEEDED libreadcon_core.so.
 readcon_dep = declare_dependency(
-    link_args: [readcon_cargo[_link_idx].full_path()],
+    link_args: [readcon_cargo[1].full_path()],
     sources: readcon_order,
     dependencies: _rust_sys_deps,
     include_directories: _incdir,
