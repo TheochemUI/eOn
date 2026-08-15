@@ -16,6 +16,7 @@
 #include "eon/Optimizer.h"
 
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -96,7 +97,8 @@ std::vector<std::string> MinimizationJob::run() {
   fileResults << this->pot->forceCallCounter.load() << " total_force_calls\n";
 
   if (status != RunStatus::FAIL_POTENTIAL_FAILED) {
-    fileResults << pos->getPotentialEnergy() << " potential_energy\n";
+    fileResults << std::format("{:.12e} potential_energy\n",
+                               pos->getPotentialEnergy());
   }
 
   // No explicit fclose needed; RAII handles it.

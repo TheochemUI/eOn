@@ -169,7 +169,7 @@ def basinhopping(config: ConfigClass = None):
     wuid_file.write("%i\n" % wuid)
     wuid_file.close()
 
-    io.save_prng_state()
+    io.save_prng_state(io.prng_state_path(config))
 
 def make_searches(comm, wuid, bhstates, config: ConfigClass):
     num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size
@@ -306,7 +306,7 @@ def main(config: ConfigClass = None):
                         os.removedirs(i)
                 log_path = os.path.join(config.path_results, "bh.log")
                 wuid_path = os.path.join(config.path_results, "wuid.dat")
-                prng_path = os.path.join(config.path_results, "prng.pkl")
+                prng_path = io.prng_state_path(config)
                 for i in [log_path, wuid_path, prng_path ]:
                     if os.path.isfile(i):
                         os.remove(i)

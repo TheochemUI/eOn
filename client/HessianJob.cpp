@@ -10,12 +10,16 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/HessianJob.h"
+#include "eon/BaseStructures.h"
 #include "eon/EonLogger.h"
 #include "eon/Hessian.h"
 #include "eon/Matter.h"
 #include "eon/MobileAtoms.h"
+#include "eon/PotRegistry.h"
 #include "eon/Potential.h"
+#include "magic_enum/magic_enum.hpp"
 
+#include <filesystem>
 #include <format>
 #include <fstream>
 #include <stdexcept>
@@ -39,26 +43,29 @@ std::vector<std::string> HessianJob::run(void) {
   // is the optimizer mask; resolveMobileAtoms intersects the list with free.
   const VectorXi mobile =
       eonc::resolveMobileAtoms(matter.get(), params.hessian_options.phva_atoms);
-  if (mobile.size() == 0) {
-    // No free atoms: leave results.dat with force_calls only (no crash).
-    std::string results_file("results.dat");
-    returnFiles.push_back(results_file);
-    std::ofstream out(results_file, std::ios::binary);
-    if (out) {
-      out << std::format("{} force_calls\n",
-                         PotRegistry::get().total_force_calls());
-    }
-    return returnFiles;
+  const bool no_mobile = mobile.size() == 0;
+  if (!no_mobile) {
+    hessian.getFreqs(matter.get(), mobile);
   }
-  hessian.getFreqs(matter.get(), mobile);
 
   std::string results_file("results.dat");
   returnFiles.push_back(results_file);
 
   std::ofstream out(results_file, std::ios::binary);
   if (out) {
+    const auto status =
+        no_mobile ? RunStatus::FAIL_MAX_ITERATIONS : RunStatus::GOOD;
+    out << std::format("{} termination_reason\n", static_cast<int>(status));
+    out << std::format("{} termination_reason_text\n",
+                       magic_enum::enum_name<RunStatus>(status));
+    out << "hessian job_type\n";
     out << std::format("{} force_calls\n",
                        PotRegistry::get().total_force_calls());
+    out << std::format("{} total_force_calls\n",
+                       PotRegistry::get().total_force_calls());
+  }
+  if (std::filesystem::exists("hessian.dat")) {
+    returnFiles.push_back("hessian.dat");
   }
 
   return returnFiles;

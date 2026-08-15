@@ -202,9 +202,10 @@ class ConfigClass:
                 sys.exit(3)
 
         if int(self.main_random_seed) >= 0:
-            if os.path.isfile(os.path.join(self.path_root, 'prng.pkl')):
-                from eon import fileio as io
-                io.get_prng_state()
+            from eon import fileio as io
+            prng_path = io.prng_state_path(self)
+            if os.path.isfile(prng_path):
+                io.get_prng_state(prng_path)
             else:
                 numpy.random.seed(self.main_random_seed)
         else:

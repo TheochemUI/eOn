@@ -133,7 +133,7 @@ def akmc(config: ConfigClass = None, steps=0):
 
     parser.write(open(metafile, 'w'))
 
-    io.save_prng_state()
+    io.save_prng_state(io.prng_state_path(config))
 
     return steps
 
@@ -546,7 +546,7 @@ def main(config: ConfigClass = None):
                             os.path.join(config.path_results, "akmc.log"),
                             os.path.join(config.path_results, "jobs.tbl"),
                             os.path.join(config.path_root, "results"),
-                            os.path.join(config.path_root, "prng.pkl"),
+                            io.prng_state_path(config),
                             os.path.join(config.path_root, "explorer.pickle"),
                             os.path.join(config.path_root, "temperatures.dat"),
                             os.path.join(config.path_root, "client.log"),
