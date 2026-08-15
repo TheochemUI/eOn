@@ -278,8 +278,8 @@ potential = lj
 
   // SVN reference (data/reference/finite_difference_lj.dat):
   // curvature at dR=0.01 is -29.95337689
-  // Parse the results.dat which has "dR curvature" format
-  std::ifstream fd_results((workdir / "results.dat").string());
+  // Parse curvature.dat, the "dR curvature" table; results.dat carries the value-key schema
+  std::ifstream fd_results((workdir / "curvature.dat").string());
   std::string header;
   std::getline(fd_results, header); // skip header line
   std::vector<std::pair<double, double>> fd_data;
@@ -311,7 +311,7 @@ potential = morse_pt
   auto results = runJob();
 
   // SVN reference (data/reference/finite_difference_morse_pt.dat):
-  std::ifstream fd_results((workdir / "results.dat").string());
+  std::ifstream fd_results((workdir / "curvature.dat").string());
   std::string header;
   std::getline(fd_results, header);
   std::vector<std::pair<double, double>> fd_data;

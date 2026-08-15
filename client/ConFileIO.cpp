@@ -382,6 +382,19 @@ readcon::ConFrameBuilder seed_builder(Matter &m,
   }
   for (long i = 0; i < n; ++i) {
     const auto mask = m.getFixedMask(i);
+    // Column 4 encodes x-only as 1, and readcon-core decodes 1 as fully
+    // fixed for compatibility with CON files that predate the bitmask. The
+    // two rules collide on that one value, so an atom fixed in x alone
+    // reads back fixed in all three. Every other mask round trips. Refuse
+    // the write rather than emit a file whose constraints differ from the
+    // ones in memory.
+    if (mask[0] && !mask[1] && !mask[2]) {
+      throw std::invalid_argument(std::format(
+          "atom {} is fixed in x only, which CON column 4 writes as 1 and "
+          "readers decode as fully fixed; constrain another axis or leave "
+          "the atom free",
+          i));
+    }
     builder.add_atom(symbol_for_z(m.getAtomicNr(i)), 0.0, 0.0, 0.0, mask,
                      atom_ids[static_cast<size_t>(i)], m.getMass(i));
   }

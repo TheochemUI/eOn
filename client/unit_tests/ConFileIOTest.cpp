@@ -174,23 +174,61 @@ TEST_CASE("Con file preserves per-axis fixed mask", "[confileio][fixed]") {
   original.setMass(1, 63.5);
   original.setAtomicNr(0, 29);
   original.setAtomicNr(1, 29);
-  original.setFixedMask(0, {true, false, false});
-  original.setFixedMask(1, {false, true, false});
+  // Every column-4 value except 1. Bit0=x, bit1=y, bit2=z. Value 1 means
+  // x-only, which readcon-core decodes as fully fixed for compatibility
+  // with CON files older than the bitmask, so it cannot survive a round
+  // trip; the next case pins the refusal instead.
+  const std::array<std::array<bool, 3>, 6> masks{{{false, true, false},
+                                                  {true, true, false},
+                                                  {false, false, true},
+                                                  {true, false, true},
+                                                  {false, true, true},
+                                                  {true, true, true}}};
 
   const std::string tmpfile = "_test_per_axis.con";
-  REQUIRE(eonc::io::io_ok(original.matter2con(tmpfile)));
-  Matter loaded(pot, params);
-  REQUIRE(eonc::io::io_ok(loaded.con2matter(tmpfile)));
-  auto m0 = loaded.getFixedMask(0);
-  auto m1 = loaded.getFixedMask(1);
-  REQUIRE(m0[0]);
-  REQUIRE_FALSE(m0[1]);
-  REQUIRE_FALSE(m0[2]);
-  REQUIRE_FALSE(m1[0]);
-  REQUIRE(m1[1]);
-  REQUIRE_FALSE(m1[2]);
-  REQUIRE(loaded.getFixed(0) == 0);
-  REQUIRE(loaded.getFixed(1) == 0);
+  for (const auto &mask : masks) {
+    original.setFixedMask(0, mask);
+    original.setFixedMask(1, {false, false, false});
+    REQUIRE(eonc::io::io_ok(original.matter2con(tmpfile)));
+    Matter loaded(pot, params);
+    REQUIRE(eonc::io::io_ok(loaded.con2matter(tmpfile)));
+    const auto m0 = loaded.getFixedMask(0);
+    const auto m1 = loaded.getFixedMask(1);
+    CAPTURE(mask[0], mask[1], mask[2]);
+    REQUIRE(m0[0] == mask[0]);
+    REQUIRE(m0[1] == mask[1]);
+    REQUIRE(m0[2] == mask[2]);
+    REQUIRE_FALSE(m1[0]);
+    REQUIRE_FALSE(m1[1]);
+    REQUIRE_FALSE(m1[2]);
+    // Whole-atom view stays the conjunction of the three axes.
+    const bool all = mask[0] && mask[1] && mask[2];
+    REQUIRE(loaded.getFixed(0) == (all ? 1 : 0));
+    std::filesystem::remove(tmpfile);
+  }
+}
+
+TEST_CASE("Con write refuses an x-only constraint it cannot encode",
+          "[confileio][fixed]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter m(pot, params);
+  m.resize(1);
+  m.setCell(10.0 * Matrix3d::Identity());
+  m.setPosition(0, 0, 0.0);
+  m.setPosition(0, 1, 0.0);
+  m.setPosition(0, 2, 0.0);
+  m.setMass(0, 63.5);
+  m.setAtomicNr(0, 29);
+  m.setFixedMask(0, {true, false, false});
+
+  // Writing 1 to column 4 produces a file every reader takes as fully
+  // fixed, so the write reports instead of silently changing the
+  // constraints. Lifting this needs readcon-core to stop decoding 1 as
+  // all-fixed.
+  const std::string tmpfile = "_test_x_only.con";
+  REQUIRE_FALSE(eonc::io::io_ok(m.matter2con(tmpfile)));
   std::filesystem::remove(tmpfile);
 }
 
