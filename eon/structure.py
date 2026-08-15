@@ -245,13 +245,23 @@ class Structure:
         atom_ids = self.ids_or_sequential()
         atom_list = []
         for i in range(len(self)):
+            fixed = [bool(self._free[i, a] < 0.5) for a in range(3)]
+            # Column 4 encodes x-only as 1; readcon-core decodes 1 as
+            # fully fixed. Refuse the write rather than emit a file
+            # whose constraints differ from the ones in memory.
+            if fixed[0] and not fixed[1] and not fixed[2]:
+                raise ValueError(
+                    f"atom {i} is fixed in x only, which CON column 4 "
+                    "writes as 1 and readers decode as fully fixed; "
+                    "constrain another axis or leave the atom free"
+                )
             atom_list.append(
                 readcon.Atom(
                     symbol=self.names[i],
                     x=float(self.r[i][0]),
                     y=float(self.r[i][1]),
                     z=float(self.r[i][2]),
-                    fixed=[bool(self._free[i, a] < 0.5) for a in range(3)],
+                    fixed=fixed,
                     atom_id=int(atom_ids[i]),
                     mass=float(self.mass[i]),
                 )

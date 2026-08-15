@@ -7,7 +7,6 @@ import numpy
 
 from eon import atoms
 from eon import fileio as io
-from eon.structure import as_atom_free
 
 from eon.config import ConfigClass # Typing
 
@@ -201,7 +200,7 @@ class Displace:
             displacement = numpy.zeros(self.reactant.r.shape)
             for i in range(len(displaced_atoms)):
                 # don't displace frozen atoms
-                if not as_atom_free(self.reactant)[displaced_atoms[i]]:
+                if not self.reactant.atom_is_free()[displaced_atoms[i]]:
                     continue
                 # Displace one of the free atoms by a gaussian distributed
                 # random number with a standard deviation of self.std_dev.
@@ -254,7 +253,7 @@ class Displace:
         if self.config.random_mode:
             displacement *= 0.0
             for i in range(len(displaced_atoms)):
-                if not as_atom_free(self.reactant)[displaced_atoms[i]]:
+                if not self.reactant.atom_is_free()[displaced_atoms[i]]:
                     continue
                 displacement[displaced_atoms[i]] = numpy.random.normal(scale = self.std_dev, size=3)
                 if self.config.displace_1d:
@@ -301,7 +300,7 @@ class Undercoordinated(Displace):
         # Only allow displacements for atoms <= the maximum coordination and that are free.
         self.undercoordinated_atoms = [ i for i in range(len(cns))
                 if cns[i] <= self.max_coordination and
-                    as_atom_free(self.reactant)[i]]
+                    self.reactant.atom_is_free()[i]]
 
         self.undercoordinated_atoms = self.filter_epicenters(self.undercoordinated_atoms)
 
@@ -332,7 +331,7 @@ class Leastcoordinated(Displace):
         self.leastcoordinated_atoms = atoms.least_coordinated(self.reactant,
                 self.coordination_distance)
         self.leastcoordinated_atoms = [ i for i in self.leastcoordinated_atoms
-                                        if as_atom_free(self.reactant)[i]]
+                                        if self.reactant.atom_is_free()[i]]
 
         self.leastcoordinated_atoms = self.filter_epicenters(self.leastcoordinated_atoms)
 
@@ -354,7 +353,7 @@ class ListedAtoms(Displace):
         self.displace_all = displace_all
         # each item in this list is the index of a free atom
         self.listed_atoms = [ i for i in self.config.disp_listed_atoms
-                if as_atom_free(self.reactant)[i] ]
+                if self.reactant.atom_is_free()[i] ]
         #print "self.listed_atoms:"
         #print self.listed_atoms
         self.listed_atoms = self.filter_epicenters(self.listed_atoms)
@@ -385,7 +384,7 @@ class ListedTypes(Displace):
         self.displace_all = displace_all
         # each item in this list is the index of a free atom
         self.listed_atoms = [ i for i in range(len(self.reactant.free))
-                if as_atom_free(self.reactant)[i] and (self.reactant.names[i] in self.config.disp_listed_types) ]
+                if self.reactant.atom_is_free()[i] and (self.reactant.names[i] in self.config.disp_listed_types) ]
 
         self.listed_atoms = self.filter_epicenters(self.listed_atoms)
 
@@ -412,7 +411,7 @@ class Random(Displace):
 
         # each item in this list is the index of a free atom
         self.free_atoms = [ i for i in range(len(self.reactant.free))
-                if as_atom_free(self.reactant)[i] ]
+                if self.reactant.atom_is_free()[i] ]
 
         self.free_atoms = self.filter_epicenters(self.free_atoms)
 
@@ -439,7 +438,7 @@ class NotFCCorHCP(Displace):
                 self.coordination_distance)
 
         self.not_HCP_or_FCC_atoms = [ i for i in self.not_HCP_or_FCC_atoms
-                                        if as_atom_free(self.reactant)[i]]
+                                        if self.reactant.atom_is_free()[i]]
 
         self.not_HCP_or_FCC_atoms = self.filter_epicenters(self.not_HCP_or_FCC_atoms)
 
@@ -466,7 +465,7 @@ class NotTCPorBCC(Displace):
                 self.coordination_distance)
 
         self.not_TCP_or_BCC_atoms = [ i for i in self.not_TCP_or_BCC_atoms
-                                        if as_atom_free(self.reactant)[i]]
+                                        if self.reactant.atom_is_free()[i]]
 
         self.not_TCP_or_BCC_atoms = self.filter_epicenters(self.not_TCP_or_BCC_atoms)
 
@@ -493,7 +492,7 @@ class NotTCP(Displace):
                 self.coordination_distance)
 
         self.not_TCP_atoms = [ i for i in self.not_TCP_atoms
-                                        if as_atom_free(self.reactant)[i]]
+                                        if self.reactant.atom_is_free()[i]]
 
         self.not_TCP_atoms = self.filter_epicenters(self.not_TCP_atoms)
 
