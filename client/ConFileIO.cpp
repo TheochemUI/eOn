@@ -697,8 +697,7 @@ IoStatus con2matter(Matter &m, const readcon::ConFrame &frame,
       masses(i) = atom.mass;
       atomic_nrs(i) = static_cast<int>(atom.atomic_number);
       const auto fixed = atom.fixed_mask();
-      m.setFixedMask(static_cast<long>(i),
-                     {fixed[0], fixed[1], fixed[2]});
+      m.setFixedMask(static_cast<long>(i), {fixed[0], fixed[1], fixed[2]});
       m.setAtomIndex(static_cast<long>(i),
                      static_cast<std::int64_t>(atom.atom_id));
 
@@ -868,7 +867,8 @@ IoStatus writeTibble(Matter &m, std::string fname) {
                          fSys(idx, 2), eSys);
     }
     const auto mask = m.getFixedMask(idx);
-    const int fixed_bits = (mask[0] ? 1 : 0) | (mask[1] ? 2 : 0) | (mask[2] ? 4 : 0);
+    const int fixed_bits =
+        (mask[0] ? 1 : 0) | (mask[1] ? 2 : 0) | (mask[2] ? 4 : 0);
     out << std::format(" {} {} {} {}\n", m.getMass(idx),
                        symbol_for_z(m.getAtomicNr(idx)), m.getAtomIndex(idx),
                        fixed_bits);

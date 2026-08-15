@@ -309,7 +309,8 @@ TEST_CASE_METHOD(ConFileIOFixture, "XYZ output is finite and non-empty",
   std::remove(tmpfile.c_str());
 }
 
-TEST_CASE_METHOD(ConFileIOFixture, "XYZ comment carries the cell and full coords",
+TEST_CASE_METHOD(ConFileIOFixture,
+                 "XYZ comment carries the cell and full coords",
                  "[confileio][xyz]") {
   original->setPosition(0, 0, 1.234567891234567);
 
@@ -329,7 +330,8 @@ TEST_CASE_METHOD(ConFileIOFixture, "XYZ comment carries the cell and full coords
   REQUIRE(comment.find("Lattice=\"") != std::string::npos);
   REQUIRE(comment.find("Properties=species:S:1:pos:R:3") != std::string::npos);
   const Matrix3d cell = original->getCell();
-  REQUIRE(comment.find(std::format("{:.17g}", cell(0, 0))) != std::string::npos);
+  REQUIRE(comment.find(std::format("{:.17g}", cell(0, 0))) !=
+          std::string::npos);
   REQUIRE(atom_line.find(std::format("{:.17g}", original->getPosition(0, 0))) !=
           std::string::npos);
 
@@ -362,8 +364,10 @@ TEST_CASE_METHOD(ConFileIOFixture, "XYZ append rejects a different atom count",
 TEST_CASE_METHOD(ConFileIOFixture, "XYZ append concatenates a matching frame",
                  "[confileio][xyz]") {
   auto tmppath = std::filesystem::temp_directory_path() / "_test_xyz_two";
-  REQUIRE(eonc::io::io_ok(eonc::io::matter2xyz(*original, tmppath.string(), false)));
-  REQUIRE(eonc::io::io_ok(eonc::io::matter2xyz(*original, tmppath.string(), true)));
+  REQUIRE(eonc::io::io_ok(
+      eonc::io::matter2xyz(*original, tmppath.string(), false)));
+  REQUIRE(
+      eonc::io::io_ok(eonc::io::matter2xyz(*original, tmppath.string(), true)));
   std::string tmpfile = tmppath.string() + ".xyz";
   std::ifstream f(tmpfile);
   int first = 0;

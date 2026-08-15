@@ -156,9 +156,8 @@ void GlobalOptimizationJob::applyMoveFeedbackMD() {
     QUILL_LOG_CRITICAL(log,
                        "ERROR: client does not know what to do with ekin.");
     QUILL_LOG_CRITICAL(log, "ERROR: client stops in applyMoveFeedbackMD.");
-    throw std::runtime_error(
-        std::format("[Global Optimization] unknown hoppingResult: {}",
-                    hoppingResult));
+    throw std::runtime_error(std::format(
+        "[Global Optimization] unknown hoppingResult: {}", hoppingResult));
   }
 }
 

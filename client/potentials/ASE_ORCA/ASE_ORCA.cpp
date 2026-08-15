@@ -40,16 +40,15 @@ std::filesystem::path makeAseWorkDir(const char *prefix) {
   std::error_code ec;
   auto dir = std::filesystem::temp_directory_path(ec);
   if (ec) {
-    throw std::runtime_error(
-        std::format("ASE-ORCA: cannot resolve temp directory: {}",
-                    ec.message()));
+    throw std::runtime_error(std::format(
+        "ASE-ORCA: cannot resolve temp directory: {}", ec.message()));
   }
   dir /= std::format("{}_{}_{}", prefix, pid, instanceCount.fetch_add(1));
   std::filesystem::create_directories(dir, ec);
   if (ec) {
-    throw std::runtime_error(std::format(
-        "ASE-ORCA: cannot create work directory {}: {}", dir.string(),
-        ec.message()));
+    throw std::runtime_error(
+        std::format("ASE-ORCA: cannot create work directory {}: {}",
+                    dir.string(), ec.message()));
   }
   return dir;
 }

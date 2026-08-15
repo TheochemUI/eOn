@@ -144,8 +144,8 @@ void bind_parameters(nb::module_ &m) {
               s.optimizer_options.convergence_metric_label =
                   std::string(*label);
             } else {
-              throw std::invalid_argument(
-                  "unknown opt_convergence_metric: " + v);
+              throw std::invalid_argument("unknown opt_convergence_metric: " +
+                                          v);
             }
           },
           "norm | max_atom | max_component")

@@ -15,9 +15,9 @@
 /// regardless of whether LAMMPS is actually installed.
 
 #include "eon/potentials/LAMMPS/LammpsLoader.h"
-#include "eon/potentials/PluginLoader.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/potentials/PluginLoader.h"
 
 #include <filesystem>
 #include <fstream>
@@ -78,8 +78,8 @@ TEST_CASE("PluginLoader: lib_present is a filesystem probe",
   auto &loader = eonc::PluginLoader::instance();
   REQUIRE_FALSE(loader.lib_present("eon_no_such_potential_zzzz"));
 
-  const auto tmp = std::filesystem::temp_directory_path() /
-                   "eon_plugin_probe_XXXXXX";
+  const auto tmp =
+      std::filesystem::temp_directory_path() / "eon_plugin_probe_XXXXXX";
   std::error_code ec;
   std::filesystem::create_directories(tmp, ec);
   REQUIRE_FALSE(ec);

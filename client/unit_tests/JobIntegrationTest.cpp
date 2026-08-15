@@ -278,7 +278,8 @@ potential = lj
 
   // SVN reference (data/reference/finite_difference_lj.dat):
   // curvature at dR=0.01 is -29.95337689
-  // Parse curvature.dat, the "dR curvature" table; results.dat carries the value-key schema
+  // Parse curvature.dat, the "dR curvature" table; results.dat carries the
+  // value-key schema
   std::ifstream fd_results((workdir / "curvature.dat").string());
   std::string header;
   std::getline(fd_results, header); // skip header line

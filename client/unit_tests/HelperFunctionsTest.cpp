@@ -155,8 +155,8 @@ TEST_CASE("HelperFunctions: requireKnownConvergenceMetric throws on typo",
     eonc::helpers::requireKnownConvergenceMetric("nope", "[test]");
     FAIL("expected throw");
   } catch (const std::invalid_argument &e) {
-    REQUIRE_THAT(std::string(e.what()),
-                 Catch::Matchers::ContainsSubstring("unknown convergence_metric"));
+    REQUIRE_THAT(std::string(e.what()), Catch::Matchers::ContainsSubstring(
+                                            "unknown convergence_metric"));
     REQUIRE_THAT(std::string(e.what()),
                  Catch::Matchers::ContainsSubstring("nope"));
   }

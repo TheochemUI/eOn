@@ -301,9 +301,9 @@ std::vector<std::string> BasinHoppingJob::run() {
     out << std::format("{:.3f} acceptance_ratio\n",
                        nsteps_ratio ? totalAccept / nsteps_ratio : 0.0);
     if (params.basin_hopping_options.swap_probability > 0) {
-      out << std::format("{:.3f} swap_acceptance_ratio\n",
-                         swap_count ? swap_accept / static_cast<double>(swap_count)
-                                    : 0.0);
+      out << std::format(
+          "{:.3f} swap_acceptance_ratio\n",
+          swap_count ? swap_accept / static_cast<double>(swap_count) : 0.0);
     }
     out << std::format("{} total_normal_displacement_steps\n",
                        disp_count - jump_count -

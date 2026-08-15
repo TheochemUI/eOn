@@ -204,9 +204,8 @@ void bind_matter(nb::module_ &m) {
             auto arr = nb::cast<NpI32>(cont);
             const long n = self.numberOfAtoms();
             if (arr.ndim() == 1 && static_cast<long>(arr.shape(0)) == n) {
-              matter_set_fixed_buf(self,
-                                   reinterpret_cast<const int *>(arr.data()),
-                                   n);
+              matter_set_fixed_buf(
+                  self, reinterpret_cast<const int *>(arr.data()), n);
               return;
             }
             if (arr.ndim() == 2 && static_cast<long>(arr.shape(0)) == n &&
