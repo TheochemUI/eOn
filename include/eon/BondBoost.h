@@ -33,9 +33,17 @@ public:
   ~BondBoost(); ///< Destructor.
 
   void initialize();
+  /// Advance the equilibration / boost schedule by one MD step.
+  /// Call once per physical step. boost() does not move the schedule.
+  void advance();
+  /// Evaluate the current bias potential and write bias forces.
+  /// Safe to call from a force evaluation; does not increment nReg.
   double boost();
+  /// Equilibration counter (starts at 1). Used to test the per-step schedule.
+  [[nodiscard]] long scheduleStep() const { return nReg; }
 
 private:
+  long rmdSteps() const;
   Matrix<double, Eigen::Dynamic, 1> Rmdsteps();
   long BondSelect();
   double Booststeps();

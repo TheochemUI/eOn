@@ -95,6 +95,13 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
   }
 
   for (int step = 1; step <= params.dynamics_options.steps; step++) {
+    if (params.hyperdynamics_options.bias_potential ==
+        Hyperdynamics::BOND_BOOST) {
+      // oneStep() evaluates accelerations (and therefore boost()) more than
+      // once. Advance the equilibration counter here, once per MD step, so
+      // ParallelReplica and SafeHyper share the same rmd_time schedule.
+      bondBoost.advance();
+    }
     dynamics.oneStep();
     double boost = 1.0;
     if (params.hyperdynamics_options.bias_potential ==

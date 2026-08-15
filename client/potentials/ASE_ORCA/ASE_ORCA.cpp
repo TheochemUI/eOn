@@ -12,8 +12,49 @@
 
 #include "eon/potentials/ASE_ORCA/ASE_ORCA.h"
 #include "eon/EnvHelpers.hpp"
+#include "eon/EonLogger.h"
 #include "eon/PyGuard.h"
 #include "eon/fpe_handler.h"
+
+#include <atomic>
+#include <format>
+#include <stdexcept>
+#include <string>
+#include <system_error>
+
+#ifdef _WIN32
+#include <process.h>
+#else
+#include <unistd.h>
+#endif
+
+namespace {
+
+std::filesystem::path makeAseWorkDir(const char *prefix) {
+  static std::atomic<long> instanceCount{0};
+#ifdef _WIN32
+  const long pid = static_cast<long>(_getpid());
+#else
+  const long pid = static_cast<long>(getpid());
+#endif
+  std::error_code ec;
+  auto dir = std::filesystem::temp_directory_path(ec);
+  if (ec) {
+    throw std::runtime_error(
+        std::format("ASE-ORCA: cannot resolve temp directory: {}",
+                    ec.message()));
+  }
+  dir /= std::format("{}_{}_{}", prefix, pid, instanceCount.fetch_add(1));
+  std::filesystem::create_directories(dir, ec);
+  if (ec) {
+    throw std::runtime_error(std::format(
+        "ASE-ORCA: cannot create work directory {}: {}", dir.string(),
+        ec.message()));
+  }
+  return dir;
+}
+
+} // namespace
 
 // XXX: This always assumes that charge is 0, mult is 1
 // ASE default ----------------------------^ ---------^
@@ -49,36 +90,64 @@ ASEOrcaPot::ASEOrcaPot(const Parameters &a_params)
     nproc = std::stoi(a_params.ase_orca_options.nproc);
   }
 
-  this->calc =
-      ORCA("profile"_a = OrcaProfile(py::str(orcpth)),
-           "orcasimpleinput"_a = orca_simpleinput,
-           "orcablocks"_a = py::str(std::format("%pal nprocs {} end", nproc)),
-           "directory"_a = ".");
+  // One directory per calculator instance so two LocalInProcess jobs in
+  // the same cwd do not share ORCA scratch and output files.
+  workDir = makeAseWorkDir("eon_ase_orca");
+
+  try {
+    this->calc =
+        ORCA("profile"_a = OrcaProfile(py::str(orcpth)),
+             "orcasimpleinput"_a = orca_simpleinput,
+             "orcablocks"_a = py::str(std::format("%pal nprocs {} end", nproc)),
+             "directory"_a = workDir.string());
+  } catch (...) {
+    std::error_code ec;
+    std::filesystem::remove_all(workDir, ec);
+    workDir.clear();
+    throw;
+  }
 };
+
+ASEOrcaPot::~ASEOrcaPot() {
+  QUILL_LOG_INFO(eonc::log::get(), "[ASEOrca] called potential {} times",
+                 counter);
+  if (!workDir.empty()) {
+    std::error_code ec;
+    std::filesystem::remove_all(workDir, ec);
+  }
+}
 
 void ASEOrcaPot::force(long nAtoms, const double *R, const int *atomicNrs,
                        double *F, double *U, double *variance,
                        const double *box) {
   variance = nullptr;
-  AtomMatrix positions = AtomMatrix::Map(const_cast<double *>(R), nAtoms, 3);
-  RotationMatrix boxx = RotationMatrix::Map(const_cast<double *>(box), 3, 3);
-  Eigen::VectorXi atmnmrs =
-      Eigen::Map<Eigen::VectorXi>(const_cast<int *>(atomicNrs), nAtoms);
-  py::object atoms = this->ase.attr("Atoms")(
-      "symbols"_a = atmnmrs, "positions"_a = positions, "cell"_a = boxx);
-  atoms.attr("set_calculator")(this->calc);
-  atoms.attr("set_pbc")(std::tuple<bool, bool, bool>(true, true, true));
-  double py_e = py::cast<double>(atoms.attr("get_potential_energy")());
-  Eigen::MatrixXd py_force =
-      py::cast<Eigen::MatrixXd>(atoms.attr("get_forces")());
+  try {
+    AtomMatrix positions = AtomMatrix::Map(const_cast<double *>(R), nAtoms, 3);
+    RotationMatrix boxx = RotationMatrix::Map(const_cast<double *>(box), 3, 3);
+    Eigen::VectorXi atmnmrs =
+        Eigen::Map<Eigen::VectorXi>(const_cast<int *>(atomicNrs), nAtoms);
+    py::object atoms = this->ase.attr("Atoms")(
+        "symbols"_a = atmnmrs, "positions"_a = positions, "cell"_a = boxx);
+    atoms.attr("set_calculator")(this->calc);
+    atoms.attr("set_pbc")(std::tuple<bool, bool, bool>(true, true, true));
+    double py_e = py::cast<double>(atoms.attr("get_potential_energy")());
+    Eigen::MatrixXd py_force =
+        py::cast<Eigen::MatrixXd>(atoms.attr("get_forces")());
 
-  // Populate the output parameters
-  *U = py_e;
-  for (long i = 0; i < nAtoms; ++i) {
-    F[3 * i] = py_force(i, 0);
-    F[3 * i + 1] = py_force(i, 1);
-    F[3 * i + 2] = py_force(i, 2);
+    // Populate the output parameters
+    *U = py_e;
+    for (long i = 0; i < nAtoms; ++i) {
+      F[3 * i] = py_force(i, 0);
+      F[3 * i + 1] = py_force(i, 1);
+      F[3 * i + 2] = py_force(i, 2);
+    }
+  } catch (py::error_already_set &e) {
+    throw std::runtime_error(std::string("ASE-ORCA Python error: ") + e.what());
+  } catch (const std::exception &e) {
+    throw std::runtime_error(std::string("ASE-ORCA C++ exception: ") +
+                             e.what());
   }
+
   counter++;
   return;
 }
