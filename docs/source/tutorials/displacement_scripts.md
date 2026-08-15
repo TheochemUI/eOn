@@ -5,30 +5,29 @@ myst:
     "keywords": "eOn displacement, saddle search, vacancy diffusion, adsorbate, PTM, OVITO, targeted displacement"
 ---
 
-# Targeted Displacement for Saddle Searches
+# Targeted displacement for saddle searches
 
 By default, eOn picks a random atom as the epicenter for each saddle search
-displacement. This works well for small systems or when all atoms are equally
-likely to participate in reactions. For larger, more structured systems —
-surfaces with defects, supported catalysts, or bulk crystals with vacancies —
+displacement. Random selection is fine for small systems or when all atoms are
+equally likely to participate in reactions. For larger, more structured systems
+(surfaces with defects, supported catalysts, or bulk crystals with vacancies),
 random selection wastes effort: most saddle searches start far from the action
 and fail to find relevant transitions.
 
-eOn provides two mechanisms for targeting displacements at the atoms that
-matter:
+eOn has two ways to target displacements at the reactive atoms:
 
-1. **Static atom list** (`displace_atom_list`) — a fixed set of atom indices
+1. **Static atom list** (`displace_atom_list`): a fixed set of atom indices
    written directly in `config.ini`. Best when the active atoms are known in
    advance and don't change between AKMC states.
 
-2. **Dynamic script** (`displace_atom_kmc_state_script`) — a Python script
+2. **Dynamic script** (`displace_atom_kmc_state_script`): a Python script
    that is executed once per new AKMC state. The script receives the current
    geometry, analyses it, and returns the indices of atoms that should be
    displaced. Best when the active region moves (e.g. a migrating vacancy).
 
-## Script Interface
+## Script interface
 
-A displacement script must satisfy the following contract:
+A displacement script must satisfy these rules:
 
 - It receives the path to a `.con` file as its **sole positional argument**.
 - It must print a **comma-separated list of 0-based atom indices** to
@@ -48,10 +47,10 @@ The `examples/akmc-cu-vacancy/` directory contains a complete AKMC setup for a
 Cu crystal with a single vacancy, using OVITO's Polyhedral Template Matching
 (PTM) to identify defect atoms.
 
-### The Idea
+### The idea
 
 In a nearly perfect FCC crystal, the only atoms likely to participate in
-vacancy migration are those whose local environment deviates from bulk FCC —
+vacancy migration are those whose local environment deviates from bulk FCC,
 i.e. the atoms adjacent to the vacancy. PTM classifies each atom's local
 neighbourhood into crystal structure types (FCC, HCP, BCC, icosahedral, or
 "other"). Atoms that are *not* FCC are the natural candidates for displacement.
@@ -77,15 +76,15 @@ displace_all_listed = true
 Key settings:
 
 - `displace_listed_atom_weight = 1.0` with all other weights at their defaults
-  (0) ensures that *only* listed atoms are used as epicenters.
-- `displace_all_listed = true` means every atom returned by the script is
-  displaced simultaneously, not just one picked at random.
+  (0) uses *only* listed atoms as epicenters.
+- `displace_all_listed = true` displaces every atom in the set at once instead
+  of one random pick.
 - `displace_radius = 3.0` also includes neighbours within 3 Å of any listed
   atom.
 - `displace_atom_kmc_state_script = ptmdisp.py` points to the script (relative
   to the eOn root directory).
 
-### The PTM Script
+### The PTM script
 
 `ptmdisp.py` is a [PEP 723](https://peps.python.org/pep-0723/) inline script.
 Its core logic:
@@ -106,7 +105,7 @@ uvx ptmdisp.py pos.con --verbose
 # Prints logging info to stderr, indices to stdout
 ```
 
-### Data Flow
+### Data flow
 
 ```
 New AKMC state
@@ -127,8 +126,8 @@ DisplacementManager uses list for all saddle searches in this state
 ## Example 2: Adsorbate on a Catalyst Surface
 
 Consider a CO molecule adsorbed on a Pt(111) surface. During an AKMC
-simulation the adsorbate can diffuse, rotate, or desorb — but the relevant
-atoms are always the adsorbate itself plus a handful of nearby surface atoms.
+simulation the adsorbate can diffuse, rotate, or desorb, but the relevant
+atoms are always the adsorbate itself plus nearby surface atoms.
 Displacing random bulk Pt atoms far from the CO would be wasteful.
 
 ### Strategy
@@ -138,7 +137,7 @@ Displacing random bulk Pt atoms far from the CO would be wasteful.
    adsorbate atom.
 3. Return the combined set of indices.
 
-### The Script
+### The script
 
 The file `examples/akmc-cu-vacancy/adsorbate_region.py` implements this
 approach using only ASE (no OVITO dependency):
@@ -176,10 +175,10 @@ displace_atom_kmc_state_script = adsorbate_region.py --adsorbate-elements C O --
 displace_all_listed = true
 ```
 
-## Static List Alternative
+## Static list alternative
 
 For systems where the active atoms are known ahead of time and do not change
-between states, a static `displace_atom_list` is simpler — no script needed:
+between states, a static `displace_atom_list` is simpler, with no script needed:
 
 ```{code-block} ini
 :caption: config.ini (excerpt)
@@ -208,5 +207,5 @@ displace_atom_list = 0, 1, 2
 ```
 
 In this mode the client reads `displace_atom_list` directly from the INI config
-and uses those atoms as epicenter candidates. This is useful for simple cases
+and uses those atoms as epicenter candidates. Use this for simple cases
 where server-side scripting is unnecessary.

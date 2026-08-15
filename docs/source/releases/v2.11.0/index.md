@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    "description": "Overview of the eOn v2.11.0 release, adding rgpot-compatible RPC serve mode, rgpycrumbs config examples, and asv-perch benchmark CI."
+    "description": "eOn v2.11.0: rgpot-compatible RPC serve mode, rgpycrumbs config examples, and asv-perch benchmark CI."
     "keywords": "eOn v2.11.0, release, serve mode, rgpot, RPC, asv-perch"
 ---
 
@@ -11,7 +11,7 @@ This release adds a new serve mode that exposes any eOn potential over Cap'n
 Proto RPC via the rgpot protocol, enabling integration with external tools such
 as ChemGP.  Four serving modes are supported: single-potential, multi-model,
 replicated, and gateway (round-robin pool behind a single port).  The feature
-is gated behind the `-Dwith_serve=true` meson option and documented in the
+requires the `-Dwith_serve=true` meson option and is documented in the
 {doc}`../../user_guide/serve_mode` guide.
 
 Also included: dictionary-style configuration examples using rgpycrumbs, a

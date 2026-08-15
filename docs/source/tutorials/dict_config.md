@@ -18,8 +18,8 @@ Optimizer, Structure Comparison, Process Search) are authored in
 {file}`schema/eon_params.capnp` and projected into {mod}`eon.schema` for docs
 and validation. The user guide pages (e.g. {doc}`/user_guide/main`,
 {doc}`/user_guide/neb`) still render the Pydantic models. You continue to write
-ordinary ``config.ini`` files (or generate them as below); Cap'n Proto is the
-field-graph author, not a required on-disk format for end users.
+ordinary ``config.ini`` files (or generate them as below). Cap'n Proto
+authors the field graph.
 
 ## Installation
 
@@ -31,7 +31,7 @@ pip install rgpycrumbs
 uv add rgpycrumbs
 ```
 
-## Basic Usage
+## Basic usage
 
 A dictionary maps INI section names to their key-value pairs. The section names
 match the headers in `config.ini` (and the headings in the user guide). For
@@ -84,7 +84,7 @@ Pass a directory path and `write_eon_config` creates `config.ini` inside it.
 Pass a full file path to control the output name.
 ```
 
-## Why Dictionaries?
+## Why dictionaries
 
 Compared to editing INI files by hand, the dictionary approach provides:
 
@@ -93,8 +93,8 @@ Compared to editing INI files by hand, the dictionary approach provides:
 - **Parameterization**: loop over temperatures, spring constants, or image
   counts without duplicating INI files.
 - **Validation reference**: option names and types are defined in
-  {mod}`eon.schema`. Typos that would silently fall back to defaults in an INI
-  file become obvious when compared against the schema documentation.
+  {mod}`eon.schema`. Typos that would fall back to defaults without a warning
+  in an INI file become obvious when compared against the schema documentation.
 - **Notebook integration**: generate and run eOn configurations within Jupyter
   notebooks. The
   [atomistic cookbook](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html)
@@ -152,7 +152,7 @@ For advanced NEB options (climbing image, energy-weighted springs, IDPP
 initialization, off-path CI with MMF), see
 `examples/neb-al/run_neb_advanced.py`.
 
-### Basin Hopping
+### Basin hopping
 
 :::::{tab-set}
 
@@ -170,7 +170,7 @@ initialization, off-path CI with MMF), see
 
 :::::
 
-### Parallel Replica Dynamics
+### Parallel replica dynamics
 
 :::::{tab-set}
 
@@ -191,8 +191,8 @@ initialization, off-path CI with MMF), see
 ### AKMC with Displacement Script
 
 The Cu vacancy example shows how dictionary config works alongside a
-displacement script (`ptmdisp.py`). The script path is just another string
-parameter:
+displacement script (`ptmdisp.py`). The script path is a string parameter
+like the rest:
 
 ```python
 "Saddle Search": {
@@ -205,7 +205,7 @@ parameter:
 See `examples/akmc-cu-vacancy/run_akmc_cu.py` for the full configuration and
 {doc}`displacement_scripts` for details on writing displacement scripts.
 
-## Parameter Sweeps
+## Parameter sweeps
 
 The dictionary approach makes parameter sweeps straightforward:
 
@@ -237,19 +237,19 @@ for n_images in [5, 7, 11, 15]:
     write_eon_config(run_dir, settings)
 ```
 
-## Schema Reference
+## Schema reference
 
 The authoritative documentation for every configuration option lives in the
 Pydantic models in {mod}`eon.schema`. The user guide pages render these models
 automatically:
 
-- {doc}`/user_guide/main` -- general simulation parameters
-- {doc}`/user_guide/akmc` -- adaptive kinetic Monte Carlo
-- {doc}`/user_guide/neb` -- nudged elastic band
-- {doc}`/user_guide/saddle_search` -- saddle search methods
-- {doc}`/user_guide/optimizer` -- optimization algorithms
-- {doc}`/user_guide/potential` -- interatomic potentials
-- {doc}`/user_guide/dynamics` -- molecular dynamics
-- {doc}`/user_guide/parallel_replica` -- parallel replica dynamics
-- {doc}`/user_guide/basin_hopping` -- basin hopping
-- {doc}`/user_guide/communicator` -- job communicators
+- {doc}`/user_guide/main`: general simulation parameters
+- {doc}`/user_guide/akmc`: adaptive kinetic Monte Carlo
+- {doc}`/user_guide/neb`: nudged elastic band
+- {doc}`/user_guide/saddle_search`: saddle search methods
+- {doc}`/user_guide/optimizer`: optimization algorithms
+- {doc}`/user_guide/potential`: interatomic potentials
+- {doc}`/user_guide/dynamics`: molecular dynamics
+- {doc}`/user_guide/parallel_replica`: parallel replica dynamics
+- {doc}`/user_guide/basin_hopping`: basin hopping
+- {doc}`/user_guide/communicator`: job communicators

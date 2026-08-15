@@ -100,4 +100,4 @@ The number of steps is computed as `floor(time / time_step)`.
 
 - <project:parallel_replica.md> for accelerated dynamics via replica parallelism
 - <project:hyperdynamics.md> for bias-potential acceleration
-- <project:optimizer.md> for structure optimization (not dynamics)
+- <project:optimizer.md> for structure optimization

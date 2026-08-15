@@ -5,24 +5,24 @@ myst:
     "keywords": "eOn external potential, ext_pot, MLIP, DeePMD, wrapper script, file interface"
 ---
 
-# External Potential
+# External potential
 
 ```{admonition} conda-forge availability
 :class: tip
 Included in the `conda-forge` package. Always compiled in; no build flags required.
 ```
 
-The external potential (`ext_pot`) interface allows eOn to use **any** energy and
-force calculator by communicating through files and a system call. Because it
-requires no compile-time dependencies, `ext_pot` is always available in every eOn
-build, including the `conda-forge` package.
+The external potential (`ext_pot`) wraps **any** energy and force calculator
+through files and a system call. Because it requires no compile-time
+dependencies, `ext_pot` is available in every eOn build, including the
+`conda-forge` package.
 
 ```{tip}
-If you installed eOn from `conda-forge` and want to use an MLIP (DeePMD, MACE,
+If you installed eOn from `conda-forge` and need an MLIP (DeePMD, MACE,
 etc.) that is not available through the [Metatomic](project:metatomic_pot.md)
-interface, `ext_pot` or [LAMMPS](project:lammps_pot.md) is the recommended path.
-The [ASE](project:ase_pot.md) potentials require additional compile-time flags
-that are **not** enabled in the `conda-forge` build.
+interface, use `ext_pot` or [LAMMPS](project:lammps_pot.md).
+The [ASE](project:ase_pot.md) potentials need `-Dwith_ase` at compile time.
+The `conda-forge` build leaves that flag off.
 ```
 
 ## Protocol

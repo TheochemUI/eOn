@@ -5,13 +5,13 @@ myst:
     "keywords": "eOn, parallel, threading, NEB, potential, MetatomicPotential, XTB"
 ---
 
-# Parallel Force Evaluation
+# Parallel force evaluation
 
 eOn supports parallel force evaluation in NEB, Dimer/ImprovedDimer, and
 ProcessSearchJob. The threading model uses `std::thread` with per-image
 potential ownership.
 
-## Threading Model
+## Threading model
 
 Two virtual methods on `Potential` control the behavior:
 
@@ -28,14 +28,14 @@ When `true`, NEB spawns one thread per image and all threads call
 ### `needsPerImageInstance()`
 
 Returns whether NEB should create a *separate* `Potential` instance per
-image via `makePotential()`. This is needed for potentials where:
+image via `makePotential()`. Needed for potentials where:
 
 - The same instance cannot be called concurrently (internal state, caches)
 - But separate instances CAN run in parallel (each has its own state)
 
 Examples:
 - **MetatomicPotential**: PyTorch model has internal caches. Same instance
-  needs a mutex; separate instances run truly in parallel. Returns
+  needs a mutex; separate instances run independently. Returns
   `needsPerImageInstance() = true`.
 - **XTBPot**: Fortran library has per-instance state (`xtb_TEnvironment`,
   `xtb_TCalculator`). Same instance is not thread-safe; separate instances
@@ -45,7 +45,7 @@ When `needsPerImageInstance()` is `true`, NEB creates N+2 potential
 instances (one per image) at construction time. The parallel force
 evaluation then proceeds lock-free.
 
-## Decision Table
+## Decision table
 
 | `isThreadSafe()` | `needsPerImageInstance()` | Behavior | Examples |
 |:-:|:-:|:--|:--|
@@ -56,9 +56,9 @@ evaluation then proceeds lock-free.
 
 ### Where the answers come from
 
-Potentials that reach eOn through `RgpotAdapter` do not hard-code either
-flag: the adapter reads `caps().reentrancy` from the rgpot kernel, so the
-answer lives next to the physics rather than in a list on the caller side.
+Potentials that reach eOn through `RgpotAdapter` take both flags from
+`caps().reentrancy` on the rgpot kernel, so the answer lives next to the
+physics.
 `SharedInstance` maps to `isThreadSafe()`, `PerInstance` to
 `needsPerImageInstance()`, and `ProcessSerial` to neither, which is the
 last row above.
@@ -66,9 +66,9 @@ last row above.
 The Fortran kernels all declare `ProcessSerial` today. That matches how
 they were treated before the port -- they were on the old hard-coded
 thread-safety blacklist -- and it is deliberately the conservative
-starting point rather than a claim about the rewritten code: the kernels
+starting point. The kernels
 carry no mutable module state any more, so promoting one is a per-kernel
-exercise in proving it and adding a test, not a sweeping change.
+exercise in checking the kernel and adding a test.
 
 The parallel check in NEB is:
 ```cpp
@@ -76,7 +76,7 @@ bool canParallel = pot->isThreadSafe() || perImagePotentials_;
 if (numImages > 1 && params.main_options.parallel && canParallel) { ... }
 ```
 
-## Affected Code Paths
+## Affected code paths
 
 | Component | Parallel Units | Per-Image Potential |
 |:--|:--|:--|
@@ -92,7 +92,7 @@ force evaluation gives a **2.3x speedup** over SVN sequential.
 
 With PET-MAD-S ML potential (14-atom Claisen, 10 NEB images):
 - Mutex-serialized (shared instance): 192 seconds
-- Per-image instances (true parallel): 69 seconds (**2.8x speedup**)
+- Per-image instances (lock-free): 69 seconds (**2.8x speedup**)
 
 ## Adding a New Potential
 
@@ -102,7 +102,7 @@ same instance but supports independent instances:
 1. Override `isThreadSafe()` to return `true` (with internal mutex as
    fallback) or `false`
 2. Override `needsPerImageInstance()` to return `true`
-3. Ensure the constructor (called by `makePotential()`) creates an
+3. The constructor (called by `makePotential()`) must create an
    independent instance (no shared static state)
 
 The `[Main] parallel = true` config option (default) enables threading.

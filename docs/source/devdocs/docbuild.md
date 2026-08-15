@@ -18,7 +18,7 @@ is handled via the `python` ecosystem. Namely:
 
 - [PDM](https://pdm-project.org/en/latest/) is used to track versions, and provide [development groups](https://pdm-project.org/latest/usage/dependency/#add-development-only-dependencies)
 
-To facilitate interactions with `pdm`,
+To run `pdm` without installing it globally,
 [uvx](https://docs.astral.sh/uv/getting-started/installation//) is recommended.
 
 ## Building locally
@@ -66,9 +66,8 @@ uvx pdm add -dG docs "sphinxcontrib-bibtex"
 
 ## Adding citations
 
-Citations are handled in a `.bib` file which is exported via `better-bibtex`
-with Zotero. Kindly do not modify these by hand.
+Citations live in a `.bib` file exported from Zotero via `better-bibtex`.
 
-Note that because we need local bibliographies, as noted in [the
-documentation](https://sphinxcontrib-bibtex.readthedocs.io/en/latest/usage.html#local-bibliographies)
-we need to use key prefixes.
+Local bibliographies, as noted in [the
+documentation](https://sphinxcontrib-bibtex.readthedocs.io/en/latest/usage.html#local-bibliographies),
+need key prefixes.

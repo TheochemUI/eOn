@@ -50,7 +50,7 @@ convergence panels. For two endpoints, use **separate** landscape plots (one
 | Optimizer | Best for | Key parameter |
 |---|---|---|
 | **LBFGS** (default) | Most minimizations, fast convergence near minima | `lbfgs_memory` (default 20) |
-| **FIRE** | Systems far from equilibrium, robust for bad initial guesses | `time_step` |
+| **FIRE** | Systems far from equilibrium, tolerant of bad initial guesses | `time_step` |
 | **CG** | Large systems where LBFGS memory is a concern | `cg_line_search` |
 | **QuickMin** | Simple dynamics-based relaxation | `time_step` |
 | **SD** | Debugging, guaranteed descent direction | `sd_alpha` |
@@ -67,7 +67,7 @@ available via `convergence_metric`:
 ## Refinement
 
 For paths far from the minimum, a two-stage optimization can be faster: start
-with a robust optimizer (QuickMin or FIRE) and switch to LBFGS after the forces
+with QuickMin or FIRE and switch to LBFGS after the forces
 drop below a threshold.
 
 ```{code-block} ini
@@ -90,7 +90,7 @@ The minimization writes:
 
 With `write_movies = true` (in `[Debug]`), `minimization.con` is written as a
 concatenated structure movie (one frame per iteration). Each frame stores
-structured JSON metadata on line 2 via `readcon-core`, including `energy`,
+structured JSON metadata in the second CON header line via `readcon-core`, including `energy`,
 `frame_index`, `step_size`, and `convergence`.
 
 Set `write_deprecated_outs = true` in `[Debug]` to also emit the legacy

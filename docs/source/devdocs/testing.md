@@ -12,7 +12,7 @@ Migrated from GoogleTest to Catch2. All tests use the `TEST_CASE` /
 `TEST_CASE_METHOD` macros with Catch2 matchers.
 ```
 
-We have a robust test suite consisting of unit tests and integration tests.
+The test suite has unit tests and integration tests.
 All tests are registered via meson's array iteration pattern and run with
 `meson test -C builddir`.
 
