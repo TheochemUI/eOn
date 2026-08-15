@@ -53,8 +53,11 @@ elif host_machine.system() == 'windows'
 endif
 
 if host_machine.system() == 'windows'
+    _cargo_shared = 'readcon_core.dll'
     _cargo_static = 'readcon_core.lib'
 else
+    _so = host_machine.system() == 'darwin' ? '.dylib' : '.so'
+    _cargo_shared = 'libreadcon_core' + _so
     _cargo_static = 'libreadcon_core.a'
 endif
 
@@ -67,13 +70,14 @@ _src_rs = run_command(
     check: true,
 ).stdout().strip().split('\n')
 
-# One output. A dual shared+static custom_target indexed in sources does
-# not create a ninja edge, so eonclib linked before the archive existed.
+# Cargo still emits both crate types (cdylib + staticlib). Do not wrap
+# the archive in a Meson static_library: that is the link_whole trap
+# the 0.14 custom_target + link_args pattern exists to avoid.
 readcon_cargo = custom_target(
     'readcon-cargo',
     input: files('Cargo.toml', 'src/lib.rs'),
     depend_files: files('Cargo.lock', 'build.rs') + files(_src_rs),
-    output: _cargo_static,
+    output: [_cargo_shared, _cargo_static],
     command: [
         _py,
         files('scripts/meson_cargo_build.py'),
@@ -81,13 +85,33 @@ readcon_cargo = custom_target(
         _msproot,
         _mbproot / 'cargo-target',
         _profile,
+        _cargo_shared,
         _cargo_static,
         '@OUTPUT0@',
+        '@OUTPUT1@',
         get_option('cargo_features'),
     ],
     build_by_default: true,
     install: true,
-    install_dir: get_option('libdir'),
+    install_dir: [get_option('libdir'), get_option('libdir')],
+)
+
+# Indexing readcon_cargo in declare_dependency.sources does not create a
+# ninja edge. Putting the cdylib in sources records NEEDED / LNK1107.
+# A generated .c that depends on the whole cargo target is the order
+# edge; consumers add it as a source even when they partial_dependency
+# the rest of readcon_dep.
+readcon_order = custom_target(
+    'readcon-order',
+    output: 'readcon_order.c',
+    command: [
+        _py,
+        '-c',
+        'from pathlib import Path; import sys; Path(sys.argv[1]).write_text("/* readcon-core cargo outputs ready */\\n")',
+        '@OUTPUT@',
+    ],
+    depends: [readcon_cargo],
+    build_by_default: true,
 )
 
 install_headers(
@@ -96,12 +120,10 @@ install_headers(
     'include/readcon-metatensor.h',
 )
 
-# link_args + sources: Meson must not promote an installed static consumer
-# to link_whole (custom_target is not a library target). The whole
-# custom_target in sources is the 0.13.1 order edge.
+_link_idx = get_option('default_library') == 'static' ? 1 : 0
 readcon_dep = declare_dependency(
-    link_args: [readcon_cargo.full_path()],
-    sources: readcon_cargo,
+    link_args: [readcon_cargo[_link_idx].full_path()],
+    sources: readcon_order,
     dependencies: _rust_sys_deps,
     include_directories: _incdir,
     version: meson.project_version(),
