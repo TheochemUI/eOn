@@ -53,11 +53,8 @@ elif host_machine.system() == 'windows'
 endif
 
 if host_machine.system() == 'windows'
-    _cargo_shared = 'readcon_core.dll'
     _cargo_static = 'readcon_core.lib'
 else
-    _so = host_machine.system() == 'darwin' ? '.dylib' : '.so'
-    _cargo_shared = 'libreadcon_core' + _so
     _cargo_static = 'libreadcon_core.a'
 endif
 
@@ -70,11 +67,13 @@ _src_rs = run_command(
     check: true,
 ).stdout().strip().split('\n')
 
+# One output. A dual shared+static custom_target indexed in sources does
+# not create a ninja edge, so eonclib linked before the archive existed.
 readcon_cargo = custom_target(
     'readcon-cargo',
     input: files('Cargo.toml', 'src/lib.rs'),
     depend_files: files('Cargo.lock', 'build.rs') + files(_src_rs),
-    output: [_cargo_shared, _cargo_static],
+    output: _cargo_static,
     command: [
         _py,
         files('scripts/meson_cargo_build.py'),
@@ -82,15 +81,13 @@ readcon_cargo = custom_target(
         _msproot,
         _mbproot / 'cargo-target',
         _profile,
-        _cargo_shared,
         _cargo_static,
         '@OUTPUT0@',
-        '@OUTPUT1@',
         get_option('cargo_features'),
     ],
     build_by_default: true,
     install: true,
-    install_dir: [get_option('libdir'), get_option('libdir')],
+    install_dir: get_option('libdir'),
 )
 
 install_headers(
@@ -100,13 +97,11 @@ install_headers(
 )
 
 # link_args + sources: Meson must not promote an installed static consumer
-# to link_whole (custom_target is not a library target).
-# Index the custom_target so the cdylib is not a source of shared consumers
-# (those would record NEEDED libreadcon_core.so).
-_link_idx = get_option('default_library') == 'static' ? 1 : 0
+# to link_whole (custom_target is not a library target). The whole
+# custom_target in sources is the 0.13.1 order edge.
 readcon_dep = declare_dependency(
-    link_args: [readcon_cargo[_link_idx].full_path()],
-    sources: [readcon_cargo[_link_idx]],
+    link_args: [readcon_cargo.full_path()],
+    sources: readcon_cargo,
     dependencies: _rust_sys_deps,
     include_directories: _incdir,
     version: meson.project_version(),
