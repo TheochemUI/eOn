@@ -77,12 +77,21 @@ std::string shellQuote(const std::string &text) {
 std::string composeCommand(const std::string &workDir,
                            const std::string &runDir,
                            const std::string &command) {
+  // A resolved single-file path (the default ./ext_pot after
+  // resolveCommand) has to be quoted so spaces and metacharacters
+  // survive system(). A command line with arguments is left alone.
+  std::error_code quoteEc;
+  const std::string quotedCommand =
+      std::filesystem::is_regular_file(command, quoteEc) && !quoteEc
+          ? shellQuote(command)
+          : command;
 #ifdef _WIN32
-  return std::format("cd /d {} && set {}={} && {}", shellQuote(workDir),
-                     kRunDirVariable, shellQuote(runDir), command);
+  // cmd.exe: quotes around name=value so the value does not include them.
+  return std::format("cd /d {} && set \"{}={}\" && {}", shellQuote(workDir),
+                     kRunDirVariable, runDir, quotedCommand);
 #else
   return std::format("cd {} && export {}={} && {}", shellQuote(workDir),
-                     kRunDirVariable, shellQuote(runDir), command);
+                     kRunDirVariable, shellQuote(runDir), quotedCommand);
 #endif
 }
 
