@@ -5,7 +5,7 @@ myst:
     "keywords": "aKMC, adaptive kinetic monte carlo, eOn, rare event systems, transition state theory"
 ---
 
-# Adaptive Kinetic Monte Carlo
+# Adaptive kinetic Monte Carlo
 
 The adaptive kinetic Monte Carlo (aKMC) method is a method to coarse grain
 molecular dynamics for rare event systems as described in

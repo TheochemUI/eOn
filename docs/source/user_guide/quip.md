@@ -30,7 +30,7 @@ The rest of the document walks through an example of this use-case.
 This needs to be in conjunction with the LAMMPS [pair style
 quip](https://docs.lammps.org/pair_quip.html).
 
-## Example Build
+## Example build
 
 ## Base environment
 

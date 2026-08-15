@@ -1,4 +1,4 @@
-# Con File I/O via readcon-core
+# CON file I/O via readcon-core
 
 Starting from v2.12, eOn uses the [readcon-core](https://github.com/lode-org/readcon-core)
 Rust library for `.con` and `.convel` file I/O in the C++ client, while
@@ -72,7 +72,7 @@ eonc::neb::writePathCon(path, tangent, eigenmode_solvers, numImages,
 That helper currently stores per-frame fields such as `neb_bead`, optional
 `neb_band`, `reaction_coordinate`, `relative_energy`, and `parallel_force`.
 
-## Python Server
+## Python server
 
 The `eon/fileio.py` module uses the `readcon` PyPI package:
 
@@ -88,7 +88,7 @@ At the time of writing, the Python orchestration layer is still primarily a
 consumer of `.con` data; the richer frame metadata is currently produced in
 the C++ client for trajectory outputs and downstream visualization tooling.
 
-## Build Requirements
+## Build requirements
 
 - **Rust** >= 1.88 (provided by pixi via conda-forge)
 - **cbindgen** >= 0.29 (installed via `cargo install cbindgen`)

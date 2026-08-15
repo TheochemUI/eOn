@@ -12,7 +12,7 @@ myst:
 Five years of work: new transition-state methods, more potential
 interfaces, and a Meson build that runs on Linux, macOS, and Windows.
 
-### ✨ Major New Features
+### Major features
 
   * **RO-NEB-CI**: climbing-image NEB with a rotating-orbit refinement for
     locating complex transition states.
@@ -42,7 +42,7 @@ interfaces, and a Meson build that runs on Linux, macOS, and Windows.
     collision cascades and ion-implantation effects.
     ([\#241](https://github.com/theochemui/eongit/issues/241))
 
-### 🚀 Enhancements & Improvements
+### Enhancements
 
   * **Nudged Elastic Band (NEB) Enhancements**: The NEB module has received
     significant upgrades for flexibility and performance:
@@ -59,7 +59,7 @@ interfaces, and a Meson build that runs on Linux, macOS, and Windows.
         springs, improving stability and performance for reaction paths with
         high energy barriers.
 
-### 🛠️ Build, Installation & Developer Experience
+### Build and installation
 
   * **Modernized Build System with Meson**: The entire project has been ported
     to the Meson build system. One build on Linux, macOS, and Windows. The
@@ -84,7 +84,7 @@ interfaces, and a Meson build that runs on Linux, macOS, and Windows.
       * Enforced consistent code style and formatting across the entire
         codebase.
 
-### 📚 Documentation
+### Documentation
 
   * Added documentation for the Nudged Elastic Band (NEB) module,
     covering theory, keywords, and practical examples.

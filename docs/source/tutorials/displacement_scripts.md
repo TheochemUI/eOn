@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn displacement, saddle search, vacancy diffusion, adsorbate, PTM, OVITO, targeted displacement"
 ---
 
-# Targeted Displacement for Saddle Searches
+# Targeted displacement for saddle searches
 
 By default, eOn picks a random atom as the epicenter for each saddle search
 displacement. Random selection is fine for small systems or when all atoms are
@@ -25,7 +25,7 @@ eOn has two ways to target displacements at the reactive atoms:
    geometry, analyses it, and returns the indices of atoms that should be
    displaced. Best when the active region moves (e.g. a migrating vacancy).
 
-## Script Interface
+## Script interface
 
 A displacement script must satisfy these rules:
 
@@ -47,7 +47,7 @@ The `examples/akmc-cu-vacancy/` directory contains a complete AKMC setup for a
 Cu crystal with a single vacancy, using OVITO's Polyhedral Template Matching
 (PTM) to identify defect atoms.
 
-### The Idea
+### The idea
 
 In a nearly perfect FCC crystal, the only atoms likely to participate in
 vacancy migration are those whose local environment deviates from bulk FCC,
@@ -84,7 +84,7 @@ Key settings:
 - `displace_atom_kmc_state_script = ptmdisp.py` points to the script (relative
   to the eOn root directory).
 
-### The PTM Script
+### The PTM script
 
 `ptmdisp.py` is a [PEP 723](https://peps.python.org/pep-0723/) inline script.
 Its core logic:
@@ -105,7 +105,7 @@ uvx ptmdisp.py pos.con --verbose
 # Prints logging info to stderr, indices to stdout
 ```
 
-### Data Flow
+### Data flow
 
 ```
 New AKMC state
@@ -137,7 +137,7 @@ Displacing random bulk Pt atoms far from the CO would be wasteful.
    adsorbate atom.
 3. Return the combined set of indices.
 
-### The Script
+### The script
 
 The file `examples/akmc-cu-vacancy/adsorbate_region.py` implements this
 approach using only ASE (no OVITO dependency):
@@ -175,7 +175,7 @@ displace_atom_kmc_state_script = adsorbate_region.py --adsorbate-elements C O --
 displace_all_listed = true
 ```
 
-## Static List Alternative
+## Static list alternative
 
 For systems where the active atoms are known ahead of time and do not change
 between states, a static `displace_atom_list` is simpler, with no script needed:

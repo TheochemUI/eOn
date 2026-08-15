@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn Basin Hopping, global optimization, Monte Carlo, potential energy surface"
 ---
 
-# Basin Hopping
+# Basin hopping
 
 Basin hopping is a Monte Carlo method in which the energy of each configuration
 is taken to be the energy of a local minimum

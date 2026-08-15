@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn NEB, Nudged Elastic Band, minimum energy path, saddle point, climbing image"
 ---
 
-# Nudged Elastic Band
+# Nudged elastic band
 
 The nudged elastic band (NEB) is a method for finding saddle points and minimum
 energy paths between known reactants and products. The method works by

@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn, long-timescale dynamics, aKMC, NEB, Parallel Replica Dynamics"
 ---
 
-# eOn: Long Timescale Dynamics Software
+# eOn: long timescale dynamics software
 
 The eOn software package contains a set of algorithms used primarily to model
 the evolution of atomic scale systems over long time scales. Standard molecular
@@ -52,7 +52,7 @@ Al(100) ripening dynamics
 In the example showing ripening dynamics on an `Al(100)` surface, a compact
 island forms after `65720` transitions in a time scale of a `ms` at `300K`.
 
-## Interatomic Interactions
+## Interatomic interactions
 
 There are a variety of empirical potentials included with `eOn`. You can also
 use the potentials built into the LAMMPS library. `eOn` also provides an
@@ -105,7 +105,7 @@ To schedule `eonclient` on a laptop or a Slurm login node, install
 [aiida-eon](https://pypi.org/project/aiida-eon/) and see
 {doc}`user_guide/aiida`.
 
-# User Guide
+# User guide
 
 ```{toctree}
 :maxdepth: 2

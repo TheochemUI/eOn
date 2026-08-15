@@ -12,7 +12,7 @@ LAMMPS is no longer a build-time dependency. eOn loads `liblammps` at
 runtime via `dlopen`. Install LAMMPS in the same environment.
 ```
 
-## Quick Install
+## Quick install
 
 ```{code-block} bash
 # conda-forge (recommended)

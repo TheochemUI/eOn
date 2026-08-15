@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn external potential, ext_pot, MLIP, DeePMD, wrapper script, file interface"
 ---
 
-# External Potential
+# External potential
 
 ```{admonition} conda-forge availability
 :class: tip

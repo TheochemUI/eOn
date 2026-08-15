@@ -94,7 +94,7 @@ Each workchain pins the `job` key and exposes the CalcJob ports under
 `calc`. Serve mode (`eonclient --serve-*`) and `forceBatch` are not
 jobs.
 
-## Related surfaces
+## Server, serve mode, and pyeonclient
 
 | Token | Where it lives |
 |---|---|

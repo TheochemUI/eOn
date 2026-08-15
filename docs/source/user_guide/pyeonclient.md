@@ -5,7 +5,7 @@ myst:
     "keywords": "pyeonclient, Dimer, saddle search, NEB, Hessian, Matter, ASE"
 ---
 
-# pyeonclient (Python client API)
+# pyeonclient
 
 ```{versionadded} 2.16
 In-process client: algorithm objects on :class:`~pyeonclient.Matter`.
@@ -269,7 +269,7 @@ lanczos.compute(matter, direction, atoms=mobile)
 
 Same polarity for `params.davidson_phva_atoms` / `Davidson.compute(..., atoms=)`.
 
-## Job factory (full JobType surface)
+## Job factory
 
 Every type in `JobType` that the C++ `makeJob` factory implements is available
 as a workdir-oriented job:

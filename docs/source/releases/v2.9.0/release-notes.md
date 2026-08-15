@@ -13,7 +13,7 @@ This release adds Off-path Climbing Image NEB (OCI-NEB), a set of
 Image Dependent Pair Potential (IDPP) initializers, and support for
 multi-headed Metatomic potentials.
 
-### ✨ Major Features
+### Major features
 
 #### Off-path Climbing Image NEB (OCI-NEB)
 
@@ -55,7 +55,7 @@ Potential (IDPP).
   density of images (e.g., 3x), relax them via IDPP, and decimate the path back
   to the target image count using cubic Hermite splines.
 
-### 🚀 Enhancements
+### Enhancements
 
 - **Metatomic Variants:** Added support for multi-headed machine learning
   potentials. Users may now specify `variant_base`, `variant_energy`, or
@@ -74,7 +74,7 @@ Potential (IDPP).
   absolute ones for starting the climbing image.
 
 
-### 🔧 Configuration Changes
+### Configuration changes
 
 New parameters are available in the `[Nudged Elastic Band]` block:
 

@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn metatomic, machine learning potential, metatensor, PyTorch, MLIP"
 ---
 
-# Metatomic Interface
+# Metatomic interface
 
 ```{versionadded} 2.0
 ```
@@ -39,7 +39,7 @@ Notes:
 
 For more details including building from source, refer to the [upstream documentation](https://docs.metatensor.org/latest/index.html).
 
-## Basic Configuration
+## Basic configuration
 
 ```{code-block} ini
 [Potential]
@@ -59,7 +59,7 @@ Pydantic model) and mirrored in `eon/config.yaml` for the YAML front end;
 
 ## Usage example
 
-### Lennard Jones Baseline
+### Lennard-Jones baseline
 
 A complete workflow, from generating a simple Lennard-Jones test model
 to running a calculation with eonclient:

@@ -4,7 +4,7 @@ myst:
     "description": "Details of the eOn software development team and key contributors."
     "keywords": "eOn team, developers, contributors"
 ---
-# eOn Team
+# eOn team
 
 `eOn` is maintained by [Rohit Goswami](https://rgoswami.me) and the
 [Jónsson Group](https://hj.hi.is/researchgroup.html) at the University of
@@ -12,7 +12,7 @@ Iceland.  For background on the project's history and relationship to the
 UT Austin codebase, see
 [this post](https://rgoswami.me/posts/eon-acad-foss/).
 
-## Active Contributors
+## Active contributors
 
 ### [Jónsson Group](https://hj.hi.is/researchgroup.html) (University of Iceland)
 
@@ -21,7 +21,7 @@ UT Austin codebase, see
 - Alejandro Pena Torres
 - Vilhjálmur Ásgeirsson
 
-## Historical Contributors (pre-v2.8)
+## Historical contributors (pre-v2.8)
 
 The Henkelman group were major contributors up to v2.8.  See
 [their project page](https://theory.cm.utexas.edu/eon/) and

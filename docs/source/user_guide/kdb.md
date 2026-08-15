@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn Kinetic Database, KDB, aKMC acceleration, process recycling, tsase"
 ---
 
-# Kinetic Database
+# Kinetic database
 
 One of the bottlenecks in an aKMC simulation is performing the saddle point
 searches. The kinetic database of

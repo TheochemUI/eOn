@@ -5,13 +5,13 @@ myst:
     "keywords": "eOn, parallel, threading, NEB, potential, MetatomicPotential, XTB"
 ---
 
-# Parallel Force Evaluation
+# Parallel force evaluation
 
 eOn supports parallel force evaluation in NEB, Dimer/ImprovedDimer, and
 ProcessSearchJob. The threading model uses `std::thread` with per-image
 potential ownership.
 
-## Threading Model
+## Threading model
 
 Two virtual methods on `Potential` control the behavior:
 
@@ -45,7 +45,7 @@ When `needsPerImageInstance()` is `true`, NEB creates N+2 potential
 instances (one per image) at construction time. The parallel force
 evaluation then proceeds lock-free.
 
-## Decision Table
+## Decision table
 
 | `isThreadSafe()` | `needsPerImageInstance()` | Behavior | Examples |
 |:-:|:-:|:--|:--|
@@ -76,7 +76,7 @@ bool canParallel = pot->isThreadSafe() || perImagePotentials_;
 if (numImages > 1 && params.main_options.parallel && canParallel) { ... }
 ```
 
-## Affected Code Paths
+## Affected code paths
 
 | Component | Parallel Units | Per-Image Potential |
 |:--|:--|:--|

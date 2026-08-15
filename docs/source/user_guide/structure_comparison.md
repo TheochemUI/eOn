@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn structure comparison, point group, bond order, configuration comparison"
 ---
 
-# Structure Comparison
+# Structure comparison
 
 ## Configuration
 

@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn MPI potential, VASP interface, parallel VASP, ab-initio"
 ---
 
-# MPI Potential
+# MPI potential
 
 ```{admonition} conda-forge availability
 :class: warning

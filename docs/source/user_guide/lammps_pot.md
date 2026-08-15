@@ -20,7 +20,7 @@ LAMMPS in the same environment: `conda install lammps`. eOn will find and load
 `liblammps` automatically at runtime.
 ```
 
-## How It Works
+## How it works
 
 eOn uses a singleton `LammpsLoader` that searches for the LAMMPS shared library
 at the first potential evaluation. The search order is:

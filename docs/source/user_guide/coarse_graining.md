@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn coarse graining, MCAMC, AS-KMC, superbasins, accelerated simulation"
 ---
 
-# Coarse Graining
+# Coarse graining
 
 In aKMC simulations where there are vastly different rates, the simulation can
 get stuck in a group of states connected by relatively fast rates. Exploring

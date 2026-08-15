@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn serve mode, RPC server, rgpot, Cap'n Proto, ChemGP, potential serving"
 ---
 
-# Serve Mode
+# Serve mode
 
 ```{versionadded} 2.2
 ```
@@ -52,7 +52,7 @@ Serve mode supports four modes of operation: single-potential, replicated,
 `--gateway` pool, and multi-model. Each mode is selected by the combination of CLI flags
 provided.
 
-### Single-Potential
+### Single potential
 
 The simplest usage serves one potential on a single port:
 
@@ -81,7 +81,7 @@ This starts 4 independent servers on ports 12345 through 12348, each with its
 own potential instance and event loop. Useful when clients can load-balance
 across known ports.
 
-### `--gateway` pool
+### Gateway pool
 
 `--gateway` exposes a single port backed by a pool of potential instances.
 Incoming requests are dispatched round-robin across the pool, so clients only
@@ -96,7 +96,7 @@ Each incoming RPC call is routed to the next available instance. This is the
 recommended mode for high-throughput use cases where clients should not need to
 track multiple ports.
 
-### Multi-Model
+### Multi-model
 
 The `--serve` flag accepts a comma-separated specification of
 `potential:port` or `potential:host:port` pairs, each served concurrently
@@ -112,7 +112,7 @@ With explicit hosts:
 eonclient --serve "lj:0.0.0.0:12345,eam_al:0.0.0.0:12346"
 ```
 
-## Potential Configuration
+## Potential configuration
 
 Potentials that require parameters (Metatomic, XTB, etc.) can be configured
 via the `--config` flag, which loads an INI-format config file:
@@ -139,7 +139,7 @@ paramset = GFN2xTB
 accuracy = 1.0
 ```
 
-## Config-Driven Serve
+## Config-driven serve
 
 The `[Serve]` section selects host, port, replicas, and `gateway_port` without CLI
 flags beyond `--config`:
@@ -255,7 +255,7 @@ oracle = make_rpc_oracle(pot)
 
 See the [ChemGP RPC tutorial](https://github.com/HaoZeke/ChemGP) for details.
 
-## Architecture Notes
+## Architecture notes
 
 The serve mode uses a `ForceCallback` (flat-array `std::function`) interface
 internally, completely decoupling the eOn potential from the capnp server.
@@ -266,7 +266,7 @@ translation unit. The capnp schema code is compiled in a separate TU
 more on the integration pattern, see the
 [rgpot integration guide](https://rgpot.rgoswami.me/integration_guide.html).
 
-## Command Reference
+## Command reference
 
 | Flag | Description |
 |------|-------------|

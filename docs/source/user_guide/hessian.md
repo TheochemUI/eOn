@@ -19,7 +19,7 @@ atomic coordinates) is used for:
 - **Saddle verification**: A first-order saddle point has exactly one negative
   Hessian eigenvalue.
 
-## How It Works
+## How it works
 
 eOn computes the Hessian numerically with a selectable finite-difference scheme
 on the **mobile** (displaced) atoms: non-fixed atoms in `pos.con`, optionally

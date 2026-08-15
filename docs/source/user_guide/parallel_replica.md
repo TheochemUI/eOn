@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn Parallel Replica, PRD, accelerated MD, replica dynamics"
 ---
 
-# Parallel Replica
+# Parallel replica
 
 Parallel Replica dynamics (PRD) is the simplest and the accurate way to
 accelerate a molecular dynamics simulation as discussed by

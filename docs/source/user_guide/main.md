@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn main config, general parameters, job type, temperature, settings"
 ---
 
-# General Simulation Parameters
+# General simulation parameters
 
 The following contains general options which specify the calculation to be done
 and general parameters which are shared between job types.

@@ -14,7 +14,7 @@ myst:
     "keywords": "eOn visualization, trajectory plotting, NEB landscape, saddle search, minimization, rgpycrumbs, chemparseplot"
 ---
 
-# Visualizing Optimization Trajectories
+# Visualizing optimization trajectories
 
 eOn can embed structured per-iteration metadata directly into trajectory movie
 frames when `write_movies = true` is set in the `[Debug]` section of
@@ -246,7 +246,7 @@ run_rgpycrumbs(
 show_plot(min_convergence)
 ```
 
-## Nudged Elastic Band
+## Nudged elastic band
 
 We run an OCI-NEB calculation on the vinyl alcohol -> acetaldehyde
 keto-enol tautomerization using PET-MAD.

@@ -18,7 +18,7 @@ LAMMPS, ASE, VASP, AMS, and MPI potentials require building from source with
 the corresponding `-Dwith_*` flags.
 ```
 
-## Supported Potentials
+## Supported potentials
 
 ### External
 

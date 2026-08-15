@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn publications, citations, research papers, scientific articles"
 ---
 
-# Related Publications
+# Related publications
 
 ## [Jónsson Group](https://hj.hi.is/indexE.html)
 

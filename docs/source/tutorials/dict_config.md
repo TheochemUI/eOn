@@ -31,7 +31,7 @@ pip install rgpycrumbs
 uv add rgpycrumbs
 ```
 
-## Basic Usage
+## Basic usage
 
 A dictionary maps INI section names to their key-value pairs. The section names
 match the headers in `config.ini` (and the headings in the user guide). For
@@ -84,7 +84,7 @@ Pass a directory path and `write_eon_config` creates `config.ini` inside it.
 Pass a full file path to control the output name.
 ```
 
-## Why Dictionaries?
+## Why dictionaries
 
 Compared to editing INI files by hand, the dictionary approach provides:
 
@@ -152,7 +152,7 @@ For advanced NEB options (climbing image, energy-weighted springs, IDPP
 initialization, off-path CI with MMF), see
 `examples/neb-al/run_neb_advanced.py`.
 
-### Basin Hopping
+### Basin hopping
 
 :::::{tab-set}
 
@@ -170,7 +170,7 @@ initialization, off-path CI with MMF), see
 
 :::::
 
-### Parallel Replica Dynamics
+### Parallel replica dynamics
 
 :::::{tab-set}
 
@@ -205,7 +205,7 @@ like the rest:
 See `examples/akmc-cu-vacancy/run_akmc_cu.py` for the full configuration and
 {doc}`displacement_scripts` for details on writing displacement scripts.
 
-## Parameter Sweeps
+## Parameter sweeps
 
 The dictionary approach makes parameter sweeps straightforward:
 
@@ -237,7 +237,7 @@ for n_images in [5, 7, 11, 15]:
     write_eon_config(run_dir, settings)
 ```
 
-## Schema Reference
+## Schema reference
 
 The authoritative documentation for every configuration option lives in the
 Pydantic models in {mod}`eon.schema`. The user guide pages render these models

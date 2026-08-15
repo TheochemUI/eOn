@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn saddle search, transition state, displacement, potential energy surface"
 ---
 
-# Saddle Search
+# Saddle search
 
 A saddle search is initiated by making a local displacement of atoms from their
 position at the minimum of the current state. This displacement can be done
@@ -15,7 +15,7 @@ local environment where reactions are likely to take place in the system, this
 information can be used to make saddle searches more efficient by getting them
 started in the right part of configuration space.
 
-## Displacement Strategies
+## Displacement strategies
 
 ### Epicenters and Weight-Based Selection
 
@@ -44,7 +44,7 @@ epicenter are displaced. Each displaced atom receives a random perturbation
 drawn from a Gaussian distribution with standard deviation
 `displace_magnitude` (in Ångströms) independently in each Cartesian direction.
 
-### Displacing All Listed Atoms
+### Displacing all listed atoms
 
 When `displace_all_listed` is **true** and a listed-atom strategy is selected,
 *every* atom in `displace_atom_list` (or `displace_type_list`) is displaced,
@@ -52,7 +52,7 @@ not a single random pick. Atoms within `displace_radius` of *any*
 displaced atom are also included. Set `displace_radius` to 0 to restrict the
 displacement strictly to the listed atoms.
 
-### Dynamic Atom Lists via Scripts
+### Dynamic atom lists via scripts
 
 For systems where the relevant atoms change from state to state (e.g. a
 migrating vacancy), a static list is insufficient. The

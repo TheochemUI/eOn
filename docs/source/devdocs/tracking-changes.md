@@ -18,7 +18,7 @@ The core workflow revolves around creating small "news fragments" for each
 change. These fragments are then collected by towncrier to build the final
 changelog entry for a release.
 
-## Creating News Fragments
+## Creating news fragments
 
 For each pull request that introduces a user-facing change, you
 must add a news fragment.
@@ -45,7 +45,7 @@ created at docs/newsfragments/457.fixed.md with the content:
 Fixed a memory leak that occurred during long-running simulations.
 ```
 
-## Fragment Types
+## Fragment types
 
 The TYPE in the filename determines which section of the changelog the entry
 will appear under. The following types are configured for this project:

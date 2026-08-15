@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn ASE, Atomic Simulation Environment, ASE calculator, Python potential"
 ---
 
-# ASE Interface
+# ASE interface
 
 ```{admonition} conda-forge availability
 :class: warning

@@ -46,7 +46,7 @@ client_path = "eonclient-custom"
 number_of_cpus = 8
 ```
 
-## Additional Topics
+## Additional topics
 
 ```{versionchanged} 2.0
 Potentials which can be run in parallel, like those accessed through ASE (e.g. ORCA) are always run in parallel, for the others, there is little to no benefit for this additional overhead.
