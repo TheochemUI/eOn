@@ -1,6 +1,7 @@
 
 """ The state module. """
 
+import ast
 import os
 import math
 import configparser
@@ -123,7 +124,7 @@ class AKMCState(state.State):
                 io.loadcon(result['saddle.con'])
             if 'product' not in result:
                 io.loadcon(result['product.con'])
-        except:
+        except (OSError, ValueError, IndexError, KeyError):
             logger.exception("Mode, reactant, saddle, or product has incorrect format")
             return None
 
@@ -151,11 +152,13 @@ class AKMCState(state.State):
             logger.debug("new event %3i found at time %f fs" % (id, current_time))
 
         # Move the relevant files into the procdata directory.
-        open(self.proc_reactant_path(id), 'w').writelines(result['reactant.con'].getvalue())
-        open(self.proc_mode_path(id), 'w').writelines(result['mode.dat'].getvalue())
-        open(self.proc_product_path(id), 'w').writelines(result['product.con'].getvalue())
-        open(self.proc_saddle_path(id), 'w').writelines(result['saddle.con'].getvalue())
-        open(self.proc_results_path(id), 'w').writelines(result['results.dat'].getvalue())
+        for path, key in ((self.proc_reactant_path(id), 'reactant.con'),
+                          (self.proc_mode_path(id), 'mode.dat'),
+                          (self.proc_product_path(id), 'product.con'),
+                          (self.proc_saddle_path(id), 'saddle.con'),
+                          (self.proc_results_path(id), 'results.dat')):
+            with io.atomic_write(path) as f:
+                f.writelines(result[key].getvalue())
 
         # Set maximum rate, if defined
 #        forward_rate = resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT)
@@ -430,7 +433,7 @@ class AKMCState(state.State):
                 return max(0.0, 1.0 - 1.0/(alpha*Nr))
 
     def get_proc_random_count(self):
-        return eval(self.info.get("MetaData", "proc repeat count", "{}"))
+        return ast.literal_eval(self.info.get("MetaData", "proc repeat count", "{}"))
 
     def inc_proc_random_count(self, procid):
         prc = self.get_proc_random_count()
@@ -499,23 +502,45 @@ class AKMCState(state.State):
             self.info.set('MetaData', 'kT', self.statelist.kT)
             return
         if abs(kT - self.statelist.kT) > 1e-8:
+            reactant_energy = self.get_energy()
             for id, proc in list(self.procs.items()):
-                proc['rate'] = proc['prefactor'] * math.exp(-proc['barrier'] / self.statelist.kT)
+                proc['rate'] = self.rate_at_kT(proc, reactant_energy)
             self.save_process_table()
+            self.info.set('MetaData', 'kT', self.statelist.kT)
+
+    def rate_at_kT(self, proc, reactant_energy):
+        """Forward rate for *proc* at the statelist kT.
+
+        Applies the ``akmc_eq_rate`` clamp on the same terms as
+        :meth:`add_process`. The process table stores only the resulting
+        rate, so a clamped process is indistinguishable from an unclamped
+        one on disk and a plain Arrhenius recompute would silently lift the
+        clamp. Falls back to the Arrhenius rate when the clamp is off or the
+        reactant energy is unknown.
+        """
+        forward_rate = proc['prefactor'] * math.exp(-proc['barrier'] / self.statelist.kT)
+        if self.config.akmc_eq_rate <= 0 or reactant_energy is None:
+            return forward_rate
+        reverse_barrier = proc['barrier'] - (proc['product_energy'] - reactant_energy)
+        reverse_rate = proc['product_prefactor'] * math.exp(-reverse_barrier / self.statelist.kT)
+        if forward_rate > self.config.akmc_eq_rate and reverse_rate > self.config.akmc_eq_rate:
+            if forward_rate < reverse_rate:
+                return self.config.akmc_eq_rate
+            return self.config.akmc_eq_rate * (forward_rate / reverse_rate)
+        return forward_rate
 
 
     def save_process_table(self):
         """ If the processtable is present in memory, writes it to disk. """
         if self.procs != None:
-            f = open(self.proctable_path, 'w')
-            f.write(self.processtable_header)
-            for id in list(self.procs.keys()):
-                proc = self.procs[id]
-                f.write(self.processtable_line % (id, proc['saddle_energy'], proc['prefactor'],
-                                                  proc['product'], proc['product_energy'],
-                                                  proc['product_prefactor'], proc['barrier'],
-                                                  proc['rate'], proc['repeats']))
-            f.close()
+            with io.atomic_write(self.proctable_path) as f:
+                f.write(self.processtable_header)
+                for id in list(self.procs.keys()):
+                    proc = self.procs[id]
+                    f.write(self.processtable_line % (id, proc['saddle_energy'], proc['prefactor'],
+                                                      proc['product'], proc['product_energy'],
+                                                      proc['product_prefactor'], proc['barrier'],
+                                                      proc['rate'], proc['repeats']))
 
 
     def append_process_table(self, id, saddle_energy, prefactor, product, product_energy,
@@ -663,11 +688,14 @@ class AKMCState(state.State):
         if store:
             if not os.path.isdir(self.bad_procdata_path):
                 os.mkdir(self.bad_procdata_path)
-            open(os.path.join(self.bad_procdata_path, "reactant_%d.con" % result['wuid']), 'w').writelines(result['reactant.con'].getvalue())
-            open(os.path.join(self.bad_procdata_path, "product_%d.con" % result['wuid']), 'w').writelines(result['product.con'].getvalue())
-            open(os.path.join(self.bad_procdata_path, "mode_%d.dat" % result['wuid']), 'w').writelines(result['mode.dat'].getvalue())
-            open(os.path.join(self.bad_procdata_path, "results_%d.dat" % result['wuid']), 'w').writelines(result['results.dat'].getvalue())
-            open(os.path.join(self.bad_procdata_path, "saddle_%d.con" % result['wuid']), 'w').writelines(result['saddle.con'].getvalue())
+            for name, key in (("reactant_%d.con", 'reactant.con'),
+                              ("product_%d.con", 'product.con'),
+                              ("mode_%d.dat", 'mode.dat'),
+                              ("results_%d.dat", 'results.dat'),
+                              ("saddle_%d.con", 'saddle.con')):
+                path = os.path.join(self.bad_procdata_path, name % result['wuid'])
+                with io.atomic_write(path) as f:
+                    f.writelines(result[key].getvalue())
 
 
     # Utility functions for loading process .con and mode files.

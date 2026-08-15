@@ -3,10 +3,10 @@
 
 import os
 import shutil
+import tempfile
 import logging
 logger = logging.getLogger('state')
 from configparser import ConfigParser
-import tarfile
 
 from eon import fileio as io
 
@@ -43,16 +43,43 @@ class State:
         if not os.path.isdir(self.path):
             if reactant_path is None:
                 raise IOError("State needs a reactant_path when it is being instantiated to disk")
-            os.mkdir(self.path)
-            os.mkdir(self.procdata_path)
-            shutil.copy(reactant_path, self.reactant_path)
-            self.info.set("MetaData", "previous state", previous_state_num)
-            f = open(self.proctable_path, 'w')
-            f.write(self.processtable_header)
-            f.close()
-            f = open(self.search_result_path, 'w')
-            f.write(self.search_result_header)
-            f.close()
+            self._create_on_disk(reactant_path, previous_state_num)
+
+    def _create_on_disk(self, reactant_path, previous_state_num):
+        """ Populate a staging directory and rename it into place.
+
+        A state directory is judged to exist by its name alone, so a
+        directory left half populated is read as a state with no reactant
+        and no processes. Everything lands in a sibling directory that is
+        renamed once complete, leaving the state either whole or absent.
+        """
+        parent = os.path.dirname(os.path.abspath(self.path))
+        staging = tempfile.mkdtemp(dir=parent,
+                                   prefix=".%s-" % os.path.basename(self.path))
+        try:
+            def staged(path):
+                return os.path.join(staging, os.path.basename(path))
+
+            os.mkdir(staged(self.procdata_path))
+            shutil.copy(reactant_path, staged(self.reactant_path))
+            info = io.ini(staged(self.info.filenames))
+            info.set("MetaData", "previous state", previous_state_num)
+            with open(staged(self.proctable_path), 'w') as f:
+                f.write(self.processtable_header)
+            with open(staged(self.search_result_path), 'w') as f:
+                f.write(self.search_result_header)
+            os.chmod(staging, io.DEFAULT_DIR_MODE)
+        except BaseException:
+            shutil.rmtree(staging, ignore_errors=True)
+            raise
+
+        try:
+            os.rename(staging, self.path)
+        except OSError:
+            shutil.rmtree(staging, ignore_errors=True)
+            if not os.path.isdir(self.path):
+                raise
+            # Another process finished this state first; keep its copy.
 
     def __repr__(self):
         return "State #%i" % self.number
@@ -67,7 +94,8 @@ class State:
         if 'stdout.dat' in result:
             raw = result['stdout.dat'].getvalue()
             id = self.allocate_process_id(b"stdout", raw)
-            open(self.proc_stdout_path(id), 'w').writelines(raw)
+            with io.atomic_write(self.proc_stdout_path(id)) as f:
+                f.writelines(raw)
 
     def get_energy(self):
         return self.info.get("MetaData", "reactant energy", None)
@@ -94,17 +122,6 @@ class State:
         return os.path.join(self.procdata_path, "results_%d.dat" % id)
     def proc_stdout_path(self, id):
         return os.path.join(self.procdata_path, "stdout_%d.dat" % id)
-
-    def tar_procdata(self):
-        if not self.procdata_tarred:
-            tar = tarfile.TarFile(self.tar_path, 'w')
-            for i in os.listdir(self.procdata_path):
-                tar.add(i)
-                os.unlink(i)
-            tar.close()
-        else:
-            logger.warning("Attempted to tar an already tarred procdata")
-        self.procdata_tarred = True
 
     def get_process(self, id):
         self.load_process_table()

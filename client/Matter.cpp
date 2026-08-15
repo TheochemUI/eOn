@@ -48,8 +48,21 @@ const Matter &Matter::operator=(const Matter &matter) {
 
   potential = matter.potential;
   potentialEnergy = matter.potentialEnergy;
+  energyVariance = matter.energyVariance;
+  forceCalls = matter.forceCalls;
   recomputePotential = matter.recomputePotential;
-  recomputeFreeMask = true; // Force cache rebuild after assignment
+  // Both caches describe the forces this object held before the assignment.
+  // resize() above already raises them; state it here alongside the members
+  // this function owns.
+  recomputeFreeMask = true;
+  recomputeMaskedForces = true;
+
+  // A BondBoost binds to one Matter (BondBoost.h:32 takes a Matter *), so a
+  // copy cannot share the source's: boosting through it would drive the
+  // original. The copy starts without one and re-establishes it through
+  // setBiasPotential. biasForces is zeroed by the resize above, which is the
+  // state that matches having no bias potential.
+  biasPotential = nullptr;
 
   headerCon = matter.headerCon;
   // ConFrame is move-only; copy does not retain movie trajectory.
@@ -158,33 +171,36 @@ double Matter::perAtomNorm(const Matter &matter) {
 }
 
 void Matter::resize(const long int length) {
-  if (length > 0) {
-    nAtoms = length;
-    positions.resize(length, 3);
-    positions.setZero();
-
-    velocities.resize(length, 3);
-    velocities.setZero();
-
-    biasForces.resize(length, 3);
-    biasForces.setZero();
-
-    forces.resize(length, 3);
-    forces.setZero();
-
-    masses.resize(length);
-    masses.setZero();
-
-    atomicNrs.resize(length);
-    atomicNrs.setZero();
-
-    isFixed.resize(length);
-    isFixed.setZero();
-
-    atomIndex.resize(length);
-    for (long i = 0; i < length; i++)
-      atomIndex(i) = static_cast<int>(i); // default: sequential
+  if (length < 0) {
+    throw std::invalid_argument("Matter::resize: negative atom count");
   }
+  // Zero is a real size: leaving nAtoms at the old value there sends
+  // setMasses and every other nAtoms loop off the end of an empty array.
+  nAtoms = length;
+  positions.resize(length, 3);
+  positions.setZero();
+
+  velocities.resize(length, 3);
+  velocities.setZero();
+
+  biasForces.resize(length, 3);
+  biasForces.setZero();
+
+  forces.resize(length, 3);
+  forces.setZero();
+
+  masses.resize(length);
+  masses.setZero();
+
+  atomicNrs.resize(length);
+  atomicNrs.setZero();
+
+  isFixed.resize(length);
+  isFixed.setZero();
+
+  atomIndex.resize(length);
+  for (long i = 0; i < length; i++)
+    atomIndex(i) = static_cast<std::int64_t>(i); // default: sequential
   recomputePotential = true;
   recomputeMaskedForces = true;
   recomputeFreeMask = true;

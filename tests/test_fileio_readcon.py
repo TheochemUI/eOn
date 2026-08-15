@@ -7,6 +7,7 @@ and that geometry / species / free flags / box round-trip correctly.
 from __future__ import annotations
 
 import inspect
+import re
 from pathlib import Path
 
 import numpy as np
@@ -39,9 +40,20 @@ def _readable_con_fixtures():
 
 
 def test_fileio_imports_and_calls_readcon():
-    """Structural: shipped fileio binds the real readcon APIs (not a private parser)."""
-    src = Path(io.__file__).read_text(encoding="utf-8")
-    assert "import readcon" in src
+    """Structural: the shipped .con path binds the real readcon APIs (not a private parser).
+
+    Frame construction lives in eon.structure and the file-level readers and
+    writers in eon.fileio, so the pair is checked together: asserting every
+    call sits in one module would only pin where the split happens to fall.
+    """
+    from eon import structure as structmod
+
+    fileio_src = Path(io.__file__).read_text(encoding="utf-8")
+    structure_src = Path(structmod.__file__).read_text(encoding="utf-8")
+    src = fileio_src + structure_src
+
+    assert "import readcon" in fileio_src
+    assert "import readcon" in structure_src
     for api in (
         "readcon.read_con",
         "readcon.read_con_string",
@@ -50,7 +62,7 @@ def test_fileio_imports_and_calls_readcon():
         "readcon.Atom",
         "readcon.ConFrame",
     ):
-        assert api in src, f"fileio must use {api}"
+        assert api in src, f"the .con path must use {api}"
     # No chemfiles on the server .con path
     assert "chemfiles" not in src.lower()
     assert "read_chemfiles" not in src
@@ -58,13 +70,30 @@ def test_fileio_imports_and_calls_readcon():
     assert "Coordinates of component" not in src
 
 
+def _version_tuple(ver: str) -> tuple[int, int, int]:
+    """(major, minor, patch) from a version string, ignoring any pre/post suffix."""
+    parts = []
+    for chunk in ver.split(".")[:3]:
+        digits = re.match(r"\d+", chunk)
+        parts.append(int(digits.group()) if digits else 0)
+    parts += [0] * (3 - len(parts))
+    return tuple(parts)
+
+
 def test_readcon_version_and_chemfiles_status():
     """Record readcon pin; eOn server I/O does not require chemfiles extra."""
     ver = getattr(readcon, "__version__", None)
     assert ver is not None
-    # eOn pyproject pins >=0.8.0; installed package must satisfy that
-    parts = tuple(int(x) for x in ver.split(".")[:2])
-    assert parts >= (0, 8), ver
+    # eOn pins readcon >=0.13.1,<0.14 in pyproject.toml, pyproject-pyeonclient.toml
+    # and pixi.toml, matching subprojects/readcon-core.wrap. The floor is the
+    # ConFileIO API (clone, bulk set_*_from_flat, compression_from_extension).
+    # The cap is a wire-format bound: readcon 0.14 writes con_spec_version 3,
+    # which the readcon-core 0.13.1 parser the C++ client links against rejects
+    # with UnsupportedSpecVersion, so the server would emit .con files its own
+    # client cannot read.
+    parts = _version_tuple(ver)
+    assert parts >= (0, 13, 1), ver
+    assert parts < (0, 14, 0), ver
     has_cf = readcon.has_chemfiles_support()
     # Default install (no [chemfiles] extra): False. Document either way.
     assert isinstance(has_cf, bool)

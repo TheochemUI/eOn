@@ -18,7 +18,6 @@ from eon import communicator
 from eon.config import ConfigClass
 from eon import fileio as io
 from eon import locking
-from eon.version import version
 
 #class RandomStructure:
 #    def __init__(self, structure):

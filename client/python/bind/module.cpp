@@ -3,6 +3,11 @@
 */
 #include <nanobind/nanobind.h>
 
+// client/python/meson.build reads this from pyproject-pyeonclient.toml.
+#ifndef PYEONCLIENT_VERSION
+#define PYEONCLIENT_VERSION "0.0.0+unknown"
+#endif
+
 namespace eonc::pybind {
 namespace nb = nanobind;
 
@@ -27,7 +32,7 @@ NB_MODULE(_core, m) {
       "MinModeSaddleSearch, Hessian, Prefactor, Dynamics/MC/BH/process_search, "
       "ASE bulk matter_from_ase/matter_to_ase. "
       "Stable ABI (abi3) or free-threaded.";
-  m.attr("__version__") = "0.3.6";
+  m.attr("__version__") = PYEONCLIENT_VERSION;
 
   m.def(
       "built_with_metatomic",

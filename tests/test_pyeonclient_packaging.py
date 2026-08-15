@@ -64,6 +64,10 @@ def test_build_wheel_script_variants_disambiguated():
     rtext = repair.read_text()
     assert "patchelf" in rtext
     assert "libcapnp" in rtext or "vendor" in rtext
+    # A host ~/.cargo/config.toml naming an absolute linker reaches the
+    # readcon-core wrap through cargo and the conda cc rejects it, so the
+    # script exports RUSTFLAGS rather than inheriting the host's.
+    assert "export RUSTFLAGS=" in text
 
 
 def test_workflow_publish_excludes_metatomic_local_version():
@@ -141,6 +145,46 @@ def test_base_wheel_build_and_import(tmp_path):
     whl = whls[-1]
     assert "+metatomic" not in whl.name, whl.name
 
+    # The build script produces the wheel; vendoring the non-system shared
+    # libraries into it is a separate step, which is why the script itself
+    # reports "repair may have been skipped". The probe below strips
+    # LD_LIBRARY_PATH to check the wheel stands on its own, so it has to run
+    # against the repaired artifact, the one that ships. This mirrors
+    # .github/workflows/pyeonclient-wheels.yml, which runs auditwheel and then
+    # this script.
+    repair = ROOT / "scripts" / "pyeonclient_repair_wheel.sh"
+    if repair.is_file():
+        # The script walks NEEDED entries to a fixpoint, but resolves each one
+        # through ldd, which searches the default loader path. capnp's own
+        # dependencies (libkj, libkj-async) live in the environment's lib
+        # directory, so without a search path it reports "cannot resolve
+        # NEEDED libkj-async" and leaves them out of the wheel.
+        repair_env = os.environ.copy()
+        prefix = os.environ.get("CONDA_PREFIX")
+        if prefix:
+            search = os.pathsep.join(
+                p for p in (
+                    repair_env.get("PYEONCLIENT_VENDOR_SEARCH_PATHS"),
+                    os.path.join(prefix, "lib"),
+                ) if p
+            )
+            repair_env["PYEONCLIENT_VENDOR_SEARCH_PATHS"] = search
+        rep = subprocess.run(
+            ["bash", str(repair), str(whl)],
+            cwd=str(ROOT),
+            env=repair_env,
+            capture_output=True,
+            text=True,
+        )
+        (tmp_path / "wheel-repair.log").write_text(rep.stdout + "\n" + rep.stderr)
+        if rep.returncode != 0:
+            pytest.fail(
+                f"wheel repair failed rc={rep.returncode}\n"
+                f"{(rep.stdout + rep.stderr)[-4000:]}"
+            )
+        whls = sorted((ROOT / "dist").glob("pyeonclient-*.whl"))
+        whl = whls[-1]
+
     venv = tmp_path / "venv"
     subprocess.run([sys.executable, "-m", "venv", str(venv)], check=True)
     pip = venv / "bin" / "pip"
@@ -183,6 +227,14 @@ def test_base_wheel_build_and_import(tmp_path):
             "assert 'not found' not in ldd, ldd\n"
             "print('BASE_WHEEL_INSTALL_OK')\n",
         ],
+        # The probe exists to test the wheel installed in this venv. A
+        # PYTHONPATH inherited from the caller shadows it with the source
+        # tree, whose extension resolves its libraries from a build
+        # directory, so the probe would report on the wrong package.
+        env={
+            k: v for k, v in os.environ.items()
+            if k not in ("PYTHONPATH", "LD_LIBRARY_PATH", "LIBRARY_PATH")
+        },
         capture_output=True,
         text=True,
         check=False,

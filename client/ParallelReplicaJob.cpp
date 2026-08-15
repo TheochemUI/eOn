@@ -256,6 +256,12 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
     }
   }
 
+  // bondBoost is a stack local of this function and setBiasPotential does not
+  // own it, so the trajectory must not carry the pointer past the return.
+  // getBiasForces reads a null bias potential as zero bias, which is what a
+  // Matter that is no longer being boosted means.
+  trajectory->setBiasPotential(nullptr);
+
   return trajectory;
 }
 

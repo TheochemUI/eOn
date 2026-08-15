@@ -69,7 +69,7 @@ jobs:
           --libdir=lib                     \
           -Dwith_gprd=true                 \
           -Dwith_tests=true
-          meson install -C bbdir
+          meson install --skip-subprojects -C bbdir
       - name: Integration Tests
         if: steps.gate.outputs.available == 'true'
         shell: pixi run bash -e {0}

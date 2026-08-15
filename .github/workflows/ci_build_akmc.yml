@@ -35,7 +35,7 @@ jobs:
         shell: pixi run bash -e {0}
         run: |
           meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release
-          meson install -C bbdir
+          meson install --skip-subprojects -C bbdir
 
       - name: Activate MSVC (Windows)
         if: runner.os == 'Windows'
@@ -83,7 +83,7 @@ jobs:
           # (flang pots + MSVC C++; /STACK:16M in meson for GAGAFE; CuH2 on).
           meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release \
             --default-library=static -Dwith_fortran=true -Dwith_cuh2=true
-          meson install -C bbdir
+          meson install --skip-subprojects -C bbdir
 
       - name: Run Catch2 unit tests [unix]
         if: runner.os != 'Windows'
@@ -160,6 +160,17 @@ jobs:
           export CC=cl CXX=cl
           export AR=lib
           meson test -C bbdir --print-errorlogs
+
+      - name: Run Python tests
+        if: runner.os != 'Windows'
+        shell: pixi run bash -e {0}
+        run: |
+          python tools/gitversion.py --write eon/version.py
+          python -m pip install -q 'pytest>=8' 'pytest-datadir>=1.5' 'sh>=2'
+          # Wheel rebuild lives in pyeonclient-wheels.yml; this job already
+          # compiled the client and does not ship capnp-rpc.pc.
+          export PYEONCLIENT_SKIP_WHEEL_BUILD=1
+          python -m pytest tests/ -q --ignore=tests/release
 
       - name: Run server smoke tests
         shell: pixi run bash -e {0}

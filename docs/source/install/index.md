@@ -86,6 +86,10 @@ meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype=release
 meson install -C bbdir
 ```
 
+If that `meson setup` stops on glibc errors raised from inside `<cmath>`, add
+`--force-fallback-for=nlohmann_json` and read the rolling distro section below
+for what causes it.
+
 Some additional performance can be gained with `ccache` and `mold`, which can be
 passed with `--native-file`:
 
@@ -95,22 +99,54 @@ passed with `--native-file`:
 ### Troubleshooting: rolling distros (Arch, Fedora)
 
 On rolling-release distributions with newer system packages, the conda-forge
-compiler sysroot can conflict with system headers. The symptom is errors like
-`__iseqsigf128 was not declared` or `__fpclassify has not been declared` when
-compiling with the pixi/conda compilers.
+compiler sysroot conflicts with system headers. `meson setup` stops during the
+compiler checks with errors such as `__iseqsigf128 was not declared` or
+`__fpclassify has not been declared`, raised from inside `<cmath>`. Nothing in
+the output names the package responsible, so the failure reads as a broken
+toolchain.
 
-By default meson **prefers** an installed `nlohmann_json` module (pkg-config /
-cmake; EasyBuild and distro packages), with the wrap as fallback — same pattern
-as readcon.
-
-On rolling-release distros with conda compilers, system CMake configs can still
-export `-I/usr/include` and mix glibc headers with the conda sysroot. Force the
-wrap when that happens:
+By default meson prefers an installed `nlohmann_json` module (pkg-config or
+CMake, from EasyBuild and distro packages) and falls back to the wrap,
+the same pattern as readcon. The system CMake config for `nlohmann_json`
+exports `-I/usr/include`, which mixes glibc headers into the conda sysroot.
+Force the wrap to keep that include path out of the build:
 
 ```{code-block} bash
 meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib \
   --force-fallback-for=nlohmann_json
 ```
+
+`client/meson.build` carries the same note beside the `nlohmann_json`
+dependency lookup.
+
+### Troubleshooting: a global cargo linker setting
+
+readcon-core is built by cargo, which reads `~/.cargo/config.toml` in addition
+to the environment. A `rustflags` entry there applies to every crate eOn builds,
+including inside a conda or pixi environment where the compiler is
+conda-forge's rather than the system one.
+
+The case that comes up is a linker override. `-C link-arg=-fuse-ld=mold` works
+with a system GCC new enough to resolve `mold` by name, but the absolute form
+`-fuse-ld=/usr/bin/mold` is rejected by conda-forge's GCC 13:
+
+```text
+error: linking with `x86_64-conda-linux-gnu-cc` failed: exit status: 1
+  = note: x86_64-conda-linux-gnu-cc: error: unrecognized command-line option
+          '-fuse-ld=/usr/bin/mold'
+error: could not compile `zmij` (build script)
+FAILED: subprojects/readcon-core/libreadcon_core.a
+```
+
+`RUSTFLAGS` overrides `build.rustflags` from the config file, so clearing it for
+the build leaves the global setting alone:
+
+```{code-block} bash
+RUSTFLAGS= meson compile -C bbdir
+```
+
+The same applies to `scripts/pyeonclient_build_wheel.sh`, which builds
+readcon-core through cargo as part of the wheel.
 
 ### Optional packages
 

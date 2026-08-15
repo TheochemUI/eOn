@@ -25,7 +25,11 @@
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 #include "version.h"
+#include <cstdlib>
+#include <exception>
 #include <fstream>
+#include <iostream>
+#include <string_view>
 
 #include <cerrno>
 #include <chrono>
@@ -124,7 +128,7 @@ void printSystemInfo() {
   QUILL_LOG_INFO(log, "DIR: {}", cwd.string());
 }
 
-int main(int argc, char **argv) {
+static int eonClientMain(int argc, char **argv) {
   // --- Start Logging setup
   // Configure backend for optimal performance (see BackendOptions.h)
   quill::BackendOptions backend_options;
@@ -456,6 +460,7 @@ int main(int argc, char **argv) {
       } catch (const std::exception &e) {
         QUILL_LOG_CRITICAL(logger, "[ERROR] unhandled exception: {}", e.what());
         logger->flush_log();
+        std::cerr << "[ERROR] unhandled exception: " << e.what() << "\n";
         return EXIT_FAILURE;
       }
 
@@ -525,5 +530,34 @@ int main(int argc, char **argv) {
 
   // Ensure all queued log messages are flushed before exiting
   quill::Backend::stop();
-  exit(0);
+  return EXIT_SUCCESS;
+}
+
+namespace {
+
+int reportFatal(std::string_view what) {
+  std::cerr << "eonclient: fatal error: " << what << '\n';
+  // Drain the queued CRITICAL lines that say why: an escaping exception
+  // reaches std::terminate without them, and so does std::exit.
+  quill::Backend::stop();
+#ifdef EONMPI
+  int mpiReady = 0;
+  MPI_Initialized(&mpiReady);
+  if (mpiReady) {
+    MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+  }
+#endif
+  return EXIT_FAILURE;
+}
+
+} // namespace
+
+int main(int argc, char **argv) {
+  try {
+    return eonClientMain(argc, argv);
+  } catch (const std::exception &e) {
+    return reportFatal(e.what());
+  } catch (...) {
+    return reportFatal("exception of unknown type");
+  }
 }

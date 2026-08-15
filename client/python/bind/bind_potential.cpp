@@ -17,6 +17,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <vector>
 
 namespace eonc::pybind {
@@ -205,8 +206,34 @@ public:
     }
   }
 
+  /// A shared_ptr owner can drop the last reference inside a released-GIL
+  /// region (BasinHopping builds and destroys Matter copies under one, and
+  /// Matter owns its Potential), and dropping an nb::object without the GIL
+  /// corrupts the refcount. Members are reset here rather than left to the
+  /// implicit destructor, which runs after this body and after gil.
+  ~AseCalcPotential() override {
+    nb::gil_scoped_acquire gil;
+    changes_empty_.reset();
+    changes_pos_cell_.reset();
+    changes_cell_.reset();
+    changes_positions_.reset();
+    all_changes_.reset();
+    props_.reset();
+    np_.reset();
+    atoms_.reset();
+    calc_.reset();
+  }
+
   /// Attach this calculator to a Matter for shared geometry + gen cache.
   /// Call after Matter is resized and Z/cell filled (from_ase does this).
+  ///
+  /// Borrows: linked_ is a raw pointer and the peer Atoms holds a non-owning
+  /// view of Matter's position buffer, so this potential must not outlive m
+  /// and must be rebound after anything that reallocates (resize, con2matter).
+  /// The binding layer cannot enforce that with keep_alive: Matter already
+  /// owns its Potential, so a potential-to-Matter reference closes a cycle
+  /// that nanobind's keep_alive list cannot collect. unbind_matter() is the
+  /// escape when the Matter goes first.
   void bind_matter(eonc::Matter &m) {
     nb::gil_scoped_acquire gil;
     ensure_modules();
@@ -235,10 +262,33 @@ public:
     last_box_ = nullptr;
   }
 
+  /// Drop the bound Matter and the borrowed position buffer with it. Clearing
+  /// the flags alone left arrays['positions'] pointing at Matter storage, and
+  /// ASE set_positions writes into that array in place, so the next force()
+  /// wrote through a pointer the caller had just released.
   void unbind_matter() {
+    nb::gil_scoped_acquire gil;
+    if (shared_positions_ && atoms_.is_valid() && !atoms_.is_none()) {
+      try {
+        // Fresh owned storage; never reads the buffer being dropped.
+        nb::object np = (np_.is_valid() && !np_.is_none())
+                            ? np_
+                            : nb::module_::import_("numpy");
+        nb::object owned = np.attr("zeros")(nb::make_tuple(n_cached_, 3),
+                                            nb::arg("dtype") = "float64");
+        atoms_.attr("arrays").attr("__setitem__")("positions", owned);
+      } catch (...) {
+        // Rather than keep a borrowed buffer, drop the peer Atoms entirely.
+        atoms_.reset();
+        n_cached_ = -1;
+      }
+    }
     linked_ = nullptr;
     shared_positions_ = false;
+    cell_synced_ = false;
     ever_calculated_ = false;
+    last_R_ = nullptr;
+    last_box_ = nullptr;
   }
 
   [[nodiscard]] bool is_bound() const noexcept { return linked_ != nullptr; }
@@ -377,7 +427,19 @@ void bind_potential(nb::module_ &m) {
             VectorXi atmnrs(n);
             for (Eigen::Index i = 0; i < n; ++i)
               atmnrs(i) = static_cast<int>(z.data()[i]);
-            auto [energy, forces] = self.get_ef(R, atmnrs, cell);
+            // Torch autograd in RGPOT metatomic engines refuses the GIL.
+            // Release around the evaluation only; argument validation above
+            // and result construction below touch Python objects.
+            // An ASE-backed potential re-enters Python from force(), where
+            // nb::gil_scoped_acquire re-takes the GIL on this thread.
+            double energy = 0.0;
+            AtomMatrix forces;
+            {
+              nb::gil_scoped_release release;
+              auto ef = self.get_ef(R, atmnrs, cell);
+              energy = std::get<0>(ef);
+              forces = std::move(std::get<1>(ef));
+            }
             const size_t rows = static_cast<size_t>(forces.rows());
             const size_t cols = 3;
             double *buf = new double[rows * cols];
@@ -479,7 +541,10 @@ void bind_potential(nb::module_ &m) {
         matter.setPotential(pot);
       },
       nb::arg("matter"), nb::arg("calculator"),
-      "Set Matter's potential to ASE calc and bind shared geometry.");
+      "Set Matter's potential to ASE calc and bind shared geometry. Binding "
+      "stores a raw Matter pointer and points the peer Atoms at Matter's "
+      "position buffer, so the potential must not outlive the Matter. Call "
+      "unbind_matter (or drop the potential) first when it might.");
 
   m.def(
       "bind_ase_matter",
@@ -493,7 +558,9 @@ void bind_potential(nb::module_ &m) {
       },
       nb::arg("potential"), nb::arg("matter"),
       "If potential is an ASE wrap, bind it to Matter for shared geometry. "
-      "Returns True if bound.");
+      "Binding stores a raw Matter pointer and points the peer Atoms at "
+      "Matter's position buffer, so the potential must not outlive the "
+      "Matter. Returns True if bound.");
 }
 
 } // namespace eonc::pybind

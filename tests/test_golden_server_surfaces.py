@@ -19,6 +19,15 @@ EXPECTED_JOB_KEYS = {
 }
 
 
+def test_eon_exports_version():
+    import eon
+    from eon import version
+
+    assert version == eon.__version__
+    assert isinstance(version, str)
+    assert version
+
+
 def test_select_job_runner_golden_keys():
     from eon.server import select_job_runner
 

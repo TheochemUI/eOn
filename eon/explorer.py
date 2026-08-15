@@ -51,9 +51,8 @@ class Explorer:
                 self.wuid = self.superbasin.id * 1000000
 
     def save_wuid(self):
-        f = open(self.wuid_path, 'w')
-        f.write("%i\n" % self.wuid)
-        f.close()
+        with io.atomic_write(self.wuid_path) as f:
+            f.write("%i\n" % self.wuid)
 
 
 class MinModeExplorer(Explorer):
@@ -93,8 +92,9 @@ class MinModeExplorer(Explorer):
             if not os.path.isdir(self.config.kdb_scratch_path):
                 os.makedirs(self.config.kdb_scratch_path)
             try:
-                queried = [int(q) for q in open(os.path.join(self.config.kdb_scratch_path, "queried"), 'r').readlines()]
-            except:
+                with open(os.path.join(self.config.kdb_scratch_path, "queried"), 'r') as f:
+                    queried = [int(q) for q in f]
+            except (OSError, ValueError):
                 queried = []
             if self.state.number not in queried:
                 queried.append(self.state.number)
@@ -383,7 +383,7 @@ class ServerMinModeExplorer(MinModeExplorer):
         MinModeExplorer.__init__(self, states, previous_state, state, superbasin, config=config)
 
     def save(self):
-        f = open("explorer.pickle", "w")
+        f = open("explorer.pickle", "wb")
         d = self.__dict__.copy()
         del d['states']
         del d['previous_state']
@@ -449,6 +449,10 @@ class ServerMinModeExplorer(MinModeExplorer):
             id = int(result['name'].split("_")[1]) + result['number']
             searchdata_id = "%d_%d" % (state_num, id)
 
+            if id not in self.wuid_to_search_id:
+                logger.warning("No search id for result %s; skipping",
+                               searchdata_id)
+                continue
             search_id = self.wuid_to_search_id[id]
             if search_id not in self.process_searches:
                 continue

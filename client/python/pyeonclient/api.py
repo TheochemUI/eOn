@@ -129,29 +129,33 @@ def NEB(
             acc = _light_neb_accelerant(accelerant)
             apply_params = None
 
-    if len(args) == 4 and not kwargs:
+    # parameters / potential are named above, so they never reach **kwargs;
+    # dispatch on what is bound rather than on the kwargs dict.
+    initial = kwargs.pop("initial", None)
+    final = kwargs.pop("final", None)
+    path = kwargs.pop("path", None)
+    if len(args) == 4:
         initial, final, parameters, potential = args
-        if apply_params is not None:
-            apply_params(parameters)
-        return _core.NEB(initial, final, parameters, potential, acc)
-    if len(args) == 3 and not kwargs:
+    elif len(args) == 3:
         path, parameters, potential = args
-        return _core.NEB(path, parameters, potential, acc)
-    if "initial" in kwargs and "final" in kwargs:
-        parameters = kwargs.get("parameters", parameters)
-        potential = kwargs.get("potential", potential)
+    elif len(args) == 2:
+        initial, final = args
+    elif len(args) == 1:
+        if final is not None:
+            initial = args[0]
+        else:
+            path = args[0]
+    elif args:
+        raise TypeError(f"NEB takes at most 4 positional arguments, got {len(args)}")
+    if kwargs:
+        raise TypeError(f"NEB got unexpected keyword arguments: {sorted(kwargs)}")
+
+    if initial is not None and final is not None:
         if apply_params is not None and parameters is not None:
             apply_params(parameters)
-        return _core.NEB(
-            kwargs["initial"], kwargs["final"], parameters, potential, acc
-        )
-    if "path" in kwargs:
-        return _core.NEB(
-            kwargs["path"],
-            kwargs.get("parameters", parameters),
-            kwargs.get("potential", potential),
-            acc,
-        )
+        return _core.NEB(initial, final, parameters, potential, acc)
+    if path is not None:
+        return _core.NEB(path, parameters, potential, acc)
     raise TypeError(
         "NEB expected (initial, final, parameters, potential) or "
         "(path, parameters, potential)"

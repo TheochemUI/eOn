@@ -14,7 +14,9 @@
 #include "GeometryAnalysis.h"
 #include "Matter.h"
 #include "RandomNumbers.h"
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace eonc {
@@ -76,6 +78,17 @@ void saveMode(FILE *modeFile, std::shared_ptr<Matter> matter, AtomMatrix mode);
 void saveMode(const std::string &filename, std::shared_ptr<Matter> matter,
               AtomMatrix mode);
 std::vector<int> split_string_int(std::string s, std::string delim);
+
+/// Display label for a force-convergence metric, or nullopt when the name is
+/// none of the three the optimizer-driven searches understand. Single source
+/// of the accepted spellings, shared by the INI loader and every search that
+/// dispatches on the string.
+std::optional<std::string_view> convergenceMetricLabel(std::string_view metric);
+/// Throws std::invalid_argument naming context when metric is unrecognized.
+/// Call at construction: the metric is compared once per optimizer step, and
+/// a typo should not surface on iteration 4000.
+void requireKnownConvergenceMetric(std::string_view metric,
+                                   std::string_view context);
 
 } // namespace helpers
 

@@ -52,7 +52,7 @@ jobs:
           -Dtorch_version=2.10             \
           -Dwith_tests=True                \
           -Dpip_metatomic=True
-          meson install -C bbdir
+          meson install --skip-subprojects -C bbdir
 
       - name: Run tests [unix]
         if: runner.os != 'Windows'
@@ -214,7 +214,7 @@ jobs:
             -Dpip_metatomic=True \
             -Dwith_fortran=true \
             -Dwith_cuh2=true
-          meson install -C bbdir
+          meson install --skip-subprojects -C bbdir
 
       - name: Run tests [windows]
         if: runner.os == 'Windows'

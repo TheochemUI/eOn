@@ -16,6 +16,10 @@ dependencies:
   - pkg-config
   - openblas
   - pybind11
+  # readcon-core builds through cargo; cbindgen generates its C header.
+  # cbindgen ships on neither conda-forge nor PyPI, so after activating the
+  # environment run: cargo install cbindgen
+  - "rust>=1.88"
   # Pinned
   - "python<3.13" # For the docs
   - "eigen==3.4.0"
@@ -28,8 +32,17 @@ dependencies:
   - pipx # conda-lock pdm towncrier
   - pre-commit
   - numpy
+  - pyyaml
   # Lint, handled by pre-commit
   - cppcheck
   - cpplint
   - clang-format
   - ruff
+  # Runtime imports of the eon server package. None of these are on
+  # conda-forge, so they come from PyPI, with the same bounds as
+  # pyproject.toml and pixi.toml.
+  - pip:
+      - "readcon>=0.13.1,<0.14"
+      - "vesin>=0.6.0,<0.7"
+      - "eon-schema>=0.2.0"
+      - "xxhash>=3.4.0"

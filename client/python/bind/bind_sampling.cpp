@@ -118,6 +118,23 @@ struct SeededAlgo {
   }
 };
 
+/// Hand a Matter back to Python holding the seed's wrapper, which owns the
+/// Parameters the two share (Matter keeps only a non-owning pointer).
+///
+/// The patient is the seed, not the algorithm object. The algorithm already
+/// holds the seed through nb::keep_alive<1, 2> on its constructor, so an
+/// algorithm-as-patient edge closes an uncollectable cycle whenever the result
+/// *is* the seed: every inplace=True run, and every `matter` read before the
+/// first run. Tying to the seed makes that case a self-tie, which
+/// tie_lifetime skips, and leaves no edge back from the seed to the result.
+template <typename Algo>
+nb::object algo_matter_out(const Algo &self,
+                           std::shared_ptr<eonc::Matter> out) {
+  nb::object obj = nb::cast(out);
+  tie_lifetime(obj, matter_object(*self.seed));
+  return obj;
+}
+
 } // namespace
 
 void bind_sampling(nb::module_ &m) {
@@ -166,10 +183,16 @@ void bind_sampling(nb::module_ &m) {
            nb::arg("matter"), nb::arg("parameters"),
            nb::arg("potential") = nb::none(), nb::keep_alive<1, 2>(),
            nb::keep_alive<1, 4>())
-      .def("run", &PyMD::run, nb::arg("inplace") = false,
-           "Run MD; returns Matter. inplace=True mutates seed.")
-      .def_prop_ro("matter",
-                   [](const PyMD &s) { return s.result ? s.result : s.seed; });
+      .def(
+          "run",
+          [](PyMD &self, bool inplace) {
+            return algo_matter_out(self, self.run(inplace));
+          },
+          nb::arg("inplace") = false,
+          "Run MD; returns Matter. inplace=True mutates seed.")
+      .def_prop_ro("matter", [](const PyMD &s) {
+        return algo_matter_out(s, s.result ? s.result : s.seed);
+      });
 
   // --- MonteCarlo ---
   struct PyMC : SeededAlgo {
@@ -197,9 +220,15 @@ void bind_sampling(nb::module_ &m) {
            nb::arg("matter"), nb::arg("parameters"),
            nb::arg("potential") = nb::none(), nb::keep_alive<1, 2>(),
            nb::keep_alive<1, 4>())
-      .def("run", &PyMC::run, nb::arg("inplace") = false)
-      .def_prop_ro("matter",
-                   [](const PyMC &s) { return s.result ? s.result : s.seed; });
+      .def(
+          "run",
+          [](PyMC &self, bool inplace) {
+            return algo_matter_out(self, self.run(inplace));
+          },
+          nb::arg("inplace") = false)
+      .def_prop_ro("matter", [](const PyMC &s) {
+        return algo_matter_out(s, s.result ? s.result : s.seed);
+      });
 
   // --- BasinHopping ---
   struct PyBH : SeededAlgo {
@@ -262,9 +291,15 @@ void bind_sampling(nb::module_ &m) {
                     std::shared_ptr<Potential>>(),
            nb::arg("matter"), nb::arg("parameters"), nb::arg("potential"),
            nb::keep_alive<1, 2>(), nb::keep_alive<1, 4>())
-      .def("run", &PyBH::run, nb::arg("inplace") = false)
-      .def_prop_ro("matter",
-                   [](const PyBH &s) { return s.result ? s.result : s.seed; });
+      .def(
+          "run",
+          [](PyBH &self, bool inplace) {
+            return algo_matter_out(self, self.run(inplace));
+          },
+          nb::arg("inplace") = false)
+      .def_prop_ro("matter", [](const PyBH &s) {
+        return algo_matter_out(s, s.result ? s.result : s.seed);
+      });
 
   // --- ProcessSearch ---
   struct PyProcessSearch {
@@ -295,7 +330,11 @@ void bind_sampling(nb::module_ &m) {
         nb::gil_scoped_release release;
         reactant->relax(true);
       }
-      double E0 = reactant->getPotentialEnergy();
+      double E0 = 0.0;
+      {
+        nb::gil_scoped_release release;
+        E0 = reactant->getPotentialEnergy();
+      }
       auto saddle = std::make_shared<Matter>(*reactant);
       double mag = params.saddle_search_options.displace_magnitude;
       if (mag > 0.0) {
@@ -310,7 +349,14 @@ void bind_sampling(nb::module_ &m) {
       }
       reactant_out = reactant;
       saddle_out = saddle;
-      return nb::make_tuple(reactant, saddle, status);
+      // Both share the seed's Parameters pointer, and keep_alive cannot reach
+      // into the tuple.
+      nb::object seed_obj = matter_object(*seed);
+      nb::object reactant_obj = nb::cast(reactant);
+      nb::object saddle_obj = nb::cast(saddle);
+      tie_lifetime(reactant_obj, seed_obj);
+      tie_lifetime(saddle_obj, seed_obj);
+      return nb::make_tuple(reactant_obj, saddle_obj, status);
     }
   };
 
@@ -322,15 +368,26 @@ void bind_sampling(nb::module_ &m) {
            nb::arg("matter"), nb::arg("mode"), nb::arg("parameters"),
            nb::arg("potential"), nb::keep_alive<1, 2>(), nb::keep_alive<1, 5>())
       .def("run", &PyProcessSearch::run, nb::arg("inplace") = false)
-      .def_prop_ro("status", [](const PyProcessSearch &s) { return s.status; });
+      // Typed so `search.status == SaddleStatus.GOOD` compares against the
+      // same type; run() keeps returning the raw int code.
+      .def_prop_ro("status", [](const PyProcessSearch &s) {
+        return static_cast<MinModeSaddleSearch::Status>(s.status);
+      });
 
-  // --- Structure helpers (free is fine — pure predicates) ---
+  // --- Structure helpers (predicates; neither argument is modified) ---
   m.def(
       "structures_equal",
-      [](Matter &a, Matter &b, bool indistinguishable) {
-        return a.compare(b, indistinguishable);
+      [](const Matter &a, const Matter &b, bool indistinguishable) {
+        // Matter::compare is non-const: with remove_translation set it runs
+        // translationRemove, which calls setPositions on its left operand,
+        // translating and PBC-wrapping it and invalidating the force cache.
+        // A predicate must not do that to the caller, so it runs on a copy.
+        Matter probe(a);
+        return probe.compare(b, indistinguishable);
       },
-      nb::arg("a"), nb::arg("b"), nb::arg("indistinguishable") = false);
+      nb::arg("a"), nb::arg("b"), nb::arg("indistinguishable") = false,
+      "True when the two structures match under Parameters.structure_"
+      "comparison. Neither argument is modified.");
 
   m.def(
       "structure_distance",
@@ -365,9 +422,15 @@ void bind_sampling(nb::module_ &m) {
            nb::arg("matter"), nb::arg("parameters"),
            nb::arg("potential") = nb::none(), nb::keep_alive<1, 2>(),
            nb::keep_alive<1, 4>())
-      .def("run", &PyTAD::run, nb::arg("inplace") = false)
-      .def_prop_ro("matter",
-                   [](const PyTAD &s) { return s.result ? s.result : s.seed; });
+      .def(
+          "run",
+          [](PyTAD &self, bool inplace) {
+            return algo_matter_out(self, self.run(inplace));
+          },
+          nb::arg("inplace") = false)
+      .def_prop_ro("matter", [](const PyTAD &s) {
+        return algo_matter_out(s, s.result ? s.result : s.seed);
+      });
 
   // Mechanical shells for PR family (not product focus)
   auto bind_pr_like = [&](const char *name, auto make_and_run) {
@@ -402,7 +465,12 @@ void bind_sampling(nb::module_ &m) {
            nb::arg("matter"), nb::arg("parameters"),
            nb::arg("potential") = nb::none(), nb::keep_alive<1, 2>(),
            nb::keep_alive<1, 4>())
-      .def("run", &PyPR::run, nb::arg("inplace") = false);
+      .def(
+          "run",
+          [](PyPR &self, bool inplace) {
+            return algo_matter_out(self, self.run(inplace));
+          },
+          nb::arg("inplace") = false);
 
   struct PySH : SeededAlgo {
     using SeededAlgo::SeededAlgo;
@@ -429,7 +497,12 @@ void bind_sampling(nb::module_ &m) {
            nb::arg("matter"), nb::arg("parameters"),
            nb::arg("potential") = nb::none(), nb::keep_alive<1, 2>(),
            nb::keep_alive<1, 4>())
-      .def("run", &PySH::run, nb::arg("inplace") = false);
+      .def(
+          "run",
+          [](PySH &self, bool inplace) {
+            return algo_matter_out(self, self.run(inplace));
+          },
+          nb::arg("inplace") = false);
 
   struct PyREX : SeededAlgo {
     using SeededAlgo::SeededAlgo;
@@ -456,7 +529,12 @@ void bind_sampling(nb::module_ &m) {
            nb::arg("matter"), nb::arg("parameters"),
            nb::arg("potential") = nb::none(), nb::keep_alive<1, 2>(),
            nb::keep_alive<1, 4>())
-      .def("run", &PyREX::run, nb::arg("inplace") = false);
+      .def(
+          "run",
+          [](PyREX &self, bool inplace) {
+            return algo_matter_out(self, self.run(inplace));
+          },
+          nb::arg("inplace") = false);
 }
 
 } // namespace eonc::pybind

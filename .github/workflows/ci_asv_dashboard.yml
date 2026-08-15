@@ -97,7 +97,7 @@ jobs:
             --buildtype release --wipe 2>/dev/null \
             || meson setup bbdir --prefix=\$CONDA_PREFIX \
             --libdir=lib --buildtype release"
-          pixi run meson install -C bbdir
+          pixi run meson install --skip-subprojects -C bbdir
           command -v eonclient
           test -x "$(command -v eonclient)"
 

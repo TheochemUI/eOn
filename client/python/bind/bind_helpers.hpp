@@ -33,6 +33,36 @@ matter_work(std::shared_ptr<eonc::Matter> matter, bool inplace) {
   return std::make_shared<eonc::Matter>(*matter);
 }
 
+/// Matter stores a non-owning `const Parameters *` (Matter.h) and every copy
+/// shares it, so a derived Matter handed to Python must hold a reference to
+/// something that owns those Parameters. `nb::keep_alive<0, N>` covers a
+/// return value that *is* the object; it cannot reach inside a returned tuple
+/// or list, so those sites tie their elements through here.
+inline void tie_lifetime(nb::handle nurse, nb::handle patient) {
+  if (!nurse.is_valid() || !patient.is_valid())
+    return;
+  if (nurse.is_none() || patient.is_none() || nurse.ptr() == patient.ptr())
+    return;
+  nb::detail::keep_alive(nurse.ptr(), patient.ptr());
+}
+
+/// Python object already wrapping `m`, or an invalid handle when Python has
+/// never seen it.
+inline nb::object matter_object(const eonc::Matter &m) { return nb::find(m); }
+
+/// Cast a freshly built path to a list, tying each frame to the object whose
+/// Parameters the frames point at.
+inline nb::list matter_path_to_python(std::vector<eonc::Matter> path,
+                                      nb::handle owner) {
+  nb::list out;
+  for (auto &frame : path) {
+    nb::object obj = nb::cast(std::move(frame));
+    tie_lifetime(obj, owner);
+    out.append(obj);
+  }
+  return out;
+}
+
 /// Write C++ ConFrames to a short-lived temp .con and load as Python
 /// readcon.ConFrame list (same stamps as disk). Caller never sees the path.
 /// Takes const ref: readcon::ConFrame is move-only (copy deleted).

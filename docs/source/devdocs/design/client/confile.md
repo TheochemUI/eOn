@@ -49,7 +49,7 @@ metadata, and an escape hatch for raw JSON.
 
 ### Multi-frame (append)
 
-For multi-frame output, eOn currently uses correctness-first append semantics:
+For multi-frame output, `append=true` extends the file in place:
 
 ```cpp
 if (!path[i]->matter2con(filename, /*append=*/i > 0, &metadata)) {
@@ -57,9 +57,26 @@ if (!path[i]->matter2con(filename, /*append=*/i > 0, &metadata)) {
 }
 ```
 
-`append=true` reads the existing frames, appends the new frame in memory, and
-rewrites the file. If the target file exists but cannot be parsed, the append
-fails instead of truncating the history.
+The new frame is serialized on its own and its bytes are concatenated onto the
+target, so an N-frame trajectory costs N frame writes rather than N(N+1)/2.
+`ConFrameWriter` emits self-contained frames with no file-level preamble, which
+makes the concatenated result identical to the same frames written in one call.
+Serialization goes through a scratch file next to the target because
+readcon-core exposes neither a writer over a caller-owned stream nor a flush on
+an open writer; the target itself is opened in append mode and flushed before
+the call returns, so every intermediate state on disk is a complete multi-frame
+`.con` that a reader or a `tail` can parse.
+
+If the target file exists but cannot be parsed, the append fails rather than
+truncating the history. That check runs when eOn did not write the file, or
+when its size or modification time moved since eOn wrote it; frames this
+process wrote and nobody touched since are extended without a re-parse.
+`eonc::io::resetConAppendState()` drops that bookkeeping for a file replaced
+with same-sized content inside one filesystem timestamp tick.
+
+Gzip and zstd targets keep the read-all-and-rewrite path. A compressed member
+cannot be extended in place, and readcon-core reads a single gzip member, so
+appended members would be invisible on read-back.
 
 NEB path writers use a small helper wrapper so that per-image metadata stays
 consistent across `neb.con`, `neb_path_*.con`, and related outputs:
@@ -95,4 +112,25 @@ the C++ client for trajectory outputs and downstream visualization tooling.
 - **Meson** >= 1.8.0
 
 The `readcon-core` library is fetched as a Meson subproject via
-`subprojects/readcon-core.wrap` and linked statically.
+`subprojects/readcon-core.wrap` and linked statically. The wrap pins release
+tag v0.13.1, and `client/meson.build` asks for `>=0.13.1` on both resolution
+paths, the pkg-config one and the subproject fallback. `eon/fileio.py` needs
+the companion `readcon` package at `>=0.13.1,<0.14`. That cap draws a
+wire-format bound: readcon 0.14 writes `con_spec_version` 3 files, which a
+0.13.1 parser rejects.
+
+## Updating the subproject
+
+Meson uses an existing `subprojects/readcon-core/` directory unchanged and does
+not re-fetch it when the wrap revision changes. After pulling a commit that
+moves the wrap, reset the checkout:
+
+```bash
+meson subprojects update --reset readcon-core
+```
+
+Skipping the reset leaves the build configuring against whatever tag sits on
+disk. The version constraint on the `subproject()` call catches that at
+configure time and names `readcon-core`, so a version complaint about the
+subproject points at a stale checkout rather than at anything in
+`client/ConFileIO.cpp`.

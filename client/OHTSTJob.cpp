@@ -11,7 +11,8 @@
 */
 #include <algorithm>
 #include <cmath>
-#include <cstdio>
+#include <format>
+#include <fstream>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -423,10 +424,14 @@ std::vector<std::string> OHTSTJob::run(void) {
   VectorXd gRotPrev;
   int sideSign = 0; // sign of <F.n> at plane 1 (grooming, Sec IIE)
 
-  FILE *prog = fopen("oh_tst_progression.dat", "w");
+  // RAII: the divergence guard and samplePlane both throw out of the plane
+  // loop below, so the handle has to close itself.
+  std::ofstream prog("oh_tst_progression.dat");
   if (prog) {
-    fprintf(prog, "# plane  s/L  <F.n> (eV/A)  dA_trans (eV)  dA_rot (eV)  "
-                  "A (eV)  n.u\n");
+    prog << "# plane  s/L  <F.n> (eV/A)  dA_trans (eV)  dA_rot (eV)  "
+            "A (eV)  n.u\n";
+  } else {
+    EONC_LOG_ERROR("[oh_tst] cannot open oh_tst_progression.dat");
   }
 
   const bool scanMode = params.oh_tst_options.pmf_scan;
@@ -490,9 +495,11 @@ std::vector<std::string> OHTSTJob::run(void) {
       nBest = n;
     }
     if (prog) {
-      fprintf(prog, "%6ld %10.6f %14.6e %12.6f %12.6f %12.6f %10.6f\n", plane,
-              s / guideLen, avg.fn, aTrans, aRot, aTotal, n.dot(u));
-      fflush(prog);
+      prog << std::format("{:6} {:10.6f} {:14.6e} {:12.6f} {:12.6f} {:12.6f} "
+                          "{:10.6f}\n",
+                          plane, s / guideLen, avg.fn, aTrans, aRot, aTotal,
+                          n.dot(u));
+      prog.flush();
     }
     EONC_LOG_DEBUG("[oh_tst] plane {} s/L {:.4f} <F.n> {:.4e} A {:.4f} eV",
                    plane, s / guideLen, avg.fn, aTotal);
@@ -523,7 +530,7 @@ std::vector<std::string> OHTSTJob::run(void) {
       sBest = s;
       nBest = n;
       if (prog) {
-        fprintf(prog, "# converged at plane %ld\n", plane);
+        prog << std::format("# converged at plane {}\n", plane);
       }
       break;
     }
@@ -653,8 +660,14 @@ std::vector<std::string> OHTSTJob::run(void) {
       s = sNew;
     }
   }
-  if (prog)
-    fclose(prog);
+  bool progOk = prog.is_open();
+  if (progOk) {
+    prog.close();
+    progOk = static_cast<bool>(prog);
+    if (!progOk) {
+      EONC_LOG_ERROR("[oh_tst] failed to write oh_tst_progression.dat");
+    }
+  }
   // A completed scan yields a valid PMF even with no interior
   // maximum; report it as converged so downstream tooling accepts
   // the profile (barrier = aBest, the max of A(s)).
@@ -677,25 +690,33 @@ std::vector<std::string> OHTSTJob::run(void) {
   const double kSI = kInternal / (params.constants.timeUnit * 1.0e-15);
 
   std::vector<std::string> returnFiles;
-  FILE *out = fopen("results.dat", "w");
-  if (out) {
-    fprintf(out, "%s job_type\n", "oh_tst");
-    fprintf(out, "%d converged\n", converged ? 1 : 0);
-    fprintf(out, "%ld planes_used\n", plane);
-    fprintf(out, "%.8f free_energy_barrier_eV\n", aBest);
-    fprintf(out, "%.8f delta_a_trans_eV\n", aTrans);
-    fprintf(out, "%.8f delta_a_rot_eV\n", aRot);
-    fprintf(out, "%.8f s_star_over_L\n", sBest / guideLen);
-    fprintf(out, "%.8f guideline_length_A\n", guideLen);
-    fprintf(out, "%.8f normal_overlap_with_guideline\n", nBest.dot(u));
-    fprintf(out, "%.8e effective_mass_amu\n", mu);
-    fprintf(out, "%.8e q_ratio_per_A\n", qRatio);
-    fprintf(out, "%.8e rate_ohtst_per_s\n", kSI);
-    fprintf(out, "%.4f temperature_K\n", temperature);
-    fclose(out);
-    returnFiles.push_back("results.dat");
+  std::ofstream out("results.dat");
+  if (!out) {
+    EONC_LOG_ERROR("[oh_tst] cannot open results.dat");
+    throw std::runtime_error("oh_tst: cannot open results.dat");
   }
-  returnFiles.push_back("oh_tst_progression.dat");
+  out << "oh_tst job_type\n";
+  out << std::format("{} converged\n", converged ? 1 : 0);
+  out << std::format("{} planes_used\n", plane);
+  out << std::format("{:.8f} free_energy_barrier_eV\n", aBest);
+  out << std::format("{:.8f} delta_a_trans_eV\n", aTrans);
+  out << std::format("{:.8f} delta_a_rot_eV\n", aRot);
+  out << std::format("{:.8f} s_star_over_L\n", sBest / guideLen);
+  out << std::format("{:.8f} guideline_length_A\n", guideLen);
+  out << std::format("{:.8f} normal_overlap_with_guideline\n", nBest.dot(u));
+  out << std::format("{:.8e} effective_mass_amu\n", mu);
+  out << std::format("{:.8e} q_ratio_per_A\n", qRatio);
+  out << std::format("{:.8e} rate_ohtst_per_s\n", kSI);
+  out << std::format("{:.4f} temperature_K\n", temperature);
+  out.close();
+  if (!out) {
+    EONC_LOG_ERROR("[oh_tst] failed to write results.dat");
+    throw std::runtime_error("oh_tst: failed to write results.dat");
+  }
+  returnFiles.push_back("results.dat");
+  if (progOk) {
+    returnFiles.push_back("oh_tst_progression.dat");
+  }
   EONC_LOG_INFO("[oh_tst] {} after {} planes: A = {:.4f} eV at s/L = {:.4f}, "
                 "k = {:.4e} 1/s at {:.1f} K",
                 converged ? "converged" : "max planes", plane, aBest,
