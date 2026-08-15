@@ -196,6 +196,17 @@ TEST_CASE_METHOD(DimerFixture,
   REQUIRE(std::holds_alternative<Davidson>(*strategy));
 }
 
+#ifndef WITH_GPRD
+TEST_CASE_METHOD(DimerFixture,
+                 "gprdimer does not silently become ImprovedDimer",
+                 "[eigenmode][strategy][gprdimer]") {
+  params.saddle_search_options.minmode_method =
+      LowestEigenmode::MINMODE_GPRDIMER;
+  REQUIRE_THROWS_WITH(eonc::buildEigenmodeStrategy(matter, params, pot),
+                      Catch::Matchers::ContainsSubstring("with_gprd"));
+}
+#endif
+
 // --- asImprovedDimer tests ---
 
 TEST_CASE_METHOD(DimerFixture,

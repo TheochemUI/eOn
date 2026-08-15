@@ -461,6 +461,7 @@ static int eonClientMain(int argc, char **argv) {
       } catch (const std::exception &e) {
         QUILL_LOG_CRITICAL(logger, "[ERROR] unhandled exception: {}", e.what());
         logger->flush_log();
+        std::cerr << "[ERROR] unhandled exception: " << e.what() << "\n";
         return EXIT_FAILURE;
       }
 

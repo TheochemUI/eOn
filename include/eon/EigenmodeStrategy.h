@@ -16,6 +16,7 @@
 #include "ImprovedDimer.h"
 #include "Lanczos.h"
 #include "LowestEigenmode.h"
+#include <stdexcept>
 #include <variant>
 
 #ifdef WITH_GPRD
@@ -57,6 +58,12 @@ buildEigenmodeStrategy(std::shared_ptr<Matter> matter, const Parameters &params,
     // movable). Construct the alternative in place; do not pass a temporary.
     return std::make_shared<EigenmodeStrategy>(
         std::in_place_type<AtomicGPDimer>, matter, params, pot);
+  }
+#else
+  else if (params.saddle_search_options.minmode_method ==
+           LowestEigenmode::MINMODE_GPRDIMER) {
+    throw std::runtime_error(
+        "min_mode_method=gprdimer requires -Dwith_gprd=true (WITH_GPRD)");
   }
 #endif
   // Default to improved dimer
