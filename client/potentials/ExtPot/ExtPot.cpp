@@ -11,6 +11,7 @@
 */
 
 #include "eon/potentials/ExtPot/ExtPot.h"
+#include "eon/potentials/ExtPot/ExtPotCommand.h"
 #include "eon/potentials/ExternalCommand.h"
 
 #include <atomic>
@@ -22,7 +23,14 @@
 #include <system_error>
 
 #ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <process.h>
+#include <windows.h>
 #else
 #include <unistd.h>
 #endif
@@ -47,26 +55,21 @@ long processId() {
 #endif
 }
 
-/// \brief Wrap a path for the shell system() hands the command to, so spaces
-/// in it survive.
-std::string shellQuote(const std::string &text) {
 #ifdef _WIN32
-  // cmd.exe takes double quotes and offers no escape for an embedded one,
-  // which a Windows path cannot hold anyway.
-  return "\"" + text + "\"";
-#else
-  std::string quoted{"'"};
-  for (const char c : text) {
-    if (c == '\'') {
-      quoted += "'\\''";
-    } else {
-      quoted += c;
-    }
+/// \brief The python.exe on PATH, quoted, or the bare name `python`.
+///
+/// cmd.exe cannot run an extensionless shebang script. wrapResolvedProgram
+/// prefixes this interpreter when the resolved path is a Python wrapper.
+std::string windowsPythonCommand() {
+  char buf[MAX_PATH];
+  const DWORD n =
+      SearchPathA(nullptr, "python.exe", nullptr, MAX_PATH, buf, nullptr);
+  if (n > 0 && n < MAX_PATH) {
+    return eonc::pot::shellQuote(std::string(buf));
   }
-  quoted += "'";
-  return quoted;
-#endif
+  return "python";
 }
+#endif
 
 /// \brief Build the command line that runs \p command in \p workDir with
 /// \p runDir named in the environment.
@@ -77,21 +80,18 @@ std::string shellQuote(const std::string &text) {
 std::string composeCommand(const std::string &workDir,
                            const std::string &runDir,
                            const std::string &command) {
-  // A resolved single-file path (the default ./ext_pot after
-  // resolveCommand) has to be quoted so spaces and metacharacters
-  // survive system(). A command line with arguments is left alone.
-  std::error_code quoteEc;
-  const std::string quotedCommand =
-      std::filesystem::is_regular_file(command, quoteEc) && !quoteEc
-          ? shellQuote(command)
-          : command;
 #ifdef _WIN32
+  const std::string quotedCommand =
+      eonc::pot::wrapResolvedProgram(command, windowsPythonCommand());
   // cmd.exe: quotes around name=value so the value does not include them.
-  return std::format("cd /d {} && set \"{}={}\" && {}", shellQuote(workDir),
-                     kRunDirVariable, runDir, quotedCommand);
+  return std::format("cd /d {} && set \"{}={}\" && {}",
+                     eonc::pot::shellQuote(workDir), kRunDirVariable, runDir,
+                     quotedCommand);
 #else
-  return std::format("cd {} && export {}={} && {}", shellQuote(workDir),
-                     kRunDirVariable, shellQuote(runDir), quotedCommand);
+  const std::string quotedCommand = eonc::pot::wrapResolvedProgram(command, {});
+  return std::format("cd {} && export {}={} && {}",
+                     eonc::pot::shellQuote(workDir), kRunDirVariable,
+                     eonc::pot::shellQuote(runDir), quotedCommand);
 #endif
 }
 
