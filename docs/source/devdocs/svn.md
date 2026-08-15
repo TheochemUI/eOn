@@ -25,7 +25,7 @@ checkout the code using the command:
 svn co svn+ssh://username@theory.cm.utexas.edu/svn/eon
 ```
 
-This will fetch a copy of the latest code to a local directory named eon.
+The command fetches a copy of the latest code to a local directory named eon.
 
 For more information on subversion read its [online documentation](http://svnbook.red-bean.com/en/1.5/index.html).
 

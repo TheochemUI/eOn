@@ -58,6 +58,15 @@ pixi run bash -c "asv machine --yes && \
   asv run -E 'existing:$(which python)' --quick"
 #+end_src
 
+* Documentation
+
+The published site is MyST markdown under ~docs/source~, built with Sphinx
+([[https://eondocs.org][eondocs.org]]).
+
+To schedule ~eonclient~ through AiiDA, install ~aiida-eon~ and see
+~docs/source/user_guide/aiida.md~. That page is the plugin landing in
+this tree. In-process Matter work is pyeonclient, not AiiDA.
+
 * Contributing
 
 Run ~pre-commit~ before submitting pull requests:

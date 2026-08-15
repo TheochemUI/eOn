@@ -11,8 +11,8 @@ A sample parallel replica simulation can be found in the directory:
 `examples/parallel-replica/`. Two input files `config.ini` and `pos.con` are
 required for eOn simlution.
 
-The example system is the diffusion of an Al adatom on the Al(100) surface. A
-snapshot of the system is given below:
+The example system is the diffusion of an Al adatom on the Al(100) surface.
+Snapshot of the system:
 
 ```{figure} ../fig/aladatom1.png
 ---

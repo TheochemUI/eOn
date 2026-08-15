@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn metatomic, machine learning potential, metatensor, PyTorch, MLIP"
 ---
 
-# Metatomic Interface
+# Metatomic interface
 
 ```{versionadded} 2.0
 ```
@@ -39,7 +39,7 @@ Notes:
 
 For more details including building from source, refer to the [upstream documentation](https://docs.metatensor.org/latest/index.html).
 
-## Basic Configuration
+## Basic configuration
 
 ```{code-block} ini
 [Potential]
@@ -59,10 +59,10 @@ Pydantic model) and mirrored in `eon/config.yaml` for the YAML front end;
 
 ## Usage example
 
-### Lennard Jones Baseline
+### Lennard-Jones baseline
 
-Here is a complete workflow, from generating a simple Lennard-Jones test model
-to running a calculation with eonclient.
+A complete workflow, from generating a simple Lennard-Jones test model
+to running a calculation with eonclient:
 
 The metatomic-lj-test package provides a simple way to create a sample model
 file. Run this Python script:
@@ -336,7 +336,7 @@ export CUBLAS_WORKSPACE_CONFIG=:4096:8
 Set **`device`** to `cpu`, `cuda`, `mps`, or leave empty / `auto` to let
 `metatomic_torch::pick_device` choose from the model's
 `supported_devices`. GPU builds must link a CUDA-enabled libtorch; the
-cookbook and conda packages typically ship a CPU libtorch with optional CUDA
+cookbook and conda packages typically include a CPU libtorch with optional CUDA
 at runtime when the host provides it.
 
 ```{code-block} ini

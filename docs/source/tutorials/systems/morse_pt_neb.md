@@ -127,7 +127,7 @@ print("paths:", len(list(work.glob("neb_path_*.con"))))
 
 ## 1D energy profiles (full history)
 
-Plot every optimization step, highlight the final band, and attach a structure
+Plot every optimization step, mark the final band, and attach a structure
 strip for **all** images on the path (`--plot-structures all`). The saddle is
 marked with a gold star on the final profile.
 
@@ -219,7 +219,7 @@ show_plot(neb_land)
 
 ## See also
 
-- {doc}`../visualization` — PET-MAD / vinyl alcohol visualization walkthrough
-- {doc}`/user_guide/neb` — NEB parameters
-- [atomistic-cookbook eon-pet-neb](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html)
-  — metatomic oxadiazole NEB with the same plot stack
+- {doc}`../visualization`: PET-MAD / vinyl alcohol visualization walkthrough
+- {doc}`/user_guide/neb`: NEB parameters
+- [atomistic-cookbook eon-pet-neb](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html):
+  metatomic oxadiazole NEB with the same plot stack

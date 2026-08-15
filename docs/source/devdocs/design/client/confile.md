@@ -1,8 +1,8 @@
-# Con File I/O via readcon-core
+# CON file I/O via readcon-core
 
 Starting from v2.12, eOn uses the [readcon-core](https://github.com/lode-org/readcon-core)
-Rust library for `.con` and `.convel` file I/O in the C++ client, with the
-Python side using the companion `readcon` package.
+Rust library for `.con` and `.convel` file I/O in the C++ client, while
+Python uses the companion `readcon` package.
 
 ## C++ Client
 
@@ -43,7 +43,7 @@ metadata.scalars.push_back({"convergence", convergence});
 matter.matter2con("minimization.con", /*append=*/true, &metadata);
 ```
 
-This maps onto `readcon-core` metadata fields such as `energy`,
+The metadata maps onto `readcon-core` fields such as `energy`,
 `frame_index`, `neb_bead`, `neb_band`, arbitrary scalar metadata, string
 metadata, and an escape hatch for raw JSON.
 
@@ -67,10 +67,10 @@ an open writer; the target itself is opened in append mode and flushed before
 the call returns, so every intermediate state on disk is a complete multi-frame
 `.con` that a reader or a `tail` can parse.
 
-If the target file exists but cannot be parsed, the append fails instead of
-silently truncating the history. That check runs when eOn did not write the
-file, or when its size or modification time moved since eOn wrote it; frames
-this process wrote and nobody touched since are extended without a re-parse.
+If the target file exists but cannot be parsed, the append fails rather than
+truncating the history. That check runs when eOn did not write the file, or
+when its size or modification time moved since eOn wrote it; frames this
+process wrote and nobody touched since are extended without a re-parse.
 `eonc::io::resetConAppendState()` drops that bookkeeping for a file replaced
 with same-sized content inside one filesystem timestamp tick.
 
@@ -89,7 +89,7 @@ eonc::neb::writePathCon(path, tangent, eigenmode_solvers, numImages,
 That helper currently stores per-frame fields such as `neb_bead`, optional
 `neb_band`, `reaction_coordinate`, `relative_energy`, and `parallel_force`.
 
-## Python Server
+## Python server
 
 The `eon/fileio.py` module uses the `readcon` PyPI package:
 
@@ -102,10 +102,10 @@ readcon.write_con(filename, [frame])     # write
 ```
 
 At the time of writing, the Python orchestration layer is still primarily a
-consumer of `.con` data; the richer frame metadata is currently produced on the
-C++ side for trajectory outputs and downstream visualization tooling.
+consumer of `.con` data; the richer frame metadata is currently produced in
+the C++ client for trajectory outputs and downstream visualization tooling.
 
-## Build Requirements
+## Build requirements
 
 - **Rust** >= 1.88 (provided by pixi via conda-forge)
 - **cbindgen** >= 0.29 (installed via `cargo install cbindgen`)

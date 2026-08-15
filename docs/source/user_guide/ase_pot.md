@@ -5,13 +5,12 @@ myst:
     "keywords": "eOn ASE, Atomic Simulation Environment, ASE calculator, Python potential"
 ---
 
-# ASE Interface
+# ASE interface
 
 ```{admonition} conda-forge availability
 :class: warning
-**Not** included in the `conda-forge` package. Requires building from source
-with `-Dwith_ase=True`. For a simpler alternative that works with any eOn
-install, see the [external potential](project:ext_pot.md) guide.
+The `conda-forge` package omits ASE. Build from source with `-Dwith_ase=True`,
+or use the [external potential](project:ext_pot.md) path on any install.
 ```
 
 The ASE interface embeds a Python interpreter inside the eOn client, letting you
@@ -67,8 +66,7 @@ eOn imports this script at startup and calls two functions:
 - `ase_calc()` -- returns an initialized ASE calculator object.
 - `_calculate(R, atomicNrs, box, calc)` -- evaluates energy and forces.
 
-Only `ase_calc()` should be edited. The `_calculate` function is a fixed
-bridge between eOn and ASE; do not modify it.
+Edit `ase_calc()`. `_calculate` is the fixed eOn-ASE bridge.
 
 ### Template
 
@@ -120,5 +118,5 @@ def ase_calc():
 
 If you installed eOn from conda-forge or prefer not to build from source, the
 [external potential](project:ext_pot.md) interface provides the same calculator
-flexibility through file-based communication. It works out of the box with any
+flexibility through file-based communication. It works with any
 eOn install at the cost of per-call process overhead.

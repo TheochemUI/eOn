@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn, long-timescale dynamics, aKMC, NEB, Parallel Replica Dynamics"
 ---
 
-# eOn: Long Timescale Dynamics Software
+# eOn: long timescale dynamics software
 
 The eOn software package contains a set of algorithms used primarily to model
 the evolution of atomic scale systems over long time scales. Standard molecular
@@ -22,7 +22,7 @@ hyperdyamics, adaptive kinetic Monte Carlo, and basin hopping.
 ## Supported systems
 
 eOn can handle both molecular systems (e.g. gas-phase reactions) and extended
-(surface) systems, with robust periodic image boundary support.
+(surface) systems, with periodic image boundary conditions.
 
 ```{figure} fig/esys_trans.png
 ---
@@ -30,7 +30,7 @@ alt: Collection of systems which can be modeled
 class: full-width
 align: center
 ---
-An overview of some systems modeled with eOn
+Some systems modeled with eOn
 ```
 
 However, the systems which are best modeled using eOn are those in which the
@@ -52,7 +52,7 @@ Al(100) ripening dynamics
 In the example showing ripening dynamics on an `Al(100)` surface, a compact
 island forms after `65720` transitions in a time scale of a `ms` at `300K`.
 
-## Interatomic Interactions
+## Interatomic interactions
 
 There are a variety of empirical potentials included with `eOn`. You can also
 use the potentials built into the LAMMPS library. `eOn` also provides an
@@ -101,7 +101,11 @@ suite ([Home](https://rgpycrumbs.rgoswami.me/tools/eon/index.html),
 [Github](https://github.com/HaoZeke/rgpycrumbs),
 [PyPI](https://pypi.org/project/rgpycrumbs/)).
 
-# User Guide
+To schedule `eonclient` on a laptop or a Slurm login node, install
+[aiida-eon](https://pypi.org/project/aiida-eon/) and see
+{doc}`user_guide/aiida`.
+
+# User guide
 
 ```{toctree}
 :maxdepth: 2

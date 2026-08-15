@@ -8,13 +8,13 @@ myst:
 # Optimizer
 
 ```{note}
-All the optimizers in `eOn` **do not** use a line search to determine steepest descent!!
+The eOn optimizers skip a line search when taking the steepest-descent step.
 ```
 
 There are several other ways in which the `eOn` implementations differ from a
 standard optimizer software suite[^1] . Some prominent reasons are:
-- They are meant to be used with the <project:neb.md> which does not
-  have well defined closed form energy surface
+- They are written for the <project:neb.md>, whose energy surface has no
+  closed form
    + Especially in the global band optimization approach {cite:p}`opt-sheppardOptimizationMethodsFinding2008`.
 - They are specialized for atomic systems
 - The optimizers **only** see the moving atoms, the frozen atoms are omitted

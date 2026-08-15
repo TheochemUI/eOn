@@ -14,7 +14,7 @@ myst:
     "keywords": "eOn visualization, trajectory plotting, NEB landscape, saddle search, minimization, rgpycrumbs, chemparseplot"
 ---
 
-# Visualizing Optimization Trajectories
+# Visualizing optimization trajectories
 
 eOn can embed structured per-iteration metadata directly into trajectory movie
 frames when `write_movies = true` is set in the `[Debug]` section of
@@ -152,9 +152,8 @@ def show_plot(path):
 
 ## Minimization
 
-We start by minimizing a slightly distorted vinyl alcohol molecule to
-demonstrate the single-ended optimization outputs consumed by
-`rgpycrumbs eon plt-min`.
+We start by minimizing a slightly distorted vinyl alcohol molecule.
+`rgpycrumbs eon plt-min` reads those single-ended optimization outputs.
 
 ```{code-cell} python
 :tags: [remove-cell]
@@ -207,8 +206,8 @@ show_plot(min_profile)
 
 ### 2D optimization landscape
 
-One landscape for this job only (do not overlay unrelated endpoints on a shared
-`(s, d)` frame). The title and strip use the `--label`.
+One landscape for this job only. Each trajectory defines its own RMSD basis
+on a `(s, d)` frame. The title and strip use the `--label`.
 
 ```{code-cell} python
 min_landscape = plot_dir / "min_landscape.png"
@@ -247,7 +246,7 @@ run_rgpycrumbs(
 show_plot(min_convergence)
 ```
 
-## Nudged Elastic Band
+## Nudged elastic band
 
 We run an OCI-NEB calculation on the vinyl alcohol -> acetaldehyde
 keto-enol tautomerization using PET-MAD.
@@ -377,7 +376,7 @@ For producing your own NEB trajectories beyond this tutorial:
   saddle systems (recommended for docs / CI)
 - The [`eon-pet-neb`](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html)
   example in the [lab-cosmo/atomistic-cookbook](https://github.com/lab-cosmo/atomistic-cookbook):
-  a step-by-step PET-MAD NEB walkthrough using ASE for path setup. This is
+  a PET-MAD NEB example that uses ASE for path setup. This is
   the canonical metatomic-consumer integration test for eOn.
 - [HaoZeke/eon_orchestrator](https://github.com/HaoZeke/eon_orchestrator):
   Snakemake-orchestrated workflow for batches of NEB calculations with

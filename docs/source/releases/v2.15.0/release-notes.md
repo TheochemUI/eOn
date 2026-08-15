@@ -11,7 +11,7 @@ myst:
 
 See the [CHANGELOG](project:../changelog.md) for the fragment-by-fragment list
 after `cog bump` consumes `docs/newsfragments/`; this page consolidates
-**user-facing and maintainer** highlights from commits since `v2.14.0` plus the
+**user-facing and maintainer** changes from commits since `v2.14.0` plus the
 release-process PR, so the next cut has one place to link from the GitHub
 Release and feedstock PR.
 
@@ -27,7 +27,7 @@ re-publish a conflicting `2.14.0` wheel if you never owned that semver on PyPI.
 
 Legacy Fortran potential modules can be loaded at runtime via `dlopen` instead of
 only at link time. Configure a search path with `[Potential] potentials_path` so
-site-specific or experimental pots can ship as shared objects without rebuilding
+site-specific or experimental pots can be distributed as shared objects without rebuilding
 the full client.
 
 Contributing commits / PRs:
@@ -77,12 +77,12 @@ CuH2 is enabled on win with the rest of in-tree Fortran (m2w64 gfortran).
 Documented and automated the full cut path: `cog` / towncrier lockstep,
 `scripts/release_assert.py`, staged tag workflow (tarball + GH release + PyPI),
 `ci/gha/*.ncl` generation (rgpot-style), incomplete-release recovery, conda-forge
-feedstock steps, and explicit Doxygen deferral (Sphinx remains the docs gate).
+feedstock steps, and explicit Doxygen deferral (Sphinx remains the docs check).
 
 **PyPI:** the project name `eon` on [pypi.org](https://pypi.org/project/eon/) is
 already taken by **EoN** (*Epidemics on Networks*, unrelated). This release
 targets a **distinct** distribution name **`eon-akmc`** (see `ci/gha/pypi.ncl` /
-`pyproject.toml` `project.name` alignment in the process PR)—import package
+`pyproject.toml` `project.name` alignment in the process PR). Import package
 layout stays under `eon/` in-tree; the **index** name is what trusted publishing
 and `pip install` use.
 
@@ -95,7 +95,7 @@ Contributing fragment: `docs/newsfragments/343.dev.md` (release-process PR).
 
 ### How to cut (maintainer)
 
-1. Pre-gates in {doc}`/devdocs/release` §1 (CI green, fragments, cookbook if
+1. Pre-release checks in {doc}`/devdocs/release` §1 (CI green, fragments, cookbook if
    blocking, incomplete-`2.14.0` decision recorded).
 2. `cog bump --version 2.15.0` (or `--auto` if commit log warrants) on `main`.
 3. `git push origin main --follow-tags` → `release.yml` (from `ci/gha/release.ncl`).
