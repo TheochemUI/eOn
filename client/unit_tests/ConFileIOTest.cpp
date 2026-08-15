@@ -20,7 +20,11 @@
 #include <cmath>
 #include <cstdio>
 #include <filesystem>
+#include <format>
 #include <fstream>
+#include <iterator>
+#include <sstream>
+#include <string>
 
 namespace tests {
 
@@ -265,6 +269,78 @@ TEST_CASE_METHOD(ConFileIOFixture, "XYZ output is finite and non-empty",
   }
 
   std::remove(tmpfile.c_str());
+}
+
+TEST_CASE_METHOD(ConFileIOFixture, "XYZ comment carries the cell and full coords",
+                 "[confileio][xyz]") {
+  original->setPosition(0, 0, 1.234567891234567);
+
+  auto tmppath = std::filesystem::temp_directory_path() / "_test_xyz_cell";
+  std::string tmpbase = tmppath.string();
+  REQUIRE(eonc::io::io_ok(eonc::io::matter2xyz(*original, tmpbase)));
+  std::string tmpfile = tmpbase + ".xyz";
+
+  std::ifstream f(tmpfile);
+  std::string count_line;
+  std::string comment;
+  std::string atom_line;
+  REQUIRE(static_cast<bool>(std::getline(f, count_line)));
+  REQUIRE(static_cast<bool>(std::getline(f, comment)));
+  REQUIRE(static_cast<bool>(std::getline(f, atom_line)));
+
+  REQUIRE(comment.find("Lattice=\"") != std::string::npos);
+  REQUIRE(comment.find("Properties=species:S:1:pos:R:3") != std::string::npos);
+  const Matrix3d cell = original->getCell();
+  REQUIRE(comment.find(std::format("{:.17g}", cell(0, 0))) != std::string::npos);
+  REQUIRE(atom_line.find(std::format("{:.17g}", original->getPosition(0, 0))) !=
+          std::string::npos);
+
+  std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE_METHOD(ConFileIOFixture, "XYZ append rejects a different atom count",
+                 "[confileio][xyz]") {
+  auto tmppath = std::filesystem::temp_directory_path() / "_test_xyz_append";
+  std::string tmpfile = tmppath.string() + ".xyz";
+  {
+    std::ofstream out(tmpfile);
+    out << "1\ncomment\nH 0 0 0\n";
+  }
+  const std::string before = [&tmpfile]() {
+    std::ifstream in(tmpfile);
+    return std::string((std::istreambuf_iterator<char>(in)),
+                       std::istreambuf_iterator<char>());
+  }();
+  REQUIRE(original->numberOfAtoms() != 1);
+  REQUIRE(eonc::io::matter2xyz(*original, tmppath.string(), true) ==
+          eonc::io::IoStatus::InvalidArgument);
+  std::ifstream in(tmpfile);
+  const std::string after((std::istreambuf_iterator<char>(in)),
+                          std::istreambuf_iterator<char>());
+  REQUIRE(after == before);
+  std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE_METHOD(ConFileIOFixture, "XYZ append concatenates a matching frame",
+                 "[confileio][xyz]") {
+  auto tmppath = std::filesystem::temp_directory_path() / "_test_xyz_two";
+  REQUIRE(eonc::io::io_ok(eonc::io::matter2xyz(*original, tmppath.string(), false)));
+  REQUIRE(eonc::io::io_ok(eonc::io::matter2xyz(*original, tmppath.string(), true)));
+  std::string tmpfile = tmppath.string() + ".xyz";
+  std::ifstream f(tmpfile);
+  int first = 0;
+  int second = 0;
+  std::string skip;
+  REQUIRE(static_cast<bool>(f >> first));
+  REQUIRE(first == original->numberOfAtoms());
+  std::getline(f, skip);
+  std::getline(f, skip);
+  for (long i = 0; i < original->numberOfAtoms(); ++i) {
+    std::getline(f, skip);
+  }
+  REQUIRE(static_cast<bool>(f >> second));
+  REQUIRE(second == original->numberOfAtoms());
+  std::filesystem::remove(tmpfile);
 }
 
 TEST_CASE_METHOD(ConFileIOFixture,
@@ -637,6 +713,42 @@ TEST_CASE("ConFileIO writeTibble produces valid output",
   REQUIRE(std::filesystem::exists(tmpfile));
   auto fsize = std::filesystem::file_size(tmpfile);
   REQUIRE(fsize > 50);
+
+  std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE("ConFileIO writeTibble uses atom ids and skips a dirty pot",
+          "[confileio][tibble]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto m = std::make_shared<Matter>(pot, params);
+  m->con2matter(std::string("reactant.con"));
+  REQUIRE(m->needsForceUpdate());
+  m->setAtomIndex(0, 41);
+
+  auto tmppath =
+      std::filesystem::temp_directory_path() / "_test_tibble_ids.dat";
+  const std::string tmpfile = tmppath.string();
+  REQUIRE(eonc::io::io_ok(eonc::io::writeTibble(*m, tmpfile)));
+
+  std::ifstream in(tmpfile);
+  std::string header;
+  std::string row;
+  REQUIRE(static_cast<bool>(std::getline(in, header)));
+  REQUIRE(static_cast<bool>(std::getline(in, row)));
+  REQUIRE(header.find("fx") == std::string::npos);
+  REQUIRE(header.find("atmID") != std::string::npos);
+  // x y z mass symbol atmID fixed -- id is the second-to-last field.
+  std::istringstream fields(row);
+  std::string tok;
+  std::string prev;
+  std::string last;
+  while (fields >> tok) {
+    prev = last;
+    last = tok;
+  }
+  REQUIRE(prev == "41");
 
   std::filesystem::remove(tmpfile);
 }

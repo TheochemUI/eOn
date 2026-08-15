@@ -1,0 +1,1 @@
+Client and server now target readcon 0.14 (CON spec 3): the meson wrap is `v0.14.0`, and `eon-akmc` / `pyeonclient` require `readcon>=0.14,<0.15`. Writers emit canonical metadata key order. `loadxyz` is chemfiles ingress when `readcon-chemfiles` is installed; XYZ *egress* stays extended XYZ because readcon's chemfiles API is read-only.

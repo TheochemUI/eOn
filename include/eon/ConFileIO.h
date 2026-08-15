@@ -133,8 +133,20 @@ void set_write_con_forces(bool enabled) noexcept;
  */
 void resetConAppendState();
 [[nodiscard]] IoStatus matter2convel(Matter &m, std::string filename);
+
+/**
+ * Write one extended-XYZ frame: Lattice= cell and 17-digit coordinates.
+ *
+ * `append` concatenates another frame. A target whose last frame has a
+ * different atom count yields InvalidArgument and is left unchanged.
+ * Chemfiles in readcon is ingress (XYZ/PDB/GRO into ConFrame), not
+ * XYZ egress, so this writer emits the Lattice= comment ASE and
+ * chemfiles already read.
+ */
 [[nodiscard]] IoStatus matter2xyz(Matter &m, std::string filename,
                                   bool append = false);
+
+/// Debug table (positions, optional cached forces). Not a structure format.
 [[nodiscard]] IoStatus writeTibble(Matter &m, std::string filename);
 
 /**

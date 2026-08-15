@@ -63,9 +63,9 @@ def test_fileio_imports_and_calls_readcon():
         "readcon.ConFrame",
     ):
         assert api in src, f"the .con path must use {api}"
-    # No chemfiles on the server .con path
-    assert "chemfiles" not in src.lower()
-    assert "read_chemfiles" not in src
+    # .con stays on the core reader; chemfiles is the XYZ/PDB/GRO edge.
+    assert "readcon.read_con" in fileio_src
+    assert "readcon.read_chemfiles_first" in fileio_src
     # Not a hand-rolled tokenizer loop for coordinates
     assert "Coordinates of component" not in src
 
@@ -84,16 +84,12 @@ def test_readcon_version_and_chemfiles_status():
     """Record readcon pin; eOn server I/O does not require chemfiles extra."""
     ver = getattr(readcon, "__version__", None)
     assert ver is not None
-    # eOn pins readcon >=0.13.1,<0.14 in pyproject.toml, pyproject-pyeonclient.toml
-    # and pixi.toml, matching subprojects/readcon-core.wrap. The floor is the
-    # ConFileIO API (clone, bulk set_*_from_flat, compression_from_extension).
-    # The cap is a wire-format bound: readcon 0.14 writes con_spec_version 3,
-    # which the readcon-core 0.13.1 parser the C++ client links against rejects
-    # with UnsupportedSpecVersion, so the server would emit .con files its own
-    # client cannot read.
+    # eOn pins readcon >=0.14,<0.15 in pyproject.toml, pyproject-pyeonclient.toml
+    # and pixi.toml, matching subprojects/readcon-core.wrap v0.14.0. Client and
+    # server must share CON spec 3.
     parts = _version_tuple(ver)
-    assert parts >= (0, 13, 1), ver
-    assert parts < (0, 14, 0), ver
+    assert parts >= (0, 14, 0), ver
+    assert parts < (0, 15, 0), ver
     has_cf = readcon.has_chemfiles_support()
     # Default install (no [chemfiles] extra): False. Document either way.
     assert isinstance(has_cf, bool)
@@ -103,15 +99,21 @@ def test_readcon_version_and_chemfiles_status():
 
 
 def test_readcon_core_not_chemfiles_for_server_io():
-    """eOn does not import chemfiles-backed APIs for .con server I/O."""
-    assert not hasattr(io, "read_chemfiles")
-    src = inspect.getsource(io)
+    """The .con path uses readcon-core even when chemfiles is installed."""
+    src = inspect.getsource(io.loadcon)
     assert "read_chemfiles" not in src
-    # Live readcon core path works regardless of chemfiles extra
     fixture = DATA / "server" / "Pt_Heptamer_oneLayer" / "pos.con"
     frames = readcon.read_con(str(fixture))
     assert len(frames) >= 1
     assert len(frames[0]) > 0
+
+
+def test_loadxyz_requires_chemfiles_extra():
+    """Without the chemfiles extra, loadxyz names the missing extra."""
+    if readcon.has_chemfiles_support():
+        pytest.skip("readcon-chemfiles is installed")
+    with pytest.raises(RuntimeError, match="readcon-chemfiles"):
+        io.loadxyz("water.xyz")
 
 
 @pytest.mark.parametrize("path", _readable_con_fixtures(), ids=lambda p: str(p.relative_to(DATA)))
@@ -213,6 +215,31 @@ def test_savecon_append_mode(tmp_path: Path):
     shifted = a.copy()
     shifted.r = shifted.r + 0.25
     io.savecon(str(out), shifted, w="a")
+    frames = io.loadcons(str(out))
+    assert len(frames) == 2
+    np.testing.assert_allclose(frames[1].r, shifted.r, atol=1e-6)
+
+
+def test_savecon_append_does_not_reread_the_movie(tmp_path: Path, monkeypatch):
+    """Append must serialize the new frame only, not parse N existing frames."""
+    path = DATA / "client" / "oxadiazole" / "pos.con"
+    a = io.loadcon(str(path))
+    out = tmp_path / "append.con"
+    io.savecon(str(out), a, w="w")
+    before = out.read_bytes()
+
+    def boom(*_args, **_kwargs):
+        raise AssertionError("append must not re-parse the movie")
+
+    monkeypatch.setattr(readcon, "read_con", boom)
+    shifted = a.copy()
+    shifted.r = shifted.r + 0.25
+    io.savecon(str(out), shifted, w="a")
+    monkeypatch.undo()
+
+    after = out.read_bytes()
+    assert after.startswith(before)
+    assert len(after) > len(before)
     frames = io.loadcons(str(out))
     assert len(frames) == 2
     np.testing.assert_allclose(frames[1].r, shifted.r, atol=1e-6)

@@ -118,7 +118,35 @@ def loadcons(filename):
     return [_frame_to_atoms(f) for f in frames]
 
 
+def loadxyz(filename):
+    '''
+    Load the first frame of an XYZ/PDB/GRO file via readcon chemfiles ingress.
+
+    Requires a chemfiles-linked readcon (``pip install readcon-chemfiles``).
+    The .con path stays on readcon-core; this is the foreign-format edge.
+    '''
+    if not getattr(readcon, "has_chemfiles_support", lambda: False)():
+        raise RuntimeError(
+            "loadxyz needs a chemfiles-linked readcon "
+            "(pip install readcon-chemfiles)"
+        )
+    return _frame_to_atoms(readcon.read_chemfiles_first(filename))
+
+
+def _tokens_are_ints(tokens):
+    """True when every token parses as an int (VASP 4 counts line)."""
+    if not tokens:
+        return False
+    for tok in tokens:
+        try:
+            int(tok)
+        except ValueError:
+            return False
+    return True
+
+
 def loadposcars(filename):
+    '''Load every POSCAR frame from filename (VASP 4 or VASP 5).'''
     p = []
     with open(filename, 'r') as filein:
         while True:
@@ -171,24 +199,52 @@ def _atoms_to_frame(p):
     return p.to_conframe()
 
 
+def _path_is_compressed_con(path):
+    name = os.path.basename(path).lower()
+    return name.endswith(".gz") or name.endswith(".zst")
+
+
+def _file_ends_with_newline(path):
+    """True for an empty file too: nothing needs separating from the first frame."""
+    try:
+        with open(path, "rb") as fh:
+            fh.seek(0, os.SEEK_END)
+            if fh.tell() == 0:
+                return True
+            fh.seek(-1, os.SEEK_END)
+            return fh.read(1) == b"\n"
+    except OSError:
+        return True
+
+
 def savecon(fileout, p, w = 'w'):
     '''
     Save a con file via readcon.
         fileout: can be either a file name or a file-like object
         p:       Structure (or Structure-like) to save
         w:       write/append flag
+
+    Append of an uncompressed file concatenates one serialized frame. A
+    gzip or zstd target cannot be extended in place, so those still
+    read the existing frames and rewrite the file.
     '''
     frame = _atoms_to_frame(p)
     if hasattr(fileout, 'write'):
         text = readcon.write_con_string([frame])
         fileout.write(text)
-    else:
-        if w == 'a' and os.path.exists(fileout):
+    elif w == 'a' and os.path.exists(fileout) and os.path.getsize(fileout) > 0:
+        if _path_is_compressed_con(fileout):
             existing = readcon.read_con(fileout)
             existing.append(frame)
             readcon.write_con(fileout, existing)
         else:
-            readcon.write_con(fileout, [frame])
+            text = readcon.write_con_string([frame])
+            with open(fileout, 'a') as fh:
+                if not _file_ends_with_newline(fileout):
+                    fh.write('\n')
+                fh.write(text)
+    else:
+        readcon.write_con(fileout, [frame])
 
 
 def load_mode(modefilein):
@@ -284,10 +340,18 @@ def parse_results(filein):
 
 def loadposcar(filein):
     '''
-    Load the POSCAR file named filename and returns an atoms object
+    Load a VASP POSCAR (or one frame of a multi-frame movie).
+
+    POSCAR is the one structure format that does not go through readcon:
+    the kdb tool emits VASP 4, and movie.py writes VASP 5 for external
+    viewers. The reader accepts both. After the cell, a line of integer
+    counts is VASP 4 (species taken from the comment); a line of species
+    names followed by the counts is VASP 5.
+
+    filein: filename or file-like object
     '''
     with _maybe_open(filein, 'r', 'readline') as f:
-        # Line 1: Atom types
+        # Line 1: comment, often the species names.
         AtomTypes = f.readline().split()
         # Line 2: scaling of coordinates
         scale = float(f.readline())
@@ -296,17 +360,21 @@ def loadposcar(filein):
         for i in range(3):
             line = f.readline().split()
             box[i] = numpy.array([float(line[0]), float(line[1]), float(line[2])]) * scale
-        # Line 6: number of atoms of each type.
+        # Line 6 is either VASP 4 counts or VASP 5 species names.
         line = f.readline().split()
-        NumAtomsPerType = []
-        for l in line:
-            NumAtomsPerType.append(int(l))
+        if _tokens_are_ints(line):
+            NumAtomsPerType = [int(tok) for tok in line]
+        else:
+            if line:
+                AtomTypes = line
+            counts_line = f.readline().split()
+            NumAtomsPerType = [int(tok) for tok in counts_line]
         # Now have enough info to make the Structure object.
         num_atoms = sum(NumAtomsPerType)
         p = Structure(num_atoms)
         # Fill in the box.
         p.box = box
-        # Line 7: selective or cartesian
+        # Selective Dynamics (optional) or Cartesian/Direct.
         sel = f.readline()[0]
         selective_flag = (sel == 's' or sel == 'S')
         if not selective_flag:
@@ -343,10 +411,12 @@ def loadposcar(filein):
 
 def saveposcar(fileout, p, w='w', direct = False):
     '''
-    Save a POSCAR
+    Save a VASP 5 POSCAR (species on the comment line and again before
+    the counts). movie.py uses this for visualization; loadposcar reads
+    this layout and the VASP 4 layout kdb produces.
         fileout: name to save it under
-        point:    atoms object to save
-        w:        write/append flag
+        p:       Structure (or Structure-like) to save
+        w:       write/append flag
     '''
     with _maybe_open(fileout, w, 'write') as poscar:
         atom_types = []

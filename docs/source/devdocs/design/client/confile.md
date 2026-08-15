@@ -113,11 +113,12 @@ C++ side for trajectory outputs and downstream visualization tooling.
 
 The `readcon-core` library is fetched as a Meson subproject via
 `subprojects/readcon-core.wrap` and linked statically. The wrap pins release
-tag v0.13.1, and `client/meson.build` asks for `>=0.13.1` on both resolution
+tag v0.14.0, and `client/meson.build` asks for `>=0.14.0` on both resolution
 paths, the pkg-config one and the subproject fallback. `eon/fileio.py` needs
-the companion `readcon` package at `>=0.13.1,<0.14`. That cap draws a
-wire-format bound: readcon 0.14 writes `con_spec_version` 3 files, which a
-0.13.1 parser rejects.
+the companion `readcon` package at `>=0.14,<0.15` so the server writes the
+same CON spec 3 the client emits (units, canonical metadata order,
+`index_proj` fields). After pulling a wrap bump, reset a stale
+`subprojects/readcon-core/` checkout with `meson subprojects update --reset readcon-core`.
 
 ## Updating the subproject
 
