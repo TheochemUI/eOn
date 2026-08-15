@@ -78,11 +78,6 @@ void bind_parameters(nb::module_ &m) {
           },
           [](eonc::Parameters &s, bool v) {
             s.main_options.writeConForces = v;
-            // ConFileIO reads the process-wide flag, not Parameters, so the
-            // field alone does nothing. ParametersINI does the same push
-            // after parsing [Main] write_con_forces. Retiring the global in
-            // favour of a per-write argument would make both redundant.
-            eonc::io::set_write_con_forces(v);
           })
       .def_prop_rw(
           "con_filename",

@@ -390,8 +390,24 @@ readcon::ConFrameBuilder seed_builder(Matter &m,
   return builder;
 }
 
+bool should_write_forces(const Matter &m,
+                         const eonc::io::ConFrameMetadata *metadata) {
+  // Per-write metadata wins so two callers can disagree without a race on
+  // the process-wide flag. Parameters next, so pyeonclient setting the
+  // field on the bound Parameters object is enough. The atomic global is
+  // last (INI parse and the explicit setter).
+  if (metadata && metadata->write_con_forces.has_value()) {
+    return *metadata->write_con_forces;
+  }
+  if (m.getWriteConForces()) {
+    return true;
+  }
+  return eonc::io::write_con_forces();
+}
+
 void apply_geometry(readcon::ConFrameBuilder &builder, Matter &m,
-                    bool with_velocities) {
+                    bool with_velocities,
+                    const eonc::io::ConFrameMetadata *metadata) {
   const long n = m.numberOfAtoms();
   if (n <= 0) {
     return;
@@ -405,7 +421,7 @@ void apply_geometry(readcon::ConFrameBuilder &builder, Matter &m,
   // only enter when the pot is already clean so we serialize cached forces.
   // Gated: force sections are opt-in ([Main] write_con_forces) because
   // ASE-class readers reject frames that carry them.
-  if (eonc::io::write_con_forces() && !m.needsForceUpdate()) {
+  if (should_write_forces(m, metadata) && !m.needsForceUpdate()) {
     builder.set_forces_from_flat(flat_row_major(m.getForcesRaw()));
   }
 
@@ -454,7 +470,7 @@ readcon::ConFrame frame_from_matter(Matter &m,
     }
   }
   apply_frame_metadata(builder, meta_ptr);
-  apply_geometry(builder, m, with_velocities);
+  apply_geometry(builder, m, with_velocities, meta_ptr);
   return builder.build();
 }
 
@@ -893,7 +909,8 @@ buildNebPathFrames(const std::vector<std::shared_ptr<Matter>> &path,
       }
       auto builder = seed.clone();
       apply_frame_metadata(builder, &metadata_per_image[i]);
-      apply_geometry(builder, img, /*with_velocities=*/false);
+      apply_geometry(builder, img, /*with_velocities=*/false,
+                     &metadata_per_image[i]);
       frames.push_back(builder.build());
     }
   } catch (const std::exception &e) {

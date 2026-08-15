@@ -257,6 +257,11 @@ public:
 
   double maxForce(void) const;
 
+  /// Parameters.main_options.writeConForces for this Matter, if bound.
+  [[nodiscard]] bool getWriteConForces() const noexcept {
+    return parameters != nullptr && parameters->main_options.writeConForces;
+  }
+
   // I/O delegates to eonc::io free functions (IoStatus for bindings).
   [[nodiscard]] io::IoStatus writeTibble(std::string filename) {
     return io::writeTibble(*this, filename);
