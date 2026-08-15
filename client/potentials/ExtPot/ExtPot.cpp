@@ -13,7 +13,9 @@
 #include "eon/potentials/ExtPot/ExtPot.h"
 #include "eon/potentials/ExternalCommand.h"
 
+#include <algorithm>
 #include <atomic>
+#include <cctype>
 #include <filesystem>
 #include <format>
 #include <fstream>
@@ -68,6 +70,29 @@ std::string shellQuote(const std::string &text) {
 #endif
 }
 
+#ifdef _WIN32
+bool isWindowsNativeProgram(const std::filesystem::path &path) {
+  std::string ext = path.extension().string();
+  std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c) {
+    return static_cast<char>(std::tolower(c));
+  });
+  return ext == ".exe" || ext == ".bat" || ext == ".cmd" || ext == ".com";
+}
+
+/// \brief cmd.exe will not honor a shebang. The default ext_pot wrapper is a
+/// Python script with no suffix, so launch it with python.
+std::string windowsLaunch(const std::string &command,
+                          const std::string &quotedCommand) {
+  std::error_code ec;
+  const std::filesystem::path named{command};
+  if (!std::filesystem::is_regular_file(named, ec) || ec ||
+      isWindowsNativeProgram(named)) {
+    return quotedCommand;
+  }
+  return std::format("python {}", quotedCommand);
+}
+#endif
+
 /// \brief Build the command line that runs \p command in \p workDir with
 /// \p runDir named in the environment.
 ///
@@ -88,7 +113,8 @@ std::string composeCommand(const std::string &workDir,
 #ifdef _WIN32
   // cmd.exe: quotes around name=value so the value does not include them.
   return std::format("cd /d {} && set \"{}={}\" && {}", shellQuote(workDir),
-                     kRunDirVariable, runDir, quotedCommand);
+                     kRunDirVariable, runDir,
+                     windowsLaunch(command, quotedCommand));
 #else
   return std::format("cd {} && export {}={} && {}", shellQuote(workDir),
                      kRunDirVariable, shellQuote(runDir), quotedCommand);
