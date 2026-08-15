@@ -16,7 +16,10 @@ locally on the server, via MPI,  or using a job queuing system such as
 [SGE](http://www.oracle.com/us/products/tools/oracle-grid-engine-075549.html).
 
 ```{note}
-As of version 2.0 onwards, we recommend using dedicated workflow management tools (like [AiiDA](https://www.aiida.net/) or [Snakemake](https://snakemake.readthedocs.io/) or [Fireworks](https://materialsproject.github.io/fireworks)) instead of using `eOn` to generate submission scripts.
+From 2.0 on, prefer a workflow manager over eOn-generated submit
+scripts. For AiiDA the plugin is {doc}`aiida` (`pip install aiida-eon`).
+Snakemake and [FireWorks](https://materialsproject.github.io/fireworks)
+remain valid alternatives.
 ```
 
 ## Configuration

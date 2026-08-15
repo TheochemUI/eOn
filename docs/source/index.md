@@ -101,6 +101,10 @@ suite ([Home](https://rgpycrumbs.rgoswami.me/tools/eon/index.html),
 [Github](https://github.com/HaoZeke/rgpycrumbs),
 [PyPI](https://pypi.org/project/rgpycrumbs/)).
 
+To schedule `eonclient` on a laptop or a Slurm login node, install
+[aiida-eon](https://pypi.org/project/aiida-eon/) and see
+{doc}`user_guide/aiida`.
+
 # User Guide
 
 ```{toctree}

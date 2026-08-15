@@ -28,6 +28,20 @@ neighbor_lists
 See also the [API reference](../apidocs/pyeonclient.md) and the
 [atomistic-cookbook PET-MAD NEB example](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html).
 
+## AiiDA (`aiida-eon`)
+
+Schedule `eonclient` through AiiDA with the
+[aiida-eon](https://pypi.org/project/aiida-eon/) plugin
+({doc}`aiida`). That is the workdir binary, not the in-process
+Python API.
+
+```{toctree}
+:maxdepth: 1
+:caption: Workflow managers
+
+aiida
+```
+
 ## Configuration file (`config.ini`)
 
 Each of the sections and methods may still be included in a configuration file
@@ -61,7 +75,8 @@ See {doc}`/devdocs/design/client/parameters` for the JSON schema.
 
 ````{margin}
 ```{note}
-As of version 2.0 onwards, we recommend using dedicated workflow management tools (like [AiiDA](https://www.aiida.net/) or [Snakemake](https://snakemake.readthedocs.io/) or [Fireworks](https://materialsproject.github.io/fireworks)) instead of using `eOn` to generate submission scripts.
+From 2.0 on, prefer a workflow manager over eOn-generated submit
+scripts. AiiDA: {doc}`aiida`. Snakemake and FireWorks also work.
 ```
 ````
 
