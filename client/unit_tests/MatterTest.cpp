@@ -264,6 +264,20 @@ TEST_CASE("getForcesRaw includes fixed atoms", "[MatterTest][forces]") {
   REQUIRE(rawForces.row(0).norm() > maskedForces.row(0).norm());
 }
 
+TEST_CASE("copy construct zeros biasPotential so getBiasForces is defined",
+          "[MatterTest][copy]") {
+  auto [m1, params] = makeLJCluster();
+  // Copy ctor delegates to copy-assign. A garbage biasPotential here is
+  // what made pytest on main die at this=0x2020202020200a44.
+  Matter copy(*m1);
+  REQUIRE_NOTHROW(copy.getBiasForces());
+  REQUIRE(copy.getBiasForces().isZero(0.0));
+  Matter assigned = *m1;
+  assigned = *m1;
+  REQUIRE_NOTHROW(assigned.getBiasForces());
+  REQUIRE(assigned.getBiasForces().isZero(0.0));
+}
+
 TEST_CASE("distanceTo computes correct distance", "[MatterTest]") {
   auto [m1, params] = makeLJCluster();
   Matter m2(*m1);
