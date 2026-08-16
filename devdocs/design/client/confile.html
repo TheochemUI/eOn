@@ -107,7 +107,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/ext_pot.html">External potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/ase_pot.html">ASE interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../../user_guide/metatomic_pot.html">Metatomic interface</a></li>
@@ -293,6 +293,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li><a class="reference internal" href="#python-server">Python server</a></li>
 <li><a class="reference internal" href="#build-requirements">Build requirements</a></li>
+<li><a class="reference internal" href="#updating-the-subproject">Updating the subproject</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
   data-type="github" data-user="TheochemUI" data-repo="eOn">
@@ -426,15 +427,30 @@ metadata, and an escape hatch for raw JSON.</p>
 </section>
 <section id="multi-frame-append">
 <h3>Multi-frame (append)<a class="headerlink" href="#multi-frame-append" title="Link to this heading">¶</a></h3>
-<p>For multi-frame output, eOn currently uses correctness-first append semantics:</p>
+<p>For multi-frame output, <code class="docutils literal notranslate"><span class="pre">append=true</span></code> extends the file in place:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">matter2con</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="cm">/*append=*/</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">metadata</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
 </span><span data-line="2"><span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;Failed to append frame&quot;</span><span class="p">);</span>
 </span><span data-line="3"><span class="p">}</span>
 </span></pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">append=true</span></code> reads the existing frames, appends the new frame in memory, and
-rewrites the file. If the target file exists but cannot be parsed, the append
-fails instead of truncating the history.</p>
+<p>The new frame is serialized on its own and its bytes are concatenated onto the
+target, so an N-frame trajectory costs N frame writes rather than N(N+1)/2.
+<code class="docutils literal notranslate"><span class="pre">ConFrameWriter</span></code> emits self-contained frames with no file-level preamble, which
+makes the concatenated result identical to the same frames written in one call.
+Serialization goes through a scratch file next to the target because
+readcon-core exposes neither a writer over a caller-owned stream nor a flush on
+an open writer; the target itself is opened in append mode and flushed before
+the call returns, so every intermediate state on disk is a complete multi-frame
+<code class="docutils literal notranslate"><span class="pre">.con</span></code> that a reader or a <code class="docutils literal notranslate"><span class="pre">tail</span></code> can parse.</p>
+<p>If the target file exists but cannot be parsed, the append fails rather than
+truncating the history. That check runs when eOn did not write the file, or
+when its size or modification time moved since eOn wrote it; frames this
+process wrote and nobody touched since are extended without a re-parse.
+<code class="docutils literal notranslate"><span class="pre">eonc::io::resetConAppendState()</span></code> drops that bookkeeping for a file replaced
+with same-sized content inside one filesystem timestamp tick.</p>
+<p>Gzip and zstd targets keep the read-all-and-rewrite path. A compressed member
+cannot be extended in place, and readcon-core reads a single gzip member, so
+appended members would be invisible on read-back.</p>
 <p>NEB path writers use a small helper wrapper so that per-image metadata stays
 consistent across <code class="docutils literal notranslate"><span class="pre">neb.con</span></code>, <code class="docutils literal notranslate"><span class="pre">neb_path_*.con</span></code>, and related outputs:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">eonc</span><span class="o">::</span><span class="n">neb</span><span class="o">::</span><span class="n">writePathCon</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">tangent</span><span class="p">,</span><span class="w"> </span><span class="n">eigenmode_solvers</span><span class="p">,</span><span class="w"> </span><span class="n">numImages</span><span class="p">,</span>
@@ -467,7 +483,24 @@ the C++ client for trajectory outputs and downstream visualization tooling.</p>
 <li><p><strong>Meson</strong> &gt;= 1.8.0</p></li>
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">readcon-core</span></code> library is fetched as a Meson subproject via
-<code class="docutils literal notranslate"><span class="pre">subprojects/readcon-core.wrap</span></code> and linked statically.</p>
+<code class="docutils literal notranslate"><span class="pre">subprojects/readcon-core.wrap</span></code> and linked statically. The wrap pins release
+the 0.14 line (spec 3, x-only decode from readcon-core #25), and
+<code class="docutils literal notranslate"><span class="pre">client/meson.build</span></code> asks for <code class="docutils literal notranslate"><span class="pre">&gt;=0.14.2</span></code> on both resolution paths.
+<code class="docutils literal notranslate"><span class="pre">eon/fileio.py</span></code> needs the companion <code class="docutils literal notranslate"><span class="pre">readcon</span></code> package at <code class="docutils literal notranslate"><span class="pre">&gt;=0.14.5</span></code>.</p>
+</section>
+<section id="updating-the-subproject">
+<h2>Updating the subproject<a class="headerlink" href="#updating-the-subproject" title="Link to this heading">¶</a></h2>
+<p>Meson uses an existing <code class="docutils literal notranslate"><span class="pre">subprojects/readcon-core/</span></code> directory unchanged and does
+not re-fetch it when the wrap revision changes. After pulling a commit that
+moves the wrap, reset the checkout:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">meson<span class="w"> </span>subprojects<span class="w"> </span>update<span class="w"> </span>--reset<span class="w"> </span>readcon-core
+</span></pre></div>
+</div>
+<p>Skipping the reset leaves the build configuring against whatever tag sits on
+disk. The version constraint on the <code class="docutils literal notranslate"><span class="pre">subproject()</span></code> call catches that at
+configure time and names <code class="docutils literal notranslate"><span class="pre">readcon-core</span></code>, so a version complaint about the
+subproject points at a stale checkout rather than at anything in
+<code class="docutils literal notranslate"><span class="pre">client/ConFileIO.cpp</span></code>.</p>
 </section>
 </section>
 

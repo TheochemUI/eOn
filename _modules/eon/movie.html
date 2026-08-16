@@ -107,7 +107,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic interface</a></li>
@@ -340,410 +340,422 @@ data-aria-dark="Switch to auto color mode">
   <article class="yue dark-code" role="main">
           <h1>Source code for eon.movie</h1><div class="highlight"><pre>
 <span></span><span data-line="1">
-</span><span data-line="2"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-</span><span data-line="4"><span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
-</span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">fileio</span> <span class="k">as</span> <span class="n">io</span>
-</span><span data-line="7">
+</span><span data-line="2"><span class="sd">&quot;&quot;&quot;AKMC movie writers.</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="sd">Visualization output is VASP 5 POSCAR (`movie.poscar`, `dynamics.poscar`,</span>
+</span><span data-line="5"><span class="sd">and the other names below). That is the one structure format that does</span>
+</span><span data-line="6"><span class="sd">not go through readcon: external viewers read POSCAR, and `loadposcar`</span>
+</span><span data-line="7"><span class="sd">accepts both this VASP 5 layout and the VASP 4 files kdb produces.</span>
+</span><span data-line="8"><span class="sd">&quot;&quot;&quot;</span>
+</span><span data-line="9">
+</span><span data-line="10"><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+</span><span data-line="11"><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+</span><span data-line="12"><span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+</span><span data-line="13">
+</span><span data-line="14"><span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">fileio</span> <span class="k">as</span> <span class="n">io</span>
+</span><span data-line="15">
 <div class="viewcode-block" id="make_movie">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.make_movie">[docs]</a>
-</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">make_movie</span><span class="p">(</span><span class="n">movie_type</span><span class="p">,</span> <span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">separate_files</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-</span><span data-line="9">    <span class="n">movie_path</span> <span class="o">=</span> <span class="s2">&quot;movie.poscar&quot;</span>
-</span><span data-line="10">    <span class="k">if</span> <span class="n">movie_type</span> <span class="o">==</span> <span class="s1">&#39;dynamics&#39;</span><span class="p">:</span>
-</span><span data-line="11">        <span class="n">atoms_list</span> <span class="o">=</span> <span class="n">dynamics</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">)</span>
-</span><span data-line="12">        <span class="n">movie_path</span> <span class="o">=</span> <span class="s2">&quot;dynamics.poscar&quot;</span>
-</span><span data-line="13">    <span class="k">elif</span> <span class="n">movie_type</span> <span class="o">==</span> <span class="s1">&#39;states&#39;</span><span class="p">:</span>
-</span><span data-line="14">        <span class="n">atoms_list</span> <span class="o">=</span> <span class="n">dynamics</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-</span><span data-line="15">        <span class="n">movie_path</span> <span class="o">=</span> <span class="s2">&quot;states.poscar&quot;</span>
-</span><span data-line="16">    <span class="k">elif</span> <span class="n">movie_type</span> <span class="o">==</span> <span class="s1">&#39;fastestpath&#39;</span><span class="p">:</span>
-</span><span data-line="17">        <span class="n">atoms_list</span> <span class="o">=</span> <span class="n">fastest_path</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">)</span>
-</span><span data-line="18">        <span class="n">movie_path</span> <span class="o">=</span> <span class="s2">&quot;fastestpath.poscar&quot;</span>
-</span><span data-line="19">    <span class="k">elif</span> <span class="n">movie_type</span> <span class="o">==</span> <span class="s1">&#39;fastestfullpath&#39;</span><span class="p">:</span>
-</span><span data-line="20">        <span class="n">atoms_list</span> <span class="o">=</span> <span class="n">fastest_path</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="21">        <span class="n">movie_path</span> <span class="o">=</span> <span class="s2">&quot;fastestfullpath.poscar&quot;</span>
-</span><span data-line="22">    <span class="k">elif</span> <span class="n">movie_type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;processes&#39;</span><span class="p">:</span>
-</span><span data-line="23">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="24">            <span class="n">statenr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">movie_type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
-</span><span data-line="25">        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-</span><span data-line="26">            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;state number must be an integer&quot;</span><span class="p">)</span>
-</span><span data-line="27">            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</span><span data-line="28">        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-</span><span data-line="29">            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;must give a state number&quot;</span><span class="p">)</span>
-</span><span data-line="30">            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</span><span data-line="31">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;making process movie for state </span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">statenr</span><span class="p">)</span>
-</span><span data-line="32">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">movie_type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
-</span><span data-line="33">            <span class="n">limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">movie_type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span>
-</span><span data-line="34">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="35">            <span class="n">limit</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span data-line="36">        <span class="n">atoms_list</span> <span class="o">=</span> <span class="n">processes</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">statenr</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
-</span><span data-line="37">        <span class="n">movie_path</span> <span class="o">=</span> <span class="s2">&quot;processes_</span><span class="si">%i</span><span class="s2">.poscar&quot;</span> <span class="o">%</span> <span class="n">statenr</span>
-</span><span data-line="38">    <span class="k">elif</span> <span class="n">movie_type</span> <span class="o">==</span> <span class="s1">&#39;graph&#39;</span><span class="p">:</span>
-</span><span data-line="39">        <span class="n">s</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">)</span>
-</span><span data-line="40">        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s2">&quot;graph.dot&quot;</span><span class="p">):</span>
-</span><span data-line="41">            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;File </span><span class="si">%s</span><span class="s2"> already exists&quot;</span> <span class="o">%</span> <span class="s2">&quot;graph.dot&quot;</span><span class="p">)</span>
-</span><span data-line="42">            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</span><span data-line="43">        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;graph.dot&quot;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
-</span><span data-line="44">        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-</span><span data-line="45">        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span data-line="46">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;If you have graphviz installed:&quot;</span><span class="p">)</span>
-</span><span data-line="47">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;dot graph.dot -Tpng -o graph.png&quot;</span><span class="p">)</span>
-</span><span data-line="48">        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</span><span data-line="49">    <span class="k">else</span><span class="p">:</span>
-</span><span data-line="50">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unknown MOVIE_TYPE&quot;</span><span class="p">)</span>
-</span><span data-line="51">        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</span><span data-line="52">    <span class="k">if</span> <span class="n">separate_files</span><span class="p">:</span>
-</span><span data-line="53">        <span class="n">movie_dir</span> <span class="o">=</span> <span class="s2">&quot;movies&quot;</span>
-</span><span data-line="54">        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">movie_dir</span><span class="p">):</span>
-</span><span data-line="55">            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">movie_dir</span><span class="p">)</span>
-</span><span data-line="56">        <span class="n">movie_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">movie_dir</span><span class="p">,</span> <span class="n">movie_path</span><span class="p">)</span>
-</span><span data-line="57">        <span class="c1"># Delete existing files with the same root.</span>
-</span><span data-line="58">        <span class="k">for</span> <span class="n">old_poscar</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">movie_path</span> <span class="o">+</span> <span class="s2">&quot;.*&quot;</span><span class="p">):</span>
-</span><span data-line="59">            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">old_poscar</span><span class="p">)</span>
-</span><span data-line="60">        <span class="c1"># Write new movie.</span>
-</span><span data-line="61">        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">atoms</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">atoms_list</span><span class="p">):</span>
-</span><span data-line="62">            <span class="n">path_i</span> <span class="o">=</span> <span class="n">movie_path</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;.</span><span class="si">%010d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
-</span><span data-line="63">            <span class="n">io</span><span class="o">.</span><span class="n">saveposcar</span><span class="p">(</span><span class="n">path_i</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-</span><span data-line="64">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved </span><span class="si">%i</span><span class="s2"> frames to </span><span class="si">%s</span><span class="s2">.*&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms_list</span><span class="p">),</span> <span class="n">movie_path</span><span class="p">))</span>
-</span><span data-line="65">    <span class="k">else</span><span class="p">:</span>
-</span><span data-line="66">        <span class="c1"># Delete existing file.</span>
-</span><span data-line="67">        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">movie_path</span><span class="p">):</span>
-</span><span data-line="68">            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">movie_path</span><span class="p">)</span>
-</span><span data-line="69">        <span class="c1"># Write movie.</span>
-</span><span data-line="70">        <span class="k">for</span> <span class="n">atoms</span> <span class="ow">in</span> <span class="n">atoms_list</span><span class="p">:</span>
-</span><span data-line="71">            <span class="n">io</span><span class="o">.</span><span class="n">saveposcar</span><span class="p">(</span><span class="n">movie_path</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
-</span><span data-line="72">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved </span><span class="si">%i</span><span class="s2"> frames to </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms_list</span><span class="p">),</span> <span class="n">movie_path</span><span class="p">))</span></div>
+</span><span data-line="16"><span class="k">def</span><span class="w"> </span><span class="nf">make_movie</span><span class="p">(</span><span class="n">movie_type</span><span class="p">,</span> <span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">separate_files</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+</span><span data-line="17">    <span class="n">movie_path</span> <span class="o">=</span> <span class="s2">&quot;movie.poscar&quot;</span>
+</span><span data-line="18">    <span class="k">if</span> <span class="n">movie_type</span> <span class="o">==</span> <span class="s1">&#39;dynamics&#39;</span><span class="p">:</span>
+</span><span data-line="19">        <span class="n">atoms_list</span> <span class="o">=</span> <span class="n">dynamics</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">)</span>
+</span><span data-line="20">        <span class="n">movie_path</span> <span class="o">=</span> <span class="s2">&quot;dynamics.poscar&quot;</span>
+</span><span data-line="21">    <span class="k">elif</span> <span class="n">movie_type</span> <span class="o">==</span> <span class="s1">&#39;states&#39;</span><span class="p">:</span>
+</span><span data-line="22">        <span class="n">atoms_list</span> <span class="o">=</span> <span class="n">dynamics</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+</span><span data-line="23">        <span class="n">movie_path</span> <span class="o">=</span> <span class="s2">&quot;states.poscar&quot;</span>
+</span><span data-line="24">    <span class="k">elif</span> <span class="n">movie_type</span> <span class="o">==</span> <span class="s1">&#39;fastestpath&#39;</span><span class="p">:</span>
+</span><span data-line="25">        <span class="n">atoms_list</span> <span class="o">=</span> <span class="n">fastest_path</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">)</span>
+</span><span data-line="26">        <span class="n">movie_path</span> <span class="o">=</span> <span class="s2">&quot;fastestpath.poscar&quot;</span>
+</span><span data-line="27">    <span class="k">elif</span> <span class="n">movie_type</span> <span class="o">==</span> <span class="s1">&#39;fastestfullpath&#39;</span><span class="p">:</span>
+</span><span data-line="28">        <span class="n">atoms_list</span> <span class="o">=</span> <span class="n">fastest_path</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="29">        <span class="n">movie_path</span> <span class="o">=</span> <span class="s2">&quot;fastestfullpath.poscar&quot;</span>
+</span><span data-line="30">    <span class="k">elif</span> <span class="n">movie_type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;processes&#39;</span><span class="p">:</span>
+</span><span data-line="31">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="32">            <span class="n">statenr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">movie_type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+</span><span data-line="33">        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span data-line="34">            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;state number must be an integer&quot;</span><span class="p">)</span>
+</span><span data-line="35">            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="36">        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+</span><span data-line="37">            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;must give a state number&quot;</span><span class="p">)</span>
+</span><span data-line="38">            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="39">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;making process movie for state </span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">statenr</span><span class="p">)</span>
+</span><span data-line="40">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">movie_type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+</span><span data-line="41">            <span class="n">limit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">movie_type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)[</span><span class="mi">2</span><span class="p">])</span>
+</span><span data-line="42">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="43">            <span class="n">limit</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="44">        <span class="n">atoms_list</span> <span class="o">=</span> <span class="n">processes</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">statenr</span><span class="p">,</span> <span class="n">limit</span><span class="p">)</span>
+</span><span data-line="45">        <span class="n">movie_path</span> <span class="o">=</span> <span class="s2">&quot;processes_</span><span class="si">%i</span><span class="s2">.poscar&quot;</span> <span class="o">%</span> <span class="n">statenr</span>
+</span><span data-line="46">    <span class="k">elif</span> <span class="n">movie_type</span> <span class="o">==</span> <span class="s1">&#39;graph&#39;</span><span class="p">:</span>
+</span><span data-line="47">        <span class="n">s</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">)</span>
+</span><span data-line="48">        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s2">&quot;graph.dot&quot;</span><span class="p">):</span>
+</span><span data-line="49">            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;File </span><span class="si">%s</span><span class="s2"> already exists&quot;</span> <span class="o">%</span> <span class="s2">&quot;graph.dot&quot;</span><span class="p">)</span>
+</span><span data-line="50">            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="51">        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;graph.dot&quot;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+</span><span data-line="52">        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</span><span data-line="53">        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span data-line="54">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;If you have graphviz installed:&quot;</span><span class="p">)</span>
+</span><span data-line="55">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;dot graph.dot -Tpng -o graph.png&quot;</span><span class="p">)</span>
+</span><span data-line="56">        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span data-line="57">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="58">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unknown MOVIE_TYPE&quot;</span><span class="p">)</span>
+</span><span data-line="59">        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="60">    <span class="k">if</span> <span class="n">separate_files</span><span class="p">:</span>
+</span><span data-line="61">        <span class="n">movie_dir</span> <span class="o">=</span> <span class="s2">&quot;movies&quot;</span>
+</span><span data-line="62">        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">movie_dir</span><span class="p">):</span>
+</span><span data-line="63">            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">movie_dir</span><span class="p">)</span>
+</span><span data-line="64">        <span class="n">movie_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">movie_dir</span><span class="p">,</span> <span class="n">movie_path</span><span class="p">)</span>
+</span><span data-line="65">        <span class="c1"># Delete existing files with the same root.</span>
+</span><span data-line="66">        <span class="k">for</span> <span class="n">old_poscar</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">movie_path</span> <span class="o">+</span> <span class="s2">&quot;.*&quot;</span><span class="p">):</span>
+</span><span data-line="67">            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">old_poscar</span><span class="p">)</span>
+</span><span data-line="68">        <span class="c1"># Write new movie.</span>
+</span><span data-line="69">        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">atoms</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">atoms_list</span><span class="p">):</span>
+</span><span data-line="70">            <span class="n">path_i</span> <span class="o">=</span> <span class="n">movie_path</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;.</span><span class="si">%010d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+</span><span data-line="71">            <span class="n">io</span><span class="o">.</span><span class="n">saveposcar</span><span class="p">(</span><span class="n">path_i</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+</span><span data-line="72">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved </span><span class="si">%i</span><span class="s2"> frames to </span><span class="si">%s</span><span class="s2">.*&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms_list</span><span class="p">),</span> <span class="n">movie_path</span><span class="p">))</span>
+</span><span data-line="73">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="74">        <span class="c1"># Delete existing file.</span>
+</span><span data-line="75">        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">movie_path</span><span class="p">):</span>
+</span><span data-line="76">            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">movie_path</span><span class="p">)</span>
+</span><span data-line="77">        <span class="c1"># Write movie.</span>
+</span><span data-line="78">        <span class="k">for</span> <span class="n">atoms</span> <span class="ow">in</span> <span class="n">atoms_list</span><span class="p">:</span>
+</span><span data-line="79">            <span class="n">io</span><span class="o">.</span><span class="n">saveposcar</span><span class="p">(</span><span class="n">movie_path</span><span class="p">,</span> <span class="n">atoms</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+</span><span data-line="80">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved </span><span class="si">%i</span><span class="s2"> frames to </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms_list</span><span class="p">),</span> <span class="n">movie_path</span><span class="p">))</span></div>
 
-</span><span data-line="73">
-</span><span data-line="74">
+</span><span data-line="81">
+</span><span data-line="82">
 <div class="viewcode-block" id="get_trajectory">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.get_trajectory">[docs]</a>
-</span><span data-line="75"><span class="k">def</span><span class="w"> </span><span class="nf">get_trajectory</span><span class="p">(</span><span class="n">trajectory_path</span><span class="p">):</span>
-</span><span data-line="76">    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">trajectory_path</span><span class="p">)</span>
-</span><span data-line="77">    <span class="n">trajectory</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span data-line="78">    <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-</span><span data-line="79">    <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-</span><span data-line="80">    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
-</span><span data-line="81">        <span class="n">fields</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-</span><span data-line="82">        <span class="n">statenr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
-</span><span data-line="83">        <span class="n">trajectory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">statenr</span><span class="p">)</span>
-</span><span data-line="84">
-</span><span data-line="85">    <span class="k">return</span> <span class="n">trajectory</span></div>
+</span><span data-line="83"><span class="k">def</span><span class="w"> </span><span class="nf">get_trajectory</span><span class="p">(</span><span class="n">trajectory_path</span><span class="p">):</span>
+</span><span data-line="84">    <span class="n">trajectory</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span data-line="85">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">trajectory_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span data-line="86">        <span class="n">header</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+</span><span data-line="87">        <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span data-line="88">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="89">            <span class="n">product_col</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;product-id&quot;</span><span class="p">)</span>
+</span><span data-line="90">        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+</span><span data-line="91">            <span class="n">product_col</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span data-line="92">        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+</span><span data-line="93">            <span class="n">fields</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+</span><span data-line="94">            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">product_col</span><span class="p">:</span>
+</span><span data-line="95">                <span class="k">continue</span>
+</span><span data-line="96">            <span class="n">trajectory</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="n">product_col</span><span class="p">]))</span>
+</span><span data-line="97">    <span class="k">return</span> <span class="n">trajectory</span></div>
 
-</span><span data-line="86">
+</span><span data-line="98">
 <div class="viewcode-block" id="processes">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.processes">[docs]</a>
-</span><span data-line="87"><span class="k">def</span><span class="w"> </span><span class="nf">processes</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">statenr</span><span class="p">,</span> <span class="n">limit</span><span class="p">):</span>
-</span><span data-line="88">    <span class="k">try</span><span class="p">:</span>
-</span><span data-line="89">        <span class="n">state</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">statenr</span><span class="p">)</span>
-</span><span data-line="90">    <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
-</span><span data-line="91">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error: Cannot make movie for non-existant state&quot;</span><span class="p">)</span>
-</span><span data-line="92">        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</span><span data-line="93">
-</span><span data-line="94">    <span class="n">process_table</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get_process_table</span><span class="p">()</span>
-</span><span data-line="95">    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">process_table</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
-</span><span data-line="96">        <span class="n">process_table</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
-</span><span data-line="97">        <span class="n">process_table</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;reactant&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get_process_reactant</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-</span><span data-line="98">        <span class="n">process_table</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;saddle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get_process_saddle</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-</span><span data-line="99">        <span class="n">process_table</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;product&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get_process_product</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-</span><span data-line="100">    <span class="n">processes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">process_table</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-</span><span data-line="101">    <span class="n">sorted_processes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">processes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">])</span>
-</span><span data-line="102">    <span class="n">sorted_processes</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
-</span><span data-line="103">
-</span><span data-line="104">    <span class="n">atoms_list</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="105">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%4s</span><span class="s2"> </span><span class="si">%16s</span><span class="s2"> </span><span class="si">%16s</span><span class="s2"> </span><span class="si">%16s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;Rate&quot;</span><span class="p">,</span> <span class="s2">&quot;Barrier&quot;</span><span class="p">,</span> <span class="s2">&quot;Prefactor&quot;</span><span class="p">))</span>
-</span><span data-line="106">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-------------------------------------------------------&quot;</span><span class="p">)</span>
-</span><span data-line="107">    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">sorted_processes</span><span class="p">:</span>
-</span><span data-line="108">        <span class="n">atoms_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;reactant&#39;</span><span class="p">])</span>
-</span><span data-line="109">        <span class="n">atoms_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;saddle&#39;</span><span class="p">])</span>
-</span><span data-line="110">        <span class="n">atoms_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">])</span>
-</span><span data-line="111">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%4i</span><span class="s2"> </span><span class="si">%16.5e</span><span class="s2"> </span><span class="si">%16.5f</span><span class="s2"> </span><span class="si">%16.5e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">]</span> <span class="p">,</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;barrier&#39;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;prefactor&#39;</span><span class="p">]))</span>
-</span><span data-line="112">        <span class="n">limit</span> <span class="o">-=</span> <span class="mi">1</span>
-</span><span data-line="113">        <span class="k">if</span> <span class="n">limit</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-</span><span data-line="114">            <span class="k">break</span>
-</span><span data-line="115">    <span class="k">return</span> <span class="n">atoms_list</span></div>
+</span><span data-line="99"><span class="k">def</span><span class="w"> </span><span class="nf">processes</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">statenr</span><span class="p">,</span> <span class="n">limit</span><span class="p">):</span>
+</span><span data-line="100">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="101">        <span class="n">state</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">statenr</span><span class="p">)</span>
+</span><span data-line="102">    <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+</span><span data-line="103">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error: Cannot make movie for non-existant state&quot;</span><span class="p">)</span>
+</span><span data-line="104">        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="105">
+</span><span data-line="106">    <span class="n">process_table</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get_process_table</span><span class="p">()</span>
+</span><span data-line="107">    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">process_table</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+</span><span data-line="108">        <span class="n">process_table</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+</span><span data-line="109">        <span class="n">process_table</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;reactant&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get_process_reactant</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+</span><span data-line="110">        <span class="n">process_table</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;saddle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get_process_saddle</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+</span><span data-line="111">        <span class="n">process_table</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;product&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get_process_product</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+</span><span data-line="112">    <span class="n">processes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">process_table</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+</span><span data-line="113">    <span class="n">sorted_processes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">processes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">])</span>
+</span><span data-line="114">    <span class="n">sorted_processes</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+</span><span data-line="115">
+</span><span data-line="116">    <span class="n">atoms_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="117">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%4s</span><span class="s2"> </span><span class="si">%16s</span><span class="s2"> </span><span class="si">%16s</span><span class="s2"> </span><span class="si">%16s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;Rate&quot;</span><span class="p">,</span> <span class="s2">&quot;Barrier&quot;</span><span class="p">,</span> <span class="s2">&quot;Prefactor&quot;</span><span class="p">))</span>
+</span><span data-line="118">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-------------------------------------------------------&quot;</span><span class="p">)</span>
+</span><span data-line="119">    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">sorted_processes</span><span class="p">:</span>
+</span><span data-line="120">        <span class="n">atoms_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;reactant&#39;</span><span class="p">])</span>
+</span><span data-line="121">        <span class="n">atoms_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;saddle&#39;</span><span class="p">])</span>
+</span><span data-line="122">        <span class="n">atoms_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">])</span>
+</span><span data-line="123">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%4i</span><span class="s2"> </span><span class="si">%16.5e</span><span class="s2"> </span><span class="si">%16.5f</span><span class="s2"> </span><span class="si">%16.5e</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">]</span> <span class="p">,</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;barrier&#39;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;prefactor&#39;</span><span class="p">]))</span>
+</span><span data-line="124">        <span class="n">limit</span> <span class="o">-=</span> <span class="mi">1</span>
+</span><span data-line="125">        <span class="k">if</span> <span class="n">limit</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="126">            <span class="k">break</span>
+</span><span data-line="127">    <span class="k">return</span> <span class="n">atoms_list</span></div>
 
-</span><span data-line="116">
+</span><span data-line="128">
 <div class="viewcode-block" id="dot">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.dot">[docs]</a>
-</span><span data-line="117"><span class="k">def</span><span class="w"> </span><span class="nf">dot</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
-</span><span data-line="118">    <span class="n">G</span> <span class="o">=</span> <span class="n">make_graph</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
-</span><span data-line="119">    <span class="k">return</span> <span class="n">G</span><span class="o">.</span><span class="n">dot</span><span class="p">()</span></div>
+</span><span data-line="129"><span class="k">def</span><span class="w"> </span><span class="nf">dot</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
+</span><span data-line="130">    <span class="n">G</span> <span class="o">=</span> <span class="n">make_graph</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
+</span><span data-line="131">    <span class="k">return</span> <span class="n">G</span><span class="o">.</span><span class="n">dot</span><span class="p">()</span></div>
 
-</span><span data-line="120">
+</span><span data-line="132">
 <div class="viewcode-block" id="dynamics">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.dynamics">[docs]</a>
-</span><span data-line="121"><span class="k">def</span><span class="w"> </span><span class="nf">dynamics</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-</span><span data-line="122">    <span class="k">if</span> <span class="ow">not</span> <span class="n">unique</span><span class="p">:</span>
-</span><span data-line="123">        <span class="n">trajectory_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="s2">&quot;dynamics.txt&quot;</span><span class="p">)</span>
-</span><span data-line="124">        <span class="n">trajectory</span> <span class="o">=</span> <span class="n">get_trajectory</span><span class="p">(</span><span class="n">trajectory_path</span><span class="p">)</span>
-</span><span data-line="125">    <span class="k">else</span><span class="p">:</span>
-</span><span data-line="126">        <span class="n">trajectory</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">states</span><span class="o">.</span><span class="n">get_num_states</span><span class="p">()))</span>
-</span><span data-line="127">
-</span><span data-line="128">    <span class="n">atoms_list</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="129">
-</span><span data-line="130">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-</span><span data-line="131">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error: There have been no dynamics steps&quot;</span><span class="p">)</span>
-</span><span data-line="132">        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</span><span data-line="133">
-</span><span data-line="134">    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">trajectory</span><span class="p">:</span>
-</span><span data-line="135">        <span class="n">state</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-</span><span data-line="136">        <span class="n">reactant</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">()</span>
-</span><span data-line="137">        <span class="n">atoms_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reactant</span><span class="p">)</span>
-</span><span data-line="138">
-</span><span data-line="139">    <span class="k">return</span> <span class="n">atoms_list</span></div>
+</span><span data-line="133"><span class="k">def</span><span class="w"> </span><span class="nf">dynamics</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+</span><span data-line="134">    <span class="k">if</span> <span class="ow">not</span> <span class="n">unique</span><span class="p">:</span>
+</span><span data-line="135">        <span class="n">trajectory_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="s2">&quot;dynamics.txt&quot;</span><span class="p">)</span>
+</span><span data-line="136">        <span class="n">trajectory</span> <span class="o">=</span> <span class="n">get_trajectory</span><span class="p">(</span><span class="n">trajectory_path</span><span class="p">)</span>
+</span><span data-line="137">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="138">        <span class="n">trajectory</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">states</span><span class="o">.</span><span class="n">get_num_states</span><span class="p">()))</span>
+</span><span data-line="139">
+</span><span data-line="140">    <span class="n">atoms_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="141">
+</span><span data-line="142">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="143">        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error: There have been no dynamics steps&quot;</span><span class="p">)</span>
+</span><span data-line="144">        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="145">
+</span><span data-line="146">    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">trajectory</span><span class="p">:</span>
+</span><span data-line="147">        <span class="n">state</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span data-line="148">        <span class="n">reactant</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">()</span>
+</span><span data-line="149">        <span class="n">atoms_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reactant</span><span class="p">)</span>
+</span><span data-line="150">
+</span><span data-line="151">    <span class="k">return</span> <span class="n">atoms_list</span></div>
 
-</span><span data-line="140">
+</span><span data-line="152">
 <div class="viewcode-block" id="make_graph">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.make_graph">[docs]</a>
-</span><span data-line="141"><span class="k">def</span><span class="w"> </span><span class="nf">make_graph</span><span class="p">(</span><span class="n">states</span><span class="p">):</span>
-</span><span data-line="142">    <span class="c1"># Build the graph.</span>
-</span><span data-line="143">    <span class="n">G</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
-</span><span data-line="144">    <span class="k">for</span> <span class="n">statenr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">states</span><span class="o">.</span><span class="n">get_num_states</span><span class="p">()):</span>
-</span><span data-line="145">        <span class="n">state</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">statenr</span><span class="p">)</span>
-</span><span data-line="146">        <span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
-</span><span data-line="147">        <span class="n">ptable</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get_process_table</span><span class="p">()</span>
-</span><span data-line="148">        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">ptable</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
-</span><span data-line="149">            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-</span><span data-line="150">                <span class="n">neighbor_state</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">])</span>
-</span><span data-line="151">                <span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">neighbor_state</span><span class="p">)</span>
-</span><span data-line="152">                <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">neighbor_state</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">])</span>
-</span><span data-line="153">    <span class="k">return</span> <span class="n">G</span></div>
+</span><span data-line="153"><span class="k">def</span><span class="w"> </span><span class="nf">make_graph</span><span class="p">(</span><span class="n">states</span><span class="p">):</span>
+</span><span data-line="154">    <span class="c1"># Build the graph.</span>
+</span><span data-line="155">    <span class="n">G</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+</span><span data-line="156">    <span class="k">for</span> <span class="n">statenr</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">states</span><span class="o">.</span><span class="n">get_num_states</span><span class="p">()):</span>
+</span><span data-line="157">        <span class="n">state</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">statenr</span><span class="p">)</span>
+</span><span data-line="158">        <span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</span><span data-line="159">        <span class="n">ptable</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">get_process_table</span><span class="p">()</span>
+</span><span data-line="160">        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">ptable</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+</span><span data-line="161">            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span><span data-line="162">                <span class="n">neighbor_state</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">])</span>
+</span><span data-line="163">                <span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">neighbor_state</span><span class="p">)</span>
+</span><span data-line="164">                <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">neighbor_state</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">])</span>
+</span><span data-line="165">    <span class="k">return</span> <span class="n">G</span></div>
 
-</span><span data-line="154">
+</span><span data-line="166">
 <div class="viewcode-block" id="fastest_path">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.fastest_path">[docs]</a>
-</span><span data-line="155"><span class="k">def</span><span class="w"> </span><span class="nf">fastest_path</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-</span><span data-line="156">    <span class="n">G</span> <span class="o">=</span> <span class="n">make_graph</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
-</span><span data-line="157">
-</span><span data-line="158">    <span class="n">state_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="mi">0</span><span class="p">)]</span>
-</span><span data-line="159">    <span class="k">if</span> <span class="n">full</span><span class="p">:</span>
-</span><span data-line="160">        <span class="n">nodes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">number</span><span class="o">-</span><span class="n">b</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
-</span><span data-line="161">        <span class="n">state_pairs</span> <span class="o">=</span> <span class="p">[</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">]</span>
-</span><span data-line="162">        <span class="k">for</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span> <span class="ow">in</span> <span class="n">state_pairs</span><span class="p">:</span>
-</span><span data-line="163">            <span class="n">path</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">shortest_path</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span><span class="n">s2</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
-</span><span data-line="164">            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
-</span><span data-line="165">                <span class="n">state_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-</span><span data-line="166">    <span class="k">else</span><span class="p">:</span>
-</span><span data-line="167">        <span class="n">end</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">states</span><span class="o">.</span><span class="n">get_num_states</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span><span data-line="168">        <span class="n">state_list</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">shortest_path</span><span class="p">(</span><span class="n">state_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">end</span><span class="p">)</span>
+</span><span data-line="167"><span class="k">def</span><span class="w"> </span><span class="nf">fastest_path</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="n">states</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+</span><span data-line="168">    <span class="n">G</span> <span class="o">=</span> <span class="n">make_graph</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
 </span><span data-line="169">
-</span><span data-line="170">    <span class="n">atoms_list</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="171">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">state_list</span><span class="p">)):</span>
-</span><span data-line="172">        <span class="n">atoms_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">())</span>
-</span><span data-line="173">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">state_list</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span> <span class="o">==</span> <span class="n">i</span><span class="p">:</span>
-</span><span data-line="174">            <span class="k">continue</span>
-</span><span data-line="175">        <span class="n">atoms_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_process_saddle</span><span class="p">(</span>
-</span><span data-line="176">                                        <span class="n">get_fastest_process_id</span><span class="p">(</span><span class="n">state_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-</span><span data-line="177">                                                               <span class="n">state_list</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])))</span>
-</span><span data-line="178">    <span class="n">time</span> <span class="o">=</span> <span class="mf">0.0</span>
-</span><span data-line="179">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">state_list</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-</span><span data-line="180">        <span class="n">ratesum</span> <span class="o">=</span> <span class="mf">0.0</span>
-</span><span data-line="181">        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">state_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_process_table</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
-</span><span data-line="182">            <span class="n">ratesum</span> <span class="o">+=</span> <span class="n">j</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">]</span>
-</span><span data-line="183">
-</span><span data-line="184">        <span class="nb">print</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">state_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
-</span><span data-line="185">        <span class="n">time</span> <span class="o">+=</span> <span class="mi">1</span><span class="o">/</span><span class="n">ratesum</span>
-</span><span data-line="186">
-</span><span data-line="187">    <span class="k">return</span> <span class="n">atoms_list</span></div>
+</span><span data-line="170">    <span class="n">state_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="mi">0</span><span class="p">)]</span>
+</span><span data-line="171">    <span class="k">if</span> <span class="n">full</span><span class="p">:</span>
+</span><span data-line="172">        <span class="n">nodes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">number</span><span class="o">-</span><span class="n">b</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+</span><span data-line="173">        <span class="n">state_pairs</span> <span class="o">=</span> <span class="p">[</span> <span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">]</span>
+</span><span data-line="174">        <span class="k">for</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span> <span class="ow">in</span> <span class="n">state_pairs</span><span class="p">:</span>
+</span><span data-line="175">            <span class="n">path</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">shortest_path</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span><span class="n">s2</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+</span><span data-line="176">            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+</span><span data-line="177">                <span class="n">state_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</span><span data-line="178">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="179">        <span class="n">end</span> <span class="o">=</span> <span class="n">states</span><span class="o">.</span><span class="n">get_state</span><span class="p">(</span><span class="n">states</span><span class="o">.</span><span class="n">get_num_states</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="180">        <span class="n">state_list</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">shortest_path</span><span class="p">(</span><span class="n">state_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">end</span><span class="p">)</span>
+</span><span data-line="181">
+</span><span data-line="182">    <span class="n">atoms_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="183">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">state_list</span><span class="p">)):</span>
+</span><span data-line="184">        <span class="n">atoms_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_reactant</span><span class="p">())</span>
+</span><span data-line="185">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">state_list</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span> <span class="o">==</span> <span class="n">i</span><span class="p">:</span>
+</span><span data-line="186">            <span class="k">continue</span>
+</span><span data-line="187">        <span class="n">atoms_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_process_saddle</span><span class="p">(</span>
+</span><span data-line="188">                                        <span class="n">get_fastest_process_id</span><span class="p">(</span><span class="n">state_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+</span><span data-line="189">                                                               <span class="n">state_list</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])))</span>
+</span><span data-line="190">    <span class="n">time</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span data-line="191">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">state_list</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+</span><span data-line="192">        <span class="n">ratesum</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span data-line="193">        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">state_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_process_table</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+</span><span data-line="194">            <span class="n">ratesum</span> <span class="o">+=</span> <span class="n">j</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">]</span>
+</span><span data-line="195">
+</span><span data-line="196">        <span class="nb">print</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">state_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+</span><span data-line="197">        <span class="n">time</span> <span class="o">+=</span> <span class="mi">1</span><span class="o">/</span><span class="n">ratesum</span>
+</span><span data-line="198">
+</span><span data-line="199">    <span class="k">return</span> <span class="n">atoms_list</span></div>
 
-</span><span data-line="188">
+</span><span data-line="200">
 <div class="viewcode-block" id="get_fastest_process_id">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.get_fastest_process_id">[docs]</a>
-</span><span data-line="189"><span class="k">def</span><span class="w"> </span><span class="nf">get_fastest_process_id</span><span class="p">(</span><span class="n">state1</span><span class="p">,</span> <span class="n">state2</span><span class="p">):</span>
-</span><span data-line="190">    <span class="n">ptable</span> <span class="o">=</span> <span class="n">state1</span><span class="o">.</span><span class="n">get_process_table</span><span class="p">()</span>
-</span><span data-line="191">    <span class="n">fastest</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="192">    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">ptable</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
-</span><span data-line="193">        <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">state2</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
-</span><span data-line="194">            <span class="k">if</span> <span class="ow">not</span> <span class="n">fastest</span> <span class="ow">or</span> <span class="n">fastest</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">]:</span>
-</span><span data-line="195">                <span class="n">fastest</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">])</span>
-</span><span data-line="196">    <span class="k">return</span> <span class="n">fastest</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</span><span data-line="201"><span class="k">def</span><span class="w"> </span><span class="nf">get_fastest_process_id</span><span class="p">(</span><span class="n">state1</span><span class="p">,</span> <span class="n">state2</span><span class="p">):</span>
+</span><span data-line="202">    <span class="n">ptable</span> <span class="o">=</span> <span class="n">state1</span><span class="o">.</span><span class="n">get_process_table</span><span class="p">()</span>
+</span><span data-line="203">    <span class="n">fastest</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="204">    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">ptable</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+</span><span data-line="205">        <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">state2</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
+</span><span data-line="206">            <span class="k">if</span> <span class="ow">not</span> <span class="n">fastest</span> <span class="ow">or</span> <span class="n">fastest</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">]:</span>
+</span><span data-line="207">                <span class="n">fastest</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">])</span>
+</span><span data-line="208">    <span class="k">return</span> <span class="n">fastest</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
-</span><span data-line="197">
+</span><span data-line="209">
 <div class="viewcode-block" id="get_fastest_process_rate">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.get_fastest_process_rate">[docs]</a>
-</span><span data-line="198"><span class="k">def</span><span class="w"> </span><span class="nf">get_fastest_process_rate</span><span class="p">(</span><span class="n">state1</span><span class="p">,</span> <span class="n">state2</span><span class="p">):</span>
-</span><span data-line="199">    <span class="n">ptable</span> <span class="o">=</span> <span class="n">state1</span><span class="o">.</span><span class="n">get_process_table</span><span class="p">()</span>
-</span><span data-line="200">    <span class="n">fastest</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="201">    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">ptable</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
-</span><span data-line="202">        <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">state2</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
-</span><span data-line="203">            <span class="k">if</span> <span class="ow">not</span> <span class="n">fastest</span> <span class="ow">or</span> <span class="n">fastest</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">]:</span>
-</span><span data-line="204">                <span class="n">fastest</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">])</span>
-</span><span data-line="205">    <span class="k">return</span> <span class="n">fastest</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+</span><span data-line="210"><span class="k">def</span><span class="w"> </span><span class="nf">get_fastest_process_rate</span><span class="p">(</span><span class="n">state1</span><span class="p">,</span> <span class="n">state2</span><span class="p">):</span>
+</span><span data-line="211">    <span class="n">ptable</span> <span class="o">=</span> <span class="n">state1</span><span class="o">.</span><span class="n">get_process_table</span><span class="p">()</span>
+</span><span data-line="212">    <span class="n">fastest</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="213">    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">ptable</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+</span><span data-line="214">        <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">state2</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
+</span><span data-line="215">            <span class="k">if</span> <span class="ow">not</span> <span class="n">fastest</span> <span class="ow">or</span> <span class="n">fastest</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">]:</span>
+</span><span data-line="216">                <span class="n">fastest</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">])</span>
+</span><span data-line="217">    <span class="k">return</span> <span class="n">fastest</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
 
-</span><span data-line="206">
+</span><span data-line="218">
 <div class="viewcode-block" id="Graph">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.Graph">[docs]</a>
-</span><span data-line="207"><span class="k">class</span><span class="w"> </span><span class="nc">Graph</span><span class="p">:</span>
-</span><span data-line="208">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-</span><span data-line="209">        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-</span><span data-line="210">        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="211">
-</span><span data-line="212">    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="213">        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
-</span><span data-line="214">
+</span><span data-line="219"><span class="k">class</span><span class="w"> </span><span class="nc">Graph</span><span class="p">:</span>
+</span><span data-line="220">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+</span><span data-line="221">        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+</span><span data-line="222">        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="223">
+</span><span data-line="224">    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="225">        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
+</span><span data-line="226">
 <div class="viewcode-block" id="Graph.dot">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.Graph.dot">[docs]</a>
-</span><span data-line="215">    <span class="k">def</span><span class="w"> </span><span class="nf">dot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="216">        <span class="n">unique_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-</span><span data-line="217">        <span class="k">for</span> <span class="n">node</span><span class="p">,</span><span class="n">edgedict</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
-</span><span data-line="218">            <span class="n">edgelist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">edgedict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-</span><span data-line="219">            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edgelist</span><span class="p">:</span>
-</span><span data-line="220">                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">number</span> <span class="o">&lt;</span> <span class="n">edge</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
-</span><span data-line="221">                    <span class="n">unique_edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">number</span><span class="p">)</span> <span class="p">)</span>
-</span><span data-line="222">                <span class="k">else</span><span class="p">:</span>
-</span><span data-line="223">                    <span class="n">unique_edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span> <span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">number</span><span class="p">)</span> <span class="p">)</span>
-</span><span data-line="224">
-</span><span data-line="225">        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;graph akmc {</span><span class="se">\n</span><span class="s2">&quot;</span>
-</span><span data-line="226">        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">unique_edges</span><span class="p">:</span>
-</span><span data-line="227">            <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> -- </span><span class="si">%s</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">edge</span>
-</span><span data-line="228">        <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;}</span><span class="se">\n</span><span class="s2">&quot;</span>
-</span><span data-line="229">        <span class="k">return</span> <span class="n">s</span></div>
-
-</span><span data-line="230">
-<div class="viewcode-block" id="Graph.add_node">
-<a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.Graph.add_node">[docs]</a>
-</span><span data-line="231">    <span class="k">def</span><span class="w"> </span><span class="nf">add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-</span><span data-line="232">        <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span>
-</span><span data-line="233">            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span></div>
-
-</span><span data-line="234">
-<div class="viewcode-block" id="Graph.add_edge">
-<a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.Graph.add_edge">[docs]</a>
-</span><span data-line="235">    <span class="k">def</span><span class="w"> </span><span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
-</span><span data-line="236">        <span class="k">if</span> <span class="n">node1</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span>
-</span><span data-line="237">            <span class="bp">self</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node1</span><span class="p">)</span>
-</span><span data-line="238">        <span class="k">if</span> <span class="n">node2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span>
-</span><span data-line="239">            <span class="bp">self</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node2</span><span class="p">)</span>
-</span><span data-line="240">
-</span><span data-line="241">        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node1</span><span class="p">][</span><span class="n">node2</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight</span></div>
+</span><span data-line="227">    <span class="k">def</span><span class="w"> </span><span class="nf">dot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="228">        <span class="n">unique_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+</span><span data-line="229">        <span class="k">for</span> <span class="n">node</span><span class="p">,</span><span class="n">edgedict</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+</span><span data-line="230">            <span class="n">edgelist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">edgedict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</span><span data-line="231">            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edgelist</span><span class="p">:</span>
+</span><span data-line="232">                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">number</span> <span class="o">&lt;</span> <span class="n">edge</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
+</span><span data-line="233">                    <span class="n">unique_edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">number</span><span class="p">)</span> <span class="p">)</span>
+</span><span data-line="234">                <span class="k">else</span><span class="p">:</span>
+</span><span data-line="235">                    <span class="n">unique_edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span> <span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">number</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">number</span><span class="p">)</span> <span class="p">)</span>
+</span><span data-line="236">
+</span><span data-line="237">        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;graph akmc {</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span data-line="238">        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">unique_edges</span><span class="p">:</span>
+</span><span data-line="239">            <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> -- </span><span class="si">%s</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">edge</span>
+</span><span data-line="240">        <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;}</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span data-line="241">        <span class="k">return</span> <span class="n">s</span></div>
 
 </span><span data-line="242">
+<div class="viewcode-block" id="Graph.add_node">
+<a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.Graph.add_node">[docs]</a>
+</span><span data-line="243">    <span class="k">def</span><span class="w"> </span><span class="nf">add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+</span><span data-line="244">        <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span>
+</span><span data-line="245">            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+</span><span data-line="246">
+<div class="viewcode-block" id="Graph.add_edge">
+<a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.Graph.add_edge">[docs]</a>
+</span><span data-line="247">    <span class="k">def</span><span class="w"> </span><span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+</span><span data-line="248">        <span class="k">if</span> <span class="n">node1</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span>
+</span><span data-line="249">            <span class="bp">self</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node1</span><span class="p">)</span>
+</span><span data-line="250">        <span class="k">if</span> <span class="n">node2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span>
+</span><span data-line="251">            <span class="bp">self</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node2</span><span class="p">)</span>
+</span><span data-line="252">
+</span><span data-line="253">        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node1</span><span class="p">][</span><span class="n">node2</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight</span></div>
+
+</span><span data-line="254">
 <div class="viewcode-block" id="Graph.neighbors">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.Graph.neighbors">[docs]</a>
-</span><span data-line="243">    <span class="k">def</span><span class="w"> </span><span class="nf">neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">node</span><span class="p">):</span>
-</span><span data-line="244">        <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span>
-</span><span data-line="245">            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-</span><span data-line="246">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="247">            <span class="k">return</span> <span class="kc">None</span></div>
+</span><span data-line="255">    <span class="k">def</span><span class="w"> </span><span class="nf">neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">node</span><span class="p">):</span>
+</span><span data-line="256">        <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span>
+</span><span data-line="257">            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</span><span data-line="258">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="259">            <span class="k">return</span> <span class="kc">None</span></div>
 
-</span><span data-line="248">
+</span><span data-line="260">
 <div class="viewcode-block" id="Graph.nodes">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.Graph.nodes">[docs]</a>
-</span><span data-line="249">    <span class="k">def</span><span class="w"> </span><span class="nf">nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="250">        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+</span><span data-line="261">    <span class="k">def</span><span class="w"> </span><span class="nf">nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="262">        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
-</span><span data-line="251">
+</span><span data-line="263">
 <div class="viewcode-block" id="Graph.dijkstra">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.Graph.dijkstra">[docs]</a>
-</span><span data-line="252">    <span class="k">def</span><span class="w"> </span><span class="nf">dijkstra</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-</span><span data-line="253">        <span class="n">G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
-</span><span data-line="254">        <span class="n">D</span> <span class="o">=</span> <span class="p">{}</span>	<span class="c1"># dictionary of final distances</span>
-</span><span data-line="255">        <span class="n">P</span> <span class="o">=</span> <span class="p">{}</span>	<span class="c1"># dictionary of predecessors</span>
-</span><span data-line="256">        <span class="n">Q</span> <span class="o">=</span> <span class="n">priorityDictionary</span><span class="p">()</span>   <span class="c1"># est.dist. of non-final vert.</span>
-</span><span data-line="257">        <span class="n">Q</span><span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span data-line="258">
-</span><span data-line="259">        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">Q</span><span class="p">:</span>
-</span><span data-line="260">            <span class="n">D</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">Q</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
-</span><span data-line="261">            <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="n">end</span><span class="p">:</span> <span class="k">break</span>
-</span><span data-line="262">
-</span><span data-line="263">            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
-</span><span data-line="264">                <span class="n">vwLength</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">w</span><span class="p">]</span>
-</span><span data-line="265">                <span class="k">if</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">D</span><span class="p">:</span>
-</span><span data-line="266">                    <span class="k">if</span> <span class="n">vwLength</span> <span class="o">&lt;</span> <span class="n">D</span><span class="p">[</span><span class="n">w</span><span class="p">]:</span>
-</span><span data-line="267">                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dijkstra: found better path to already-final vertex&quot;</span><span class="p">)</span>
-</span><span data-line="268">                <span class="k">elif</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Q</span> <span class="ow">or</span> <span class="n">vwLength</span> <span class="o">&lt;</span> <span class="n">Q</span><span class="p">[</span><span class="n">w</span><span class="p">]:</span>
-</span><span data-line="269">                    <span class="n">Q</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">vwLength</span>
-</span><span data-line="270">                    <span class="n">P</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
-</span><span data-line="271">
-</span><span data-line="272">        <span class="k">return</span> <span class="p">(</span><span class="n">D</span><span class="p">,</span><span class="n">P</span><span class="p">)</span></div>
+</span><span data-line="264">    <span class="k">def</span><span class="w"> </span><span class="nf">dijkstra</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span data-line="265">        <span class="n">G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span>
+</span><span data-line="266">        <span class="n">D</span> <span class="o">=</span> <span class="p">{}</span>	<span class="c1"># dictionary of final distances</span>
+</span><span data-line="267">        <span class="n">P</span> <span class="o">=</span> <span class="p">{}</span>	<span class="c1"># dictionary of predecessors</span>
+</span><span data-line="268">        <span class="n">Q</span> <span class="o">=</span> <span class="n">priorityDictionary</span><span class="p">()</span>   <span class="c1"># est.dist. of non-final vert.</span>
+</span><span data-line="269">        <span class="n">Q</span><span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="270">
+</span><span data-line="271">        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">Q</span><span class="p">:</span>
+</span><span data-line="272">            <span class="n">D</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">Q</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+</span><span data-line="273">            <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="n">end</span><span class="p">:</span> <span class="k">break</span>
+</span><span data-line="274">
+</span><span data-line="275">            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+</span><span data-line="276">                <span class="n">vwLength</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+</span> <span class="n">G</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">w</span><span class="p">]</span>
+</span><span data-line="277">                <span class="k">if</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">D</span><span class="p">:</span>
+</span><span data-line="278">                    <span class="k">if</span> <span class="n">vwLength</span> <span class="o">&lt;</span> <span class="n">D</span><span class="p">[</span><span class="n">w</span><span class="p">]:</span>
+</span><span data-line="279">                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dijkstra: found better path to already-final vertex&quot;</span><span class="p">)</span>
+</span><span data-line="280">                <span class="k">elif</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Q</span> <span class="ow">or</span> <span class="n">vwLength</span> <span class="o">&lt;</span> <span class="n">Q</span><span class="p">[</span><span class="n">w</span><span class="p">]:</span>
+</span><span data-line="281">                    <span class="n">Q</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">vwLength</span>
+</span><span data-line="282">                    <span class="n">P</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+</span><span data-line="283">
+</span><span data-line="284">        <span class="k">return</span> <span class="p">(</span><span class="n">D</span><span class="p">,</span><span class="n">P</span><span class="p">)</span></div>
 
-</span><span data-line="273">
+</span><span data-line="285">
 <div class="viewcode-block" id="Graph.shortest_path">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.Graph.shortest_path">[docs]</a>
-</span><span data-line="274">    <span class="k">def</span><span class="w"> </span><span class="nf">shortest_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
-</span><span data-line="275">        <span class="n">D</span><span class="p">,</span><span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dijkstra</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="n">end</span><span class="p">)</span>
-</span><span data-line="276">        <span class="n">path</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="277">        <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
-</span><span data-line="278">            <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
-</span><span data-line="279">            <span class="k">if</span> <span class="n">end</span> <span class="o">==</span> <span class="n">start</span><span class="p">:</span> <span class="k">break</span>
-</span><span data-line="280">            <span class="n">end</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">end</span><span class="p">]</span>
-</span><span data-line="281">        <span class="n">path</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
-</span><span data-line="282">        <span class="k">return</span> <span class="n">path</span></div>
+</span><span data-line="286">    <span class="k">def</span><span class="w"> </span><span class="nf">shortest_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+</span><span data-line="287">        <span class="n">D</span><span class="p">,</span><span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dijkstra</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="n">end</span><span class="p">)</span>
+</span><span data-line="288">        <span class="n">path</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="289">        <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="290">            <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+</span><span data-line="291">            <span class="k">if</span> <span class="n">end</span> <span class="o">==</span> <span class="n">start</span><span class="p">:</span> <span class="k">break</span>
+</span><span data-line="292">            <span class="n">end</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">end</span><span class="p">]</span>
+</span><span data-line="293">        <span class="n">path</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+</span><span data-line="294">        <span class="k">return</span> <span class="n">path</span></div>
 </div>
 
-</span><span data-line="283">
+</span><span data-line="295">
 <div class="viewcode-block" id="priorityDictionary">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.priorityDictionary">[docs]</a>
-</span><span data-line="284"><span class="k">class</span><span class="w"> </span><span class="nc">priorityDictionary</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
-</span><span data-line="285">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="286"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Initialize priorityDictionary by creating binary heap</span>
-</span><span data-line="287"><span class="sd">           of pairs (value,key).  Note that changing or removing a dict entry will</span>
-</span><span data-line="288"><span class="sd">           not remove the old pair from the heap until it is found by smallest() or</span>
-</span><span data-line="289"><span class="sd">           until the heap is rebuilt.</span>
-</span><span data-line="290"><span class="sd">        &#39;&#39;&#39;</span>
-</span><span data-line="291">        <span class="bp">self</span><span class="o">.</span><span class="n">__heap</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="292">        <span class="nb">dict</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-</span><span data-line="293">
+</span><span data-line="296"><span class="k">class</span><span class="w"> </span><span class="nc">priorityDictionary</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+</span><span data-line="297">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="298"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Initialize priorityDictionary by creating binary heap</span>
+</span><span data-line="299"><span class="sd">           of pairs (value,key).  Note that changing or removing a dict entry will</span>
+</span><span data-line="300"><span class="sd">           not remove the old pair from the heap until it is found by smallest() or</span>
+</span><span data-line="301"><span class="sd">           until the heap is rebuilt.</span>
+</span><span data-line="302"><span class="sd">        &#39;&#39;&#39;</span>
+</span><span data-line="303">        <span class="bp">self</span><span class="o">.</span><span class="n">__heap</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="304">        <span class="nb">dict</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</span><span data-line="305">
 <div class="viewcode-block" id="priorityDictionary.smallest">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.priorityDictionary.smallest">[docs]</a>
-</span><span data-line="294">    <span class="k">def</span><span class="w"> </span><span class="nf">smallest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="295"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Find smallest item after removing deleted items from heap.&#39;&#39;&#39;</span>
-</span><span data-line="296">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-</span><span data-line="297">            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;smallest of empty priorityDictionary&quot;</span><span class="p">)</span>
-</span><span data-line="298">        <span class="n">heap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__heap</span>
-</span><span data-line="299">        <span class="k">while</span> <span class="n">heap</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span> <span class="ow">or</span> <span class="bp">self</span><span class="p">[</span><span class="n">heap</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span> <span class="o">!=</span> <span class="n">heap</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
-</span><span data-line="300">            <span class="n">lastItem</span> <span class="o">=</span> <span class="n">heap</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-</span><span data-line="301">            <span class="n">insertionPoint</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span data-line="302">            <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
-</span><span data-line="303">                <span class="n">smallChild</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">insertionPoint</span><span class="o">+</span><span class="mi">1</span>
-</span><span data-line="304">                <span class="k">if</span> <span class="n">smallChild</span><span class="o">+</span><span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">heap</span><span class="p">)</span> <span class="ow">and</span> \
-</span><span data-line="305">                        <span class="n">heap</span><span class="p">[</span><span class="n">smallChild</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">heap</span><span class="p">[</span><span class="n">smallChild</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span>
-</span><span data-line="306">                    <span class="n">smallChild</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span data-line="307">                <span class="k">if</span> <span class="n">smallChild</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">heap</span><span class="p">)</span> <span class="ow">or</span> <span class="n">lastItem</span> <span class="o">&lt;=</span> <span class="n">heap</span><span class="p">[</span><span class="n">smallChild</span><span class="p">]:</span>
-</span><span data-line="308">                    <span class="n">heap</span><span class="p">[</span><span class="n">insertionPoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">lastItem</span>
-</span><span data-line="309">                    <span class="k">break</span>
-</span><span data-line="310">                <span class="n">heap</span><span class="p">[</span><span class="n">insertionPoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">heap</span><span class="p">[</span><span class="n">smallChild</span><span class="p">]</span>
-</span><span data-line="311">                <span class="n">insertionPoint</span> <span class="o">=</span> <span class="n">smallChild</span>
-</span><span data-line="312">        <span class="k">return</span> <span class="n">heap</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span></div>
+</span><span data-line="306">    <span class="k">def</span><span class="w"> </span><span class="nf">smallest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="307"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Find smallest item after removing deleted items from heap.&#39;&#39;&#39;</span>
+</span><span data-line="308">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="309">            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;smallest of empty priorityDictionary&quot;</span><span class="p">)</span>
+</span><span data-line="310">        <span class="n">heap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__heap</span>
+</span><span data-line="311">        <span class="k">while</span> <span class="n">heap</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span> <span class="ow">or</span> <span class="bp">self</span><span class="p">[</span><span class="n">heap</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span> <span class="o">!=</span> <span class="n">heap</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+</span><span data-line="312">            <span class="n">lastItem</span> <span class="o">=</span> <span class="n">heap</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span data-line="313">            <span class="n">insertionPoint</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="314">            <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="315">                <span class="n">smallChild</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">insertionPoint</span><span class="o">+</span><span class="mi">1</span>
+</span><span data-line="316">                <span class="k">if</span> <span class="n">smallChild</span><span class="o">+</span><span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">heap</span><span class="p">)</span> <span class="ow">and</span> \
+</span><span data-line="317">                        <span class="n">heap</span><span class="p">[</span><span class="n">smallChild</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">heap</span><span class="p">[</span><span class="n">smallChild</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span>
+</span><span data-line="318">                    <span class="n">smallChild</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="319">                <span class="k">if</span> <span class="n">smallChild</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">heap</span><span class="p">)</span> <span class="ow">or</span> <span class="n">lastItem</span> <span class="o">&lt;=</span> <span class="n">heap</span><span class="p">[</span><span class="n">smallChild</span><span class="p">]:</span>
+</span><span data-line="320">                    <span class="n">heap</span><span class="p">[</span><span class="n">insertionPoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">lastItem</span>
+</span><span data-line="321">                    <span class="k">break</span>
+</span><span data-line="322">                <span class="n">heap</span><span class="p">[</span><span class="n">insertionPoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">heap</span><span class="p">[</span><span class="n">smallChild</span><span class="p">]</span>
+</span><span data-line="323">                <span class="n">insertionPoint</span> <span class="o">=</span> <span class="n">smallChild</span>
+</span><span data-line="324">        <span class="k">return</span> <span class="n">heap</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span></div>
 
-</span><span data-line="313">
-</span><span data-line="314">    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="315"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Create destructive sorted iterator of priorityDictionary.&#39;&#39;&#39;</span>
-</span><span data-line="316">        <span class="k">def</span><span class="w"> </span><span class="nf">iterfn</span><span class="p">():</span>
-</span><span data-line="317">            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-</span><span data-line="318">                <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">smallest</span><span class="p">()</span>
-</span><span data-line="319">                <span class="k">yield</span> <span class="n">x</span>
-</span><span data-line="320">                <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
-</span><span data-line="321">        <span class="k">return</span> <span class="n">iterfn</span><span class="p">()</span>
-</span><span data-line="322">
-</span><span data-line="323">    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">):</span>
-</span><span data-line="324"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Change value stored in dictionary and add corresponding</span>
-</span><span data-line="325"><span class="sd">           pair to heap.  Rebuilds the heap if the number of deleted items grows</span>
-</span><span data-line="326"><span class="sd">           too large, to avoid memory leakage.</span>
-</span><span data-line="327"><span class="sd">        &#39;&#39;&#39;</span>
-</span><span data-line="328">        <span class="nb">dict</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">)</span>
-</span><span data-line="329">        <span class="n">heap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__heap</span>
-</span><span data-line="330">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">heap</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span data-line="331">            <span class="bp">self</span><span class="o">.</span><span class="n">__heap</span> <span class="o">=</span> <span class="p">[(</span><span class="n">v</span><span class="p">,</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">())]</span>
-</span><span data-line="332">            <span class="bp">self</span><span class="o">.</span><span class="n">__heap</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>  <span class="c1"># builtin sort likely faster than O(n) heapify</span>
-</span><span data-line="333">        <span class="k">else</span><span class="p">:</span>
-</span><span data-line="334">            <span class="n">newPair</span> <span class="o">=</span> <span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="n">key</span><span class="p">)</span>
-</span><span data-line="335">            <span class="n">insertionPoint</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">heap</span><span class="p">)</span>
-</span><span data-line="336">            <span class="n">heap</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="337">            <span class="k">while</span> <span class="n">insertionPoint</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> \
-</span><span data-line="338">                    <span class="n">newPair</span> <span class="o">&lt;</span> <span class="n">heap</span><span class="p">[(</span><span class="n">insertionPoint</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]:</span>
-</span><span data-line="339">                <span class="n">heap</span><span class="p">[</span><span class="n">insertionPoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">heap</span><span class="p">[(</span><span class="n">insertionPoint</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]</span>
-</span><span data-line="340">                <span class="n">insertionPoint</span> <span class="o">=</span> <span class="p">(</span><span class="n">insertionPoint</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span>
-</span><span data-line="341">            <span class="n">heap</span><span class="p">[</span><span class="n">insertionPoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">newPair</span>
-</span><span data-line="342">
+</span><span data-line="325">
+</span><span data-line="326">    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="327"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Create destructive sorted iterator of priorityDictionary.&#39;&#39;&#39;</span>
+</span><span data-line="328">        <span class="k">def</span><span class="w"> </span><span class="nf">iterfn</span><span class="p">():</span>
+</span><span data-line="329">            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="330">                <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">smallest</span><span class="p">()</span>
+</span><span data-line="331">                <span class="k">yield</span> <span class="n">x</span>
+</span><span data-line="332">                <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+</span><span data-line="333">        <span class="k">return</span> <span class="n">iterfn</span><span class="p">()</span>
+</span><span data-line="334">
+</span><span data-line="335">    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">):</span>
+</span><span data-line="336"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Change value stored in dictionary and add corresponding</span>
+</span><span data-line="337"><span class="sd">           pair to heap.  Rebuilds the heap if the number of deleted items grows</span>
+</span><span data-line="338"><span class="sd">           too large, to avoid memory leakage.</span>
+</span><span data-line="339"><span class="sd">        &#39;&#39;&#39;</span>
+</span><span data-line="340">        <span class="nb">dict</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">)</span>
+</span><span data-line="341">        <span class="n">heap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__heap</span>
+</span><span data-line="342">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">heap</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="343">            <span class="bp">self</span><span class="o">.</span><span class="n">__heap</span> <span class="o">=</span> <span class="p">[(</span><span class="n">v</span><span class="p">,</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">())]</span>
+</span><span data-line="344">            <span class="bp">self</span><span class="o">.</span><span class="n">__heap</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>  <span class="c1"># builtin sort likely faster than O(n) heapify</span>
+</span><span data-line="345">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="346">            <span class="n">newPair</span> <span class="o">=</span> <span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="n">key</span><span class="p">)</span>
+</span><span data-line="347">            <span class="n">insertionPoint</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">heap</span><span class="p">)</span>
+</span><span data-line="348">            <span class="n">heap</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="349">            <span class="k">while</span> <span class="n">insertionPoint</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> \
+</span><span data-line="350">                    <span class="n">newPair</span> <span class="o">&lt;</span> <span class="n">heap</span><span class="p">[(</span><span class="n">insertionPoint</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]:</span>
+</span><span data-line="351">                <span class="n">heap</span><span class="p">[</span><span class="n">insertionPoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">heap</span><span class="p">[(</span><span class="n">insertionPoint</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]</span>
+</span><span data-line="352">                <span class="n">insertionPoint</span> <span class="o">=</span> <span class="p">(</span><span class="n">insertionPoint</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span>
+</span><span data-line="353">            <span class="n">heap</span><span class="p">[</span><span class="n">insertionPoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">newPair</span>
+</span><span data-line="354">
 <div class="viewcode-block" id="priorityDictionary.setdefault">
 <a class="viewcode-back" href="../../apidocs/eon/eon.movie.html#eon.movie.priorityDictionary.setdefault">[docs]</a>
-</span><span data-line="343">    <span class="k">def</span><span class="w"> </span><span class="nf">setdefault</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">):</span>
-</span><span data-line="344"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Reimplement setdefault to call our customized __setitem__.&#39;&#39;&#39;</span>
-</span><span data-line="345">        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-</span><span data-line="346">            <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-</span><span data-line="347">        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+</span><span data-line="355">    <span class="k">def</span><span class="w"> </span><span class="nf">setdefault</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">):</span>
+</span><span data-line="356"><span class="w">        </span><span class="sd">&#39;&#39;&#39;Reimplement setdefault to call our customized __setitem__.&#39;&#39;&#39;</span>
+</span><span data-line="357">        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+</span><span data-line="358">            <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+</span><span data-line="359">        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
 </div>
 
 </span></pre></div>

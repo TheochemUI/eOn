@@ -107,7 +107,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic interface</a></li>
@@ -378,6 +378,11 @@ data-aria-dark="Switch to auto color mode">
   <article class="yue dark-code" role="main">
           <section id="module-eon.movie">
 <span id="eon-movie"></span><h1><a class="reference internal" href="#module-eon.movie" title="eon.movie"><code class="xref py py-mod docutils literal notranslate"><span class="pre">eon.movie</span></code></a><a class="headerlink" href="#module-eon.movie" title="Link to this heading">¶</a></h1>
+<p>AKMC movie writers.</p>
+<p>Visualization output is VASP 5 POSCAR (<code class="docutils literal notranslate"><span class="pre">movie.poscar</span></code>, <code class="docutils literal notranslate"><span class="pre">dynamics.poscar</span></code>,
+and the other names below). That is the one structure format that does
+not go through readcon: external viewers read POSCAR, and <code class="docutils literal notranslate"><span class="pre">loadposcar</span></code>
+accepts both this VASP 5 layout and the VASP 4 files kdb produces.</p>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <section id="classes">

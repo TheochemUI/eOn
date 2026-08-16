@@ -18,116 +18,127 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-import os
-import shutil
-import subprocess
-import sys
-import tempfile
-from pathlib import Path
-
-from IPython.display import Image, display
-from rgpycrumbs.eon.helpers import write_eon_config
-
-os.environ.setdefault("MPLBACKEND", "Agg")
-os.environ.setdefault("RGPYCRUMBS_AUTO_DEPS", "1")
-
-DATA = Path("data/lj_min")
-assert (DATA / "pos.con").is_file(), DATA.resolve()
-
-work = Path(tempfile.mkdtemp(prefix="eon_lj_min_"))
-plot_dir = work / "plots"
-plot_dir.mkdir()
-shutil.copy(DATA / "pos.con", work / "pos.con")
-
-cfg = {
-    "Main": {"job": "minimization", "random_seed": 42},
-    "Potential": {"potential": "ljcluster"},
-    "Optimizer": {
-        "opt_method": "lbfgs",
-        "converged_force": 0.01,
-        "max_iterations": 500,
-        "max_move": 0.2,
-    },
-    # Movies for plt-min landscape; optional legacy .dat for older tools.
-    "Debug": {"write_movies": True, "write_deprecated_outs": True},
-}
-write_eon_config(work, cfg)
-
-
-def run_eon(job_dir, *, timeout=300):
-    eonclient = str(Path(sys.executable).with_name("eonclient"))
-    if not Path(eonclient).exists():
-        eonclient = "eonclient"
-    r = subprocess.run(
-        [eonclient], cwd=job_dir, capture_output=True, text=True, timeout=timeout
-    )
-    if r.returncode != 0:
-        print(r.stdout)
-        print(r.stderr, file=sys.stderr)
-        raise RuntimeError(f"eonclient failed ({r.returncode})")
-    return r
-
-
-def run_rgpycrumbs(*args, cwd=None, timeout=600):
-    cmd = [sys.executable, "-m", "rgpycrumbs.cli", *args]
-    print("$", " ".join(cmd))
-    r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=timeout)
-    if r.stdout:
-        print(r.stdout)
-    if r.stderr:
-        print(r.stderr, file=sys.stderr)
-    if r.returncode != 0:
-        raise RuntimeError(f"rgpycrumbs failed ({r.returncode})")
-    return r
-
-
-def show_plot(path):
-    display(Image(filename=str(path)))
-
-
-print("Workdir:", work)
-run_eon(work)
-print("outputs:", sorted(p.name for p in work.glob("minimization.*")))
+out = plot_dir / "min_2d.png"
+run_rgpycrumbs(
+    "eon",
+    "plt-min",
+    "--job-dir",
+    str(work),
+    "--label",
+    "lj cluster",
+    "--plot-type",
+    "landscape",
+    "--project-path",
+    "--surface-type",
+    "grad_imq",
+    "--plot-structures",
+    "endpoints",
+    "--strip-renderer",
+    "xyzrender",
+    "--strip-dividers",
+    "--xyzrender-config",
+    "paton",
+    "--rotation",
+    "90x,0y,0z",
+    "--dpi",
+    "150",
+    "-o",
+    str(out),
+)
+show_plot(out)
 ------------------
 
+----- stdout -----
+$ /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 -m rgpycrumbs.cli eon plt-min --job-dir /tmp/eon_lj_min_lx5gr2nq --label lj cluster --plot-type landscape --project-path --surface-type grad_imq --plot-structures endpoints --strip-renderer xyzrender --strip-dividers --xyzrender-config paton --rotation 90x,0y,0z --dpi 150 -o /tmp/eon_lj_min_lx5gr2nq/plots/min_2d.png
+----- stdout -----
+--> Dispatching to: /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py --job-dir /tmp/eon_lj_min_lx5gr2nq --label lj cluster --plot-type landscape --project-path --surface-type grad_imq --plot-structures endpoints --strip-renderer xyzrender --strip-dividers --xyzrender-config paton --rotation 90x,0y,0z --dpi 150 -o /tmp/eon_lj_min_lx5gr2nq/plots/min_2d.png
+[2;36m[08/16/26 00:29:20][0m[2;36m [0m[34mINFO    [0m INFO - Loading minimization trajectory from        
+[2;36m                    [0m         [35m/tmp/[0m[95meon_lj_min_lx5gr2nq[0m                           
+[2;36m                   [0m[2;36m [0m[34mINFO    [0m INFO - Using minimization metrics from frame       
+[2;36m                    [0m         metadata [1m([0m[1;36m1[0m rows[1m)[0m                                  
+[2;36m                   [0m[2;36m [0m[34mINFO    [0m INFO - Loaded [1;36m1[0m frames, [1;36m1[0m data rows                
+[2;36m                   [0m[2;36m [0m[34mINFO    [0m INFO - Loaded minimization trajectory from         
+[2;36m                    [0m         [35m/tmp/[0m[95meon_lj_min_lx5gr2nq[0m [1m([0m[1;36m1[0m frames[1m)[0m                
+[2;36m                   [0m[2;36m [0m[34mINFO    [0m INFO - Setting global rcParams for ruhi theme      
+[2;36m                   [0m[2;36m [0m[33mWARNING [0m WARNING - Font [32m'Atkinson Hyperlegible'[0m not found.  
+[2;36m                    [0m         Falling back to [32m'sans-serif'[0m.                      
+[2;36m                   [0m[2;36m [0m[34mINFO    [0m INFO - Calculating landscape coordinates [1m([0mRMSD-A,  
+[2;36m                    [0m         RMSD-B[1m)[0m[33m...[0m
+----- stderr -----
+--> Using active interpreter (readcon/plot stack present or --dev)
+Traceback (most recent call last):
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py", line 402, in <module>
+    main()
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/click/core.py", line 1485, in __call__
+    return self.main(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/click/core.py", line 1406, in main
+    rv = self.invoke(ctx)
+         ^^^^^^^^^^^^^^^^
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/click/core.py", line 1269, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/click/core.py", line 824, in invoke
+    return callback(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/click/decorators.py", line 34, in new_func
+    return f(get_current_context(), *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py", line 293, in main
+    return run_from_click("min", plot_min_from_settings, ctx, config=config, **params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plot_config.py", line 346, in run_from_click
+    return runner(resolve_from_click(command, ctx, config=config, **params))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py", line 153, in plot_min_from_settings
+    _plot_landscape(
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py", line 353, in _plot_landscape
+    render_single_ended_landscape(
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/chemparseplot/plot/optimization.py", line 421, in render_single_ended_landscape
+    f_para = -np.gradient(energies_plot)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 1297, in gradient
+    raise ValueError(
+ValueError: Shape of array too small to calculate a numerical gradient, at least (edge_order + 1) elements are required.
+------------------
 
 [31m---------------------------------------------------------------------------[39m
-[31mModuleNotFoundError[39m                       Traceback (most recent call last)
-[36mFile [39m[32m~/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/helpers.py:53[39m, in [36mwrite_eon_config[39m[34m(path, settings, validate)[39m
-[32m     52[39m [38;5;28;01mtry[39;00m:
-[32m---> [39m[32m53[39m     [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01meon_schema[39;00m[34;01m.[39;00m[34;01mconfig[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m unknown_ini_keys, write_ini
-[32m     54[39m [38;5;28;01mexcept[39;00m [38;5;167;01mImportError[39;00m [38;5;28;01mas[39;00m exc:  [38;5;66;03m# pragma: no cover[39;00m
+[31mRuntimeError[39m                              Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[3][39m[32m, line 2[39m
+[32m      1[39m out = plot_dir / [33m"[39m[33mmin_2d.png[39m[33m"[39m
+[32m----> [39m[32m2[39m [43mrun_rgpycrumbs[49m[43m([49m
+[32m      3[39m [43m    [49m[33;43m"[39;49m[33;43meon[39;49m[33;43m"[39;49m[43m,[49m
+[32m      4[39m [43m    [49m[33;43m"[39;49m[33;43mplt-min[39;49m[33;43m"[39;49m[43m,[49m
+[32m      5[39m [43m    [49m[33;43m"[39;49m[33;43m--job-dir[39;49m[33;43m"[39;49m[43m,[49m
+[32m      6[39m [43m    [49m[38;5;28;43mstr[39;49m[43m([49m[43mwork[49m[43m)[49m[43m,[49m
+[32m      7[39m [43m    [49m[33;43m"[39;49m[33;43m--label[39;49m[33;43m"[39;49m[43m,[49m
+[32m      8[39m [43m    [49m[33;43m"[39;49m[33;43mlj cluster[39;49m[33;43m"[39;49m[43m,[49m
+[32m      9[39m [43m    [49m[33;43m"[39;49m[33;43m--plot-type[39;49m[33;43m"[39;49m[43m,[49m
+[32m     10[39m [43m    [49m[33;43m"[39;49m[33;43mlandscape[39;49m[33;43m"[39;49m[43m,[49m
+[32m     11[39m [43m    [49m[33;43m"[39;49m[33;43m--project-path[39;49m[33;43m"[39;49m[43m,[49m
+[32m     12[39m [43m    [49m[33;43m"[39;49m[33;43m--surface-type[39;49m[33;43m"[39;49m[43m,[49m
+[32m     13[39m [43m    [49m[33;43m"[39;49m[33;43mgrad_imq[39;49m[33;43m"[39;49m[43m,[49m
+[32m     14[39m [43m    [49m[33;43m"[39;49m[33;43m--plot-structures[39;49m[33;43m"[39;49m[43m,[49m
+[32m     15[39m [43m    [49m[33;43m"[39;49m[33;43mendpoints[39;49m[33;43m"[39;49m[43m,[49m
+[32m     16[39m [43m    [49m[33;43m"[39;49m[33;43m--strip-renderer[39;49m[33;43m"[39;49m[43m,[49m
+[32m     17[39m [43m    [49m[33;43m"[39;49m[33;43mxyzrender[39;49m[33;43m"[39;49m[43m,[49m
+[32m     18[39m [43m    [49m[33;43m"[39;49m[33;43m--strip-dividers[39;49m[33;43m"[39;49m[43m,[49m
+[32m     19[39m [43m    [49m[33;43m"[39;49m[33;43m--xyzrender-config[39;49m[33;43m"[39;49m[43m,[49m
+[32m     20[39m [43m    [49m[33;43m"[39;49m[33;43mpaton[39;49m[33;43m"[39;49m[43m,[49m
+[32m     21[39m [43m    [49m[33;43m"[39;49m[33;43m--rotation[39;49m[33;43m"[39;49m[43m,[49m
+[32m     22[39m [43m    [49m[33;43m"[39;49m[33;43m90x,0y,0z[39;49m[33;43m"[39;49m[43m,[49m
+[32m     23[39m [43m    [49m[33;43m"[39;49m[33;43m--dpi[39;49m[33;43m"[39;49m[43m,[49m
+[32m     24[39m [43m    [49m[33;43m"[39;49m[33;43m150[39;49m[33;43m"[39;49m[43m,[49m
+[32m     25[39m [43m    [49m[33;43m"[39;49m[33;43m-o[39;49m[33;43m"[39;49m[43m,[49m
+[32m     26[39m [43m    [49m[38;5;28;43mstr[39;49m[43m([49m[43mout[49m[43m)[49m[43m,[49m
+[32m     27[39m [43m)[49m
+[32m     28[39m show_plot(out)
 
-[31mModuleNotFoundError[39m: No module named 'eon_schema'
+[36mCell[39m[36m [39m[32mIn[1][39m[32m, line 60[39m, in [36mrun_rgpycrumbs[39m[34m(cwd, timeout, *args)[39m
+[32m     58[39m     [38;5;28mprint[39m(r.stderr, file=sys.stderr)
+[32m     59[39m [38;5;28;01mif[39;00m r.returncode != [32m0[39m:
+[32m---> [39m[32m60[39m     [38;5;28;01mraise[39;00m [38;5;167;01mRuntimeError[39;00m([33mf[39m[33m"[39m[33mrgpycrumbs failed ([39m[38;5;132;01m{[39;00mr.returncode[38;5;132;01m}[39;00m[33m)[39m[33m"[39m)
+[32m     61[39m [38;5;28;01mreturn[39;00m r
 
-The above exception was the direct cause of the following exception:
-
-[31mImportError[39m                               Traceback (most recent call last)
-[36mCell[39m[36m [39m[32mIn[1][39m[32m, line 34[39m
-[32m     20[39m shutil.copy(DATA / [33m"[39m[33mpos.con[39m[33m"[39m, work / [33m"[39m[33mpos.con[39m[33m"[39m)
-[32m     22[39m cfg = {
-[32m     23[39m     [33m"[39m[33mMain[39m[33m"[39m: {[33m"[39m[33mjob[39m[33m"[39m: [33m"[39m[33mminimization[39m[33m"[39m, [33m"[39m[33mrandom_seed[39m[33m"[39m: [32m42[39m},
-[32m     24[39m     [33m"[39m[33mPotential[39m[33m"[39m: {[33m"[39m[33mpotential[39m[33m"[39m: [33m"[39m[33mljcluster[39m[33m"[39m},
-[32m   (...)[39m[32m     32[39m     [33m"[39m[33mDebug[39m[33m"[39m: {[33m"[39m[33mwrite_movies[39m[33m"[39m: [38;5;28;01mTrue[39;00m, [33m"[39m[33mwrite_deprecated_outs[39m[33m"[39m: [38;5;28;01mTrue[39;00m},
-[32m     33[39m }
-[32m---> [39m[32m34[39m [43mwrite_eon_config[49m[43m([49m[43mwork[49m[43m,[49m[43m [49m[43mcfg[49m[43m)[49m
-[32m     37[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mrun_eon[39m(job_dir, *, timeout=[32m300[39m):
-[32m     38[39m     eonclient = [38;5;28mstr[39m(Path(sys.executable).with_name([33m"[39m[33meonclient[39m[33m"[39m))
-
-[36mFile [39m[32m~/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/helpers.py:55[39m, in [36mwrite_eon_config[39m[34m(path, settings, validate)[39m
-[32m     53[39m     [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01meon_schema[39;00m[34;01m.[39;00m[34;01mconfig[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m unknown_ini_keys, write_ini
-[32m     54[39m [38;5;28;01mexcept[39;00m [38;5;167;01mImportError[39;00m [38;5;28;01mas[39;00m exc:  [38;5;66;03m# pragma: no cover[39;00m
-[32m---> [39m[32m55[39m     [38;5;28;01mraise[39;00m [38;5;167;01mImportError[39;00m(
-[32m     56[39m         [33m"[39m[33mwrite_eon_config requires eon-schema>=0.2.[39m[38;5;130;01m\n[39;00m[33m"[39m
-[32m     57[39m         [33m"[39m[33m  pip install [39m[33m'[39m[33mrgpycrumbs[eon][39m[33m'[39m[38;5;130;01m\n[39;00m[33m"[39m
-[32m     58[39m         [33m"[39m[33m  # or: pip install [39m[33m'[39m[33meon-schema>=0.2[39m[33m'[39m[38;5;130;01m\n[39;00m[33m"[39m
-[32m     59[39m         [33m"[39m[33m  # uv: uv pip install [39m[33m'[39m[33meon-schema>=0.2[39m[33m'[39m[33m"[39m
-[32m     60[39m     ) [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mexc[39;00m
-[32m     62[39m [38;5;28;01mif[39;00m validate:
-[32m     63[39m     bad = unknown_ini_keys(settings, covered_only=[38;5;28;01mTrue[39;00m)
-
-[31mImportError[39m: write_eon_config requires eon-schema>=0.2.
-  pip install 'rgpycrumbs[eon]'
-  # or: pip install 'eon-schema>=0.2'
-  # uv: uv pip install 'eon-schema>=0.2'
+[31mRuntimeError[39m: rgpycrumbs failed (1)
 

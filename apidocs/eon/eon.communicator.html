@@ -107,7 +107,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic interface</a></li>
@@ -299,6 +299,9 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#eon.communicator.NotImplementedError"><code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code></a></li>
 <li><a class="reference internal" href="#eon.communicator.CommunicatorError"><code class="docutils literal notranslate"><span class="pre">CommunicatorError</span></code></a></li>
 <li><a class="reference internal" href="#eon.communicator.EONClientError"><code class="docutils literal notranslate"><span class="pre">EONClientError</span></code></a></li>
+<li><a class="reference internal" href="#eon.communicator.RETURN_FILES_MANIFEST"><code class="docutils literal notranslate"><span class="pre">RETURN_FILES_MANIFEST</span></code></a></li>
+<li><a class="reference internal" href="#eon.communicator.read_return_files_manifest"><code class="docutils literal notranslate"><span class="pre">read_return_files_manifest()</span></code></a></li>
+<li><a class="reference internal" href="#eon.communicator.harvest_job_files"><code class="docutils literal notranslate"><span class="pre">harvest_job_files()</span></code></a></li>
 <li><a class="reference internal" href="#eon.communicator.Communicator"><code class="docutils literal notranslate"><span class="pre">Communicator</span></code></a><ul>
 <li><a class="reference internal" href="#eon.communicator.Communicator.submit_jobs"><code class="docutils literal notranslate">submit_jobs()</span></code></a></li>
 <li><a class="reference internal" href="#eon.communicator.Communicator.get_results"><code class="docutils literal notranslate">get_results()</span></code></a></li>
@@ -449,6 +452,12 @@ data-aria-dark="Switch to auto color mode">
 <tr class="row-odd"><td><p><a class="reference internal" href="#eon.communicator.get_communicator" title="eon.communicator.get_communicator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_communicator</span></code></a></p></td>
 <td><p>Return a communicator for <em>config</em>.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.communicator.read_return_files_manifest" title="eon.communicator.read_return_files_manifest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_return_files_manifest</span></code></a></p></td>
+<td><p>Return the filenames listed in return_files.dat, or None if absent.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.communicator.harvest_job_files" title="eon.communicator.harvest_job_files"><code class="xref py py-obj docutils literal notranslate"><span class="pre">harvest_job_files</span></code></a></p></td>
+<td><p>Harvest one non-bundled job directory into {filename: StringIO}.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -459,6 +468,9 @@ data-aria-dark="Switch to auto color mode">
 <table class="autosummary longtable docutils align-left">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#eon.communicator.logger" title="eon.communicator.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.communicator.RETURN_FILES_MANIFEST" title="eon.communicator.RETURN_FILES_MANIFEST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RETURN_FILES_MANIFEST</span></code></a></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -524,6 +536,27 @@ memoized by <code class="docutils literal notranslate"><span class="pre">id(conf
 <p>An eOn client finished without outputting results, it probably crashed.</p>
 <p class="rubric">Initialization</p>
 <p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="eon.communicator.RETURN_FILES_MANIFEST">
+<span class="sig-prename descclassname"><span class="pre">eon.communicator.</span></span><span class="sig-name descname"><span class="pre">RETURN_FILES_MANIFEST</span></span><a class="headerlink" href="#eon.communicator.RETURN_FILES_MANIFEST" title="Link to this definition">¶</a></dt>
+<dd><p>‘return_files.dat’</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.communicator.read_return_files_manifest">
+<span class="sig-prename descclassname"><span class="pre">eon.communicator.</span></span><span class="sig-name descname"><span class="pre">read_return_files_manifest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jobpath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#read_return_files_manifest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.read_return_files_manifest" title="Link to this definition">¶</a></dt>
+<dd><p>Return the filenames listed in return_files.dat, or None if absent.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.communicator.harvest_job_files">
+<span class="sig-prename descclassname"><span class="pre">eon.communicator.</span></span><span class="sig-name descname"><span class="pre">harvest_job_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jobpath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/communicator.html#harvest_job_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.communicator.harvest_job_files" title="Link to this definition">¶</a></dt>
+<dd><p>Harvest one non-bundled job directory into {filename: StringIO}.</p>
+<p>When return_files.dat is present, only those names (plus results.dat)
+are kept, any extension. A listed file that was never written is
+logged and omitted. Without a manifest, keep .con/.dat/.json/.log.</p>
 </dd></dl>
 
 <dl class="py class">

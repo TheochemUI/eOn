@@ -107,7 +107,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic interface</a></li>
@@ -510,36 +510,38 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="156">            <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
 </span><span data-line="157">                <span class="p">{</span>
 </span><span data-line="158">                    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">jid</span><span class="p">,</span>
-</span><span data-line="159">                    <span class="s2">&quot;number&quot;</span><span class="p">:</span> <span class="n">jid</span><span class="p">,</span>
-</span><span data-line="160">                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">jid</span><span class="p">),</span>
-</span><span data-line="161">                    <span class="s2">&quot;min.con&quot;</span><span class="p">:</span> <span class="n">min_io</span><span class="p">,</span>
-</span><span data-line="162">                    <span class="s2">&quot;results.dat&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">,</span>
-</span><span data-line="163">                    <span class="c1"># also expose Matter for callers that want zero re-parse</span>
-</span><span data-line="164">                    <span class="s2">&quot;_matter&quot;</span><span class="p">:</span> <span class="n">matter</span><span class="p">,</span>
-</span><span data-line="165">                    <span class="s2">&quot;_structure&quot;</span><span class="p">:</span> <span class="n">out</span><span class="p">,</span>
-</span><span data-line="166">                    <span class="s2">&quot;_energy&quot;</span><span class="p">:</span> <span class="n">energy</span><span class="p">,</span>
-</span><span data-line="167">                    <span class="s2">&quot;_converged&quot;</span><span class="p">:</span> <span class="n">converged</span><span class="p">,</span>
-</span><span data-line="168">                <span class="p">}</span>
-</span><span data-line="169">            <span class="p">)</span>
-</span><span data-line="170">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-</span><span data-line="171">                <span class="s2">&quot;inprocess job </span><span class="si">%s</span><span class="s2">: converged=</span><span class="si">%s</span><span class="s2"> E=</span><span class="si">%.6f</span><span class="s2"> fcalls=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-</span><span data-line="172">                <span class="n">jid</span><span class="p">,</span>
-</span><span data-line="173">                <span class="n">converged</span><span class="p">,</span>
-</span><span data-line="174">                <span class="n">energy</span><span class="p">,</span>
-</span><span data-line="175">                <span class="n">fcalls</span><span class="p">,</span>
-</span><span data-line="176">            <span class="p">)</span></div>
+</span><span data-line="159">                    <span class="c1"># Bundle index within the job, as the file-based</span>
+</span><span data-line="160">                    <span class="c1"># communicators set it; one task per job here.</span>
+</span><span data-line="161">                    <span class="s2">&quot;number&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="162">                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">jid</span><span class="p">),</span>
+</span><span data-line="163">                    <span class="s2">&quot;min.con&quot;</span><span class="p">:</span> <span class="n">min_io</span><span class="p">,</span>
+</span><span data-line="164">                    <span class="s2">&quot;results.dat&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">,</span>
+</span><span data-line="165">                    <span class="c1"># also expose Matter for callers that want zero re-parse</span>
+</span><span data-line="166">                    <span class="s2">&quot;_matter&quot;</span><span class="p">:</span> <span class="n">matter</span><span class="p">,</span>
+</span><span data-line="167">                    <span class="s2">&quot;_structure&quot;</span><span class="p">:</span> <span class="n">out</span><span class="p">,</span>
+</span><span data-line="168">                    <span class="s2">&quot;_energy&quot;</span><span class="p">:</span> <span class="n">energy</span><span class="p">,</span>
+</span><span data-line="169">                    <span class="s2">&quot;_converged&quot;</span><span class="p">:</span> <span class="n">converged</span><span class="p">,</span>
+</span><span data-line="170">                <span class="p">}</span>
+</span><span data-line="171">            <span class="p">)</span>
+</span><span data-line="172">            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+</span><span data-line="173">                <span class="s2">&quot;inprocess job </span><span class="si">%s</span><span class="s2">: converged=</span><span class="si">%s</span><span class="s2"> E=</span><span class="si">%.6f</span><span class="s2"> fcalls=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span data-line="174">                <span class="n">jid</span><span class="p">,</span>
+</span><span data-line="175">                <span class="n">converged</span><span class="p">,</span>
+</span><span data-line="176">                <span class="n">energy</span><span class="p">,</span>
+</span><span data-line="177">                <span class="n">fcalls</span><span class="p">,</span>
+</span><span data-line="178">            <span class="p">)</span></div>
 
-</span><span data-line="177">
+</span><span data-line="179">
 <div class="viewcode-block" id="LocalInProcess.get_results">
 <a class="viewcode-back" href="../../apidocs/eon/eon.communicator_inprocess.html#eon.communicator_inprocess.LocalInProcess.get_results">[docs]</a>
-</span><span data-line="178">    <span class="k">def</span><span class="w"> </span><span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resultspath</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_result</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-</span><span data-line="179"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return finished job dicts (legacy StringIO + Matter fields).&quot;&quot;&quot;</span>
-</span><span data-line="180">        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span>
-</span><span data-line="181">        <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="182">        <span class="c1"># Compatibility: some callers expect a list of lists from unbundle</span>
-</span><span data-line="183">        <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span><span class="p">:</span>
-</span><span data-line="184">            <span class="k">return</span> <span class="p">[]</span>
-</span><span data-line="185">        <span class="k">return</span> <span class="n">out</span></div>
+</span><span data-line="180">    <span class="k">def</span><span class="w"> </span><span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resultspath</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keep_result</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span data-line="181"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Return finished job dicts (legacy StringIO + Matter fields).&quot;&quot;&quot;</span>
+</span><span data-line="182">        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span>
+</span><span data-line="183">        <span class="bp">self</span><span class="o">.</span><span class="n">_finished</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="184">        <span class="c1"># Compatibility: some callers expect a list of lists from unbundle</span>
+</span><span data-line="185">        <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span><span class="p">:</span>
+</span><span data-line="186">            <span class="k">return</span> <span class="p">[]</span>
+</span><span data-line="187">        <span class="k">return</span> <span class="n">out</span></div>
 </div>
 
 </span></pre></div>

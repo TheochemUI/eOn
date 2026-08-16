@@ -107,7 +107,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic interface</a></li>
@@ -308,6 +308,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#eon.akmcstate.AKMCState.get_repeats"><code class="docutils literal notranslate">get_repeats()</span></code></a></li>
 <li><a class="reference internal" href="#eon.akmcstate.AKMCState.inc_repeats"><code class="docutils literal notranslate">inc_repeats()</span></code></a></li>
 <li><a class="reference internal" href="#eon.akmcstate.AKMCState.load_process_table"><code class="docutils literal notranslate">load_process_table()</span></code></a></li>
+<li><a class="reference internal" href="#eon.akmcstate.AKMCState.rate_at_kT"><code class="docutils literal notranslate">rate_at_kT()</span></code></a></li>
 <li><a class="reference internal" href="#eon.akmcstate.AKMCState.save_process_table"><code class="docutils literal notranslate">save_process_table()</span></code></a></li>
 <li><a class="reference internal" href="#eon.akmcstate.AKMCState.append_process_table"><code class="docutils literal notranslate">append_process_table()</span></code></a></li>
 <li><a class="reference internal" href="#eon.akmcstate.AKMCState.update_lowest_barrier"><code class="docutils literal notranslate">update_lowest_barrier()</span></code></a></li>
@@ -569,6 +570,22 @@ is logged. New ids must use :meth:<code class="docutils literal notranslate"><sp
 <dl class="myst field-list simple">
 <dt class="field-odd">Meth<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">get_num_procs</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="eon.akmcstate.AKMCState.rate_at_kT">
+<span class="sig-name descname"><span class="pre">rate_at_kT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reactant_energy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/akmcstate.html#AKMCState.rate_at_kT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.akmcstate.AKMCState.rate_at_kT" title="Link to this definition">¶</a></dt>
+<dd><p>Forward rate for <em>proc</em> at the statelist kT.</p>
+<p>Applies the <code class="docutils literal notranslate"><span class="pre">akmc_eq_rate</span></code> clamp on the same terms as</p>
+<dl class="myst field-list simple">
+<dt class="field-odd">Meth<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">add_process</span></code>. The process table stores only the resulting
+rate, so a clamped process is indistinguishable from an unclamped
+one on disk and a plain Arrhenius recompute would silently lift the
+clamp. Falls back to the Arrhenius rate when the clamp is off or the
+reactant energy is unknown.</p>
 </dd>
 </dl>
 </dd></dl>

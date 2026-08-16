@@ -107,7 +107,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic interface</a></li>
@@ -420,6 +420,31 @@ as minimization).</p>
 </span></pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">$ /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 -m rgpycrumbs.cli eon plt-saddle --job-dir /tmp/eon_pt_saddle_fzw8rh87 --label pt saddle --plot-type profile --dpi 150 -o /tmp/eon_pt_saddle_fzw8rh87/plots/saddle_profile.png
+</span></pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">--&gt; Dispatching to: /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_saddle.py --job-dir /tmp/eon_pt_saddle_fzw8rh87 --label pt saddle --plot-type profile --dpi 150 -o /tmp/eon_pt_saddle_fzw8rh87/plots/saddle_profile.png
+</span><span data-line="2"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[08/16/26 00:40:40] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loading dimer trajectory from               
+</span><span data-line="3"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_pt_saddle_fzw8rh87                        
+</span><span data-line="4"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Using dimer metrics from frame metadata <span class=" -Color -Color-Bold">(</span><span class=" -Color -Color-Bold -Color-Bold-Cyan">11</span> 
+</span><span data-line="5"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         rows<span class=" -Color -Color-Bold">)</span>                                              
+</span><span data-line="6"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loaded <span class=" -Color -Color-Bold -Color-Bold-Cyan">11</span> frames, <span class=" -Color -Color-Bold -Color-Bold-Cyan">11</span> data rows              
+</span><span data-line="7"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loaded trajectory from                      
+</span><span data-line="8"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_pt_saddle_fzw8rh87 <span class=" -Color -Color-Bold">(</span><span class=" -Color -Color-Bold -Color-Bold-Cyan">11</span> frames, <span class=" -Color -Color-Yellow">saddle</span>=<span class=" -Color -Color-Magenta">yes</span><span class=" -Color -Color-Bold">)</span>
+</span><span data-line="9"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Setting global rcParams for ruhi theme      
+</span><span data-line="10"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Yellow">WARNING </span> WARNING - Font <span class=" -Color -Color-Green">&#39;Atkinson Hyperlegible&#39;</span> not found.  
+</span><span data-line="11"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         Falling back to <span class=" -Color -Color-Green">&#39;sans-serif&#39;</span>.                      
+</span><span data-line="12"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[08/16/26 00:40:41] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Saved                                       
+</span><span data-line="13"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/eon_pt_saddle_fzw8rh87/plots/</span>saddle_profile.pn
+</span><span data-line="14"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         g                                                  
+</span></pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">--&gt; Using active interpreter (readcon/plot stack present or --dev)
+</span></pre></div>
+</div>
+<img alt="../../_images/f97605ecf0cef85eb6302cead68d2d0f590febc3d2f6c05f6ad39c0ec945d992.png" src="../../_images/f97605ecf0cef85eb6302cead68d2d0f590febc3d2f6c05f6ad39c0ec945d992.png" />
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -452,6 +477,44 @@ as minimization).</p>
 </span><span data-line="27">    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;plt-saddle landscape skipped:&quot;</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
 </span></pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">$ /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 -m rgpycrumbs.cli eon plt-saddle --job-dir /tmp/eon_pt_saddle_fzw8rh87 --label pt saddle --plot-type landscape --project-path --surface-type grad_imq --plot-structures endpoints --strip-renderer xyzrender --strip-dividers --dpi 150 -o /tmp/eon_pt_saddle_fzw8rh87/plots/saddle_2d.png
+</span></pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">--&gt; Dispatching to: /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_saddle.py --job-dir /tmp/eon_pt_saddle_fzw8rh87 --label pt saddle --plot-type landscape --project-path --surface-type grad_imq --plot-structures endpoints --strip-renderer xyzrender --strip-dividers --dpi 150 -o /tmp/eon_pt_saddle_fzw8rh87/plots/saddle_2d.png
+</span><span data-line="2"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[08/16/26 00:40:43] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loading dimer trajectory from               
+</span><span data-line="3"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_pt_saddle_fzw8rh87                        
+</span><span data-line="4"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Using dimer metrics from frame metadata <span class=" -Color -Color-Bold">(</span><span class=" -Color -Color-Bold -Color-Bold-Cyan">11</span> 
+</span><span data-line="5"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         rows<span class=" -Color -Color-Bold">)</span>                                              
+</span><span data-line="6"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loaded <span class=" -Color -Color-Bold -Color-Bold-Cyan">11</span> frames, <span class=" -Color -Color-Bold -Color-Bold-Cyan">11</span> data rows              
+</span><span data-line="7"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loaded trajectory from                      
+</span><span data-line="8"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_pt_saddle_fzw8rh87 <span class=" -Color -Color-Bold">(</span><span class=" -Color -Color-Bold -Color-Bold-Cyan">11</span> frames, <span class=" -Color -Color-Yellow">saddle</span>=<span class=" -Color -Color-Magenta">yes</span><span class=" -Color -Color-Bold">)</span>
+</span><span data-line="9"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Setting global rcParams for ruhi theme      
+</span><span data-line="10"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Yellow">WARNING </span> WARNING - Font <span class=" -Color -Color-Green">&#39;Atkinson Hyperlegible&#39;</span> not found.  
+</span><span data-line="11"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         Falling back to <span class=" -Color -Color-Green">&#39;sans-serif&#39;</span>.                      
+</span><span data-line="12"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Calculating landscape coordinates <span class=" -Color -Color-Bold">(</span>RMSD-A,  
+</span><span data-line="13"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         RMSD-B<span class=" -Color -Color-Bold">)</span><span class=" -Color -Color-Yellow">...</span>                                         
+</span><span data-line="14"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[08/16/26 00:41:01] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Generating 2D surface using grad_imq        
+</span><span data-line="15"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Bold">(</span>Projected: True<span class=" -Color -Color-Bold">)</span><span class=" -Color -Color-Yellow">...</span>                               
+</span><span data-line="16"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Unable to initialize backend <span class=" -Color -Color-Green">&#39;tpu&#39;</span>:         
+</span><span data-line="17"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         INTERNAL: Failed to open libtpu.so: libtpu.so:     
+</span><span data-line="18"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         cannot open shared object file: No such file or    
+</span><span data-line="19"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         directory                                          
+</span><span data-line="20"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[08/16/26 00:41:10] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Calculating landscape coordinates <span class=" -Color -Color-Bold">(</span>RMSD-A,  
+</span><span data-line="21"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         RMSD-B<span class=" -Color -Color-Bold">)</span><span class=" -Color -Color-Yellow">...</span>                                         
+</span><span data-line="22"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[08/16/26 00:41:27] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loading <span class=" -Color -Color-Magenta">/tmp/</span>tmp2boqvmt0.xyz                
+</span><span data-line="23"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Built graph: <span class=" -Color -Color-Bold -Color-Bold-Cyan">336</span> atoms, <span class=" -Color -Color-Bold -Color-Bold-Cyan">1607</span> bonds          
+</span><span data-line="24"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[08/16/26 00:41:29] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loading <span class=" -Color -Color-Magenta">/tmp/</span>tmpp88h3csf.xyz                
+</span><span data-line="25"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Built graph: <span class=" -Color -Color-Bold -Color-Bold-Cyan">336</span> atoms, <span class=" -Color -Color-Bold -Color-Bold-Cyan">1606</span> bonds          
+</span><span data-line="26"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[08/16/26 00:41:30] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Saved                                       
+</span><span data-line="27"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/eon_pt_saddle_fzw8rh87/plots/</span>saddle_2d.png    
+</span></pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">--&gt; Using active interpreter (readcon/plot stack present or --dev)
+</span></pre></div>
+</div>
+<img alt="../../_images/7f484118023f2a3d5a3e84bd0eadb9b0b12c41bc6a8ea2822dc90776fd8a320e.png" src="../../_images/7f484118023f2a3d5a3e84bd0eadb9b0b12c41bc6a8ea2822dc90776fd8a320e.png" />
 </div>
 </div>
 </section>

@@ -107,7 +107,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/ext_pot.html">External potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/ase_pot.html">ASE interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/metatomic_pot.html">Metatomic interface</a></li>
@@ -292,6 +292,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#obtaining-sources">Obtaining sources</a><ul>
 <li><a class="reference internal" href="#building-from-source">Building from source</a><ul>
 <li><a class="reference internal" href="#troubleshooting-rolling-distros-arch-fedora">Troubleshooting: rolling distros (Arch, Fedora)</a></li>
+<li><a class="reference internal" href="#troubleshooting-a-global-cargo-linker-setting">Troubleshooting: a global cargo linker setting</a></li>
 <li><a class="reference internal" href="#optional-packages">Optional packages</a></li>
 </ul>
 </li>
@@ -449,6 +450,9 @@ binary is automatically made available in the activated environment.</p>
 </span><span data-line="5">meson<span class="w"> </span>install<span class="w"> </span>-C<span class="w"> </span>bbdir
 </span></pre></div>
 </div>
+<p>If that <code class="docutils literal notranslate"><span class="pre">meson</span> <span class="pre">setup</span></code> stops on glibc errors raised from inside <code class="docutils literal notranslate"><span class="pre">&lt;cmath&gt;</span></code>, add
+<code class="docutils literal notranslate"><span class="pre">--force-fallback-for=nlohmann_json</span></code> and read the rolling distro section below
+for what causes it.</p>
 <p>Some additional performance can be gained with <code class="docutils literal notranslate"><span class="pre">ccache</span></code> and <code class="docutils literal notranslate"><span class="pre">mold</span></code>, which can be
 passed with <code class="docutils literal notranslate"><span class="pre">--native-file</span></code>:</p>
 <ul class="simple">
@@ -458,19 +462,46 @@ passed with <code class="docutils literal notranslate"><span class="pre">--nativ
 <section id="troubleshooting-rolling-distros-arch-fedora">
 <h3>Troubleshooting: rolling distros (Arch, Fedora)<a class="headerlink" href="#troubleshooting-rolling-distros-arch-fedora" title="Link to this heading">¶</a></h3>
 <p>On rolling-release distributions with newer system packages, the conda-forge
-compiler sysroot can conflict with system headers. The symptom is errors like
-<code class="docutils literal notranslate"><span class="pre">__iseqsigf128</span> <span class="pre">was</span> <span class="pre">not</span> <span class="pre">declared</span></code> or <code class="docutils literal notranslate"><span class="pre">__fpclassify</span> <span class="pre">has</span> <span class="pre">not</span> <span class="pre">been</span> <span class="pre">declared</span></code> when
-compiling with the pixi/conda compilers.</p>
-<p>By default meson <strong>prefers</strong> an installed <code class="docutils literal notranslate"><span class="pre">nlohmann_json</span></code> module (pkg-config /
-cmake; EasyBuild and distro packages), with the wrap as fallback — same pattern
-as readcon.</p>
-<p>On rolling-release distros with conda compilers, system CMake configs can still
-export <code class="docutils literal notranslate"><span class="pre">-I/usr/include</span></code> and mix glibc headers with the conda sysroot. Force the
-wrap when that happens:</p>
+compiler sysroot conflicts with system headers. <code class="docutils literal notranslate"><span class="pre">meson</span> <span class="pre">setup</span></code> stops during the
+compiler checks with errors such as <code class="docutils literal notranslate"><span class="pre">__iseqsigf128</span> <span class="pre">was</span> <span class="pre">not</span> <span class="pre">declared</span></code> or
+<code class="docutils literal notranslate"><span class="pre">__fpclassify</span> <span class="pre">has</span> <span class="pre">not</span> <span class="pre">been</span> <span class="pre">declared</span></code>, raised from inside <code class="docutils literal notranslate"><span class="pre">&lt;cmath&gt;</span></code>. Nothing in
+the output names the package responsible, so the failure reads as a broken
+toolchain.</p>
+<p>By default meson prefers an installed <code class="docutils literal notranslate"><span class="pre">nlohmann_json</span></code> module (pkg-config or
+CMake, from EasyBuild and distro packages) and falls back to the wrap,
+the same pattern as readcon. The system CMake config for <code class="docutils literal notranslate"><span class="pre">nlohmann_json</span></code>
+exports <code class="docutils literal notranslate"><span class="pre">-I/usr/include</span></code>, which mixes glibc headers into the conda sysroot.
+Force the wrap to keep that include path out of the build:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">meson<span class="w"> </span>setup<span class="w"> </span>bbdir<span class="w"> </span>--prefix<span class="o">=</span><span class="nv">$CONDA_PREFIX</span><span class="w"> </span>--libdir<span class="o">=</span>lib<span class="w"> </span><span class="se">\</span>
 </span><span data-line="2"><span class="w">  </span>--force-fallback-for<span class="o">=</span>nlohmann_json
 </span></pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">client/meson.build</span></code> carries the same note beside the <code class="docutils literal notranslate"><span class="pre">nlohmann_json</span></code>
+dependency lookup.</p>
+</section>
+<section id="troubleshooting-a-global-cargo-linker-setting">
+<h3>Troubleshooting: a global cargo linker setting<a class="headerlink" href="#troubleshooting-a-global-cargo-linker-setting" title="Link to this heading">¶</a></h3>
+<p>readcon-core is built by cargo, which reads <code class="docutils literal notranslate"><span class="pre">~/.cargo/config.toml</span></code> in addition
+to the environment. A <code class="docutils literal notranslate"><span class="pre">rustflags</span></code> entry there applies to every crate eOn builds,
+including inside a conda or pixi environment where the compiler is
+conda-forge’s rather than the system one.</p>
+<p>The case that comes up is a linker override. <code class="docutils literal notranslate"><span class="pre">-C</span> <span class="pre">link-arg=-fuse-ld=mold</span></code> works
+with a system GCC new enough to resolve <code class="docutils literal notranslate"><span class="pre">mold</span></code> by name, but the absolute form
+<code class="docutils literal notranslate"><span class="pre">-fuse-ld=/usr/bin/mold</span></code> is rejected by conda-forge’s GCC 13:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span data-line="1">error: linking with `x86_64-conda-linux-gnu-cc` failed: exit status: 1
+</span><span data-line="2">  = note: x86_64-conda-linux-gnu-cc: error: unrecognized command-line option
+</span><span data-line="3">          &#39;-fuse-ld=/usr/bin/mold&#39;
+</span><span data-line="4">error: could not compile `zmij` (build script)
+</span><span data-line="5">FAILED: subprojects/readcon-core/libreadcon_core.a
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">RUSTFLAGS</span></code> overrides <code class="docutils literal notranslate"><span class="pre">build.rustflags</span></code> from the config file, so clearing it for
+the build leaves the global setting alone:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nv">RUSTFLAGS</span><span class="o">=</span><span class="w"> </span>meson<span class="w"> </span>compile<span class="w"> </span>-C<span class="w"> </span>bbdir
+</span></pre></div>
+</div>
+<p>The same applies to <code class="docutils literal notranslate"><span class="pre">scripts/pyeonclient_build_wheel.sh</span></code>, which builds
+readcon-core through cargo as part of the wheel.</p>
 </section>
 <section id="optional-packages">
 <h3>Optional packages<a class="headerlink" href="#optional-packages" title="Link to this heading">¶</a></h3>

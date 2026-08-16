@@ -107,7 +107,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic interface</a></li>
@@ -295,6 +295,11 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#eon.escaperate.get_statelist"><code class="docutils literal notranslate"><span class="pre">get_statelist()</span></code></a></li>
 <li><a class="reference internal" href="#eon.escaperate.get_pr_metadata"><code class="docutils literal notranslate"><span class="pre">get_pr_metadata()</span></code></a></li>
 <li><a class="reference internal" href="#eon.escaperate.write_pr_metadata"><code class="docutils literal notranslate"><span class="pre">write_pr_metadata()</span></code></a></li>
+<li><a class="reference internal" href="#eon.escaperate.end_state_table_path"><code class="docutils literal notranslate"><span class="pre">end_state_table_path()</span></code></a></li>
+<li><a class="reference internal" href="#eon.escaperate.load_end_state_table"><code class="docutils literal notranslate"><span class="pre">load_end_state_table()</span></code></a></li>
+<li><a class="reference internal" href="#eon.escaperate.save_end_state_table"><code class="docutils literal notranslate"><span class="pre">save_end_state_table()</span></code></a></li>
+<li><a class="reference internal" href="#eon.escaperate.find_matching_process"><code class="docutils literal notranslate"><span class="pre">find_matching_process()</span></code></a></li>
+<li><a class="reference internal" href="#eon.escaperate.accumulate_end_state"><code class="docutils literal notranslate"><span class="pre">accumulate_end_state()</span></code></a></li>
 <li><a class="reference internal" href="#eon.escaperate.make_searches"><code class="docutils literal notranslate"><span class="pre">make_searches()</span></code></a></li>
 <li><a class="reference internal" href="#eon.escaperate.register_results"><code class="docutils literal notranslate"><span class="pre">register_results()</span></code></a></li>
 <li><a class="reference internal" href="#eon.escaperate.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
@@ -385,13 +390,28 @@ data-aria-dark="Switch to auto color mode">
 <tr class="row-odd"><td><p><a class="reference internal" href="#eon.escaperate.write_pr_metadata" title="eon.escaperate.write_pr_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_pr_metadata</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.escaperate.make_searches" title="eon.escaperate.make_searches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_searches</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.escaperate.end_state_table_path" title="eon.escaperate.end_state_table_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end_state_table_path</span></code></a></p></td>
+<td><p>Escape-rate table for one reactant state, under ConfigClass.path_states.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.escaperate.load_end_state_table" title="eon.escaperate.load_end_state_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_end_state_table</span></code></a></p></td>
+<td><p>Read the end-state table. The file is opened for reading from the start.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.escaperate.save_end_state_table" title="eon.escaperate.save_end_state_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_end_state_table</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.escaperate.register_results" title="eon.escaperate.register_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_results</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.escaperate.find_matching_process" title="eon.escaperate.find_matching_process"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_matching_process</span></code></a></p></td>
+<td><p>Return the process id whose stored product matches <em>product</em>, or None.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.escaperate.accumulate_end_state" title="eon.escaperate.accumulate_end_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">accumulate_end_state</span></code></a></p></td>
+<td><p>Fold one transition into the end-state table. Return the process id.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.escaperate.make_searches" title="eon.escaperate.make_searches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_searches</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.escaperate.main" title="eon.escaperate.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.escaperate.register_results" title="eon.escaperate.register_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_results</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.escaperate.main" title="eon.escaperate.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -442,6 +462,39 @@ data-aria-dark="Switch to auto color mode">
 <dt class="sig sig-object py" id="eon.escaperate.write_pr_metadata">
 <span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">write_pr_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_state_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wuid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/escaperate.html#write_pr_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.escaperate.write_pr_metadata" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.escaperate.end_state_table_path">
+<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">end_state_table_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_number</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/escaperate.html#end_state_table_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.escaperate.end_state_table_path" title="Link to this definition">¶</a></dt>
+<dd><p>Escape-rate table for one reactant state, under ConfigClass.path_states.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.escaperate.load_end_state_table">
+<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">load_end_state_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/escaperate.html#load_end_state_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.escaperate.load_end_state_table" title="Link to this definition">¶</a></dt>
+<dd><p>Read the end-state table. The file is opened for reading from the start.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.escaperate.save_end_state_table">
+<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">save_end_state_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/escaperate.html#save_end_state_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.escaperate.save_end_state_table" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.escaperate.find_matching_process">
+<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">find_matching_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">product</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/escaperate.html#find_matching_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.escaperate.find_matching_process" title="Link to this definition">¶</a></dt>
+<dd><p>Return the process id whose stored product matches <em>product</em>, or None.</p>
+<p>Products live at product_<xxh64>.con via State.proc_product_path, not
+product_0.con / product_1.con.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.escaperate.accumulate_end_state">
+<span class="sig-prename descclassname"><span class="pre">eon.escaperate.</span></span><span class="sig-name descname"><span class="pre">accumulate_end_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">product</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/escaperate.html#accumulate_end_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.escaperate.accumulate_end_state" title="Link to this definition">¶</a></dt>
+<dd><p>Fold one transition into the end-state table. Return the process id.</p>
+<p>A repeat product updates views/time/rate and does not call add_process,
+because process ids are content-addressed and a second add would collide.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.escaperate.make_searches">

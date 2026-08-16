@@ -107,7 +107,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic interface</a></li>
@@ -425,6 +425,30 @@ title from <code class="docutils literal notranslate"><span class="pre">--label<
 </span></pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">$ /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 -m rgpycrumbs.cli eon plt-min --job-dir /tmp/eon_lj_min_lx5gr2nq --label lj cluster --plot-type profile --dpi 150 -o /tmp/eon_lj_min_lx5gr2nq/plots/min_1d.png
+</span></pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">--&gt; Dispatching to: /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py --job-dir /tmp/eon_lj_min_lx5gr2nq --label lj cluster --plot-type profile --dpi 150 -o /tmp/eon_lj_min_lx5gr2nq/plots/min_1d.png
+</span><span data-line="2"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[08/16/26 00:29:17] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loading minimization trajectory from        
+</span><span data-line="3"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_lj_min_lx5gr2nq                           
+</span><span data-line="4"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Using minimization metrics from frame       
+</span><span data-line="5"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         metadata <span class=" -Color -Color-Bold">(</span><span class=" -Color -Color-Bold -Color-Bold-Cyan">1</span> rows<span class=" -Color -Color-Bold">)</span>                                  
+</span><span data-line="6"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loaded <span class=" -Color -Color-Bold -Color-Bold-Cyan">1</span> frames, <span class=" -Color -Color-Bold -Color-Bold-Cyan">1</span> data rows                
+</span><span data-line="7"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loaded minimization trajectory from         
+</span><span data-line="8"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_lj_min_lx5gr2nq <span class=" -Color -Color-Bold">(</span><span class=" -Color -Color-Bold -Color-Bold-Cyan">1</span> frames<span class=" -Color -Color-Bold">)</span>                
+</span><span data-line="9"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Setting global rcParams for ruhi theme      
+</span><span data-line="10"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Yellow">WARNING </span> WARNING - Font <span class=" -Color -Color-Green">&#39;Atkinson Hyperlegible&#39;</span> not found.  
+</span><span data-line="11"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         Falling back to <span class=" -Color -Color-Green">&#39;sans-serif&#39;</span>.                      
+</span><span data-line="12"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Saved                                       
+</span><span data-line="13"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/eon_lj_min_lx5gr2nq/plots/</span>min_1d.png          
+</span></pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">--&gt; Using active interpreter (readcon/plot stack present or --dev)
+</span></pre></div>
+</div>
+<img alt="../../_images/e436449ca3048988cc145dadd0304406afb09cc2e39e7a261faf29d73f8a21da.png" src="../../_images/e436449ca3048988cc145dadd0304406afb09cc2e39e7a261faf29d73f8a21da.png" />
+</div>
 </div>
 </section>
 <section id="d-optimization-landscape">
@@ -461,6 +485,104 @@ minimization</strong>; endpoints are labeled <strong>initial</strong> / <strong>
 </span><span data-line="26">    <span class="nb">str</span><span class="p">(</span><span class="n">out</span><span class="p">),</span>
 </span><span data-line="27"><span class="p">)</span>
 </span><span data-line="28"><span class="n">show_plot</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">$ /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 -m rgpycrumbs.cli eon plt-min --job-dir /tmp/eon_lj_min_lx5gr2nq --label lj cluster --plot-type landscape --project-path --surface-type grad_imq --plot-structures endpoints --strip-renderer xyzrender --strip-dividers --xyzrender-config paton --rotation 90x,0y,0z --dpi 150 -o /tmp/eon_lj_min_lx5gr2nq/plots/min_2d.png
+</span></pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">--&gt; Dispatching to: /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py --job-dir /tmp/eon_lj_min_lx5gr2nq --label lj cluster --plot-type landscape --project-path --surface-type grad_imq --plot-structures endpoints --strip-renderer xyzrender --strip-dividers --xyzrender-config paton --rotation 90x,0y,0z --dpi 150 -o /tmp/eon_lj_min_lx5gr2nq/plots/min_2d.png
+</span><span data-line="2"><span class=" -Color -Color-Faint -Color-Faint-Cyan">[08/16/26 00:29:20] </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loading minimization trajectory from        
+</span><span data-line="3"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_lj_min_lx5gr2nq                           
+</span><span data-line="4"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Using minimization metrics from frame       
+</span><span data-line="5"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         metadata <span class=" -Color -Color-Bold">(</span><span class=" -Color -Color-Bold -Color-Bold-Cyan">1</span> rows<span class=" -Color -Color-Bold">)</span>                                  
+</span><span data-line="6"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loaded <span class=" -Color -Color-Bold -Color-Bold-Cyan">1</span> frames, <span class=" -Color -Color-Bold -Color-Bold-Cyan">1</span> data rows                
+</span><span data-line="7"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Loaded minimization trajectory from         
+</span><span data-line="8"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         <span class=" -Color -Color-Magenta">/tmp/</span>eon_lj_min_lx5gr2nq <span class=" -Color -Color-Bold">(</span><span class=" -Color -Color-Bold -Color-Bold-Cyan">1</span> frames<span class=" -Color -Color-Bold">)</span>                
+</span><span data-line="9"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Setting global rcParams for ruhi theme      
+</span><span data-line="10"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Yellow">WARNING </span> WARNING - Font <span class=" -Color -Color-Green">&#39;Atkinson Hyperlegible&#39;</span> not found.  
+</span><span data-line="11"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         Falling back to <span class=" -Color -Color-Green">&#39;sans-serif&#39;</span>.                      
+</span><span data-line="12"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span><span class=" -Color -Color-Blue">INFO    </span> INFO - Calculating landscape coordinates <span class=" -Color -Color-Bold">(</span>RMSD-A,  
+</span><span data-line="13"><span class=" -Color -Color-Faint -Color-Faint-Cyan">                    </span>         RMSD-B<span class=" -Color -Color-Bold">)</span><span class=" -Color -Color-Yellow">...</span>                                         
+</span></pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span data-line="1">--&gt; Using active interpreter (readcon/plot stack present or --dev)
+</span><span data-line="2">Traceback (most recent call last):
+</span><span data-line="3">  File &quot;/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py&quot;, line 402, in &lt;module&gt;
+</span><span data-line="4">    main()
+</span><span data-line="5">  File &quot;/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/click/core.py&quot;, line 1485, in __call__
+</span><span data-line="6">    return self.main(*args, **kwargs)
+</span><span data-line="7">           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+</span><span data-line="8">  File &quot;/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/click/core.py&quot;, line 1406, in main
+</span><span data-line="9">    rv = self.invoke(ctx)
+</span><span data-line="10">         ^^^^^^^^^^^^^^^^
+</span><span data-line="11">  File &quot;/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/click/core.py&quot;, line 1269, in invoke
+</span><span data-line="12">    return ctx.invoke(self.callback, **ctx.params)
+</span><span data-line="13">           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+</span><span data-line="14">  File &quot;/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/click/core.py&quot;, line 824, in invoke
+</span><span data-line="15">    return callback(*args, **kwargs)
+</span><span data-line="16">           ^^^^^^^^^^^^^^^^^^^^^^^^^
+</span><span data-line="17">  File &quot;/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/click/decorators.py&quot;, line 34, in new_func
+</span><span data-line="18">    return f(get_current_context(), *args, **kwargs)
+</span><span data-line="19">           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+</span><span data-line="20">  File &quot;/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py&quot;, line 293, in main
+</span><span data-line="21">    return run_from_click(&quot;min&quot;, plot_min_from_settings, ctx, config=config, **params)
+</span><span data-line="22">           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+</span><span data-line="23">  File &quot;/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plot_config.py&quot;, line 346, in run_from_click
+</span><span data-line="24">    return runner(resolve_from_click(command, ctx, config=config, **params))
+</span><span data-line="25">           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+</span><span data-line="26">  File &quot;/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py&quot;, line 153, in plot_min_from_settings
+</span><span data-line="27">    _plot_landscape(
+</span><span data-line="28">  File &quot;/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py&quot;, line 353, in _plot_landscape
+</span><span data-line="29">    render_single_ended_landscape(
+</span><span data-line="30">  File &quot;/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/chemparseplot/plot/optimization.py&quot;, line 421, in render_single_ended_landscape
+</span><span data-line="31">    f_para = -np.gradient(energies_plot)
+</span><span data-line="32">              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+</span><span data-line="33">  File &quot;/home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py&quot;, line 1297, in gradient
+</span><span data-line="34">    raise ValueError(
+</span><span data-line="35">ValueError: Shape of array too small to calculate a numerical gradient, at least (edge_order + 1) elements are required.
+</span></pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gt">---------------------------------------------------------------------------</span>
+</span><span data-line="2"><span class="ne">RuntimeError</span><span class="g g-Whitespace">                              </span>Traceback (most recent call last)
+</span><span data-line="3"><span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
+</span><span data-line="4"><span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">out</span> <span class="o">=</span> <span class="n">plot_dir</span> <span class="o">/</span> <span class="s2">&quot;min_2d.png&quot;</span>
+</span><span data-line="5"><span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">run_rgpycrumbs</span><span class="p">(</span>
+</span><span data-line="6"><span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="s2">&quot;eon&quot;</span><span class="p">,</span>
+</span><span data-line="7"><span class="g g-Whitespace">      </span><span class="mi">4</span>     <span class="s2">&quot;plt-min&quot;</span><span class="p">,</span>
+</span><span data-line="8"><span class="g g-Whitespace">      </span><span class="mi">5</span>     <span class="s2">&quot;--job-dir&quot;</span><span class="p">,</span>
+</span><span data-line="9"><span class="g g-Whitespace">      </span><span class="mi">6</span>     <span class="nb">str</span><span class="p">(</span><span class="n">work</span><span class="p">),</span>
+</span><span data-line="10"><span class="g g-Whitespace">      </span><span class="mi">7</span>     <span class="s2">&quot;--label&quot;</span><span class="p">,</span>
+</span><span data-line="11"><span class="g g-Whitespace">      </span><span class="mi">8</span>     <span class="s2">&quot;lj cluster&quot;</span><span class="p">,</span>
+</span><span data-line="12"><span class="g g-Whitespace">      </span><span class="mi">9</span>     <span class="s2">&quot;--plot-type&quot;</span><span class="p">,</span>
+</span><span data-line="13"><span class="g g-Whitespace">     </span><span class="mi">10</span>     <span class="s2">&quot;landscape&quot;</span><span class="p">,</span>
+</span><span data-line="14"><span class="g g-Whitespace">     </span><span class="mi">11</span>     <span class="s2">&quot;--project-path&quot;</span><span class="p">,</span>
+</span><span data-line="15"><span class="g g-Whitespace">     </span><span class="mi">12</span>     <span class="s2">&quot;--surface-type&quot;</span><span class="p">,</span>
+</span><span data-line="16"><span class="g g-Whitespace">     </span><span class="mi">13</span>     <span class="s2">&quot;grad_imq&quot;</span><span class="p">,</span>
+</span><span data-line="17"><span class="g g-Whitespace">     </span><span class="mi">14</span>     <span class="s2">&quot;--plot-structures&quot;</span><span class="p">,</span>
+</span><span data-line="18"><span class="g g-Whitespace">     </span><span class="mi">15</span>     <span class="s2">&quot;endpoints&quot;</span><span class="p">,</span>
+</span><span data-line="19"><span class="g g-Whitespace">     </span><span class="mi">16</span>     <span class="s2">&quot;--strip-renderer&quot;</span><span class="p">,</span>
+</span><span data-line="20"><span class="g g-Whitespace">     </span><span class="mi">17</span>     <span class="s2">&quot;xyzrender&quot;</span><span class="p">,</span>
+</span><span data-line="21"><span class="g g-Whitespace">     </span><span class="mi">18</span>     <span class="s2">&quot;--strip-dividers&quot;</span><span class="p">,</span>
+</span><span data-line="22"><span class="g g-Whitespace">     </span><span class="mi">19</span>     <span class="s2">&quot;--xyzrender-config&quot;</span><span class="p">,</span>
+</span><span data-line="23"><span class="g g-Whitespace">     </span><span class="mi">20</span>     <span class="s2">&quot;paton&quot;</span><span class="p">,</span>
+</span><span data-line="24"><span class="g g-Whitespace">     </span><span class="mi">21</span>     <span class="s2">&quot;--rotation&quot;</span><span class="p">,</span>
+</span><span data-line="25"><span class="g g-Whitespace">     </span><span class="mi">22</span>     <span class="s2">&quot;90x,0y,0z&quot;</span><span class="p">,</span>
+</span><span data-line="26"><span class="g g-Whitespace">     </span><span class="mi">23</span>     <span class="s2">&quot;--dpi&quot;</span><span class="p">,</span>
+</span><span data-line="27"><span class="g g-Whitespace">     </span><span class="mi">24</span>     <span class="s2">&quot;150&quot;</span><span class="p">,</span>
+</span><span data-line="28"><span class="g g-Whitespace">     </span><span class="mi">25</span>     <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
+</span><span data-line="29"><span class="g g-Whitespace">     </span><span class="mi">26</span>     <span class="nb">str</span><span class="p">(</span><span class="n">out</span><span class="p">),</span>
+</span><span data-line="30"><span class="g g-Whitespace">     </span><span class="mi">27</span> <span class="p">)</span>
+</span><span data-line="31"><span class="g g-Whitespace">     </span><span class="mi">28</span> <span class="n">show_plot</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+</span><span data-line="32">
+</span><span data-line="33"><span class="nn">Cell In[1], line 60,</span> in <span class="ni">run_rgpycrumbs</span><span class="nt">(cwd, timeout, *args)</span>
+</span><span data-line="34"><span class="g g-Whitespace">     </span><span class="mi">58</span>     <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+</span><span data-line="35"><span class="g g-Whitespace">     </span><span class="mi">59</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="36"><span class="ne">---&gt; </span><span class="mi">60</span>     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rgpycrumbs failed (</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">returncode</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</span><span data-line="37"><span class="g g-Whitespace">     </span><span class="mi">61</span> <span class="k">return</span> <span class="n">r</span>
+</span><span data-line="38">
+</span><span data-line="39"><span class="ne">RuntimeError</span>: rgpycrumbs failed (1)
 </span></pre></div>
 </div>
 </div>

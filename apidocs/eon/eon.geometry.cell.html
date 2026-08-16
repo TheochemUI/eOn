@@ -107,7 +107,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic interface</a></li>
@@ -368,10 +368,10 @@ data-aria-dark="Switch to auto color mode">
 <table class="autosummary longtable docutils align-left">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#eon.geometry.cell.length_angle_to_box" title="eon.geometry.cell.length_angle_to_box"><code class="xref py py-obj docutils literal notranslate"><span class="pre">length_angle_to_box</span></code></a></p></td>
-<td><p>Convert cell lengths + angles (degrees) to a 3×3 row-vector box matrix.</p></td>
+<td><p>Convert cell lengths + CON angles (degrees) to a 3×3 row-vector box.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#eon.geometry.cell.box_to_length_angle" title="eon.geometry.cell.box_to_length_angle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">box_to_length_angle</span></code></a></p></td>
-<td><p>Inverse of :func:<code class="docutils literal notranslate"><span class="pre">length_angle_to_box</span></code>.</p></td>
+<td><p>Inverse of :func:<code class="docutils literal notranslate"><span class="pre">length_angle_to_box</span></code>: lengths and (alpha, beta, gamma).</p></td>
 </tr>
 </tbody>
 </table>
@@ -382,13 +382,16 @@ data-aria-dark="Switch to auto color mode">
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.geometry.cell.length_angle_to_box">
 <span class="sig-prename descclassname"><span class="pre">eon.geometry.cell.</span></span><span class="sig-name descname"><span class="pre">length_angle_to_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boxlengths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angles</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../_modules/eon/geometry/cell.html#length_angle_to_box"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.geometry.cell.length_angle_to_box" title="Link to this definition">¶</a></dt>
-<dd><p>Convert cell lengths + angles (degrees) to a 3×3 row-vector box matrix.</p>
+<dd><p>Convert cell lengths + CON angles (degrees) to a 3×3 row-vector box.</p>
+<p><code class="docutils literal notranslate"><span class="pre">angles</span></code> is <code class="docutils literal notranslate"><span class="pre">(alpha,</span> <span class="pre">beta,</span> <span class="pre">gamma)</span></code> as CON header line 4 specifies:
+alpha = angle(b, c), beta = angle(a, c), gamma = angle(a, b). Vector
+<code class="docutils literal notranslate"><span class="pre">a</span></code> lies on x and <code class="docutils literal notranslate"><span class="pre">b</span></code> in the xy plane.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.geometry.cell.box_to_length_angle">
 <span class="sig-prename descclassname"><span class="pre">eon.geometry.cell.</span></span><span class="sig-name descname"><span class="pre">box_to_length_angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">box</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/eon/geometry/cell.html#box_to_length_angle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.geometry.cell.box_to_length_angle" title="Link to this definition">¶</a></dt>
-<dd><p>Inverse of :func:<code class="docutils literal notranslate"><span class="pre">length_angle_to_box</span></code>.</p>
+<dd><p>Inverse of :func:<code class="docutils literal notranslate"><span class="pre">length_angle_to_box</span></code>: lengths and (alpha, beta, gamma).</p>
 </dd></dl>
 
 </section>

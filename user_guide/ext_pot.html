@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="teal" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>External potential - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="LAMMPS Potential" href="lammps_pot.html" /><link rel="prev" title="AiiDA (aiida-eon)" href="aiida.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>External Potential - eOn</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="LAMMPS Potential" href="lammps_pot.html" /><link rel="prev" title="AiiDA (aiida-eon)" href="aiida.html" />
       <link rel="canonical" href="https://eondocs.org/user_guide/ext_pot.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
@@ -27,7 +27,7 @@
 </style>
     <meta property="og:type" content="website"/>
   <meta property="og:url" content="https://eondocs.org/user_guide/ext_pot.html"/>
-  <meta property="og:title" content="External potential"/>
+  <meta property="og:title" content="External Potential"/>
     <meta name="twitter:card" content="summary"/>
   </head>
 <body><div class="sy-head">
@@ -107,7 +107,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">External potential</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="ase_pot.html">ASE interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="metatomic_pot.html">Metatomic interface</a></li>
@@ -341,7 +341,7 @@ data-aria-dark="Switch to auto color mode">
         <span>/</span>
         <meta itemprop="position" content="2" />
       </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <strong itemprop="name">External potential</strong>
+        <strong itemprop="name">External Potential</strong>
         <meta itemprop="position" content="3" />
       </li></ol>
     <div class="xl:hidden ml-1">
@@ -390,31 +390,53 @@ data-aria-dark="Switch to auto color mode">
   </div>
 </div><article class="yue dark-code" role="main">
           <section id="external-potential">
-<h1>External potential<a class="headerlink" href="#external-potential" title="Link to this heading">¶</a></h1>
+<h1>External Potential<a class="headerlink" href="#external-potential" title="Link to this heading">¶</a></h1>
 <div class="tip admonition">
 <p class="admonition-title">conda-forge availability</p>
 <p>Included in the <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> package. Always compiled in; no build flags required.</p>
 </div>
-<p>The external potential (<code class="docutils literal notranslate"><span class="pre">ext_pot</span></code>) wraps <strong>any</strong> energy and force calculator
-through files and a system call. Because it requires no compile-time
-dependencies, <code class="docutils literal notranslate"><span class="pre">ext_pot</span></code> is available in every eOn build, including the
-<code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> package.</p>
+<p>The external potential (<code class="docutils literal notranslate"><span class="pre">ext_pot</span></code>) interface allows eOn to use <strong>any</strong> energy and
+force calculator by communicating through files and a system call. Because it
+requires no compile-time dependencies, <code class="docutils literal notranslate"><span class="pre">ext_pot</span></code> is always available in every eOn
+build, including the <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> package.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>If you installed eOn from <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> and need an MLIP (DeePMD, MACE,
+<p>If you installed eOn from <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> and want to use an MLIP (DeePMD, MACE,
 etc.) that is not available through the <a class="reference internal" href="metatomic_pot.html"><span class="std std-doc">Metatomic</span></a>
-interface, use <code class="docutils literal notranslate"><span class="pre">ext_pot</span></code> or <a class="reference internal" href="lammps_pot.html"><span class="std std-doc">LAMMPS</span></a>.
-The <a class="reference internal" href="ase_pot.html"><span class="std std-doc">ASE</span></a> potentials need <code class="docutils literal notranslate"><span class="pre">-Dwith_ase</span></code> at compile time.
-The <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> build leaves that flag off.</p>
+interface, <code class="docutils literal notranslate"><span class="pre">ext_pot</span></code> or <a class="reference internal" href="lammps_pot.html"><span class="std std-doc">LAMMPS</span></a> is the recommended path.
+The <a class="reference internal" href="ase_pot.html"><span class="std std-doc">ASE</span></a> potentials require additional compile-time flags
+that are <strong>not</strong> enabled in the <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> build.</p>
 </div>
 <section id="protocol">
 <h2>Protocol<a class="headerlink" href="#protocol" title="Link to this heading">¶</a></h2>
 <p>When the client needs an energy/force evaluation it:</p>
 <ol class="arabic simple">
-<li><p>Writes the file <code class="docutils literal notranslate"><span class="pre">from_eon_to_extpot</span></code> in the working directory.</p></li>
-<li><p>Calls the executable (or script) specified by <code class="docutils literal notranslate"><span class="pre">ext_pot_path</span></code> via <code class="docutils literal notranslate"><span class="pre">system()</span></code>.</p></li>
-<li><p>Reads the file <code class="docutils literal notranslate"><span class="pre">from_extpot_to_eon</span></code> that the script must create.</p></li>
+<li><p>Creates a private exchange directory named <code class="docutils literal notranslate"><span class="pre">extpot_&lt;pid&gt;_&lt;n&gt;</span></code> beside the
+working directory, where <code class="docutils literal notranslate"><span class="pre">&lt;pid&gt;</span></code> is the client’s process id and <code class="docutils literal notranslate"><span class="pre">&lt;n&gt;</span></code>
+counts the potentials it built.</p></li>
+<li><p>Writes the file <code class="docutils literal notranslate"><span class="pre">from_eon_to_extpot</span></code> in that directory.</p></li>
+<li><p>Calls the executable (or script) specified by <code class="docutils literal notranslate"><span class="pre">ext_pot_path</span></code> via
+<code class="docutils literal notranslate"><span class="pre">system()</span></code>, with the exchange directory as the command’s working
+directory.</p></li>
+<li><p>Reads the file <code class="docutils literal notranslate"><span class="pre">from_extpot_to_eon</span></code> that the script must create there.</p></li>
 </ol>
+<p>The two filenames do not change, so a wrapper that opens them by relative
+name, as every example below does, needs no edit. The exchange directory is
+what keeps two clients started in one directory from reading each other’s
+numbers; the client removes it once the exchange files are consumed, and
+leaves it in place when a call fails so its contents can be inspected.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><code class="docutils literal notranslate"><span class="pre">ext_pot_path</span></code> is resolved against the directory eOn runs in when it names an
+existing file, so <code class="docutils literal notranslate"><span class="pre">./ext_pot</span></code> and an absolute path both work. A command line
+with arguments (<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">wrapper.py</span></code>) or a name looked up on <code class="docutils literal notranslate"><span class="pre">PATH</span></code> is passed
+to the shell unchanged and therefore has to be written so it resolves from
+the exchange directory: give the script an absolute path. On Windows,
+<code class="docutils literal notranslate"><span class="pre">cmd.exe</span></code> does not honor a shebang: a resolved script whose first line names
+python, or whose name ends in <code class="docutils literal notranslate"><span class="pre">.py</span></code>, is invoked as <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">&lt;script&gt;</span></code>. A
+wrapper that needs to reach files in the directory eOn runs in finds that
+directory in the environment variable <code class="docutils literal notranslate"><span class="pre">EON_EXTPOT_RUN_DIR</span></code>.</p>
+</div>
 <section id="input-file-from-eon-to-extpot">
 <h3>Input file (<code class="docutils literal notranslate"><span class="pre">from_eon_to_extpot</span></code>)<a class="headerlink" href="#input-file-from-eon-to-extpot" title="Link to this heading">¶</a></h3>
 <p>The first three lines are the 3x3 box matrix (one row per line, tab-separated).

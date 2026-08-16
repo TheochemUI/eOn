@@ -107,7 +107,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic interface</a></li>
@@ -291,9 +291,14 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#data">Data</a></li>
 <li><a class="reference internal" href="#api">API</a><ul>
 <li><a class="reference internal" href="#eon.fileio.logger"><code class="docutils literal notranslate"><span class="pre">logger</span></code></a></li>
+<li><a class="reference internal" href="#eon.fileio.prng_state_path"><code class="docutils literal notranslate"><span class="pre">prng_state_path()</span></code></a></li>
 <li><a class="reference internal" href="#eon.fileio.save_prng_state"><code class="docutils literal notranslate"><span class="pre">save_prng_state()</span></code></a></li>
 <li><a class="reference internal" href="#eon.fileio.get_prng_state"><code class="docutils literal notranslate"><span class="pre">get_prng_state()</span></code></a></li>
+<li><a class="reference internal" href="#eon.fileio.DEFAULT_FILE_MODE"><code class="docutils literal notranslate"><span class="pre">DEFAULT_FILE_MODE</span></code></a></li>
+<li><a class="reference internal" href="#eon.fileio.DEFAULT_DIR_MODE"><code class="docutils literal notranslate"><span class="pre">DEFAULT_DIR_MODE</span></code></a></li>
+<li><a class="reference internal" href="#eon.fileio.atomic_write"><code class="docutils literal notranslate"><span class="pre">atomic_write()</span></code></a></li>
 <li><a class="reference internal" href="#eon.fileio.loadcons"><code class="docutils literal notranslate"><span class="pre">loadcons()</span></code></a></li>
+<li><a class="reference internal" href="#eon.fileio.loadxyz"><code class="docutils literal notranslate"><span class="pre">loadxyz()</span></code></a></li>
 <li><a class="reference internal" href="#eon.fileio.loadposcars"><code class="docutils literal notranslate"><span class="pre">loadposcars()</span></code></a></li>
 <li><a class="reference internal" href="#eon.fileio.loadcon"><code class="docutils literal notranslate"><span class="pre">loadcon()</span></code></a></li>
 <li><a class="reference internal" href="#eon.fileio.savecon"><code class="docutils literal notranslate"><span class="pre">savecon()</span></code></a></li>
@@ -440,56 +445,80 @@ methods.</p></td>
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-left">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.save_prng_state" title="eon.fileio.save_prng_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_prng_state</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.prng_state_path" title="eon.fileio.prng_state_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prng_state_path</span></code></a></p></td>
+<td><p>Path of the persisted numpy PRNG pickle.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.save_prng_state" title="eon.fileio.save_prng_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_prng_state</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.get_prng_state" title="eon.fileio.get_prng_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_prng_state</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.get_prng_state" title="eon.fileio.get_prng_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_prng_state</span></code></a></p></td>
 <td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.atomic_write" title="eon.fileio.atomic_write"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atomic_write</span></code></a></p></td>
+<td><p>Rewrite a file in one step, for callers that truncate and rewrite whole.
+path: destination file
+mode: ‘w’ or ‘wb’
+The body writes to a temporary file in the destination’s own directory,
+which is renamed over the destination on a clean exit. A reader sees
+either the old contents or the new ones, and a write that fails partway
+(a full disk, a killed process) leaves the destination as it was.
+mkstemp opens at 0600, so the destination’s own mode carries over, or
+the umask default for a file that does not exist yet.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.loadcons" title="eon.fileio.loadcons"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loadcons</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.loadposcars" title="eon.fileio.loadposcars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loadposcars</span></code></a></p></td>
-<td></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.loadxyz" title="eon.fileio.loadxyz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loadxyz</span></code></a></p></td>
+<td><p>Load the first frame of an XYZ/PDB/GRO file via readcon chemfiles ingress.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.loadcon" title="eon.fileio.loadcon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loadcon</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.loadposcars" title="eon.fileio.loadposcars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loadposcars</span></code></a></p></td>
+<td><p>Load every POSCAR frame from filename (VASP 4 or VASP 5).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.loadcon" title="eon.fileio.loadcon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loadcon</span></code></a></p></td>
 <td><p>Load a con file via readcon; return a Structure.
 filein: may be either a filename or a file-like object</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.savecon" title="eon.fileio.savecon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">savecon</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.savecon" title="eon.fileio.savecon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">savecon</span></code></a></p></td>
 <td><p>Save a con file via readcon.
 fileout: can be either a file name or a file-like object
 p:       Structure (or Structure-like) to save
 w:       write/append flag</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.load_mode" title="eon.fileio.load_mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_mode</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.load_mode" title="eon.fileio.load_mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_mode</span></code></a></p></td>
 <td><p>Reads a mode.dat file into an N by 3 numpy array
 modefilein: may be either a file-like object of a filename</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.save_mode" title="eon.fileio.save_mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_mode</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.save_mode" title="eon.fileio.save_mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_mode</span></code></a></p></td>
 <td><p>Saves an Nx3 numpy array into a mode.dat file.
 modefileout:     may be either a filename or file-like object
-displace_vector: the mode (Nx3 numpy array)</p></td>
+displace_vector: the mode (Nx3 numpy array)
+free:            optional (N,) or (N,3) mask; a 0 axis is written as 0
+17 significant digits round trip a double exactly, and match what the
+client’s printf writers emit for the same value.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.save_results_dat" title="eon.fileio.save_results_dat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_results_dat</span></code></a></p></td>
-<td><p>Saves a results.dat file from a dictionary</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.save_results_dat" title="eon.fileio.save_results_dat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_results_dat</span></code></a></p></td>
+<td><p>Saves a results.dat file from a dictionary
+fileout: may be either a filename or a file-like object
+results: dictionary of values, written one “<value> <key>” line each</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.modify_config" title="eon.fileio.modify_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_config</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.modify_config" title="eon.fileio.modify_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_config</span></code></a></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.parse_results" title="eon.fileio.parse_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_results</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.parse_results" title="eon.fileio.parse_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_results</span></code></a></p></td>
 <td><p>Reads a results.dat file and gives a dictionary of the values contained therein</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.loadposcar" title="eon.fileio.loadposcar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loadposcar</span></code></a></p></td>
-<td><p>Load the POSCAR file named filename and returns an atoms object</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.loadposcar" title="eon.fileio.loadposcar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loadposcar</span></code></a></p></td>
+<td><p>Load a VASP POSCAR (or one frame of a multi-frame movie).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.saveposcar" title="eon.fileio.saveposcar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">saveposcar</span></code></a></p></td>
-<td><p>Save a POSCAR
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.saveposcar" title="eon.fileio.saveposcar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">saveposcar</span></code></a></p></td>
+<td><p>Save a VASP 5 POSCAR (species on the comment line and again before
+the counts). movie.py uses this for visualization; loadposcar reads
+this layout and the VASP 4 layout kdb produces.
 fileout: name to save it under
-point:    atoms object to save
-w:        write/append flag</p></td>
+p:       Structure (or Structure-like) to save
+w:       write/append flag</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.load_potfiles" title="eon.fileio.load_potfiles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_potfiles</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.load_potfiles" title="eon.fileio.load_potfiles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_potfiles</span></code></a></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -502,6 +531,12 @@ w:        write/append flag</p></td>
 <table class="autosummary longtable docutils align-left">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.logger" title="eon.fileio.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.fileio.DEFAULT_FILE_MODE" title="eon.fileio.DEFAULT_FILE_MODE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DEFAULT_FILE_MODE</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.fileio.DEFAULT_DIR_MODE" title="eon.fileio.DEFAULT_DIR_MODE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DEFAULT_DIR_MODE</span></code></a></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -517,14 +552,48 @@ w:        write/append flag</p></td>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="eon.fileio.prng_state_path">
+<span class="sig-prename descclassname"><span class="pre">eon.fileio.</span></span><span class="sig-name descname"><span class="pre">prng_state_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/fileio.html#prng_state_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.fileio.prng_state_path" title="Link to this definition">¶</a></dt>
+<dd><p>Path of the persisted numpy PRNG pickle.</p>
+<p>ConfigClass.init restores from this file under path_root, so every
+writer and reset must use the same location rather than the process CWD.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="eon.fileio.save_prng_state">
-<span class="sig-prename descclassname"><span class="pre">eon.fileio.</span></span><span class="sig-name descname"><span class="pre">save_prng_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/fileio.html#save_prng_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.fileio.save_prng_state" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.fileio.</span></span><span class="sig-name descname"><span class="pre">save_prng_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/fileio.html#save_prng_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.fileio.save_prng_state" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.fileio.get_prng_state">
-<span class="sig-prename descclassname"><span class="pre">eon.fileio.</span></span><span class="sig-name descname"><span class="pre">get_prng_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/fileio.html#get_prng_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.fileio.get_prng_state" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.fileio.</span></span><span class="sig-name descname"><span class="pre">get_prng_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/fileio.html#get_prng_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.fileio.get_prng_state" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="eon.fileio.DEFAULT_FILE_MODE">
+<span class="sig-prename descclassname"><span class="pre">eon.fileio.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_FILE_MODE</span></span><a class="headerlink" href="#eon.fileio.DEFAULT_FILE_MODE" title="Link to this definition">¶</a></dt>
+<dd><p>None</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="eon.fileio.DEFAULT_DIR_MODE">
+<span class="sig-prename descclassname"><span class="pre">eon.fileio.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_DIR_MODE</span></span><a class="headerlink" href="#eon.fileio.DEFAULT_DIR_MODE" title="Link to this definition">¶</a></dt>
+<dd><p>None</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.fileio.atomic_write">
+<span class="sig-prename descclassname"><span class="pre">eon.fileio.</span></span><span class="sig-name descname"><span class="pre">atomic_write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'w'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/fileio.html#atomic_write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.fileio.atomic_write" title="Link to this definition">¶</a></dt>
+<dd><p>Rewrite a file in one step, for callers that truncate and rewrite whole.
+path: destination file
+mode: ‘w’ or ‘wb’
+The body writes to a temporary file in the destination’s own directory,
+which is renamed over the destination on a clean exit. A reader sees
+either the old contents or the new ones, and a write that fails partway
+(a full disk, a killed process) leaves the destination as it was.
+mkstemp opens at 0600, so the destination’s own mode carries over, or
+the umask default for a file that does not exist yet.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.fileio.loadcons">
@@ -532,9 +601,18 @@ w:        write/append flag</p></td>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="eon.fileio.loadxyz">
+<span class="sig-prename descclassname"><span class="pre">eon.fileio.</span></span><span class="sig-name descname"><span class="pre">loadxyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/fileio.html#loadxyz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.fileio.loadxyz" title="Link to this definition">¶</a></dt>
+<dd><p>Load the first frame of an XYZ/PDB/GRO file via readcon chemfiles ingress.</p>
+<p>Requires a chemfiles-linked readcon (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">readcon-chemfiles</span></code>).
+The .con path stays on readcon-core; this is the foreign-format edge.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="eon.fileio.loadposcars">
 <span class="sig-prename descclassname"><span class="pre">eon.fileio.</span></span><span class="sig-name descname"><span class="pre">loadposcars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/fileio.html#loadposcars"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.fileio.loadposcars" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Load every POSCAR frame from filename (VASP 4 or VASP 5).</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.fileio.loadcon">
@@ -550,6 +628,9 @@ filein: may be either a filename or a file-like object</p>
 fileout: can be either a file name or a file-like object
 p:       Structure (or Structure-like) to save
 w:       write/append flag</p>
+<p>Append of an uncompressed file concatenates one serialized frame. A
+gzip or zstd target cannot be extended in place, so those still
+read the existing frames and rewrite the file.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -561,16 +642,21 @@ modefilein: may be either a file-like object of a filename</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.fileio.save_mode">
-<span class="sig-prename descclassname"><span class="pre">eon.fileio.</span></span><span class="sig-name descname"><span class="pre">save_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modefileout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">displace_vector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/fileio.html#save_mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.fileio.save_mode" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">eon.fileio.</span></span><span class="sig-name descname"><span class="pre">save_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modefileout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">displace_vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">free</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/fileio.html#save_mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.fileio.save_mode" title="Link to this definition">¶</a></dt>
 <dd><p>Saves an Nx3 numpy array into a mode.dat file.
 modefileout:     may be either a filename or file-like object
-displace_vector: the mode (Nx3 numpy array)</p>
+displace_vector: the mode (Nx3 numpy array)
+free:            optional (N,) or (N,3) mask; a 0 axis is written as 0
+17 significant digits round trip a double exactly, and match what the
+client’s printf writers emit for the same value.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.fileio.save_results_dat">
 <span class="sig-prename descclassname"><span class="pre">eon.fileio.</span></span><span class="sig-name descname"><span class="pre">save_results_dat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fileout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/fileio.html#save_results_dat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.fileio.save_results_dat" title="Link to this definition">¶</a></dt>
-<dd><p>Saves a results.dat file from a dictionary</p>
+<dd><p>Saves a results.dat file from a dictionary
+fileout: may be either a filename or a file-like object
+results: dictionary of values, written one “<value> <key>” line each</p>
 </dd></dl>
 
 <dl class="py function">
@@ -587,16 +673,24 @@ displace_vector: the mode (Nx3 numpy array)</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.fileio.loadposcar">
 <span class="sig-prename descclassname"><span class="pre">eon.fileio.</span></span><span class="sig-name descname"><span class="pre">loadposcar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filein</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/fileio.html#loadposcar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.fileio.loadposcar" title="Link to this definition">¶</a></dt>
-<dd><p>Load the POSCAR file named filename and returns an atoms object</p>
+<dd><p>Load a VASP POSCAR (or one frame of a multi-frame movie).</p>
+<p>POSCAR is the one structure format that does not go through readcon:
+the kdb tool emits VASP 4, and movie.py writes VASP 5 for external
+viewers. The reader accepts both. After the cell, a line of integer
+counts is VASP 4 (species taken from the comment); a line of species
+names followed by the counts is VASP 5.</p>
+<p>filein: filename or file-like object</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="eon.fileio.saveposcar">
 <span class="sig-prename descclassname"><span class="pre">eon.fileio.</span></span><span class="sig-name descname"><span class="pre">saveposcar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fileout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'w'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/fileio.html#saveposcar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.fileio.saveposcar" title="Link to this definition">¶</a></dt>
-<dd><p>Save a POSCAR
+<dd><p>Save a VASP 5 POSCAR (species on the comment line and again before
+the counts). movie.py uses this for visualization; loadposcar reads
+this layout and the VASP 4 layout kdb produces.
 fileout: name to save it under
-point:    atoms object to save
-w:        write/append flag</p>
+p:       Structure (or Structure-like) to save
+w:       write/append flag</p>
 </dd></dl>
 
 <dl class="py class">

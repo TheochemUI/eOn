@@ -107,7 +107,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic interface</a></li>
@@ -428,8 +428,13 @@ zero doesn’t already exist.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.statelist.StateList.load_state_table">
-<span class="sig-name descname"><span class="pre">load_state_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/statelist.html#StateList.load_state_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.statelist.StateList.load_state_table" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">load_state_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eon/statelist.html#StateList.load_state_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.statelist.StateList.load_state_table" title="Link to this definition">¶</a></dt>
+<dd><p>Load the state table from disk.</p>
+<p>If already loaded and <em>force</em> is false, do nothing. When <em>force</em> is
+true (used by :meth:<code class="docutils literal notranslate"><span class="pre">get_num_states</span></code>), re-read so states appended by
+another process are seen; a stale count would mint a state number
+that is already taken.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="eon.statelist.StateList.save_state_table">

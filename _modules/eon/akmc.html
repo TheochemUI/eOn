@@ -107,7 +107,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic interface</a></li>
@@ -359,7 +359,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="18">
 </span><span data-line="19"><span class="n">numpy</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="n">over</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">,</span> <span class="n">under</span><span class="o">=</span><span class="s2">&quot;print&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">)</span>
 </span><span data-line="20">
-</span><span data-line="21"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">version</span>
+</span><span data-line="21"><span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">version</span>
 </span><span data-line="22"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigClass</span>
 </span><span data-line="23"><span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">communicator</span>
 </span><span data-line="24"><span class="kn">from</span><span class="w"> </span><span class="nn">eon</span><span class="w"> </span><span class="kn">import</span> <span class="n">locking</span>
@@ -476,7 +476,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="133">
 </span><span data-line="134">    <span class="n">parser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">metafile</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">))</span>
 </span><span data-line="135">
-</span><span data-line="136">    <span class="n">io</span><span class="o">.</span><span class="n">save_prng_state</span><span class="p">()</span>
+</span><span data-line="136">    <span class="n">io</span><span class="o">.</span><span class="n">save_prng_state</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">prng_state_path</span><span class="p">(</span><span class="n">config</span><span class="p">))</span>
 </span><span data-line="137">
 </span><span data-line="138">    <span class="k">return</span> <span class="n">steps</span></div>
 
@@ -907,7 +907,7 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="546">                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_results</span><span class="p">,</span> <span class="s2">&quot;akmc.log&quot;</span><span class="p">),</span>
 </span><span data-line="547">                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_results</span><span class="p">,</span> <span class="s2">&quot;jobs.tbl&quot;</span><span class="p">),</span>
 </span><span data-line="548">                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">,</span> <span class="s2">&quot;results&quot;</span><span class="p">),</span>
-</span><span data-line="549">                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">,</span> <span class="s2">&quot;prng.pkl&quot;</span><span class="p">),</span>
+</span><span data-line="549">                            <span class="n">io</span><span class="o">.</span><span class="n">prng_state_path</span><span class="p">(</span><span class="n">config</span><span class="p">),</span>
 </span><span data-line="550">                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">,</span> <span class="s2">&quot;explorer.pickle&quot;</span><span class="p">),</span>
 </span><span data-line="551">                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">,</span> <span class="s2">&quot;temperatures.dat&quot;</span><span class="p">),</span>
 </span><span data-line="552">                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">path_root</span><span class="p">,</span> <span class="s2">&quot;client.log&quot;</span><span class="p">),</span>

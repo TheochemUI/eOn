@@ -107,7 +107,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/ase_pot.html">ASE interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../../user_guide/metatomic_pot.html">Metatomic interface</a></li>
@@ -359,180 +359,332 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="18"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.geometry.cell</span><span class="w"> </span><span class="kn">import</span> <span class="n">box_to_length_angle</span><span class="p">,</span> <span class="n">length_angle_to_box</span>
 </span><span data-line="19">
 </span><span data-line="20">
+<div class="viewcode-block" id="coerce_free">
+<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.coerce_free">[docs]</a>
+</span><span data-line="21"><span class="k">def</span><span class="w"> </span><span class="nf">coerce_free</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+</span><span data-line="22"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Normalize a free-flag array to shape ``(n, 3)``.</span>
+</span><span data-line="23">
+</span><span data-line="24"><span class="sd">    A length-``n`` vector is the whole-atom form and is broadcast onto every</span>
+</span><span data-line="25"><span class="sd">    Cartesian axis. ``1.0`` is free, ``0.0`` is fixed.</span>
+</span><span data-line="26"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="27">    <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="28">    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="29">        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="30">    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+</span><span data-line="31">        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="32">    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">n</span><span class="p">,):</span>
+</span><span data-line="33">        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="34">    <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="35">        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span data-line="36">    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;free must have shape (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">,) or (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">, 3), got </span><span class="si">{</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+</span><span data-line="37">
+</span><span data-line="38">
+<div class="viewcode-block" id="as_atom_free">
+<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.as_atom_free">[docs]</a>
+</span><span data-line="39"><span class="k">def</span><span class="w"> </span><span class="nf">as_atom_free</span><span class="p">(</span><span class="n">free</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+</span><span data-line="40"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Per-atom free flag: True if any Cartesian axis is free.&quot;&quot;&quot;</span>
+</span><span data-line="41">    <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">free</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="42">    <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="43">        <span class="k">return</span> <span class="n">f</span> <span class="o">&gt;</span> <span class="mf">0.5</span>
+</span><span data-line="44">    <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">f</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+</span><span data-line="45">        <span class="k">return</span> <span class="p">(</span><span class="n">f</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="46">    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;free must be shape (N,) or (N, 3), got </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+</span><span data-line="47">
+</span><span data-line="48">
+<div class="viewcode-block" id="structure_order">
+<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.structure_order">[docs]</a>
+</span><span data-line="49"><span class="k">def</span><span class="w"> </span><span class="nf">structure_order</span><span class="p">(</span><span class="n">atom_ids</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+</span><span data-line="50"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Permutation taking file order to :class:`Structure` order.</span>
+</span><span data-line="51">
+</span><span data-line="52"><span class="sd">    ``Structure`` orders its atoms by ascending ``atom_id``; a ``.con`` file</span>
+</span><span data-line="53"><span class="sd">    orders them by species block, because CON header lines 7 and 8 are a type</span>
+</span><span data-line="54"><span class="sd">    count and per-type counts. Ascending ids therefore survive the grouping the</span>
+</span><span data-line="55"><span class="sd">    writer applies and are what puts the atoms back where an index into</span>
+</span><span data-line="56"><span class="sd">    :attr:`Structure.r` finds the same atom it found before the write.</span>
+</span><span data-line="57">
+</span><span data-line="58"><span class="sd">    Ids that repeat carry no permutation to invert (a writer that numbers each</span>
+</span><span data-line="59"><span class="sd">    species from 1 produces those), so file order stands.</span>
+</span><span data-line="60"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="61">    <span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">atom_ids</span><span class="p">)</span>
+</span><span data-line="62">    <span class="n">n</span> <span class="o">=</span> <span class="n">ids</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span data-line="63">    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+</span><span data-line="64">        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span data-line="65">    <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">ids</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">&gt;</span> <span class="n">ids</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])):</span>
+</span><span data-line="66">        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span data-line="67">    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
+</span><span data-line="68">        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span data-line="69">    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">)</span></div>
+
+</span><span data-line="70">
+</span><span data-line="71">
 <div class="viewcode-block" id="Structure">
 <a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.Structure">[docs]</a>
-</span><span data-line="21"><span class="k">class</span><span class="w"> </span><span class="nc">Structure</span><span class="p">:</span>
-</span><span data-line="22"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Mutable atomic configuration (numpy-backed).</span>
-</span><span data-line="23">
-</span><span data-line="24"><span class="sd">    Attributes</span>
-</span><span data-line="25"><span class="sd">    ----------</span>
-</span><span data-line="26"><span class="sd">    r : (N, 3) float</span>
-</span><span data-line="27"><span class="sd">        Cartesian positions.</span>
-</span><span data-line="28"><span class="sd">    free : (N,) float</span>
-</span><span data-line="29"><span class="sd">        1.0 if free to move, 0.0 if fixed (eOn convention).</span>
-</span><span data-line="30"><span class="sd">    box : (3, 3) float</span>
-</span><span data-line="31"><span class="sd">        Cell matrix with lattice vectors as **rows** (ASE/vesin convention).</span>
-</span><span data-line="32"><span class="sd">    names : list[str]</span>
-</span><span data-line="33"><span class="sd">        Chemical symbols, length N.</span>
-</span><span data-line="34"><span class="sd">    mass : (N,) float</span>
-</span><span data-line="35"><span class="sd">        Atomic masses.</span>
-</span><span data-line="36"><span class="sd">    &quot;&quot;&quot;</span>
-</span><span data-line="37">
-</span><span data-line="38">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;free&quot;</span><span class="p">,</span> <span class="s2">&quot;box&quot;</span><span class="p">,</span> <span class="s2">&quot;names&quot;</span><span class="p">,</span> <span class="s2">&quot;mass&quot;</span><span class="p">)</span>
-</span><span data-line="39">
-</span><span data-line="40">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_atoms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
-</span><span data-line="41">        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_atoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-</span><span data-line="42">        <span class="bp">self</span><span class="o">.</span><span class="n">free</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-</span><span data-line="43">        <span class="bp">self</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-</span><span data-line="44">        <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_atoms</span>
-</span><span data-line="45">        <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-</span><span data-line="46">
-</span><span data-line="47">    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span data-line="48">        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-</span><span data-line="49">
+</span><span data-line="72"><span class="k">class</span><span class="w"> </span><span class="nc">Structure</span><span class="p">:</span>
+</span><span data-line="73"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Mutable atomic configuration (numpy-backed).</span>
+</span><span data-line="74">
+</span><span data-line="75"><span class="sd">    Atoms sit in ascending :attr:`atom_ids` order, which is the order a</span>
+</span><span data-line="76"><span class="sd">    from-scratch ``Structure`` builds them in and the order every index-coupled</span>
+</span><span data-line="77"><span class="sd">    sidecar (``mode.dat``, ``masses.dat``, ``direction.dat``, the Hessian,</span>
+</span><span data-line="78"><span class="sd">    ``Prefactor.movedAtoms``) is written in. ``.con`` files store atoms grouped</span>
+</span><span data-line="79"><span class="sd">    by species, so :meth:`from_conframe` undoes the grouping through the ids</span>
+</span><span data-line="80"><span class="sd">    rather than taking file order as given.</span>
+</span><span data-line="81">
+</span><span data-line="82"><span class="sd">    Attributes</span>
+</span><span data-line="83"><span class="sd">    ----------</span>
+</span><span data-line="84"><span class="sd">    r : (N, 3) float</span>
+</span><span data-line="85"><span class="sd">        Cartesian positions.</span>
+</span><span data-line="86"><span class="sd">    free : (N, 3) float</span>
+</span><span data-line="87"><span class="sd">        Per-axis free flags (1.0 free, 0.0 fixed). A length-N assignment</span>
+</span><span data-line="88"><span class="sd">        broadcasts onto all three axes. CON column 4 is this mask.</span>
+</span><span data-line="89"><span class="sd">    box : (3, 3) float</span>
+</span><span data-line="90"><span class="sd">        Cell matrix with lattice vectors as **rows** (ASE/vesin convention).</span>
+</span><span data-line="91"><span class="sd">    names : list[str]</span>
+</span><span data-line="92"><span class="sd">        Chemical symbols, length N.</span>
+</span><span data-line="93"><span class="sd">    mass : (N,) float</span>
+</span><span data-line="94"><span class="sd">        Atomic masses.</span>
+</span><span data-line="95"><span class="sd">    atom_ids : (N,) uint64</span>
+</span><span data-line="96"><span class="sd">        Per-atom identity, CON column 5. ``1..N`` for a Structure built from</span>
+</span><span data-line="97"><span class="sd">        scratch; whatever the file carried for one read off disk.</span>
+</span><span data-line="98"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span data-line="99">
+</span><span data-line="100">    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;_free&quot;</span><span class="p">,</span> <span class="s2">&quot;box&quot;</span><span class="p">,</span> <span class="s2">&quot;names&quot;</span><span class="p">,</span> <span class="s2">&quot;mass&quot;</span><span class="p">,</span> <span class="s2">&quot;atom_ids&quot;</span><span class="p">)</span>
+</span><span data-line="101">
+</span><span data-line="102">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_atoms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+</span><span data-line="103">        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_atoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="104">        <span class="bp">self</span><span class="o">.</span><span class="n">_free</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_atoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="105">        <span class="bp">self</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="106">        <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_atoms</span>
+</span><span data-line="107">        <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="108">        <span class="bp">self</span><span class="o">.</span><span class="n">atom_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_atoms</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span>
+</span><span data-line="109">
+</span><span data-line="110">    <span class="nd">@property</span>
+</span><span data-line="111">    <span class="k">def</span><span class="w"> </span><span class="nf">free</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+</span><span data-line="112">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_free</span>
+</span><span data-line="113">
+</span><span data-line="114">    <span class="nd">@free</span><span class="o">.</span><span class="n">setter</span>
+</span><span data-line="115">    <span class="k">def</span><span class="w"> </span><span class="nf">free</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="116">        <span class="bp">self</span><span class="o">.</span><span class="n">_free</span> <span class="o">=</span> <span class="n">coerce_free</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+</span><span data-line="117">
+</span><span data-line="118">    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span data-line="119">        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span data-line="120">
 <div class="viewcode-block" id="Structure.copy">
 <a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.Structure.copy">[docs]</a>
-</span><span data-line="50">    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Structure&quot;</span><span class="p">:</span>
-</span><span data-line="51">        <span class="n">p</span> <span class="o">=</span> <span class="n">Structure</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-</span><span data-line="52">        <span class="n">p</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span data-line="53">        <span class="n">p</span><span class="o">.</span><span class="n">free</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">free</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span data-line="54">        <span class="n">p</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span data-line="55">        <span class="n">p</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
-</span><span data-line="56">        <span class="n">p</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span data-line="57">        <span class="k">return</span> <span class="n">p</span></div>
+</span><span data-line="121">    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Structure&quot;</span><span class="p">:</span>
+</span><span data-line="122">        <span class="n">p</span> <span class="o">=</span> <span class="n">Structure</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+</span><span data-line="123">        <span class="n">p</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span><span data-line="124">        <span class="n">p</span><span class="o">.</span><span class="n">free</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">free</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span><span data-line="125">        <span class="n">p</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span><span data-line="126">        <span class="n">p</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+</span><span data-line="127">        <span class="n">p</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span><span data-line="128">        <span class="n">p</span><span class="o">.</span><span class="n">atom_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom_ids</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span><span data-line="129">        <span class="k">return</span> <span class="n">p</span></div>
 
-</span><span data-line="58">
-<div class="viewcode-block" id="Structure.free_r">
-<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.Structure.free_r">[docs]</a>
-</span><span data-line="59">    <span class="k">def</span><span class="w"> </span><span class="nf">free_r</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-</span><span data-line="60"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Positions of free (unfixed) atoms only.&quot;&quot;&quot;</span>
-</span><span data-line="61">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">free</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)]</span></div>
-
-</span><span data-line="62">
-<div class="viewcode-block" id="Structure.free_mask">
-<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.Structure.free_mask">[docs]</a>
-</span><span data-line="63">    <span class="k">def</span><span class="w"> </span><span class="nf">free_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-</span><span data-line="64">        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">free</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span></div>
-
-</span><span data-line="65">
-<div class="viewcode-block" id="Structure.fixed_mask">
-<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.Structure.fixed_mask">[docs]</a>
-</span><span data-line="66">    <span class="k">def</span><span class="w"> </span><span class="nf">fixed_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-</span><span data-line="67">        <span class="k">return</span> <span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">free_mask</span><span class="p">()</span></div>
-
-</span><span data-line="68">
-<div class="viewcode-block" id="Structure.append">
-<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.Structure.append">[docs]</a>
-</span><span data-line="69">    <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">free</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">mass</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="70">        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="p">[</span><span class="n">r</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
-</span><span data-line="71">        <span class="bp">self</span><span class="o">.</span><span class="n">free</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">free</span><span class="p">,</span> <span class="n">free</span><span class="p">)</span>
-</span><span data-line="72">        <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-</span><span data-line="73">        <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span> <span class="n">mass</span><span class="p">)</span></div>
-
-</span><span data-line="74">
-</span><span data-line="75">    <span class="c1"># --- readcon ConFrame bridge (canonical I/O type) ---</span>
-</span><span data-line="76">
-<div class="viewcode-block" id="Structure.from_conframe">
-<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.Structure.from_conframe">[docs]</a>
-</span><span data-line="77">    <span class="nd">@classmethod</span>
-</span><span data-line="78">    <span class="k">def</span><span class="w"> </span><span class="nf">from_conframe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="s2">&quot;readcon.ConFrame&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Structure&quot;</span><span class="p">:</span>
-</span><span data-line="79"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a Structure from a readcon ConFrame (live API).&quot;&quot;&quot;</span>
-</span><span data-line="80">        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
-</span><span data-line="81">        <span class="n">p</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-</span><span data-line="82">        <span class="n">boxlengths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">cell</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-</span><span data-line="83">        <span class="n">boxangles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">angles</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-</span><span data-line="84">        <span class="n">p</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="n">length_angle_to_box</span><span class="p">(</span><span class="n">boxlengths</span><span class="p">,</span> <span class="n">boxangles</span><span class="p">)</span>
-</span><span data-line="85">        <span class="c1"># Prefer bulk coords when available</span>
-</span><span data-line="86">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="87">            <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">coords_array</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-</span><span data-line="88">            <span class="k">if</span> <span class="n">coords</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
-</span><span data-line="89">                <span class="n">p</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">coords</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span data-line="90">            <span class="k">else</span><span class="p">:</span>
-</span><span data-line="91">                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;coords shape&quot;</span><span class="p">)</span>
-</span><span data-line="92">        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-</span><span data-line="93">            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">atom</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">atoms</span><span class="p">):</span>
-</span><span data-line="94">                <span class="n">p</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">z</span><span class="p">]</span>
-</span><span data-line="95">        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">atom</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">atoms</span><span class="p">):</span>
-</span><span data-line="96">            <span class="n">p</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">symbol</span>
-</span><span data-line="97">            <span class="n">p</span><span class="o">.</span><span class="n">mass</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">mass</span> <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">mass</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mf">0.0</span>
-</span><span data-line="98">            <span class="n">fixed</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">fixed</span>
-</span><span data-line="99">            <span class="n">p</span><span class="o">.</span><span class="n">free</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="k">if</span> <span class="p">(</span><span class="n">fixed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">fixed</span><span class="p">))</span> <span class="k">else</span> <span class="mf">1.0</span>
-</span><span data-line="100">        <span class="k">return</span> <span class="n">p</span></div>
-
-</span><span data-line="101">
-<div class="viewcode-block" id="Structure.to_conframe">
-<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.Structure.to_conframe">[docs]</a>
-</span><span data-line="102">    <span class="k">def</span><span class="w"> </span><span class="nf">to_conframe</span><span class="p">(</span>
-</span><span data-line="103">        <span class="bp">self</span><span class="p">,</span>
-</span><span data-line="104">        <span class="n">prebox_header</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="105">        <span class="n">postbox_header</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="106">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;readcon.ConFrame&quot;</span><span class="p">:</span>
-</span><span data-line="107"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to a readcon ConFrame for writing.&quot;&quot;&quot;</span>
-</span><span data-line="108">        <span class="n">lengths</span><span class="p">,</span> <span class="n">angles</span> <span class="o">=</span> <span class="n">box_to_length_angle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">box</span><span class="p">)</span>
-</span><span data-line="109">        <span class="n">atom_list</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="110">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
-</span><span data-line="111">            <span class="n">is_fixed</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">free</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-</span><span data-line="112">            <span class="n">atom_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-</span><span data-line="113">                <span class="n">readcon</span><span class="o">.</span><span class="n">Atom</span><span class="p">(</span>
-</span><span data-line="114">                    <span class="n">symbol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-</span><span data-line="115">                    <span class="n">x</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
-</span><span data-line="116">                    <span class="n">y</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span>
-</span><span data-line="117">                    <span class="n">z</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]),</span>
-</span><span data-line="118">                    <span class="n">fixed</span><span class="o">=</span><span class="p">[</span><span class="n">is_fixed</span><span class="p">,</span> <span class="n">is_fixed</span><span class="p">,</span> <span class="n">is_fixed</span><span class="p">],</span>
-</span><span data-line="119">                    <span class="n">atom_id</span><span class="o">=</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
-</span><span data-line="120">                    <span class="n">mass</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
-</span><span data-line="121">                <span class="p">)</span>
-</span><span data-line="122">            <span class="p">)</span>
-</span><span data-line="123">        <span class="k">return</span> <span class="n">readcon</span><span class="o">.</span><span class="n">ConFrame</span><span class="p">(</span>
-</span><span data-line="124">            <span class="n">cell</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">lengths</span><span class="p">),</span>
-</span><span data-line="125">            <span class="n">angles</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">angles</span><span class="p">),</span>
-</span><span data-line="126">            <span class="n">atoms</span><span class="o">=</span><span class="n">atom_list</span><span class="p">,</span>
-</span><span data-line="127">            <span class="n">prebox_header</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">prebox_header</span><span class="p">)</span>
-</span><span data-line="128">            <span class="k">if</span> <span class="n">prebox_header</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-</span><span data-line="129">            <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;Generated by eOn&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">],</span>
-</span><span data-line="130">            <span class="n">postbox_header</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">postbox_header</span><span class="p">)</span> <span class="k">if</span> <span class="n">postbox_header</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="131">        <span class="p">)</span></div>
-</div>
-
-</span><span data-line="132">
+</span><span data-line="130">
+<div class="viewcode-block" id="Structure.ids_or_sequential">
+<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.Structure.ids_or_sequential">[docs]</a>
+</span><span data-line="131">    <span class="k">def</span><span class="w"> </span><span class="nf">ids_or_sequential</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+</span><span data-line="132"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Atom ids, or ``1..N`` when the id array is out of step with the geometry.</span>
 </span><span data-line="133">
-</span><span data-line="134"><span class="c1"># Back-compat name used throughout the server</span>
-</span><span data-line="135"><span class="n">Atoms</span> <span class="o">=</span> <span class="n">Structure</span>
-</span><span data-line="136">
-</span><span data-line="137">
-<div class="viewcode-block" id="structure_to_ase">
-<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.structure_to_ase">[docs]</a>
-</span><span data-line="138"><span class="k">def</span><span class="w"> </span><span class="nf">structure_to_ase</span><span class="p">(</span><span class="n">structure</span><span class="p">:</span> <span class="s2">&quot;Structure&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">pbc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-</span><span data-line="139"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional ASE export (requires ase + pyeonclient.ase_bridge).&quot;&quot;&quot;</span>
-</span><span data-line="140">    <span class="kn">from</span><span class="w"> </span><span class="nn">pyeonclient.ase_bridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">structure_to_ase</span> <span class="k">as</span> <span class="n">_f</span>
-</span><span data-line="141">
-</span><span data-line="142">    <span class="k">return</span> <span class="n">_f</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">pbc</span><span class="o">=</span><span class="n">pbc</span><span class="p">)</span></div>
+</span><span data-line="134"><span class="sd">        Callers that grow ``r`` / ``names`` / ``mass`` field by field leave the</span>
+</span><span data-line="135"><span class="sd">        ids behind; a short or long id array carries no identity to preserve,</span>
+</span><span data-line="136"><span class="sd">        so the sequential numbering stands in.</span>
+</span><span data-line="137"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="138">        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</span><span data-line="139">        <span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atom_ids</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="140">        <span class="k">if</span> <span class="n">ids</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">n</span><span class="p">:</span>
+</span><span data-line="141">            <span class="k">return</span> <span class="n">ids</span>
+</span><span data-line="142">        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span></div>
 
 </span><span data-line="143">
-</span><span data-line="144">
+<div class="viewcode-block" id="Structure.atom_is_free">
+<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.Structure.atom_is_free">[docs]</a>
+</span><span data-line="144">    <span class="k">def</span><span class="w"> </span><span class="nf">atom_is_free</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+</span><span data-line="145"><span class="w">        </span><span class="sd">&quot;&quot;&quot;True for atoms that have at least one free Cartesian axis.&quot;&quot;&quot;</span>
+</span><span data-line="146">        <span class="k">return</span> <span class="n">as_atom_free</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_free</span><span class="p">)</span></div>
+
+</span><span data-line="147">
+<div class="viewcode-block" id="Structure.free_r">
+<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.Structure.free_r">[docs]</a>
+</span><span data-line="148">    <span class="k">def</span><span class="w"> </span><span class="nf">free_r</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+</span><span data-line="149"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Positions of atoms that have at least one free axis.&quot;&quot;&quot;</span>
+</span><span data-line="150">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">atom_is_free</span><span class="p">()]</span></div>
+
+</span><span data-line="151">
+<div class="viewcode-block" id="Structure.free_mask">
+<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.Structure.free_mask">[docs]</a>
+</span><span data-line="152">    <span class="k">def</span><span class="w"> </span><span class="nf">free_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+</span><span data-line="153">        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_free</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span></div>
+
+</span><span data-line="154">
+<div class="viewcode-block" id="Structure.fixed_mask">
+<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.Structure.fixed_mask">[docs]</a>
+</span><span data-line="155">    <span class="k">def</span><span class="w"> </span><span class="nf">fixed_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+</span><span data-line="156">        <span class="k">return</span> <span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">free_mask</span><span class="p">()</span></div>
+
+</span><span data-line="157">
+<div class="viewcode-block" id="Structure.append">
+<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.Structure.append">[docs]</a>
+</span><span data-line="158">    <span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">free</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">mass</span><span class="p">,</span> <span class="n">atom_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="159"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Add one atom at the end.</span>
+</span><span data-line="160">
+</span><span data-line="161"><span class="sd">        An atom_id of None takes one past the largest in use, keeping the ids</span>
+</span><span data-line="162"><span class="sd">        distinct and ascending so the appended atom stays last across a save</span>
+</span><span data-line="163"><span class="sd">        and load cycle.</span>
+</span><span data-line="164"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="165">        <span class="k">if</span> <span class="n">atom_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="166">            <span class="n">atom_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atom_ids</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atom_ids</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span>
+</span><span data-line="167">        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="p">[</span><span class="n">r</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+</span><span data-line="168">        <span class="n">free_row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">free</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="169">        <span class="k">if</span> <span class="n">free_row</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span><span data-line="170">            <span class="n">free_row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">free_row</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span data-line="171">        <span class="k">elif</span> <span class="n">free_row</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+</span><span data-line="172">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;free must be a scalar or length-3&quot;</span><span class="p">)</span>
+</span><span data-line="173">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_free</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="174">            <span class="bp">self</span><span class="o">.</span><span class="n">_free</span> <span class="o">=</span> <span class="n">free_row</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</span><span data-line="175">        <span class="k">else</span><span class="p">:</span>
+</span><span data-line="176">            <span class="bp">self</span><span class="o">.</span><span class="n">_free</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_free</span><span class="p">,</span> <span class="n">free_row</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)))</span>
+</span><span data-line="177">        <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</span><span data-line="178">        <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="p">,</span> <span class="n">mass</span><span class="p">)</span>
+</span><span data-line="179">        <span class="bp">self</span><span class="o">.</span><span class="n">atom_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+</span><span data-line="180">            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atom_ids</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">atom_id</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">))</span>
+</span><span data-line="181">        <span class="p">)</span></div>
+
+</span><span data-line="182">
+</span><span data-line="183">    <span class="c1"># --- readcon ConFrame bridge (canonical I/O type) ---</span>
+</span><span data-line="184">
+<div class="viewcode-block" id="Structure.from_conframe">
+<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.Structure.from_conframe">[docs]</a>
+</span><span data-line="185">    <span class="nd">@classmethod</span>
+</span><span data-line="186">    <span class="k">def</span><span class="w"> </span><span class="nf">from_conframe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="s2">&quot;readcon.ConFrame&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Structure&quot;</span><span class="p">:</span>
+</span><span data-line="187"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a Structure from a readcon ConFrame (live API).</span>
+</span><span data-line="188">
+</span><span data-line="189"><span class="sd">        The frame holds atoms grouped by species; :func:`structure_order` puts</span>
+</span><span data-line="190"><span class="sd">        them back in ``atom_id`` order.</span>
+</span><span data-line="191"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="192">        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+</span><span data-line="193">        <span class="n">p</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span data-line="194">        <span class="n">boxlengths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">cell</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="195">        <span class="n">boxangles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">angles</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="196">        <span class="n">p</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="n">length_angle_to_box</span><span class="p">(</span><span class="n">boxlengths</span><span class="p">,</span> <span class="n">boxangles</span><span class="p">)</span>
+</span><span data-line="197">        <span class="c1"># Prefer bulk coords when available</span>
+</span><span data-line="198">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="199">            <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">coords_array</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span data-line="200">            <span class="k">if</span> <span class="n">coords</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+</span><span data-line="201">                <span class="n">p</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">coords</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span><span data-line="202">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="203">                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;coords shape&quot;</span><span class="p">)</span>
+</span><span data-line="204">        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="205">            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">atom</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">atoms</span><span class="p">):</span>
+</span><span data-line="206">                <span class="n">p</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">z</span><span class="p">]</span>
+</span><span data-line="207">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="208">            <span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">atom_ids_array</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span>
+</span><span data-line="209">            <span class="k">if</span> <span class="n">ids</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">n</span><span class="p">,):</span>
+</span><span data-line="210">                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;atom_ids shape&quot;</span><span class="p">)</span>
+</span><span data-line="211">        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="212">            <span class="n">ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+</span><span data-line="213">                <span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">atom_id</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">frame</span><span class="o">.</span><span class="n">atoms</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span>
+</span><span data-line="214">            <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span data-line="215">        <span class="n">p</span><span class="o">.</span><span class="n">atom_ids</span> <span class="o">=</span> <span class="n">ids</span>
+</span><span data-line="216">        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">atom</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">atoms</span><span class="p">):</span>
+</span><span data-line="217">            <span class="n">p</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">symbol</span>
+</span><span data-line="218">            <span class="n">p</span><span class="o">.</span><span class="n">mass</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">mass</span> <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">mass</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mf">0.0</span>
+</span><span data-line="219">            <span class="n">fixed</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">fixed</span>
+</span><span data-line="220">            <span class="k">if</span> <span class="n">fixed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="221">                <span class="n">p</span><span class="o">.</span><span class="n">_free</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+</span><span data-line="222">            <span class="k">else</span><span class="p">:</span>
+</span><span data-line="223">                <span class="n">p</span><span class="o">.</span><span class="n">_free</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="mf">0.0</span> <span class="k">if</span> <span class="n">flag</span> <span class="k">else</span> <span class="mf">1.0</span> <span class="k">for</span> <span class="n">flag</span> <span class="ow">in</span> <span class="n">fixed</span><span class="p">)</span>
+</span><span data-line="224">        <span class="n">order</span> <span class="o">=</span> <span class="n">structure_order</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">atom_ids</span><span class="p">)</span>
+</span><span data-line="225">        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)):</span>
+</span><span data-line="226">            <span class="n">p</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
+</span><span data-line="227">            <span class="n">p</span><span class="o">.</span><span class="n">free</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">free</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
+</span><span data-line="228">            <span class="n">p</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">mass</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
+</span><span data-line="229">            <span class="n">p</span><span class="o">.</span><span class="n">atom_ids</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">atom_ids</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
+</span><span data-line="230">            <span class="n">p</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">order</span><span class="p">]</span>
+</span><span data-line="231">        <span class="k">return</span> <span class="n">p</span></div>
+
+</span><span data-line="232">
+<div class="viewcode-block" id="Structure.to_conframe">
+<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.Structure.to_conframe">[docs]</a>
+</span><span data-line="233">    <span class="k">def</span><span class="w"> </span><span class="nf">to_conframe</span><span class="p">(</span>
+</span><span data-line="234">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="235">        <span class="n">prebox_header</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="236">        <span class="n">postbox_header</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="237">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;readcon.ConFrame&quot;</span><span class="p">:</span>
+</span><span data-line="238"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to a readcon ConFrame for writing.</span>
+</span><span data-line="239">
+</span><span data-line="240"><span class="sd">        Atoms go out in Structure order carrying their own ids. The writer</span>
+</span><span data-line="241"><span class="sd">        groups them by species; the ids are what :meth:`from_conframe` reads</span>
+</span><span data-line="242"><span class="sd">        the grouping back out of.</span>
+</span><span data-line="243"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span data-line="244">        <span class="n">lengths</span><span class="p">,</span> <span class="n">angles</span> <span class="o">=</span> <span class="n">box_to_length_angle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">box</span><span class="p">)</span>
+</span><span data-line="245">        <span class="n">atom_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ids_or_sequential</span><span class="p">()</span>
+</span><span data-line="246">        <span class="n">atom_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="247">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
+</span><span data-line="248">            <span class="n">fixed</span> <span class="o">=</span> <span class="p">[</span><span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_free</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">a</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+</span><span data-line="249">            <span class="n">atom_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+</span><span data-line="250">                <span class="n">readcon</span><span class="o">.</span><span class="n">Atom</span><span class="p">(</span>
+</span><span data-line="251">                    <span class="n">symbol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+</span><span data-line="252">                    <span class="n">x</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+</span><span data-line="253">                    <span class="n">y</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span>
+</span><span data-line="254">                    <span class="n">z</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]),</span>
+</span><span data-line="255">                    <span class="n">fixed</span><span class="o">=</span><span class="n">fixed</span><span class="p">,</span>
+</span><span data-line="256">                    <span class="n">atom_id</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">atom_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
+</span><span data-line="257">                    <span class="n">mass</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
+</span><span data-line="258">                <span class="p">)</span>
+</span><span data-line="259">            <span class="p">)</span>
+</span><span data-line="260">        <span class="k">return</span> <span class="n">readcon</span><span class="o">.</span><span class="n">ConFrame</span><span class="p">(</span>
+</span><span data-line="261">            <span class="n">cell</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">lengths</span><span class="p">),</span>
+</span><span data-line="262">            <span class="n">angles</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">angles</span><span class="p">),</span>
+</span><span data-line="263">            <span class="n">atoms</span><span class="o">=</span><span class="n">atom_list</span><span class="p">,</span>
+</span><span data-line="264">            <span class="n">prebox_header</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">prebox_header</span><span class="p">)</span>
+</span><span data-line="265">            <span class="k">if</span> <span class="n">prebox_header</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</span><span data-line="266">            <span class="k">else</span> <span class="p">[</span><span class="s2">&quot;Generated by eOn&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">],</span>
+</span><span data-line="267">            <span class="n">postbox_header</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">postbox_header</span><span class="p">)</span> <span class="k">if</span> <span class="n">postbox_header</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="268">        <span class="p">)</span></div>
+</div>
+
+</span><span data-line="269">
+</span><span data-line="270">
+</span><span data-line="271"><span class="c1"># Back-compat name used throughout the server</span>
+</span><span data-line="272"><span class="n">Atoms</span> <span class="o">=</span> <span class="n">Structure</span>
+</span><span data-line="273">
+</span><span data-line="274">
+<div class="viewcode-block" id="structure_to_ase">
+<a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.structure_to_ase">[docs]</a>
+</span><span data-line="275"><span class="k">def</span><span class="w"> </span><span class="nf">structure_to_ase</span><span class="p">(</span><span class="n">structure</span><span class="p">:</span> <span class="s2">&quot;Structure&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">pbc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+</span><span data-line="276"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional ASE export (requires ase + pyeonclient.ase_bridge).&quot;&quot;&quot;</span>
+</span><span data-line="277">    <span class="kn">from</span><span class="w"> </span><span class="nn">pyeonclient.ase_bridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">structure_to_ase</span> <span class="k">as</span> <span class="n">_f</span>
+</span><span data-line="278">
+</span><span data-line="279">    <span class="k">return</span> <span class="n">_f</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">pbc</span><span class="o">=</span><span class="n">pbc</span><span class="p">)</span></div>
+
+</span><span data-line="280">
+</span><span data-line="281">
 <div class="viewcode-block" id="ase_to_structure">
 <a class="viewcode-back" href="../../apidocs/eon/eon.structure.html#eon.structure.ase_to_structure">[docs]</a>
-</span><span data-line="145"><span class="k">def</span><span class="w"> </span><span class="nf">ase_to_structure</span><span class="p">(</span><span class="n">atoms</span><span class="p">):</span>
-</span><span data-line="146"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional ASE import (requires ase + pyeonclient.ase_bridge).&quot;&quot;&quot;</span>
-</span><span data-line="147">    <span class="kn">from</span><span class="w"> </span><span class="nn">pyeonclient.ase_bridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">ase_to_structure</span> <span class="k">as</span> <span class="n">_f</span>
-</span><span data-line="148">
-</span><span data-line="149">    <span class="k">return</span> <span class="n">_f</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span></div>
+</span><span data-line="282"><span class="k">def</span><span class="w"> </span><span class="nf">ase_to_structure</span><span class="p">(</span><span class="n">atoms</span><span class="p">):</span>
+</span><span data-line="283"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Optional ASE import (requires ase + pyeonclient.ase_bridge).&quot;&quot;&quot;</span>
+</span><span data-line="284">    <span class="kn">from</span><span class="w"> </span><span class="nn">pyeonclient.ase_bridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">ase_to_structure</span> <span class="k">as</span> <span class="n">_f</span>
+</span><span data-line="285">
+</span><span data-line="286">    <span class="k">return</span> <span class="n">_f</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span></div>
 
-</span><span data-line="150">
-</span><span data-line="151">
-</span><span data-line="152"><span class="c1"># Methods on Structure for ergonomics</span>
-</span><span data-line="153"><span class="k">def</span><span class="w"> </span><span class="nf">_structure_to_ase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">pbc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-</span><span data-line="154">    <span class="k">return</span> <span class="n">structure_to_ase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pbc</span><span class="o">=</span><span class="n">pbc</span><span class="p">)</span>
-</span><span data-line="155">
-</span><span data-line="156">
-</span><span data-line="157"><span class="n">Structure</span><span class="o">.</span><span class="n">to_ase</span> <span class="o">=</span> <span class="n">_structure_to_ase</span>  <span class="c1"># type: ignore[attr-defined]</span>
-</span><span data-line="158">
-</span><span data-line="159">
-</span><span data-line="160"><span class="k">def</span><span class="w"> </span><span class="nf">_structure_from_ase</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">atoms</span><span class="p">):</span>
-</span><span data-line="161">    <span class="k">return</span> <span class="n">ase_to_structure</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
-</span><span data-line="162">
-</span><span data-line="163">
-</span><span data-line="164"><span class="n">Structure</span><span class="o">.</span><span class="n">from_ase</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="n">_structure_from_ase</span><span class="p">)</span>  <span class="c1"># type: ignore[attr-defined, assignment]</span>
+</span><span data-line="287">
+</span><span data-line="288">
+</span><span data-line="289"><span class="c1"># Methods on Structure for ergonomics</span>
+</span><span data-line="290"><span class="k">def</span><span class="w"> </span><span class="nf">_structure_to_ase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">pbc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+</span><span data-line="291">    <span class="k">return</span> <span class="n">structure_to_ase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pbc</span><span class="o">=</span><span class="n">pbc</span><span class="p">)</span>
+</span><span data-line="292">
+</span><span data-line="293">
+</span><span data-line="294"><span class="n">Structure</span><span class="o">.</span><span class="n">to_ase</span> <span class="o">=</span> <span class="n">_structure_to_ase</span>  <span class="c1"># type: ignore[attr-defined]</span>
+</span><span data-line="295">
+</span><span data-line="296">
+</span><span data-line="297"><span class="k">def</span><span class="w"> </span><span class="nf">_structure_from_ase</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">atoms</span><span class="p">):</span>
+</span><span data-line="298">    <span class="k">return</span> <span class="n">ase_to_structure</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+</span><span data-line="299">
+</span><span data-line="300">
+</span><span data-line="301"><span class="n">Structure</span><span class="o">.</span><span class="n">from_ase</span> <span class="o">=</span> <span class="nb">classmethod</span><span class="p">(</span><span class="n">_structure_from_ase</span><span class="p">)</span>  <span class="c1"># type: ignore[attr-defined, assignment]</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

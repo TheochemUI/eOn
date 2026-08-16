@@ -107,7 +107,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/pyeonclient.html">pyeonclient</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/neighbor_lists.html">Neighbor lists (vesin)</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/aiida.html">AiiDA (<code class="docutils literal notranslate"><span class="pre">aiida-eon</span></code>)</a></li>
-<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/ext_pot.html">External potential</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/ext_pot.html">External Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/lammps_pot.html">LAMMPS Potential</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/ase_pot.html">ASE interface</a></li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../user_guide/metatomic_pot.html">Metatomic interface</a></li>
@@ -500,8 +500,9 @@ against <strong>PyPI torch</strong>.</p>
 <section id="release">
 <h2>Release<a class="headerlink" href="#release" title="Link to this heading">¶</a></h2>
 <ol class="arabic simple">
-<li><p>Bump <code class="docutils literal notranslate"><span class="pre">version</span></code> in <code class="docutils literal notranslate"><span class="pre">pyproject-pyeonclient.toml</span></code> and
-<code class="docutils literal notranslate"><span class="pre">client/python/bind/module.cpp</span></code> <code class="docutils literal notranslate"><span class="pre">__version__</span></code> (lockstep). Pin
+<li><p>Bump <code class="docutils literal notranslate"><span class="pre">version</span></code> in <code class="docutils literal notranslate"><span class="pre">pyproject-pyeonclient.toml</span></code>. <code class="docutils literal notranslate"><span class="pre">client/python/meson.build</span></code>
+reads it from there and defines <code class="docutils literal notranslate"><span class="pre">PYEONCLIENT_VERSION</span></code>, which
+<code class="docutils literal notranslate"><span class="pre">client/python/bind/module.cpp</span></code> publishes as <code class="docutils literal notranslate"><span class="pre">_core.__version__</span></code>. Pin
 <code class="docutils literal notranslate"><span class="pre">pyeonclient[models]</span></code> → <code class="docutils literal notranslate"><span class="pre">eon-schema</span></code> floor if schema public API changed.</p></li>
 <li><p>Tag: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">-s</span> <span class="pre">pyeonclient-v0.3.3</span> <span class="pre">-m</span> <span class="pre">&quot;pyeonclient</span> <span class="pre">0.3.3&quot;</span></code></p></li>
 <li><p>Push tag → <code class="docutils literal notranslate"><span class="pre">pyeonclient-wheels.yml</span></code> builds and publishes (CI publish job).</p></li>
