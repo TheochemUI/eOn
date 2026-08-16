@@ -2,6 +2,71 @@
 
 <!-- towncrier release notes start -->
 
+## [3.2.0](https://github.com/TheochemUI/eOn/tree/3.2.0) - 2026-08-16
+
+### Added
+
+- The basic-eon workflow runs the tests/ suite on Unix after the
+  client install, including the `sh` package those process tests import.
+  Job modules import `version` from the `eon` package so a source-tree
+  checkout without generated `version.py` still dispatches.
+- User guide for the AiiDA plugin (`pip install aiida-eon`) at
+  `docs/source/user_guide/aiida.md`. The communicator page now links
+  there.
+- `RgpotAdapter` reports `caps().batched` and forwards a band of images to
+  `rgpot::forceBatchImpl`, so a kernel that evaluates several systems in
+  one call sees the whole band. The wrap tracks the rgpot branch that
+  adds `ForceBatch` until a tag carries it.
+
+### Changed
+
+- Appending a frame to a `.con` no longer reads and rewrites the whole movie. `matter2con(filename, append=true)` serializes the new frame on its own and concatenates it, so writing an N-frame trajectory costs N frame writes instead of N(N+1)/2, and per-step movie writers such as `dynamics.con`, `movie.con`, and the basin hopping trial movies stop growing quadratically with step count. Output bytes are unchanged: a movie built by repeated appends is identical to the same frames written in one call. A target eOn did not write, or whose size or modification time moved since eOn wrote it, is still parsed once before anything is added, so an unparseable file yields an append error with its bytes intact. Gzip and zstd targets keep the read-and-rewrite path because a compressed member cannot be extended in place.
+- C++ wrap and Python pins move to readcon 0.14.5 together, so the client
+  can read the spec-3 files the 0.14 writer emits. x-only constraints
+  round-trip on the client and the Python Structure writer (readcon-core #25).
+  0.14.5 ships a win_amd64 wheel, so Windows CI does not build the sdist.
+- Rewrite the Sphinx user guide, tutorials, install notes, developer
+  docs, and older release pages so they no longer trip the house
+  prose rules (robust, comprehensive, below is, out of the box,
+  highlighting, first-class, ship-as-verb, and the rest of that list).
+  Drop remaining X-not-Y contrast frames: state what each path is.
+
+### Fixed
+
+- ASE-NWChem and ASE-ORCA calculators each get a private work directory instead
+  of `directory='.'`, so concurrent LocalInProcess jobs do not clobber each
+  other's scratch files. Calculator errors throw rather than abort the process.
+- Bond-boost hyperdynamics advances the equilibration counter once per MD step.
+  `boost()` only evaluates the current bias, so ParallelReplica (which also
+  installs the bias potential on the trajectory) and SafeHyper share the same
+  `rmd_time` schedule.
+- Constructing a `VASP` potential no longer deletes the working directory's contents. The constructor removed fifteen files, among them `WAVECAR`, `CHGCAR`, `TMPCAR` and `OUTCAR`, so a client restarted in a directory lost the wavefunction and charge density an `ISTART`/`ICHARG` restart reads, along with the previous run's record; and a potential built after the first force call, as `AtomicGPDimer` does, deleted `FU` and `NEWCAR` out from under a VASP process that was still running. A run now clears only the three handshake files it owns, `FU`, `NEWCAR` and `STOPCAR`, once, immediately before it starts VASP. `STOPCAR` was never removed although eOn writes it at shutdown, so a client restarted after a clean shutdown handed the new VASP an abort instruction on its first ionic step. Discarding the results and restart files is available as `VASP::removeStaleFiles()` for a caller that means to start from an empty directory; the `examples/akmc-vasp-slurm` scripts already do the same removals in shell.
+- Copying a Matter leaves biasPotential null. Copy-assign used to skip
+  that pointer, so getBiasForces read an indeterminate BondBoost and
+  the Python suite died on main.
+- Library code no longer calls `std::exit` on a bad `convergence_metric`, FIRE time-step collapse, or basin-hopping / global-optimization enum typo. Those errors throw, so a Python caller inside `gil_scoped_release` gets an exception instead of a silent interpreter kill. Unknown enumerated strings are rejected when `Parameters` is loaded.
+- On Windows, ExtPot launches a suffix-less ext_pot wrapper with python.
+  cmd.exe does not honor a shebang, so a quoted path to the script was
+  not a runnable command.
+- Potential loaders probe plugin libraries on disk before `dlopen`, and `LammpsLoader` no longer loads `liblammps` just to ask whether it is present. Availability checks therefore skip the banner-printing static initializers those libraries run on load.
+- Setting ``params.write_con_forces`` on a pyeonclient Parameters object now writes force sections for that Matter. A ``ConFrameMetadata.write_con_forces`` value overrides the process-wide flag so two writers can disagree.
+- The external-program potential backends (`AMS`, `AMS_IO`, `ExtPot`, `VASP`) now check every file open, read and shell command instead of trusting them. A missing, truncated or stale result file previously left the force and energy arrays holding whatever they held before, and those values went straight into the optimizer; they now raise an error naming the file and how many atoms were read. `AMS_IO` also truncates `ams_output` rather than appending to it, so a failed run cannot hand back the previous run's forces, and `VASP` rejects a structure whose species are not in contiguous runs rather than writing a `POSCAR` whose counts disagree with its coordinates.
+- The readcon wrap overlay still cargo-builds both crate types. A generated
+  .c that depends on that custom_target is the ninja order edge, so eonclib
+  does not link before the outputs exist and does not record NEEDED
+  libreadcon_core.so or pass the DLL to MSVC.
+- `ExtPot` and `VASP` no longer claim to be safe to call from several threads on one instance. Both exchange structures and forces through files at fixed names, so the parallel image evaluation in `NudgedElasticBand`, `ImprovedDimer` and `ProcessSearchJob` had every thread writing one input file and reading one result file, and images took each other's forces. `ExtPot` also asks for a potential instance per image, which gives each thread an exchange directory of its own and keeps the evaluation parallel; `VASP` cannot, since every instance drives the same VASP process through the same files, so its image evaluation runs sequentially. The other external-program backends (`ASE`, `ASE_NWCHEM`, `ASE_ORCA`, `LAMMPS`) already declared both.
+- `ExtPot` runs the external program in a private exchange directory named `extpot_<pid>_<n>` instead of the client's working directory. The exchange files keep their names, `from_eon_to_extpot` and `from_extpot_to_eon`, so a wrapper that opens them by relative name needs no change; two clients started in one directory can no longer read each other's structures and forces. A relative `ext_pot_path` that names an existing file, such as the default `./ext_pot`, is resolved before the command runs; a command line with arguments needs an absolute path to the script, and `EON_EXTPOT_RUN_DIR` names the directory eOn runs in for a wrapper that has to reach it. On Windows a resolved Python wrapper (shebang or `.py`) is invoked through `python.exe`, because `cmd.exe` will not run an extensionless file. The previous result file is removed before each call, so an external program that exits successfully without writing one raises an error rather than handing back the previous call's forces.
+- `PotRegistry` is a process-lifetime heap singleton, so a `Potential` destroyed during interpreter finalization no longer calls into a destroyed registry or locks a destroyed mutex.
+- `loadposcar` accepts both VASP 4 (integer counts after the cell, as the kdb tool writes) and VASP 5 (species names then counts, as `saveposcar` and the server movie files write). eOn can read back `movie.poscar`, `dynamics.poscar`, and the other `movie.py` outputs it wrote.
+- `matter2xyz` writes extended XYZ: the comment carries `Lattice="..."` so a reader can reconstruct the cell, and coordinates use 17 significant digits to match the CON path. Appending a frame whose atom count differs from the last frame in the file is rejected and leaves the file unchanged.
+- `min_mode_method = gprdimer` without `-Dwith_gprd=true` is an error.
+  The search no longer falls through to ImprovedDimer and reports a
+  nonnegative-mode abort.
+- `savecon(..., w="a")` appends one serialized `.con` frame instead of reading the whole movie back and rewriting it. Gzip and zstd targets still rewrite, because a compressed member cannot be extended in place.
+- pyeonclient Structure/Matter conversion looks up every element (H–Og) without importing the server package, and raises on an unknown atomic number instead of writing a fabricated ``Z79`` symbol.
+
+
 ## [3.1.0](https://github.com/TheochemUI/eOn/tree/3.1.0) - 2026-08-08
 
 ### Changed

@@ -1,1 +1,0 @@
-`savecon(..., w="a")` appends one serialized `.con` frame instead of reading the whole movie back and rewriting it. Gzip and zstd targets still rewrite, because a compressed member cannot be extended in place.
