@@ -1,7 +1,9 @@
 name: Build and Deploy Documentation
 
 concurrency:
-  group: "pages"
+  # Per ref so a PR docs job is not cancelled by another branch's pages
+  # run. Push/tag deploys still serialise on their own ref.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 on:

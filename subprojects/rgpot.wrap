@@ -5,5 +5,9 @@ url = https://github.com/OmniPotentRPC/rgpot.git
 # Fortran 2018 kernels (SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2,
 # TIP4P-H). v3.0.0 is the first release carrying them; the major is for the
 # packaging change (no libptlrpc.so, librgpot.so.3).
-revision = v3.0.0
+#
+# Tracking a branch rather than the v3.0.0 tag: RgpotAdapter::forceBatch
+# needs rgpot::ForceBatch and Potential::forceBatchImpl, which no tagged
+# release carries. Pin back to the tag that ships them once one exists.
+revision = feat/force-batch-impl
 depth = 1

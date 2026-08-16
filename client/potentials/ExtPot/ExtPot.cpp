@@ -11,10 +11,10 @@
 */
 
 #include "eon/potentials/ExtPot/ExtPot.h"
+#include "eon/potentials/ExtPot/ExtPotCommand.h"
 #include "eon/potentials/ExternalCommand.h"
 
 #include <atomic>
-#include <cctype>
 #include <filesystem>
 #include <format>
 #include <fstream>
@@ -23,7 +23,14 @@
 #include <system_error>
 
 #ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <process.h>
+#include <windows.h>
 #else
 #include <unistd.h>
 #endif
@@ -48,61 +55,19 @@ long processId() {
 #endif
 }
 
-/// \brief Wrap a path for the shell system() hands the command to, so spaces
-/// in it survive.
-std::string shellQuote(const std::string &text) {
 #ifdef _WIN32
-  // cmd.exe takes double quotes and offers no escape for an embedded one,
-  // which a Windows path cannot hold anyway.
-  return "\"" + text + "\"";
-#else
-  std::string quoted{"'"};
-  for (const char c : text) {
-    if (c == '\'') {
-      quoted += "'\\''";
-    } else {
-      quoted += c;
-    }
+/// \brief The python.exe on PATH, quoted, or the bare name `python`.
+///
+/// cmd.exe cannot run an extensionless shebang script. wrapResolvedProgram
+/// prefixes this interpreter when the resolved path is a Python wrapper.
+std::string windowsPythonCommand() {
+  char buf[MAX_PATH];
+  const DWORD n =
+      SearchPathA(nullptr, "python.exe", nullptr, MAX_PATH, buf, nullptr);
+  if (n > 0 && n < MAX_PATH) {
+    return eonc::pot::shellQuote(std::string(buf));
   }
-  quoted += "'";
-  return quoted;
-#endif
-}
-
-#ifdef _WIN32
-std::string asciiLower(std::string text) {
-  for (char &c : text) {
-    c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
-  }
-  return text;
-}
-
-/// \brief cmd.exe cannot run a shebang script or a quoted path that has no
-/// PATHEXT suffix. A regular file that is a Python wrapper is invoked as
-/// `python "path"`; a native Windows program is quoted as-is; a command
-/// line with arguments is left alone.
-std::string windowsCommand(const std::string &command) {
-  std::error_code ec;
-  const std::filesystem::path named{command};
-  if (!std::filesystem::is_regular_file(named, ec) || ec) {
-    return command;
-  }
-  const std::string ext = asciiLower(named.extension().string());
-  if (ext == ".exe" || ext == ".com" || ext == ".bat" || ext == ".cmd") {
-    return shellQuote(command);
-  }
-  bool pythonScript = ext == ".py" || ext == ".pyw";
-  if (!pythonScript) {
-    std::ifstream in(named);
-    std::string line;
-    pythonScript = static_cast<bool>(std::getline(in, line)) &&
-                   line.rfind("#!", 0) == 0 &&
-                   line.find("python") != std::string::npos;
-  }
-  if (pythonScript) {
-    return std::format("python {}", shellQuote(command));
-  }
-  return shellQuote(command);
+  return "python";
 }
 #endif
 
@@ -116,20 +81,17 @@ std::string composeCommand(const std::string &workDir,
                            const std::string &runDir,
                            const std::string &command) {
 #ifdef _WIN32
-  // cmd.exe: quotes around name=value so the value does not include them.
-  return std::format("cd /d {} && set \"{}={}\" && {}", shellQuote(workDir),
-                     kRunDirVariable, runDir, windowsCommand(command));
-#else
-  // A resolved single-file path (the default ./ext_pot after
-  // resolveCommand) has to be quoted so spaces and metacharacters
-  // survive system(). A command line with arguments is left alone.
-  std::error_code quoteEc;
   const std::string quotedCommand =
-      std::filesystem::is_regular_file(command, quoteEc) && !quoteEc
-          ? shellQuote(command)
-          : command;
-  return std::format("cd {} && export {}={} && {}", shellQuote(workDir),
-                     kRunDirVariable, shellQuote(runDir), quotedCommand);
+      eonc::pot::wrapResolvedProgram(command, windowsPythonCommand());
+  // cmd.exe: quotes around name=value so the value does not include them.
+  return std::format("cd /d {} && set \"{}={}\" && {}",
+                     eonc::pot::shellQuote(workDir), kRunDirVariable, runDir,
+                     quotedCommand);
+#else
+  const std::string quotedCommand = eonc::pot::wrapResolvedProgram(command, {});
+  return std::format("cd {} && export {}={} && {}",
+                     eonc::pot::shellQuote(workDir), kRunDirVariable,
+                     eonc::pot::shellQuote(runDir), quotedCommand);
 #endif
 }
 

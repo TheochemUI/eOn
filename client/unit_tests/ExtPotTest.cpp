@@ -13,6 +13,7 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/MatrixHelpers.hpp"
 #include "eon/Matter.h"
+#include "eon/potentials/ExtPot/ExtPotCommand.h"
 #include <cstdlib>
 #include <filesystem>
 #include <memory>
@@ -52,6 +53,20 @@ protected:
   std::shared_ptr<Potential> pot_ext;
   double threshold;
 };
+
+TEST_CASE("ExtPot shebangInterpreter reads env python3", "[ExtPot]") {
+  REQUIRE(eonc::pot::shebangInterpreter("ext_pot") == "python3");
+  REQUIRE(eonc::pot::isPythonInterpreterName("python3"));
+  REQUIRE(eonc::pot::isPythonInterpreterName("python.exe"));
+}
+
+#ifdef _WIN32
+TEST_CASE("ExtPot wraps a shebang script for cmd.exe", "[ExtPot]") {
+  const auto path = std::filesystem::canonical("ext_pot").string();
+  const auto wrapped = eonc::pot::wrapResolvedProgram(path, "python");
+  REQUIRE(wrapped == "python \"" + path + "\"");
+}
+#endif
 
 TEST_CASE_METHOD(ExtPotTest, "ExtPot harmonic spring energy and forces",
                  "[PotTest][ExtPot]") {
