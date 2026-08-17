@@ -170,6 +170,8 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+/docs/doxyYoda/
+/docs/doxygen-html/
 
 # PyBuilder
 target/
