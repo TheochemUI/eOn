@@ -1,0 +1,446 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: Namespace Members</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('namespacemembers_vars.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contents">
+<div class="textblock">Here is a list of all namespace variables with links to the namespace documentation for each variable:</div>
+
+<h3 class="doxsection"><a id="index_a" name="index_a"></a>- a -</h3><ul>
+<li>ACCELERATION&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#af25f3a2e4fe61ffc777bc47ac2981e29">forcefields::unit_system</a></li>
+<li>AM&#160;:&#160;<a class="el" href="namespaceeonc.html#a190d45f16cc94f99af10b6fb1efe0547">eonc</a></li>
+<li>AMPERE&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a86e8545fb868ac7121d3bbd6fa6da006">forcefields::unit_system</a></li>
+<li>ANGSTROM&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a3adbbde40fce64c131246813d38949e3">forcefields::unit_system</a></li>
+<li>ANGSTROM2&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#ac517503e9be77555313c1ca87d5574da">forcefields::unit_system</a></li>
+<li>ANGSTROM3&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#afe6f2d2c73d9a9899b480bb1445a8f45">forcefields::unit_system</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_b" name="index_b"></a>- b -</h3><ul>
+<li>BOHR&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a950f0ef8b8b26b7a8dc03e91bc21cdc7">forcefields::unit_system</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_c" name="index_c"></a>- c -</h3><ul>
+<li>CALORY&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#af74c4d0fab748d2efa936446bac9b694">forcefields::unit_system</a></li>
+<li>calory&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a98ca67724c89677e15a059b6cf61abfe">forcefields::unit_system</a></li>
+<li>CHARGE&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#afe3051ce01efe950b0339b2fb0b7262a">forcefields::unit_system</a></li>
+<li>COULOMB&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a4910aa84d0b36db29591db07aa964c2f">forcefields::unit_system</a></li>
+<li>CURRENT&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a5e5218470327e8b085f51173ed525c7c">forcefields::unit_system</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_d" name="index_d"></a>- d -</h3><ul>
+<li>debye&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a3864e22c85db6cb1e98204f13beb18ca">forcefields::unit_system</a></li>
+<li>DEGREE&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a2b5963942dc6b57c3ec163ea34086860">forcefields::unit_system</a></li>
+<li>DISP_LAST_ATOM&#160;:&#160;<a class="el" href="namespaceeonc_1_1EpiCenters.html#a3f879a934b81e169ba20a6a75c3340bb">eonc::EpiCenters</a></li>
+<li>DISP_LISTED_ATOMS&#160;:&#160;<a class="el" href="namespaceeonc_1_1EpiCenters.html#a19fef5e0ac89301cce85298814fc04bd">eonc::EpiCenters</a></li>
+<li>DISP_LOAD&#160;:&#160;<a class="el" href="namespaceeonc_1_1EpiCenters.html#a3daeffdce455426b6819b083964fa53a">eonc::EpiCenters</a></li>
+<li>DISP_MIN_COORDINATED&#160;:&#160;<a class="el" href="namespaceeonc_1_1EpiCenters.html#a1df5e79b97a359bd4cc97c1721dab149">eonc::EpiCenters</a></li>
+<li>DISP_NOT_FCC_OR_HCP&#160;:&#160;<a class="el" href="namespaceeonc_1_1EpiCenters.html#a1b0f030a0abb6b01ca86e1fff1df1c6a">eonc::EpiCenters</a></li>
+<li>DISP_RANDOM&#160;:&#160;<a class="el" href="namespaceeonc_1_1EpiCenters.html#a00d53e225a73ad2031a555a9e7c0eaf2">eonc::EpiCenters</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_e" name="index_e"></a>- e -</h3><ul>
+<li>e_charge&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a0d4891b5d9da457ec51356b42909d2db">forcefields::unit_system</a></li>
+<li>ECHARGE&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a007c5ef384ed755b22dc9a7e300bf2eb">forcefields::unit_system</a></li>
+<li>ENERGY&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#ab01614e338e908a183442ac522512f2e">forcefields::unit_system</a></li>
+<li>EPS&#160;:&#160;<a class="el" href="namespaceeonc.html#a2b9a5efd7a8a4da4d208431f06929079">eonc</a></li>
+<li>eps&#160;:&#160;<a class="el" href="namespaceeonc_1_1safemath.html#a57c5f23e983b67c789337e2108c86c8c">eonc::safemath</a></li>
+<li>ERGS&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#ab6418a5317479f897600b95ea21b7b57">forcefields::unit_system</a></li>
+<li>EV&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a8d080af1998361ce8c39ceccc3130902">forcefields::unit_system</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_f" name="index_f"></a>- f -</h3><ul>
+<li>FEMTO&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#ad5ce48de40220efe95a67acdfa6a4546">forcefields::unit_system</a></li>
+<li>FILTER_CUTOFF&#160;:&#160;<a class="el" href="namespaceeonc_1_1Prefactor.html#a0d0e1917c5501cdc7ef881018ec115d0">eonc::Prefactor</a></li>
+<li>FILTER_FRACTION&#160;:&#160;<a class="el" href="namespaceeonc_1_1Prefactor.html#afc056c6475d2aa47599d96160e9329ce">eonc::Prefactor</a></li>
+<li>FORCE&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#abd0e114428343075670d12b052dc877c">forcefields::unit_system</a></li>
+<li>FS&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#afa33cdd52440d822e20cee5b5337a7b5">forcefields::unit_system</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_g" name="index_g"></a>- g -</h3><ul>
+<li>G_PER_MOL&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#ae91089e8465795f38b5332bf7c18e723">forcefields::unit_system</a></li>
+<li>GRAM&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a44785f1fbd2ea379e47a0211e6b273a4">forcefields::unit_system</a></li>
+<li>GRAM_PER_MOL&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a286f6446474e402af5a2854536ec89cd">forcefields::unit_system</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_h" name="index_h"></a>- h -</h3><ul>
+<li>HARTREE&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a149bc12b876481da5e843df9471ecfb6">forcefields::unit_system</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_i" name="index_i"></a>- i -</h3><ul>
+<li>IA1&#160;:&#160;<a class="el" href="namespaceeonc.html#a7f5b1fbf7258dddb2039901ab8e1635f">eonc</a></li>
+<li>IA2&#160;:&#160;<a class="el" href="namespaceeonc.html#a24d3050ff202f18f352a7f0b42f85c2c">eonc</a></li>
+<li>IM&#160;:&#160;<a class="el" href="namespaceeonc.html#ad660c87952894d11defebc8decb94ee8">eonc</a></li>
+<li>IM1&#160;:&#160;<a class="el" href="namespaceeonc.html#ac96c4ca4a450b15d5cc031ba4f0287ff">eonc</a></li>
+<li>IM2&#160;:&#160;<a class="el" href="namespaceeonc.html#ad0e99b70e0407a8b85b442d9214aa84f">eonc</a></li>
+<li>IMM1&#160;:&#160;<a class="el" href="namespaceeonc.html#acc0329f8db4730d78f480ee016335e4d">eonc</a></li>
+<li>IQ1&#160;:&#160;<a class="el" href="namespaceeonc.html#a4c041e0985cefaa2e4d09552c60979a4">eonc</a></li>
+<li>IQ2&#160;:&#160;<a class="el" href="namespaceeonc.html#a8a10553b8ab562d83c40a83b508b40fb">eonc</a></li>
+<li>IR1&#160;:&#160;<a class="el" href="namespaceeonc.html#ad68d05aae5553c2b358a0029a62bd39c">eonc</a></li>
+<li>IR2&#160;:&#160;<a class="el" href="namespaceeonc.html#a30c4cd46e75b08be9113bc55eddda979">eonc</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_j" name="index_j"></a>- j -</h3><ul>
+<li>JOULE&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a9d9aa2eb894d98a38261315fb4af0d8e">forcefields::unit_system</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_k" name="index_k"></a>- k -</h3><ul>
+<li>k_boltzmann&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a3d69ed059c27e619511efc0427361679">forcefields::unit_system</a></li>
+<li>KCAL_PER_MOL&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a8525e6bd48901f948196f9099006543c">forcefields::unit_system</a></li>
+<li>kDefaultLoggerName&#160;:&#160;<a class="el" href="namespaceeonc_1_1log_1_1detail.html#a98fff7a6b38782d04baafd43880b7b83">eonc::log::detail</a></li>
+<li>KELVIN&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#ae72ba6b6131e31cb22ab117d3e5a1230">forcefields::unit_system</a></li>
+<li>KG&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a576873962d04d5cea46d59763a77768e">forcefields::unit_system</a></li>
+<li>KILO&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a5e02426428780a8c57fa4b47e3a7be8e">forcefields::unit_system</a></li>
+<li>KJ&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a7663bf2402823d73bd35ef9c51adab63">forcefields::unit_system</a></li>
+<li>KJ_PER_MOL&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a25deb509257137c64f58b68256236bfa">forcefields::unit_system</a></li>
+<li>kTracebackLoggerName&#160;:&#160;<a class="el" href="namespaceeonc_1_1log_1_1detail.html#a13ecaa4676a7d55b383cf89f9b3a68cc">eonc::log::detail</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_l" name="index_l"></a>- l -</h3><ul>
+<li>LENGTH&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a1090032ca9ac3e82faa0278830be7b22">forcefields::unit_system</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_m" name="index_m"></a>- m -</h3><ul>
+<li>MASS&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a86f3785849fae74b249e5d161342e40f">forcefields::unit_system</a></li>
+<li>METRE&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a6790eb34512930d72ac508c14aa512bb">forcefields::unit_system</a></li>
+<li>METRE_PER_SECOND&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a3d722a024459550df09f4c55d8cd9605">forcefields::unit_system</a></li>
+<li>METRE_PER_SECOND2&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a3d91821c58b48739a7f3759e17515a94">forcefields::unit_system</a></li>
+<li>MOL&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#adf6de2be75537af23df50b6b37d34465">forcefields::unit_system</a></li>
+<li>MXCSR_MASK_IM&#160;:&#160;<a class="el" href="namespaceeonc.html#aff1bfce1304766d7d1e8f5ce268b9f36">eonc</a></li>
+<li>MXCSR_MASK_OM&#160;:&#160;<a class="el" href="namespaceeonc.html#ac89eb94ca6acc23cbc8412ac036f3ab7">eonc</a></li>
+<li>MXCSR_MASK_ZM&#160;:&#160;<a class="el" href="namespaceeonc.html#aa3534bb5451c0fcb500a7b87ed39873a">eonc</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_n" name="index_n"></a>- n -</h3><ul>
+<li>Na_avogadro&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a8692cceaf8e86c91e553b641b8b9aed3">forcefields::unit_system</a></li>
+<li>NANO&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a7b1a6c2d9391b72380ff4ef1d9bd859e">forcefields::unit_system</a></li>
+<li>NDIV&#160;:&#160;<a class="el" href="namespaceeonc.html#a23cb765ddcc8e524ae5d145ed38aa4c7">eonc</a></li>
+<li>NEWTON&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a9f65a6e72aa17dbb859356e778ad44d6">forcefields::unit_system</a></li>
+<li>NM&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a85e9a5cc9e628f5df0f7f9e48276711d">forcefields::unit_system</a></li>
+<li>NTAB&#160;:&#160;<a class="el" href="namespaceeonc.html#a75a40eb331ab993ff9f3bc69fbf7449a">eonc</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_o" name="index_o"></a>- o -</h3><ul>
+<li>ONE_OVER_4_PI_EPSILON0&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#ad1f22d33892a317f21556b75ff5248c9">forcefields::unit_system</a></li>
+<li>one_over_4_pi_epsilon0&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a942fdd56ff6b1014b3d43de2301a0579">forcefields::unit_system</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_p" name="index_p"></a>- p -</h3><ul>
+<li>pi&#160;:&#160;<a class="el" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers</a>, <a class="el" href="namespaceforcefields_1_1unit__system.html#ac2157e4d1ee735b7765dae36b1a0a34b">forcefields::unit_system</a></li>
+<li>PRESSURE&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a8af8d429905cd33ba83061f8d2f15cec">forcefields::unit_system</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_r" name="index_r"></a>- r -</h3><ul>
+<li>R_gas&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#ac762eed5421fcb26bc0b3ccf3701e075">forcefields::unit_system</a></li>
+<li>RATE_HTST&#160;:&#160;<a class="el" href="namespaceeonc_1_1Prefactor.html#ab705ebdc1173ba3d8e3f085eb8326a80">eonc::Prefactor</a></li>
+<li>RATE_QQHTST&#160;:&#160;<a class="el" href="namespaceeonc_1_1Prefactor.html#ad61b06683b59d9f2921f828f486e6aa8">eonc::Prefactor</a></li>
+<li>RNMX&#160;:&#160;<a class="el" href="namespaceeonc.html#afff29e13a7f2ea6586a4d52cffb7bdbb">eonc</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_s" name="index_s"></a>- s -</h3><ul>
+<li>SECOND&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a3ff6f5f8cb75b9b88b564032587876cf">forcefields::unit_system</a></li>
+<li>sqrt_one_over_4_pi_epsilon0&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a71889d7c431221d4ca1a11f4a8c12188">forcefields::unit_system</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_t" name="index_t"></a>- t -</h3><ul>
+<li>TEMPERATURE&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a5bedd43676dfceb4bb2d460159fb3fa3">forcefields::unit_system</a></li>
+<li>TIME&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a9678e8288009922ba90d730d13d45e71">forcefields::unit_system</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_v" name="index_v"></a>- v -</h3><ul>
+<li>VELOCITY&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a93d91af67e7433ab6b3450aa08458f42">forcefields::unit_system</a></li>
+<li>VOLT&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a01b9ef66ff4c5224055fac14361fe614">forcefields::unit_system</a></li>
+</ul>
+
+
+<h3 class="doxsection"><a id="index_w" name="index_w"></a>- w -</h3><ul>
+<li>WATT&#160;:&#160;<a class="el" href="namespaceforcefields_1_1unit__system.html#a2cc317b090041d0202db3cda0550b7b7">forcefields::unit_system</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

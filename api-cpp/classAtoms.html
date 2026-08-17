@@ -1,0 +1,1477 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: Atoms Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classAtoms.html','','classAtoms-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Atoms Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>The main list of atoms class.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Atoms_8h_source.html">Atoms.h</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for Atoms:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+ <div class="center">
+  <img src="classAtoms.png" usemap="#Atoms_map" alt=""/>
+  <map id="Atoms_map" name="Atoms_map">
+<area href="classGhostAtoms.html" alt="GhostAtoms" shape="rect" coords="0,56,78,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a3830c2699ced729d323210992563ad52" id="r_a3830c2699ced729d323210992563ad52"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a3830c2699ced729d323210992563ad52">Atoms</a> (const <a class="el" href="classVec.html">Vec</a> *p, int n, <a class="el" href="classSuperCell.html">SuperCell</a> *s)</td></tr>
+<tr class="memdesc:a3830c2699ced729d323210992563ad52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct <a class="el" href="classAtoms.html" title="The main list of atoms class.">Atoms</a> from array of positions, number of elements and a <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a>.  <br /></td></tr>
+<tr class="memitem:acfd53a3f553d84b522e1d018499af19c" id="r_acfd53a3f553d84b522e1d018499af19c"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#acfd53a3f553d84b522e1d018499af19c">~Atoms</a> ()</td></tr>
+<tr class="memdesc:acfd53a3f553d84b522e1d018499af19c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the atoms. Does not delete <a class="el" href="classPotential.html">Potential</a> or <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a>.  <br /></td></tr>
+<tr class="memitem:a43bedf6781873746d21d3f4e1b88defa" id="r_a43bedf6781873746d21d3f4e1b88defa"><td class="memItemLeft">virtual <a class="el" href="classSuperCell.html">SuperCell</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a43bedf6781873746d21d3f4e1b88defa">GetSuperCell</a> () const</td></tr>
+<tr class="memdesc:a43bedf6781873746d21d3f4e1b88defa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a pointer to the <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a> object.  <br /></td></tr>
+<tr class="memitem:a55fea530f92978447476cc768e33c672" id="r_a55fea530f92978447476cc768e33c672"><td class="memItemLeft">virtual const <a class="el" href="classVec.html">Vec</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a55fea530f92978447476cc768e33c672">GetUnitCell</a> () const</td></tr>
+<tr class="memdesc:a55fea530f92978447476cc768e33c672"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the unitcell vectors.  <br /></td></tr>
+<tr class="memitem:a8af24754359632f68d66fd64d0d088fb" id="r_a8af24754359632f68d66fd64d0d088fb"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a8af24754359632f68d66fd64d0d088fb">SetUnitCell</a> (const <a class="el" href="classVec.html">Vec</a> newbasis[3], bool fix)</td></tr>
+<tr class="memdesc:a8af24754359632f68d66fd64d0d088fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a new unit cell, rescaling the positions unless fix is true.  <br /></td></tr>
+<tr class="memitem:ad780d71a08da3198ddc635a1f90462ea" id="r_ad780d71a08da3198ddc635a1f90462ea"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ad780d71a08da3198ddc635a1f90462ea">SetCalculator</a> (<a class="el" href="classAsapPotential.html">AsapPotential</a> *potential)</td></tr>
+<tr class="memdesc:ad780d71a08da3198ddc635a1f90462ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a <a class="el" href="classPotential.html">Potential</a>. An eventual old <a class="el" href="classPotential.html">Potential</a> is not deallocated.  <br /></td></tr>
+<tr class="memitem:a4fbac9c95a2f2864a8a2cca7d8395f5a" id="r_a4fbac9c95a2f2864a8a2cca7d8395f5a"><td class="memItemLeft"><a class="el" href="classAsapPotential.html">AsapPotential</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a4fbac9c95a2f2864a8a2cca7d8395f5a">GetPotential</a> () const</td></tr>
+<tr class="memdesc:a4fbac9c95a2f2864a8a2cca7d8395f5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a pointer to the <a class="el" href="classPotential.html">Potential</a>.  <br /></td></tr>
+<tr class="memitem:ac1896c340b2fc97e482929a3b19cf89b" id="r_ac1896c340b2fc97e482929a3b19cf89b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac1896c340b2fc97e482929a3b19cf89b">MarkChanged</a> ()</td></tr>
+<tr class="memdesc:ac1896c340b2fc97e482929a3b19cf89b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the change pointer.  <br /></td></tr>
+<tr class="memitem:a2773d22154be5032f0b07fa176ebb898" id="r_a2773d22154be5032f0b07fa176ebb898"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a2773d22154be5032f0b07fa176ebb898">GetChangeCounter</a> () const</td></tr>
+<tr class="memdesc:a2773d22154be5032f0b07fa176ebb898"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the change counter.  <br /></td></tr>
+<tr class="memitem:aff9a207b5592f595b7fa78ab5e2d200f" id="r_aff9a207b5592f595b7fa78ab5e2d200f"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aff9a207b5592f595b7fa78ab5e2d200f">SetCartesianPositions</a> (const <a class="el" href="classVec.html">Vec</a> *p)</td></tr>
+<tr class="memdesc:aff9a207b5592f595b7fa78ab5e2d200f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the Cartesian positions.  <br /></td></tr>
+<tr class="memitem:a59a5a5920a8348133293a642711945b2" id="r_a59a5a5920a8348133293a642711945b2"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a59a5a5920a8348133293a642711945b2">GetCartesianPositions</a> (<a class="el" href="classVec.html">Vec</a> *p) const</td></tr>
+<tr class="memdesc:a59a5a5920a8348133293a642711945b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a copy of the Cartesian positions.  <br /></td></tr>
+<tr class="memitem:a9dffcbfbf258e17dc182a09a1141f7cd" id="r_a9dffcbfbf258e17dc182a09a1141f7cd"><td class="memItemLeft">virtual const <a class="el" href="classVec.html">Vec</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a9dffcbfbf258e17dc182a09a1141f7cd">GetCartesianPositions</a> () const</td></tr>
+<tr class="memdesc:a9dffcbfbf258e17dc182a09a1141f7cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a const pointer to the Cartesian positions.  <br /></td></tr>
+<tr class="memitem:a2f59dd531a731e2dd71b4ff650e7ac75" id="r_a2f59dd531a731e2dd71b4ff650e7ac75"><td class="memItemLeft"><a class="el" href="classVec.html">Vec</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a2f59dd531a731e2dd71b4ff650e7ac75">GetPositionsPtr</a> ()</td></tr>
+<tr class="memdesc:a2f59dd531a731e2dd71b4ff650e7ac75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a non-const pointer to the Cartesian positions. DANGEROUS!  <br /></td></tr>
+<tr class="memitem:ae25125f950c16da3ddd3d0d8b3111db8" id="r_ae25125f950c16da3ddd3d0d8b3111db8"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ae25125f950c16da3ddd3d0d8b3111db8">GetUnwrappedPositions</a> (<a class="el" href="classvector.html">vector</a>&lt; <a class="el" href="classVec.html">Vec</a> &gt; &amp;p) const</td></tr>
+<tr class="memdesc:ae25125f950c16da3ddd3d0d8b3111db8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the positions, hiding that they may have been wrapped due to the boundary conditions.  <br /></td></tr>
+<tr class="memitem:a42e0d88f3ab9077c29ec488b453c1244" id="r_a42e0d88f3ab9077c29ec488b453c1244"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a42e0d88f3ab9077c29ec488b453c1244">SetUnwrappedPositions</a> (const <a class="el" href="classVec.html">Vec</a> *p)</td></tr>
+<tr class="memdesc:a42e0d88f3ab9077c29ec488b453c1244"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the positions from an array of positions not taking any wrapping into account.  <br /></td></tr>
+<tr class="memitem:a6025defdf799f0c778116259d911820c" id="r_a6025defdf799f0c778116259d911820c"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a6025defdf799f0c778116259d911820c">NormalizeDifferences</a> (<a class="el" href="classVec.html">Vec</a> *diff) const</td></tr>
+<tr class="memdesc:a6025defdf799f0c778116259d911820c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply periodic boundary conditions to differences in positions.  <br /></td></tr>
+<tr class="memitem:a4c9cd41d0924dacd506b2a8b7c2080ce" id="r_a4c9cd41d0924dacd506b2a8b7c2080ce"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a4c9cd41d0924dacd506b2a8b7c2080ce">NormalizeDifference</a> (<a class="el" href="classVec.html">Vec</a> &amp;diff) const</td></tr>
+<tr class="memdesc:a4c9cd41d0924dacd506b2a8b7c2080ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply periodic boundary conditions to difference in positions.  <br /></td></tr>
+<tr class="memitem:aab51ffa092bc07c1ee2bc2426849d070" id="r_aab51ffa092bc07c1ee2bc2426849d070"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#aab51ffa092bc07c1ee2bc2426849d070">NormalizePositions</a> ()</td></tr>
+<tr class="memdesc:aab51ffa092bc07c1ee2bc2426849d070"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply periodic boundary conditions to the positions.  <br /></td></tr>
+<tr class="memitem:ad8b3abdefa07257352c5fec645e26de1" id="r_ad8b3abdefa07257352c5fec645e26de1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ad8b3abdefa07257352c5fec645e26de1">NormalizePosition</a> (<a class="el" href="classVec.html">Vec</a> &amp;pos) const</td></tr>
+<tr class="memdesc:ad8b3abdefa07257352c5fec645e26de1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalize a position which is not owned by the atoms.  <br /></td></tr>
+<tr class="memitem:a4190dd86c3da889e4fd9dc692f2c04e8" id="r_a4190dd86c3da889e4fd9dc692f2c04e8"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a4190dd86c3da889e4fd9dc692f2c04e8">NormalizePosition</a> (<a class="el" href="classVec.html">Vec</a> &amp;pos, <a class="el" href="classVec.html">Vec</a> &amp;scaled_translation) const</td></tr>
+<tr class="memdesc:a4190dd86c3da889e4fd9dc692f2c04e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalize a position which is not owned by the atoms.  <br /></td></tr>
+<tr class="memitem:ad6d2df5fd223a6c72d1f89369ebe1764" id="r_ad6d2df5fd223a6c72d1f89369ebe1764"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ad6d2df5fd223a6c72d1f89369ebe1764">ReNormalizePosition</a> (<a class="el" href="classVec.html">Vec</a> &amp;pos, <a class="el" href="classVec.html">Vec</a> &amp;scaled_translation) const</td></tr>
+<tr class="memdesc:ad6d2df5fd223a6c72d1f89369ebe1764"><td class="mdescLeft">&#160;</td><td class="mdescRight">Repeat a normalization. See NormalizePosition(a,b).  <br /></td></tr>
+<tr class="memitem:a97c2a8223ede2b2451b41c26d510f1b0" id="r_a97c2a8223ede2b2451b41c26d510f1b0"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a97c2a8223ede2b2451b41c26d510f1b0">SetAtomicNumbers</a> (const int *z)</td></tr>
+<tr class="memdesc:a97c2a8223ede2b2451b41c26d510f1b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the atomic numbers. Should be done right after construction.  <br /></td></tr>
+<tr class="memitem:ab0b9c6618f6a454c07b40bc37717bd07" id="r_ab0b9c6618f6a454c07b40bc37717bd07"><td class="memItemLeft">virtual const int *&#160;</td><td class="memItemRight"><a class="el" href="#ab0b9c6618f6a454c07b40bc37717bd07">GetAtomicNumbers</a> () const</td></tr>
+<tr class="memdesc:ab0b9c6618f6a454c07b40bc37717bd07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a const pointer to the atomic numbers.  <br /></td></tr>
+<tr class="memitem:a3e7dba2fbbe9185cb0cee8cef3a8e5f8" id="r_a3e7dba2fbbe9185cb0cee8cef3a8e5f8"><td class="memItemLeft">int *&#160;</td><td class="memItemRight"><a class="el" href="#a3e7dba2fbbe9185cb0cee8cef3a8e5f8">GetAtomicNumbersPtr</a> ()</td></tr>
+<tr class="memdesc:a3e7dba2fbbe9185cb0cee8cef3a8e5f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a non-const pointer to the atomic numbers. DANGEROUS!  <br /></td></tr>
+<tr class="memitem:af13bbdf9c3816573e85a84807040b40e" id="r_af13bbdf9c3816573e85a84807040b40e"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#af13bbdf9c3816573e85a84807040b40e">GetListOfElements</a> (<a class="el" href="classset.html">set</a>&lt; int &gt; &amp;elements) const</td></tr>
+<tr class="memdesc:af13bbdf9c3816573e85a84807040b40e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a set of all elements present in the simulations.  <br /></td></tr>
+<tr class="memitem:a938941874463793c2fe86e5b6cc5e2e1" id="r_a938941874463793c2fe86e5b6cc5e2e1"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a938941874463793c2fe86e5b6cc5e2e1">SetNumberOfImages</a> (int i)</td></tr>
+<tr class="memdesc:a938941874463793c2fe86e5b6cc5e2e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the number of images. Used by the neighbor list.  <br /></td></tr>
+<tr class="memitem:a09af7c5c1af57d821413bc5f7bc95da7" id="r_a09af7c5c1af57d821413bc5f7bc95da7"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a09af7c5c1af57d821413bc5f7bc95da7">GetNumberOfImages</a> () const</td></tr>
+<tr class="memdesc:a09af7c5c1af57d821413bc5f7bc95da7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of images. Used by the neighbor list.  <br /></td></tr>
+<tr class="memitem:a8f27e2814b8e439c193dc4c29789cd92" id="r_a8f27e2814b8e439c193dc4c29789cd92"><td class="memItemLeft">virtual int&#160;</td><td class="memItemRight"><a class="el" href="#a8f27e2814b8e439c193dc4c29789cd92">GetNumberOfAtoms</a> () const</td></tr>
+<tr class="memdesc:a8f27e2814b8e439c193dc4c29789cd92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of atoms (including nodes in a QC simulation).  <br /></td></tr>
+<tr class="memitem:a41b258c4da4a9567f4067825f6cbf517" id="r_a41b258c4da4a9567f4067825f6cbf517"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a41b258c4da4a9567f4067825f6cbf517">GetNumberOfRealAtoms</a> () const</td></tr>
+<tr class="memdesc:a41b258c4da4a9567f4067825f6cbf517"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of atoms (excluding nodes in a QC simulation).  <br /></td></tr>
+<tr class="memitem:abaaa62ae9f07648b3efbefab20da7d8a" id="r_abaaa62ae9f07648b3efbefab20da7d8a"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#abaaa62ae9f07648b3efbefab20da7d8a">SetNumberOfAtoms</a> (int n)</td></tr>
+<tr class="memdesc:abaaa62ae9f07648b3efbefab20da7d8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change the number of atoms.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:ae5251c7774ea40f06a117cb2deccb482" id="r_ae5251c7774ea40f06a117cb2deccb482"><td class="memItemLeft"><a class="el" href="classAsapPotential.html">AsapPotential</a> *&#160;</td><td class="memItemRight"><a class="el" href="#ae5251c7774ea40f06a117cb2deccb482">potential</a></td></tr>
+<tr class="memdesc:ae5251c7774ea40f06a117cb2deccb482"><td class="mdescLeft">&#160;</td><td class="mdescRight">A pointer to the potential.  <br /></td></tr>
+<tr class="memitem:a0133427b82da165742719d58b7bbbceb" id="r_a0133427b82da165742719d58b7bbbceb"><td class="memItemLeft"><a class="el" href="classSuperCell.html">SuperCell</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a0133427b82da165742719d58b7bbbceb">superCell</a></td></tr>
+<tr class="memdesc:a0133427b82da165742719d58b7bbbceb"><td class="mdescLeft">&#160;</td><td class="mdescRight">A pointer to the supercell.  <br /></td></tr>
+<tr class="memitem:aaa3eebdc720490ab24af9890e6f2043d" id="r_aaa3eebdc720490ab24af9890e6f2043d"><td class="memItemLeft"><a class="el" href="classvector.html">vector</a>&lt; <a class="el" href="classVec.html">Vec</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aaa3eebdc720490ab24af9890e6f2043d">positions</a></td></tr>
+<tr class="memdesc:aaa3eebdc720490ab24af9890e6f2043d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains the Cartesian positions.  <br /></td></tr>
+<tr class="memitem:aa06770305a3bad62a0a4d2a31ae0476e" id="r_aa06770305a3bad62a0a4d2a31ae0476e"><td class="memItemLeft"><a class="el" href="classvector.html">vector</a>&lt; <a class="el" href="classVec.html">Vec</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aa06770305a3bad62a0a4d2a31ae0476e">pos_translations</a></td></tr>
+<tr class="memdesc:aa06770305a3bad62a0a4d2a31ae0476e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Translations applied to the positions to conform with the periodic boundary conditions.  <br /></td></tr>
+<tr class="memitem:a8e4def9248da72b49e964f8ce769b973" id="r_a8e4def9248da72b49e964f8ce769b973"><td class="memItemLeft"><a class="el" href="classvector.html">vector</a>&lt; int &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a8e4def9248da72b49e964f8ce769b973">types</a></td></tr>
+<tr class="memdesc:a8e4def9248da72b49e964f8ce769b973"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contains the atomic numbers.  <br /></td></tr>
+<tr class="memitem:a94f16d7494ce28f199190c728047de5a" id="r_a94f16d7494ce28f199190c728047de5a"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a94f16d7494ce28f199190c728047de5a">nAtoms</a></td></tr>
+<tr class="memdesc:a94f16d7494ce28f199190c728047de5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of atoms in the list.  <br /></td></tr>
+<tr class="memitem:a90b3511f7c792f973ef567767f2f19ac" id="r_a90b3511f7c792f973ef567767f2f19ac"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a90b3511f7c792f973ef567767f2f19ac">nImages</a></td></tr>
+<tr class="memdesc:a90b3511f7c792f973ef567767f2f19ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of image atoms used by <a class="el" href="classNeighborList.html" title="&quot;Half&quot; neighbor lists for atoms.">NeighborList</a>.  <br /></td></tr>
+<tr class="memitem:aa917ca1fb2a9cad1bb6057acd5103cb7" id="r_aa917ca1fb2a9cad1bb6057acd5103cb7"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#aa917ca1fb2a9cad1bb6057acd5103cb7">counter</a></td></tr>
+<tr class="memdesc:aa917ca1fb2a9cad1bb6057acd5103cb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to track changes.  <br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The main list of atoms class. </p>
+<p>The <a class="el" href="classAtoms.html" title="The main list of atoms class.">Atoms</a> class stores the coordinates and atomic numbers of the atoms. Coordinates are stored as Cartesian coordinates. <a class="el" href="classAtoms.html" title="The main list of atoms class.">Atoms</a> has a reference to a <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a> object containing the unitcell of the simulation, and a pointer to a <a class="el" href="classPotential.html">Potential</a> object responsible of force calculations. Other information about atoms (such as velocities and forces) are not stored in the C++ code but live in Python. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00036">36</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a3830c2699ced729d323210992563ad52" name="a3830c2699ced729d323210992563ad52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3830c2699ced729d323210992563ad52">&#9670;&#160;</a></span>Atoms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Atoms::Atoms </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classVec.html">Vec</a> *</td>          <td class="paramname"><span class="paramname"><em>p</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>n</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classSuperCell.html">SuperCell</a> *</td>          <td class="paramname"><span class="paramname"><em>s</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct <a class="el" href="classAtoms.html" title="The main list of atoms class.">Atoms</a> from array of positions, number of elements and a <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a>. </p>
+
+</div>
+</div>
+<a id="acfd53a3f553d84b522e1d018499af19c" name="acfd53a3f553d84b522e1d018499af19c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfd53a3f553d84b522e1d018499af19c">&#9670;&#160;</a></span>~Atoms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual Atoms::~Atoms </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Deletes the atoms. Does not delete <a class="el" href="classPotential.html">Potential</a> or <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00043">43</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   43</span>{};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="ab0b9c6618f6a454c07b40bc37717bd07" name="ab0b9c6618f6a454c07b40bc37717bd07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0b9c6618f6a454c07b40bc37717bd07">&#9670;&#160;</a></span>GetAtomicNumbers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const int * Atoms::GetAtomicNumbers </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a const pointer to the atomic numbers. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00165">165</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  165</span>{ <span class="keywordflow">return</span> &amp;<a class="code hl_variable" href="#a8e4def9248da72b49e964f8ce769b973">types</a>[0]; }</div>
+<div class="ttc" id="aclassAtoms_html_a8e4def9248da72b49e964f8ce769b973"><div class="ttname"><a href="#a8e4def9248da72b49e964f8ce769b973">Atoms::types</a></div><div class="ttdeci">vector&lt; int &gt; types</div><div class="ttdoc">Contains the atomic numbers.</div><div class="ttdef"><b>Definition</b> <a href="Atoms_8h_source.html#l00208">Atoms.h:208</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a3e7dba2fbbe9185cb0cee8cef3a8e5f8" name="a3e7dba2fbbe9185cb0cee8cef3a8e5f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e7dba2fbbe9185cb0cee8cef3a8e5f8">&#9670;&#160;</a></span>GetAtomicNumbersPtr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int * Atoms::GetAtomicNumbersPtr </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a non-const pointer to the atomic numbers. DANGEROUS! </p>
+<p>GetAtomicNumbersPtr returns a pointer allowing modification of the atomic numbers. Use with care, and call MarkChanged manually! </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00171">171</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  171</span>{ <span class="keywordflow">return</span> &amp;<a class="code hl_variable" href="#a8e4def9248da72b49e964f8ce769b973">types</a>[0]; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9dffcbfbf258e17dc182a09a1141f7cd" name="a9dffcbfbf258e17dc182a09a1141f7cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dffcbfbf258e17dc182a09a1141f7cd">&#9670;&#160;</a></span>GetCartesianPositions() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const <a class="el" href="classVec.html">Vec</a> * Atoms::GetCartesianPositions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a const pointer to the Cartesian positions. </p>
+<p>This version returns a pointer to the coordinates of all atoms. If ghost atoms are present, they are at the end of the array. It is up to the caller to know if ghost atoms are present, and to access them (or not) according to the need. Non-atomistic degrees of freedom, such as nodes in QC simulations, are not returned by this version.</p>
+<dl class="bug"><dt><b><a class="el" href="bug.html#_bug000001">Bug</a></b></dt><dd>The difference in semantics between the two versions of GetCartesianPositions is most unfortunate: one of them should be renamed. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00100">100</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  100</span>{ <span class="keywordflow">return</span> &amp;<a class="code hl_variable" href="#aaa3eebdc720490ab24af9890e6f2043d">positions</a>[0]; }</div>
+<div class="ttc" id="aclassAtoms_html_aaa3eebdc720490ab24af9890e6f2043d"><div class="ttname"><a href="#aaa3eebdc720490ab24af9890e6f2043d">Atoms::positions</a></div><div class="ttdeci">vector&lt; Vec &gt; positions</div><div class="ttdoc">Contains the Cartesian positions.</div><div class="ttdef"><b>Definition</b> <a href="Atoms_8h_source.html#l00204">Atoms.h:204</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a59a5a5920a8348133293a642711945b2" name="a59a5a5920a8348133293a642711945b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59a5a5920a8348133293a642711945b2">&#9670;&#160;</a></span>GetCartesianPositions() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Atoms::GetCartesianPositions </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classVec.html">Vec</a> *</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a copy of the Cartesian positions. </p>
+<p>This version returns all degrees of freedom, i.e. both atoms and nodes in a quasicontinuum simulation. It does not return ghost atoms.</p>
+<dl class="section warning"><dt>Warning</dt><dd>When atoms.GetCartesianPositions() is called from Python, that is translated into a call to GetUwrappedPositions(), <em>not</em> to a call to this method. </dd></dl>
+
+</div>
+</div>
+<a id="a2773d22154be5032f0b07fa176ebb898" name="a2773d22154be5032f0b07fa176ebb898"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2773d22154be5032f0b07fa176ebb898">&#9670;&#160;</a></span>GetChangeCounter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Atoms::GetChangeCounter </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the change counter. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00068">68</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   68</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#aa917ca1fb2a9cad1bb6057acd5103cb7">counter</a>; }</div>
+<div class="ttc" id="aclassAtoms_html_aa917ca1fb2a9cad1bb6057acd5103cb7"><div class="ttname"><a href="#aa917ca1fb2a9cad1bb6057acd5103cb7">Atoms::counter</a></div><div class="ttdeci">int counter</div><div class="ttdoc">Used to track changes.</div><div class="ttdef"><b>Definition</b> <a href="Atoms_8h_source.html#l00211">Atoms.h:211</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af13bbdf9c3816573e85a84807040b40e" name="af13bbdf9c3816573e85a84807040b40e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af13bbdf9c3816573e85a84807040b40e">&#9670;&#160;</a></span>GetListOfElements()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Atoms::GetListOfElements </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classset.html">set</a>&lt; int &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>elements</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get a set of all elements present in the simulations. </p>
+
+</div>
+</div>
+<a id="a8f27e2814b8e439c193dc4c29789cd92" name="a8f27e2814b8e439c193dc4c29789cd92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f27e2814b8e439c193dc4c29789cd92">&#9670;&#160;</a></span>GetNumberOfAtoms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual int Atoms::GetNumberOfAtoms </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the number of atoms (including nodes in a QC simulation). </p>
+<p>In a QuasiContinuum calculation we have real atoms and node atoms. <a class="el" href="#a8f27e2814b8e439c193dc4c29789cd92" title="Get the number of atoms (including nodes in a QC simulation).">GetNumberOfAtoms()</a> is a virtual function: For a QCAtoms class it will return the number of real atoms plus the number of node atoms. This number is needed by SWIG to get the size of arrays. The method <a class="el" href="#a41b258c4da4a9567f4067825f6cbf517" title="Get the number of atoms (excluding nodes in a QC simulation).">GetNumberOfRealAtoms()</a> is needed by potentials and the Neighbor List object (they only deal with the real atoms). </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00190">190</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  190</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a94f16d7494ce28f199190c728047de5a">nAtoms</a>; }</div>
+<div class="ttc" id="aclassAtoms_html_a94f16d7494ce28f199190c728047de5a"><div class="ttname"><a href="#a94f16d7494ce28f199190c728047de5a">Atoms::nAtoms</a></div><div class="ttdeci">int nAtoms</div><div class="ttdoc">The number of atoms in the list.</div><div class="ttdef"><b>Definition</b> <a href="Atoms_8h_source.html#l00209">Atoms.h:209</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a09af7c5c1af57d821413bc5f7bc95da7" name="a09af7c5c1af57d821413bc5f7bc95da7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09af7c5c1af57d821413bc5f7bc95da7">&#9670;&#160;</a></span>GetNumberOfImages()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Atoms::GetNumberOfImages </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the number of images. Used by the neighbor list. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00180">180</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  180</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a90b3511f7c792f973ef567767f2f19ac">nImages</a>; }</div>
+<div class="ttc" id="aclassAtoms_html_a90b3511f7c792f973ef567767f2f19ac"><div class="ttname"><a href="#a90b3511f7c792f973ef567767f2f19ac">Atoms::nImages</a></div><div class="ttdeci">int nImages</div><div class="ttdoc">The number of image atoms used by NeighborList.</div><div class="ttdef"><b>Definition</b> <a href="Atoms_8h_source.html#l00210">Atoms.h:210</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a41b258c4da4a9567f4067825f6cbf517" name="a41b258c4da4a9567f4067825f6cbf517"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41b258c4da4a9567f4067825f6cbf517">&#9670;&#160;</a></span>GetNumberOfRealAtoms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Atoms::GetNumberOfRealAtoms </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the number of atoms (excluding nodes in a QC simulation). </p>
+<p>See also the documentation of <a class="el" href="#a8f27e2814b8e439c193dc4c29789cd92" title="Get the number of atoms (including nodes in a QC simulation).">GetNumberOfAtoms()</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00196">196</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  196</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a94f16d7494ce28f199190c728047de5a">nAtoms</a>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2f59dd531a731e2dd71b4ff650e7ac75" name="a2f59dd531a731e2dd71b4ff650e7ac75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f59dd531a731e2dd71b4ff650e7ac75">&#9670;&#160;</a></span>GetPositionsPtr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classVec.html">Vec</a> * Atoms::GetPositionsPtr </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a non-const pointer to the Cartesian positions. DANGEROUS! </p>
+<p>GetPositionsPtr returns a pointer allowing modification of the positions. Be sure to call MarkChanged if this is done. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00106">106</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  106</span>{ <span class="keywordflow">return</span> &amp;<a class="code hl_variable" href="#aaa3eebdc720490ab24af9890e6f2043d">positions</a>[0]; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a4fbac9c95a2f2864a8a2cca7d8395f5a" name="a4fbac9c95a2f2864a8a2cca7d8395f5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fbac9c95a2f2864a8a2cca7d8395f5a">&#9670;&#160;</a></span>GetPotential()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classAsapPotential.html">AsapPotential</a> * Atoms::GetPotential </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get a pointer to the <a class="el" href="classPotential.html">Potential</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00058">58</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   58</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#ae5251c7774ea40f06a117cb2deccb482">potential</a>; }</div>
+<div class="ttc" id="aclassAtoms_html_ae5251c7774ea40f06a117cb2deccb482"><div class="ttname"><a href="#ae5251c7774ea40f06a117cb2deccb482">Atoms::potential</a></div><div class="ttdeci">AsapPotential * potential</div><div class="ttdoc">A pointer to the potential.</div><div class="ttdef"><b>Definition</b> <a href="Atoms_8h_source.html#l00202">Atoms.h:202</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a43bedf6781873746d21d3f4e1b88defa" name="a43bedf6781873746d21d3f4e1b88defa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43bedf6781873746d21d3f4e1b88defa">&#9670;&#160;</a></span>GetSuperCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classSuperCell.html">SuperCell</a> * Atoms::GetSuperCell </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a pointer to the <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a> object. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00046">46</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   46</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a0133427b82da165742719d58b7bbbceb">superCell</a>; }</div>
+<div class="ttc" id="aclassAtoms_html_a0133427b82da165742719d58b7bbbceb"><div class="ttname"><a href="#a0133427b82da165742719d58b7bbbceb">Atoms::superCell</a></div><div class="ttdeci">SuperCell * superCell</div><div class="ttdoc">A pointer to the supercell.</div><div class="ttdef"><b>Definition</b> <a href="Atoms_8h_source.html#l00203">Atoms.h:203</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a55fea530f92978447476cc768e33c672" name="a55fea530f92978447476cc768e33c672"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55fea530f92978447476cc768e33c672">&#9670;&#160;</a></span>GetUnitCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const <a class="el" href="classVec.html">Vec</a> * Atoms::GetUnitCell </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the unitcell vectors. </p>
+
+</div>
+</div>
+<a id="ae25125f950c16da3ddd3d0d8b3111db8" name="ae25125f950c16da3ddd3d0d8b3111db8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae25125f950c16da3ddd3d0d8b3111db8">&#9670;&#160;</a></span>GetUnwrappedPositions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Atoms::GetUnwrappedPositions </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classvector.html">vector</a>&lt; <a class="el" href="classVec.html">Vec</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the positions, hiding that they may have been wrapped due to the boundary conditions. </p>
+<p>This is the function used by Python when GetCartesianPositions is called. </p>
+
+</div>
+</div>
+<a id="ac1896c340b2fc97e482929a3b19cf89b" name="ac1896c340b2fc97e482929a3b19cf89b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1896c340b2fc97e482929a3b19cf89b">&#9670;&#160;</a></span>MarkChanged()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Atoms::MarkChanged </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Update the change pointer. </p>
+<p>The change counter is updated whenever the atoms are changed. It is used to decide if e.g. forces should be recalculated. Methods such as <a class="el" href="#aff9a207b5592f595b7fa78ab5e2d200f" title="Set the Cartesian positions.">SetCartesianPositions()</a> increment the counter. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00065">65</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   65</span>{ ++<a class="code hl_variable" href="#aa917ca1fb2a9cad1bb6057acd5103cb7">counter</a>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a4c9cd41d0924dacd506b2a8b7c2080ce" name="a4c9cd41d0924dacd506b2a8b7c2080ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c9cd41d0924dacd506b2a8b7c2080ce">&#9670;&#160;</a></span>NormalizeDifference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Atoms::NormalizeDifference </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classVec.html">Vec</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>diff</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply periodic boundary conditions to difference in positions. </p>
+
+</div>
+</div>
+<a id="a6025defdf799f0c778116259d911820c" name="a6025defdf799f0c778116259d911820c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6025defdf799f0c778116259d911820c">&#9670;&#160;</a></span>NormalizeDifferences()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Atoms::NormalizeDifferences </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classVec.html">Vec</a> *</td>          <td class="paramname"><span class="paramname"><em>diff</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply periodic boundary conditions to differences in positions. </p>
+
+</div>
+</div>
+<a id="ad8b3abdefa07257352c5fec645e26de1" name="ad8b3abdefa07257352c5fec645e26de1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8b3abdefa07257352c5fec645e26de1">&#9670;&#160;</a></span>NormalizePosition() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Atoms::NormalizePosition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classVec.html">Vec</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>pos</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Normalize a position which is not owned by the atoms. </p>
+<p>If another object holds a position needing to be normalized, this function should be called. It exists in two versions, one just normalizing the position, and one also returning the scaled space correction applied. </p>
+
+</div>
+</div>
+<a id="a4190dd86c3da889e4fd9dc692f2c04e8" name="a4190dd86c3da889e4fd9dc692f2c04e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4190dd86c3da889e4fd9dc692f2c04e8">&#9670;&#160;</a></span>NormalizePosition() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Atoms::NormalizePosition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classVec.html">Vec</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>pos</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classVec.html">Vec</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>scaled_translation</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Normalize a position which is not owned by the atoms. </p>
+<p>This version of the call reports the translation in scaled_translation, so the same translation can be obtained later (by calling ReNormalizePosition) without redoing the decision on whether to wrap. This is useful if positions need to be normalized between neighborlist updates, and is currently used by the Quasicontinuum code. </p>
+
+</div>
+</div>
+<a id="aab51ffa092bc07c1ee2bc2426849d070" name="aab51ffa092bc07c1ee2bc2426849d070"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab51ffa092bc07c1ee2bc2426849d070">&#9670;&#160;</a></span>NormalizePositions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Atoms::NormalizePositions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply periodic boundary conditions to the positions. </p>
+<p>Does NOT call MarkChanged ! Normalize the positions, i.e. translate the atoms back into the supercell if there are periodic boundary conditions. This does not count as changing the atoms, so the change counter is NOT updated. The actual work is done by the <a class="el" href="classSuperCell.html" title="The SuperCell defines the size, shape and boundary condx of a simulation.">SuperCell</a>. This method should be called by the <a class="el" href="classPotential.html">Potential</a>, which may (should?) delegate it to the <a class="el" href="classNeighborList.html" title="&quot;Half&quot; neighbor lists for atoms.">NeighborList</a>. </p>
+
+</div>
+</div>
+<a id="ad6d2df5fd223a6c72d1f89369ebe1764" name="ad6d2df5fd223a6c72d1f89369ebe1764"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6d2df5fd223a6c72d1f89369ebe1764">&#9670;&#160;</a></span>ReNormalizePosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Atoms::ReNormalizePosition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classVec.html">Vec</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>pos</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classVec.html">Vec</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>scaled_translation</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Repeat a normalization. See NormalizePosition(a,b). </p>
+
+</div>
+</div>
+<a id="a97c2a8223ede2b2451b41c26d510f1b0" name="a97c2a8223ede2b2451b41c26d510f1b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97c2a8223ede2b2451b41c26d510f1b0">&#9670;&#160;</a></span>SetAtomicNumbers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Atoms::SetAtomicNumbers </td>
+          <td>(</td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em>z</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the atomic numbers. Should be done right after construction. </p>
+
+</div>
+</div>
+<a id="ad780d71a08da3198ddc635a1f90462ea" name="ad780d71a08da3198ddc635a1f90462ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad780d71a08da3198ddc635a1f90462ea">&#9670;&#160;</a></span>SetCalculator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Atoms::SetCalculator </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classAsapPotential.html">AsapPotential</a> *</td>          <td class="paramname"><span class="paramname"><em>potential</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set a <a class="el" href="classPotential.html">Potential</a>. An eventual old <a class="el" href="classPotential.html">Potential</a> is not deallocated. </p>
+
+</div>
+</div>
+<a id="aff9a207b5592f595b7fa78ab5e2d200f" name="aff9a207b5592f595b7fa78ab5e2d200f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff9a207b5592f595b7fa78ab5e2d200f">&#9670;&#160;</a></span>SetCartesianPositions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Atoms::SetCartesianPositions </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classVec.html">Vec</a> *</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the Cartesian positions. </p>
+<dl class="section warning"><dt>Warning</dt><dd>When atoms.SetCartesianPositions() is called from Python, that is translated into a call to SetUwrappedPositions(), <em>not</em> to a call to this method. </dd></dl>
+
+</div>
+</div>
+<a id="abaaa62ae9f07648b3efbefab20da7d8a" name="abaaa62ae9f07648b3efbefab20da7d8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abaaa62ae9f07648b3efbefab20da7d8a">&#9670;&#160;</a></span>SetNumberOfAtoms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Atoms::SetNumberOfAtoms </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>n</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Change the number of atoms. </p>
+
+</div>
+</div>
+<a id="a938941874463793c2fe86e5b6cc5e2e1" name="a938941874463793c2fe86e5b6cc5e2e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a938941874463793c2fe86e5b6cc5e2e1">&#9670;&#160;</a></span>SetNumberOfImages()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Atoms::SetNumberOfImages </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>i</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the number of images. Used by the neighbor list. </p>
+
+</div>
+</div>
+<a id="a8af24754359632f68d66fd64d0d088fb" name="a8af24754359632f68d66fd64d0d088fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8af24754359632f68d66fd64d0d088fb">&#9670;&#160;</a></span>SetUnitCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Atoms::SetUnitCell </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classVec.html">Vec</a></td>          <td class="paramname"><span class="paramname"><em>newbasis</em></span>[3], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>fix</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set a new unit cell, rescaling the positions unless fix is true. </p>
+
+</div>
+</div>
+<a id="a42e0d88f3ab9077c29ec488b453c1244" name="a42e0d88f3ab9077c29ec488b453c1244"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42e0d88f3ab9077c29ec488b453c1244">&#9670;&#160;</a></span>SetUnwrappedPositions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void Atoms::SetUnwrappedPositions </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classVec.html">Vec</a> *</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the positions from an array of positions not taking any wrapping into account. </p>
+<p>The already existing offset (caused by wrapping through periodic boundaries) is applied to the atoms. This is the function used by Python when SetCartesianPositions is called. </p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="aa917ca1fb2a9cad1bb6057acd5103cb7" name="aa917ca1fb2a9cad1bb6057acd5103cb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa917ca1fb2a9cad1bb6057acd5103cb7">&#9670;&#160;</a></span>counter</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Atoms::counter</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Used to track changes. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00211">211</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+
+</div>
+</div>
+<a id="a94f16d7494ce28f199190c728047de5a" name="a94f16d7494ce28f199190c728047de5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94f16d7494ce28f199190c728047de5a">&#9670;&#160;</a></span>nAtoms</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Atoms::nAtoms</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The number of atoms in the list. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00209">209</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+
+</div>
+</div>
+<a id="a90b3511f7c792f973ef567767f2f19ac" name="a90b3511f7c792f973ef567767f2f19ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90b3511f7c792f973ef567767f2f19ac">&#9670;&#160;</a></span>nImages</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Atoms::nImages</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The number of image atoms used by <a class="el" href="classNeighborList.html" title="&quot;Half&quot; neighbor lists for atoms.">NeighborList</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00210">210</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+
+</div>
+</div>
+<a id="aa06770305a3bad62a0a4d2a31ae0476e" name="aa06770305a3bad62a0a4d2a31ae0476e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa06770305a3bad62a0a4d2a31ae0476e">&#9670;&#160;</a></span>pos_translations</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classvector.html">vector</a>&lt;<a class="el" href="classVec.html">Vec</a>&gt; Atoms::pos_translations</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Translations applied to the positions to conform with the periodic boundary conditions. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00205">205</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+
+</div>
+</div>
+<a id="aaa3eebdc720490ab24af9890e6f2043d" name="aaa3eebdc720490ab24af9890e6f2043d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa3eebdc720490ab24af9890e6f2043d">&#9670;&#160;</a></span>positions</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classvector.html">vector</a>&lt;<a class="el" href="classVec.html">Vec</a>&gt; Atoms::positions</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Contains the Cartesian positions. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00204">204</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+
+</div>
+</div>
+<a id="ae5251c7774ea40f06a117cb2deccb482" name="ae5251c7774ea40f06a117cb2deccb482"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5251c7774ea40f06a117cb2deccb482">&#9670;&#160;</a></span>potential</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classAsapPotential.html">AsapPotential</a>* Atoms::potential</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>A pointer to the potential. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00202">202</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+
+</div>
+</div>
+<a id="a0133427b82da165742719d58b7bbbceb" name="a0133427b82da165742719d58b7bbbceb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0133427b82da165742719d58b7bbbceb">&#9670;&#160;</a></span>superCell</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classSuperCell.html">SuperCell</a>* Atoms::superCell</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>A pointer to the supercell. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00203">203</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+
+</div>
+</div>
+<a id="a8e4def9248da72b49e964f8ce769b973" name="a8e4def9248da72b49e964f8ce769b973"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e4def9248da72b49e964f8ce769b973">&#9670;&#160;</a></span>types</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classvector.html">vector</a>&lt;int&gt; Atoms::types</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Contains the atomic numbers. </p>
+
+<p class="definition">Definition at line <a class="el" href="Atoms_8h_source.html#l00208">208</a> of file <a class="el" href="Atoms_8h_source.html">Atoms.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/potentials/EMT/Asap/<a class="el" href="Atoms_8h_source.html">Atoms.h</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="classAtoms.html">Atoms</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

@@ -1,0 +1,866 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::Prefactor Namespace Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('namespaceeonc_1_1Prefactor.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::Prefactor Namespace Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a9139ed08e86e1089d6bf90d5d9d75d71" id="r_a9139ed08e86e1089d6bf90d5d9d75d71"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a9139ed08e86e1089d6bf90d5d9d75d71">getPrefactors</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;parameters, <a class="el" href="classMatter.html">Matter</a> *min1, <a class="el" href="classMatter.html">Matter</a> *saddle, <a class="el" href="classMatter.html">Matter</a> *min2, double &amp;pref1, double &amp;pref2)</td></tr>
+<tr class="memitem:a2ff4dd44b7f73e862323275553ebfd7e" id="r_a2ff4dd44b7f73e862323275553ebfd7e"><td class="memItemLeft">VectorXi&#160;</td><td class="memItemRight"><a class="el" href="#a2ff4dd44b7f73e862323275553ebfd7e">movedAtoms</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;parameters, <a class="el" href="classMatter.html">Matter</a> *min1, <a class="el" href="classMatter.html">Matter</a> *saddle, <a class="el" href="classMatter.html">Matter</a> *min2)</td></tr>
+<tr class="memitem:a24cfd71c283f6249b7237fc650407878" id="r_a24cfd71c283f6249b7237fc650407878"><td class="memItemLeft">VectorXi&#160;</td><td class="memItemRight"><a class="el" href="#a24cfd71c283f6249b7237fc650407878">movedAtomsPct</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;parameters, <a class="el" href="classMatter.html">Matter</a> *min1, <a class="el" href="classMatter.html">Matter</a> *saddle, <a class="el" href="classMatter.html">Matter</a> *min2)</td></tr>
+<tr class="memitem:a244998c5e6d2d9839c84346fea3f0174" id="r_a244998c5e6d2d9839c84346fea3f0174"><td class="memItemLeft">VectorXi&#160;</td><td class="memItemRight"><a class="el" href="#a244998c5e6d2d9839c84346fea3f0174">allFreeAtoms</a> (<a class="el" href="classMatter.html">Matter</a> *matter)</td></tr>
+<tr class="memitem:ad37a40fd2ada37e7a039739cd69a7190" id="r_ad37a40fd2ada37e7a039739cd69a7190"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#ad37a40fd2ada37e7a039739cd69a7190">removeZeroFreqs</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;parameters, VectorXd freqs)</td></tr>
+<tr class="memitem:a1119f028d017c1522a8167d2180cf19e" id="r_a1119f028d017c1522a8167d2180cf19e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1119f028d017c1522a8167d2180cf19e">logFreqs</a> (const VectorXd &amp;freqs, const char *name)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-var-members" class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ab705ebdc1173ba3d8e3f085eb8326a80" id="r_ab705ebdc1173ba3d8e3f085eb8326a80"><td class="memItemLeft">const char&#160;</td><td class="memItemRight"><a class="el" href="#ab705ebdc1173ba3d8e3f085eb8326a80">RATE_HTST</a> [] = &quot;htst&quot;</td></tr>
+<tr class="memitem:ad61b06683b59d9f2921f828f486e6aa8" id="r_ad61b06683b59d9f2921f828f486e6aa8"><td class="memItemLeft">const char&#160;</td><td class="memItemRight"><a class="el" href="#ad61b06683b59d9f2921f828f486e6aa8">RATE_QQHTST</a> [] = &quot;qqhtst&quot;</td></tr>
+<tr class="memitem:a0d0e1917c5501cdc7ef881018ec115d0" id="r_a0d0e1917c5501cdc7ef881018ec115d0"><td class="memItemLeft">const char&#160;</td><td class="memItemRight"><a class="el" href="#a0d0e1917c5501cdc7ef881018ec115d0">FILTER_CUTOFF</a> [] = &quot;cutoff&quot;</td></tr>
+<tr class="memitem:afc056c6475d2aa47599d96160e9329ce" id="r_afc056c6475d2aa47599d96160e9329ce"><td class="memItemLeft">const char&#160;</td><td class="memItemRight"><a class="el" href="#afc056c6475d2aa47599d96160e9329ce">FILTER_FRACTION</a> [] = &quot;fraction&quot;</td></tr>
+</table>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a244998c5e6d2d9839c84346fea3f0174" name="a244998c5e6d2d9839c84346fea3f0174"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a244998c5e6d2d9839c84346fea3f0174">&#9670;&#160;</a></span>allFreeAtoms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">VectorXi eonc::Prefactor::allFreeAtoms </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>matter</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Prefactor_8cpp_source.html#l00310">310</a> of file <a class="el" href="Prefactor_8cpp_source.html">Prefactor.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  310</span>                                                   {</div>
+<div class="line"><span class="lineno">  311</span>  <span class="keywordtype">long</span> nAtoms = matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>();</div>
+<div class="line"><span class="lineno">  312</span> </div>
+<div class="line"><span class="lineno">  313</span>  VectorXi moved(nAtoms);</div>
+<div class="line"><span class="lineno">  314</span>  moved.setConstant(-1);</div>
+<div class="line"><span class="lineno">  315</span> </div>
+<div class="line"><span class="lineno">  316</span>  <span class="keywordtype">int</span> nMoved = 0;</div>
+<div class="line"><span class="lineno">  317</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; nAtoms; i++) {</div>
+<div class="line"><span class="lineno">  318</span>    <span class="keywordflow">if</span> (!matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#afe2636574f8f27addf59661ecc77f910">getFixed</a>(i)) {</div>
+<div class="line"><span class="lineno">  319</span>      moved[nMoved] = i;</div>
+<div class="line"><span class="lineno">  320</span>      nMoved++;</div>
+<div class="line"><span class="lineno">  321</span>    }</div>
+<div class="line"><span class="lineno">  322</span>  }</div>
+<div class="line"><span class="lineno">  323</span>  <span class="keywordflow">return</span> moved.head(nMoved);</div>
+<div class="line"><span class="lineno">  324</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a6d270e335854296565eaa5ba015753b5"><div class="ttname"><a href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">eonc::Matter::numberOfAtoms</a></div><div class="ttdeci">long int numberOfAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00209">Matter.cpp:209</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_afe2636574f8f27addf59661ecc77f910"><div class="ttname"><a href="classeonc_1_1Matter.html#afe2636574f8f27addf59661ecc77f910">eonc::Matter::getFixed</a></div><div class="ttdeci">int getFixed(long int atom) const</div><div class="ttdoc">1 if every Cartesian axis of the atom is fixed, else 0.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00402">Matter.cpp:402</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9139ed08e86e1089d6bf90d5d9d75d71" name="a9139ed08e86e1089d6bf90d5d9d75d71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9139ed08e86e1089d6bf90d5d9d75d71">&#9670;&#160;</a></span>getPrefactors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eonc::Prefactor::getPrefactors </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>parameters</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>min1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>saddle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>min2</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;</td>          <td class="paramname"><span class="paramname"><em>pref1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;</td>          <td class="paramname"><span class="paramname"><em>pref2</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Prefactor_8cpp_source.html#l00022">22</a> of file <a class="el" href="Prefactor_8cpp_source.html">Prefactor.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   24</span>                                                  {</div>
+<div class="line"><span class="lineno">   25</span>  VectorXd min1Freqs, saddleFreqs, min2Freqs;</div>
+<div class="line"><span class="lineno">   26</span> </div>
+<div class="line"><span class="lineno">   27</span>  <span class="comment">// determine which atoms moved in the process</span></div>
+<div class="line"><span class="lineno">   28</span>  VectorXi atoms;</div>
+<div class="line"><span class="lineno">   29</span> </div>
+<div class="line"><span class="lineno">   30</span>  <span class="keywordflow">if</span> (parameters.<a class="code hl_variable" href="classeonc_1_1Parameters.html#ac978c51f86f70ee43b14ee7d7ae8c9ed">prefactor_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1prefactor__options__t.html#aaa4261c9279e246dcd28f14bb98ee82f">filter_scheme</a> ==</div>
+<div class="line"><span class="lineno">   31</span>      <a class="code hl_variable" href="#afc056c6475d2aa47599d96160e9329ce">eonc::Prefactor::FILTER_FRACTION</a>) {</div>
+<div class="line"><span class="lineno">   32</span>    atoms = <a class="code hl_function" href="#a24cfd71c283f6249b7237fc650407878">movedAtomsPct</a>(parameters, min1, saddle, min2);</div>
+<div class="line"><span class="lineno">   33</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   34</span>    atoms = <a class="code hl_function" href="#a2ff4dd44b7f73e862323275553ebfd7e">movedAtoms</a>(parameters, min1, saddle, min2);</div>
+<div class="line"><span class="lineno">   35</span>  }</div>
+<div class="line"><span class="lineno">   36</span> </div>
+<div class="line"><span class="lineno">   37</span>  assert(atoms.rows() &gt; 0);</div>
+<div class="line"><span class="lineno">   38</span> </div>
+<div class="line"><span class="lineno">   39</span>  <span class="comment">// calculate min1 frequencies</span></div>
+<div class="line"><span class="lineno">   40</span>  <a class="code hl_class" href="classeonc_1_1Hessian.html">Hessian</a> hessian(parameters, min1);</div>
+<div class="line"><span class="lineno">   41</span>  min1Freqs = hessian.getFreqs(min1, atoms);</div>
+<div class="line"><span class="lineno">   42</span>  <span class="keywordflow">if</span> (min1Freqs.size() == 0) {</div>
+<div class="line"><span class="lineno">   43</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[Prefactor] Bad hessian: min1&quot;</span>);</div>
+<div class="line"><span class="lineno">   44</span>    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">   45</span>  }</div>
+<div class="line"><span class="lineno">   46</span>  <span class="comment">// remove zero modes</span></div>
+<div class="line"><span class="lineno">   47</span>  <span class="keywordflow">if</span> (parameters.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a6a05f3bbfd2d579807f438e91880ba95">structure_comparison_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html#a1b0d3ba2b2c2ecf662e0c6f2ad2fd918">check_rotation</a>) {</div>
+<div class="line"><span class="lineno">   48</span>    min1Freqs = hessian.removeZeroFreqs(min1Freqs);</div>
+<div class="line"><span class="lineno">   49</span>  }</div>
+<div class="line"><span class="lineno">   50</span> </div>
+<div class="line"><span class="lineno">   51</span>  <span class="comment">// calculate saddle frequencies</span></div>
+<div class="line"><span class="lineno">   52</span>  saddleFreqs = hessian.getFreqs(saddle, atoms);</div>
+<div class="line"><span class="lineno">   53</span>  <span class="keywordflow">if</span> (saddleFreqs.size() == 0) {</div>
+<div class="line"><span class="lineno">   54</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[Prefactor] Bad hessian: saddle&quot;</span>);</div>
+<div class="line"><span class="lineno">   55</span>    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">   56</span>  }</div>
+<div class="line"><span class="lineno">   57</span>  <span class="comment">// remove zero modes</span></div>
+<div class="line"><span class="lineno">   58</span>  <span class="keywordflow">if</span> (parameters.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a6a05f3bbfd2d579807f438e91880ba95">structure_comparison_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html#a1b0d3ba2b2c2ecf662e0c6f2ad2fd918">check_rotation</a>) {</div>
+<div class="line"><span class="lineno">   59</span>    saddleFreqs = hessian.removeZeroFreqs(saddleFreqs);</div>
+<div class="line"><span class="lineno">   60</span>  }</div>
+<div class="line"><span class="lineno">   61</span> </div>
+<div class="line"><span class="lineno">   62</span>  <span class="comment">// calculate min2 frequencies</span></div>
+<div class="line"><span class="lineno">   63</span>  min2Freqs = hessian.getFreqs(min2, atoms);</div>
+<div class="line"><span class="lineno">   64</span>  <span class="keywordflow">if</span> (min2Freqs.size() == 0) {</div>
+<div class="line"><span class="lineno">   65</span>    <span class="keywordflow">if</span> (!parameters.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#a92c27036ffcab9f5e5d46a1cd0c99c30">quiet</a>) {</div>
+<div class="line"><span class="lineno">   66</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[Prefactor] Bad hessian: min2&quot;</span>);</div>
+<div class="line"><span class="lineno">   67</span>    }</div>
+<div class="line"><span class="lineno">   68</span>    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">   69</span>  }</div>
+<div class="line"><span class="lineno">   70</span>  <span class="comment">// remove zero modes</span></div>
+<div class="line"><span class="lineno">   71</span>  <span class="keywordflow">if</span> (parameters.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a6a05f3bbfd2d579807f438e91880ba95">structure_comparison_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html#a1b0d3ba2b2c2ecf662e0c6f2ad2fd918">check_rotation</a>) {</div>
+<div class="line"><span class="lineno">   72</span>    min2Freqs = hessian.removeZeroFreqs(min2Freqs);</div>
+<div class="line"><span class="lineno">   73</span>  }</div>
+<div class="line"><span class="lineno">   74</span> </div>
+<div class="line"><span class="lineno">   75</span>  <span class="comment">// check Hessian sizes</span></div>
+<div class="line"><span class="lineno">   76</span>  <span class="comment">// BUG FIX: original checked min1 vs saddle twice, never min2</span></div>
+<div class="line"><span class="lineno">   77</span>  <span class="keywordflow">if</span> ((min1Freqs.size() != saddleFreqs.size()) ||</div>
+<div class="line"><span class="lineno">   78</span>      (min2Freqs.size() != saddleFreqs.size())) {</div>
+<div class="line"><span class="lineno">   79</span>    <span class="keywordflow">if</span> (!parameters.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#a92c27036ffcab9f5e5d46a1cd0c99c30">quiet</a>) {</div>
+<div class="line"><span class="lineno">   80</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[Prefactor] Bad prefactor: Hessian sizes do not match&quot;</span>);</div>
+<div class="line"><span class="lineno">   81</span>    }</div>
+<div class="line"><span class="lineno">   82</span>    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">   83</span>  }</div>
+<div class="line"><span class="lineno">   84</span> </div>
+<div class="line"><span class="lineno">   85</span>  <a class="code hl_function" href="#a1119f028d017c1522a8167d2180cf19e">logFreqs</a>(min1Freqs, <span class="stringliteral">&quot;minimum 1&quot;</span>);</div>
+<div class="line"><span class="lineno">   86</span>  <a class="code hl_function" href="#a1119f028d017c1522a8167d2180cf19e">logFreqs</a>(saddleFreqs, <span class="stringliteral">&quot;saddle&quot;</span>);</div>
+<div class="line"><span class="lineno">   87</span>  <a class="code hl_function" href="#a1119f028d017c1522a8167d2180cf19e">logFreqs</a>(min2Freqs, <span class="stringliteral">&quot;minimum 2&quot;</span>);</div>
+<div class="line"><span class="lineno">   88</span> </div>
+<div class="line"><span class="lineno">   89</span>  <span class="comment">// check for correct number of negative modes</span></div>
+<div class="line"><span class="lineno">   90</span>  <span class="comment">// Bound each loop by its own vector: removeZeroFreqs returns a shorter</span></div>
+<div class="line"><span class="lineno">   91</span>  <span class="comment">// vector than the 3N it was handed, and each of the three is shrunk by a</span></div>
+<div class="line"><span class="lineno">   92</span>  <span class="comment">// separate call.</span></div>
+<div class="line"><span class="lineno">   93</span>  <span class="keywordtype">int</span> numNegFreq = 0;</div>
+<div class="line"><span class="lineno">   94</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; min1Freqs.size(); i++) {</div>
+<div class="line"><span class="lineno">   95</span>    <span class="keywordflow">if</span> (min1Freqs(i) &lt; 0) {</div>
+<div class="line"><span class="lineno">   96</span>      <a class="code hl_define" href="EonLogger_8h.html#a3985f57d817b8b5bac1a2f71f12ea439">EONC_LOG_DEBUG</a>(<span class="stringliteral">&quot;[Prefactor] min1 had negative mode of {}&quot;</span>, min1Freqs(i));</div>
+<div class="line"><span class="lineno">   97</span>      numNegFreq++;</div>
+<div class="line"><span class="lineno">   98</span>    }</div>
+<div class="line"><span class="lineno">   99</span>  }</div>
+<div class="line"><span class="lineno">  100</span>  <span class="keywordflow">if</span> (numNegFreq != 0) {</div>
+<div class="line"><span class="lineno">  101</span>    <a class="code hl_define" href="EonLogger_8h.html#a3985f57d817b8b5bac1a2f71f12ea439">EONC_LOG_DEBUG</a>(<span class="stringliteral">&quot;[Prefactor] Error: {} negative modes at min1&quot;</span>, numNegFreq);</div>
+<div class="line"><span class="lineno">  102</span>    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">  103</span>  }</div>
+<div class="line"><span class="lineno">  104</span> </div>
+<div class="line"><span class="lineno">  105</span>  numNegFreq = 0;</div>
+<div class="line"><span class="lineno">  106</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; saddleFreqs.size(); i++) {</div>
+<div class="line"><span class="lineno">  107</span>    <span class="keywordflow">if</span> (saddleFreqs(i) &lt; 0) {</div>
+<div class="line"><span class="lineno">  108</span>      numNegFreq++;</div>
+<div class="line"><span class="lineno">  109</span>    }</div>
+<div class="line"><span class="lineno">  110</span>  }</div>
+<div class="line"><span class="lineno">  111</span>  <span class="keywordflow">if</span> (numNegFreq != 1) {</div>
+<div class="line"><span class="lineno">  112</span>    <a class="code hl_define" href="EonLogger_8h.html#a3985f57d817b8b5bac1a2f71f12ea439">EONC_LOG_DEBUG</a>(<span class="stringliteral">&quot;Error: {} negative modes at saddle&quot;</span>, numNegFreq);</div>
+<div class="line"><span class="lineno">  113</span>    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">  114</span>  }</div>
+<div class="line"><span class="lineno">  115</span> </div>
+<div class="line"><span class="lineno">  116</span>  numNegFreq = 0;</div>
+<div class="line"><span class="lineno">  117</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; min2Freqs.size(); i++) {</div>
+<div class="line"><span class="lineno">  118</span>    <span class="keywordflow">if</span> (min2Freqs(i) &lt; 0) {</div>
+<div class="line"><span class="lineno">  119</span>      numNegFreq++;</div>
+<div class="line"><span class="lineno">  120</span>    }</div>
+<div class="line"><span class="lineno">  121</span>  }</div>
+<div class="line"><span class="lineno">  122</span>  <span class="keywordflow">if</span> (numNegFreq != 0) {</div>
+<div class="line"><span class="lineno">  123</span>    <a class="code hl_define" href="EonLogger_8h.html#a3985f57d817b8b5bac1a2f71f12ea439">EONC_LOG_DEBUG</a>(<span class="stringliteral">&quot;Error: {} negative modes at min2&quot;</span>, numNegFreq);</div>
+<div class="line"><span class="lineno">  124</span>    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">  125</span>  }</div>
+<div class="line"><span class="lineno">  126</span> </div>
+<div class="line"><span class="lineno">  127</span>  <span class="comment">// calculate the prefactors</span></div>
+<div class="line"><span class="lineno">  128</span>  pref1 = 1.0;</div>
+<div class="line"><span class="lineno">  129</span>  pref2 = 1.0;</div>
+<div class="line"><span class="lineno">  130</span> </div>
+<div class="line"><span class="lineno">  131</span>  <span class="keywordflow">if</span> (parameters.<a class="code hl_variable" href="classeonc_1_1Parameters.html#ac978c51f86f70ee43b14ee7d7ae8c9ed">prefactor_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1prefactor__options__t.html#a5ab24e0127590d0e29e15c5af7b0e384">rate</a> == <a class="code hl_variable" href="#ab705ebdc1173ba3d8e3f085eb8326a80">eonc::Prefactor::RATE_HTST</a>) {</div>
+<div class="line"><span class="lineno">  132</span> </div>
+<div class="line"><span class="lineno">  133</span>    <span class="comment">// products are calculated this way in order to avoid overflow</span></div>
+<div class="line"><span class="lineno">  134</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; saddleFreqs.size(); i++) {</div>
+<div class="line"><span class="lineno">  135</span>      pref1 *= min1Freqs[i];</div>
+<div class="line"><span class="lineno">  136</span>      pref2 *= min2Freqs[i];</div>
+<div class="line"><span class="lineno">  137</span>      <span class="keywordflow">if</span> (saddleFreqs[i] &gt; 0) {</div>
+<div class="line"><span class="lineno">  138</span>        pref1 /= saddleFreqs[i];</div>
+<div class="line"><span class="lineno">  139</span>        pref2 /= saddleFreqs[i];</div>
+<div class="line"><span class="lineno">  140</span>      }</div>
+<div class="line"><span class="lineno">  141</span>    }</div>
+<div class="line"><span class="lineno">  142</span>    pref1 = std::sqrt(pref1) / (2 * <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a> * 10.18e-15);</div>
+<div class="line"><span class="lineno">  143</span>    pref2 = std::sqrt(pref2) / (2 * <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a> * 10.18e-15);</div>
+<div class="line"><span class="lineno">  144</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (parameters.<a class="code hl_variable" href="classeonc_1_1Parameters.html#ac978c51f86f70ee43b14ee7d7ae8c9ed">prefactor_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1prefactor__options__t.html#a5ab24e0127590d0e29e15c5af7b0e384">rate</a> ==</div>
+<div class="line"><span class="lineno">  145</span>             <a class="code hl_variable" href="#ad61b06683b59d9f2921f828f486e6aa8">eonc::Prefactor::RATE_QQHTST</a>) {</div>
+<div class="line"><span class="lineno">  146</span>    <span class="keywordtype">double</span> kB_T = parameters.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#a41cc292ecf79c5c916ae324987a486ce">temperature</a> * 8.617332e-5; <span class="comment">// eV</span></div>
+<div class="line"><span class="lineno">  147</span>    <span class="keywordtype">double</span> h_bar = 6.582119e-16;                                     <span class="comment">// eV*s</span></div>
+<div class="line"><span class="lineno">  148</span>    <span class="keywordtype">double</span> h = 4.135667e-15;                                         <span class="comment">// eV*s</span></div>
+<div class="line"><span class="lineno">  149</span>    <span class="keywordtype">double</span> temp = (h_bar / (2.0 * kB_T));</div>
+<div class="line"><span class="lineno">  150</span> </div>
+<div class="line"><span class="lineno">  151</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; min1Freqs.size(); i++) {</div>
+<div class="line"><span class="lineno">  152</span>      pref1 = pref1 * (std::sinh(temp * (std::sqrt(min1Freqs[i]) / 10.18e-15)));</div>
+<div class="line"><span class="lineno">  153</span>      pref2 = pref2 * (std::sinh(temp * (std::sqrt(min2Freqs[i]) / 10.18e-15)));</div>
+<div class="line"><span class="lineno">  154</span> </div>
+<div class="line"><span class="lineno">  155</span>      <span class="keywordflow">if</span> (saddleFreqs[i] &gt; 0) {</div>
+<div class="line"><span class="lineno">  156</span>        pref1 =</div>
+<div class="line"><span class="lineno">  157</span>            pref1 / (std::sinh(temp * (std::sqrt(saddleFreqs[i]) / 10.18e-15)));</div>
+<div class="line"><span class="lineno">  158</span>        pref2 =</div>
+<div class="line"><span class="lineno">  159</span>            pref2 / (std::sinh(temp * (std::sqrt(saddleFreqs[i]) / 10.18e-15)));</div>
+<div class="line"><span class="lineno">  160</span>      }</div>
+<div class="line"><span class="lineno">  161</span>    }</div>
+<div class="line"><span class="lineno">  162</span>    pref1 = 2. * kB_T / (h)*pref1;</div>
+<div class="line"><span class="lineno">  163</span>    pref2 = 2. * kB_T / (h)*pref2;</div>
+<div class="line"><span class="lineno">  164</span>  }</div>
+<div class="line"><span class="lineno">  165</span>  <a class="code hl_define" href="EonLogger_8h.html#a3985f57d817b8b5bac1a2f71f12ea439">EONC_LOG_DEBUG</a>(<span class="stringliteral">&quot;[Prefactor] reactant to product prefactor: {:.3e}&quot;</span>, pref1);</div>
+<div class="line"><span class="lineno">  166</span>  <a class="code hl_define" href="EonLogger_8h.html#a3985f57d817b8b5bac1a2f71f12ea439">EONC_LOG_DEBUG</a>(<span class="stringliteral">&quot;[Prefactor] product to reactant prefactor: {:.3e}&quot;</span>, pref2);</div>
+<div class="line"><span class="lineno">  167</span>  <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">  168</span>}</div>
+<div class="ttc" id="aEonLogger_8h_html_a3985f57d817b8b5bac1a2f71f12ea439"><div class="ttname"><a href="EonLogger_8h.html#a3985f57d817b8b5bac1a2f71f12ea439">EONC_LOG_DEBUG</a></div><div class="ttdeci">#define EONC_LOG_DEBUG(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00244">EonLogger.h:244</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html_a4cf9b473cf6a1d850b3725fca6805f86"><div class="ttname"><a href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a></div><div class="ttdeci">#define EONC_LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00262">EonLogger.h:262</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Hessian_html"><div class="ttname"><a href="classeonc_1_1Hessian.html">eonc::Hessian</a></div><div class="ttdef"><b>Definition</b> <a href="Hessian_8h_source.html#l00021">Hessian.h:21</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a6a05f3bbfd2d579807f438e91880ba95"><div class="ttname"><a href="classeonc_1_1Parameters.html#a6a05f3bbfd2d579807f438e91880ba95">eonc::Parameters::structure_comparison_options</a></div><div class="ttdeci">struct eonc::Parameters::structure_comparison_options_t structure_comparison_options</div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_ac978c51f86f70ee43b14ee7d7ae8c9ed"><div class="ttname"><a href="classeonc_1_1Parameters.html#ac978c51f86f70ee43b14ee7d7ae8c9ed">eonc::Parameters::prefactor_options</a></div><div class="ttdeci">struct eonc::Parameters::prefactor_options_t prefactor_options</div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_afd8b76ca52c432bb56efd1a73ebf8234"><div class="ttname"><a href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">eonc::Parameters::main_options</a></div><div class="ttdeci">struct eonc::Parameters::main_options_t main_options</div></div>
+<div class="ttc" id="anamespaceeonc_1_1Prefactor_html_a1119f028d017c1522a8167d2180cf19e"><div class="ttname"><a href="#a1119f028d017c1522a8167d2180cf19e">eonc::Prefactor::logFreqs</a></div><div class="ttdeci">void logFreqs(const VectorXd &amp;freqs, const char *name)</div><div class="ttdef"><b>Definition</b> <a href="Prefactor_8cpp_source.html#l00170">Prefactor.cpp:170</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1Prefactor_html_a24cfd71c283f6249b7237fc650407878"><div class="ttname"><a href="#a24cfd71c283f6249b7237fc650407878">eonc::Prefactor::movedAtomsPct</a></div><div class="ttdeci">VectorXi movedAtomsPct(const Parameters &amp;parameters, Matter *min1, Matter *saddle, Matter *min2)</div><div class="ttdef"><b>Definition</b> <a href="Prefactor_8cpp_source.html#l00230">Prefactor.cpp:230</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1Prefactor_html_a2ff4dd44b7f73e862323275553ebfd7e"><div class="ttname"><a href="#a2ff4dd44b7f73e862323275553ebfd7e">eonc::Prefactor::movedAtoms</a></div><div class="ttdeci">VectorXi movedAtoms(const Parameters &amp;parameters, Matter *min1, Matter *saddle, Matter *min2)</div><div class="ttdef"><b>Definition</b> <a href="Prefactor_8cpp_source.html#l00185">Prefactor.cpp:185</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1Prefactor_html_ab705ebdc1173ba3d8e3f085eb8326a80"><div class="ttname"><a href="#ab705ebdc1173ba3d8e3f085eb8326a80">eonc::Prefactor::RATE_HTST</a></div><div class="ttdeci">const char RATE_HTST[]</div><div class="ttdef"><b>Definition</b> <a href="Prefactor_8h_source.html#l00022">Prefactor.h:22</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1Prefactor_html_ad61b06683b59d9f2921f828f486e6aa8"><div class="ttname"><a href="#ad61b06683b59d9f2921f828f486e6aa8">eonc::Prefactor::RATE_QQHTST</a></div><div class="ttdeci">const char RATE_QQHTST[]</div><div class="ttdef"><b>Definition</b> <a href="Prefactor_8h_source.html#l00023">Prefactor.h:23</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1Prefactor_html_afc056c6475d2aa47599d96160e9329ce"><div class="ttname"><a href="#afc056c6475d2aa47599d96160e9329ce">eonc::Prefactor::FILTER_FRACTION</a></div><div class="ttdeci">const char FILTER_FRACTION[]</div><div class="ttdef"><b>Definition</b> <a href="Prefactor_8h_source.html#l00025">Prefactor.h:25</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a96a0233e9530dc3963dbcd001e1015c0"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a></div><div class="ttdeci">constexpr double pi</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8h_source.html#l00028">HelperFunctions.h:28</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1main__options__t_html_a41cc292ecf79c5c916ae324987a486ce"><div class="ttname"><a href="structeonc_1_1Parameters_1_1main__options__t.html#a41cc292ecf79c5c916ae324987a486ce">eonc::Parameters::main_options_t::temperature</a></div><div class="ttdeci">double temperature</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00049">Parameters.h:49</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1main__options__t_html_a92c27036ffcab9f5e5d46a1cd0c99c30"><div class="ttname"><a href="structeonc_1_1Parameters_1_1main__options__t.html#a92c27036ffcab9f5e5d46a1cd0c99c30">eonc::Parameters::main_options_t::quiet</a></div><div class="ttdeci">bool quiet</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00050">Parameters.h:50</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1prefactor__options__t_html_a5ab24e0127590d0e29e15c5af7b0e384"><div class="ttname"><a href="structeonc_1_1Parameters_1_1prefactor__options__t.html#a5ab24e0127590d0e29e15c5af7b0e384">eonc::Parameters::prefactor_options_t::rate</a></div><div class="ttdeci">std::string rate</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00443">Parameters.h:443</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1prefactor__options__t_html_aaa4261c9279e246dcd28f14bb98ee82f"><div class="ttname"><a href="structeonc_1_1Parameters_1_1prefactor__options__t.html#aaa4261c9279e246dcd28f14bb98ee82f">eonc::Parameters::prefactor_options_t::filter_scheme</a></div><div class="ttdeci">std::string filter_scheme</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00446">Parameters.h:446</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1structure__comparison__options__t_html_a1b0d3ba2b2c2ecf662e0c6f2ad2fd918"><div class="ttname"><a href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html#a1b0d3ba2b2c2ecf662e0c6f2ad2fd918">eonc::Parameters::structure_comparison_options_t::check_rotation</a></div><div class="ttdeci">bool check_rotation</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00167">Parameters.h:167</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1119f028d017c1522a8167d2180cf19e" name="a1119f028d017c1522a8167d2180cf19e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1119f028d017c1522a8167d2180cf19e">&#9670;&#160;</a></span>logFreqs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::Prefactor::logFreqs </td>
+          <td>(</td>
+          <td class="paramtype">const VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>freqs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Prefactor_8cpp_source.html#l00170">170</a> of file <a class="el" href="Prefactor_8cpp_source.html">Prefactor.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  170</span>                                                                    {</div>
+<div class="line"><span class="lineno">  171</span>  std::ofstream outFile(<span class="stringliteral">&quot;freqs.dat&quot;</span>, std::ios::app);</div>
+<div class="line"><span class="lineno">  172</span>  <span class="keywordflow">if</span> (!outFile.is_open())</div>
+<div class="line"><span class="lineno">  173</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  174</span> </div>
+<div class="line"><span class="lineno">  175</span>  outFile &lt;&lt; std::format(<span class="stringliteral">&quot;[Prefactor] Frequencies at {}\n&quot;</span>, name);</div>
+<div class="line"><span class="lineno">  176</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; freqs.size(); i++) {</div>
+<div class="line"><span class="lineno">  177</span>    outFile &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span> &lt;&lt; std::format(<span class="stringliteral">&quot;{:10.6f} &quot;</span>, freqs(i));</div>
+<div class="line"><span class="lineno">  178</span>    <span class="keywordflow">if</span> ((i + 1) % 5 == 0) {</div>
+<div class="line"><span class="lineno">  179</span>      outFile &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  180</span>    }</div>
+<div class="line"><span class="lineno">  181</span>  }</div>
+<div class="line"><span class="lineno">  182</span>  outFile &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  183</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2ff4dd44b7f73e862323275553ebfd7e" name="a2ff4dd44b7f73e862323275553ebfd7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ff4dd44b7f73e862323275553ebfd7e">&#9670;&#160;</a></span>movedAtoms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">VectorXi eonc::Prefactor::movedAtoms </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>parameters</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>min1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>saddle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>min2</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Prefactor_8cpp_source.html#l00185">185</a> of file <a class="el" href="Prefactor_8cpp_source.html">Prefactor.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  186</span>                                                                   {</div>
+<div class="line"><span class="lineno">  187</span>  <span class="keywordtype">long</span> nAtoms = saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>();</div>
+<div class="line"><span class="lineno">  188</span> </div>
+<div class="line"><span class="lineno">  189</span>  VectorXi moved(nAtoms);</div>
+<div class="line"><span class="lineno">  190</span>  moved.setConstant(-1);</div>
+<div class="line"><span class="lineno">  191</span> </div>
+<div class="line"><span class="lineno">  192</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diffMin1 =</div>
+<div class="line"><span class="lineno">  193</span>      saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>() - min1-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>());</div>
+<div class="line"><span class="lineno">  194</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diffMin2 =</div>
+<div class="line"><span class="lineno">  195</span>      saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>() - min2-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>());</div>
+<div class="line"><span class="lineno">  196</span> </div>
+<div class="line"><span class="lineno">  197</span>  diffMin1.array() *= saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
+<div class="line"><span class="lineno">  198</span>  diffMin2.array() *= saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
+<div class="line"><span class="lineno">  199</span> </div>
+<div class="line"><span class="lineno">  200</span>  <span class="keywordtype">int</span> nMoved = 0;</div>
+<div class="line"><span class="lineno">  201</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; nAtoms; i++) {</div>
+<div class="line"><span class="lineno">  202</span>    <span class="keywordflow">if</span> ((diffMin1.row(i).norm() &gt;</div>
+<div class="line"><span class="lineno">  203</span>         parameters.<a class="code hl_variable" href="classeonc_1_1Parameters.html#ac978c51f86f70ee43b14ee7d7ae8c9ed">prefactor_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1prefactor__options__t.html#a36abf2eab292f9ba4073ee8113914345">min_displacement</a>) ||</div>
+<div class="line"><span class="lineno">  204</span>        (diffMin2.row(i).norm() &gt;</div>
+<div class="line"><span class="lineno">  205</span>         parameters.<a class="code hl_variable" href="classeonc_1_1Parameters.html#ac978c51f86f70ee43b14ee7d7ae8c9ed">prefactor_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1prefactor__options__t.html#a36abf2eab292f9ba4073ee8113914345">min_displacement</a>)) {</div>
+<div class="line"><span class="lineno">  206</span>      <span class="comment">// Avoid Eigen Array == scalar in boolean context (C++20 / Eigen 3.3</span></div>
+<div class="line"><span class="lineno">  207</span>      <span class="comment">// manylinux toolchains reject Array comparison as bool).</span></div>
+<div class="line"><span class="lineno">  208</span>      <span class="keywordflow">if</span> (std::find(moved.data(), moved.data() + nMoved, i) ==</div>
+<div class="line"><span class="lineno">  209</span>          moved.data() + nMoved) {</div>
+<div class="line"><span class="lineno">  210</span>        moved[nMoved] = i;</div>
+<div class="line"><span class="lineno">  211</span>        nMoved++;</div>
+<div class="line"><span class="lineno">  212</span>      }</div>
+<div class="line"><span class="lineno">  213</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; nAtoms; j++) {</div>
+<div class="line"><span class="lineno">  214</span>        <span class="keywordtype">double</span> diffRSaddle = saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a3f0aa81cd1f3f1ec16c682c72aa18111">distance</a>(i, j);</div>
+<div class="line"><span class="lineno">  215</span> </div>
+<div class="line"><span class="lineno">  216</span>        <span class="keywordflow">if</span> (diffRSaddle &lt; parameters.<a class="code hl_variable" href="classeonc_1_1Parameters.html#ac978c51f86f70ee43b14ee7d7ae8c9ed">prefactor_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1prefactor__options__t.html#aa1ad9041abbb8ce0ceb9ef03bc2e1148">within_radius</a> &amp;&amp;</div>
+<div class="line"><span class="lineno">  217</span>            (!saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#afe2636574f8f27addf59661ecc77f910">getFixed</a>(j))) {</div>
+<div class="line"><span class="lineno">  218</span>          <span class="keywordflow">if</span> (std::find(moved.data(), moved.data() + nMoved, j) ==</div>
+<div class="line"><span class="lineno">  219</span>              moved.data() + nMoved) {</div>
+<div class="line"><span class="lineno">  220</span>            moved[nMoved] = j;</div>
+<div class="line"><span class="lineno">  221</span>            nMoved++;</div>
+<div class="line"><span class="lineno">  222</span>          }</div>
+<div class="line"><span class="lineno">  223</span>        }</div>
+<div class="line"><span class="lineno">  224</span>      }</div>
+<div class="line"><span class="lineno">  225</span>    }</div>
+<div class="line"><span class="lineno">  226</span>  }</div>
+<div class="line"><span class="lineno">  227</span>  <span class="keywordflow">return</span> moved.head(nMoved);</div>
+<div class="line"><span class="lineno">  228</span>}</div>
+<div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a3f0aa81cd1f3f1ec16c682c72aa18111"><div class="ttname"><a href="classeonc_1_1Matter.html#a3f0aa81cd1f3f1ec16c682c72aa18111">eonc::Matter::distance</a></div><div class="ttdeci">double distance(long index1, long index2) const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00360">Matter.cpp:360</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a42c2c5ca606659d564e05f09ba452601"><div class="ttname"><a href="classeonc_1_1Matter.html#a42c2c5ca606659d564e05f09ba452601">eonc::Matter::getFree</a></div><div class="ttdeci">AtomMatrix getFree() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00580">Matter.cpp:580</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a5fe171bc21bf698aa9589fc66a118b7a"><div class="ttname"><a href="classeonc_1_1Matter.html#a5fe171bc21bf698aa9589fc66a118b7a">eonc::Matter::pbc</a></div><div class="ttdeci">AtomMatrix pbc(const AtomMatrix &amp;diff) const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00163">Matter.h:163</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_af4c79f27fe60b4dbd397064faf3f1f78"><div class="ttname"><a href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">eonc::Matter::getPositions</a></div><div class="ttdeci">const AtomMatrix &amp; getPositions() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00236">Matter.cpp:236</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1prefactor__options__t_html_a36abf2eab292f9ba4073ee8113914345"><div class="ttname"><a href="structeonc_1_1Parameters_1_1prefactor__options__t.html#a36abf2eab292f9ba4073ee8113914345">eonc::Parameters::prefactor_options_t::min_displacement</a></div><div class="ttdeci">double min_displacement</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00442">Parameters.h:442</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1prefactor__options__t_html_aa1ad9041abbb8ce0ceb9ef03bc2e1148"><div class="ttname"><a href="structeonc_1_1Parameters_1_1prefactor__options__t.html#aa1ad9041abbb8ce0ceb9ef03bc2e1148">eonc::Parameters::prefactor_options_t::within_radius</a></div><div class="ttdeci">double within_radius</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00441">Parameters.h:441</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a24cfd71c283f6249b7237fc650407878" name="a24cfd71c283f6249b7237fc650407878"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24cfd71c283f6249b7237fc650407878">&#9670;&#160;</a></span>movedAtomsPct()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">VectorXi eonc::Prefactor::movedAtomsPct </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>parameters</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>min1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>saddle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>min2</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Prefactor_8cpp_source.html#l00230">230</a> of file <a class="el" href="Prefactor_8cpp_source.html">Prefactor.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  232</span>                                                      {</div>
+<div class="line"><span class="lineno">  233</span>  <span class="keywordtype">long</span> nAtoms = saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>();</div>
+<div class="line"><span class="lineno">  234</span>  <span class="keywordtype">long</span> nFree = saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#acf7568f3207c071f206a8db116ed03c1">numberOfFreeAtoms</a>();</div>
+<div class="line"><span class="lineno">  235</span> </div>
+<div class="line"><span class="lineno">  236</span>  VectorXi moved(nAtoms);</div>
+<div class="line"><span class="lineno">  237</span>  moved.setConstant(-1);</div>
+<div class="line"><span class="lineno">  238</span> </div>
+<div class="line"><span class="lineno">  239</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diffMin1 =</div>
+<div class="line"><span class="lineno">  240</span>      saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>() - min1-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>());</div>
+<div class="line"><span class="lineno">  241</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diffMin2 =</div>
+<div class="line"><span class="lineno">  242</span>      saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>() - min2-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>());</div>
+<div class="line"><span class="lineno">  243</span> </div>
+<div class="line"><span class="lineno">  244</span>  diffMin1.array() *= saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
+<div class="line"><span class="lineno">  245</span>  diffMin2.array() *= saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
+<div class="line"><span class="lineno">  246</span> </div>
+<div class="line"><span class="lineno">  247</span>  VectorXd diff(nAtoms);</div>
+<div class="line"><span class="lineno">  248</span>  diff.setConstant(0.0);</div>
+<div class="line"><span class="lineno">  249</span> </div>
+<div class="line"><span class="lineno">  250</span>  QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">  251</span>      <a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>(),</div>
+<div class="line"><span class="lineno">  252</span>      <span class="stringliteral">&quot;[Prefactor] including all atoms that make up {:.3f}% of the motion&quot;</span>,</div>
+<div class="line"><span class="lineno">  253</span>      parameters.<a class="code hl_variable" href="classeonc_1_1Parameters.html#ac978c51f86f70ee43b14ee7d7ae8c9ed">prefactor_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1prefactor__options__t.html#a4aa0318239d72e4cc58757dac27b2cff">filter_fraction</a> * 100);</div>
+<div class="line"><span class="lineno">  254</span>  <span class="keywordtype">double</span> sum = 0.0;</div>
+<div class="line"><span class="lineno">  255</span>  <span class="keywordtype">int</span> mini = 0;</div>
+<div class="line"><span class="lineno">  256</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; nAtoms; i++) {</div>
+<div class="line"><span class="lineno">  257</span>    diff[i] = std::max(diffMin1.row(i).norm(), diffMin2.row(i).norm());</div>
+<div class="line"><span class="lineno">  258</span>    sum += diff[i];</div>
+<div class="line"><span class="lineno">  259</span>    <span class="keywordflow">if</span> (diff[i] &lt;= diff[mini]) {</div>
+<div class="line"><span class="lineno">  260</span>      mini = i;</div>
+<div class="line"><span class="lineno">  261</span>    }</div>
+<div class="line"><span class="lineno">  262</span>  }</div>
+<div class="line"><span class="lineno">  263</span> </div>
+<div class="line"><span class="lineno">  264</span>  <a class="code hl_define" href="EonLogger_8h.html#a3985f57d817b8b5bac1a2f71f12ea439">EONC_LOG_DEBUG</a>(<span class="stringliteral">&quot;[Prefactor] sum of atom distances moved {:.4f}&quot;</span>, sum);</div>
+<div class="line"><span class="lineno">  265</span>  <a class="code hl_define" href="EonLogger_8h.html#a3985f57d817b8b5bac1a2f71f12ea439">EONC_LOG_DEBUG</a>(<span class="stringliteral">&quot;[Prefactor] max moved atom distance: {:.4f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  266</span>                 diff.maxCoeff());</div>
+<div class="line"><span class="lineno">  267</span> </div>
+<div class="line"><span class="lineno">  268</span>  <span class="keywordtype">int</span> nMoved = 0;</div>
+<div class="line"><span class="lineno">  269</span>  <span class="keywordtype">double</span> d = 0.0;</div>
+<div class="line"><span class="lineno">  270</span>  <span class="keywordflow">while</span> (d / sum &lt;= parameters.<a class="code hl_variable" href="classeonc_1_1Parameters.html#ac978c51f86f70ee43b14ee7d7ae8c9ed">prefactor_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1prefactor__options__t.html#a4aa0318239d72e4cc58757dac27b2cff">filter_fraction</a> &amp;&amp;</div>
+<div class="line"><span class="lineno">  271</span>         nMoved &lt; nFree) {</div>
+<div class="line"><span class="lineno">  272</span>    <span class="keywordtype">int</span> maxi = mini;</div>
+<div class="line"><span class="lineno">  273</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; nAtoms; i++) {</div>
+<div class="line"><span class="lineno">  274</span>      <span class="keywordflow">if</span> (diff[i] &gt;= diff[maxi]) {</div>
+<div class="line"><span class="lineno">  275</span>        <span class="keywordflow">if</span> (std::find(moved.data(), moved.data() + nMoved, i) ==</div>
+<div class="line"><span class="lineno">  276</span>            moved.data() + nMoved) {</div>
+<div class="line"><span class="lineno">  277</span>          maxi = i;</div>
+<div class="line"><span class="lineno">  278</span>        }</div>
+<div class="line"><span class="lineno">  279</span>      }</div>
+<div class="line"><span class="lineno">  280</span>    }</div>
+<div class="line"><span class="lineno">  281</span>    moved[nMoved] = maxi;</div>
+<div class="line"><span class="lineno">  282</span>    nMoved++;</div>
+<div class="line"><span class="lineno">  283</span>    d += diff[maxi];</div>
+<div class="line"><span class="lineno">  284</span>  }</div>
+<div class="line"><span class="lineno">  285</span> </div>
+<div class="line"><span class="lineno">  286</span>  <span class="keywordtype">int</span> totalAtoms = nMoved;</div>
+<div class="line"><span class="lineno">  287</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; nMoved; i++) {</div>
+<div class="line"><span class="lineno">  288</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; nAtoms; j++) {</div>
+<div class="line"><span class="lineno">  289</span>      <span class="keywordflow">if</span> (moved[i] == j)</div>
+<div class="line"><span class="lineno">  290</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  291</span> </div>
+<div class="line"><span class="lineno">  292</span>      <span class="keywordtype">double</span> diffRSaddle = saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a3f0aa81cd1f3f1ec16c682c72aa18111">distance</a>(moved[i], j);</div>
+<div class="line"><span class="lineno">  293</span> </div>
+<div class="line"><span class="lineno">  294</span>      <span class="keywordflow">if</span> (diffRSaddle &lt; parameters.<a class="code hl_variable" href="classeonc_1_1Parameters.html#ac978c51f86f70ee43b14ee7d7ae8c9ed">prefactor_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1prefactor__options__t.html#aa1ad9041abbb8ce0ceb9ef03bc2e1148">within_radius</a> &amp;&amp;</div>
+<div class="line"><span class="lineno">  295</span>          (!saddle-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#afe2636574f8f27addf59661ecc77f910">getFixed</a>(j))) {</div>
+<div class="line"><span class="lineno">  296</span> </div>
+<div class="line"><span class="lineno">  297</span>        <span class="keywordflow">if</span> (std::find(moved.data(), moved.data() + totalAtoms, j) ==</div>
+<div class="line"><span class="lineno">  298</span>            moved.data() + totalAtoms) {</div>
+<div class="line"><span class="lineno">  299</span>          moved[totalAtoms++] = j;</div>
+<div class="line"><span class="lineno">  300</span>        }</div>
+<div class="line"><span class="lineno">  301</span>      }</div>
+<div class="line"><span class="lineno">  302</span>    }</div>
+<div class="line"><span class="lineno">  303</span>  }</div>
+<div class="line"><span class="lineno">  304</span>  <a class="code hl_define" href="EonLogger_8h.html#a3985f57d817b8b5bac1a2f71f12ea439">EONC_LOG_DEBUG</a>(<span class="stringliteral">&quot;[Prefactor] including {} atoms in the hessian ({} moved + {} &quot;</span></div>
+<div class="line"><span class="lineno">  305</span>                 <span class="stringliteral">&quot;neighbors)&quot;</span>,</div>
+<div class="line"><span class="lineno">  306</span>                 totalAtoms, nMoved, totalAtoms - nMoved);</div>
+<div class="line"><span class="lineno">  307</span>  <span class="keywordflow">return</span> moved.head(totalAtoms);</div>
+<div class="line"><span class="lineno">  308</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_acf7568f3207c071f206a8db116ed03c1"><div class="ttname"><a href="classeonc_1_1Matter.html#acf7568f3207c071f206a8db116ed03c1">eonc::Matter::numberOfFreeAtoms</a></div><div class="ttdeci">long int numberOfFreeAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00475">Matter.cpp:475</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00044">EonLogger.h:44</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1prefactor__options__t_html_a4aa0318239d72e4cc58757dac27b2cff"><div class="ttname"><a href="structeonc_1_1Parameters_1_1prefactor__options__t.html#a4aa0318239d72e4cc58757dac27b2cff">eonc::Parameters::prefactor_options_t::filter_fraction</a></div><div class="ttdeci">double filter_fraction</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00447">Parameters.h:447</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad37a40fd2ada37e7a039739cd69a7190" name="ad37a40fd2ada37e7a039739cd69a7190"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad37a40fd2ada37e7a039739cd69a7190">&#9670;&#160;</a></span>removeZeroFreqs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">VectorXd eonc::Prefactor::removeZeroFreqs </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>parameters</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">VectorXd</td>          <td class="paramname"><span class="paramname"><em>freqs</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-var-members" id="doc-var-members"></a><h2 id="header-doc-var-members" class="groupheader">Variable Documentation</h2>
+<a id="a0d0e1917c5501cdc7ef881018ec115d0" name="a0d0e1917c5501cdc7ef881018ec115d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d0e1917c5501cdc7ef881018ec115d0">&#9670;&#160;</a></span>FILTER_CUTOFF</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char eonc::Prefactor::FILTER_CUTOFF[] = &quot;cutoff&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Prefactor_8h_source.html#l00024">24</a> of file <a class="el" href="Prefactor_8h_source.html">Prefactor.h</a>.</p>
+
+</div>
+</div>
+<a id="afc056c6475d2aa47599d96160e9329ce" name="afc056c6475d2aa47599d96160e9329ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc056c6475d2aa47599d96160e9329ce">&#9670;&#160;</a></span>FILTER_FRACTION</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char eonc::Prefactor::FILTER_FRACTION[] = &quot;fraction&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Prefactor_8h_source.html#l00025">25</a> of file <a class="el" href="Prefactor_8h_source.html">Prefactor.h</a>.</p>
+
+</div>
+</div>
+<a id="ab705ebdc1173ba3d8e3f085eb8326a80" name="ab705ebdc1173ba3d8e3f085eb8326a80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab705ebdc1173ba3d8e3f085eb8326a80">&#9670;&#160;</a></span>RATE_HTST</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char eonc::Prefactor::RATE_HTST[] = &quot;htst&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Prefactor_8h_source.html#l00022">22</a> of file <a class="el" href="Prefactor_8h_source.html">Prefactor.h</a>.</p>
+
+</div>
+</div>
+<a id="ad61b06683b59d9f2921f828f486e6aa8" name="ad61b06683b59d9f2921f828f486e6aa8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad61b06683b59d9f2921f828f486e6aa8">&#9670;&#160;</a></span>RATE_QQHTST</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char eonc::Prefactor::RATE_QQHTST[] = &quot;qqhtst&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Prefactor_8h_source.html#l00023">23</a> of file <a class="el" href="Prefactor_8h_source.html">Prefactor.h</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="namespaceeonc_1_1Prefactor.html">Prefactor</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

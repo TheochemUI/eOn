@@ -478,23 +478,16 @@ Then [§3](#3-post-bump-actions) push and channel completion.
 
 ## 8. API / Doxygen documentation check
 
-rgpot maintains `docs/source/Doxyfile_*.cfg` and integrates Doxygen output into
-the Sphinx site. **eOn does not yet include an equivalent in-tree Doxygen pipeline**
-for the C++ `client/` tree; Python API docs use Sphinx autodoc/autodoc2 in the
-existing `docs/` build (`ci_docs.yml` / `docs/source/devdocs/docbuild.md`).
+Python API docs stay on Sphinx autodoc/autodoc2. The C++ `client/` tree is
+a sibling doxyYoda HTML site at `/api-cpp/` (`docs/source/Doxyfile_doxyyoda.cfg`,
+`pixi run -e docs install-doxyhtml`, wired in `ci_docs.yml`).
 
 **Release check (current policy):**
 
 - [ ] Sphinx docs build is green on `main` (`ci_docs.yml` or local
   `pixi r -e docs …` / project-documented doc target).
+- [ ] `docs/build/html/api-cpp/index.html` exists after `install-doxyhtml`.
 - [ ] Curated release notes exist under `docs/source/releases/vX.Y.Z/`.
-- [ ] No broken “run doxygen” step is required for a cut.
-
-**Deferred (explicit non-goal until a dedicated docs PR):** full Doxygen +
-doxyrest/breathe wiring for `client/**/*.h` analogous to rgpot. Track as
-follow-up; do not block semver cuts solely on Doxygen absence. When added,
-extend this section with the generate command and wire it into `ci_docs.yml`
-plus this checklist.
 
 ## 9. Paper tags
 

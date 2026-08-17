@@ -1,0 +1,1037 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: NeighborList Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classNeighborList.html','','classNeighborList-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">NeighborList Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>"Half" neighbor lists for atoms.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a174dd1b14858476b97805699a9d16caf" id="r_a174dd1b14858476b97805699a9d16caf"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a174dd1b14858476b97805699a9d16caf">NeighborList</a> (<a class="el" href="classAtoms.html">Atoms</a> *a, double rCut, double driftfactor=0.05, int defaultNeighborEstimate=50)</td></tr>
+<tr class="memdesc:a174dd1b14858476b97805699a9d16caf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a neighbor list for atoms a with cutoff rCut.  <br /></td></tr>
+<tr class="memitem:a9f66cfc09ee295ce155310e64cb892c8" id="r_a9f66cfc09ee295ce155310e64cb892c8"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a9f66cfc09ee295ce155310e64cb892c8">~NeighborList</a> ()</td></tr>
+<tr class="memitem:a548d33c02d4f68d9e58844f80f02e600" id="r_a548d33c02d4f68d9e58844f80f02e600"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a548d33c02d4f68d9e58844f80f02e600">CheckAndUpdateNeighborList</a> ()</td></tr>
+<tr class="memdesc:a548d33c02d4f68d9e58844f80f02e600"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if the neighbor list can still be reused, update if not.  <br /></td></tr>
+<tr class="memitem:ad68ec1ece9f8a887c9b2839e2850cf4a" id="r_ad68ec1ece9f8a887c9b2839e2850cf4a"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ad68ec1ece9f8a887c9b2839e2850cf4a">GetNeighbors</a> (int n, int *neighbors, <a class="el" href="classVec.html">Vec</a> *diffs, double *diffs2, int &amp;size, double r=-1.0) const</td></tr>
+<tr class="memdesc:ad68ec1ece9f8a887c9b2839e2850cf4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get all neighbors of atom n. The most important method :-).  <br /></td></tr>
+<tr class="memitem:a3ac08e2fc692fe2bf34f998753d9426a" id="r_a3ac08e2fc692fe2bf34f998753d9426a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a3ac08e2fc692fe2bf34f998753d9426a">UpdateSuperCell</a> (const <a class="el" href="classSuperCell.html">SuperCell</a> *superCell)</td></tr>
+<tr class="memdesc:a3ac08e2fc692fe2bf34f998753d9426a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inform the neighbor list that the supercell has changed.  <br /></td></tr>
+<tr class="memitem:ad069775accaccedb8fe2ce7cd31e8504" id="r_ad069775accaccedb8fe2ce7cd31e8504"><td class="memItemLeft">const int *&#160;</td><td class="memItemRight"><a class="el" href="#ad069775accaccedb8fe2ce7cd31e8504">GetList</a> (int a, int &amp;n)</td></tr>
+<tr class="memdesc:ad069775accaccedb8fe2ce7cd31e8504"><td class="mdescLeft">&#160;</td><td class="mdescRight"><em>Low-level</em> interface to the neighbor list.  <br /></td></tr>
+<tr class="memitem:a7c54811ba5f589a1e9f299fac3245ead" id="r_a7c54811ba5f589a1e9f299fac3245ead"><td class="memItemLeft">const <a class="el" href="structImage.html">Image</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a7c54811ba5f589a1e9f299fac3245ead">GetImage</a> (int i)</td></tr>
+<tr class="memdesc:a7c54811ba5f589a1e9f299fac3245ead"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the real atom corresponding to an image.  <br /></td></tr>
+<tr class="memitem:adbbd06b8787b4859195a563262ec1122" id="r_adbbd06b8787b4859195a563262ec1122"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#adbbd06b8787b4859195a563262ec1122">MaxNeighborListLength</a> () const</td></tr>
+<tr class="memdesc:adbbd06b8787b4859195a563262ec1122"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the guaranteed maximal length of a single atom's NB list.  <br /></td></tr>
+<tr class="memitem:a8d0c8001b285b43dbe3bbbbac3b2b861" id="r_a8d0c8001b285b43dbe3bbbbac3b2b861"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a8d0c8001b285b43dbe3bbbbac3b2b861">GetNumberOfAtoms</a> () const</td></tr>
+<tr class="memdesc:a8d0c8001b285b43dbe3bbbbac3b2b861"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of atoms in the corresponding list of atoms.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a9b410cd4e77a25b3dc8e3671330fc26a" id="r_a9b410cd4e77a25b3dc8e3671330fc26a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a9b410cd4e77a25b3dc8e3671330fc26a">MakeList</a> ()</td></tr>
+<tr class="memdesc:a9b410cd4e77a25b3dc8e3671330fc26a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a new neighbor list.  <br /></td></tr>
+<tr class="memitem:ae18d3d8b35c51b505c78c759be285ab4" id="r_ae18d3d8b35c51b505c78c759be285ab4"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae18d3d8b35c51b505c78c759be285ab4">UpdateImagePositions</a> ()</td></tr>
+<tr class="memdesc:ae18d3d8b35c51b505c78c759be285ab4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the positions of the images when the real atoms may have moved.  <br /></td></tr>
+<tr class="memitem:a840cb774c40d73a5bede60706559891f" id="r_a840cb774c40d73a5bede60706559891f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a840cb774c40d73a5bede60706559891f">Allocate</a> ()</td></tr>
+<tr class="memdesc:a840cb774c40d73a5bede60706559891f"><td class="mdescLeft">&#160;</td><td class="mdescRight">(Re)allocate the memory for the neighbor list.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a3ff3233b87962f288d1ed72d454b5b52" id="r_a3ff3233b87962f288d1ed72d454b5b52"><td class="memItemLeft"><a class="el" href="classAtoms.html">Atoms</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a3ff3233b87962f288d1ed72d454b5b52">atoms</a></td></tr>
+<tr class="memdesc:a3ff3233b87962f288d1ed72d454b5b52"><td class="mdescLeft">&#160;</td><td class="mdescRight">A pointer to the atoms.  <br /></td></tr>
+<tr class="memitem:ad7ba717230e19ec7d886e7761435d835" id="r_ad7ba717230e19ec7d886e7761435d835"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ad7ba717230e19ec7d886e7761435d835">nAtoms</a></td></tr>
+<tr class="memdesc:ad7ba717230e19ec7d886e7761435d835"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of atoms.  <br /></td></tr>
+<tr class="memitem:ae2b33684aab2b2a3715b442406ff3a54" id="r_ae2b33684aab2b2a3715b442406ff3a54"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ae2b33684aab2b2a3715b442406ff3a54">nSize</a></td></tr>
+<tr class="memdesc:ae2b33684aab2b2a3715b442406ff3a54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of atoms including ghost atoms.  <br /></td></tr>
+<tr class="memitem:a2fd472234a6205b69c5c4070356ee79e" id="r_a2fd472234a6205b69c5c4070356ee79e"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a2fd472234a6205b69c5c4070356ee79e">rCut2</a></td></tr>
+<tr class="memdesc:a2fd472234a6205b69c5c4070356ee79e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The square of the cutoff radius.  <br /></td></tr>
+<tr class="memitem:a2c8bc30642f71c21f980918517687ece" id="r_a2c8bc30642f71c21f980918517687ece"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a2c8bc30642f71c21f980918517687ece">drift2</a></td></tr>
+<tr class="memdesc:a2c8bc30642f71c21f980918517687ece"><td class="mdescLeft">&#160;</td><td class="mdescRight">The square of the maximally allowed drift of an atom.  <br /></td></tr>
+<tr class="memitem:ac5f5c001f585f13ab1af091b38d5a475" id="r_ac5f5c001f585f13ab1af091b38d5a475"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ac5f5c001f585f13ab1af091b38d5a475">rMax</a></td></tr>
+<tr class="memdesc:ac5f5c001f585f13ab1af091b38d5a475"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cutoff when <em>generating</em> neighbor list.  <br /></td></tr>
+<tr class="memitem:a90006abbebab836e1ca03e85d55c9e4a" id="r_a90006abbebab836e1ca03e85d55c9e4a"><td class="memItemLeft"><a class="el" href="classVec.html">Vec</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a90006abbebab836e1ca03e85d55c9e4a">positions</a></td></tr>
+<tr class="memdesc:a90006abbebab836e1ca03e85d55c9e4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">A pointer into the positions array of the atoms.  <br /></td></tr>
+<tr class="memitem:ac80d2a6cdb0bb22737d9f5c6be810674" id="r_ac80d2a6cdb0bb22737d9f5c6be810674"><td class="memItemLeft"><a class="el" href="classvector.html">vector</a>&lt; <a class="el" href="classVec.html">Vec</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ac80d2a6cdb0bb22737d9f5c6be810674">referencePositions</a></td></tr>
+<tr class="memdesc:ac80d2a6cdb0bb22737d9f5c6be810674"><td class="mdescLeft">&#160;</td><td class="mdescRight">The positions at the last update.  <br /></td></tr>
+<tr class="memitem:ab2989f02bffe6db6fd0b3f8ca8ed9be0" id="r_ab2989f02bffe6db6fd0b3f8ca8ed9be0"><td class="memItemLeft"><a class="el" href="classvector.html">vector</a>&lt; <a class="el" href="structImage.html">Image</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ab2989f02bffe6db6fd0b3f8ca8ed9be0">images</a></td></tr>
+<tr class="memdesc:ab2989f02bffe6db6fd0b3f8ca8ed9be0"><td class="mdescLeft">&#160;</td><td class="mdescRight">The images of neighbors through PBC.  <br /></td></tr>
+<tr class="memitem:aa9a8b382f1bd16ccd48f10f2b3b1bcb6" id="r_aa9a8b382f1bd16ccd48f10f2b3b1bcb6"><td class="memItemLeft">int *&#160;</td><td class="memItemRight"><a class="el" href="#aa9a8b382f1bd16ccd48f10f2b3b1bcb6">neighborList</a></td></tr>
+<tr class="memdesc:aa9a8b382f1bd16ccd48f10f2b3b1bcb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">The actual neighbor list.  <br /></td></tr>
+<tr class="memitem:a6d4f309d3a6d9ea3bd9cb0b0688d7aca" id="r_a6d4f309d3a6d9ea3bd9cb0b0688d7aca"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a6d4f309d3a6d9ea3bd9cb0b0688d7aca">nMax</a></td></tr>
+<tr class="memdesc:a6d4f309d3a6d9ea3bd9cb0b0688d7aca"><td class="mdescLeft">&#160;</td><td class="mdescRight">The size of the neighborList array.  <br /></td></tr>
+<tr class="memitem:a2c41772aae7694f7a3e177b650a6c744" id="r_a2c41772aae7694f7a3e177b650a6c744"><td class="memItemLeft">int *&#160;</td><td class="memItemRight"><a class="el" href="#a2c41772aae7694f7a3e177b650a6c744">indices</a></td></tr>
+<tr class="memdesc:a2c41772aae7694f7a3e177b650a6c744"><td class="mdescLeft">&#160;</td><td class="mdescRight">Offsets into neighborList giving each atom's neighbors.  <br /></td></tr>
+<tr class="memitem:ae2a3376a4a5be282ec43129ced4dea19" id="r_ae2a3376a4a5be282ec43129ced4dea19"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ae2a3376a4a5be282ec43129ced4dea19">maxlistlen</a></td></tr>
+<tr class="memdesc:ae2a3376a4a5be282ec43129ced4dea19"><td class="mdescLeft">&#160;</td><td class="mdescRight">The length of the longest neighbor list of an atom.  <br /></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>"Half" neighbor lists for atoms. </p>
+<p>This implements a <em>"half neighbor list"</em>, i.e. if atom a is on atom b's neighbor list, atom b will NOT be on atom a's neighbor list.</p>
+<p>GetNeighbors(...) returns "half" of the neighbors inside a sphere of radius rCut. CheckAndUpdateNeighborLists() must be called every time the positions change. If an atom has moved more than "drift", CheckAndUpdateNeighborLists() will call <a class="el" href="#a9b410cd4e77a25b3dc8e3671330fc26a" title="Generate a new neighbor list.">MakeList()</a>, and a new list is generated. </p>
+
+<p class="definition">Definition at line <a class="el" href="NeighborList_8h_source.html#l00024">24</a> of file <a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a174dd1b14858476b97805699a9d16caf" name="a174dd1b14858476b97805699a9d16caf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a174dd1b14858476b97805699a9d16caf">&#9670;&#160;</a></span>NeighborList()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NeighborList::NeighborList </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classAtoms.html">Atoms</a> *</td>          <td class="paramname"><span class="paramname"><em>a</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>rCut</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>driftfactor</em></span><span class="paramdefsep"> = </span><span class="paramdefval">0.05</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>defaultNeighborEstimate</em></span><span class="paramdefsep"> = </span><span class="paramdefval">50</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generate a neighbor list for atoms a with cutoff rCut. </p>
+<p>The neighbor list will contain all neighbors within the distance rCut. The neighborlist can be reused until an atom has moved more than rCut*driftfactor. </p>
+
+</div>
+</div>
+<a id="a9f66cfc09ee295ce155310e64cb892c8" name="a9f66cfc09ee295ce155310e64cb892c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f66cfc09ee295ce155310e64cb892c8">&#9670;&#160;</a></span>~NeighborList()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">NeighborList::~NeighborList </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a840cb774c40d73a5bede60706559891f" name="a840cb774c40d73a5bede60706559891f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a840cb774c40d73a5bede60706559891f">&#9670;&#160;</a></span>Allocate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NeighborList::Allocate </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>(Re)allocate the memory for the neighbor list. </p>
+
+</div>
+</div>
+<a id="a548d33c02d4f68d9e58844f80f02e600" name="a548d33c02d4f68d9e58844f80f02e600"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a548d33c02d4f68d9e58844f80f02e600">&#9670;&#160;</a></span>CheckAndUpdateNeighborList()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool NeighborList::CheckAndUpdateNeighborList </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check if the neighbor list can still be reused, update if not. </p>
+
+</div>
+</div>
+<a id="a7c54811ba5f589a1e9f299fac3245ead" name="a7c54811ba5f589a1e9f299fac3245ead"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c54811ba5f589a1e9f299fac3245ead">&#9670;&#160;</a></span>GetImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structImage.html">Image</a> &amp; NeighborList::GetImage </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>i</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the real atom corresponding to an image. </p>
+<p>The input argument i is the number of the image counted from the first image. It is thus the number returned by GetList <em>minus the number of atoms</em>. The return value is a const reference to an <a class="el" href="structImage.html" title="Represents atoms seen through the periodic boundaries.">Image</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="NeighborList_8h_source.html#l00077">77</a> of file <a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   77</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#ab2989f02bffe6db6fd0b3f8ca8ed9be0">images</a>[i]; }</div>
+<div class="ttc" id="aclassNeighborList_html_ab2989f02bffe6db6fd0b3f8ca8ed9be0"><div class="ttname"><a href="#ab2989f02bffe6db6fd0b3f8ca8ed9be0">NeighborList::images</a></div><div class="ttdeci">vector&lt; Image &gt; images</div><div class="ttdoc">The images of neighbors through PBC.</div><div class="ttdef"><b>Definition</b> <a href="NeighborList_8h_source.html#l00105">NeighborList.h:105</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad069775accaccedb8fe2ce7cd31e8504" name="ad069775accaccedb8fe2ce7cd31e8504"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad069775accaccedb8fe2ce7cd31e8504">&#9670;&#160;</a></span>GetList()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const int * NeighborList::GetList </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>a</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;</td>          <td class="paramname"><span class="paramname"><em>n</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><em>Low-level</em> interface to the neighbor list. </p>
+<p>Returns a const pointer to the internal list of neighbors of atom a, the length of the list is placed in n. The list will contain all neighbors within the cutoff radius, and some neighbors outside the cutoff. Some neighbors will be image atoms instead of real atoms (if they are neighbors thanks to the periodic boundaries), use GetImage to get the number of the real atom. </p>
+
+</div>
+</div>
+<a id="ad68ec1ece9f8a887c9b2839e2850cf4a" name="ad68ec1ece9f8a887c9b2839e2850cf4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad68ec1ece9f8a887c9b2839e2850cf4a">&#9670;&#160;</a></span>GetNeighbors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int NeighborList::GetNeighbors </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>n</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *</td>          <td class="paramname"><span class="paramname"><em>neighbors</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classVec.html">Vec</a> *</td>          <td class="paramname"><span class="paramname"><em>diffs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>diffs2</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;</td>          <td class="paramname"><span class="paramname"><em>size</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>r</em></span><span class="paramdefsep"> = </span><span class="paramdefval">-1.0</span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get all neighbors of atom n. The most important method :-). </p>
+<p>Input values: n is the number of the atom. r (optional) is a cutoff, must be less than rCut in the constructor (not checked!).</p>
+<p>In-out values: size contains the maximum space in the arrays. It is decremented by the number of neighbors placed in the arrays. It is an error to call GetNeighbors with too small a value of size.</p>
+<p>Out values: neighbors[] contains the numbers of the atoms, diffs[] contains the <em>relative</em> positions of the atoms, diffs2[] contains the norms of the diffs vectors.</p>
+<p>Return value: The number of neighbors. </p>
+
+</div>
+</div>
+<a id="a8d0c8001b285b43dbe3bbbbac3b2b861" name="a8d0c8001b285b43dbe3bbbbac3b2b861"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d0c8001b285b43dbe3bbbbac3b2b861">&#9670;&#160;</a></span>GetNumberOfAtoms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int NeighborList::GetNumberOfAtoms </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the number of atoms in the corresponding list of atoms. </p>
+
+<p class="definition">Definition at line <a class="el" href="NeighborList_8h_source.html#l00087">87</a> of file <a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   87</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#ad7ba717230e19ec7d886e7761435d835">nAtoms</a>; } <span class="comment">// Used from swig.</span></div>
+<div class="ttc" id="aclassNeighborList_html_ad7ba717230e19ec7d886e7761435d835"><div class="ttname"><a href="#ad7ba717230e19ec7d886e7761435d835">NeighborList::nAtoms</a></div><div class="ttdeci">int nAtoms</div><div class="ttdoc">The number of atoms.</div><div class="ttdef"><b>Definition</b> <a href="NeighborList_8h_source.html#l00098">NeighborList.h:98</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9b410cd4e77a25b3dc8e3671330fc26a" name="a9b410cd4e77a25b3dc8e3671330fc26a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b410cd4e77a25b3dc8e3671330fc26a">&#9670;&#160;</a></span>MakeList()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NeighborList::MakeList </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate a new neighbor list. </p>
+
+</div>
+</div>
+<a id="adbbd06b8787b4859195a563262ec1122" name="adbbd06b8787b4859195a563262ec1122"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbbd06b8787b4859195a563262ec1122">&#9670;&#160;</a></span>MaxNeighborListLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int NeighborList::MaxNeighborListLength </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the guaranteed maximal length of a single atom's NB list. </p>
+<p>Call this before using <a class="el" href="#ad68ec1ece9f8a887c9b2839e2850cf4a" title="Get all neighbors of atom n. The most important method :-).">GetNeighbors()</a> to make sure the arrays are big enough. The value may change when the neighbor list is updated. </p>
+
+<p class="definition">Definition at line <a class="el" href="NeighborList_8h_source.html#l00084">84</a> of file <a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   84</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#ae2a3376a4a5be282ec43129ced4dea19">maxlistlen</a>; }</div>
+<div class="ttc" id="aclassNeighborList_html_ae2a3376a4a5be282ec43129ced4dea19"><div class="ttname"><a href="#ae2a3376a4a5be282ec43129ced4dea19">NeighborList::maxlistlen</a></div><div class="ttdeci">int maxlistlen</div><div class="ttdoc">The length of the longest neighbor list of an atom.</div><div class="ttdef"><b>Definition</b> <a href="NeighborList_8h_source.html#l00109">NeighborList.h:109</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae18d3d8b35c51b505c78c759be285ab4" name="ae18d3d8b35c51b505c78c759be285ab4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae18d3d8b35c51b505c78c759be285ab4">&#9670;&#160;</a></span>UpdateImagePositions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NeighborList::UpdateImagePositions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Update the positions of the images when the real atoms may have moved. </p>
+
+</div>
+</div>
+<a id="a3ac08e2fc692fe2bf34f998753d9426a" name="a3ac08e2fc692fe2bf34f998753d9426a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ac08e2fc692fe2bf34f998753d9426a">&#9670;&#160;</a></span>UpdateSuperCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void NeighborList::UpdateSuperCell </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classSuperCell.html">SuperCell</a> *</td>          <td class="paramname"><span class="paramname"><em>superCell</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inform the neighbor list that the supercell has changed. </p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a3ff3233b87962f288d1ed72d454b5b52" name="a3ff3233b87962f288d1ed72d454b5b52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ff3233b87962f288d1ed72d454b5b52">&#9670;&#160;</a></span>atoms</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classAtoms.html">Atoms</a>* NeighborList::atoms</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>A pointer to the atoms. </p>
+
+<p class="definition">Definition at line <a class="el" href="NeighborList_8h_source.html#l00097">97</a> of file <a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>.</p>
+
+</div>
+</div>
+<a id="a2c8bc30642f71c21f980918517687ece" name="a2c8bc30642f71c21f980918517687ece"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c8bc30642f71c21f980918517687ece">&#9670;&#160;</a></span>drift2</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double NeighborList::drift2</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The square of the maximally allowed drift of an atom. </p>
+
+<p class="definition">Definition at line <a class="el" href="NeighborList_8h_source.html#l00101">101</a> of file <a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>.</p>
+
+</div>
+</div>
+<a id="ab2989f02bffe6db6fd0b3f8ca8ed9be0" name="ab2989f02bffe6db6fd0b3f8ca8ed9be0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2989f02bffe6db6fd0b3f8ca8ed9be0">&#9670;&#160;</a></span>images</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classvector.html">vector</a>&lt;<a class="el" href="structImage.html">Image</a>&gt; NeighborList::images</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The images of neighbors through PBC. </p>
+
+<p class="definition">Definition at line <a class="el" href="NeighborList_8h_source.html#l00105">105</a> of file <a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>.</p>
+
+</div>
+</div>
+<a id="a2c41772aae7694f7a3e177b650a6c744" name="a2c41772aae7694f7a3e177b650a6c744"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c41772aae7694f7a3e177b650a6c744">&#9670;&#160;</a></span>indices</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int* NeighborList::indices</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Offsets into neighborList giving each atom's neighbors. </p>
+
+<p class="definition">Definition at line <a class="el" href="NeighborList_8h_source.html#l00108">108</a> of file <a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>.</p>
+
+</div>
+</div>
+<a id="ae2a3376a4a5be282ec43129ced4dea19" name="ae2a3376a4a5be282ec43129ced4dea19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2a3376a4a5be282ec43129ced4dea19">&#9670;&#160;</a></span>maxlistlen</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int NeighborList::maxlistlen</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The length of the longest neighbor list of an atom. </p>
+
+<p class="definition">Definition at line <a class="el" href="NeighborList_8h_source.html#l00109">109</a> of file <a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>.</p>
+
+</div>
+</div>
+<a id="ad7ba717230e19ec7d886e7761435d835" name="ad7ba717230e19ec7d886e7761435d835"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7ba717230e19ec7d886e7761435d835">&#9670;&#160;</a></span>nAtoms</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int NeighborList::nAtoms</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The number of atoms. </p>
+
+<p class="definition">Definition at line <a class="el" href="NeighborList_8h_source.html#l00098">98</a> of file <a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>.</p>
+
+</div>
+</div>
+<a id="aa9a8b382f1bd16ccd48f10f2b3b1bcb6" name="aa9a8b382f1bd16ccd48f10f2b3b1bcb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9a8b382f1bd16ccd48f10f2b3b1bcb6">&#9670;&#160;</a></span>neighborList</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int* NeighborList::neighborList</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The actual neighbor list. </p>
+
+<p class="definition">Definition at line <a class="el" href="NeighborList_8h_source.html#l00106">106</a> of file <a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>.</p>
+
+</div>
+</div>
+<a id="a6d4f309d3a6d9ea3bd9cb0b0688d7aca" name="a6d4f309d3a6d9ea3bd9cb0b0688d7aca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d4f309d3a6d9ea3bd9cb0b0688d7aca">&#9670;&#160;</a></span>nMax</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int NeighborList::nMax</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The size of the neighborList array. </p>
+
+<p class="definition">Definition at line <a class="el" href="NeighborList_8h_source.html#l00107">107</a> of file <a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>.</p>
+
+</div>
+</div>
+<a id="ae2b33684aab2b2a3715b442406ff3a54" name="ae2b33684aab2b2a3715b442406ff3a54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2b33684aab2b2a3715b442406ff3a54">&#9670;&#160;</a></span>nSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int NeighborList::nSize</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of atoms including ghost atoms. </p>
+
+<p class="definition">Definition at line <a class="el" href="NeighborList_8h_source.html#l00099">99</a> of file <a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>.</p>
+
+</div>
+</div>
+<a id="a90006abbebab836e1ca03e85d55c9e4a" name="a90006abbebab836e1ca03e85d55c9e4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90006abbebab836e1ca03e85d55c9e4a">&#9670;&#160;</a></span>positions</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classVec.html">Vec</a>* NeighborList::positions</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>A pointer into the positions array of the atoms. </p>
+
+<p class="definition">Definition at line <a class="el" href="NeighborList_8h_source.html#l00103">103</a> of file <a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>.</p>
+
+</div>
+</div>
+<a id="a2fd472234a6205b69c5c4070356ee79e" name="a2fd472234a6205b69c5c4070356ee79e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fd472234a6205b69c5c4070356ee79e">&#9670;&#160;</a></span>rCut2</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double NeighborList::rCut2</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The square of the cutoff radius. </p>
+
+<p class="definition">Definition at line <a class="el" href="NeighborList_8h_source.html#l00100">100</a> of file <a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>.</p>
+
+</div>
+</div>
+<a id="ac80d2a6cdb0bb22737d9f5c6be810674" name="ac80d2a6cdb0bb22737d9f5c6be810674"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac80d2a6cdb0bb22737d9f5c6be810674">&#9670;&#160;</a></span>referencePositions</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classvector.html">vector</a>&lt;<a class="el" href="classVec.html">Vec</a>&gt; NeighborList::referencePositions</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The positions at the last update. </p>
+
+<p class="definition">Definition at line <a class="el" href="NeighborList_8h_source.html#l00104">104</a> of file <a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>.</p>
+
+</div>
+</div>
+<a id="ac5f5c001f585f13ab1af091b38d5a475" name="ac5f5c001f585f13ab1af091b38d5a475"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5f5c001f585f13ab1af091b38d5a475">&#9670;&#160;</a></span>rMax</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double NeighborList::rMax</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cutoff when <em>generating</em> neighbor list. </p>
+
+<p class="definition">Definition at line <a class="el" href="NeighborList_8h_source.html#l00102">102</a> of file <a class="el" href="NeighborList_8h_source.html">NeighborList.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/potentials/EMT/Asap/<a class="el" href="NeighborList_8h_source.html">NeighborList.h</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="classNeighborList.html">NeighborList</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

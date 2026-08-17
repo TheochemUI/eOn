@@ -1,0 +1,1078 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: LORRotation Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classLORRotation.html','','classLORRotation-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">LORRotation Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="LORRotation_8h_source.html">LORRotation.h</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for LORRotation:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+ <div class="center">
+  <img src="classLORRotation.png" usemap="#LORRotation_map" alt=""/>
+  <map id="LORRotation_map" name="LORRotation_map">
+<area href="classeonc_1_1LowestEigenmode.html" title="Base for eigenmode solvers." alt="eonc::LowestEigenmode" shape="rect" coords="0,0,147,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a5482e5579f08df3b1c63339540ee8187" id="r_a5482e5579f08df3b1c63339540ee8187"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a5482e5579f08df3b1c63339540ee8187">LORRotation</a> (std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; matter, const <a class="el" href="classParameters.html">Parameters</a> &amp;params, std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt; pot)</td></tr>
+<tr class="memitem:aee7fa7b91116b5fc355345dc6525d43e" id="r_aee7fa7b91116b5fc355345dc6525d43e"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#aee7fa7b91116b5fc355345dc6525d43e">~LORRotation</a> ()=default</td></tr>
+<tr class="memitem:a955c89188f986f6deac8595ae9dd1cbc" id="r_a955c89188f986f6deac8595ae9dd1cbc"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a955c89188f986f6deac8595ae9dd1cbc">compute</a> (std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; matter, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> initialDirection)</td></tr>
+<tr class="memitem:ac8efcb98dcf379c80a67e8442f2c6ebd" id="r_ac8efcb98dcf379c80a67e8442f2c6ebd"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ac8efcb98dcf379c80a67e8442f2c6ebd">getEigenvalue</a> ()</td></tr>
+<tr class="memitem:a4a8ec2f085df6e3c38263e1418177250" id="r_a4a8ec2f085df6e3c38263e1418177250"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="#a4a8ec2f085df6e3c38263e1418177250">getEigenvector</a> ()</td></tr>
+<tr class="inherit_header pub_methods_classeonc_1_1LowestEigenmode"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1LowestEigenmode')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1LowestEigenmode.html">eonc::LowestEigenmode</a></td></tr>
+<tr class="memitem:af5c7e532e7e02cb38d6f27c348c52473 inherit pub_methods_classeonc_1_1LowestEigenmode" id="r_af5c7e532e7e02cb38d6f27c348c52473"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#af5c7e532e7e02cb38d6f27c348c52473">LowestEigenmode</a> (std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt; potPassed, const <a class="el" href="classParameters.html">Parameters</a> &amp;parameters)</td></tr>
+<tr class="memitem:a73b0774f28b1f9646b329332ab261426 inherit pub_methods_classeonc_1_1LowestEigenmode" id="r_a73b0774f28b1f9646b329332ab261426"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a73b0774f28b1f9646b329332ab261426">~LowestEigenmode</a> ()=default</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:abdce0f72e836d45cd1359eaef9a422c8" id="r_abdce0f72e836d45cd1359eaef9a422c8"><td class="memItemLeft">static VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#abdce0f72e836d45cd1359eaef9a422c8">translateHUnitOrthoP3</a> (const VectorXd &amp;N, const VectorXd &amp;Theta, const VectorXd &amp;P, const VectorXd &amp;HN, const VectorXd &amp;HTheta, const VectorXd &amp;HP)</td></tr>
+<tr class="memdesc:abdce0f72e836d45cd1359eaef9a422c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Force-translation identity for H·P3 when P3 is the <em>unit</em> Gram-Schmidt residual of P against orthonormal {N, Θ} and H is linear: P_ortho = P - (N·P) N - (Θ·P) Θ P3 = P_ortho / ||P_ortho|| H P3 = (H P - (N·P) H N - (Θ·P) H Θ) / ||P_ortho|| (Not Gram-Schmidt on HP in ambient space.) Returns zero vector if ||P_ortho|| is negligible.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:ae6829cdee8fa835149a0d64f0a8bf7ed" id="r_ae6829cdee8fa835149a0d64f0a8bf7ed"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ae6829cdee8fa835149a0d64f0a8bf7ed">curvatureHistory</a></td></tr>
+<tr class="memitem:a9fea36a32843f7f111483005d6cc760c" id="r_a9fea36a32843f7f111483005d6cc760c"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a9fea36a32843f7f111483005d6cc760c">convergedOnResidual</a> {false}</td></tr>
+<tr class="inherit_header pub_attribs_classeonc_1_1LowestEigenmode"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classeonc_1_1LowestEigenmode')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="classeonc_1_1LowestEigenmode.html">eonc::LowestEigenmode</a></td></tr>
+<tr class="memitem:a724f93c18ebe10e59fb24d29cf0703c1 inherit pub_attribs_classeonc_1_1LowestEigenmode" id="r_a724f93c18ebe10e59fb24d29cf0703c1"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">totalForceCalls</a> {0}</td></tr>
+<tr class="memitem:a60b737b93fe99a9004ee424f0d897d87 inherit pub_attribs_classeonc_1_1LowestEigenmode" id="r_a60b737b93fe99a9004ee424f0d897d87"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a60b737b93fe99a9004ee424f0d897d87">statsTorque</a> {0.0}</td></tr>
+<tr class="memitem:ae4a178406585da7f462cade19451eba3 inherit pub_attribs_classeonc_1_1LowestEigenmode" id="r_ae4a178406585da7f462cade19451eba3"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#ae4a178406585da7f462cade19451eba3">statsCurvature</a> {0.0}</td></tr>
+<tr class="memitem:a0b00be5551a5221a2951a5271e353e1c inherit pub_attribs_classeonc_1_1LowestEigenmode" id="r_a0b00be5551a5221a2951a5271e353e1c"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a0b00be5551a5221a2951a5271e353e1c">statsAngle</a> {0.0}</td></tr>
+<tr class="memitem:a882f5b774893c01f8fdf2b0f2608a098 inherit pub_attribs_classeonc_1_1LowestEigenmode" id="r_a882f5b774893c01f8fdf2b0f2608a098"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> {0}</td></tr>
+<tr class="memitem:aaddd4f58289e430dcb327c814d9b1874 inherit pub_attribs_classeonc_1_1LowestEigenmode" id="r_aaddd4f58289e430dcb327c814d9b1874"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#aaddd4f58289e430dcb327c814d9b1874">totalIterations</a> {0}</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a75e2ccbb5f6576aa7343102c6bbd24c1" id="r_a75e2ccbb5f6576aa7343102c6bbd24c1"><td class="memItemLeft"><a class="el" href="structeonc_1_1log_1_1Scoped.html">eonc::log::Scoped</a>&#160;</td><td class="memItemRight"><a class="el" href="#a75e2ccbb5f6576aa7343102c6bbd24c1">log</a></td></tr>
+<tr class="memitem:ae5da3d0b246f81dba3347052ad5c2057" id="r_ae5da3d0b246f81dba3347052ad5c2057"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#ae5da3d0b246f81dba3347052ad5c2057">eigenvector</a></td></tr>
+<tr class="memitem:ac36423466e228a682a86df95fc3f9b0a" id="r_ac36423466e228a682a86df95fc3f9b0a"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ac36423466e228a682a86df95fc3f9b0a">eigenvalue</a> {0.0}</td></tr>
+<tr class="memitem:a4982d22b835f474542eef21480c9f2e0" id="r_a4982d22b835f474542eef21480c9f2e0"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a4982d22b835f474542eef21480c9f2e0">x0</a></td></tr>
+<tr class="memitem:a767bb6e14451ca91dfb630f74aaac622" id="r_a767bb6e14451ca91dfb630f74aaac622"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a767bb6e14451ca91dfb630f74aaac622">x1</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classeonc_1_1LowestEigenmode"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_attribs_classeonc_1_1LowestEigenmode')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Public Attributes inherited from <a class="el" href="classeonc_1_1LowestEigenmode.html">eonc::LowestEigenmode</a></td></tr>
+<tr class="memitem:ac00c88de9f1b794fe951d0326653da22 inherit pub_static_attribs_classeonc_1_1LowestEigenmode" id="r_ac00c88de9f1b794fe951d0326653da22"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#ac00c88de9f1b794fe951d0326653da22">MINMODE_DIMER</a> [] = &quot;dimer&quot;</td></tr>
+<tr class="memitem:ac5a052901220bdb1f32fad014196ddfc inherit pub_static_attribs_classeonc_1_1LowestEigenmode" id="r_ac5a052901220bdb1f32fad014196ddfc"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#ac5a052901220bdb1f32fad014196ddfc">MINMODE_GPRDIMER</a> [] = &quot;gprdimer&quot;</td></tr>
+<tr class="memitem:add7ee32020815d66fda3b7994ff13398 inherit pub_static_attribs_classeonc_1_1LowestEigenmode" id="r_add7ee32020815d66fda3b7994ff13398"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#add7ee32020815d66fda3b7994ff13398">MINMODE_LANCZOS</a> [] = &quot;lanczos&quot;</td></tr>
+<tr class="memitem:acf5ac1a295fcabec6008ad693b8193bc inherit pub_static_attribs_classeonc_1_1LowestEigenmode" id="r_acf5ac1a295fcabec6008ad693b8193bc"><td class="memItemLeft">static const char&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#acf5ac1a295fcabec6008ad693b8193bc">MINMODE_DAVIDSON</a> [] = &quot;davidson&quot;</td></tr>
+<tr class="inherit_header pro_attribs_classeonc_1_1LowestEigenmode"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1LowestEigenmode')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1LowestEigenmode.html">eonc::LowestEigenmode</a></td></tr>
+<tr class="memitem:a37333ab6591b41d3d0e0a5e5f0481300 inherit pro_attribs_classeonc_1_1LowestEigenmode" id="r_a37333ab6591b41d3d0e0a5e5f0481300"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">pot</a></td></tr>
+<tr class="memitem:a372b0c7160716051cd847072498d8322 inherit pro_attribs_classeonc_1_1LowestEigenmode" id="r_a372b0c7160716051cd847072498d8322"><td class="memItemLeft">const <a class="el" href="classParameters.html">Parameters</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="LORRotation_8h_source.html#l00025">25</a> of file <a class="el" href="LORRotation_8h_source.html">LORRotation.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a5482e5579f08df3b1c63339540ee8187" name="a5482e5579f08df3b1c63339540ee8187"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5482e5579f08df3b1c63339540ee8187">&#9670;&#160;</a></span>LORRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeonc_1_1LORRotation.html#a5482e5579f08df3b1c63339540ee8187">LORRotation::LORRotation</a> </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>matter</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>pot</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LORRotation_8cpp_source.html#l00029">29</a> of file <a class="el" href="LORRotation_8cpp_source.html">LORRotation.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   32</span>    : <a class="code hl_function" href="classeonc_1_1LowestEigenmode.html#af5c7e532e7e02cb38d6f27c348c52473">LowestEigenmode</a>(<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">pot</a>, <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>) {</div>
+<div class="line"><span class="lineno">   33</span>  <span class="keyword">auto</span> x1Pot = (<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">pot</a>-&gt;needsPerImageInstance() &amp;&amp; <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.main_options.parallel)</div>
+<div class="line"><span class="lineno">   34</span>                   ? <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a>(<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>)</div>
+<div class="line"><span class="lineno">   35</span>                   : <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">pot</a>;</div>
+<div class="line"><span class="lineno">   36</span>  <a class="code hl_variable" href="#a4982d22b835f474542eef21480c9f2e0">x0</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">pot</a>, <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>);</div>
+<div class="line"><span class="lineno">   37</span>  <a class="code hl_variable" href="#a767bb6e14451ca91dfb630f74aaac622">x1</a> = std::make_shared&lt;Matter&gt;(x1Pot, <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>);</div>
+<div class="line"><span class="lineno">   38</span>  *<a class="code hl_variable" href="#a4982d22b835f474542eef21480c9f2e0">x0</a> = *matter;</div>
+<div class="line"><span class="lineno">   39</span>  *<a class="code hl_variable" href="#a767bb6e14451ca91dfb630f74aaac622">x1</a> = *matter;</div>
+<div class="line"><span class="lineno">   40</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">totalForceCalls</a> = 0;</div>
+<div class="line"><span class="lineno">   41</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> = 0;</div>
+<div class="line"><span class="lineno">   42</span>  <a class="code hl_variable" href="#ae5da3d0b246f81dba3347052ad5c2057">eigenvector</a>.resize(3 * matter-&gt;numberOfAtoms());</div>
+<div class="line"><span class="lineno">   43</span>  <a class="code hl_variable" href="#ae5da3d0b246f81dba3347052ad5c2057">eigenvector</a>.setZero();</div>
+<div class="line"><span class="lineno">   44</span>}</div>
+<div class="ttc" id="aclassLORRotation_html_a4982d22b835f474542eef21480c9f2e0"><div class="ttname"><a href="#a4982d22b835f474542eef21480c9f2e0">LORRotation::x0</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; x0</div><div class="ttdef"><b>Definition</b> <a href="LORRotation_8h_source.html#l00030">LORRotation.h:30</a></div></div>
+<div class="ttc" id="aclassLORRotation_html_a767bb6e14451ca91dfb630f74aaac622"><div class="ttname"><a href="#a767bb6e14451ca91dfb630f74aaac622">LORRotation::x1</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; x1</div><div class="ttdef"><b>Definition</b> <a href="LORRotation_8h_source.html#l00031">LORRotation.h:31</a></div></div>
+<div class="ttc" id="aclassLORRotation_html_ae5da3d0b246f81dba3347052ad5c2057"><div class="ttname"><a href="#ae5da3d0b246f81dba3347052ad5c2057">LORRotation::eigenvector</a></div><div class="ttdeci">VectorXd eigenvector</div><div class="ttdef"><b>Definition</b> <a href="LORRotation_8h_source.html#l00028">LORRotation.h:28</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a372b0c7160716051cd847072498d8322"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">eonc::LowestEigenmode::params</a></div><div class="ttdeci">const Parameters &amp; params</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00028">LowestEigenmode.h:28</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a37333ab6591b41d3d0e0a5e5f0481300"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">eonc::LowestEigenmode::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00027">LowestEigenmode.h:27</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a724f93c18ebe10e59fb24d29cf0703c1"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">eonc::LowestEigenmode::totalForceCalls</a></div><div class="ttdeci">long totalForceCalls</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00031">LowestEigenmode.h:31</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_a882f5b774893c01f8fdf2b0f2608a098"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">eonc::LowestEigenmode::statsRotations</a></div><div class="ttdeci">long statsRotations</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00035">LowestEigenmode.h:35</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LowestEigenmode_html_af5c7e532e7e02cb38d6f27c348c52473"><div class="ttname"><a href="classeonc_1_1LowestEigenmode.html#af5c7e532e7e02cb38d6f27c348c52473">eonc::LowestEigenmode::LowestEigenmode</a></div><div class="ttdeci">LowestEigenmode(std::shared_ptr&lt; Potential &gt; potPassed, const Parameters &amp;parameters)</div><div class="ttdef"><b>Definition</b> <a href="LowestEigenmode_8h_source.html#l00042">LowestEigenmode.h:42</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_ad3c8668c89bd3ffae898307b0890f1ff"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; makePotential(const Parameters &amp;params)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8cpp_source.html#l00118">Potential.cpp:118</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aee7fa7b91116b5fc355345dc6525d43e" name="aee7fa7b91116b5fc355345dc6525d43e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee7fa7b91116b5fc355345dc6525d43e">&#9670;&#160;</a></span>~LORRotation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeonc_1_1LORRotation.html#aee7fa7b91116b5fc355345dc6525d43e">eonc::LORRotation::~LORRotation</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a955c89188f986f6deac8595ae9dd1cbc" name="a955c89188f986f6deac8595ae9dd1cbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a955c89188f986f6deac8595ae9dd1cbc">&#9670;&#160;</a></span>compute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classeonc_1_1LORRotation.html#a955c89188f986f6deac8595ae9dd1cbc">LORRotation::compute</a> </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>matter</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></td>          <td class="paramname"><span class="paramname"><em>initialDirection</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LORRotation_8cpp_source.html#l00061">61</a> of file <a class="el" href="LORRotation_8cpp_source.html">LORRotation.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   62</span>                                                                 {</div>
+<div class="line"><span class="lineno">   63</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> dim = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(3 * matter-&gt;numberOfAtoms());</div>
+<div class="line"><span class="lineno">   64</span>  <span class="keyword">const</span> VectorXd freeMask = matter-&gt;getFreeV();</div>
+<div class="line"><span class="lineno">   65</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">totalForceCalls</a> = 0;</div>
+<div class="line"><span class="lineno">   66</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> = 0;</div>
+<div class="line"><span class="lineno">   67</span>  <a class="code hl_variable" href="#ae6829cdee8fa835149a0d64f0a8bf7ed">curvatureHistory</a>.clear();</div>
+<div class="line"><span class="lineno">   68</span>  <a class="code hl_variable" href="#a9fea36a32843f7f111483005d6cc760c">convergedOnResidual</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   69</span>  <a class="code hl_variable" href="#ac36423466e228a682a86df95fc3f9b0a">eigenvalue</a> = 0.0;</div>
+<div class="line"><span class="lineno">   70</span>  <a class="code hl_variable" href="#ae5da3d0b246f81dba3347052ad5c2057">eigenvector</a> = VectorXd::Zero(dim);</div>
+<div class="line"><span class="lineno">   71</span> </div>
+<div class="line"><span class="lineno">   72</span>  <span class="comment">// Fully fixed system: no free DOF — avoid normalize() NaN.</span></div>
+<div class="line"><span class="lineno">   73</span>  <span class="keywordflow">if</span> (freeMask.norm() &lt; 1e-14 || matter-&gt;numberOfFreeAtoms() == 0) {</div>
+<div class="line"><span class="lineno">   74</span>    QUILL_LOG_WARNING(<a class="code hl_variable" href="#a75e2ccbb5f6576aa7343102c6bbd24c1">log</a>, <span class="stringliteral">&quot;[LOR] no free atoms; skipping rotation&quot;</span>);</div>
+<div class="line"><span class="lineno">   75</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   76</span>  }</div>
+<div class="line"><span class="lineno">   77</span> </div>
+<div class="line"><span class="lineno">   78</span>  VectorXd N = VectorXd::Map(initialDirectionAtomMatrix.data(), dim);</div>
+<div class="line"><span class="lineno">   79</span>  N = N.array() * freeMask.array();</div>
+<div class="line"><span class="lineno">   80</span>  <span class="keywordflow">if</span> (N.norm() &lt; 1e-10) {</div>
+<div class="line"><span class="lineno">   81</span>    N.setRandom();</div>
+<div class="line"><span class="lineno">   82</span>    N = N.array() * freeMask.array();</div>
+<div class="line"><span class="lineno">   83</span>  }</div>
+<div class="line"><span class="lineno">   84</span>  <span class="keywordflow">if</span> (N.norm() &lt; 1e-14) {</div>
+<div class="line"><span class="lineno">   85</span>    QUILL_LOG_WARNING(<a class="code hl_variable" href="#a75e2ccbb5f6576aa7343102c6bbd24c1">log</a>, <span class="stringliteral">&quot;[LOR] free mask yields zero direction; skip&quot;</span>);</div>
+<div class="line"><span class="lineno">   86</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   87</span>  }</div>
+<div class="line"><span class="lineno">   88</span>  N.normalize();</div>
+<div class="line"><span class="lineno">   89</span> </div>
+<div class="line"><span class="lineno">   90</span>  *<a class="code hl_variable" href="#a4982d22b835f474542eef21480c9f2e0">x0</a> = *matter;</div>
+<div class="line"><span class="lineno">   91</span>  *<a class="code hl_variable" href="#a767bb6e14451ca91dfb630f74aaac622">x1</a> = *matter;</div>
+<div class="line"><span class="lineno">   92</span>  <span class="keyword">const</span> VectorXd x0_r = <a class="code hl_variable" href="#a4982d22b835f474542eef21480c9f2e0">x0</a>-&gt;getPositionsV();</div>
+<div class="line"><span class="lineno">   93</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> delta = <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.main_options.finiteDifference;</div>
+<div class="line"><span class="lineno">   94</span> </div>
+<div class="line"><span class="lineno">   95</span>  <span class="comment">// rotations_max &lt;= 0 → Parameters default (10); no silent upper clamp.</span></div>
+<div class="line"><span class="lineno">   96</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> rotBudget = <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options.rotations_max &gt; 0</div>
+<div class="line"><span class="lineno">   97</span>                             ? <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options.rotations_max</div>
+<div class="line"><span class="lineno">   98</span>                             : 10;</div>
+<div class="line"><span class="lineno">   99</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> rotmax = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(std::max&lt;long&gt;(1, rotBudget));</div>
+<div class="line"><span class="lineno">  100</span> </div>
+<div class="line"><span class="lineno">  101</span>  <span class="comment">// Dedicated LOR residual tolerance (not classical torque_min).</span></div>
+<div class="line"><span class="lineno">  102</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> residualTol =</div>
+<div class="line"><span class="lineno">  103</span>      std::max(1e-3, <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">params</a>.dimer_options.lor_residual_tol);</div>
+<div class="line"><span class="lineno">  104</span>  <span class="keyword">auto</span> relativeResidual = [](<span class="keywordtype">double</span> fnorm, <span class="keywordtype">double</span> cn) {</div>
+<div class="line"><span class="lineno">  105</span>    <span class="keywordflow">return</span> fnorm / (std::abs(cn) + 1.0);</div>
+<div class="line"><span class="lineno">  106</span>  };</div>
+<div class="line"><span class="lineno">  107</span> </div>
+<div class="line"><span class="lineno">  108</span>  <span class="keywordtype">double</span> bestCN = std::numeric_limits&lt;double&gt;::infinity();</div>
+<div class="line"><span class="lineno">  109</span>  VectorXd bestN = N;</div>
+<div class="line"><span class="lineno">  110</span>  VectorXd bestHN = VectorXd::Zero(dim);</div>
+<div class="line"><span class="lineno">  111</span> </div>
+<div class="line"><span class="lineno">  112</span>  <span class="comment">// Cache center forces once (paper: FD products reuse F(R0)).</span></div>
+<div class="line"><span class="lineno">  113</span>  <span class="keyword">const</span> VectorXd F0 = <a class="code hl_variable" href="#a4982d22b835f474542eef21480c9f2e0">x0</a>-&gt;getForcesV();</div>
+<div class="line"><span class="lineno">  114</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">totalForceCalls</a> += 1;</div>
+<div class="line"><span class="lineno">  115</span> </div>
+<div class="line"><span class="lineno">  116</span>  <span class="keyword">auto</span> applyMask = [&amp;](VectorXd &amp;v) { v = v.array() * freeMask.array(); };</div>
+<div class="line"><span class="lineno">  117</span> </div>
+<div class="line"><span class="lineno">  118</span>  <span class="keyword">auto</span> unitize = [&amp;](VectorXd &amp;v) -&gt; <span class="keywordtype">double</span> {</div>
+<div class="line"><span class="lineno">  119</span>    applyMask(v);</div>
+<div class="line"><span class="lineno">  120</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> n = v.norm();</div>
+<div class="line"><span class="lineno">  121</span>    <span class="keywordflow">if</span> (n &gt; 1e-14) {</div>
+<div class="line"><span class="lineno">  122</span>      v /= n;</div>
+<div class="line"><span class="lineno">  123</span>    }</div>
+<div class="line"><span class="lineno">  124</span>    <span class="keywordflow">return</span> n;</div>
+<div class="line"><span class="lineno">  125</span>  };</div>
+<div class="line"><span class="lineno">  126</span> </div>
+<div class="line"><span class="lineno">  127</span>  <span class="comment">// One new force at R0+δ·dir; F0 cached (Algorithm I: ≤1 new FD per rotation).</span></div>
+<div class="line"><span class="lineno">  128</span>  <span class="keyword">auto</span> hessianAlong = [&amp;](<span class="keyword">const</span> VectorXd &amp;v) -&gt; VectorXd {</div>
+<div class="line"><span class="lineno">  129</span>    VectorXd dir = v.array() * freeMask.array();</div>
+<div class="line"><span class="lineno">  130</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> nrm = dir.norm();</div>
+<div class="line"><span class="lineno">  131</span>    <span class="keywordflow">if</span> (nrm &lt; 1e-14) {</div>
+<div class="line"><span class="lineno">  132</span>      <span class="keywordflow">return</span> VectorXd::Zero(dim);</div>
+<div class="line"><span class="lineno">  133</span>    }</div>
+<div class="line"><span class="lineno">  134</span>    dir /= nrm;</div>
+<div class="line"><span class="lineno">  135</span>    <a class="code hl_variable" href="#a767bb6e14451ca91dfb630f74aaac622">x1</a>-&gt;setPositionsV(x0_r + delta * dir);</div>
+<div class="line"><span class="lineno">  136</span>    <span class="keyword">const</span> VectorXd F1 = <a class="code hl_variable" href="#a767bb6e14451ca91dfb630f74aaac622">x1</a>-&gt;getForcesV();</div>
+<div class="line"><span class="lineno">  137</span>    <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">totalForceCalls</a> += 1;</div>
+<div class="line"><span class="lineno">  138</span>    VectorXd Hv = -(F1 - F0) / delta;</div>
+<div class="line"><span class="lineno">  139</span>    applyMask(Hv);</div>
+<div class="line"><span class="lineno">  140</span>    <span class="keywordflow">return</span> Hv * nrm;</div>
+<div class="line"><span class="lineno">  141</span>  };</div>
+<div class="line"><span class="lineno">  142</span> </div>
+<div class="line"><span class="lineno">  143</span>  <span class="keyword">auto</span> trackBest = [&amp;](<span class="keywordtype">double</span> cn, <span class="keyword">const</span> VectorXd &amp;nVec, <span class="keyword">const</span> VectorXd &amp;hnVec) {</div>
+<div class="line"><span class="lineno">  144</span>    <span class="keywordflow">if</span> (cn &lt; bestCN) {</div>
+<div class="line"><span class="lineno">  145</span>      bestCN = cn;</div>
+<div class="line"><span class="lineno">  146</span>      bestN = nVec;</div>
+<div class="line"><span class="lineno">  147</span>      bestHN = hnVec;</div>
+<div class="line"><span class="lineno">  148</span>    }</div>
+<div class="line"><span class="lineno">  149</span>  };</div>
+<div class="line"><span class="lineno">  150</span>  <span class="comment">// Record Ritz C only when non-increasing (paper quadratic + translation).</span></div>
+<div class="line"><span class="lineno">  151</span>  <span class="comment">// Strictly non-increasing (1e-4 float). Returns whether the sample was kept</span></div>
+<div class="line"><span class="lineno">  152</span>  <span class="comment">// (callers must only trackBest on kept samples so ev == min(history)).</span></div>
+<div class="line"><span class="lineno">  153</span>  <span class="keyword">auto</span> appendHistory = [&amp;](<span class="keywordtype">double</span> cn) -&gt; <span class="keywordtype">bool</span> {</div>
+<div class="line"><span class="lineno">  154</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ae6829cdee8fa835149a0d64f0a8bf7ed">curvatureHistory</a>.empty() || cn &lt;= <a class="code hl_variable" href="#ae6829cdee8fa835149a0d64f0a8bf7ed">curvatureHistory</a>.back() + 1e-4) {</div>
+<div class="line"><span class="lineno">  155</span>      <a class="code hl_variable" href="#ae6829cdee8fa835149a0d64f0a8bf7ed">curvatureHistory</a>.push_back(cn);</div>
+<div class="line"><span class="lineno">  156</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  157</span>    }</div>
+<div class="line"><span class="lineno">  158</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  159</span>  };</div>
+<div class="line"><span class="lineno">  160</span> </div>
+<div class="line"><span class="lineno">  161</span>  <span class="comment">// --- Algorithm I start: H N, F_⊥ ---</span></div>
+<div class="line"><span class="lineno">  162</span>  VectorXd HN = hessianAlong(N);</div>
+<div class="line"><span class="lineno">  163</span>  applyMask(HN);</div>
+<div class="line"><span class="lineno">  164</span>  <span class="keywordtype">double</span> CN = N.dot(HN);</div>
+<div class="line"><span class="lineno">  165</span>  <span class="keywordflow">if</span> (appendHistory(CN)) {</div>
+<div class="line"><span class="lineno">  166</span>    trackBest(CN, N, HN);</div>
+<div class="line"><span class="lineno">  167</span>  }</div>
+<div class="line"><span class="lineno">  168</span> </div>
+<div class="line"><span class="lineno">  169</span>  VectorXd F = HN - CN * N;</div>
+<div class="line"><span class="lineno">  170</span>  applyMask(F);</div>
+<div class="line"><span class="lineno">  171</span>  <span class="keywordtype">double</span> Fnorm = F.norm();</div>
+<div class="line"><span class="lineno">  172</span> </div>
+<div class="line"><span class="lineno">  173</span>  QUILL_LOG_INFO(</div>
+<div class="line"><span class="lineno">  174</span>      <a class="code hl_variable" href="#a75e2ccbb5f6576aa7343102c6bbd24c1">log</a>, <span class="stringliteral">&quot;[LOR] iter=0 ||F_perp||={:.6e} C_N={:.6f} (Algorithm I start)&quot;</span>,</div>
+<div class="line"><span class="lineno">  175</span>      Fnorm, CN);</div>
+<div class="line"><span class="lineno">  176</span> </div>
+<div class="line"><span class="lineno">  177</span>  <span class="keywordflow">if</span> (relativeResidual(Fnorm, CN) &lt; residualTol) {</div>
+<div class="line"><span class="lineno">  178</span>    <a class="code hl_variable" href="#a9fea36a32843f7f111483005d6cc760c">convergedOnResidual</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  179</span>    <a class="code hl_variable" href="#ac36423466e228a682a86df95fc3f9b0a">eigenvalue</a> = CN;</div>
+<div class="line"><span class="lineno">  180</span>    <a class="code hl_variable" href="#ae5da3d0b246f81dba3347052ad5c2057">eigenvector</a> = N;</div>
+<div class="line"><span class="lineno">  181</span>    QUILL_LOG_INFO(<a class="code hl_variable" href="#a75e2ccbb5f6576aa7343102c6bbd24c1">log</a>, <span class="stringliteral">&quot;[LOR] converged on residual at start&quot;</span>);</div>
+<div class="line"><span class="lineno">  182</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  183</span>  }</div>
+<div class="line"><span class="lineno">  184</span> </div>
+<div class="line"><span class="lineno">  185</span>  VectorXd Theta = F / Fnorm;</div>
+<div class="line"><span class="lineno">  186</span>  VectorXd HTheta = hessianAlong(Theta); <span class="comment">// iteration-1 second FD (H Θ)</span></div>
+<div class="line"><span class="lineno">  187</span>  applyMask(HTheta);</div>
+<div class="line"><span class="lineno">  188</span> </div>
+<div class="line"><span class="lineno">  189</span>  <span class="comment">// 2×2 Ritz in span{N, Θ}</span></div>
+<div class="line"><span class="lineno">  190</span>  Eigen::Matrix2d A2;</div>
+<div class="line"><span class="lineno">  191</span>  A2(0, 0) = N.dot(HN);</div>
+<div class="line"><span class="lineno">  192</span>  A2(0, 1) = N.dot(HTheta);</div>
+<div class="line"><span class="lineno">  193</span>  A2(1, 0) = A2(0, 1);</div>
+<div class="line"><span class="lineno">  194</span>  A2(1, 1) = Theta.dot(HTheta);</div>
+<div class="line"><span class="lineno">  195</span>  Eigen::SelfAdjointEigenSolver&lt;Eigen::Matrix2d&gt; es2(A2);</div>
+<div class="line"><span class="lineno">  196</span>  Eigen::Vector2d coeffs = es2.eigenvectors().col(0);</div>
+<div class="line"><span class="lineno">  197</span>  <span class="keywordtype">double</span> a = coeffs(0);</div>
+<div class="line"><span class="lineno">  198</span>  <span class="keywordtype">double</span> b = coeffs(1);</div>
+<div class="line"><span class="lineno">  199</span> </div>
+<div class="line"><span class="lineno">  200</span>  VectorXd Nlin = a * N + b * Theta;</div>
+<div class="line"><span class="lineno">  201</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> nN = unitize(Nlin);</div>
+<div class="line"><span class="lineno">  202</span>  VectorXd HNlin = a * HN + b * HTheta;</div>
+<div class="line"><span class="lineno">  203</span>  <span class="keywordflow">if</span> (nN &gt; 1e-14) {</div>
+<div class="line"><span class="lineno">  204</span>    HNlin /= nN;</div>
+<div class="line"><span class="lineno">  205</span>  }</div>
+<div class="line"><span class="lineno">  206</span>  N = Nlin;</div>
+<div class="line"><span class="lineno">  207</span>  HN = HNlin;</div>
+<div class="line"><span class="lineno">  208</span> </div>
+<div class="line"><span class="lineno">  209</span>  VectorXd P = Theta;</div>
+<div class="line"><span class="lineno">  210</span>  VectorXd HP = HTheta;</div>
+<div class="line"><span class="lineno">  211</span> </div>
+<div class="line"><span class="lineno">  212</span>  CN = N.dot(HN);</div>
+<div class="line"><span class="lineno">  213</span>  <span class="keywordflow">if</span> (appendHistory(CN)) {</div>
+<div class="line"><span class="lineno">  214</span>    trackBest(CN, N, HN);</div>
+<div class="line"><span class="lineno">  215</span>  }</div>
+<div class="line"><span class="lineno">  216</span>  F = HN - CN * N;</div>
+<div class="line"><span class="lineno">  217</span>  applyMask(F);</div>
+<div class="line"><span class="lineno">  218</span>  Fnorm = F.norm();</div>
+<div class="line"><span class="lineno">  219</span>  <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> = 1;</div>
+<div class="line"><span class="lineno">  220</span> </div>
+<div class="line"><span class="lineno">  221</span>  QUILL_LOG_INFO(</div>
+<div class="line"><span class="lineno">  222</span>      <a class="code hl_variable" href="#a75e2ccbb5f6576aa7343102c6bbd24c1">log</a>, <span class="stringliteral">&quot;[LOR] iter=1 (2x2) ||F_perp||={:.6e} C_N={:.6f} a={:.4f} b={:.4f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  223</span>      Fnorm, CN, a, b);</div>
+<div class="line"><span class="lineno">  224</span> </div>
+<div class="line"><span class="lineno">  225</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 2; k &lt;= rotmax; ++k) {</div>
+<div class="line"><span class="lineno">  226</span>    <span class="keywordflow">if</span> (relativeResidual(Fnorm, CN) &lt; residualTol) {</div>
+<div class="line"><span class="lineno">  227</span>      <a class="code hl_variable" href="#a9fea36a32843f7f111483005d6cc760c">convergedOnResidual</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  228</span>      QUILL_LOG_INFO(<a class="code hl_variable" href="#a75e2ccbb5f6576aa7343102c6bbd24c1">log</a>,</div>
+<div class="line"><span class="lineno">  229</span>                     <span class="stringliteral">&quot;[LOR] converged residual iter={} ||F||={:.6e} rel={:.6e}&quot;</span>,</div>
+<div class="line"><span class="lineno">  230</span>                     k, Fnorm, relativeResidual(Fnorm, CN));</div>
+<div class="line"><span class="lineno">  231</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  232</span>    }</div>
+<div class="line"><span class="lineno">  233</span> </div>
+<div class="line"><span class="lineno">  234</span>    Theta = F / Fnorm;</div>
+<div class="line"><span class="lineno">  235</span>    <span class="comment">// Exactly one new FD this iteration: H · Θ (force translation for N, P)</span></div>
+<div class="line"><span class="lineno">  236</span>    HTheta = hessianAlong(Theta);</div>
+<div class="line"><span class="lineno">  237</span>    applyMask(HTheta);</div>
+<div class="line"><span class="lineno">  238</span> </div>
+<div class="line"><span class="lineno">  239</span>    <span class="comment">// Orthonormalize P vs N,Θ for stable 3×3 (intentional vs paper GEP on B≠I)</span></div>
+<div class="line"><span class="lineno">  240</span>    VectorXd P3 = P - N.dot(P) * N - Theta.dot(P) * Theta;</div>
+<div class="line"><span class="lineno">  241</span>    applyMask(P3);</div>
+<div class="line"><span class="lineno">  242</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> pNrm = P3.norm();</div>
+<div class="line"><span class="lineno">  243</span> </div>
+<div class="line"><span class="lineno">  244</span>    <span class="keyword">auto</span> applyRitz2 = [&amp;]() {</div>
+<div class="line"><span class="lineno">  245</span>      Eigen::Matrix2d A2b;</div>
+<div class="line"><span class="lineno">  246</span>      A2b(0, 0) = N.dot(HN);</div>
+<div class="line"><span class="lineno">  247</span>      A2b(0, 1) = N.dot(HTheta);</div>
+<div class="line"><span class="lineno">  248</span>      A2b(1, 0) = A2b(0, 1);</div>
+<div class="line"><span class="lineno">  249</span>      A2b(1, 1) = Theta.dot(HTheta);</div>
+<div class="line"><span class="lineno">  250</span>      Eigen::SelfAdjointEigenSolver&lt;Eigen::Matrix2d&gt; es2b(A2b);</div>
+<div class="line"><span class="lineno">  251</span>      Eigen::Vector2d c2 = es2b.eigenvectors().col(0);</div>
+<div class="line"><span class="lineno">  252</span>      a = c2(0);</div>
+<div class="line"><span class="lineno">  253</span>      b = c2(1);</div>
+<div class="line"><span class="lineno">  254</span>      VectorXd Nnew = a * N + b * Theta;</div>
+<div class="line"><span class="lineno">  255</span>      VectorXd HNnew = a * HN + b * HTheta;</div>
+<div class="line"><span class="lineno">  256</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> nn = unitize(Nnew);</div>
+<div class="line"><span class="lineno">  257</span>      <span class="keywordflow">if</span> (nn &gt; 1e-14) {</div>
+<div class="line"><span class="lineno">  258</span>        HNnew /= nn;</div>
+<div class="line"><span class="lineno">  259</span>      }</div>
+<div class="line"><span class="lineno">  260</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> cNew = Nnew.dot(HNnew);</div>
+<div class="line"><span class="lineno">  261</span>      <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#ae6829cdee8fa835149a0d64f0a8bf7ed">curvatureHistory</a>.empty() &amp;&amp; cNew &gt; <a class="code hl_variable" href="#ae6829cdee8fa835149a0d64f0a8bf7ed">curvatureHistory</a>.back() + 1e-4) {</div>
+<div class="line"><span class="lineno">  262</span>        QUILL_LOG_INFO(<a class="code hl_variable" href="#a75e2ccbb5f6576aa7343102c6bbd24c1">log</a>,</div>
+<div class="line"><span class="lineno">  263</span>                       <span class="stringliteral">&quot;[LOR] curvature stall (2x2 fallback) iter={} &quot;</span></div>
+<div class="line"><span class="lineno">  264</span>                       <span class="stringliteral">&quot;C_prev={:.6f} C_new={:.6f} (reject)&quot;</span>,</div>
+<div class="line"><span class="lineno">  265</span>                       k, <a class="code hl_variable" href="#ae6829cdee8fa835149a0d64f0a8bf7ed">curvatureHistory</a>.back(), cNew);</div>
+<div class="line"><span class="lineno">  266</span>        N = bestN;</div>
+<div class="line"><span class="lineno">  267</span>        HN = bestHN;</div>
+<div class="line"><span class="lineno">  268</span>        CN = bestCN;</div>
+<div class="line"><span class="lineno">  269</span>        F = HN - CN * N;</div>
+<div class="line"><span class="lineno">  270</span>        applyMask(F);</div>
+<div class="line"><span class="lineno">  271</span>        Fnorm = F.norm();</div>
+<div class="line"><span class="lineno">  272</span>        <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> = k;</div>
+<div class="line"><span class="lineno">  273</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  274</span>      }</div>
+<div class="line"><span class="lineno">  275</span>      P = Theta;</div>
+<div class="line"><span class="lineno">  276</span>      HP = HTheta;</div>
+<div class="line"><span class="lineno">  277</span>      N = Nnew;</div>
+<div class="line"><span class="lineno">  278</span>      HN = HNnew;</div>
+<div class="line"><span class="lineno">  279</span>      CN = cNew;</div>
+<div class="line"><span class="lineno">  280</span>      <span class="keywordflow">if</span> (appendHistory(CN)) {</div>
+<div class="line"><span class="lineno">  281</span>        trackBest(CN, N, HN);</div>
+<div class="line"><span class="lineno">  282</span>      }</div>
+<div class="line"><span class="lineno">  283</span>      F = HN - CN * N;</div>
+<div class="line"><span class="lineno">  284</span>      applyMask(F);</div>
+<div class="line"><span class="lineno">  285</span>      Fnorm = F.norm();</div>
+<div class="line"><span class="lineno">  286</span>      <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> = k;</div>
+<div class="line"><span class="lineno">  287</span>      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  288</span>    };</div>
+<div class="line"><span class="lineno">  289</span> </div>
+<div class="line"><span class="lineno">  290</span>    <span class="keywordflow">if</span> (pNrm &lt; 1e-8) {</div>
+<div class="line"><span class="lineno">  291</span>      <span class="keywordflow">if</span> (!applyRitz2()) {</div>
+<div class="line"><span class="lineno">  292</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  293</span>      }</div>
+<div class="line"><span class="lineno">  294</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  295</span>    }</div>
+<div class="line"><span class="lineno">  296</span>    P3 /= pNrm;</div>
+<div class="line"><span class="lineno">  297</span>    <span class="comment">// H·P3 by force-translation linearity (not ambient GS on HP):</span></div>
+<div class="line"><span class="lineno">  298</span>    <span class="comment">// H P3 = (HP - (N·P) HN - (Θ·P) HΘ) / ||P_ortho|| with P3 = P_ortho/||...||</span></div>
+<div class="line"><span class="lineno">  299</span>    VectorXd HP3 = <a class="code hl_function" href="classeonc_1_1LORRotation.html#abdce0f72e836d45cd1359eaef9a422c8">translateHUnitOrthoP3</a>(N, Theta, P, HN, HTheta, HP);</div>
+<div class="line"><span class="lineno">  300</span>    applyMask(HP3);</div>
+<div class="line"><span class="lineno">  301</span>    <span class="keywordflow">if</span> (HP3.norm() &lt; 1e-14) {</div>
+<div class="line"><span class="lineno">  302</span>      <span class="keywordflow">if</span> (!applyRitz2()) {</div>
+<div class="line"><span class="lineno">  303</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  304</span>      }</div>
+<div class="line"><span class="lineno">  305</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  306</span>    }</div>
+<div class="line"><span class="lineno">  307</span> </div>
+<div class="line"><span class="lineno">  308</span>    Eigen::Matrix3d A3 = Eigen::Matrix3d::Zero();</div>
+<div class="line"><span class="lineno">  309</span>    <span class="keyword">const</span> VectorXd basis[3] = {N, Theta, P3};</div>
+<div class="line"><span class="lineno">  310</span>    <span class="keyword">const</span> VectorXd Hbasis[3] = {HN, HTheta, HP3};</div>
+<div class="line"><span class="lineno">  311</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 3; ++i) {</div>
+<div class="line"><span class="lineno">  312</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = i; j &lt; 3; ++j) {</div>
+<div class="line"><span class="lineno">  313</span>        A3(i, j) = basis[i].dot(Hbasis[j]);</div>
+<div class="line"><span class="lineno">  314</span>        A3(j, i) = A3(i, j);</div>
+<div class="line"><span class="lineno">  315</span>      }</div>
+<div class="line"><span class="lineno">  316</span>    }</div>
+<div class="line"><span class="lineno">  317</span>    A3 = 0.5 * (A3 + A3.transpose());</div>
+<div class="line"><span class="lineno">  318</span>    Eigen::SelfAdjointEigenSolver&lt;Eigen::Matrix3d&gt; ges(A3);</div>
+<div class="line"><span class="lineno">  319</span>    <span class="keywordflow">if</span> (ges.info() != Eigen::Success) {</div>
+<div class="line"><span class="lineno">  320</span>      QUILL_LOG_WARNING(<a class="code hl_variable" href="#a75e2ccbb5f6576aa7343102c6bbd24c1">log</a>, <span class="stringliteral">&quot;[LOR] 3x3 eigen failed at iter={}; stop&quot;</span>, k);</div>
+<div class="line"><span class="lineno">  321</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  322</span>    }</div>
+<div class="line"><span class="lineno">  323</span>    <span class="keyword">const</span> Eigen::Vector3d c3 = ges.eigenvectors().col(0);</div>
+<div class="line"><span class="lineno">  324</span>    a = c3(0);</div>
+<div class="line"><span class="lineno">  325</span>    b = c3(1);</div>
+<div class="line"><span class="lineno">  326</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> c = c3(2);</div>
+<div class="line"><span class="lineno">  327</span> </div>
+<div class="line"><span class="lineno">  328</span>    <span class="comment">// Save pre-update for stall revert without FD</span></div>
+<div class="line"><span class="lineno">  329</span>    <span class="keyword">const</span> VectorXd Nprev = N;</div>
+<div class="line"><span class="lineno">  330</span>    <span class="keyword">const</span> VectorXd HNprev = HN;</div>
+<div class="line"><span class="lineno">  331</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> CNprev = CN;</div>
+<div class="line"><span class="lineno">  332</span> </div>
+<div class="line"><span class="lineno">  333</span>    VectorXd Nnew = a * N + b * Theta + c * P3;</div>
+<div class="line"><span class="lineno">  334</span>    VectorXd Pnew = b * Theta + c * P3;</div>
+<div class="line"><span class="lineno">  335</span>    VectorXd HNnew = a * HN + b * HTheta + c * HP3;</div>
+<div class="line"><span class="lineno">  336</span>    VectorXd HPnew = b * HTheta + c * HP3;</div>
+<div class="line"><span class="lineno">  337</span> </div>
+<div class="line"><span class="lineno">  338</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> nNew = unitize(Nnew);</div>
+<div class="line"><span class="lineno">  339</span>    <span class="keywordflow">if</span> (nNew &gt; 1e-14) {</div>
+<div class="line"><span class="lineno">  340</span>      HNnew /= nNew;</div>
+<div class="line"><span class="lineno">  341</span>    }</div>
+<div class="line"><span class="lineno">  342</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> pNew = unitize(Pnew);</div>
+<div class="line"><span class="lineno">  343</span>    <span class="keywordflow">if</span> (pNew &gt; 1e-14) {</div>
+<div class="line"><span class="lineno">  344</span>      HPnew /= pNew;</div>
+<div class="line"><span class="lineno">  345</span>    }</div>
+<div class="line"><span class="lineno">  346</span> </div>
+<div class="line"><span class="lineno">  347</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> CNnew = Nnew.dot(HNnew);</div>
+<div class="line"><span class="lineno">  348</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#ae6829cdee8fa835149a0d64f0a8bf7ed">curvatureHistory</a>.empty() &amp;&amp; CNnew &gt; <a class="code hl_variable" href="#ae6829cdee8fa835149a0d64f0a8bf7ed">curvatureHistory</a>.back() + 1e-4) {</div>
+<div class="line"><span class="lineno">  349</span>      QUILL_LOG_INFO(<a class="code hl_variable" href="#a75e2ccbb5f6576aa7343102c6bbd24c1">log</a>,</div>
+<div class="line"><span class="lineno">  350</span>                     <span class="stringliteral">&quot;[LOR] curvature stall iter={} C_prev={:.6f} C_new={:.6f} &quot;</span></div>
+<div class="line"><span class="lineno">  351</span>                     <span class="stringliteral">&quot;(reject update; keep prior mode, no extra FD)&quot;</span>,</div>
+<div class="line"><span class="lineno">  352</span>                     k, <a class="code hl_variable" href="#ae6829cdee8fa835149a0d64f0a8bf7ed">curvatureHistory</a>.back(), CNnew);</div>
+<div class="line"><span class="lineno">  353</span>      N = bestN;</div>
+<div class="line"><span class="lineno">  354</span>      HN = bestHN;</div>
+<div class="line"><span class="lineno">  355</span>      CN = bestCN;</div>
+<div class="line"><span class="lineno">  356</span>      F = HN - CN * N;</div>
+<div class="line"><span class="lineno">  357</span>      applyMask(F);</div>
+<div class="line"><span class="lineno">  358</span>      Fnorm = F.norm();</div>
+<div class="line"><span class="lineno">  359</span>      <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> = k;</div>
+<div class="line"><span class="lineno">  360</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  361</span>    }</div>
+<div class="line"><span class="lineno">  362</span> </div>
+<div class="line"><span class="lineno">  363</span>    N = Nnew;</div>
+<div class="line"><span class="lineno">  364</span>    P = Pnew;</div>
+<div class="line"><span class="lineno">  365</span>    HN = HNnew;</div>
+<div class="line"><span class="lineno">  366</span>    HP = HPnew;</div>
+<div class="line"><span class="lineno">  367</span>    CN = CNnew;</div>
+<div class="line"><span class="lineno">  368</span>    <span class="keywordflow">if</span> (appendHistory(CN)) {</div>
+<div class="line"><span class="lineno">  369</span>      trackBest(CN, N, HN);</div>
+<div class="line"><span class="lineno">  370</span>    }</div>
+<div class="line"><span class="lineno">  371</span>    (void)Nprev;</div>
+<div class="line"><span class="lineno">  372</span>    (void)HNprev;</div>
+<div class="line"><span class="lineno">  373</span>    (void)CNprev;</div>
+<div class="line"><span class="lineno">  374</span> </div>
+<div class="line"><span class="lineno">  375</span>    F = HN - CN * N;</div>
+<div class="line"><span class="lineno">  376</span>    applyMask(F);</div>
+<div class="line"><span class="lineno">  377</span>    Fnorm = F.norm();</div>
+<div class="line"><span class="lineno">  378</span>    <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a> = k;</div>
+<div class="line"><span class="lineno">  379</span> </div>
+<div class="line"><span class="lineno">  380</span>    QUILL_LOG_INFO(<a class="code hl_variable" href="#a75e2ccbb5f6576aa7343102c6bbd24c1">log</a>,</div>
+<div class="line"><span class="lineno">  381</span>                   <span class="stringliteral">&quot;[LOR] iter={} (3x3) ||F_perp||={:.6e} C_N={:.6f} a={:.4f} &quot;</span></div>
+<div class="line"><span class="lineno">  382</span>                   <span class="stringliteral">&quot;b={:.4f} c={:.4f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  383</span>                   k, Fnorm, CN, a, b, c);</div>
+<div class="line"><span class="lineno">  384</span> </div>
+<div class="line"><span class="lineno">  385</span>    <span class="keywordflow">if</span> (relativeResidual(Fnorm, CN) &lt; residualTol) {</div>
+<div class="line"><span class="lineno">  386</span>      <a class="code hl_variable" href="#a9fea36a32843f7f111483005d6cc760c">convergedOnResidual</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  387</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  388</span>    }</div>
+<div class="line"><span class="lineno">  389</span>  }</div>
+<div class="line"><span class="lineno">  390</span> </div>
+<div class="line"><span class="lineno">  391</span>  <span class="comment">// Return best softest mode from accepted Ritz steps (no mandatory final FD).</span></div>
+<div class="line"><span class="lineno">  392</span>  N = bestN;</div>
+<div class="line"><span class="lineno">  393</span>  HN = bestHN;</div>
+<div class="line"><span class="lineno">  394</span>  CN = bestCN;</div>
+<div class="line"><span class="lineno">  395</span>  <a class="code hl_variable" href="#ac36423466e228a682a86df95fc3f9b0a">eigenvalue</a> = CN;</div>
+<div class="line"><span class="lineno">  396</span>  <a class="code hl_variable" href="#ae5da3d0b246f81dba3347052ad5c2057">eigenvector</a> = N;</div>
+<div class="line"><span class="lineno">  397</span>  QUILL_LOG_INFO(<a class="code hl_variable" href="#a75e2ccbb5f6576aa7343102c6bbd24c1">log</a>,</div>
+<div class="line"><span class="lineno">  398</span>                 <span class="stringliteral">&quot;[LOR] done rotations={} force_calls={} C_N={:.6f} &quot;</span></div>
+<div class="line"><span class="lineno">  399</span>                 <span class="stringliteral">&quot;converged_residual={}&quot;</span>,</div>
+<div class="line"><span class="lineno">  400</span>                 <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a882f5b774893c01f8fdf2b0f2608a098">statsRotations</a>, <a class="code hl_variable" href="classeonc_1_1LowestEigenmode.html#a724f93c18ebe10e59fb24d29cf0703c1">totalForceCalls</a>, <a class="code hl_variable" href="#ac36423466e228a682a86df95fc3f9b0a">eigenvalue</a>,</div>
+<div class="line"><span class="lineno">  401</span>                 <a class="code hl_variable" href="#a9fea36a32843f7f111483005d6cc760c">convergedOnResidual</a>);</div>
+<div class="line"><span class="lineno">  402</span>}</div>
+<div class="ttc" id="aclassLORRotation_html_a75e2ccbb5f6576aa7343102c6bbd24c1"><div class="ttname"><a href="#a75e2ccbb5f6576aa7343102c6bbd24c1">LORRotation::log</a></div><div class="ttdeci">eonc::log::Scoped log</div><div class="ttdef"><b>Definition</b> <a href="LORRotation_8h_source.html#l00027">LORRotation.h:27</a></div></div>
+<div class="ttc" id="aclassLORRotation_html_a9fea36a32843f7f111483005d6cc760c"><div class="ttname"><a href="#a9fea36a32843f7f111483005d6cc760c">LORRotation::convergedOnResidual</a></div><div class="ttdeci">bool convergedOnResidual</div><div class="ttdef"><b>Definition</b> <a href="LORRotation_8h_source.html#l00046">LORRotation.h:46</a></div></div>
+<div class="ttc" id="aclassLORRotation_html_ac36423466e228a682a86df95fc3f9b0a"><div class="ttname"><a href="#ac36423466e228a682a86df95fc3f9b0a">LORRotation::eigenvalue</a></div><div class="ttdeci">double eigenvalue</div><div class="ttdef"><b>Definition</b> <a href="LORRotation_8h_source.html#l00029">LORRotation.h:29</a></div></div>
+<div class="ttc" id="aclassLORRotation_html_ae6829cdee8fa835149a0d64f0a8bf7ed"><div class="ttname"><a href="#ae6829cdee8fa835149a0d64f0a8bf7ed">LORRotation::curvatureHistory</a></div><div class="ttdeci">std::vector&lt; double &gt; curvatureHistory</div><div class="ttdef"><b>Definition</b> <a href="LORRotation_8h_source.html#l00045">LORRotation.h:45</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LORRotation_html_abdce0f72e836d45cd1359eaef9a422c8"><div class="ttname"><a href="classeonc_1_1LORRotation.html#abdce0f72e836d45cd1359eaef9a422c8">eonc::LORRotation::translateHUnitOrthoP3</a></div><div class="ttdeci">static VectorXd translateHUnitOrthoP3(const VectorXd &amp;N, const VectorXd &amp;Theta, const VectorXd &amp;P, const VectorXd &amp;HN, const VectorXd &amp;HTheta, const VectorXd &amp;HP)</div><div class="ttdoc">Force-translation identity for H·P3 when P3 is the unit Gram-Schmidt residual of P against orthonorma...</div><div class="ttdef"><b>Definition</b> <a href="LORRotation_8cpp_source.html#l00047">LORRotation.cpp:47</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac8efcb98dcf379c80a67e8442f2c6ebd" name="ac8efcb98dcf379c80a67e8442f2c6ebd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8efcb98dcf379c80a67e8442f2c6ebd">&#9670;&#160;</a></span>getEigenvalue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classeonc_1_1LORRotation.html#ac8efcb98dcf379c80a67e8442f2c6ebd">eonc::LORRotation::getEigenvalue</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LORRotation_8h_source.html#l00039">39</a> of file <a class="el" href="LORRotation_8h_source.html">LORRotation.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   39</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#ac36423466e228a682a86df95fc3f9b0a">eigenvalue</a>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a4a8ec2f085df6e3c38263e1418177250" name="a4a8ec2f085df6e3c38263e1418177250"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a8ec2f085df6e3c38263e1418177250">&#9670;&#160;</a></span>getEigenvector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> <a class="el" href="classeonc_1_1LORRotation.html#a4a8ec2f085df6e3c38263e1418177250">eonc::LORRotation::getEigenvector</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LORRotation_8h_source.html#l00040">40</a> of file <a class="el" href="LORRotation_8h_source.html">LORRotation.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   40</span>                              {</div>
+<div class="line"><span class="lineno">   41</span>    <span class="keywordflow">return</span> AtomMatrix::Map(<a class="code hl_variable" href="#ae5da3d0b246f81dba3347052ad5c2057">eigenvector</a>.data(), <a class="code hl_variable" href="#ae5da3d0b246f81dba3347052ad5c2057">eigenvector</a>.size() / 3, 3);</div>
+<div class="line"><span class="lineno">   42</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="abdce0f72e836d45cd1359eaef9a422c8" name="abdce0f72e836d45cd1359eaef9a422c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdce0f72e836d45cd1359eaef9a422c8">&#9670;&#160;</a></span>translateHUnitOrthoP3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">VectorXd <a class="el" href="classeonc_1_1LORRotation.html#abdce0f72e836d45cd1359eaef9a422c8">LORRotation::translateHUnitOrthoP3</a> </td>
+          <td>(</td>
+          <td class="paramtype">const VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>N</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>Theta</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>P</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>HN</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>HTheta</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>HP</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Force-translation identity for H·P3 when P3 is the <em>unit</em> Gram-Schmidt residual of P against orthonormal {N, Θ} and H is linear: P_ortho = P - (N·P) N - (Θ·P) Θ P3 = P_ortho / ||P_ortho|| H P3 = (H P - (N·P) H N - (Θ·P) H Θ) / ||P_ortho|| (Not Gram-Schmidt on HP in ambient space.) Returns zero vector if ||P_ortho|| is negligible. </p>
+<p>Shipped LOR 3×3 path uses this helper. </p>
+
+<p class="definition">Definition at line <a class="el" href="LORRotation_8cpp_source.html#l00047">47</a> of file <a class="el" href="LORRotation_8cpp_source.html">LORRotation.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   49</span>                                                                               {</div>
+<div class="line"><span class="lineno">   50</span>  <span class="comment">// P_ortho = (I - N Nᵀ - Θ Θᵀ) P  with {N, Θ} orthonormal</span></div>
+<div class="line"><span class="lineno">   51</span>  <span class="keyword">const</span> VectorXd P_ortho = P - N.dot(P) * N - Theta.dot(P) * Theta;</div>
+<div class="line"><span class="lineno">   52</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> pNrm = P_ortho.norm();</div>
+<div class="line"><span class="lineno">   53</span>  <span class="keywordflow">if</span> (pNrm &lt; 1e-14) {</div>
+<div class="line"><span class="lineno">   54</span>    <span class="keywordflow">return</span> VectorXd::Zero(P.size());</div>
+<div class="line"><span class="lineno">   55</span>  }</div>
+<div class="line"><span class="lineno">   56</span>  <span class="comment">// H P_ortho = HP - (N·P) HN - (Θ·P) HΘ  (linearity of H — not GS on HP)</span></div>
+<div class="line"><span class="lineno">   57</span>  <span class="keyword">const</span> VectorXd HPortho = HP - N.dot(P) * HN - Theta.dot(P) * HTheta;</div>
+<div class="line"><span class="lineno">   58</span>  <span class="keywordflow">return</span> HPortho / pNrm; <span class="comment">// = H (P_ortho / ||P_ortho||) = H P3</span></div>
+<div class="line"><span class="lineno">   59</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a9fea36a32843f7f111483005d6cc760c" name="a9fea36a32843f7f111483005d6cc760c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fea36a32843f7f111483005d6cc760c">&#9670;&#160;</a></span>convergedOnResidual</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classeonc_1_1LORRotation.html#a9fea36a32843f7f111483005d6cc760c">eonc::LORRotation::convergedOnResidual</a> {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LORRotation_8h_source.html#l00046">46</a> of file <a class="el" href="LORRotation_8h_source.html">LORRotation.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   46</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae6829cdee8fa835149a0d64f0a8bf7ed" name="ae6829cdee8fa835149a0d64f0a8bf7ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6829cdee8fa835149a0d64f0a8bf7ed">&#9670;&#160;</a></span>curvatureHistory</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; <a class="el" href="classeonc_1_1LORRotation.html#ae6829cdee8fa835149a0d64f0a8bf7ed">eonc::LORRotation::curvatureHistory</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LORRotation_8h_source.html#l00045">45</a> of file <a class="el" href="LORRotation_8h_source.html">LORRotation.h</a>.</p>
+
+</div>
+</div>
+<a id="ac36423466e228a682a86df95fc3f9b0a" name="ac36423466e228a682a86df95fc3f9b0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac36423466e228a682a86df95fc3f9b0a">&#9670;&#160;</a></span>eigenvalue</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classeonc_1_1LORRotation.html#ac36423466e228a682a86df95fc3f9b0a">eonc::LORRotation::eigenvalue</a> {0.0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LORRotation_8h_source.html#l00029">29</a> of file <a class="el" href="LORRotation_8h_source.html">LORRotation.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   29</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae5da3d0b246f81dba3347052ad5c2057" name="ae5da3d0b246f81dba3347052ad5c2057"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5da3d0b246f81dba3347052ad5c2057">&#9670;&#160;</a></span>eigenvector</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">VectorXd <a class="el" href="classeonc_1_1LORRotation.html#ae5da3d0b246f81dba3347052ad5c2057">eonc::LORRotation::eigenvector</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LORRotation_8h_source.html#l00028">28</a> of file <a class="el" href="LORRotation_8h_source.html">LORRotation.h</a>.</p>
+
+</div>
+</div>
+<a id="a75e2ccbb5f6576aa7343102c6bbd24c1" name="a75e2ccbb5f6576aa7343102c6bbd24c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75e2ccbb5f6576aa7343102c6bbd24c1">&#9670;&#160;</a></span>log</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1log_1_1Scoped.html">eonc::log::Scoped</a> <a class="el" href="classeonc_1_1LORRotation.html#a75e2ccbb5f6576aa7343102c6bbd24c1">eonc::LORRotation::log</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LORRotation_8h_source.html#l00027">27</a> of file <a class="el" href="LORRotation_8h_source.html">LORRotation.h</a>.</p>
+
+</div>
+</div>
+<a id="a4982d22b835f474542eef21480c9f2e0" name="a4982d22b835f474542eef21480c9f2e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4982d22b835f474542eef21480c9f2e0">&#9670;&#160;</a></span>x0</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classMatter.html">Matter</a>&gt; <a class="el" href="classeonc_1_1LORRotation.html#a4982d22b835f474542eef21480c9f2e0">eonc::LORRotation::x0</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LORRotation_8h_source.html#l00030">30</a> of file <a class="el" href="LORRotation_8h_source.html">LORRotation.h</a>.</p>
+
+</div>
+</div>
+<a id="a767bb6e14451ca91dfb630f74aaac622" name="a767bb6e14451ca91dfb630f74aaac622"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a767bb6e14451ca91dfb630f74aaac622">&#9670;&#160;</a></span>x1</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classMatter.html">Matter</a>&gt; <a class="el" href="classeonc_1_1LORRotation.html#a767bb6e14451ca91dfb630f74aaac622">eonc::LORRotation::x1</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LORRotation_8h_source.html#l00031">31</a> of file <a class="el" href="LORRotation_8h_source.html">LORRotation.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="LORRotation_8h_source.html">LORRotation.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/<a class="el" href="LORRotation_8cpp_source.html">LORRotation.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="classLORRotation.html">LORRotation</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

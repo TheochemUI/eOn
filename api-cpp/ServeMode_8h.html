@@ -1,0 +1,785 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/include/eon/ServeMode.h File Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('ServeMode_8h.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">ServeMode.h File Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="Parameters_8h_source.html">Parameters.h</a>&quot;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="ServeMode_8h_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:eonc_3A_3AServeEndpoint" id="r_eonc_3A_3AServeEndpoint"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1ServeEndpoint.html">eonc::ServeEndpoint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration for a single serve endpoint.  <a href="structeonc_1_1ServeEndpoint.html#details">More...</a><br /></td></tr>
+<tr class="memitem:ServeEndpoint" id="r_ServeEndpoint"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structServeEndpoint.html">ServeEndpoint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration for a single serve endpoint.  <a href="structServeEndpoint.html#details">More...</a><br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:eonc" id="r_eonc"><td class="memItemLeft">namespace &#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html">eonc</a></td></tr>
+<tr class="memdesc:namespaceeonc"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII resource manager for the ARTn C library with global synchronization. <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a41eef310a4da8b94a072259e75816c36" id="r_a41eef310a4da8b94a072259e75816c36"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a41eef310a4da8b94a072259e75816c36">eonc::serveMode</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params, const std::string &amp;host, uint16_t port)</td></tr>
+<tr class="memdesc:a41eef310a4da8b94a072259e75816c36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a single rgpot-compatible Cap'n Proto RPC server.  <br /></td></tr>
+<tr class="memitem:abdfc4b8250c5a7d87d4eaa5030194b44" id="r_abdfc4b8250c5a7d87d4eaa5030194b44"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#abdfc4b8250c5a7d87d4eaa5030194b44">eonc::serveMultiple</a> (const std::vector&lt; <a class="el" href="structServeEndpoint.html">ServeEndpoint</a> &gt; &amp;endpoints, const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
+<tr class="memdesc:abdfc4b8250c5a7d87d4eaa5030194b44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serve multiple potentials concurrently on different ports.  <br /></td></tr>
+<tr class="memitem:addbe99ddcc2a13a67797e7a9f0625197" id="r_addbe99ddcc2a13a67797e7a9f0625197"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#addbe99ddcc2a13a67797e7a9f0625197">eonc::serveReplicated</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params, const std::string &amp;host, uint16_t base_port, size_t replicas)</td></tr>
+<tr class="memdesc:addbe99ddcc2a13a67797e7a9f0625197"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serve N replicas of the same potential across sequential ports.  <br /></td></tr>
+<tr class="memitem:a2d44293d95714634795621498031536d" id="r_a2d44293d95714634795621498031536d"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a2d44293d95714634795621498031536d">eonc::serveGateway</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params, const std::string &amp;host, uint16_t port, size_t pool_size)</td></tr>
+<tr class="memdesc:a2d44293d95714634795621498031536d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a gateway server backed by a pool of potential instances.  <br /></td></tr>
+<tr class="memitem:a5e925ddd7fb3c6c11346cf97429c5c27" id="r_a5e925ddd7fb3c6c11346cf97429c5c27"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a5e925ddd7fb3c6c11346cf97429c5c27">eonc::serveFromConfig</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
+<tr class="memdesc:a5e925ddd7fb3c6c11346cf97429c5c27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start serve mode from config-file parameters.  <br /></td></tr>
+<tr class="memitem:a0bab3b9bafa3fca028a6c31adac24447" id="r_a0bab3b9bafa3fca028a6c31adac24447"><td class="memItemLeft">std::vector&lt; <a class="el" href="structServeEndpoint.html">ServeEndpoint</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html#a0bab3b9bafa3fca028a6c31adac24447">eonc::parseServeSpec</a> (const std::string &amp;spec)</td></tr>
+<tr class="memdesc:a0bab3b9bafa3fca028a6c31adac24447"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a serve configuration string into endpoints.  <br /></td></tr>
+<tr class="memitem:a0bab3b9bafa3fca028a6c31adac24447" id="r_a0bab3b9bafa3fca028a6c31adac24447"><td class="memItemLeft">std::vector&lt; <a class="el" href="structServeEndpoint.html">ServeEndpoint</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a0bab3b9bafa3fca028a6c31adac24447">parseServeSpec</a> (const std::string &amp;spec)</td></tr>
+<tr class="memdesc:a0bab3b9bafa3fca028a6c31adac24447"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a serve configuration string into endpoints.  <br /></td></tr>
+<tr class="memitem:a5e925ddd7fb3c6c11346cf97429c5c27" id="r_a5e925ddd7fb3c6c11346cf97429c5c27"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a5e925ddd7fb3c6c11346cf97429c5c27">serveFromConfig</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
+<tr class="memdesc:a5e925ddd7fb3c6c11346cf97429c5c27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start serve mode from config-file parameters.  <br /></td></tr>
+<tr class="memitem:a2d44293d95714634795621498031536d" id="r_a2d44293d95714634795621498031536d"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2d44293d95714634795621498031536d">serveGateway</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params, const std::string &amp;host, uint16_t port, size_t pool_size)</td></tr>
+<tr class="memdesc:a2d44293d95714634795621498031536d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a gateway server backed by a pool of potential instances.  <br /></td></tr>
+<tr class="memitem:a41eef310a4da8b94a072259e75816c36" id="r_a41eef310a4da8b94a072259e75816c36"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a41eef310a4da8b94a072259e75816c36">serveMode</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params, const std::string &amp;host, uint16_t port)</td></tr>
+<tr class="memdesc:a41eef310a4da8b94a072259e75816c36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start a single rgpot-compatible Cap'n Proto RPC server.  <br /></td></tr>
+<tr class="memitem:abdfc4b8250c5a7d87d4eaa5030194b44" id="r_abdfc4b8250c5a7d87d4eaa5030194b44"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#abdfc4b8250c5a7d87d4eaa5030194b44">serveMultiple</a> (const std::vector&lt; <a class="el" href="structServeEndpoint.html">ServeEndpoint</a> &gt; &amp;endpoints, const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
+<tr class="memdesc:abdfc4b8250c5a7d87d4eaa5030194b44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serve multiple potentials concurrently on different ports.  <br /></td></tr>
+<tr class="memitem:addbe99ddcc2a13a67797e7a9f0625197" id="r_addbe99ddcc2a13a67797e7a9f0625197"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#addbe99ddcc2a13a67797e7a9f0625197">serveReplicated</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params, const std::string &amp;host, uint16_t base_port, size_t replicas)</td></tr>
+<tr class="memdesc:addbe99ddcc2a13a67797e7a9f0625197"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serve N replicas of the same potential across sequential ports.  <br /></td></tr>
+</table>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a0bab3b9bafa3fca028a6c31adac24447" name="a0bab3b9bafa3fca028a6c31adac24447"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bab3b9bafa3fca028a6c31adac24447">&#9670;&#160;</a></span>parseServeSpec()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structServeEndpoint.html">ServeEndpoint</a> &gt; <a class="el" href="namespaceeonc.html#a0bab3b9bafa3fca028a6c31adac24447">eonc::parseServeSpec</a> </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>spec</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parse a serve configuration string into endpoints. </p>
+<p>Accepts comma-separated entries of the form "potential:port" or "potential:host:port". Examples: "lj:12345" "metatomic:12345,lj:12346" "metatomic:0.0.0.0:12345"</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">spec</td><td>The comma-separated endpoint specification. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A vector of <a class="el" href="structServeEndpoint.html" title="Configuration for a single serve endpoint.">ServeEndpoint</a> structs. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="ServeMode_8cpp_source.html#l00229">229</a> of file <a class="el" href="ServeMode_8cpp_source.html">ServeMode.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  229</span>                                                               {</div>
+<div class="line"><span class="lineno">  230</span>  std::vector&lt;ServeEndpoint&gt; endpoints;</div>
+<div class="line"><span class="lineno">  231</span>  std::istringstream stream(spec);</div>
+<div class="line"><span class="lineno">  232</span>  std::string token;</div>
+<div class="line"><span class="lineno">  233</span> </div>
+<div class="line"><span class="lineno">  234</span>  <span class="keywordflow">while</span> (std::getline(stream, token, <span class="charliteral">&#39;,&#39;</span>)) {</div>
+<div class="line"><span class="lineno">  235</span>    <span class="comment">// Trim whitespace</span></div>
+<div class="line"><span class="lineno">  236</span>    token.erase(0, token.find_first_not_of(<span class="stringliteral">&quot; \t&quot;</span>));</div>
+<div class="line"><span class="lineno">  237</span>    token.erase(token.find_last_not_of(<span class="stringliteral">&quot; \t&quot;</span>) + 1);</div>
+<div class="line"><span class="lineno">  238</span>    <span class="keywordflow">if</span> (token.empty())</div>
+<div class="line"><span class="lineno">  239</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  240</span> </div>
+<div class="line"><span class="lineno">  241</span>    <span class="comment">// Parse &quot;potential:port&quot; or &quot;potential:host:port&quot;</span></div>
+<div class="line"><span class="lineno">  242</span>    <span class="keywordtype">size_t</span> first_colon = token.find(<span class="charliteral">&#39;:&#39;</span>);</div>
+<div class="line"><span class="lineno">  243</span>    <span class="keywordflow">if</span> (first_colon == std::string::npos) {</div>
+<div class="line"><span class="lineno">  244</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Invalid serve spec &#39;{}&#39;: expected &#39;potential:port&#39;&quot;</span>,</div>
+<div class="line"><span class="lineno">  245</span>                     token);</div>
+<div class="line"><span class="lineno">  246</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  247</span>    }</div>
+<div class="line"><span class="lineno">  248</span> </div>
+<div class="line"><span class="lineno">  249</span>    std::string pot_str = token.substr(0, first_colon);</div>
+<div class="line"><span class="lineno">  250</span>    std::string rest = token.substr(first_colon + 1);</div>
+<div class="line"><span class="lineno">  251</span> </div>
+<div class="line"><span class="lineno">  252</span>    <span class="comment">// Trim parts after colon split</span></div>
+<div class="line"><span class="lineno">  253</span>    pot_str.erase(0, pot_str.find_first_not_of(<span class="stringliteral">&quot; \t&quot;</span>));</div>
+<div class="line"><span class="lineno">  254</span>    pot_str.erase(pot_str.find_last_not_of(<span class="stringliteral">&quot; \t&quot;</span>) + 1);</div>
+<div class="line"><span class="lineno">  255</span>    rest.erase(0, rest.find_first_not_of(<span class="stringliteral">&quot; \t&quot;</span>));</div>
+<div class="line"><span class="lineno">  256</span>    rest.erase(rest.find_last_not_of(<span class="stringliteral">&quot; \t&quot;</span>) + 1);</div>
+<div class="line"><span class="lineno">  257</span> </div>
+<div class="line"><span class="lineno">  258</span>    <span class="comment">// Lowercase the potential name</span></div>
+<div class="line"><span class="lineno">  259</span>    std::transform(pot_str.begin(), pot_str.end(), pot_str.begin(), ::tolower);</div>
+<div class="line"><span class="lineno">  260</span> </div>
+<div class="line"><span class="lineno">  261</span>    <a class="code hl_struct" href="structeonc_1_1ServeEndpoint.html">ServeEndpoint</a> ep;</div>
+<div class="line"><span class="lineno">  262</span>    ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a21fbca84657edd560b9c2d1946642a53">potential</a> =</div>
+<div class="line"><span class="lineno">  263</span>        magic_enum::enum_cast&lt;PotType&gt;(pot_str, magic_enum::case_insensitive)</div>
+<div class="line"><span class="lineno">  264</span>            .value_or(PotType::UNKNOWN);</div>
+<div class="line"><span class="lineno">  265</span> </div>
+<div class="line"><span class="lineno">  266</span>    <span class="keywordflow">if</span> (ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a21fbca84657edd560b9c2d1946642a53">potential</a> == PotType::UNKNOWN) {</div>
+<div class="line"><span class="lineno">  267</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Unknown potential type &#39;{}&#39;&quot;</span>, pot_str);</div>
+<div class="line"><span class="lineno">  268</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  269</span>    }</div>
+<div class="line"><span class="lineno">  270</span> </div>
+<div class="line"><span class="lineno">  271</span>    <span class="keywordtype">size_t</span> second_colon = rest.find(<span class="charliteral">&#39;:&#39;</span>);</div>
+<div class="line"><span class="lineno">  272</span>    <span class="keywordflow">if</span> (second_colon != std::string::npos) {</div>
+<div class="line"><span class="lineno">  273</span>      <span class="comment">// &quot;host:port&quot; format</span></div>
+<div class="line"><span class="lineno">  274</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a> = rest.substr(0, second_colon);</div>
+<div class="line"><span class="lineno">  275</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a>.erase(0, ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a>.find_first_not_of(<span class="stringliteral">&quot; \t&quot;</span>));</div>
+<div class="line"><span class="lineno">  276</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a>.erase(ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a>.find_last_not_of(<span class="stringliteral">&quot; \t&quot;</span>) + 1);</div>
+<div class="line"><span class="lineno">  277</span>      std::string port_str = rest.substr(second_colon + 1);</div>
+<div class="line"><span class="lineno">  278</span>      port_str.erase(0, port_str.find_first_not_of(<span class="stringliteral">&quot; \t&quot;</span>));</div>
+<div class="line"><span class="lineno">  279</span>      port_str.erase(port_str.find_last_not_of(<span class="stringliteral">&quot; \t&quot;</span>) + 1);</div>
+<div class="line"><span class="lineno">  280</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a955e4c2fcc853eae9ae76a6892953c0a">port</a> = <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(std::stoi(port_str));</div>
+<div class="line"><span class="lineno">  281</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  282</span>      <span class="comment">// &quot;port&quot; only</span></div>
+<div class="line"><span class="lineno">  283</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a> = <span class="stringliteral">&quot;localhost&quot;</span>;</div>
+<div class="line"><span class="lineno">  284</span>      ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a955e4c2fcc853eae9ae76a6892953c0a">port</a> = <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(std::stoi(rest));</div>
+<div class="line"><span class="lineno">  285</span>    }</div>
+<div class="line"><span class="lineno">  286</span> </div>
+<div class="line"><span class="lineno">  287</span>    QUILL_LOG_INFO(<a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>(), <span class="stringliteral">&quot;Parsed endpoint: {} on {}:{}&quot;</span>,</div>
+<div class="line"><span class="lineno">  288</span>                   std::string(magic_enum::enum_name(ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a21fbca84657edd560b9c2d1946642a53">potential</a>)), ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">host</a>,</div>
+<div class="line"><span class="lineno">  289</span>                   ep.<a class="code hl_variable" href="structeonc_1_1ServeEndpoint.html#a955e4c2fcc853eae9ae76a6892953c0a">port</a>);</div>
+<div class="line"><span class="lineno">  290</span>    endpoints.push_back(ep);</div>
+<div class="line"><span class="lineno">  291</span>  }</div>
+<div class="line"><span class="lineno">  292</span> </div>
+<div class="line"><span class="lineno">  293</span>  <span class="keywordflow">return</span> endpoints;</div>
+<div class="line"><span class="lineno">  294</span>}</div>
+<div class="ttc" id="aEonLogger_8h_html_a4cf9b473cf6a1d850b3725fca6805f86"><div class="ttname"><a href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a></div><div class="ttdeci">#define EONC_LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00262">EonLogger.h:262</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00044">EonLogger.h:44</a></div></div>
+<div class="ttc" id="astructeonc_1_1ServeEndpoint_html"><div class="ttname"><a href="structeonc_1_1ServeEndpoint.html">eonc::ServeEndpoint</a></div><div class="ttdoc">Configuration for a single serve endpoint.</div><div class="ttdef"><b>Definition</b> <a href="ServeMode_8h_source.html#l00027">ServeMode.h:27</a></div></div>
+<div class="ttc" id="astructeonc_1_1ServeEndpoint_html_a21fbca84657edd560b9c2d1946642a53"><div class="ttname"><a href="structeonc_1_1ServeEndpoint.html#a21fbca84657edd560b9c2d1946642a53">eonc::ServeEndpoint::potential</a></div><div class="ttdeci">PotType potential</div><div class="ttdef"><b>Definition</b> <a href="ServeMode_8h_source.html#l00028">ServeMode.h:28</a></div></div>
+<div class="ttc" id="astructeonc_1_1ServeEndpoint_html_a955e4c2fcc853eae9ae76a6892953c0a"><div class="ttname"><a href="structeonc_1_1ServeEndpoint.html#a955e4c2fcc853eae9ae76a6892953c0a">eonc::ServeEndpoint::port</a></div><div class="ttdeci">uint16_t port</div><div class="ttdef"><b>Definition</b> <a href="ServeMode_8h_source.html#l00030">ServeMode.h:30</a></div></div>
+<div class="ttc" id="astructeonc_1_1ServeEndpoint_html_ae70904e198b82a6e9d6c2244534844b0"><div class="ttname"><a href="structeonc_1_1ServeEndpoint.html#ae70904e198b82a6e9d6c2244534844b0">eonc::ServeEndpoint::host</a></div><div class="ttdeci">std::string host</div><div class="ttdef"><b>Definition</b> <a href="ServeMode_8h_source.html#l00029">ServeMode.h:29</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5e925ddd7fb3c6c11346cf97429c5c27" name="a5e925ddd7fb3c6c11346cf97429c5c27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e925ddd7fb3c6c11346cf97429c5c27">&#9670;&#160;</a></span>serveFromConfig()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="namespaceeonc.html#a5e925ddd7fb3c6c11346cf97429c5c27">eonc::serveFromConfig</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start serve mode from config-file parameters. </p>
+<p>Reads serve_options from params and dispatches to the appropriate mode:</p><ul>
+<li>If endpoints is set, uses multi-model serve (serveMultiple).</li>
+<li>If gateway_port &gt; 0, uses gateway mode (serveGateway).</li>
+<li>Otherwise, uses replicated mode (serveReplicated).</li>
+</ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>The eOn parameters with serve_options populated. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="ServeMode_8cpp_source.html#l00200">200</a> of file <a class="el" href="ServeMode_8cpp_source.html">ServeMode.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  200</span>                                               {</div>
+<div class="line"><span class="lineno">  201</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;opts = params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afe3f882ee9250f5bb11378ff41294d06">serve_options</a>;</div>
+<div class="line"><span class="lineno">  202</span> </div>
+<div class="line"><span class="lineno">  203</span>  <span class="comment">// Multi-model endpoints take priority</span></div>
+<div class="line"><span class="lineno">  204</span>  <span class="keywordflow">if</span> (!opts.endpoints.empty()) {</div>
+<div class="line"><span class="lineno">  205</span>    <span class="keyword">auto</span> endpoints = <a class="code hl_function" href="#a0bab3b9bafa3fca028a6c31adac24447">parseServeSpec</a>(opts.endpoints);</div>
+<div class="line"><span class="lineno">  206</span>    <span class="keywordflow">if</span> (endpoints.empty()) {</div>
+<div class="line"><span class="lineno">  207</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;No valid endpoints in spec: {}&quot;</span>, opts.endpoints);</div>
+<div class="line"><span class="lineno">  208</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  209</span>    }</div>
+<div class="line"><span class="lineno">  210</span>    <a class="code hl_function" href="#abdfc4b8250c5a7d87d4eaa5030194b44">serveMultiple</a>(endpoints, params);</div>
+<div class="line"><span class="lineno">  211</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  212</span>  }</div>
+<div class="line"><span class="lineno">  213</span> </div>
+<div class="line"><span class="lineno">  214</span>  <span class="comment">// Gateway mode</span></div>
+<div class="line"><span class="lineno">  215</span>  <span class="keywordflow">if</span> (opts.gateway_port &gt; 0) {</div>
+<div class="line"><span class="lineno">  216</span>    <span class="keywordtype">size_t</span> pool = (opts.replicas &gt; 0) ? opts.replicas : 1;</div>
+<div class="line"><span class="lineno">  217</span>    <a class="code hl_function" href="#a2d44293d95714634795621498031536d">serveGateway</a>(params, opts.host, opts.gateway_port, pool);</div>
+<div class="line"><span class="lineno">  218</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  219</span>  }</div>
+<div class="line"><span class="lineno">  220</span> </div>
+<div class="line"><span class="lineno">  221</span>  <span class="comment">// Replicated mode (default)</span></div>
+<div class="line"><span class="lineno">  222</span>  <a class="code hl_function" href="#addbe99ddcc2a13a67797e7a9f0625197">serveReplicated</a>(params, opts.host, opts.port, opts.replicas);</div>
+<div class="line"><span class="lineno">  223</span>}</div>
+<div class="ttc" id="aServeMode_8h_html_a0bab3b9bafa3fca028a6c31adac24447"><div class="ttname"><a href="#a0bab3b9bafa3fca028a6c31adac24447">parseServeSpec</a></div><div class="ttdeci">std::vector&lt; ServeEndpoint &gt; parseServeSpec(const std::string &amp;spec)</div><div class="ttdoc">Parse a serve configuration string into endpoints.</div><div class="ttdef"><b>Definition</b> <a href="ServeMode_8cpp_source.html#l00229">ServeMode.cpp:229</a></div></div>
+<div class="ttc" id="aServeMode_8h_html_a2d44293d95714634795621498031536d"><div class="ttname"><a href="#a2d44293d95714634795621498031536d">serveGateway</a></div><div class="ttdeci">void serveGateway(const Parameters &amp;params, const std::string &amp;host, uint16_t port, size_t pool_size)</div><div class="ttdoc">Start a gateway server backed by a pool of potential instances.</div><div class="ttdef"><b>Definition</b> <a href="ServeMode_8cpp_source.html#l00167">ServeMode.cpp:167</a></div></div>
+<div class="ttc" id="aServeMode_8h_html_abdfc4b8250c5a7d87d4eaa5030194b44"><div class="ttname"><a href="#abdfc4b8250c5a7d87d4eaa5030194b44">serveMultiple</a></div><div class="ttdeci">void serveMultiple(const std::vector&lt; ServeEndpoint &gt; &amp;endpoints, const Parameters &amp;params)</div><div class="ttdoc">Serve multiple potentials concurrently on different ports.</div><div class="ttdef"><b>Definition</b> <a href="ServeMode_8cpp_source.html#l00079">ServeMode.cpp:79</a></div></div>
+<div class="ttc" id="aServeMode_8h_html_addbe99ddcc2a13a67797e7a9f0625197"><div class="ttname"><a href="#addbe99ddcc2a13a67797e7a9f0625197">serveReplicated</a></div><div class="ttdeci">void serveReplicated(const Parameters &amp;params, const std::string &amp;host, uint16_t base_port, size_t replicas)</div><div class="ttdoc">Serve N replicas of the same potential across sequential ports.</div><div class="ttdef"><b>Definition</b> <a href="ServeMode_8cpp_source.html#l00133">ServeMode.cpp:133</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_afe3f882ee9250f5bb11378ff41294d06"><div class="ttname"><a href="classeonc_1_1Parameters.html#afe3f882ee9250f5bb11378ff41294d06">eonc::Parameters::serve_options</a></div><div class="ttdeci">struct eonc::Parameters::serve_options_t serve_options</div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2d44293d95714634795621498031536d" name="a2d44293d95714634795621498031536d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d44293d95714634795621498031536d">&#9670;&#160;</a></span>serveGateway()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="namespaceeonc.html#a2d44293d95714634795621498031536d">eonc::serveGateway</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>host</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>port</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>pool_size</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start a gateway server backed by a pool of potential instances. </p>
+<p>Creates <span class="tt">pool_size</span> instances of the configured potential and serves them behind a single gateway port. Incoming requests are dispatched round-robin across the pool. This gives clients a single endpoint while spreading load.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>The eOn parameters (potential_options.potential must be set). </td></tr>
+    <tr><td class="paramname">host</td><td>The hostname to listen on. </td></tr>
+    <tr><td class="paramname">port</td><td>The gateway port. </td></tr>
+    <tr><td class="paramname">pool_size</td><td>Number of potential instances in the pool. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="ServeMode_8cpp_source.html#l00167">167</a> of file <a class="el" href="ServeMode_8cpp_source.html">ServeMode.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  168</span>                                                   {</div>
+<div class="line"><span class="lineno">  169</span>  <span class="keywordflow">if</span> (pool_size == 0) {</div>
+<div class="line"><span class="lineno">  170</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Pool size must be &gt;= 1&quot;</span>);</div>
+<div class="line"><span class="lineno">  171</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  172</span>  }</div>
+<div class="line"><span class="lineno">  173</span> </div>
+<div class="line"><span class="lineno">  174</span>  <span class="keyword">auto</span> pot_type = params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">potential_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1potential__options__t.html#a8c62d8e8c2374eff1672e72ec2bae1c8">potential</a>;</div>
+<div class="line"><span class="lineno">  175</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Creating pool of {} {} instances for gateway on {}:{}&quot;</span>,</div>
+<div class="line"><span class="lineno">  176</span>                pool_size, std::string(magic_enum::enum_name(pot_type)), host,</div>
+<div class="line"><span class="lineno">  177</span>                port);</div>
+<div class="line"><span class="lineno">  178</span> </div>
+<div class="line"><span class="lineno">  179</span>  std::vector&lt;ForceCallback&gt; pool;</div>
+<div class="line"><span class="lineno">  180</span>  pool.reserve(pool_size);</div>
+<div class="line"><span class="lineno">  181</span> </div>
+<div class="line"><span class="lineno">  182</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; pool_size; ++i) {</div>
+<div class="line"><span class="lineno">  183</span>    <span class="keyword">auto</span> eon_pot = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a>(params);</div>
+<div class="line"><span class="lineno">  184</span>    <span class="keywordflow">if</span> (!eon_pot) {</div>
+<div class="line"><span class="lineno">  185</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Failed to create potential instance {}/{}&quot;</span>, i + 1,</div>
+<div class="line"><span class="lineno">  186</span>                     pool_size);</div>
+<div class="line"><span class="lineno">  187</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  188</span>    }</div>
+<div class="line"><span class="lineno">  189</span>    pool.push_back(makeForceCallback(std::move(eon_pot)));</div>
+<div class="line"><span class="lineno">  190</span>  }</div>
+<div class="line"><span class="lineno">  191</span> </div>
+<div class="line"><span class="lineno">  192</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Pool ready, starting gateway server&quot;</span>);</div>
+<div class="line"><span class="lineno">  193</span>  <a class="code hl_function" href="ServeRpcServer_8h.html#abde34b2d6455f233f19867a3e220b56c">startPooledRpcServer</a>(std::move(pool), host, port);</div>
+<div class="line"><span class="lineno">  194</span>}</div>
+<div class="ttc" id="aEonLogger_8h_html_afba240899b90f3996875577cc095dc00"><div class="ttname"><a href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a></div><div class="ttdeci">#define EONC_LOG_INFO(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00250">EonLogger.h:250</a></div></div>
+<div class="ttc" id="aServeRpcServer_8h_html_abde34b2d6455f233f19867a3e220b56c"><div class="ttname"><a href="ServeRpcServer_8h.html#abde34b2d6455f233f19867a3e220b56c">startPooledRpcServer</a></div><div class="ttdeci">void startPooledRpcServer(std::vector&lt; ForceCallback &gt; pool, const std::string &amp;host, uint16_t port)</div><div class="ttdoc">Start a blocking Cap&#39;n Proto RPC server backed by a pool of force callbacks dispatched round-robin.</div><div class="ttdef"><b>Definition</b> <a href="ServeRpcServer_8cpp_source.html#l00061">ServeRpcServer.cpp:185</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a75c3a463dab97989d367d624e455606c"><div class="ttname"><a href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">eonc::Parameters::potential_options</a></div><div class="ttdeci">struct eonc::Parameters::potential_options_t potential_options</div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_ad3c8668c89bd3ffae898307b0890f1ff"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; makePotential(const Parameters &amp;params)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8cpp_source.html#l00118">Potential.cpp:118</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1potential__options__t_html_a8c62d8e8c2374eff1672e72ec2bae1c8"><div class="ttname"><a href="structeonc_1_1Parameters_1_1potential__options__t.html#a8c62d8e8c2374eff1672e72ec2bae1c8">eonc::Parameters::potential_options_t::potential</a></div><div class="ttdeci">PotType potential</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00067">Parameters.h:67</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a41eef310a4da8b94a072259e75816c36" name="a41eef310a4da8b94a072259e75816c36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41eef310a4da8b94a072259e75816c36">&#9670;&#160;</a></span>serveMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="namespaceeonc.html#a41eef310a4da8b94a072259e75816c36">eonc::serveMode</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>host</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>port</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start a single rgpot-compatible Cap'n Proto RPC server. </p>
+<p>Wraps eOn's <a class="el" href="classPotential.html#a51a8f3110935f320fe1bfca4efa3bbb3">Potential::force()</a> as an rgpot PotentialBase and serves it over Cap'n Proto RPC. Blocks until the server is killed.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>The eOn parameters (potential_options.potential must be set). </td></tr>
+    <tr><td class="paramname">host</td><td>The hostname to listen on (e.g., "localhost" or "*"). </td></tr>
+    <tr><td class="paramname">port</td><td>The TCP port to listen on. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="ServeMode_8cpp_source.html#l00056">56</a> of file <a class="el" href="ServeMode_8cpp_source.html">ServeMode.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   57</span>                              {</div>
+<div class="line"><span class="lineno">   58</span>  <span class="keyword">auto</span> pot_type = params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">potential_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1potential__options__t.html#a8c62d8e8c2374eff1672e72ec2bae1c8">potential</a>;</div>
+<div class="line"><span class="lineno">   59</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Creating potential: {}&quot;</span>,</div>
+<div class="line"><span class="lineno">   60</span>                std::string(magic_enum::enum_name(pot_type)));</div>
+<div class="line"><span class="lineno">   61</span> </div>
+<div class="line"><span class="lineno">   62</span>  <span class="keyword">auto</span> eon_pot = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a>(params);</div>
+<div class="line"><span class="lineno">   63</span>  <span class="keywordflow">if</span> (!eon_pot) {</div>
+<div class="line"><span class="lineno">   64</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Failed to create potential of type {}&quot;</span>,</div>
+<div class="line"><span class="lineno">   65</span>                   std::string(magic_enum::enum_name(pot_type)));</div>
+<div class="line"><span class="lineno">   66</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   67</span>  }</div>
+<div class="line"><span class="lineno">   68</span> </div>
+<div class="line"><span class="lineno">   69</span>  <span class="keyword">auto</span> callback = makeForceCallback(std::move(eon_pot));</div>
+<div class="line"><span class="lineno">   70</span> </div>
+<div class="line"><span class="lineno">   71</span>  <span class="comment">// Blocks until killed (runs Cap&#39;n Proto event loop)</span></div>
+<div class="line"><span class="lineno">   72</span>  <a class="code hl_function" href="ServeRpcServer_8h.html#ae73698d7590f300d12636be26b8e0ea7">startRpcServer</a>(std::move(callback), host, port);</div>
+<div class="line"><span class="lineno">   73</span>}</div>
+<div class="ttc" id="aServeRpcServer_8h_html_ae73698d7590f300d12636be26b8e0ea7"><div class="ttname"><a href="ServeRpcServer_8h.html#ae73698d7590f300d12636be26b8e0ea7">startRpcServer</a></div><div class="ttdeci">void startRpcServer(ForceCallback callback, const std::string &amp;host, uint16_t port)</div><div class="ttdoc">Start a blocking Cap&#39;n Proto RPC server using a force callback.</div><div class="ttdef"><b>Definition</b> <a href="ServeRpcServer_8cpp_source.html#l00050">ServeRpcServer.cpp:103</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="abdfc4b8250c5a7d87d4eaa5030194b44" name="abdfc4b8250c5a7d87d4eaa5030194b44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdfc4b8250c5a7d87d4eaa5030194b44">&#9670;&#160;</a></span>serveMultiple()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="namespaceeonc.html#abdfc4b8250c5a7d87d4eaa5030194b44">eonc::serveMultiple</a> </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structServeEndpoint.html">ServeEndpoint</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>endpoints</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serve multiple potentials concurrently on different ports. </p>
+<p>Each endpoint gets its own thread, its own potential instance, and its own Cap'n Proto event loop. All threads block until SIGINT/SIGTERM.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">endpoints</td><td>List of {potential, host, port} configurations. </td></tr>
+    <tr><td class="paramname">params</td><td>Base eOn parameters (potential type is overridden per endpoint). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="ServeMode_8cpp_source.html#l00079">79</a> of file <a class="el" href="ServeMode_8cpp_source.html">ServeMode.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   80</span>                                                  {</div>
+<div class="line"><span class="lineno">   81</span>  <span class="keywordflow">if</span> (endpoints.empty()) {</div>
+<div class="line"><span class="lineno">   82</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;No serve endpoints specified&quot;</span>);</div>
+<div class="line"><span class="lineno">   83</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   84</span>  }</div>
+<div class="line"><span class="lineno">   85</span> </div>
+<div class="line"><span class="lineno">   86</span>  <span class="comment">// Single endpoint: run in the main thread (no extra overhead)</span></div>
+<div class="line"><span class="lineno">   87</span>  <span class="keywordflow">if</span> (endpoints.size() == 1) {</div>
+<div class="line"><span class="lineno">   88</span>    <span class="keyword">auto</span> params = base_params;</div>
+<div class="line"><span class="lineno">   89</span>    params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">potential_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1potential__options__t.html#a8c62d8e8c2374eff1672e72ec2bae1c8">potential</a> = endpoints[0].potential;</div>
+<div class="line"><span class="lineno">   90</span>    <a class="code hl_function" href="#a41eef310a4da8b94a072259e75816c36">serveMode</a>(params, endpoints[0].host, endpoints[0].port);</div>
+<div class="line"><span class="lineno">   91</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   92</span>  }</div>
+<div class="line"><span class="lineno">   93</span> </div>
+<div class="line"><span class="lineno">   94</span>  <span class="comment">// Multiple endpoints: one thread per server</span></div>
+<div class="line"><span class="lineno">   95</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Starting {} concurrent RPC servers&quot;</span>, endpoints.size());</div>
+<div class="line"><span class="lineno">   96</span> </div>
+<div class="line"><span class="lineno">   97</span>  std::vector&lt;std::thread&gt; threads;</div>
+<div class="line"><span class="lineno">   98</span>  threads.reserve(endpoints.size());</div>
+<div class="line"><span class="lineno">   99</span> </div>
+<div class="line"><span class="lineno">  100</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;ep : endpoints) {</div>
+<div class="line"><span class="lineno">  101</span>    threads.emplace_back([&amp;base_params, ep]() {</div>
+<div class="line"><span class="lineno">  102</span>      <span class="keyword">auto</span> params = base_params;</div>
+<div class="line"><span class="lineno">  103</span>      params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">potential_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1potential__options__t.html#a8c62d8e8c2374eff1672e72ec2bae1c8">potential</a> = ep.potential;</div>
+<div class="line"><span class="lineno">  104</span>      <span class="keyword">auto</span> pot_name = std::string(magic_enum::enum_name(ep.potential));</div>
+<div class="line"><span class="lineno">  105</span> </div>
+<div class="line"><span class="lineno">  106</span>      <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[{}:{}] Creating potential: {}&quot;</span>, ep.host, ep.port,</div>
+<div class="line"><span class="lineno">  107</span>                    pot_name);</div>
+<div class="line"><span class="lineno">  108</span> </div>
+<div class="line"><span class="lineno">  109</span>      <span class="keyword">auto</span> eon_pot = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a>(params);</div>
+<div class="line"><span class="lineno">  110</span>      <span class="keywordflow">if</span> (!eon_pot) {</div>
+<div class="line"><span class="lineno">  111</span>        <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[{}:{}] Failed to create potential {}&quot;</span>, ep.host,</div>
+<div class="line"><span class="lineno">  112</span>                       ep.port, pot_name);</div>
+<div class="line"><span class="lineno">  113</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  114</span>      }</div>
+<div class="line"><span class="lineno">  115</span> </div>
+<div class="line"><span class="lineno">  116</span>      <span class="keyword">auto</span> callback = makeForceCallback(std::move(eon_pot));</div>
+<div class="line"><span class="lineno">  117</span>      <a class="code hl_function" href="ServeRpcServer_8h.html#ae73698d7590f300d12636be26b8e0ea7">startRpcServer</a>(std::move(callback), ep.host, ep.port);</div>
+<div class="line"><span class="lineno">  118</span>    });</div>
+<div class="line"><span class="lineno">  119</span>  }</div>
+<div class="line"><span class="lineno">  120</span> </div>
+<div class="line"><span class="lineno">  121</span>  <span class="comment">// Wait for all threads (they block until killed)</span></div>
+<div class="line"><span class="lineno">  122</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;t : threads) {</div>
+<div class="line"><span class="lineno">  123</span>    <span class="keywordflow">if</span> (t.joinable()) {</div>
+<div class="line"><span class="lineno">  124</span>      t.join();</div>
+<div class="line"><span class="lineno">  125</span>    }</div>
+<div class="line"><span class="lineno">  126</span>  }</div>
+<div class="line"><span class="lineno">  127</span>}</div>
+<div class="ttc" id="aServeMode_8h_html_a41eef310a4da8b94a072259e75816c36"><div class="ttname"><a href="#a41eef310a4da8b94a072259e75816c36">serveMode</a></div><div class="ttdeci">void serveMode(const Parameters &amp;params, const std::string &amp;host, uint16_t port)</div><div class="ttdoc">Start a single rgpot-compatible Cap&#39;n Proto RPC server.</div><div class="ttdef"><b>Definition</b> <a href="ServeMode_8cpp_source.html#l00056">ServeMode.cpp:56</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="addbe99ddcc2a13a67797e7a9f0625197" name="addbe99ddcc2a13a67797e7a9f0625197"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addbe99ddcc2a13a67797e7a9f0625197">&#9670;&#160;</a></span>serveReplicated()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="namespaceeonc.html#addbe99ddcc2a13a67797e7a9f0625197">eonc::serveReplicated</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>host</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t</td>          <td class="paramname"><span class="paramname"><em>base_port</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>replicas</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serve N replicas of the same potential across sequential ports. </p>
+<p>Starts <span class="tt">replicas</span> threads, each serving the same potential type on ports base_port, base_port+1, ..., base_port+replicas-1.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>The eOn parameters (potential_options.potential must be set). </td></tr>
+    <tr><td class="paramname">host</td><td>The hostname to listen on. </td></tr>
+    <tr><td class="paramname">base_port</td><td>The first port; replicas use base_port+0 .. base_port+N-1. </td></tr>
+    <tr><td class="paramname">replicas</td><td>Number of concurrent server instances. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="ServeMode_8cpp_source.html#l00133">133</a> of file <a class="el" href="ServeMode_8cpp_source.html">ServeMode.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  134</span>                                                          {</div>
+<div class="line"><span class="lineno">  135</span>  <span class="keywordflow">if</span> (replicas == 0) {</div>
+<div class="line"><span class="lineno">  136</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Replicas must be &gt;= 1&quot;</span>);</div>
+<div class="line"><span class="lineno">  137</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  138</span>  }</div>
+<div class="line"><span class="lineno">  139</span>  <span class="keywordflow">if</span> (replicas == 1) {</div>
+<div class="line"><span class="lineno">  140</span>    <a class="code hl_function" href="#a41eef310a4da8b94a072259e75816c36">serveMode</a>(params, host, base_port);</div>
+<div class="line"><span class="lineno">  141</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  142</span>  }</div>
+<div class="line"><span class="lineno">  143</span> </div>
+<div class="line"><span class="lineno">  144</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;Starting {} replicated servers on ports {}-{}&quot;</span>, replicas,</div>
+<div class="line"><span class="lineno">  145</span>                base_port, base_port + replicas - 1);</div>
+<div class="line"><span class="lineno">  146</span> </div>
+<div class="line"><span class="lineno">  147</span>  std::vector&lt;std::thread&gt; threads;</div>
+<div class="line"><span class="lineno">  148</span>  threads.reserve(replicas);</div>
+<div class="line"><span class="lineno">  149</span> </div>
+<div class="line"><span class="lineno">  150</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; replicas; ++i) {</div>
+<div class="line"><span class="lineno">  151</span>    uint16_t port = <span class="keyword">static_cast&lt;</span>uint16_t<span class="keyword">&gt;</span>(base_port + i);</div>
+<div class="line"><span class="lineno">  152</span>    threads.emplace_back(</div>
+<div class="line"><span class="lineno">  153</span>        [&amp;params, &amp;host, port]() { <a class="code hl_function" href="#a41eef310a4da8b94a072259e75816c36">serveMode</a>(params, host, port); });</div>
+<div class="line"><span class="lineno">  154</span>  }</div>
+<div class="line"><span class="lineno">  155</span> </div>
+<div class="line"><span class="lineno">  156</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;t : threads) {</div>
+<div class="line"><span class="lineno">  157</span>    <span class="keywordflow">if</span> (t.joinable()) {</div>
+<div class="line"><span class="lineno">  158</span>      t.join();</div>
+<div class="line"><span class="lineno">  159</span>    }</div>
+<div class="line"><span class="lineno">  160</span>  }</div>
+<div class="line"><span class="lineno">  161</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="dir_2527c5cc2e6dc8ce970a4d420439d1d9.html">eon</a></li><li class="navelem"><a href="ServeMode_8h.html">ServeMode.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

@@ -1,0 +1,679 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: Quickmin Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classQuickmin.html','','classQuickmin-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Quickmin Class Reference<span class="mlabels"><span class="mlabel final">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="Quickmin_8h_source.html">Quickmin.h</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for Quickmin:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+ <div class="center">
+  <img src="classQuickmin.png" usemap="#Quickmin_map" alt=""/>
+  <map id="Quickmin_map" name="Quickmin_map">
+<area href="classeonc_1_1Optimizer.html" alt="eonc::Optimizer" shape="rect" coords="0,0,99,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a190e46af2be89154a4b8ac6c7a89afb4" id="r_a190e46af2be89154a4b8ac6c7a89afb4"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a190e46af2be89154a4b8ac6c7a89afb4">Quickmin</a> (std::shared_ptr&lt; <a class="el" href="classObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memitem:ab1aa8787f86984656ae1a96a98d352c7" id="r_ab1aa8787f86984656ae1a96a98d352c7"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ab1aa8787f86984656ae1a96a98d352c7">~Quickmin</a> ()=default</td></tr>
+<tr class="memitem:a58ed8590551bf5566e40422e823fc0fe" id="r_a58ed8590551bf5566e40422e823fc0fe"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a58ed8590551bf5566e40422e823fc0fe">step</a> (double a_maxMove) override</td></tr>
+<tr class="memitem:ac0effad0edd9e5aa32f6f58fe90d1e6e" id="r_ac0effad0edd9e5aa32f6f58fe90d1e6e"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ac0effad0edd9e5aa32f6f58fe90d1e6e">run</a> (size_t a_maxIterations, double a_maxMove) override</td></tr>
+<tr class="inherit_header pub_methods_classeonc_1_1Optimizer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1Optimizer')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1Optimizer.html">eonc::Optimizer</a></td></tr>
+<tr class="memitem:a51ef8ef5f774fa7125131d8a5dd72710 inherit pub_methods_classeonc_1_1Optimizer" id="r_a51ef8ef5f774fa7125131d8a5dd72710"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, const <a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a> &amp;a_config)</td></tr>
+<tr class="memitem:af5e38a77399147106fd57aced5092a71 inherit pub_methods_classeonc_1_1Optimizer" id="r_af5e38a77399147106fd57aced5092a71"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#af5e38a77399147106fd57aced5092a71">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, <a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> a_optype, const <a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a> &amp;a_config)</td></tr>
+<tr class="memitem:a7359cf3da3da63ba17b3564de5428e18 inherit pub_methods_classeonc_1_1Optimizer" id="r_a7359cf3da3da63ba17b3564de5428e18"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#a7359cf3da3da63ba17b3564de5428e18">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memitem:a0799f30a0b8940646966008020d93e6d inherit pub_methods_classeonc_1_1Optimizer" id="r_a0799f30a0b8940646966008020d93e6d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#a0799f30a0b8940646966008020d93e6d">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, <a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> a_optype, const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memitem:ae94c246f1e45f8f7b8f906667951543c inherit pub_methods_classeonc_1_1Optimizer" id="r_ae94c246f1e45f8f7b8f906667951543c"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#ae94c246f1e45f8f7b8f906667951543c">~Optimizer</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a20c9239afea0d5ef032e370f875573fc" id="r_a20c9239afea0d5ef032e370f875573fc"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a20c9239afea0d5ef032e370f875573fc">m_dt</a></td></tr>
+<tr class="memitem:adc66c02fbf4d5a91987e4ab67bb7cf76" id="r_adc66c02fbf4d5a91987e4ab67bb7cf76"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#adc66c02fbf4d5a91987e4ab67bb7cf76">m_dt_max</a></td></tr>
+<tr class="memitem:aff3f16760cbb51834c7cdfbbe3fd5c98" id="r_aff3f16760cbb51834c7cdfbbe3fd5c98"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#aff3f16760cbb51834c7cdfbbe3fd5c98">m_max_move</a></td></tr>
+<tr class="memitem:a32194b31d7c716310b473a12dcbe5ed4" id="r_a32194b31d7c716310b473a12dcbe5ed4"><td class="memItemLeft">Eigen::VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a32194b31d7c716310b473a12dcbe5ed4">m_vel</a></td></tr>
+<tr class="memitem:aa26f05207cf4d21b5fb13c9915f61311" id="r_aa26f05207cf4d21b5fb13c9915f61311"><td class="memItemLeft">size_t&#160;</td><td class="memItemRight"><a class="el" href="#aa26f05207cf4d21b5fb13c9915f61311">m_iteration</a></td></tr>
+<tr class="memitem:a468889abddcfe80e844b210b221183e0" id="r_a468889abddcfe80e844b210b221183e0"><td class="memItemLeft">size_t&#160;</td><td class="memItemRight"><a class="el" href="#a468889abddcfe80e844b210b221183e0">m_max_iter</a></td></tr>
+<tr class="memitem:a3545af5c8f5ad2acb48d791966a63402" id="r_a3545af5c8f5ad2acb48d791966a63402"><td class="memItemLeft"><a class="el" href="structeonc_1_1log_1_1FileScoped.html">eonc::log::FileScoped</a>&#160;</td><td class="memItemRight"><a class="el" href="#a3545af5c8f5ad2acb48d791966a63402">m_log</a> {&quot;quickmin&quot;, &quot;_quickmin.log&quot;}</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_attribs_classeonc_1_1Optimizer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1Optimizer')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1Optimizer.html">eonc::Optimizer</a></td></tr>
+<tr class="memitem:a3bfcee12036bd655e29a065e8e1c1f4d inherit pro_attribs_classeonc_1_1Optimizer" id="r_a3bfcee12036bd655e29a065e8e1c1f4d"><td class="memItemLeft">const <a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a></td></tr>
+<tr class="memitem:ac396cbda1caadf57ff9df7eda4db1822 inherit pro_attribs_classeonc_1_1Optimizer" id="r_ac396cbda1caadf57ff9df7eda4db1822"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classObjectiveFunction.html">ObjectiveFunction</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="Quickmin_8h_source.html#l00022">22</a> of file <a class="el" href="Quickmin_8h_source.html">Quickmin.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a190e46af2be89154a4b8ac6c7a89afb4" name="a190e46af2be89154a4b8ac6c7a89afb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a190e46af2be89154a4b8ac6c7a89afb4">&#9670;&#160;</a></span>Quickmin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeonc_1_1Quickmin.html#a190e46af2be89154a4b8ac6c7a89afb4">eonc::Quickmin::Quickmin</a> </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classObjectiveFunction.html">ObjectiveFunction</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>a_objf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>a_params</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Quickmin_8h_source.html#l00025">25</a> of file <a class="el" href="Quickmin_8h_source.html">Quickmin.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   27</span>      : <a class="code hl_function" href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer</a>(a_objf, <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ad86cb697d0458a9fbfbadb6cd1e9e936">OptType::QM</a>, a_params),</div>
+<div class="line"><span class="lineno">   28</span>        <a class="code hl_variable" href="#a20c9239afea0d5ef032e370f875573fc">m_dt</a>{a_params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a6a6dd36e3073766761c34d928540815f">time_step</a>},</div>
+<div class="line"><span class="lineno">   29</span>        <a class="code hl_variable" href="#adc66c02fbf4d5a91987e4ab67bb7cf76">m_dt_max</a>{a_params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a708538153cc4fa3ed2322079c44f6216">max_time_step</a>},</div>
+<div class="line"><span class="lineno">   30</span>        <a class="code hl_variable" href="#aff3f16760cbb51834c7cdfbbe3fd5c98">m_max_move</a>{a_params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#af4fcd22b349db9419c51039f62290c33">max_move</a>},</div>
+<div class="line"><span class="lineno">   31</span>        <a class="code hl_variable" href="#a32194b31d7c716310b473a12dcbe5ed4">m_vel</a>{Eigen::VectorXd::Zero(a_objf-&gt;degreesOfFreedom())},</div>
+<div class="line"><span class="lineno">   32</span>        <a class="code hl_variable" href="#aa26f05207cf4d21b5fb13c9915f61311">m_iteration</a>{0},</div>
+<div class="line"><span class="lineno">   33</span>        <a class="code hl_variable" href="#a468889abddcfe80e844b210b221183e0">m_max_iter</a>{a_params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a0114e7ce183767636b2d990b6b44367b">max_iterations</a>} {}</div>
+<div class="ttc" id="aclassQuickmin_html_a20c9239afea0d5ef032e370f875573fc"><div class="ttname"><a href="#a20c9239afea0d5ef032e370f875573fc">Quickmin::m_dt</a></div><div class="ttdeci">double m_dt</div><div class="ttdef"><b>Definition</b> <a href="Quickmin_8h_source.html#l00040">Quickmin.h:40</a></div></div>
+<div class="ttc" id="aclassQuickmin_html_a32194b31d7c716310b473a12dcbe5ed4"><div class="ttname"><a href="#a32194b31d7c716310b473a12dcbe5ed4">Quickmin::m_vel</a></div><div class="ttdeci">Eigen::VectorXd m_vel</div><div class="ttdef"><b>Definition</b> <a href="Quickmin_8h_source.html#l00041">Quickmin.h:41</a></div></div>
+<div class="ttc" id="aclassQuickmin_html_a468889abddcfe80e844b210b221183e0"><div class="ttname"><a href="#a468889abddcfe80e844b210b221183e0">Quickmin::m_max_iter</a></div><div class="ttdeci">size_t m_max_iter</div><div class="ttdef"><b>Definition</b> <a href="Quickmin_8h_source.html#l00042">Quickmin.h:42</a></div></div>
+<div class="ttc" id="aclassQuickmin_html_aa26f05207cf4d21b5fb13c9915f61311"><div class="ttname"><a href="#aa26f05207cf4d21b5fb13c9915f61311">Quickmin::m_iteration</a></div><div class="ttdeci">size_t m_iteration</div><div class="ttdef"><b>Definition</b> <a href="Quickmin_8h_source.html#l00042">Quickmin.h:42</a></div></div>
+<div class="ttc" id="aclassQuickmin_html_adc66c02fbf4d5a91987e4ab67bb7cf76"><div class="ttname"><a href="#adc66c02fbf4d5a91987e4ab67bb7cf76">Quickmin::m_dt_max</a></div><div class="ttdeci">double m_dt_max</div><div class="ttdef"><b>Definition</b> <a href="Quickmin_8h_source.html#l00040">Quickmin.h:40</a></div></div>
+<div class="ttc" id="aclassQuickmin_html_aff3f16760cbb51834c7cdfbbe3fd5c98"><div class="ttname"><a href="#aff3f16760cbb51834c7cdfbbe3fd5c98">Quickmin::m_max_move</a></div><div class="ttdeci">double m_max_move</div><div class="ttdef"><b>Definition</b> <a href="Quickmin_8h_source.html#l00040">Quickmin.h:40</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Optimizer_html_a51ef8ef5f774fa7125131d8a5dd72710"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">eonc::Optimizer::Optimizer</a></div><div class="ttdeci">Optimizer(std::shared_ptr&lt; ObjectiveFunction &gt; a_objf, const OptimizerConfig &amp;a_config)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00071">Optimizer.h:71</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a1c3ba2cdc8f797e5ab2d8961720fe896"><div class="ttname"><a href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">eonc::Parameters::optimizer_options</a></div><div class="ttdeci">struct eonc::Parameters::optimizer_options_t optimizer_options</div></div>
+<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56ad86cb697d0458a9fbfbadb6cd1e9e936"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ad86cb697d0458a9fbfbadb6cd1e9e936">eonc::OptType::QM</a></div><div class="ttdeci">@ QM</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00102">BaseStructures.h:102</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_html_a0114e7ce183767636b2d990b6b44367b"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a0114e7ce183767636b2d990b6b44367b">eonc::Parameters::optimizer_options_t::max_iterations</a></div><div class="ttdeci">size_t max_iterations</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00223">Parameters.h:223</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_html_a6a6dd36e3073766761c34d928540815f"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a6a6dd36e3073766761c34d928540815f">eonc::Parameters::optimizer_options_t::time_step</a></div><div class="ttdeci">double time_step</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00227">Parameters.h:227</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_html_a708538153cc4fa3ed2322079c44f6216"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a708538153cc4fa3ed2322079c44f6216">eonc::Parameters::optimizer_options_t::max_time_step</a></div><div class="ttdeci">double max_time_step</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00229">Parameters.h:229</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_html_af4fcd22b349db9419c51039f62290c33"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t.html#af4fcd22b349db9419c51039f62290c33">eonc::Parameters::optimizer_options_t::max_move</a></div><div class="ttdeci">double max_move</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00224">Parameters.h:224</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab1aa8787f86984656ae1a96a98d352c7" name="ab1aa8787f86984656ae1a96a98d352c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1aa8787f86984656ae1a96a98d352c7">&#9670;&#160;</a></span>~Quickmin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeonc_1_1Quickmin.html#ab1aa8787f86984656ae1a96a98d352c7">eonc::Quickmin::~Quickmin</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="ac0effad0edd9e5aa32f6f58fe90d1e6e" name="ac0effad0edd9e5aa32f6f58fe90d1e6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0effad0edd9e5aa32f6f58fe90d1e6e">&#9670;&#160;</a></span>run()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classeonc_1_1Quickmin.html#ac0effad0edd9e5aa32f6f58fe90d1e6e">Quickmin::run</a> </td>
+          <td>(</td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>a_maxIterations</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>a_maxMove</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classeonc_1_1Optimizer.html#a94dd8b89c732857574c03586efa25273">eonc::Optimizer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="Quickmin_8cpp_source.html#l00038">38</a> of file <a class="el" href="Quickmin_8cpp_source.html">Quickmin.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   38</span>                                                     {</div>
+<div class="line"><span class="lineno">   39</span>  <span class="keywordflow">while</span> (!<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() &amp;&amp; <a class="code hl_variable" href="#aa26f05207cf4d21b5fb13c9915f61311">m_iteration</a> &lt; a_maxSteps) {</div>
+<div class="line"><span class="lineno">   40</span>    <a class="code hl_function" href="classeonc_1_1Quickmin.html#a58ed8590551bf5566e40422e823fc0fe">step</a>(a_maxMove);</div>
+<div class="line"><span class="lineno">   41</span>  }</div>
+<div class="line"><span class="lineno">   42</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">   43</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Optimizer_html_ac396cbda1caadf57ff9df7eda4db1822"><div class="ttname"><a href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">eonc::Optimizer::m_objf</a></div><div class="ttdeci">std::shared_ptr&lt; ObjectiveFunction &gt; m_objf</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00068">Optimizer.h:68</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Quickmin_html_a58ed8590551bf5566e40422e823fc0fe"><div class="ttname"><a href="classeonc_1_1Quickmin.html#a58ed8590551bf5566e40422e823fc0fe">eonc::Quickmin::step</a></div><div class="ttdeci">int step(double a_maxMove) override</div><div class="ttdef"><b>Definition</b> <a href="Quickmin_8cpp_source.html#l00015">Quickmin.cpp:15</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a58ed8590551bf5566e40422e823fc0fe" name="a58ed8590551bf5566e40422e823fc0fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58ed8590551bf5566e40422e823fc0fe">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classeonc_1_1Quickmin.html#a58ed8590551bf5566e40422e823fc0fe">Quickmin::step</a> </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>a_maxMove</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classeonc_1_1Optimizer.html#aa66365f3f15e6d4b9829e555cfc9f2b5">eonc::Optimizer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="Quickmin_8cpp_source.html#l00015">15</a> of file <a class="el" href="Quickmin_8cpp_source.html">Quickmin.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   15</span>                                   {</div>
+<div class="line"><span class="lineno">   16</span>  Eigen::VectorXd force = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient();</div>
+<div class="line"><span class="lineno">   17</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.quickmin.steepest_descent) {</div>
+<div class="line"><span class="lineno">   18</span>    <a class="code hl_variable" href="#a32194b31d7c716310b473a12dcbe5ed4">m_vel</a>.setZero();</div>
+<div class="line"><span class="lineno">   19</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   20</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a32194b31d7c716310b473a12dcbe5ed4">m_vel</a>.dot(force) &lt; 0) {</div>
+<div class="line"><span class="lineno">   21</span>      <a class="code hl_variable" href="#a32194b31d7c716310b473a12dcbe5ed4">m_vel</a>.setZero();</div>
+<div class="line"><span class="lineno">   22</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   23</span>      Eigen::VectorXd f_unit = force.normalized();</div>
+<div class="line"><span class="lineno">   24</span>      <a class="code hl_variable" href="#a32194b31d7c716310b473a12dcbe5ed4">m_vel</a> = <a class="code hl_variable" href="#a32194b31d7c716310b473a12dcbe5ed4">m_vel</a>.dot(f_unit) * f_unit;</div>
+<div class="line"><span class="lineno">   25</span>    }</div>
+<div class="line"><span class="lineno">   26</span>  }</div>
+<div class="line"><span class="lineno">   27</span> </div>
+<div class="line"><span class="lineno">   28</span>  <a class="code hl_variable" href="#a32194b31d7c716310b473a12dcbe5ed4">m_vel</a> += force * <a class="code hl_variable" href="#a20c9239afea0d5ef032e370f875573fc">m_dt</a>;</div>
+<div class="line"><span class="lineno">   29</span>  Eigen::VectorXd dr = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::helpers::maxAtomMotionAppliedV</a>(</div>
+<div class="line"><span class="lineno">   30</span>      <a class="code hl_variable" href="#a32194b31d7c716310b473a12dcbe5ed4">m_vel</a> * <a class="code hl_variable" href="#a20c9239afea0d5ef032e370f875573fc">m_dt</a>,</div>
+<div class="line"><span class="lineno">   31</span>      a_maxMove); <span class="comment">// used to be m_optConfig.opts.max_time_step</span></div>
+<div class="line"><span class="lineno">   32</span>  QUILL_LOG_INFO(<a class="code hl_variable" href="#a3545af5c8f5ad2acb48d791966a63402">m_log</a>, <span class="stringliteral">&quot;{} M_Vel.norm() is {}&quot;</span>, <a class="code hl_variable" href="#aa26f05207cf4d21b5fb13c9915f61311">m_iteration</a>, <a class="code hl_variable" href="#a32194b31d7c716310b473a12dcbe5ed4">m_vel</a>.norm());</div>
+<div class="line"><span class="lineno">   33</span>  <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPositions() + dr);</div>
+<div class="line"><span class="lineno">   34</span>  <a class="code hl_variable" href="#aa26f05207cf4d21b5fb13c9915f61311">m_iteration</a>++;</div>
+<div class="line"><span class="lineno">   35</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">   36</span>}</div>
+<div class="ttc" id="aclassQuickmin_html_a3545af5c8f5ad2acb48d791966a63402"><div class="ttname"><a href="#a3545af5c8f5ad2acb48d791966a63402">Quickmin::m_log</a></div><div class="ttdeci">eonc::log::FileScoped m_log</div><div class="ttdef"><b>Definition</b> <a href="Quickmin_8h_source.html#l00043">Quickmin.h:43</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Optimizer_html_a3bfcee12036bd655e29a065e8e1c1f4d"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">eonc::Optimizer::m_optConfig</a></div><div class="ttdeci">const OptimizerConfig m_optConfig</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00067">Optimizer.h:67</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_acbf42a1f91c3c4317451f0c12a60aeee"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::helpers::maxAtomMotionAppliedV</a></div><div class="ttdeci">VectorXd maxAtomMotionAppliedV(const VectorXd v1, double maxMotion)</div><div class="ttdef"><b>Definition</b> <a href="GeometryAnalysis_8cpp_source.html#l00033">GeometryAnalysis.cpp:319</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a20c9239afea0d5ef032e370f875573fc" name="a20c9239afea0d5ef032e370f875573fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20c9239afea0d5ef032e370f875573fc">&#9670;&#160;</a></span>m_dt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classeonc_1_1Quickmin.html#a20c9239afea0d5ef032e370f875573fc">eonc::Quickmin::m_dt</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Quickmin_8h_source.html#l00040">40</a> of file <a class="el" href="Quickmin_8h_source.html">Quickmin.h</a>.</p>
+
+</div>
+</div>
+<a id="adc66c02fbf4d5a91987e4ab67bb7cf76" name="adc66c02fbf4d5a91987e4ab67bb7cf76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc66c02fbf4d5a91987e4ab67bb7cf76">&#9670;&#160;</a></span>m_dt_max</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classeonc_1_1Quickmin.html#adc66c02fbf4d5a91987e4ab67bb7cf76">eonc::Quickmin::m_dt_max</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Quickmin_8h_source.html#l00040">40</a> of file <a class="el" href="Quickmin_8h_source.html">Quickmin.h</a>.</p>
+
+</div>
+</div>
+<a id="aa26f05207cf4d21b5fb13c9915f61311" name="aa26f05207cf4d21b5fb13c9915f61311"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa26f05207cf4d21b5fb13c9915f61311">&#9670;&#160;</a></span>m_iteration</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t <a class="el" href="classeonc_1_1Quickmin.html#aa26f05207cf4d21b5fb13c9915f61311">eonc::Quickmin::m_iteration</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Quickmin_8h_source.html#l00042">42</a> of file <a class="el" href="Quickmin_8h_source.html">Quickmin.h</a>.</p>
+
+</div>
+</div>
+<a id="a3545af5c8f5ad2acb48d791966a63402" name="a3545af5c8f5ad2acb48d791966a63402"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3545af5c8f5ad2acb48d791966a63402">&#9670;&#160;</a></span>m_log</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1log_1_1FileScoped.html">eonc::log::FileScoped</a> <a class="el" href="classeonc_1_1Quickmin.html#a3545af5c8f5ad2acb48d791966a63402">eonc::Quickmin::m_log</a> {&quot;quickmin&quot;, &quot;_quickmin.log&quot;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Quickmin_8h_source.html#l00043">43</a> of file <a class="el" href="Quickmin_8h_source.html">Quickmin.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   43</span>{<span class="stringliteral">&quot;quickmin&quot;</span>, <span class="stringliteral">&quot;_quickmin.log&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a468889abddcfe80e844b210b221183e0" name="a468889abddcfe80e844b210b221183e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a468889abddcfe80e844b210b221183e0">&#9670;&#160;</a></span>m_max_iter</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t <a class="el" href="classeonc_1_1Quickmin.html#a468889abddcfe80e844b210b221183e0">eonc::Quickmin::m_max_iter</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Quickmin_8h_source.html#l00042">42</a> of file <a class="el" href="Quickmin_8h_source.html">Quickmin.h</a>.</p>
+
+</div>
+</div>
+<a id="aff3f16760cbb51834c7cdfbbe3fd5c98" name="aff3f16760cbb51834c7cdfbbe3fd5c98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff3f16760cbb51834c7cdfbbe3fd5c98">&#9670;&#160;</a></span>m_max_move</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classeonc_1_1Quickmin.html#aff3f16760cbb51834c7cdfbbe3fd5c98">eonc::Quickmin::m_max_move</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Quickmin_8h_source.html#l00040">40</a> of file <a class="el" href="Quickmin_8h_source.html">Quickmin.h</a>.</p>
+
+</div>
+</div>
+<a id="a32194b31d7c716310b473a12dcbe5ed4" name="a32194b31d7c716310b473a12dcbe5ed4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32194b31d7c716310b473a12dcbe5ed4">&#9670;&#160;</a></span>m_vel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd <a class="el" href="classeonc_1_1Quickmin.html#a32194b31d7c716310b473a12dcbe5ed4">eonc::Quickmin::m_vel</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Quickmin_8h_source.html#l00041">41</a> of file <a class="el" href="Quickmin_8h_source.html">Quickmin.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="Quickmin_8h_source.html">Quickmin.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/<a class="el" href="Quickmin_8cpp_source.html">Quickmin.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="classQuickmin.html">Quickmin</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

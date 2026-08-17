@@ -1,0 +1,1101 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::neb::OCINEBController Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1neb_1_1OCINEBController.html','','classeonc_1_1neb_1_1OCINEBController-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::neb::OCINEBController Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Goswami (in prep).  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="NEBOcinebController_8h_source.html">NEBOcinebController.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:Config" id="r_Config"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1neb_1_1OCINEBController_1_1Config.html">Config</a></td></tr>
+<tr class="memitem:MMFResult" id="r_MMFResult"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1neb_1_1OCINEBController_1_1MMFResult.html">MMFResult</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a2fb2b83cc4d09f1eb7ac4ec6dc74bd7d" id="r_a2fb2b83cc4d09f1eb7ac4ec6dc74bd7d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a2fb2b83cc4d09f1eb7ac4ec6dc74bd7d">OCINEBController</a> (const <a class="el" href="structeonc_1_1neb_1_1OCINEBController_1_1Config.html">Config</a> &amp;cfg)</td></tr>
+<tr class="memitem:a945a3b27ff9e51b7a94d61747e67b887" id="r_a945a3b27ff9e51b7a94d61747e67b887"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a945a3b27ff9e51b7a94d61747e67b887">initBaseline</a> (double baseline_force)</td></tr>
+<tr class="memitem:a239f13c2d7a485f7da4166490025336e" id="r_a239f13c2d7a485f7da4166490025336e"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a239f13c2d7a485f7da4166490025336e">shouldTrigger</a> (double convForce, bool ci_active, long climbingImage, long numImages, int ciStabilityCounter) const</td></tr>
+<tr class="memitem:a7dcc9e18222cd55d6b87d4fd0334bfa0" id="r_a7dcc9e18222cd55d6b87d4fd0334bfa0"><td class="memItemLeft"><a class="el" href="structeonc_1_1neb_1_1OCINEBController_1_1MMFResult.html">MMFResult</a>&#160;</td><td class="memItemRight"><a class="el" href="#a7dcc9e18222cd55d6b87d4fd0334bfa0">run</a> (<a class="el" href="classeonc_1_1NudgedElasticBand.html">eonc::NudgedElasticBand</a> &amp;neb, double convForce)</td></tr>
+<tr class="memitem:a4a77466640953dd3953699c1e9d832c4" id="r_a4a77466640953dd3953699c1e9d832c4"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a4a77466640953dd3953699c1e9d832c4">resetStability</a> ()</td></tr>
+<tr class="memitem:a65f2ceb4a3bcf82fb6bc226a8672d00a" id="r_a65f2ceb4a3bcf82fb6bc226a8672d00a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a65f2ceb4a3bcf82fb6bc226a8672d00a">updateStability</a> (long climbingImage)</td></tr>
+<tr class="memitem:ace6abef577f49df4cd3cf2992f7ff490" id="r_ace6abef577f49df4cd3cf2992f7ff490"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ace6abef577f49df4cd3cf2992f7ff490">stabilityCount</a> () const</td></tr>
+<tr class="memitem:a8cbc43fcab8cb5280a8ed9cfad3087dd" id="r_a8cbc43fcab8cb5280a8ed9cfad3087dd"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a8cbc43fcab8cb5280a8ed9cfad3087dd">threshold</a> () const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a23f8d62af902431487d76507f079e7c0" id="r_a23f8d62af902431487d76507f079e7c0"><td class="memItemLeft">static <a class="el" href="structeonc_1_1neb_1_1OCINEBController_1_1Config.html">Config</a>&#160;</td><td class="memItemRight"><a class="el" href="#a23f8d62af902431487d76507f079e7c0">fromParams</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a8db8b58f6c54691654c678a5c34bf006" id="r_a8db8b58f6c54691654c678a5c34bf006"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a8db8b58f6c54691654c678a5c34bf006">runDimer</a> (<a class="el" href="classeonc_1_1NudgedElasticBand.html">eonc::NudgedElasticBand</a> &amp;neb, double &amp;alignment)</td></tr>
+<tr class="memitem:a5e9c48080ecadc019093094ce77fca91" id="r_a5e9c48080ecadc019093094ce77fca91"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a5e9c48080ecadc019093094ce77fca91">updateThresholdSuccess</a> (double convForce, double newForce)</td></tr>
+<tr class="memitem:aeaa9683433dac5303bf895c28ffb9e0e" id="r_aeaa9683433dac5303bf895c28ffb9e0e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aeaa9683433dac5303bf895c28ffb9e0e">updateThresholdBackoff</a> (double alignment)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:af779f72f73480ebc947643575de57f1f" id="r_af779f72f73480ebc947643575de57f1f"><td class="memItemLeft"><a class="el" href="structeonc_1_1neb_1_1OCINEBController_1_1Config.html">Config</a>&#160;</td><td class="memItemRight"><a class="el" href="#af779f72f73480ebc947643575de57f1f">cfg_</a></td></tr>
+<tr class="memitem:a975e9042c6286151386ee4fc3e8afecb" id="r_a975e9042c6286151386ee4fc3e8afecb"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a975e9042c6286151386ee4fc3e8afecb">current_threshold_</a> {-1.0}</td></tr>
+<tr class="memitem:a0cc926bad79564b77464c9166e8423da" id="r_a0cc926bad79564b77464c9166e8423da"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a0cc926bad79564b77464c9166e8423da">baseline_force_</a> {-1.0}</td></tr>
+<tr class="memitem:a70d143248c1beaac2ee6c1460eef8cb5" id="r_a70d143248c1beaac2ee6c1460eef8cb5"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a70d143248c1beaac2ee6c1460eef8cb5">previousClimbingImage_</a> {-1}</td></tr>
+<tr class="memitem:a89e0002d95fc6abf70b4de661145d05d" id="r_a89e0002d95fc6abf70b4de661145d05d"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a89e0002d95fc6abf70b4de661145d05d">ciStabilityCounter_</a> {0}</td></tr>
+<tr class="memitem:a6ab4697ce85ba30b734dc5cd98939cd1" id="r_a6ab4697ce85ba30b734dc5cd98939cd1"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a6ab4697ce85ba30b734dc5cd98939cd1">mmf_iterations_used_</a> {0}</td></tr>
+<tr class="memitem:a4ca2bd5c58446ace0b27f1bd7e7ba847" id="r_a4ca2bd5c58446ace0b27f1bd7e7ba847"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a4ca2bd5c58446ace0b27f1bd7e7ba847">has_cached_mode_</a> {false}</td></tr>
+<tr class="memitem:a7bde5dd215197965d4aee7072f268886" id="r_a7bde5dd215197965d4aee7072f268886"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="#a7bde5dd215197965d4aee7072f268886">cached_mode_</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Goswami (in prep). </p>
+<p>Controller for OCINEB hybrid dimer refinement of the climbing image. Manages MMF triggering, threshold adaptation, and backoff logic. </p>
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8h_source.html#l00026">26</a> of file <a class="el" href="NEBOcinebController_8h_source.html">NEBOcinebController.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a2fb2b83cc4d09f1eb7ac4ec6dc74bd7d" name="a2fb2b83cc4d09f1eb7ac4ec6dc74bd7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fb2b83cc4d09f1eb7ac4ec6dc74bd7d">&#9670;&#160;</a></span>OCINEBController()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eonc::neb::OCINEBController::OCINEBController </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeonc_1_1neb_1_1OCINEBController_1_1Config.html">Config</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>cfg</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8cpp_source.html#l00037">37</a> of file <a class="el" href="NEBOcinebController_8cpp_source.html">NEBOcinebController.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   38</span>    : <a class="code hl_variable" href="#af779f72f73480ebc947643575de57f1f">cfg_</a>{cfg} {}</div>
+<div class="ttc" id="aclasseonc_1_1neb_1_1OCINEBController_html_af779f72f73480ebc947643575de57f1f"><div class="ttname"><a href="#af779f72f73480ebc947643575de57f1f">eonc::neb::OCINEBController::cfg_</a></div><div class="ttdeci">Config cfg_</div><div class="ttdef"><b>Definition</b> <a href="NEBOcinebController_8h_source.html#l00060">NEBOcinebController.h:60</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a23f8d62af902431487d76507f079e7c0" name="a23f8d62af902431487d76507f079e7c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23f8d62af902431487d76507f079e7c0">&#9670;&#160;</a></span>fromParams()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1neb_1_1OCINEBController_1_1Config.html">OCINEBController::Config</a> eonc::neb::OCINEBController::fromParams </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8cpp_source.html#l00023">23</a> of file <a class="el" href="NEBOcinebController_8cpp_source.html">NEBOcinebController.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   23</span>                                                     {</div>
+<div class="line"><span class="lineno">   24</span>  <span class="keyword">auto</span> &amp;ci = params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t.html#a6269a1214dd82977f50af048cb9ea2f7">climbing_image</a>;</div>
+<div class="line"><span class="lineno">   25</span>  <span class="keyword">auto</span> &amp;r = ci.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t_1_1climbing__image__options__t.html#a88547c48da945788ed9af373f40e730c">ocineb</a>;</div>
+<div class="line"><span class="lineno">   26</span>  <span class="keywordflow">return</span> <a class="code hl_struct" href="structeonc_1_1neb_1_1OCINEBController_1_1Config.html">Config</a>{</div>
+<div class="line"><span class="lineno">   27</span>      r.use_mmf,</div>
+<div class="line"><span class="lineno">   28</span>      r.trigger_force,</div>
+<div class="line"><span class="lineno">   29</span>      r.trigger_factor,</div>
+<div class="line"><span class="lineno">   30</span>      r.max_steps,</div>
+<div class="line"><span class="lineno">   31</span>      r.ci_stability_count,</div>
+<div class="line"><span class="lineno">   32</span>      r.angle_tol,</div>
+<div class="line"><span class="lineno">   33</span>      params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t.html#a9fef04e7d204f603a6aec91a0eff93f2">force_tolerance</a>,</div>
+<div class="line"><span class="lineno">   34</span>  };</div>
+<div class="line"><span class="lineno">   35</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a40bad5f66d7bb2ccfca684f8ecf850c2"><div class="ttname"><a href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">eonc::Parameters::neb_options</a></div><div class="ttdeci">struct eonc::Parameters::neb_options_t neb_options</div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1neb__options__t_1_1climbing__image__options__t_html_a88547c48da945788ed9af373f40e730c"><div class="ttname"><a href="structeonc_1_1Parameters_1_1neb__options__t_1_1climbing__image__options__t.html#a88547c48da945788ed9af373f40e730c">eonc::Parameters::neb_options_t::climbing_image_options_t::ocineb</a></div><div class="ttdeci">struct eonc::Parameters::neb_options_t::climbing_image_options_t::hybrid_dimer_t ocineb</div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1neb__options__t_html_a6269a1214dd82977f50af048cb9ea2f7"><div class="ttname"><a href="structeonc_1_1Parameters_1_1neb__options__t.html#a6269a1214dd82977f50af048cb9ea2f7">eonc::Parameters::neb_options_t::climbing_image</a></div><div class="ttdeci">struct eonc::Parameters::neb_options_t::climbing_image_options_t climbing_image</div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1neb__options__t_html_a9fef04e7d204f603a6aec91a0eff93f2"><div class="ttname"><a href="structeonc_1_1Parameters_1_1neb__options__t.html#a9fef04e7d204f603a6aec91a0eff93f2">eonc::Parameters::neb_options_t::force_tolerance</a></div><div class="ttdeci">double force_tolerance</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00471">Parameters.h:471</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb_1_1OCINEBController_1_1Config_html"><div class="ttname"><a href="structeonc_1_1neb_1_1OCINEBController_1_1Config.html">eonc::neb::OCINEBController::Config</a></div><div class="ttdef"><b>Definition</b> <a href="NEBOcinebController_8h_source.html#l00028">NEBOcinebController.h:28</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a945a3b27ff9e51b7a94d61747e67b887" name="a945a3b27ff9e51b7a94d61747e67b887"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a945a3b27ff9e51b7a94d61747e67b887">&#9670;&#160;</a></span>initBaseline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::neb::OCINEBController::initBaseline </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>baseline_force</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8cpp_source.html#l00040">40</a> of file <a class="el" href="NEBOcinebController_8cpp_source.html">NEBOcinebController.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   40</span>                                                         {</div>
+<div class="line"><span class="lineno">   41</span>  <a class="code hl_variable" href="#a0cc926bad79564b77464c9166e8423da">baseline_force_</a> = baseline_force;</div>
+<div class="line"><span class="lineno">   42</span>  <a class="code hl_variable" href="#a975e9042c6286151386ee4fc3e8afecb">current_threshold_</a> = <a class="code hl_variable" href="#a0cc926bad79564b77464c9166e8423da">baseline_force_</a> * <a class="code hl_variable" href="#af779f72f73480ebc947643575de57f1f">cfg_</a>.trigger_factor;</div>
+<div class="line"><span class="lineno">   43</span>}</div>
+<div class="ttc" id="aclasseonc_1_1neb_1_1OCINEBController_html_a0cc926bad79564b77464c9166e8423da"><div class="ttname"><a href="#a0cc926bad79564b77464c9166e8423da">eonc::neb::OCINEBController::baseline_force_</a></div><div class="ttdeci">double baseline_force_</div><div class="ttdef"><b>Definition</b> <a href="NEBOcinebController_8h_source.html#l00062">NEBOcinebController.h:62</a></div></div>
+<div class="ttc" id="aclasseonc_1_1neb_1_1OCINEBController_html_a975e9042c6286151386ee4fc3e8afecb"><div class="ttname"><a href="#a975e9042c6286151386ee4fc3e8afecb">eonc::neb::OCINEBController::current_threshold_</a></div><div class="ttdeci">double current_threshold_</div><div class="ttdef"><b>Definition</b> <a href="NEBOcinebController_8h_source.html#l00061">NEBOcinebController.h:61</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a4a77466640953dd3953699c1e9d832c4" name="a4a77466640953dd3953699c1e9d832c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a77466640953dd3953699c1e9d832c4">&#9670;&#160;</a></span>resetStability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::neb::OCINEBController::resetStability </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8h_source.html#l00054">54</a> of file <a class="el" href="NEBOcinebController_8h_source.html">NEBOcinebController.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   54</span>{ <a class="code hl_variable" href="#a89e0002d95fc6abf70b4de661145d05d">ciStabilityCounter_</a> = 0; }</div>
+<div class="ttc" id="aclasseonc_1_1neb_1_1OCINEBController_html_a89e0002d95fc6abf70b4de661145d05d"><div class="ttname"><a href="#a89e0002d95fc6abf70b4de661145d05d">eonc::neb::OCINEBController::ciStabilityCounter_</a></div><div class="ttdeci">int ciStabilityCounter_</div><div class="ttdef"><b>Definition</b> <a href="NEBOcinebController_8h_source.html#l00064">NEBOcinebController.h:64</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7dcc9e18222cd55d6b87d4fd0334bfa0" name="a7dcc9e18222cd55d6b87d4fd0334bfa0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7dcc9e18222cd55d6b87d4fd0334bfa0">&#9670;&#160;</a></span>run()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1neb_1_1OCINEBController_1_1MMFResult.html">OCINEBController::MMFResult</a> eonc::neb::OCINEBController::run </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1NudgedElasticBand.html">eonc::NudgedElasticBand</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>neb</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>convForce</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8cpp_source.html#l00069">69</a> of file <a class="el" href="NEBOcinebController_8cpp_source.html">NEBOcinebController.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   70</span>                                                                    {</div>
+<div class="line"><span class="lineno">   71</span>  <span class="keyword">auto</span> *log = <a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>();</div>
+<div class="line"><span class="lineno">   72</span> </div>
+<div class="line"><span class="lineno">   73</span>  QUILL_LOG_DEBUG(log,</div>
+<div class="line"><span class="lineno">   74</span>                  <span class="stringliteral">&quot;Triggering MMF.  Force: {:.4f}, Threshold: {:.4f} &quot;</span></div>
+<div class="line"><span class="lineno">   75</span>                  <span class="stringliteral">&quot;({:.2f}x baseline)&quot;</span>,</div>
+<div class="line"><span class="lineno">   76</span>                  convForce, <a class="code hl_variable" href="#a975e9042c6286151386ee4fc3e8afecb">current_threshold_</a>,</div>
+<div class="line"><span class="lineno">   77</span>                  <a class="code hl_variable" href="#a975e9042c6286151386ee4fc3e8afecb">current_threshold_</a> / <a class="code hl_variable" href="#a0cc926bad79564b77464c9166e8423da">baseline_force_</a>);</div>
+<div class="line"><span class="lineno">   78</span> </div>
+<div class="line"><span class="lineno">   79</span>  <span class="comment">// Save climbing image state before MMF</span></div>
+<div class="line"><span class="lineno">   80</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> savedPositions = neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>[neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#af3aab21133a069b95ce79c1770342455">climbingImage</a>]-&gt;getPositions();</div>
+<div class="line"><span class="lineno">   81</span> </div>
+<div class="line"><span class="lineno">   82</span>  <span class="keywordtype">double</span> alignment = 0.0;</div>
+<div class="line"><span class="lineno">   83</span>  <span class="keywordtype">int</span> mmfResult = <a class="code hl_function" href="#a8db8b58f6c54691654c678a5c34bf006">runDimer</a>(neb, alignment);</div>
+<div class="line"><span class="lineno">   84</span> </div>
+<div class="line"><span class="lineno">   85</span>  <span class="comment">// Always update forces after MMF</span></div>
+<div class="line"><span class="lineno">   86</span>  neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#a6d176624cfe9b9f08ef0ecf7bbaaaf8a">movedAfterForceCall</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   87</span>  neb.<a class="code hl_function" href="classeonc_1_1NudgedElasticBand.html#aab091c10e46c1707e3395f06f72a2d10">updateForces</a>();</div>
+<div class="line"><span class="lineno">   88</span>  <span class="keywordtype">double</span> newForce = neb.<a class="code hl_function" href="classeonc_1_1NudgedElasticBand.html#a730ccf6cfc5e3ab7941060d6d376e729">convergenceForce</a>();</div>
+<div class="line"><span class="lineno">   89</span> </div>
+<div class="line"><span class="lineno">   90</span>  <span class="comment">// Check convergence</span></div>
+<div class="line"><span class="lineno">   91</span>  <span class="keywordflow">if</span> (newForce &lt; <a class="code hl_variable" href="#af779f72f73480ebc947643575de57f1f">cfg_</a>.force_tolerance) {</div>
+<div class="line"><span class="lineno">   92</span>    QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;NEB converged after MMF. Force: {:.4f}&quot;</span>, newForce);</div>
+<div class="line"><span class="lineno">   93</span>    <span class="keywordflow">return</span> {newForce, <span class="keyword">true</span>, <span class="keyword">false</span>};</div>
+<div class="line"><span class="lineno">   94</span>  }</div>
+<div class="line"><span class="lineno">   95</span> </div>
+<div class="line"><span class="lineno">   96</span>  <span class="keywordtype">bool</span> mmfHelped = (newForce &lt; convForce) &amp;&amp; mmfResult != -2;</div>
+<div class="line"><span class="lineno">   97</span> </div>
+<div class="line"><span class="lineno">   98</span>  <span class="keywordflow">if</span> (mmfHelped) {</div>
+<div class="line"><span class="lineno">   99</span>    <a class="code hl_function" href="#a5e9c48080ecadc019093094ce77fca91">updateThresholdSuccess</a>(convForce, newForce);</div>
+<div class="line"><span class="lineno">  100</span>    QUILL_LOG_DEBUG(log,</div>
+<div class="line"><span class="lineno">  101</span>                    <span class="stringliteral">&quot;MMF helped (status={}). Force: {:.4f} -&gt; {:.4f} &quot;</span></div>
+<div class="line"><span class="lineno">  102</span>                    <span class="stringliteral">&quot;({:.2f}x baseline). New threshold: {:.4f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  103</span>                    mmfResult, convForce, newForce, newForce / <a class="code hl_variable" href="#a0cc926bad79564b77464c9166e8423da">baseline_force_</a>,</div>
+<div class="line"><span class="lineno">  104</span>                    <a class="code hl_variable" href="#a975e9042c6286151386ee4fc3e8afecb">current_threshold_</a>);</div>
+<div class="line"><span class="lineno">  105</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  106</span>    <span class="comment">// On positive curvature (status=-2), the CI is at a minimum, not a</span></div>
+<div class="line"><span class="lineno">  107</span>    <span class="comment">// saddle. Restore to pre-MMF position to prevent catastrophic force</span></div>
+<div class="line"><span class="lineno">  108</span>    <span class="comment">// explosion. For other failures (alignment loss, force increase),</span></div>
+<div class="line"><span class="lineno">  109</span>    <span class="comment">// let the NEB recover naturally -- the CI position may still be</span></div>
+<div class="line"><span class="lineno">  110</span>    <span class="comment">// closer to the saddle than before.</span></div>
+<div class="line"><span class="lineno">  111</span>    <span class="keywordflow">if</span> (mmfResult == -2) {</div>
+<div class="line"><span class="lineno">  112</span>      neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>[neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#af3aab21133a069b95ce79c1770342455">climbingImage</a>]-&gt;setPositions(savedPositions);</div>
+<div class="line"><span class="lineno">  113</span>      neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#a6d176624cfe9b9f08ef0ecf7bbaaaf8a">movedAfterForceCall</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  114</span>      <a class="code hl_variable" href="#a4ca2bd5c58446ace0b27f1bd7e7ba847">has_cached_mode_</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  115</span>      newForce = convForce;</div>
+<div class="line"><span class="lineno">  116</span>    }</div>
+<div class="line"><span class="lineno">  117</span>    <a class="code hl_function" href="#aeaa9683433dac5303bf895c28ffb9e0e">updateThresholdBackoff</a>(alignment);</div>
+<div class="line"><span class="lineno">  118</span>    QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">  119</span>        log,</div>
+<div class="line"><span class="lineno">  120</span>        <span class="stringliteral">&quot;MMF backoff (status={}). Force: {:.4f} -&gt; {:.4f}, &quot;</span></div>
+<div class="line"><span class="lineno">  121</span>        <span class="stringliteral">&quot;Alignment:  {:.3f}. {}New threshold: {:.4f} ({:.2f}x baseline)&quot;</span>,</div>
+<div class="line"><span class="lineno">  122</span>        mmfResult, convForce, newForce, alignment,</div>
+<div class="line"><span class="lineno">  123</span>        mmfResult == -2 ? <span class="stringliteral">&quot;Restored CI. &quot;</span> : <span class="stringliteral">&quot;&quot;</span>, <a class="code hl_variable" href="#a975e9042c6286151386ee4fc3e8afecb">current_threshold_</a>,</div>
+<div class="line"><span class="lineno">  124</span>        <a class="code hl_variable" href="#a975e9042c6286151386ee4fc3e8afecb">current_threshold_</a> / <a class="code hl_variable" href="#a0cc926bad79564b77464c9166e8423da">baseline_force_</a>);</div>
+<div class="line"><span class="lineno">  125</span>  }</div>
+<div class="line"><span class="lineno">  126</span> </div>
+<div class="line"><span class="lineno">  127</span>  <span class="keywordtype">bool</span> shouldReset =</div>
+<div class="line"><span class="lineno">  128</span>      (savedPositions - neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>[neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#af3aab21133a069b95ce79c1770342455">climbingImage</a>]-&gt;getPositions()).norm() &gt;</div>
+<div class="line"><span class="lineno">  129</span>      neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#a6c63f8fb0f3646d55dd546dc20a3abb7">params</a>.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#af4fcd22b349db9419c51039f62290c33">max_move</a> *</div>
+<div class="line"><span class="lineno">  130</span>          neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#a6c63f8fb0f3646d55dd546dc20a3abb7">params</a>.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t.html#aac3b3b66c980ea8ce77e8c3c638747a0">image_count</a>;</div>
+<div class="line"><span class="lineno">  131</span> </div>
+<div class="line"><span class="lineno">  132</span>  <span class="keywordflow">if</span> (shouldReset) {</div>
+<div class="line"><span class="lineno">  133</span>    QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;Resetting optimization history.&quot;</span>);</div>
+<div class="line"><span class="lineno">  134</span>  }</div>
+<div class="line"><span class="lineno">  135</span> </div>
+<div class="line"><span class="lineno">  136</span>  <a class="code hl_variable" href="#a89e0002d95fc6abf70b4de661145d05d">ciStabilityCounter_</a> = 0;</div>
+<div class="line"><span class="lineno">  137</span> </div>
+<div class="line"><span class="lineno">  138</span>  <span class="keywordflow">return</span> {newForce, <span class="keyword">false</span>, shouldReset};</div>
+<div class="line"><span class="lineno">  139</span>}</div>
+<div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBand_html_a439335bce7cd4472ee77291be8e0dafa"><div class="ttname"><a href="classeonc_1_1NudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">eonc::NudgedElasticBand::path</a></div><div class="ttdeci">std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; path</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00076">NudgedElasticBand.h:76</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBand_html_a6c63f8fb0f3646d55dd546dc20a3abb7"><div class="ttname"><a href="classeonc_1_1NudgedElasticBand.html#a6c63f8fb0f3646d55dd546dc20a3abb7">eonc::NudgedElasticBand::params</a></div><div class="ttdeci">Parameters params</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00096">NudgedElasticBand.h:96</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBand_html_a6d176624cfe9b9f08ef0ecf7bbaaaf8a"><div class="ttname"><a href="classeonc_1_1NudgedElasticBand.html#a6d176624cfe9b9f08ef0ecf7bbaaaf8a">eonc::NudgedElasticBand::movedAfterForceCall</a></div><div class="ttdeci">bool movedAfterForceCall</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00084">NudgedElasticBand.h:84</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBand_html_a730ccf6cfc5e3ab7941060d6d376e729"><div class="ttname"><a href="classeonc_1_1NudgedElasticBand.html#a730ccf6cfc5e3ab7941060d6d376e729">eonc::NudgedElasticBand::convergenceForce</a></div><div class="ttdeci">double convergenceForce(void)</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8cpp_source.html#l00433">NudgedElasticBand.cpp:433</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBand_html_aab091c10e46c1707e3395f06f72a2d10"><div class="ttname"><a href="classeonc_1_1NudgedElasticBand.html#aab091c10e46c1707e3395f06f72a2d10">eonc::NudgedElasticBand::updateForces</a></div><div class="ttdeci">void updateForces(bool ci_active)</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8cpp_source.html#l00469">NudgedElasticBand.cpp:469</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBand_html_af3aab21133a069b95ce79c1770342455"><div class="ttname"><a href="classeonc_1_1NudgedElasticBand.html#af3aab21133a069b95ce79c1770342455">eonc::NudgedElasticBand::climbingImage</a></div><div class="ttdeci">long climbingImage</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00075">NudgedElasticBand.h:75</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a1c3ba2cdc8f797e5ab2d8961720fe896"><div class="ttname"><a href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">eonc::Parameters::optimizer_options</a></div><div class="ttdeci">struct eonc::Parameters::optimizer_options_t optimizer_options</div></div>
+<div class="ttc" id="aclasseonc_1_1neb_1_1OCINEBController_html_a4ca2bd5c58446ace0b27f1bd7e7ba847"><div class="ttname"><a href="#a4ca2bd5c58446ace0b27f1bd7e7ba847">eonc::neb::OCINEBController::has_cached_mode_</a></div><div class="ttdeci">bool has_cached_mode_</div><div class="ttdef"><b>Definition</b> <a href="NEBOcinebController_8h_source.html#l00068">NEBOcinebController.h:68</a></div></div>
+<div class="ttc" id="aclasseonc_1_1neb_1_1OCINEBController_html_a5e9c48080ecadc019093094ce77fca91"><div class="ttname"><a href="#a5e9c48080ecadc019093094ce77fca91">eonc::neb::OCINEBController::updateThresholdSuccess</a></div><div class="ttdeci">void updateThresholdSuccess(double convForce, double newForce)</div><div class="ttdef"><b>Definition</b> <a href="NEBOcinebController_8cpp_source.html#l00217">NEBOcinebController.cpp:217</a></div></div>
+<div class="ttc" id="aclasseonc_1_1neb_1_1OCINEBController_html_a8db8b58f6c54691654c678a5c34bf006"><div class="ttname"><a href="#a8db8b58f6c54691654c678a5c34bf006">eonc::neb::OCINEBController::runDimer</a></div><div class="ttdeci">int runDimer(eonc::NudgedElasticBand &amp;neb, double &amp;alignment)</div><div class="ttdef"><b>Definition</b> <a href="NEBOcinebController_8cpp_source.html#l00141">NEBOcinebController.cpp:141</a></div></div>
+<div class="ttc" id="aclasseonc_1_1neb_1_1OCINEBController_html_aeaa9683433dac5303bf895c28ffb9e0e"><div class="ttname"><a href="#aeaa9683433dac5303bf895c28ffb9e0e">eonc::neb::OCINEBController::updateThresholdBackoff</a></div><div class="ttdeci">void updateThresholdBackoff(double alignment)</div><div class="ttdef"><b>Definition</b> <a href="NEBOcinebController_8cpp_source.html#l00224">NEBOcinebController.cpp:224</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00044">EonLogger.h:44</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1neb__options__t_html_aac3b3b66c980ea8ce77e8c3c638747a0"><div class="ttname"><a href="structeonc_1_1Parameters_1_1neb__options__t.html#aac3b3b66c980ea8ce77e8c3c638747a0">eonc::Parameters::neb_options_t::image_count</a></div><div class="ttdeci">long image_count</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00468">Parameters.h:468</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_html_af4fcd22b349db9419c51039f62290c33"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t.html#af4fcd22b349db9419c51039f62290c33">eonc::Parameters::optimizer_options_t::max_move</a></div><div class="ttdeci">double max_move</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00224">Parameters.h:224</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8db8b58f6c54691654c678a5c34bf006" name="a8db8b58f6c54691654c678a5c34bf006"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8db8b58f6c54691654c678a5c34bf006">&#9670;&#160;</a></span>runDimer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eonc::neb::OCINEBController::runDimer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeonc_1_1NudgedElasticBand.html">eonc::NudgedElasticBand</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>neb</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;</td>          <td class="paramname"><span class="paramname"><em>alignment</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8cpp_source.html#l00141">141</a> of file <a class="el" href="NEBOcinebController_8cpp_source.html">NEBOcinebController.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  142</span>                                                  {</div>
+<div class="line"><span class="lineno">  143</span>  <span class="keyword">auto</span> *log = <a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>();</div>
+<div class="line"><span class="lineno">  144</span>  alignment = 0.0;</div>
+<div class="line"><span class="lineno">  145</span> </div>
+<div class="line"><span class="lineno">  146</span>  <span class="keywordflow">if</span> (neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#af3aab21133a069b95ce79c1770342455">climbingImage</a> &lt;= 0 || neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#af3aab21133a069b95ce79c1770342455">climbingImage</a> &gt; neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#a6cf868fd45b0fe9709dbe1ef19d5a7a9">numImages</a>) {</div>
+<div class="line"><span class="lineno">  147</span>    QUILL_LOG_WARNING(log, <span class="stringliteral">&quot;Invalid climbing image for MMF:  {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  148</span>                      neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#af3aab21133a069b95ce79c1770342455">climbingImage</a>);</div>
+<div class="line"><span class="lineno">  149</span>    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">  150</span>  }</div>
+<div class="line"><span class="lineno">  151</span> </div>
+<div class="line"><span class="lineno">  152</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> initialMode;</div>
+<div class="line"><span class="lineno">  153</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a4ca2bd5c58446ace0b27f1bd7e7ba847">has_cached_mode_</a>) {</div>
+<div class="line"><span class="lineno">  154</span>    initialMode = <a class="code hl_variable" href="#a7bde5dd215197965d4aee7072f268886">cached_mode_</a>;</div>
+<div class="line"><span class="lineno">  155</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  156</span>    initialMode = *neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#a189895e2c19c739127a2e83fcb049a07">tangent</a>[neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#af3aab21133a069b95ce79c1770342455">climbingImage</a>];</div>
+<div class="line"><span class="lineno">  157</span>  }</div>
+<div class="line"><span class="lineno">  158</span>  <span class="keywordtype">double</span> tangentNorm = initialMode.norm();</div>
+<div class="line"><span class="lineno">  159</span>  <span class="keywordflow">if</span> (tangentNorm &lt; 1e-8) {</div>
+<div class="line"><span class="lineno">  160</span>    QUILL_LOG_WARNING(log, <span class="stringliteral">&quot;Tangent too small for MMF initialization&quot;</span>);</div>
+<div class="line"><span class="lineno">  161</span>    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">  162</span>  }</div>
+<div class="line"><span class="lineno">  163</span>  initialMode /= tangentNorm;</div>
+<div class="line"><span class="lineno">  164</span> </div>
+<div class="line"><span class="lineno">  165</span>  <span class="keyword">auto</span> tempMinModeSearch = std::make_shared&lt;MinModeSaddleSearch&gt;(</div>
+<div class="line"><span class="lineno">  166</span>      neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>[neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#af3aab21133a069b95ce79c1770342455">climbingImage</a>], initialMode,</div>
+<div class="line"><span class="lineno">  167</span>      neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">path</a>[neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#af3aab21133a069b95ce79c1770342455">climbingImage</a>]-&gt;getPotentialEnergy(), neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#a6c63f8fb0f3646d55dd546dc20a3abb7">params</a>, neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#aaecefdd86316ce81857e1d9c45e637cc">pot</a>);</div>
+<div class="line"><span class="lineno">  168</span> </div>
+<div class="line"><span class="lineno">  169</span>  <span class="keywordtype">int</span> minModeStatus;</div>
+<div class="line"><span class="lineno">  170</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  171</span>    minModeStatus = tempMinModeSearch-&gt;run(<a class="code hl_variable" href="#af779f72f73480ebc947643575de57f1f">cfg_</a>.max_steps);</div>
+<div class="line"><span class="lineno">  172</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> eonc::DimerModeRestoredException &amp;) {</div>
+<div class="line"><span class="lineno">  173</span>    minModeStatus = <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960ad771efc37afabe5b907af0764cc17a0e">MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST</a>;</div>
+<div class="line"><span class="lineno">  174</span>    QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;MMF:  Dimer restored to best state&quot;</span>);</div>
+<div class="line"><span class="lineno">  175</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> eonc::DimerModeLostException &amp;) {</div>
+<div class="line"><span class="lineno">  176</span>    minModeStatus = <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a95c8fd5af0aeeae2857ea18c23c42663">MinModeSaddleSearch::STATUS_DIMER_LOST_MODE</a>;</div>
+<div class="line"><span class="lineno">  177</span>    QUILL_LOG_WARNING(log, <span class="stringliteral">&quot;Dimer lost mode during MMF refinement&quot;</span>);</div>
+<div class="line"><span class="lineno">  178</span>  }</div>
+<div class="line"><span class="lineno">  179</span> </div>
+<div class="line"><span class="lineno">  180</span>  <a class="code hl_variable" href="#a6ab4697ce85ba30b734dc5cd98939cd1">mmf_iterations_used_</a> += tempMinModeSearch-&gt;iteration;</div>
+<div class="line"><span class="lineno">  181</span> </div>
+<div class="line"><span class="lineno">  182</span>  <span class="keywordtype">double</span> eigenvalue = tempMinModeSearch-&gt;getEigenvalue();</div>
+<div class="line"><span class="lineno">  183</span>  <span class="keywordflow">if</span> (eigenvalue &gt; 0.0) {</div>
+<div class="line"><span class="lineno">  184</span>    QUILL_LOG_WARNING(log,</div>
+<div class="line"><span class="lineno">  185</span>                      <span class="stringliteral">&quot;MMF skipped: Positive curvature detected (eig={:.4f}).&quot;</span>,</div>
+<div class="line"><span class="lineno">  186</span>                      eigenvalue);</div>
+<div class="line"><span class="lineno">  187</span>    <span class="keywordflow">return</span> -2;</div>
+<div class="line"><span class="lineno">  188</span>  }</div>
+<div class="line"><span class="lineno">  189</span> </div>
+<div class="line"><span class="lineno">  190</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> finalModeMatrix = tempMinModeSearch-&gt;getEigenvector();</div>
+<div class="line"><span class="lineno">  191</span>  VectorXd finalMode = VectorXd::Map(finalModeMatrix.data(), 3 * neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#a63b58bf79fe5352c34c9e9b76200b8e4">atoms</a>);</div>
+<div class="line"><span class="lineno">  192</span>  VectorXd currentTangent =</div>
+<div class="line"><span class="lineno">  193</span>      VectorXd::Map(neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#a189895e2c19c739127a2e83fcb049a07">tangent</a>[neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#af3aab21133a069b95ce79c1770342455">climbingImage</a>]-&gt;data(), 3 * neb.<a class="code hl_variable" href="classeonc_1_1NudgedElasticBand.html#a63b58bf79fe5352c34c9e9b76200b8e4">atoms</a>);</div>
+<div class="line"><span class="lineno">  194</span>  alignment = std::abs(finalMode.normalized().dot(currentTangent.normalized()));</div>
+<div class="line"><span class="lineno">  195</span> </div>
+<div class="line"><span class="lineno">  196</span>  <span class="keywordflow">if</span> (minModeStatus == <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">MinModeSaddleSearch::STATUS_GOOD</a> ||</div>
+<div class="line"><span class="lineno">  197</span>      minModeStatus == <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960ad771efc37afabe5b907af0764cc17a0e">MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST</a>) {</div>
+<div class="line"><span class="lineno">  198</span>    <span class="keywordflow">if</span> (alignment &lt; <a class="code hl_variable" href="#af779f72f73480ebc947643575de57f1f">cfg_</a>.angle_tol) {</div>
+<div class="line"><span class="lineno">  199</span>      QUILL_LOG_WARNING(</div>
+<div class="line"><span class="lineno">  200</span>          log,</div>
+<div class="line"><span class="lineno">  201</span>          <span class="stringliteral">&quot;MMF converged/restored but mode drifted (alignment={:.3f} &lt; {:.3f})&quot;</span>,</div>
+<div class="line"><span class="lineno">  202</span>          alignment, <a class="code hl_variable" href="#af779f72f73480ebc947643575de57f1f">cfg_</a>.angle_tol);</div>
+<div class="line"><span class="lineno">  203</span>      <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">  204</span>    }</div>
+<div class="line"><span class="lineno">  205</span>    <a class="code hl_variable" href="#a7bde5dd215197965d4aee7072f268886">cached_mode_</a> = finalModeMatrix;</div>
+<div class="line"><span class="lineno">  206</span>    <a class="code hl_variable" href="#a4ca2bd5c58446ace0b27f1bd7e7ba847">has_cached_mode_</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  207</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">  208</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (minModeStatus == <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a357ef1429672374690911f30278bc52d">MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS</a>) {</div>
+<div class="line"><span class="lineno">  209</span>    <span class="keywordflow">return</span> 1;</div>
+<div class="line"><span class="lineno">  210</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  211</span>    QUILL_LOG_WARNING(log, <span class="stringliteral">&quot;MMF failed.  Mode-tangent alignment: {:.3f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  212</span>                      alignment);</div>
+<div class="line"><span class="lineno">  213</span>    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><span class="lineno">  214</span>  }</div>
+<div class="line"><span class="lineno">  215</span>}</div>
+<div class="ttc" id="aclasseonc_1_1MinModeSaddleSearch_html_a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796"><div class="ttname"><a href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a21140618d9213e62812224c7a8863796">eonc::MinModeSaddleSearch::STATUS_GOOD</a></div><div class="ttdeci">@ STATUS_GOOD</div><div class="ttdef"><b>Definition</b> <a href="MinModeSaddleSearch_8h_source.html#l00031">MinModeSaddleSearch.h:31</a></div></div>
+<div class="ttc" id="aclasseonc_1_1MinModeSaddleSearch_html_a4a5c4ebad104382ef600037faafd5960a357ef1429672374690911f30278bc52d"><div class="ttname"><a href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a357ef1429672374690911f30278bc52d">eonc::MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS</a></div><div class="ttdeci">@ STATUS_BAD_MAX_ITERATIONS</div><div class="ttdef"><b>Definition</b> <a href="MinModeSaddleSearch_8h_source.html#l00036">MinModeSaddleSearch.h:36</a></div></div>
+<div class="ttc" id="aclasseonc_1_1MinModeSaddleSearch_html_a4a5c4ebad104382ef600037faafd5960a95c8fd5af0aeeae2857ea18c23c42663"><div class="ttname"><a href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a95c8fd5af0aeeae2857ea18c23c42663">eonc::MinModeSaddleSearch::STATUS_DIMER_LOST_MODE</a></div><div class="ttdeci">@ STATUS_DIMER_LOST_MODE</div><div class="ttdef"><b>Definition</b> <a href="MinModeSaddleSearch_8h_source.html#l00051">MinModeSaddleSearch.h:51</a></div></div>
+<div class="ttc" id="aclasseonc_1_1MinModeSaddleSearch_html_a4a5c4ebad104382ef600037faafd5960ad771efc37afabe5b907af0764cc17a0e"><div class="ttname"><a href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960ad771efc37afabe5b907af0764cc17a0e">eonc::MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST</a></div><div class="ttdeci">@ STATUS_DIMER_RESTORED_BEST</div><div class="ttdef"><b>Definition</b> <a href="MinModeSaddleSearch_8h_source.html#l00052">MinModeSaddleSearch.h:52</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBand_html_a189895e2c19c739127a2e83fcb049a07"><div class="ttname"><a href="classeonc_1_1NudgedElasticBand.html#a189895e2c19c739127a2e83fcb049a07">eonc::NudgedElasticBand::tangent</a></div><div class="ttdeci">std::vector&lt; std::shared_ptr&lt; AtomMatrix &gt; &gt; tangent</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00077">NudgedElasticBand.h:77</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBand_html_a63b58bf79fe5352c34c9e9b76200b8e4"><div class="ttname"><a href="classeonc_1_1NudgedElasticBand.html#a63b58bf79fe5352c34c9e9b76200b8e4">eonc::NudgedElasticBand::atoms</a></div><div class="ttdeci">int atoms</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00074">NudgedElasticBand.h:74</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBand_html_a6cf868fd45b0fe9709dbe1ef19d5a7a9"><div class="ttname"><a href="classeonc_1_1NudgedElasticBand.html#a6cf868fd45b0fe9709dbe1ef19d5a7a9">eonc::NudgedElasticBand::numImages</a></div><div class="ttdeci">long numImages</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00075">NudgedElasticBand.h:75</a></div></div>
+<div class="ttc" id="aclasseonc_1_1NudgedElasticBand_html_aaecefdd86316ce81857e1d9c45e637cc"><div class="ttname"><a href="classeonc_1_1NudgedElasticBand.html#aaecefdd86316ce81857e1d9c45e637cc">eonc::NudgedElasticBand::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdef"><b>Definition</b> <a href="NudgedElasticBand_8h_source.html#l00097">NudgedElasticBand.h:97</a></div></div>
+<div class="ttc" id="aclasseonc_1_1neb_1_1OCINEBController_html_a6ab4697ce85ba30b734dc5cd98939cd1"><div class="ttname"><a href="#a6ab4697ce85ba30b734dc5cd98939cd1">eonc::neb::OCINEBController::mmf_iterations_used_</a></div><div class="ttdeci">int mmf_iterations_used_</div><div class="ttdef"><b>Definition</b> <a href="NEBOcinebController_8h_source.html#l00065">NEBOcinebController.h:65</a></div></div>
+<div class="ttc" id="aclasseonc_1_1neb_1_1OCINEBController_html_a7bde5dd215197965d4aee7072f268886"><div class="ttname"><a href="#a7bde5dd215197965d4aee7072f268886">eonc::neb::OCINEBController::cached_mode_</a></div><div class="ttdeci">AtomMatrix cached_mode_</div><div class="ttdef"><b>Definition</b> <a href="NEBOcinebController_8h_source.html#l00069">NEBOcinebController.h:69</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a239f13c2d7a485f7da4166490025336e" name="a239f13c2d7a485f7da4166490025336e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a239f13c2d7a485f7da4166490025336e">&#9670;&#160;</a></span>shouldTrigger()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::neb::OCINEBController::shouldTrigger </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>convForce</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>ci_active</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>climbingImage</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>numImages</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ciStabilityCounter</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8cpp_source.html#l00045">45</a> of file <a class="el" href="NEBOcinebController_8cpp_source.html">NEBOcinebController.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   47</span>                                                                   {</div>
+<div class="line"><span class="lineno">   48</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#af779f72f73480ebc947643575de57f1f">cfg_</a>.use_mmf || !ci_active)</div>
+<div class="line"><span class="lineno">   49</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   50</span>  <span class="keywordflow">if</span> (climbingImage &lt;= 0 || climbingImage &gt; numImages)</div>
+<div class="line"><span class="lineno">   51</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   52</span>  <span class="keywordflow">if</span> (ciStabilityCounter &lt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#af779f72f73480ebc947643575de57f1f">cfg_</a>.ci_stability_count))</div>
+<div class="line"><span class="lineno">   53</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   54</span>  <span class="keywordflow">if</span> (convForce &lt;= <a class="code hl_variable" href="#af779f72f73480ebc947643575de57f1f">cfg_</a>.force_tolerance)</div>
+<div class="line"><span class="lineno">   55</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   56</span>  <span class="keywordflow">return</span> (convForce &lt; <a class="code hl_variable" href="#a975e9042c6286151386ee4fc3e8afecb">current_threshold_</a> || convForce &lt; <a class="code hl_variable" href="#af779f72f73480ebc947643575de57f1f">cfg_</a>.trigger_force);</div>
+<div class="line"><span class="lineno">   57</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ace6abef577f49df4cd3cf2992f7ff490" name="ace6abef577f49df4cd3cf2992f7ff490"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace6abef577f49df4cd3cf2992f7ff490">&#9670;&#160;</a></span>stabilityCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eonc::neb::OCINEBController::stabilityCount </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8h_source.html#l00056">56</a> of file <a class="el" href="NEBOcinebController_8h_source.html">NEBOcinebController.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   56</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a89e0002d95fc6abf70b4de661145d05d">ciStabilityCounter_</a>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8cbc43fcab8cb5280a8ed9cfad3087dd" name="a8cbc43fcab8cb5280a8ed9cfad3087dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cbc43fcab8cb5280a8ed9cfad3087dd">&#9670;&#160;</a></span>threshold()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::neb::OCINEBController::threshold </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8h_source.html#l00057">57</a> of file <a class="el" href="NEBOcinebController_8h_source.html">NEBOcinebController.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   57</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a975e9042c6286151386ee4fc3e8afecb">current_threshold_</a>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a65f2ceb4a3bcf82fb6bc226a8672d00a" name="a65f2ceb4a3bcf82fb6bc226a8672d00a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65f2ceb4a3bcf82fb6bc226a8672d00a">&#9670;&#160;</a></span>updateStability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::neb::OCINEBController::updateStability </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>climbingImage</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8cpp_source.html#l00059">59</a> of file <a class="el" href="NEBOcinebController_8cpp_source.html">NEBOcinebController.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   59</span>                                                         {</div>
+<div class="line"><span class="lineno">   60</span>  <span class="keywordflow">if</span> (climbingImage == <a class="code hl_variable" href="#a70d143248c1beaac2ee6c1460eef8cb5">previousClimbingImage_</a>) {</div>
+<div class="line"><span class="lineno">   61</span>    <a class="code hl_variable" href="#a89e0002d95fc6abf70b4de661145d05d">ciStabilityCounter_</a>++;</div>
+<div class="line"><span class="lineno">   62</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   63</span>    <a class="code hl_variable" href="#a89e0002d95fc6abf70b4de661145d05d">ciStabilityCounter_</a> = 0;</div>
+<div class="line"><span class="lineno">   64</span>    <a class="code hl_variable" href="#a70d143248c1beaac2ee6c1460eef8cb5">previousClimbingImage_</a> = climbingImage;</div>
+<div class="line"><span class="lineno">   65</span>    <a class="code hl_variable" href="#a4ca2bd5c58446ace0b27f1bd7e7ba847">has_cached_mode_</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   66</span>  }</div>
+<div class="line"><span class="lineno">   67</span>}</div>
+<div class="ttc" id="aclasseonc_1_1neb_1_1OCINEBController_html_a70d143248c1beaac2ee6c1460eef8cb5"><div class="ttname"><a href="#a70d143248c1beaac2ee6c1460eef8cb5">eonc::neb::OCINEBController::previousClimbingImage_</a></div><div class="ttdeci">long previousClimbingImage_</div><div class="ttdef"><b>Definition</b> <a href="NEBOcinebController_8h_source.html#l00063">NEBOcinebController.h:63</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aeaa9683433dac5303bf895c28ffb9e0e" name="aeaa9683433dac5303bf895c28ffb9e0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeaa9683433dac5303bf895c28ffb9e0e">&#9670;&#160;</a></span>updateThresholdBackoff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::neb::OCINEBController::updateThresholdBackoff </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>alignment</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8cpp_source.html#l00224">224</a> of file <a class="el" href="NEBOcinebController_8cpp_source.html">NEBOcinebController.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  224</span>                                                              {</div>
+<div class="line"><span class="lineno">  225</span>  <span class="keywordtype">double</span> alpha = std::clamp(alignment, 0.0, 1.0);</div>
+<div class="line"><span class="lineno">  226</span>  <span class="keywordtype">double</span> penalty_factor = 0.5 + 0.5 * alpha;</div>
+<div class="line"><span class="lineno">  227</span>  <a class="code hl_variable" href="#a975e9042c6286151386ee4fc3e8afecb">current_threshold_</a> = <a class="code hl_variable" href="#a0cc926bad79564b77464c9166e8423da">baseline_force_</a> * <a class="code hl_variable" href="#af779f72f73480ebc947643575de57f1f">cfg_</a>.trigger_factor * penalty_factor;</div>
+<div class="line"><span class="lineno">  228</span>  <span class="comment">// Lower bound on the MMF trigger threshold. Scaled by force_tolerance so</span></div>
+<div class="line"><span class="lineno">  229</span>  <span class="comment">// the MMF gate never collapses to zero when the NEB is already near</span></div>
+<div class="line"><span class="lineno">  230</span>  <span class="comment">// convergence, but also capped by the trigger_factor envelope so a</span></div>
+<div class="line"><span class="lineno">  231</span>  <span class="comment">// loose force_tolerance cannot push min_threshold above the cap and</span></div>
+<div class="line"><span class="lineno">  232</span>  <span class="comment">// starve MMF activation.</span></div>
+<div class="line"><span class="lineno">  233</span>  <span class="keywordtype">double</span> min_threshold = std::min(<a class="code hl_variable" href="#af779f72f73480ebc947643575de57f1f">cfg_</a>.force_tolerance * 2.0,</div>
+<div class="line"><span class="lineno">  234</span>                                  <a class="code hl_variable" href="#a0cc926bad79564b77464c9166e8423da">baseline_force_</a> * <a class="code hl_variable" href="#af779f72f73480ebc947643575de57f1f">cfg_</a>.trigger_factor);</div>
+<div class="line"><span class="lineno">  235</span>  <a class="code hl_variable" href="#a975e9042c6286151386ee4fc3e8afecb">current_threshold_</a> = std::max(<a class="code hl_variable" href="#a975e9042c6286151386ee4fc3e8afecb">current_threshold_</a>, min_threshold);</div>
+<div class="line"><span class="lineno">  236</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5e9c48080ecadc019093094ce77fca91" name="a5e9c48080ecadc019093094ce77fca91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e9c48080ecadc019093094ce77fca91">&#9670;&#160;</a></span>updateThresholdSuccess()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::neb::OCINEBController::updateThresholdSuccess </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>convForce</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>newForce</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8cpp_source.html#l00217">217</a> of file <a class="el" href="NEBOcinebController_8cpp_source.html">NEBOcinebController.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  218</span>                                                               {</div>
+<div class="line"><span class="lineno">  219</span>  <a class="code hl_variable" href="#a975e9042c6286151386ee4fc3e8afecb">current_threshold_</a> = newForce * (0.5 + 0.4 * (newForce / convForce));</div>
+<div class="line"><span class="lineno">  220</span>  <span class="keywordtype">double</span> max_threshold = <a class="code hl_variable" href="#a0cc926bad79564b77464c9166e8423da">baseline_force_</a> * <a class="code hl_variable" href="#af779f72f73480ebc947643575de57f1f">cfg_</a>.trigger_factor;</div>
+<div class="line"><span class="lineno">  221</span>  <a class="code hl_variable" href="#a975e9042c6286151386ee4fc3e8afecb">current_threshold_</a> = std::min(<a class="code hl_variable" href="#a975e9042c6286151386ee4fc3e8afecb">current_threshold_</a>, max_threshold);</div>
+<div class="line"><span class="lineno">  222</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a0cc926bad79564b77464c9166e8423da" name="a0cc926bad79564b77464c9166e8423da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cc926bad79564b77464c9166e8423da">&#9670;&#160;</a></span>baseline_force_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::neb::OCINEBController::baseline_force_ {-1.0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8h_source.html#l00062">62</a> of file <a class="el" href="NEBOcinebController_8h_source.html">NEBOcinebController.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   62</span>{-1.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7bde5dd215197965d4aee7072f268886" name="a7bde5dd215197965d4aee7072f268886"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bde5dd215197965d4aee7072f268886">&#9670;&#160;</a></span>cached_mode_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> eonc::neb::OCINEBController::cached_mode_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8h_source.html#l00069">69</a> of file <a class="el" href="NEBOcinebController_8h_source.html">NEBOcinebController.h</a>.</p>
+
+</div>
+</div>
+<a id="af779f72f73480ebc947643575de57f1f" name="af779f72f73480ebc947643575de57f1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af779f72f73480ebc947643575de57f1f">&#9670;&#160;</a></span>cfg_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1neb_1_1OCINEBController_1_1Config.html">Config</a> eonc::neb::OCINEBController::cfg_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8h_source.html#l00060">60</a> of file <a class="el" href="NEBOcinebController_8h_source.html">NEBOcinebController.h</a>.</p>
+
+</div>
+</div>
+<a id="a89e0002d95fc6abf70b4de661145d05d" name="a89e0002d95fc6abf70b4de661145d05d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89e0002d95fc6abf70b4de661145d05d">&#9670;&#160;</a></span>ciStabilityCounter_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eonc::neb::OCINEBController::ciStabilityCounter_ {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8h_source.html#l00064">64</a> of file <a class="el" href="NEBOcinebController_8h_source.html">NEBOcinebController.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   64</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a975e9042c6286151386ee4fc3e8afecb" name="a975e9042c6286151386ee4fc3e8afecb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a975e9042c6286151386ee4fc3e8afecb">&#9670;&#160;</a></span>current_threshold_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eonc::neb::OCINEBController::current_threshold_ {-1.0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8h_source.html#l00061">61</a> of file <a class="el" href="NEBOcinebController_8h_source.html">NEBOcinebController.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   61</span>{-1.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a4ca2bd5c58446ace0b27f1bd7e7ba847" name="a4ca2bd5c58446ace0b27f1bd7e7ba847"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ca2bd5c58446ace0b27f1bd7e7ba847">&#9670;&#160;</a></span>has_cached_mode_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::neb::OCINEBController::has_cached_mode_ {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8h_source.html#l00068">68</a> of file <a class="el" href="NEBOcinebController_8h_source.html">NEBOcinebController.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   68</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6ab4697ce85ba30b734dc5cd98939cd1" name="a6ab4697ce85ba30b734dc5cd98939cd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ab4697ce85ba30b734dc5cd98939cd1">&#9670;&#160;</a></span>mmf_iterations_used_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eonc::neb::OCINEBController::mmf_iterations_used_ {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8h_source.html#l00065">65</a> of file <a class="el" href="NEBOcinebController_8h_source.html">NEBOcinebController.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   65</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a70d143248c1beaac2ee6c1460eef8cb5" name="a70d143248c1beaac2ee6c1460eef8cb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70d143248c1beaac2ee6c1460eef8cb5">&#9670;&#160;</a></span>previousClimbingImage_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::neb::OCINEBController::previousClimbingImage_ {-1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBOcinebController_8h_source.html#l00063">63</a> of file <a class="el" href="NEBOcinebController_8h_source.html">NEBOcinebController.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   63</span>{-1};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="NEBOcinebController_8h_source.html">NEBOcinebController.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/<a class="el" href="NEBOcinebController_8cpp_source.html">NEBOcinebController.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="namespaceeonc_1_1neb.html">neb</a></li><li class="navelem"><a href="classeonc_1_1neb_1_1OCINEBController.html">OCINEBController</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

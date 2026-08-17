@@ -1,0 +1,600 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/client/NEBSplineExtrema.cpp Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('NEBSplineExtrema_8cpp_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">NEBSplineExtrema.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="NEBSplineExtrema_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">** This file is part of eOn.</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">**</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">** SPDX-License-Identifier: BSD-3-Clause</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">**</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">** Copyright (c) 2010--present, eOn Development Team</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">** All rights reserved.</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">**</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">** Repo:</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">** https://github.com/TheochemUI/eOn</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">*/</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="NEBSplineExtrema_8h.html">eon/NEBSplineExtrema.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="ConFileIO_8h.html">eon/ConFileIO.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;format&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;fstream&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span>fs = std::filesystem;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc_1_1neb.html">eonc::neb</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>eonc::io::ConFrameMetadata neb_frame_metadata(</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; &amp;path,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;AtomMatrix&gt;&gt; &amp;tangent,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;EigenmodeStrategy&gt;&gt; &amp;eigenmode_solvers,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordtype">long</span> numImages, <span class="keywordtype">bool</span> estimateEigenvalues, <span class="keywordtype">long</span> imageIndex,</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordtype">double</span> reactionCoordinate, std::optional&lt;size_t&gt; bandIndex) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> tang;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>  <span class="keywordflow">if</span> (imageIndex == 0) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    tang = path[0]-&gt;pbc(path[1]-&gt;getPositions() - path[0]-&gt;getPositions());</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (imageIndex == numImages + 1) {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    tang = path[numImages]-&gt;pbc(path[numImages + 1]-&gt;getPositions() -</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                                path[numImages]-&gt;getPositions());</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    tang = *tangent[imageIndex];</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>  }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  tang.normalize();</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> reference_energy = path[0]-&gt;getPotentialEnergy();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> absolute_energy = path[imageIndex]-&gt;getPotentialEnergy();</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> relative_energy = absolute_energy - reference_energy;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> parallel_force = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(path[imageIndex]-&gt;getForces(), tang);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  eonc::io::ConFrameMetadata metadata;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  metadata.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#a1c066326eb4ccd15a01e3606e4abf5bd">frame_index</a> = <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(imageIndex);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  metadata.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#a477c0c6939c5add657040782e213add1">energy</a> = absolute_energy;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  metadata.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#af120c8f87a26122f66264df1f1bf2a1b">neb_bead</a> = <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(imageIndex);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  <span class="keywordflow">if</span> (bandIndex) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    metadata.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#a1e3ec7c95a8f840aab609450248a3ce8">neb_band</a> = <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(*bandIndex);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>  metadata.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#a2a031c3e8c331a9fcd4b0b06ca9cde83">scalars</a>.push_back({<span class="stringliteral">&quot;reaction_coordinate&quot;</span>, reactionCoordinate});</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>  metadata.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#a2a031c3e8c331a9fcd4b0b06ca9cde83">scalars</a>.push_back({<span class="stringliteral">&quot;relative_energy&quot;</span>, relative_energy});</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>  metadata.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#a2a031c3e8c331a9fcd4b0b06ca9cde83">scalars</a>.push_back({<span class="stringliteral">&quot;parallel_force&quot;</span>, parallel_force});</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>  <span class="keywordflow">if</span> (estimateEigenvalues &amp;&amp; imageIndex &gt;= 0 &amp;&amp;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>      imageIndex &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(eigenmode_solvers.size()) &amp;&amp;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>      eigenmode_solvers[imageIndex]) {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <a class="code hl_function" href="namespaceeonc.html#aadea15a7f9fe0b9bdc5983ed470d6917">eonc::eigenmodeCompute</a>(*eigenmode_solvers[imageIndex], path[imageIndex],</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                           tang);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    metadata.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#a2a031c3e8c331a9fcd4b0b06ca9cde83">scalars</a>.push_back(</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        {<span class="stringliteral">&quot;lowest_eigenvalue&quot;</span>,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>         <a class="code hl_function" href="namespaceeonc.html#ab1dbea20c2a27bbd87d55a6872c31c45">eonc::eigenmodeGetEigenvalue</a>(*eigenmode_solvers[imageIndex])});</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  <span class="keywordflow">return</span> metadata;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>}</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>} <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><a class="code hl_struct" href="structeonc_1_1neb_1_1ExtremaResult.html">ExtremaResult</a></div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="}">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1neb.html#ae2bcb7440c5a7c56b5f545f1b3a18dd2">   74</a></span><a class="code hl_function" href="namespaceeonc_1_1neb.html#ae2bcb7440c5a7c56b5f545f1b3a18dd2">findSplineExtrema</a>(<span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; &amp;path,</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                  <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;AtomMatrix&gt;&gt; &amp;tangent,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                  <span class="keywordtype">long</span> numImages) {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>  <span class="keyword">auto</span> *<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a> = <a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>();</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>  <span class="comment">// Calculate cubic parameters for each interval</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> tangentEndpoint;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  std::vector&lt;double&gt; a(numImages + 1), b(numImages + 1), c(numImages + 1),</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>      d(numImages + 1);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>  <span class="keywordtype">double</span> F1, F2, U1, U2, dist;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt;= numImages; i++) {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    dist = path[i]-&gt;distanceTo(*path[i + 1]);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">if</span> (i == 0) {</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>      tangentEndpoint =</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>          path[i]-&gt;pbc(path[1]-&gt;getPositions() - path[0]-&gt;getPositions());</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>      tangentEndpoint.normalize();</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>      F1 = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(path[i]-&gt;getForces(), tangentEndpoint) * dist;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>      F1 = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(path[i]-&gt;getForces(), *tangent[i]) * dist;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">if</span> (i == numImages) {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>      tangentEndpoint = path[i + 1]-&gt;pbc(path[numImages + 1]-&gt;getPositions() -</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                                         path[numImages]-&gt;getPositions());</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>      tangentEndpoint.normalize();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>      F2 = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(path[i + 1]-&gt;getForces(), tangentEndpoint) * dist;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>      F2 = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(path[i + 1]-&gt;getForces(), *tangent[i + 1]) * dist;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    U1 = path[i]-&gt;getPotentialEnergy();</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    U2 = path[i + 1]-&gt;getPotentialEnergy();</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    a[i] = U1;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    b[i] = -F1;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    c[i] = 3. * (U2 - U1) + 2. * F1 + F2;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    d[i] = -2. * (U2 - U1) - (F1 + F2);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>  }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>  <a class="code hl_struct" href="structeonc_1_1neb_1_1ExtremaResult.html">ExtremaResult</a> result;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>  result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#a8db5cd9d5ca14aa60c2021288e66d1c9">positions</a>.resize(2 * (numImages + 1));</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>  result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#a3107ea9fedebc5f8be4ae6b42bafdb4c">energies</a>.resize(2 * (numImages + 1));</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>  result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#a32a8df07ff9e68bb9470ec4c2ae9b3bc">curvatures</a>.resize(2 * (numImages + 1));</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>  <span class="keywordtype">double</span> discriminant, f;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt;= numImages; i++) {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    discriminant = c[i] * c[i] - 3.0 * b[i] * d[i];</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordflow">if</span> (discriminant &gt;= 0) {</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>      f = -1;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>      <span class="comment">// Quadratic case</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>      <span class="keywordflow">if</span> ((d[i] == 0) &amp;&amp; (c[i] != 0)) {</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        f = (-b[i] / (2. * c[i]));</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>      }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>      <span class="comment">// Cubic case 1</span></div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span> (d[i] != 0) {</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        f = -(c[i] + std::sqrt(discriminant)) / (3. * d[i]);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>      }</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>      <span class="keywordflow">if</span> ((f &gt;= 0) &amp;&amp; (f &lt;= 1)) {</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#a8db5cd9d5ca14aa60c2021288e66d1c9">positions</a>[result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#af5ad8726e13202a0e8761ae722de4511">numExtrema</a>] = i + f;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#a3107ea9fedebc5f8be4ae6b42bafdb4c">energies</a>[result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#af5ad8726e13202a0e8761ae722de4511">numExtrema</a>] =</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>            ((d[i] * f + c[i]) * f + b[i]) * f + a[i]; <span class="comment">// Horner&#39;s method</span></div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#a32a8df07ff9e68bb9470ec4c2ae9b3bc">curvatures</a>[result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#af5ad8726e13202a0e8761ae722de4511">numExtrema</a>] = 6.0 * d[i] * f + 2 * c[i];</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#af5ad8726e13202a0e8761ae722de4511">numExtrema</a>++;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>      }</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>      <span class="comment">// Cubic case 2</span></div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>      <span class="keywordflow">if</span> (d[i] != 0) {</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        f = (-(c[i] - std::sqrt(discriminant)) / (3. * d[i]));</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>      }</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>      <span class="keywordflow">if</span> ((f &gt;= 0) &amp;&amp; (f &lt;= 1)) {</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#a8db5cd9d5ca14aa60c2021288e66d1c9">positions</a>[result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#af5ad8726e13202a0e8761ae722de4511">numExtrema</a>] = i + f;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#a3107ea9fedebc5f8be4ae6b42bafdb4c">energies</a>[result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#af5ad8726e13202a0e8761ae722de4511">numExtrema</a>] =</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            ((d[i] * f + c[i]) * f + b[i]) * f + a[i]; <span class="comment">// Horner&#39;s method</span></div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#a32a8df07ff9e68bb9470ec4c2ae9b3bc">curvatures</a>[result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#af5ad8726e13202a0e8761ae722de4511">numExtrema</a>] = 6 * d[i] * f + 2 * c[i];</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#af5ad8726e13202a0e8761ae722de4511">numExtrema</a>++;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>      }</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    }</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>  }</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>  QUILL_LOG_DEBUG(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>, <span class="stringliteral">&quot;Found {} extrema&quot;</span>, result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#af5ad8726e13202a0e8761ae722de4511">numExtrema</a>);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>  QUILL_LOG_DEBUG(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>, <span class="stringliteral">&quot;Energy reference: {}&quot;</span>, path[0]-&gt;getPotentialEnergy());</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#af5ad8726e13202a0e8761ae722de4511">numExtrema</a>; i++) {</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    QUILL_LOG_DEBUG(</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>, <span class="stringliteral">&quot;extrema #{} at image position {} with energy {} and curvature {}&quot;</span>,</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        i + 1, result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#a8db5cd9d5ca14aa60c2021288e66d1c9">positions</a>[i],</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#a3107ea9fedebc5f8be4ae6b42bafdb4c">energies</a>[i] - path[0]-&gt;getPotentialEnergy(),</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        result.<a class="code hl_variable" href="structeonc_1_1neb_1_1ExtremaResult.html#a32a8df07ff9e68bb9470ec4c2ae9b3bc">curvatures</a>[i]);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>  }</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>}</div>
+</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="foldopen" id="foldopen00166" data-start="{" data-end="}">
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1neb.html#ac9eab767bb62543c947aaed38e5f06b4">  166</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc_1_1neb.html#ac9eab767bb62543c947aaed38e5f06b4">printImageData</a>(</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; &amp;path,</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;AtomMatrix&gt;&gt; &amp;tangent,</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;EigenmodeStrategy&gt;&gt; &amp;eigenmode_solvers,</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keywordtype">long</span> numImages, <span class="keywordtype">bool</span> estimateEigenvalues, <span class="keywordtype">bool</span> writeToFile, <span class="keywordtype">size_t</span> idx,</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <a class="code hl_struct" href="structeonc_1_1log_1_1Scoped.html">eonc::log::Scoped</a> <a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>) {</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>  <span class="keywordtype">double</span> dist, distTotal = 0;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> tangentStart =</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>      path[0]-&gt;pbc(path[1]-&gt;getPositions() - path[0]-&gt;getPositions());</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> tangentEnd = path[numImages]-&gt;pbc(</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>      path[numImages + 1]-&gt;getPositions() - path[numImages]-&gt;getPositions());</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> tang;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>  std::string header;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>  <span class="keywordflow">if</span> (estimateEigenvalues) {</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    header = std::format(<span class="stringliteral">&quot;{:&gt;3s} {:&gt;12s} {:&gt;12s} {:&gt;12s} {:&gt;12s}&quot;</span>, <span class="stringliteral">&quot;img&quot;</span>,</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>                         <span class="stringliteral">&quot;rxn_coord&quot;</span>, <span class="stringliteral">&quot;energy&quot;</span>, <span class="stringliteral">&quot;f_para&quot;</span>, <span class="stringliteral">&quot;eigval&quot;</span>);</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    header = std::format(<span class="stringliteral">&quot;{:&gt;3s} {:&gt;12s} {:&gt;12s} {:&gt;12s}&quot;</span>, <span class="stringliteral">&quot;img&quot;</span>, <span class="stringliteral">&quot;rxn_coord&quot;</span>,</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>                         <span class="stringliteral">&quot;energy&quot;</span>, <span class="stringliteral">&quot;f_para&quot;</span>);</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>  }</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>  tangentStart.normalize();</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>  tangentEnd.normalize();</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>  std::ofstream fileLogger;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>  <span class="keywordflow">if</span> (writeToFile) {</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    std::string neb_dat_fs;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keywordflow">if</span> (idx == std::numeric_limits&lt;size_t&gt;::max()) {</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>      neb_dat_fs = <span class="stringliteral">&quot;neb.dat&quot;</span>;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>      neb_dat_fs = std::format(<span class="stringliteral">&quot;neb_{:03}.dat&quot;</span>, idx);</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    }</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keywordflow">if</span> (fs::exists(neb_dat_fs)) {</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>      fs::remove(neb_dat_fs);</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    }</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    fileLogger.open(neb_dat_fs);</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordflow">if</span> (fileLogger.is_open()) {</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>      fileLogger &lt;&lt; header &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    }</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>  }</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> energy_reactant = path[0]-&gt;getPotentialEnergy();</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt;= numImages + 1; i++) {</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keywordflow">if</span> (i == 0) {</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>      tang = tangentStart;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (i == numImages + 1) {</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>      tang = tangentEnd;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>      tang = *tangent[i];</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    }</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="keywordflow">if</span> (i &gt; 0) {</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>      dist = path[i]-&gt;distanceTo(*path[i - 1]);</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>      distTotal += dist;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    }</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    <span class="keywordtype">double</span> relative_energy = path[i]-&gt;getPotentialEnergy() - energy_reactant;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <span class="keywordtype">double</span> parallel_force = <a class="code hl_function" href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a>(path[i]-&gt;getForces(), tang);</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span> </div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <span class="keywordflow">if</span> (estimateEigenvalues) {</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>      <a class="code hl_function" href="namespaceeonc.html#aadea15a7f9fe0b9bdc5983ed470d6917">eonc::eigenmodeCompute</a>(*eigenmode_solvers[i], path[i], tang);</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>      <span class="keywordtype">double</span> lowest_eigenvalue =</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>          <a class="code hl_function" href="namespaceeonc.html#ab1dbea20c2a27bbd87d55a6872c31c45">eonc::eigenmodeGetEigenvalue</a>(*eigenmode_solvers[i]);</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>      <span class="keywordflow">if</span> (fileLogger.is_open()) {</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        fileLogger &lt;&lt; std::format(</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>            <span class="stringliteral">&quot;{:&gt;3} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f}\n&quot;</span>, i, distTotal,</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>            relative_energy, parallel_force, lowest_eigenvalue);</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>        QUILL_LOG_DEBUG(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>, <span class="stringliteral">&quot;{:&gt;3} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f}&quot;</span>, i,</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>                        distTotal, relative_energy, parallel_force,</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>                        lowest_eigenvalue);</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>      }</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>      <span class="keywordflow">if</span> (fileLogger.is_open()) {</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        fileLogger &lt;&lt; std::format(<span class="stringliteral">&quot;{:&gt;3} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f}\n&quot;</span>, i,</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>                                  distTotal, relative_energy, parallel_force);</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        QUILL_LOG_DEBUG(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>, <span class="stringliteral">&quot;{:&gt;3} {:&gt;12.6f} {:&gt;12.6f} {:&gt;12.6f}&quot;</span>, i,</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>                        distTotal, relative_energy, parallel_force);</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>      }</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    }</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>  }</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>}</div>
+</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span> </div>
+<div class="foldopen" id="foldopen00251" data-start="{" data-end="}">
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1neb.html#a91b5edfbc7ccfad8b12158c4a577f1ab">  251</a></span>std::vector&lt;readcon::ConFrame&gt; <a class="code hl_function" href="namespaceeonc_1_1neb.html#a91b5edfbc7ccfad8b12158c4a577f1ab">pathToConFrames</a>(</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; &amp;path,</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;AtomMatrix&gt;&gt; &amp;tangent,</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;EigenmodeStrategy&gt;&gt; &amp;eigenmode_solvers,</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    <span class="keywordtype">long</span> numImages, <span class="keywordtype">bool</span> estimateEigenvalues, std::optional&lt;size_t&gt; bandIndex) {</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>  <span class="keyword">const</span> <span class="keywordtype">size_t</span> nframes = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(numImages) + 2;</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>  <span class="keywordflow">if</span> (path.size() &lt; nframes) {</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>  }</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span> </div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>  <span class="keywordtype">double</span> distTotal = 0.0;</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>  std::vector&lt;eonc::io::ConFrameMetadata&gt; metas;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>  metas.reserve(nframes);</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span> </div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt;= numImages + 1; i++) {</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    <span class="keywordflow">if</span> (i &gt; 0) {</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>      distTotal += path[i]-&gt;distanceTo(*path[i - 1]);</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    }</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    metas.push_back(neb_frame_metadata(path, tangent, eigenmode_solvers,</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>                                       numImages, estimateEigenvalues, i,</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>                                       distTotal, bandIndex));</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>  }</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span> </div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>  std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; band(</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>      path.begin(), path.begin() + <span class="keyword">static_cast&lt;</span>std::ptrdiff_t<span class="keyword">&gt;</span>(nframes));</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#a82c7b62eba032ea919c9cc6abf2ba8af">eonc::io::buildNebPathFrames</a>(band, metas);</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>}</div>
+</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span> </div>
+<div class="foldopen" id="foldopen00279" data-start="{" data-end="}">
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1neb.html#aa7cfbb79d2fd990dcecce194c4c4d29f">  279</a></span><a class="code hl_enumeration" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">eonc::io::IoStatus</a> <a class="code hl_function" href="namespaceeonc_1_1neb.html#aa7cfbb79d2fd990dcecce194c4c4d29f">writePathCon</a>(</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; &amp;path,</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;AtomMatrix&gt;&gt; &amp;tangent,</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;EigenmodeStrategy&gt;&gt; &amp;eigenmode_solvers,</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    <span class="keywordtype">long</span> numImages, <span class="keywordtype">bool</span> estimateEigenvalues, std::string filename,</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    std::optional&lt;size_t&gt; bandIndex) {</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>  <span class="keyword">auto</span> frames = <a class="code hl_function" href="namespaceeonc_1_1neb.html#a91b5edfbc7ccfad8b12158c4a577f1ab">pathToConFrames</a>(path, tangent, eigenmode_solvers, numImages,</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>                                estimateEigenvalues, bandIndex);</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>  <span class="keywordflow">if</span> (frames.empty()) {</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">eonc::io::IoStatus::InvalidArgument</a>;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>  }</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1io.html#a2a321dfc9b8cf6c615a518a3f79ccdd0">eonc::io::writeConFrames</a>(std::move(filename), frames);</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>}</div>
+</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span> </div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>} <span class="comment">// namespace eonc::neb</span></div>
+<div class="ttc" id="aConFileIO_8h_html"><div class="ttname"><a href="ConFileIO_8h.html">ConFileIO.h</a></div></div>
+<div class="ttc" id="aEigen_8h_html_a427ffeef0bf8105f9563078d30c121e5"><div class="ttname"><a href="Eigen_8h.html#a427ffeef0bf8105f9563078d30c121e5">matDot</a></div><div class="ttdeci">double matDot(const AtomMatrix &amp;a, const AtomMatrix &amp;b)</div><div class="ttdoc">SIMD-optimized dot product for contiguous Eigen matrices.</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00050">Eigen.h:50</a></div></div>
+<div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
+<div class="ttc" id="aNEBSplineExtrema_8h_html"><div class="ttname"><a href="NEBSplineExtrema_8h.html">NEBSplineExtrema.h</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_a2a321dfc9b8cf6c615a518a3f79ccdd0"><div class="ttname"><a href="namespaceeonc_1_1io.html#a2a321dfc9b8cf6c615a518a3f79ccdd0">eonc::io::writeConFrames</a></div><div class="ttdeci">IoStatus writeConFrames(std::string filename, const std::vector&lt; readcon::ConFrame &gt; &amp;frames)</div><div class="ttdoc">Write already-built ConFrames to a multi-frame .con (temp or durable).</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00921">ConFileIO.cpp:921</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_a82c7b62eba032ea919c9cc6abf2ba8af"><div class="ttname"><a href="namespaceeonc_1_1io.html#a82c7b62eba032ea919c9cc6abf2ba8af">eonc::io::buildNebPathFrames</a></div><div class="ttdeci">std::vector&lt; readcon::ConFrame &gt; buildNebPathFrames(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path, const std::vector&lt; ConFrameMetadata &gt; &amp;metadata_per_image)</div><div class="ttdoc">Build NEB band ConFrames without writing (clone builder path of writeNebPath).</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00872">ConFileIO.cpp:872</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_aa96f30005b3cd2485a5da4371602a1c9"><div class="ttname"><a href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">eonc::io::IoStatus</a></div><div class="ttdeci">IoStatus</div><div class="ttdoc">Structured I/O result for the client surface (nanobind-friendly).</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00029">ConFileIO.h:29</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">eonc::io::IoStatus::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00035">ConFileIO.h:35</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1log_html"><div class="ttname"><a href="namespaceeonc_1_1log.html">eonc::log</a></div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00028">EonLogger.h:28</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00044">EonLogger.h:44</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1neb_html"><div class="ttname"><a href="namespaceeonc_1_1neb.html">eonc::neb</a></div><div class="ttdef"><b>Definition</b> <a href="NEBForceProjection_8cpp_source.html#l00018">NEBForceProjection.cpp:18</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1neb_html_a91b5edfbc7ccfad8b12158c4a577f1ab"><div class="ttname"><a href="namespaceeonc_1_1neb.html#a91b5edfbc7ccfad8b12158c4a577f1ab">eonc::neb::pathToConFrames</a></div><div class="ttdeci">std::vector&lt; readcon::ConFrame &gt; pathToConFrames(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; AtomMatrix &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; EigenmodeStrategy &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, std::optional&lt; size_t &gt; bandIndex)</div><div class="ttdoc">Build stamped ConFrames for a NEB band (same metadata as writePathCon).</div><div class="ttdef"><b>Definition</b> <a href="#l00251">NEBSplineExtrema.cpp:251</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1neb_html_aa7cfbb79d2fd990dcecce194c4c4d29f"><div class="ttname"><a href="namespaceeonc_1_1neb.html#aa7cfbb79d2fd990dcecce194c4c4d29f">eonc::neb::writePathCon</a></div><div class="ttdeci">eonc::io::IoStatus writePathCon(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; AtomMatrix &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; EigenmodeStrategy &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, std::string filename, std::optional&lt; size_t &gt; bandIndex)</div><div class="ttdoc">Write a NEB band as a multi-frame .con via readcon ConFrameBuilder::clone().</div><div class="ttdef"><b>Definition</b> <a href="#l00279">NEBSplineExtrema.cpp:279</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1neb_html_ac9eab767bb62543c947aaed38e5f06b4"><div class="ttname"><a href="namespaceeonc_1_1neb.html#ac9eab767bb62543c947aaed38e5f06b4">eonc::neb::printImageData</a></div><div class="ttdeci">void printImageData(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; AtomMatrix &gt; &gt; &amp;tangent, const std::vector&lt; std::shared_ptr&lt; EigenmodeStrategy &gt; &gt; &amp;eigenmode_solvers, long numImages, bool estimateEigenvalues, bool writeToFile, size_t idx, eonc::log::Scoped log)</div><div class="ttdoc">Print NEB image data to log and optionally to file.</div><div class="ttdef"><b>Definition</b> <a href="#l00166">NEBSplineExtrema.cpp:166</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1neb_html_ae2bcb7440c5a7c56b5f545f1b3a18dd2"><div class="ttname"><a href="namespaceeonc_1_1neb.html#ae2bcb7440c5a7c56b5f545f1b3a18dd2">eonc::neb::findSplineExtrema</a></div><div class="ttdeci">ExtremaResult findSplineExtrema(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path, const std::vector&lt; std::shared_ptr&lt; AtomMatrix &gt; &gt; &amp;tangent, long numImages)</div><div class="ttdoc">Find extrema along the MEP using cubic spline interpolation.</div><div class="ttdef"><b>Definition</b> <a href="#l00074">NEBSplineExtrema.cpp:74</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_aadea15a7f9fe0b9bdc5983ed470d6917"><div class="ttname"><a href="namespaceeonc.html#aadea15a7f9fe0b9bdc5983ed470d6917">eonc::eigenmodeCompute</a></div><div class="ttdeci">void eigenmodeCompute(EigenmodeStrategy &amp;s, std::shared_ptr&lt; Matter &gt; matter, AtomMatrix direction)</div><div class="ttdoc">Dispatch compute() to the active variant.</div><div class="ttdef"><b>Definition</b> <a href="EigenmodeStrategy_8h_source.html#l00075">EigenmodeStrategy.h:75</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_ab1dbea20c2a27bbd87d55a6872c31c45"><div class="ttname"><a href="namespaceeonc.html#ab1dbea20c2a27bbd87d55a6872c31c45">eonc::eigenmodeGetEigenvalue</a></div><div class="ttdeci">double eigenmodeGetEigenvalue(EigenmodeStrategy &amp;s)</div><div class="ttdoc">Dispatch getEigenvalue() to the active variant.</div><div class="ttdef"><b>Definition</b> <a href="EigenmodeStrategy_8h_source.html#l00082">EigenmodeStrategy.h:82</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_a1c066326eb4ccd15a01e3606e4abf5bd"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#a1c066326eb4ccd15a01e3606e4abf5bd">eonc::io::ConFrameMetadata::frame_index</a></div><div class="ttdeci">std::optional&lt; uint64_t &gt; frame_index</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00072">ConFileIO.h:72</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_a1e3ec7c95a8f840aab609450248a3ce8"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#a1e3ec7c95a8f840aab609450248a3ce8">eonc::io::ConFrameMetadata::neb_band</a></div><div class="ttdeci">std::optional&lt; uint64_t &gt; neb_band</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00077">ConFileIO.h:77</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_a2a031c3e8c331a9fcd4b0b06ca9cde83"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#a2a031c3e8c331a9fcd4b0b06ca9cde83">eonc::io::ConFrameMetadata::scalars</a></div><div class="ttdeci">std::vector&lt; ConMetadataValue &gt; scalars</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00079">ConFileIO.h:79</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_a477c0c6939c5add657040782e213add1"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#a477c0c6939c5add657040782e213add1">eonc::io::ConFrameMetadata::energy</a></div><div class="ttdeci">std::optional&lt; double &gt; energy</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00073">ConFileIO.h:73</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_af120c8f87a26122f66264df1f1bf2a1b"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#af120c8f87a26122f66264df1f1bf2a1b">eonc::io::ConFrameMetadata::neb_bead</a></div><div class="ttdeci">std::optional&lt; uint64_t &gt; neb_bead</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00076">ConFileIO.h:76</a></div></div>
+<div class="ttc" id="astructeonc_1_1log_1_1Scoped_html"><div class="ttname"><a href="structeonc_1_1log_1_1Scoped.html">eonc::log::Scoped</a></div><div class="ttdoc">RAII helper for class-scoped logging.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00171">EonLogger.h:171</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb_1_1ExtremaResult_html"><div class="ttname"><a href="structeonc_1_1neb_1_1ExtremaResult.html">eonc::neb::ExtremaResult</a></div><div class="ttdef"><b>Definition</b> <a href="NEBSplineExtrema_8h_source.html#l00028">NEBSplineExtrema.h:28</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb_1_1ExtremaResult_html_a3107ea9fedebc5f8be4ae6b42bafdb4c"><div class="ttname"><a href="structeonc_1_1neb_1_1ExtremaResult.html#a3107ea9fedebc5f8be4ae6b42bafdb4c">eonc::neb::ExtremaResult::energies</a></div><div class="ttdeci">std::vector&lt; double &gt; energies</div><div class="ttdef"><b>Definition</b> <a href="NEBSplineExtrema_8h_source.html#l00031">NEBSplineExtrema.h:31</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb_1_1ExtremaResult_html_a32a8df07ff9e68bb9470ec4c2ae9b3bc"><div class="ttname"><a href="structeonc_1_1neb_1_1ExtremaResult.html#a32a8df07ff9e68bb9470ec4c2ae9b3bc">eonc::neb::ExtremaResult::curvatures</a></div><div class="ttdeci">std::vector&lt; double &gt; curvatures</div><div class="ttdef"><b>Definition</b> <a href="NEBSplineExtrema_8h_source.html#l00032">NEBSplineExtrema.h:32</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb_1_1ExtremaResult_html_a8db5cd9d5ca14aa60c2021288e66d1c9"><div class="ttname"><a href="structeonc_1_1neb_1_1ExtremaResult.html#a8db5cd9d5ca14aa60c2021288e66d1c9">eonc::neb::ExtremaResult::positions</a></div><div class="ttdeci">std::vector&lt; double &gt; positions</div><div class="ttdef"><b>Definition</b> <a href="NEBSplineExtrema_8h_source.html#l00030">NEBSplineExtrema.h:30</a></div></div>
+<div class="ttc" id="astructeonc_1_1neb_1_1ExtremaResult_html_af5ad8726e13202a0e8761ae722de4511"><div class="ttname"><a href="structeonc_1_1neb_1_1ExtremaResult.html#af5ad8726e13202a0e8761ae722de4511">eonc::neb::ExtremaResult::numExtrema</a></div><div class="ttdeci">long numExtrema</div><div class="ttdef"><b>Definition</b> <a href="NEBSplineExtrema_8h_source.html#l00029">NEBSplineExtrema.h:29</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_db3a54907829b36871118d03417739cd.html">client</a></li><li class="navelem"><a href="NEBSplineExtrema_8cpp.html">NEBSplineExtrema.cpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

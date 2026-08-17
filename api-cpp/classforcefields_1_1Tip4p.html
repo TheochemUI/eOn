@@ -1,0 +1,1071 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: forcefields::Tip4p Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classforcefields_1_1Tip4p.html','','classforcefields_1_1Tip4p-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">forcefields::Tip4p Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>TIP4P forcefield with fexible molecules and group based cutoff.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="tip4p__ccl_8hpp_source.html">tip4p_ccl.hpp</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for forcefields::Tip4p:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+ <div class="center">
+  <img src="classforcefields_1_1Tip4p.png" usemap="#forcefields_3A_3ATip4p_map" alt=""/>
+  <map id="forcefields_3A_3ATip4p_map" name="forcefields_3A_3ATip4p_map">
+<area href="classforcefields_1_1Ccl.html" title="Quartic intramolecular potential for water." alt="forcefields::Ccl" shape="rect" coords="0,56,154,80"/>
+<area href="classforcefields_1_1PotentialBase.html" title="Functions and tools commonly used by potentials." alt="forcefields::PotentialBase" shape="rect" coords="0,0,154,24"/>
+<area href="classTip4p.html" alt="Tip4p" shape="rect" coords="0,168,154,192"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a327b6e132528f6f7d101575973fb425f" id="r_a327b6e132528f6f7d101575973fb425f"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a327b6e132528f6f7d101575973fb425f">Tip4p</a> ()</td></tr>
+<tr class="memitem:a6f791989eda7f59a9d2b2c079481a8ae" id="r_a6f791989eda7f59a9d2b2c079481a8ae"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a6f791989eda7f59a9d2b2c079481a8ae">Tip4p</a> (double cutoff, double switchingWidth)</td></tr>
+<tr class="memitem:a6bdefec32186480c2c2857597a2e115f" id="r_a6bdefec32186480c2c2857597a2e115f"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a6bdefec32186480c2c2857597a2e115f">~Tip4p</a> ()</td></tr>
+<tr class="memitem:a2ff2fbc12329126095efbef695f62d03" id="r_a2ff2fbc12329126095efbef695f62d03"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2ff2fbc12329126095efbef695f62d03">computeHH_O_</a> (const int nAtoms, const double R[], double F[], double &amp;U, const double b[])</td></tr>
+<tr class="memdesc:a2ff2fbc12329126095efbef695f62d03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the forces and the energy.  <br /></td></tr>
+<tr class="memitem:ab3510b5a13a6ea2d6da0ba6f343844ed" id="r_ab3510b5a13a6ea2d6da0ba6f343844ed"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ab3510b5a13a6ea2d6da0ba6f343844ed">computeHH_O_</a> (const int nAtoms, const double R[], double F[], double &amp;U, const double b[], const bool fixed[])</td></tr>
+<tr class="memdesc:ab3510b5a13a6ea2d6da0ba6f343844ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the forces and the energy (with fixed atom optimisation).  <br /></td></tr>
+<tr class="inherit_header pub_methods_classforcefields_1_1Ccl"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classforcefields_1_1Ccl')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td></tr>
+<tr class="memitem:adaee7339131b9f01b70c2d055d4a099b inherit pub_methods_classforcefields_1_1Ccl" id="r_adaee7339131b9f01b70c2d055d4a099b"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1Ccl.html#adaee7339131b9f01b70c2d055d4a099b">Ccl</a> ()</td></tr>
+<tr class="memitem:ad79edba720cfb5e65242445f85ce1054 inherit pub_methods_classforcefields_1_1Ccl" id="r_ad79edba720cfb5e65242445f85ce1054"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1Ccl.html#ad79edba720cfb5e65242445f85ce1054">computeHH_O_</a> (const int nAtoms, const double R[], double F[], double &amp;U, const double b[])</td></tr>
+<tr class="memdesc:ad79edba720cfb5e65242445f85ce1054 inherit pub_methods_classforcefields_1_1Ccl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the forces and the energy.  <br /></td></tr>
+<tr class="memitem:a1f60f51afc3e6ef0298e8fb3aa1e62b8 inherit pub_methods_classforcefields_1_1Ccl" id="r_a1f60f51afc3e6ef0298e8fb3aa1e62b8"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1Ccl.html#a1f60f51afc3e6ef0298e8fb3aa1e62b8">computeHH_O_</a> (const int nAtoms, const double R[], double F[], double &amp;U, const double b[], const bool fixed[])</td></tr>
+<tr class="memdesc:a1f60f51afc3e6ef0298e8fb3aa1e62b8 inherit pub_methods_classforcefields_1_1Ccl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the forces and the energy (with fixed atom optimisation).  <br /></td></tr>
+<tr class="memitem:a61b4876e60e49b0d665e0fd8fed3ade6 inherit pub_methods_classforcefields_1_1Ccl" id="r_a61b4876e60e49b0d665e0fd8fed3ade6"><td class="memItemLeft">char const *&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1Ccl.html#a61b4876e60e49b0d665e0fd8fed3ade6">getName</a> () const</td></tr>
+<tr class="memdesc:a61b4876e60e49b0d665e0fd8fed3ade6 inherit pub_methods_classforcefields_1_1Ccl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the potential.  <br /></td></tr>
+<tr class="inherit_header pub_methods_classforcefields_1_1PotentialBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classforcefields_1_1PotentialBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td></tr>
+<tr class="memitem:a0c0bbe743a98331b6e928c0065fd294d inherit pub_methods_classforcefields_1_1PotentialBase" id="r_a0c0bbe743a98331b6e928c0065fd294d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a0c0bbe743a98331b6e928c0065fd294d">PotentialBase</a> ()</td></tr>
+<tr class="memdesc:a0c0bbe743a98331b6e928c0065fd294d inherit pub_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non bond interaction cutoff.  <br /></td></tr>
+<tr class="memitem:a60e07d0902e72e128baf942974199810 inherit pub_methods_classforcefields_1_1PotentialBase" id="r_a60e07d0902e72e128baf942974199810"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a60e07d0902e72e128baf942974199810">PotentialBase</a> (double cutoff, double switchingWidth)</td></tr>
+<tr class="memitem:ab4a0946f1a33688584a184665c481c94 inherit pub_methods_classforcefields_1_1PotentialBase" id="r_ab4a0946f1a33688584a184665c481c94"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#ab4a0946f1a33688584a184665c481c94">~PotentialBase</a> ()</td></tr>
+<tr class="memitem:a6bea63adfa83bdb6e7a5d4fdce454955 inherit pub_methods_classforcefields_1_1PotentialBase" id="r_a6bea63adfa83bdb6e7a5d4fdce454955"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a6bea63adfa83bdb6e7a5d4fdce454955">getCutoff</a> () const</td></tr>
+<tr class="memitem:a6bb51f7d2223741ca65263a8f76b1f5b inherit pub_methods_classforcefields_1_1PotentialBase" id="r_a6bb51f7d2223741ca65263a8f76b1f5b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a6bb51f7d2223741ca65263a8f76b1f5b">setCutoff</a> (double cutoff)</td></tr>
+<tr class="memitem:abbc99205a45a285c85ff5b58657265f4 inherit pub_methods_classforcefields_1_1PotentialBase" id="r_abbc99205a45a285c85ff5b58657265f4"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#abbc99205a45a285c85ff5b58657265f4">getSwitchingWidth</a> () const</td></tr>
+<tr class="memdesc:abbc99205a45a285c85ff5b58657265f4 inherit pub_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Width of the switching zone.  <br /></td></tr>
+<tr class="memitem:a7f469cdccc446844de8ec4f288a58d5e inherit pub_methods_classforcefields_1_1PotentialBase" id="r_a7f469cdccc446844de8ec4f288a58d5e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a7f469cdccc446844de8ec4f288a58d5e">setSwitchingWidth</a> (double width)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a10ae9a4406a9826ba0ec28dc006a9b58" id="r_a10ae9a4406a9826ba0ec28dc006a9b58"><td class="memItemLeft">static char const *&#160;</td><td class="memItemRight"><a class="el" href="#a10ae9a4406a9826ba0ec28dc006a9b58">getName</a> ()</td></tr>
+<tr class="memdesc:a10ae9a4406a9826ba0ec28dc006a9b58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the potential.  <br /></td></tr>
+<tr class="memitem:a16a4ff3004563cbae05b1f797d6ef245" id="r_a16a4ff3004563cbae05b1f797d6ef245"><td class="memItemLeft">static double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a16a4ff3004563cbae05b1f797d6ef245">applyPeriodicity0</a> (double r, double const period)</td></tr>
+<tr class="memdesc:a16a4ff3004563cbae05b1f797d6ef245"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum image representation.  <br /></td></tr>
+<tr class="memitem:addbaf7e0063265711af335e80530e395" id="r_addbaf7e0063265711af335e80530e395"><td class="memItemLeft">static void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#addbaf7e0063265711af335e80530e395">applyPeriodicity0</a> (double r[], double const periods[])</td></tr>
+<tr class="memdesc:addbaf7e0063265711af335e80530e395"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum image representation.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:abea631db9851de7012f923e842d350d4" id="r_abea631db9851de7012f923e842d350d4"><td class="memTemplParams" colspan="2">template&lt;int H, int O&gt; </td></tr>
+<tr class="memitem:abea631db9851de7012f923e842d350d4 template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#abea631db9851de7012f923e842d350d4">computeTemplate</a> (const int nMolecules, const double(*const rh1)[H *3], const double(*const rh2)[H *3], const double(*const ro)[O *3], double(*const fh1)[H *3], double(*const fh2)[H *3], double(*const fo)[O *3], double &amp;energy, double const b[], bool const (*const xh1)[H]=0, bool const (*const xh2)[H]=0, bool const (*const xo)[O]=0)</td></tr>
+<tr class="memdesc:abea631db9851de7012f923e842d350d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute forces and energy.  <br /></td></tr>
+<tr class="memitem:a112edec86e86f5473281918797cb0660" id="r_a112edec86e86f5473281918797cb0660"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a112edec86e86f5473281918797cb0660">coulombWithCutoff</a> (Water &amp;w1, Water &amp;w2, double &amp;U)</td></tr>
+<tr class="memdesc:a112edec86e86f5473281918797cb0660"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interactions between two molecules.  <br /></td></tr>
+<tr class="memitem:a9b798f17c73122533d33d5ec18627d3e" id="r_a9b798f17c73122533d33d5ec18627d3e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a9b798f17c73122533d33d5ec18627d3e">coulombFull</a> (Water &amp;w1, Water &amp;w2, double &amp;U)</td></tr>
+<tr class="memdesc:a9b798f17c73122533d33d5ec18627d3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interactions between two molecules.  <br /></td></tr>
+<tr class="memitem:a602046fb4b9013437f0db1bc11d9d96e" id="r_a602046fb4b9013437f0db1bc11d9d96e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a602046fb4b9013437f0db1bc11d9d96e">lennardJonesWithCutoff</a> (Water &amp;w1, Water &amp;w2, double &amp;U)</td></tr>
+<tr class="memdesc:a602046fb4b9013437f0db1bc11d9d96e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interactions between two molecules.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_methods_classforcefields_1_1Ccl"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classforcefields_1_1Ccl')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td></tr>
+<tr class="memitem:a28da394ac0567004197baff0f49848cc inherit pro_methods_classforcefields_1_1Ccl" id="r_a28da394ac0567004197baff0f49848cc"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1Ccl.html#a28da394ac0567004197baff0f49848cc">Ccl</a> (double cutoff, double switchingWidth)</td></tr>
+<tr class="memdesc:a28da394ac0567004197baff0f49848cc inherit pro_methods_classforcefields_1_1Ccl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor with cutoff for derived classes.  <br /></td></tr>
+<tr class="memitem:a9f7ee938cdf59318e6ba397e6113482c inherit pro_methods_classforcefields_1_1Ccl" id="r_a9f7ee938cdf59318e6ba397e6113482c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1Ccl.html#a9f7ee938cdf59318e6ba397e6113482c">intramolecular</a> (double const rh1[], double const rh2[], double const ro[], double fh1[], double fh2[], double fo[], double &amp;energy)</td></tr>
+<tr class="memdesc:a9f7ee938cdf59318e6ba397e6113482c inherit pro_methods_classforcefields_1_1Ccl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interactions inside one molecules.  <br /></td></tr>
+<tr class="memitem:a788d8cf88d1a1c3bb15518083065bace inherit pro_methods_classforcefields_1_1Ccl" id="r_a788d8cf88d1a1c3bb15518083065bace"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1Ccl.html#a788d8cf88d1a1c3bb15518083065bace">initialiseRho</a> (<a class="el" href="structforcefields_1_1PotentialBase_1_1Vector3.html">Vector3</a> const &amp;v, <a class="el" href="structforcefields_1_1Ccl_1_1Rho.html">Rho</a> &amp;r)</td></tr>
+<tr class="memdesc:a788d8cf88d1a1c3bb15518083065bace inherit pro_methods_classforcefields_1_1Ccl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise <a class="el" href="structforcefields_1_1Ccl_1_1Rho.html" title="parameter in paper.">Rho</a>.  <br /></td></tr>
+<tr class="memitem:a7a93f5761d0f7201d7e5c81ef24ca21a inherit pro_methods_classforcefields_1_1Ccl" id="r_a7a93f5761d0f7201d7e5c81ef24ca21a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1Ccl.html#a7a93f5761d0f7201d7e5c81ef24ca21a">initialiseDtheta</a> (<a class="el" href="structforcefields_1_1PotentialBase_1_1Vector3.html">Vector3</a> const &amp;v1, <a class="el" href="structforcefields_1_1PotentialBase_1_1Vector3.html">Vector3</a> const &amp;v2, <a class="el" href="structforcefields_1_1Ccl_1_1Dtheta.html">Dtheta</a> &amp;dth, double const thetaEquilibrium)</td></tr>
+<tr class="memdesc:a7a93f5761d0f7201d7e5c81ef24ca21a inherit pro_methods_classforcefields_1_1Ccl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialise <a class="el" href="structforcefields_1_1Ccl_1_1Dtheta.html" title="parameter in paper.">Dtheta</a>.  <br /></td></tr>
+<tr class="memitem:ad0d7a21d96074aaf905e7feacd9b762d inherit pro_methods_classforcefields_1_1Ccl" id="r_ad0d7a21d96074aaf905e7feacd9b762d"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1Ccl.html#ad0d7a21d96074aaf905e7feacd9b762d">intramolecular</a> (<a class="el" href="structforcefields_1_1Ccl_1_1Rho.html">Rho</a> const &amp;ro1, <a class="el" href="structforcefields_1_1Ccl_1_1Rho.html">Rho</a> const &amp;ro2, <a class="el" href="structforcefields_1_1Ccl_1_1Dtheta.html">Dtheta</a> const &amp;dth, double &amp;energy, double fh1[], double fh2[], double fo[])</td></tr>
+<tr class="memdesc:ad0d7a21d96074aaf905e7feacd9b762d inherit pro_methods_classforcefields_1_1Ccl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute intramolecular energy and forces.  <br /></td></tr>
+<tr class="inherit_header pro_methods_classforcefields_1_1PotentialBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classforcefields_1_1PotentialBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td></tr>
+<tr class="memitem:a4e0fb50fca0290376bdeca8c1fcbe114 inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a4e0fb50fca0290376bdeca8c1fcbe114"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a4e0fb50fca0290376bdeca8c1fcbe114">restrainAngle</a> (double const r1[], double const r2[], double const r3[], double f1[], double f2[], double f3[], double &amp;u, const double k, const double aeq)</td></tr>
+<tr class="memdesc:a4e0fb50fca0290376bdeca8c1fcbe114 inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Angular quadratic restraints.  <br /></td></tr>
+<tr class="memitem:a7a3596d5b7f22cab8d45f18bab685fa2 inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a7a3596d5b7f22cab8d45f18bab685fa2"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a7a3596d5b7f22cab8d45f18bab685fa2">calculateCentre</a> (double const r1[], double const r2[], double rc[])</td></tr>
+<tr class="memdesc:a7a3596d5b7f22cab8d45f18bab685fa2 inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate centre of two points.  <br /></td></tr>
+<tr class="memitem:ad07f26fc59fed3c2224c6feab54bd794 inherit pro_methods_classforcefields_1_1PotentialBase" id="r_ad07f26fc59fed3c2224c6feab54bd794"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#ad07f26fc59fed3c2224c6feab54bd794">calculateCentre</a> (double const r1[], double const r2[], double const r3[], double rc[])</td></tr>
+<tr class="memdesc:ad07f26fc59fed3c2224c6feab54bd794 inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate centre of three points.  <br /></td></tr>
+<tr class="memitem:acdc6eedf8f7aff5d001da56dc7937176 inherit pro_methods_classforcefields_1_1PotentialBase" id="r_acdc6eedf8f7aff5d001da56dc7937176"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#acdc6eedf8f7aff5d001da56dc7937176">calculateWeightedCentre</a> (double const w1, double const w2, double const w3, double const r1[], double const r2[], double const r3[], double rc[])</td></tr>
+<tr class="memdesc:acdc6eedf8f7aff5d001da56dc7937176 inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate barycentre.  <br /></td></tr>
+<tr class="memitem:abdd7962614f460f5f4584fb4d714907a inherit pro_methods_classforcefields_1_1PotentialBase" id="r_abdd7962614f460f5f4584fb4d714907a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#abdd7962614f460f5f4584fb4d714907a">coulombWithCutoff</a> (const double r1[], const double r2[], double f1[], double f2[], double &amp;u, double const qq)</td></tr>
+<tr class="memdesc:abdd7962614f460f5f4584fb4d714907a inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coulomb interaction with single charge based cutoff.  <br /></td></tr>
+<tr class="memitem:a6d3c622e1dd72d4c30f0488c32d1cc9e inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a6d3c622e1dd72d4c30f0488c32d1cc9e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a6d3c622e1dd72d4c30f0488c32d1cc9e">coulomb</a> (const double r1[], const double r2[], double f1[], double f2[], double &amp;u, double const qq)</td></tr>
+<tr class="memdesc:a6d3c622e1dd72d4c30f0488c32d1cc9e inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute Coulomb interaction between two charges.  <br /></td></tr>
+<tr class="memitem:a09daf208eba4f9e72cea80b98bfb0c5f inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a09daf208eba4f9e72cea80b98bfb0c5f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a09daf208eba4f9e72cea80b98bfb0c5f">coulomb</a> (double distance, double &amp;force, double &amp;energy, double const qq)</td></tr>
+<tr class="memdesc:a09daf208eba4f9e72cea80b98bfb0c5f inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute Coulomb interaction between two charges.  <br /></td></tr>
+<tr class="memitem:aa88b67f8351de8f205951bfbcdb6e9da inherit pro_methods_classforcefields_1_1PotentialBase" id="r_aa88b67f8351de8f205951bfbcdb6e9da"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#aa88b67f8351de8f205951bfbcdb6e9da">spreadForce</a> (double f1[], double f2[], double const fc[])</td></tr>
+<tr class="memdesc:aa88b67f8351de8f205951bfbcdb6e9da inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spread force on centre to other points.  <br /></td></tr>
+<tr class="memitem:ae47c59948aa60495a8d59ed8fda8f030 inherit pro_methods_classforcefields_1_1PotentialBase" id="r_ae47c59948aa60495a8d59ed8fda8f030"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#ae47c59948aa60495a8d59ed8fda8f030">spreadForce</a> (double f1[], double f2[], double f3[], double const fc[])</td></tr>
+<tr class="memdesc:ae47c59948aa60495a8d59ed8fda8f030 inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spread force on centre to other points.  <br /></td></tr>
+<tr class="memitem:a0d4fca8576a908ceaae501d9c3bb8f56 inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a0d4fca8576a908ceaae501d9c3bb8f56"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a0d4fca8576a908ceaae501d9c3bb8f56">spreadWeightedForce</a> (double const w1, double const w2, double const w3, double f1[], double f2[], double f3[], double const fc[])</td></tr>
+<tr class="memdesc:a0d4fca8576a908ceaae501d9c3bb8f56 inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spread force on barycentre to atoms.  <br /></td></tr>
+<tr class="memitem:a866d5d81f2440152a6fd1b0efa588eb8 inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a866d5d81f2440152a6fd1b0efa588eb8"><td class="memTemplParams" colspan="2">template&lt;int N, class R, class F&gt; </td></tr>
+<tr class="memitem:a866d5d81f2440152a6fd1b0efa588eb8 inherit pro_methods_classforcefields_1_1PotentialBase template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a866d5d81f2440152a6fd1b0efa588eb8">addForces</a> (<a class="el" href="structforcefields_1_1PotentialBase_1_1ChargeGroup.html">ChargeGroup</a>&lt; N, R, F &gt; const &amp;g1, <a class="el" href="structforcefields_1_1PotentialBase_1_1ChargeGroup.html">ChargeGroup</a>&lt; N, R, F &gt; &amp;g2)</td></tr>
+<tr class="memdesc:a866d5d81f2440152a6fd1b0efa588eb8 inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Increment forces.  <br /></td></tr>
+<tr class="memitem:a1bebbf9c9cdf48986383f06b8881f84a inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a1bebbf9c9cdf48986383f06b8881f84a"><td class="memTemplParams" colspan="2">template&lt;int N, class R, class F&gt; </td></tr>
+<tr class="memitem:a1bebbf9c9cdf48986383f06b8881f84a inherit pro_methods_classforcefields_1_1PotentialBase template"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a1bebbf9c9cdf48986383f06b8881f84a">switching</a> (<a class="el" href="structforcefields_1_1PotentialBase_1_1ChargeGroup.html">ChargeGroup</a>&lt; N, R, F &gt; &amp;g1, <a class="el" href="structforcefields_1_1PotentialBase_1_1ChargeGroup.html">ChargeGroup</a>&lt; N, R, F &gt; &amp;g2, double &amp;energy, double cutoff, double switchingWidth)</td></tr>
+<tr class="memitem:a94036e65047de49552a0e0a5f171e4ff inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a94036e65047de49552a0e0a5f171e4ff"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a94036e65047de49552a0e0a5f171e4ff">computePt</a> (int const nAtoms, double positions[], double forces[], double &amp;energy, double const periods[], bool const fixed[])</td></tr>
+<tr class="memdesc:a94036e65047de49552a0e0a5f171e4ff inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classPotential.html">Potential</a> for Platinum.  <br /></td></tr>
+<tr class="memitem:a30d31334c47fb6f59423aa6a5ac1b581 inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a30d31334c47fb6f59423aa6a5ac1b581"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a30d31334c47fb6f59423aa6a5ac1b581">restrainLength</a> (const double R1[], const double R2[], double F1[], double F2[], double &amp;u, const double k, const double r0)</td></tr>
+<tr class="memdesc:a30d31334c47fb6f59423aa6a5ac1b581 inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute quadratic restraints between two atoms.  <br /></td></tr>
+<tr class="memitem:a6fb0ae19383cfa472fcdc7fa79951503 inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a6fb0ae19383cfa472fcdc7fa79951503"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a6fb0ae19383cfa472fcdc7fa79951503">lennardJones</a> (double const distance, double &amp;force, double &amp;energy, double const epsilon, double const sigma)</td></tr>
+<tr class="memdesc:a6fb0ae19383cfa472fcdc7fa79951503 inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lennard-Jones 12-6 between two atoms.  <br /></td></tr>
+<tr class="memitem:a8c829f076d66d2e4b4f1c95007ae5bec inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a8c829f076d66d2e4b4f1c95007ae5bec"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a8c829f076d66d2e4b4f1c95007ae5bec">lennardJones</a> (const double R1[], const double R2[], double F1[], double F2[], double &amp;E, double const epsilon, double const sigma)</td></tr>
+<tr class="memdesc:a8c829f076d66d2e4b4f1c95007ae5bec inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lennard-Jones 12-6 between two atoms.  <br /></td></tr>
+<tr class="memitem:a8224374e2a0c646a57a252631e02c330 inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a8224374e2a0c646a57a252631e02c330"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a8224374e2a0c646a57a252631e02c330">lennardJonesWithCutoff</a> (double const r1[], double const r2[], double f1[], double f2[], double &amp;energy, double const epsilon, double const sigma)</td></tr>
+<tr class="memdesc:a8224374e2a0c646a57a252631e02c330 inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lennard Jones 12-6 <a class="el" href="classPotential.html">Potential</a> with cutoff.  <br /></td></tr>
+<tr class="memitem:a047feed131c79bfdf02e4ca85df8ee14 inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a047feed131c79bfdf02e4ca85df8ee14"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a047feed131c79bfdf02e4ca85df8ee14">switching</a> (double const distance, double &amp;force, double &amp;energy)</td></tr>
+<tr class="memdesc:a047feed131c79bfdf02e4ca85df8ee14 inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smooth cutoff switch off.  <br /></td></tr>
+<tr class="memitem:a397bae8d91b979763e06f9a7ce1a413f inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a397bae8d91b979763e06f9a7ce1a413f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a397bae8d91b979763e06f9a7ce1a413f">switching</a> (double const r1[], double const r2[], double f1[], double f2[], double &amp;energy)</td></tr>
+<tr class="memdesc:a397bae8d91b979763e06f9a7ce1a413f inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smooth cutoff switch off.  <br /></td></tr>
+<tr class="memitem:a9024403ecf6c10f072809dcf46151535 inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a9024403ecf6c10f072809dcf46151535"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a9024403ecf6c10f072809dcf46151535">applyPeriodicity1</a> (double r, int const axis)</td></tr>
+<tr class="memdesc:a9024403ecf6c10f072809dcf46151535 inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum image representation.  <br /></td></tr>
+<tr class="memitem:a6c1f38fb44b59b2b4bfea180f13a9cd6 inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a6c1f38fb44b59b2b4bfea180f13a9cd6"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a6c1f38fb44b59b2b4bfea180f13a9cd6">applyPeriodicity1</a> (double r[])</td></tr>
+<tr class="memdesc:a6c1f38fb44b59b2b4bfea180f13a9cd6 inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimum image representation.  <br /></td></tr>
+<tr class="memitem:a7f21b849d82086603401e6f8183ff7f3 inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a7f21b849d82086603401e6f8183ff7f3"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a7f21b849d82086603401e6f8183ff7f3">distance</a> (const double x[], const double y[], double z[], double &amp;z1, double &amp;z2)</td></tr>
+<tr class="memdesc:a7f21b849d82086603401e6f8183ff7f3 inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance vector, norm and norm square.  <br /></td></tr>
+<tr class="memitem:ae7c4fb67af7b5f183598048c4afa4f8b inherit pro_methods_classforcefields_1_1PotentialBase" id="r_ae7c4fb67af7b5f183598048c4afa4f8b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#ae7c4fb67af7b5f183598048c4afa4f8b">distance</a> (const double x[], const double y[], double z[], double &amp;z1)</td></tr>
+<tr class="memdesc:ae7c4fb67af7b5f183598048c4afa4f8b inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance.  <br /></td></tr>
+<tr class="memitem:a5fbbe47bf7e7397090e6e6e1d362049a inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a5fbbe47bf7e7397090e6e6e1d362049a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a5fbbe47bf7e7397090e6e6e1d362049a">distance</a> (const double x[], const double y[], double z[])</td></tr>
+<tr class="memdesc:a5fbbe47bf7e7397090e6e6e1d362049a inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance vector, norm.  <br /></td></tr>
+<tr class="memitem:ae2e716177f7a2642d19f2f165122fe5b inherit pro_methods_classforcefields_1_1PotentialBase" id="r_ae2e716177f7a2642d19f2f165122fe5b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#ae2e716177f7a2642d19f2f165122fe5b">distance</a> (const double x[], const double y[], double &amp;z1)</td></tr>
+<tr class="memdesc:ae2e716177f7a2642d19f2f165122fe5b inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance.  <br /></td></tr>
+<tr class="memitem:a7f2f556efb650ee4d549cdf2f28249c1 inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a7f2f556efb650ee4d549cdf2f28249c1"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a7f2f556efb650ee4d549cdf2f28249c1">distance</a> (const double x[], const double y[], <a class="el" href="structforcefields_1_1PotentialBase_1_1Vector3.html">Vector3</a> &amp;z)</td></tr>
+<tr class="memdesc:a7f2f556efb650ee4d549cdf2f28249c1 inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance vector, norm and norm square.  <br /></td></tr>
+<tr class="memitem:a7d326b2133661b2677b85ebef011ff7b inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a7d326b2133661b2677b85ebef011ff7b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a7d326b2133661b2677b85ebef011ff7b">setPeriodicity</a> (const double periods[])</td></tr>
+<tr class="memdesc:a7d326b2133661b2677b85ebef011ff7b inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set periodicity.  <br /></td></tr>
+<tr class="memitem:a1ab71bb1df6ccf3c3413644c4b672be5 inherit pro_methods_classforcefields_1_1PotentialBase" id="r_a1ab71bb1df6ccf3c3413644c4b672be5"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a1ab71bb1df6ccf3c3413644c4b672be5">unBreak1</a> (double const r, double const ref, int const axis)</td></tr>
+<tr class="memdesc:a1ab71bb1df6ccf3c3413644c4b672be5 inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Undo the separation of two atoms created by the periodic boundaries.  <br /></td></tr>
+<tr class="memitem:aa876f9724170c56f52856fbe45dd0d7d inherit pro_methods_classforcefields_1_1PotentialBase" id="r_aa876f9724170c56f52856fbe45dd0d7d"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#aa876f9724170c56f52856fbe45dd0d7d">unBreak1</a> (double r[], double const ref[])</td></tr>
+<tr class="memdesc:aa876f9724170c56f52856fbe45dd0d7d inherit pro_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Undo the separation of two atoms created by the periodic boundaries.  <br /></td></tr>
+<tr class="inherit_header pro_static_methods_classforcefields_1_1PotentialBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_static_methods_classforcefields_1_1PotentialBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Protected Member Functions inherited from <a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td></tr>
+<tr class="memitem:ga23adf8fa148d5eb07c549f357ce1d60b inherit pro_static_methods_classforcefields_1_1PotentialBase" id="r_ga23adf8fa148d5eb07c549f357ce1d60b"><td class="memItemLeft">static void&#160;</td><td class="memItemRight"><a class="el" href="group__vector3d.html#ga23adf8fa148d5eb07c549f357ce1d60b">divide</a> (double v[], double const divisor)</td></tr>
+<tr class="memdesc:ga23adf8fa148d5eb07c549f357ce1d60b inherit pro_static_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Divide vector.  <br /></td></tr>
+<tr class="memitem:gac73e01ad1d8e9b7f328a9fd0ab6eeecf inherit pro_static_methods_classforcefields_1_1PotentialBase" id="r_gac73e01ad1d8e9b7f328a9fd0ab6eeecf"><td class="memItemLeft">static double *&#160;</td><td class="memItemRight"><a class="el" href="group__vector3d.html#gac73e01ad1d8e9b7f328a9fd0ab6eeecf">crossProduct</a> (const double v[], const double w[], double e[])</td></tr>
+<tr class="memdesc:gac73e01ad1d8e9b7f328a9fd0ab6eeecf inherit pro_static_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cross product.  <br /></td></tr>
+<tr class="memitem:ga3ef54f1a24b645df2792949829635d63 inherit pro_static_methods_classforcefields_1_1PotentialBase" id="r_ga3ef54f1a24b645df2792949829635d63"><td class="memItemLeft">static double&#160;</td><td class="memItemRight"><a class="el" href="group__vector3d.html#ga3ef54f1a24b645df2792949829635d63">dotProduct</a> (double const v[], double const w[])</td></tr>
+<tr class="memdesc:ga3ef54f1a24b645df2792949829635d63 inherit pro_static_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dot product.  <br /></td></tr>
+<tr class="memitem:ga4cf47e84487baa308a7a6a91cba9a016 inherit pro_static_methods_classforcefields_1_1PotentialBase" id="r_ga4cf47e84487baa308a7a6a91cba9a016"><td class="memItemLeft">static void&#160;</td><td class="memItemRight"><a class="el" href="group__vector3d.html#ga4cf47e84487baa308a7a6a91cba9a016">multiply</a> (double v[], double const factor)</td></tr>
+<tr class="memdesc:ga4cf47e84487baa308a7a6a91cba9a016 inherit pro_static_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Multiply vector.  <br /></td></tr>
+<tr class="memitem:ga10b1a4e7d6cd70f9cc666e9fdde887f3 inherit pro_static_methods_classforcefields_1_1PotentialBase" id="r_ga10b1a4e7d6cd70f9cc666e9fdde887f3"><td class="memItemLeft">static double&#160;</td><td class="memItemRight"><a class="el" href="group__vector3d.html#ga10b1a4e7d6cd70f9cc666e9fdde887f3">norm</a> (double const v[])</td></tr>
+<tr class="memdesc:ga10b1a4e7d6cd70f9cc666e9fdde887f3 inherit pro_static_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Norm of 3D vector.  <br /></td></tr>
+<tr class="memitem:gaccc278445568626e20341caded5616db inherit pro_static_methods_classforcefields_1_1PotentialBase" id="r_gaccc278445568626e20341caded5616db"><td class="memItemLeft">static void&#160;</td><td class="memItemRight"><a class="el" href="group__vector3d.html#gaccc278445568626e20341caded5616db">normalise</a> (double v[])</td></tr>
+<tr class="memdesc:gaccc278445568626e20341caded5616db inherit pro_static_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalise 3D vector \( \frac{\mathbf v}{ |\mathbf v|} \).  <br /></td></tr>
+<tr class="memitem:ac91445db4bba4fcb9f616267a1222147 inherit pro_static_methods_classforcefields_1_1PotentialBase" id="r_ac91445db4bba4fcb9f616267a1222147"><td class="memItemLeft">static double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#ac91445db4bba4fcb9f616267a1222147">isoscelesBase</a> (double length, double angle)</td></tr>
+<tr class="memdesc:ac91445db4bba4fcb9f616267a1222147 inherit pro_static_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the base of an isosceles triangle.  <br /></td></tr>
+<tr class="memitem:aa3d8635481e741415a057fc10dad1059 inherit pro_static_methods_classforcefields_1_1PotentialBase" id="r_aa3d8635481e741415a057fc10dad1059"><td class="memItemLeft">static double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#aa3d8635481e741415a057fc10dad1059">epsilon</a> (double const A, double const B)</td></tr>
+<tr class="memdesc:aa3d8635481e741415a057fc10dad1059 inherit pro_static_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conversion for Lennard-Jones.  <br /></td></tr>
+<tr class="memitem:a0c28fa522a9f561e202338e2424a39af inherit pro_static_methods_classforcefields_1_1PotentialBase" id="r_a0c28fa522a9f561e202338e2424a39af"><td class="memItemLeft">static double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a0c28fa522a9f561e202338e2424a39af">sigma</a> (double const A, double const B)</td></tr>
+<tr class="memdesc:a0c28fa522a9f561e202338e2424a39af inherit pro_static_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conversion for Lennard-Jones.  <br /></td></tr>
+<tr class="memitem:aa02d0785396ffb5fbd11ad6de7348f43 inherit pro_static_methods_classforcefields_1_1PotentialBase" id="r_aa02d0785396ffb5fbd11ad6de7348f43"><td class="memItemLeft">static double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#aa02d0785396ffb5fbd11ad6de7348f43">smithKongEpsilon</a> (double sigma1, double epsilon1, double sigma2, double epsilon2)</td></tr>
+<tr class="memdesc:aa02d0785396ffb5fbd11ad6de7348f43 inherit pro_static_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smith and Kong combination rules.  <br /></td></tr>
+<tr class="memitem:a6958c8fbace6e12619ee5f3ae2b11641 inherit pro_static_methods_classforcefields_1_1PotentialBase" id="r_a6958c8fbace6e12619ee5f3ae2b11641"><td class="memItemLeft">static double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a6958c8fbace6e12619ee5f3ae2b11641">smithKongSigma</a> (double sigma1, double epsilon1, double sigma2, double epsilon2)</td></tr>
+<tr class="memdesc:a6958c8fbace6e12619ee5f3ae2b11641 inherit pro_static_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smith and Kong combination rules.  <br /></td></tr>
+<tr class="memitem:a2f4ee68c190639e702ec47b0e60debb1 inherit pro_static_methods_classforcefields_1_1PotentialBase" id="r_a2f4ee68c190639e702ec47b0e60debb1"><td class="memItemLeft">static double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a2f4ee68c190639e702ec47b0e60debb1">unBreak0</a> (double const r, double const ref, double const period)</td></tr>
+<tr class="memdesc:a2f4ee68c190639e702ec47b0e60debb1 inherit pro_static_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Undo the separation of two atoms created by the periodic boundaries.  <br /></td></tr>
+<tr class="memitem:a6484b31df79e68710399afb723b35f82 inherit pro_static_methods_classforcefields_1_1PotentialBase" id="r_a6484b31df79e68710399afb723b35f82"><td class="memItemLeft">static void&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a6484b31df79e68710399afb723b35f82">unBreak0</a> (double r[], double const ref[], double const periods[])</td></tr>
+<tr class="memdesc:a6484b31df79e68710399afb723b35f82 inherit pro_static_methods_classforcefields_1_1PotentialBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Undo the separation of two atoms created by the periodic boundaries.  <br /></td></tr>
+<tr class="inherit_header pro_attribs_classforcefields_1_1PotentialBase"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classforcefields_1_1PotentialBase')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td></tr>
+<tr class="memitem:acc1769baf153eb0acb5758c5803aa72c inherit pro_attribs_classforcefields_1_1PotentialBase" id="r_acc1769baf153eb0acb5758c5803aa72c"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#acc1769baf153eb0acb5758c5803aa72c">cutoff_</a></td></tr>
+<tr class="memitem:a91206cd71c4c2b41735ca990c7c44441 inherit pro_attribs_classforcefields_1_1PotentialBase" id="r_a91206cd71c4c2b41735ca990c7c44441"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a91206cd71c4c2b41735ca990c7c44441">periods_</a> [3]</td></tr>
+<tr class="memitem:a6fc0ca510d01a8053262afb747b751c0 inherit pro_attribs_classforcefields_1_1PotentialBase" id="r_a6fc0ca510d01a8053262afb747b751c0"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a6fc0ca510d01a8053262afb747b751c0">switchingWidth_</a></td></tr>
+<tr class="inherit_header pro_static_attribs_classforcefields_1_1Ccl"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_static_attribs_classforcefields_1_1Ccl')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Static Protected Attributes inherited from <a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td></tr>
+<tr class="memitem:a06f1a4e8492bf7ff82ab9c905b378a0b inherit pro_static_attribs_classforcefields_1_1Ccl" id="r_a06f1a4e8492bf7ff82ab9c905b378a0b"><td class="memItemLeft">static double const&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1Ccl.html#a06f1a4e8492bf7ff82ab9c905b378a0b">re_</a> = ::re_</td></tr>
+<tr class="memdesc:a06f1a4e8492bf7ff82ab9c905b378a0b inherit pro_static_attribs_classforcefields_1_1Ccl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance OH at equilibrium.  <br /></td></tr>
+<tr class="memitem:a0b292f41430d6466207ea99b5bfa70bd inherit pro_static_attribs_classforcefields_1_1Ccl" id="r_a0b292f41430d6466207ea99b5bfa70bd"><td class="memItemLeft">static double const&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1Ccl.html#a0b292f41430d6466207ea99b5bfa70bd">thetae_</a> = ::thetae_</td></tr>
+<tr class="memdesc:a0b292f41430d6466207ea99b5bfa70bd inherit pro_static_attribs_classforcefields_1_1Ccl"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance OH at equilibrium.  <br /></td></tr>
+<tr class="memitem:ade862af6fe691fe650a2c5bb8cd4f262" id="r_ade862af6fe691fe650a2c5bb8cd4f262"><td class="memItemLeft">static const double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#ade862af6fe691fe650a2c5bb8cd4f262">ONE_OVER_4_PI_EPSILON0</a></td></tr>
+<tr class="memitem:a8735dcd5e17bb2b7a85ed02865e951bc" id="r_a8735dcd5e17bb2b7a85ed02865e951bc"><td class="memItemLeft">static const double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a8735dcd5e17bb2b7a85ed02865e951bc">EPSILON_PT</a> = 0.68165797577788501</td></tr>
+<tr class="memdesc:a8735dcd5e17bb2b7a85ed02865e951bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Platinum Lennard-Jones.  <br /></td></tr>
+<tr class="memitem:a97a258d5e5df42cbc604753f6babfab9" id="r_a97a258d5e5df42cbc604753f6babfab9"><td class="memItemLeft">static const double&#160;</td><td class="memItemRight"><a class="el" href="classforcefields_1_1PotentialBase.html#a97a258d5e5df42cbc604753f6babfab9">SIGMA_PT</a> = 2.54</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>TIP4P forcefield with fexible molecules and group based cutoff. </p>
+<p>The function computing the forces and energy is compute(). <a class="el" href="classParameters.html">Parameters</a> for the forcefield were taken from <a class="el" href="#abascal2005" title="abascal2005">Abascal et al.</a>. The parameters are those of TIP4P (original version). TIP4P is a potential for constrained molecules of water. In this implementation quadratic restraints were added to bonds OH and HH inside molecules of water. So the potential can be used without constraints. The potential has a cutoff for long range interaction. The cutoff can be changed by <a class="el" href="classforcefields_1_1PotentialBase.html#a6bb51f7d2223741ca65263a8f76b1f5b">setCutoff()</a>. There is also and switching zone at the edge of the cutoff to cut off the interactions smoothly. The width of this switching zone is controlled by <a class="el" href="classforcefields_1_1PotentialBase.html#a7f469cdccc446844de8ec4f288a58d5e">setSwitchingWidth()</a>.<br  />
+ The unit system for this potential is eV (electron volt), Angstrom, e (e charge). </p>
+<h1 class="doxsection"><a class="anchor" id="references"></a>
+References</h1>
+<p><a class="anchor" id="abascal2005"></a>A general purpose model for the condensed phases of water: TIP4P/2005, J.L.F. Abascal and C. Vega, J. Chem. Phys. (2005) vol. 123, p. 234505. </p>
+
+<p class="definition">Definition at line <a class="el" href="tip4p__ccl_8hpp_source.html#l00023">23</a> of file <a class="el" href="tip4p__ccl_8hpp_source.html">tip4p_ccl.hpp</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a327b6e132528f6f7d101575973fb425f" name="a327b6e132528f6f7d101575973fb425f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a327b6e132528f6f7d101575973fb425f">&#9670;&#160;</a></span>Tip4p() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Tip4p::Tip4p </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="tip4p__ccl_8cpp_source.html#l00067">67</a> of file <a class="el" href="tip4p__ccl_8cpp_source.html">tip4p_ccl.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   68</span>    : <a class="code hl_function" href="classforcefields_1_1Ccl.html#adaee7339131b9f01b70c2d055d4a099b">Ccl</a>() {}</div>
+<div class="ttc" id="aclassforcefields_1_1Ccl_html_adaee7339131b9f01b70c2d055d4a099b"><div class="ttname"><a href="classforcefields_1_1Ccl.html#adaee7339131b9f01b70c2d055d4a099b">forcefields::Ccl::Ccl</a></div><div class="ttdeci">Ccl()</div><div class="ttdef"><b>Definition</b> <a href="ccl_8hpp_source.html#l00024">ccl.hpp:24</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6f791989eda7f59a9d2b2c079481a8ae" name="a6f791989eda7f59a9d2b2c079481a8ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f791989eda7f59a9d2b2c079481a8ae">&#9670;&#160;</a></span>Tip4p() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Tip4p::Tip4p </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>cutoff</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>switchingWidth</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="tip4p__ccl_8cpp_source.html#l00070">70</a> of file <a class="el" href="tip4p__ccl_8cpp_source.html">tip4p_ccl.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   71</span>    : <a class="code hl_function" href="classforcefields_1_1Ccl.html#adaee7339131b9f01b70c2d055d4a099b">Ccl</a>(cutoff, switchingWidth) {}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6bdefec32186480c2c2857597a2e115f" name="a6bdefec32186480c2c2857597a2e115f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bdefec32186480c2c2857597a2e115f">&#9670;&#160;</a></span>~Tip4p()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">forcefields::Tip4p::~Tip4p </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="tip4p__ccl_8hpp_source.html#l00027">27</a> of file <a class="el" href="tip4p__ccl_8hpp_source.html">tip4p_ccl.hpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   27</span>{}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a2ff2fbc12329126095efbef695f62d03" name="a2ff2fbc12329126095efbef695f62d03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ff2fbc12329126095efbef695f62d03">&#9670;&#160;</a></span>computeHH_O_() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tip4p::computeHH_O_ </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>nAtoms</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double</td>          <td class="paramname"><span class="paramname"><em>R</em></span>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>F</em></span>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;</td>          <td class="paramname"><span class="paramname"><em>U</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double</td>          <td class="paramname"><span class="paramname"><em>b</em></span>[]&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the forces and the energy. </p>
+<p>The order of the atoms is very important. For this function the order is H1, H1, H2, H2, etc ... , O1, O2, etc ... The numbers are for the molecules. The suffix HH_O_ is to reminds the ordering of the atoms. It indicates the position of the atoms of the first molecule, while the underscore marks the locations of other atoms. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">nAtoms</td><td>Number of <a class="el" href="classAtoms.html" title="The main list of atoms class.">Atoms</a>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">R</td><td>coordinates. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">F</td><td>Forces. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">U</td><td><a class="el" href="classPotential.html">Potential</a> energy. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>Periodic boundaries. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section warning"><dt>Warning</dt><dd>Be careful with the order of the atoms. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="tip4p__ccl_8cpp_source.html#l00085">85</a> of file <a class="el" href="tip4p__ccl_8cpp_source.html">tip4p_ccl.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   86</span>                                                      {</div>
+<div class="line"><span class="lineno">   87</span>  <a class="code hl_function" href="#a2ff2fbc12329126095efbef695f62d03">computeHH_O_</a>(nAtoms, R, F, U, b, 0);</div>
+<div class="line"><span class="lineno">   88</span>}</div>
+<div class="ttc" id="aclassforcefields_1_1Tip4p_html_a2ff2fbc12329126095efbef695f62d03"><div class="ttname"><a href="#a2ff2fbc12329126095efbef695f62d03">forcefields::Tip4p::computeHH_O_</a></div><div class="ttdeci">void computeHH_O_(const int nAtoms, const double R[], double F[], double &amp;U, const double b[])</div><div class="ttdoc">Compute the forces and the energy.</div><div class="ttdef"><b>Definition</b> <a href="tip4p__ccl_8cpp_source.html#l00085">tip4p_ccl.cpp:85</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab3510b5a13a6ea2d6da0ba6f343844ed" name="ab3510b5a13a6ea2d6da0ba6f343844ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3510b5a13a6ea2d6da0ba6f343844ed">&#9670;&#160;</a></span>computeHH_O_() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tip4p::computeHH_O_ </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>nAtoms</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double</td>          <td class="paramname"><span class="paramname"><em>R</em></span>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>F</em></span>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;</td>          <td class="paramname"><span class="paramname"><em>U</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double</td>          <td class="paramname"><span class="paramname"><em>b</em></span>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool</td>          <td class="paramname"><span class="paramname"><em>fixed</em></span>[]&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the forces and the energy (with fixed atom optimisation). </p>
+<p>In a simulation, some atoms may be fixed (not allowed to move). Computing the interaction between two fixed atoms is useless. When the potential knows which atoms are fixed, it can avoid these useless computations. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">nAtoms</td><td>Number of <a class="el" href="classAtoms.html" title="The main list of atoms class.">Atoms</a>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">R</td><td>coordinates. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">F</td><td>Forces. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">U</td><td><a class="el" href="classPotential.html">Potential</a> energy. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>Periodic boundaries. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fixed</td><td>The length of the array must be equal to <em class="arg">nAtoms</em> in compute(). True when atom is fixed, false otherwise. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd>Check compute() for the order of the atoms. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="tip4p__ccl_8cpp_source.html#l00103">103</a> of file <a class="el" href="tip4p__ccl_8cpp_source.html">tip4p_ccl.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  104</span>                                                                          {</div>
+<div class="line"><span class="lineno">  105</span>  <span class="keywordtype">int</span> <span class="keyword">const</span> nMolecules = nAtoms / 3;</div>
+<div class="line"><span class="lineno">  106</span>  <span class="keyword">const</span> double (*<span class="keyword">const</span> rh1)[6] = <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">double</span> (*)[6]<span class="keyword">&gt;</span>(R);</div>
+<div class="line"><span class="lineno">  107</span>  <span class="keyword">const</span> double (*<span class="keyword">const</span> rh2)[6] = <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">double</span> (*)[6]<span class="keyword">&gt;</span>(&amp;R[3]);</div>
+<div class="line"><span class="lineno">  108</span>  <span class="keyword">const</span> double (*<span class="keyword">const</span> ro)[3] =</div>
+<div class="line"><span class="lineno">  109</span>      <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">double</span> (*)[3]<span class="keyword">&gt;</span>(&amp;R[nMolecules * 6]);</div>
+<div class="line"><span class="lineno">  110</span>  double (*<span class="keyword">const</span> fh1)[6] = <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">double</span> (*)[6]<span class="keyword">&gt;</span>(F);</div>
+<div class="line"><span class="lineno">  111</span>  double (*<span class="keyword">const</span> fh2)[6] = <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">double</span> (*)[6]<span class="keyword">&gt;</span>(&amp;F[3]);</div>
+<div class="line"><span class="lineno">  112</span>  double (*<span class="keyword">const</span> fo)[3] = <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">double</span> (*)[3]<span class="keyword">&gt;</span>(&amp;F[nMolecules * 6]);</div>
+<div class="line"><span class="lineno">  113</span>  <span class="keywordtype">bool</span> <span class="keyword">const</span>(*<span class="keyword">const</span> xh1)[2] = <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">bool</span> const(*)[2]<span class="keyword">&gt;</span>(fixed);</div>
+<div class="line"><span class="lineno">  114</span>  <span class="keywordtype">bool</span> <span class="keyword">const</span>(*<span class="keyword">const</span> xh2)[2] = <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">bool</span> const(*)[2]<span class="keyword">&gt;</span>(&amp;fixed[1]);</div>
+<div class="line"><span class="lineno">  115</span>  <span class="keywordtype">bool</span> <span class="keyword">const</span>(*<span class="keyword">const</span> xo)[1] =</div>
+<div class="line"><span class="lineno">  116</span>      <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">bool</span> const(*)[1]<span class="keyword">&gt;</span>(&amp;fixed[nMolecules * 2]);</div>
+<div class="line"><span class="lineno">  117</span>  <a class="code hl_function" href="#abea631db9851de7012f923e842d350d4">computeTemplate</a>(nMolecules, rh1, rh2, ro, fh1, fh2, fo, U, b, xh1, xh2, xo);</div>
+<div class="line"><span class="lineno">  118</span>}</div>
+<div class="ttc" id="aclassforcefields_1_1Tip4p_html_abea631db9851de7012f923e842d350d4"><div class="ttname"><a href="#abea631db9851de7012f923e842d350d4">forcefields::Tip4p::computeTemplate</a></div><div class="ttdeci">void computeTemplate(const int nMolecules, const double(*const rh1)[H *3], const double(*const rh2)[H *3], const double(*const ro)[O *3], double(*const fh1)[H *3], double(*const fh2)[H *3], double(*const fo)[O *3], double &amp;energy, double const b[], bool const (*const xh1)[H]=0, bool const (*const xh2)[H]=0, bool const (*const xo)[O]=0)</div><div class="ttdoc">Compute forces and energy.</div><div class="ttdef"><b>Definition</b> <a href="tip4p__ccl_8cpp_source.html#l00157">tip4p_ccl.cpp:157</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="abea631db9851de7012f923e842d350d4" name="abea631db9851de7012f923e842d350d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abea631db9851de7012f923e842d350d4">&#9670;&#160;</a></span>computeTemplate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int H, int O&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tip4p::computeTemplate </td>
+          <td>(</td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>nMolecules</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double(*)</td>          <td class="paramname"><span class="paramname"><em>rh1</em></span>[H *3], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double(*)</td>          <td class="paramname"><span class="paramname"><em>rh2</em></span>[H *3], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double(*)</td>          <td class="paramname"><span class="paramname"><em>ro</em></span>[O *3], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double(*)</td>          <td class="paramname"><span class="paramname"><em>fh1</em></span>[H *3], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double(*)</td>          <td class="paramname"><span class="paramname"><em>fh2</em></span>[H *3], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double(*)</td>          <td class="paramname"><span class="paramname"><em>fo</em></span>[O *3], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;</td>          <td class="paramname"><span class="paramname"><em>energy</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double const</td>          <td class="paramname"><span class="paramname"><em>b</em></span>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool const (*)</td>          <td class="paramname"><span class="paramname"><em>xh1</em></span>[H]<span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool const (*)</td>          <td class="paramname"><span class="paramname"><em>xh2</em></span>[H]<span class="paramdefsep"> = </span><span class="paramdefval">0</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool const (*)</td>          <td class="paramname"><span class="paramname"><em>xo</em></span>[O]<span class="paramdefsep"> = </span><span class="paramdefval">0</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute forces and energy. </p>
+<p>The function calculates and returns the energy and forces applied on each atom. The function has preconditions with which the user must comply before calling this function. The periodic boundaries must set with (<a class="el" href="classforcefields_1_1PotentialBase.html#a7d326b2133661b2677b85ebef011ff7b" title="Set periodicity.">setPeriodicity()</a>). The content of and arrays <em class="arg">fh1</em> , <em class="arg">fh2</em> , <em class="arg">fo</em> must be zero for all elements. <br  />
+Arrays ending in <em>h1</em> are for the hydrogen one of the molecules and those ending in <em>h2</em> for hydrogen 2. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">nMolecules</td><td>Number of molecules. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rh1, rh2, ro</td><td>Positions of hydrogens and oxygens. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">fh1, fh2, fo</td><td>Forces on hydrogens and oxygens. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">energy</td><td><a class="el" href="classPotential.html">Potential</a> energy. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">b</td><td>Periodic boundaries. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xh1, xh2, xo</td><td>Tell which atoms are fixed and which are movable. This parameter are optional. When provided, interaction between fixed atoms are skipped. The three arrays <em class="arg">xh1</em>, <em class="arg">xh2</em>, <em class="arg">xo</em> must be provided for the optimisation to work. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section warning"><dt>Warning</dt><dd>Remember the preconditions. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="tip4p__ccl_8cpp_source.html#l00157">157</a> of file <a class="el" href="tip4p__ccl_8cpp_source.html">tip4p_ccl.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  163</span>                               {</div>
+<div class="line"><span class="lineno">  164</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; nMolecules; ++i) {</div>
+<div class="line"><span class="lineno">  165</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> a = 0; a &lt; 3; a++) {</div>
+<div class="line"><span class="lineno">  166</span>      fh1[i][a] = 0.0;</div>
+<div class="line"><span class="lineno">  167</span>      fh2[i][a] = 0.0;</div>
+<div class="line"><span class="lineno">  168</span>      fo[i][a] = 0.0;</div>
+<div class="line"><span class="lineno">  169</span>    };</div>
+<div class="line"><span class="lineno">  170</span>  };</div>
+<div class="line"><span class="lineno">  171</span>  energy = 0.0;</div>
+<div class="line"><span class="lineno">  172</span>  <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a7d326b2133661b2677b85ebef011ff7b">setPeriodicity</a>(b);</div>
+<div class="line"><span class="lineno">  173</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = nMolecules - 1; i &gt;= 0; --i) {</div>
+<div class="line"><span class="lineno">  174</span>    <span class="keywordtype">double</span> rc1[3], rn1[3], fn1[3] = {0}; <span class="comment">// rn position charge N, rc centre of</span></div>
+<div class="line"><span class="lineno">  175</span>                                         <span class="comment">// charge for groupbased cutoff.</span></div>
+<div class="line"><span class="lineno">  176</span>    <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#acdc6eedf8f7aff5d001da56dc7937176">calculateWeightedCentre</a>(wo_, wh_, wh_, ro[i], rh1[i], rh2[i], rn1);</div>
+<div class="line"><span class="lineno">  177</span>    <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a7a3596d5b7f22cab8d45f18bab685fa2">calculateCentre</a>(rn1, rh1[i], rh2[i], rc1);</div>
+<div class="line"><span class="lineno">  178</span>    Water w1 = {rh1[i], rh2[i], ro[i], rn1, rc1, fh1[i], fh2[i], fo[i], fn1};</div>
+<div class="line"><span class="lineno">  179</span>    <a class="code hl_function" href="classforcefields_1_1Ccl.html#a9f7ee938cdf59318e6ba397e6113482c">intramolecular</a>(rh1[i], rh2[i], ro[i], fh1[i], fh2[i], fo[i], energy);</div>
+<div class="line"><span class="lineno">  180</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = i - 1; j &gt;= 0; --j) {</div>
+<div class="line"><span class="lineno">  181</span>      <span class="keywordtype">bool</span> areFixed = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  182</span>      <span class="keywordflow">if</span> (xh1 and xh2 and xo) {</div>
+<div class="line"><span class="lineno">  183</span>        areFixed = xh1[i][0] and xh2[i][0] and xo[i][0];</div>
+<div class="line"><span class="lineno">  184</span>        <span class="comment">// check if all the atoms of molecule j are fixed.</span></div>
+<div class="line"><span class="lineno">  185</span>        areFixed &amp;= xh1[j][0] and xh2[j][0] and xo[j][0];</div>
+<div class="line"><span class="lineno">  186</span>      };</div>
+<div class="line"><span class="lineno">  187</span>      <span class="comment">// if both molecules are fixed skip force calculation</span></div>
+<div class="line"><span class="lineno">  188</span>      <span class="keywordflow">if</span> (not areFixed) {</div>
+<div class="line"><span class="lineno">  189</span>        <span class="keywordtype">double</span> rc2[3], rn2[3], fn2[3] = {0};</div>
+<div class="line"><span class="lineno">  190</span>        <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#acdc6eedf8f7aff5d001da56dc7937176">calculateWeightedCentre</a>(wo_, wh_, wh_, ro[j], rh1[j], rh2[j], rn2);</div>
+<div class="line"><span class="lineno">  191</span>        <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a7a3596d5b7f22cab8d45f18bab685fa2">calculateCentre</a>(rn2, rh1[j], rh2[j], rc2);</div>
+<div class="line"><span class="lineno">  192</span>        Water w2 = {rh1[j], rh2[j], ro[j], rn2, rc2,</div>
+<div class="line"><span class="lineno">  193</span>                    fh1[j], fh2[j], fo[j], fn2};</div>
+<div class="line"><span class="lineno">  194</span>        <a class="code hl_function" href="#a112edec86e86f5473281918797cb0660">coulombWithCutoff</a>(w1, w2, energy);</div>
+<div class="line"><span class="lineno">  195</span>        <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a0d4fca8576a908ceaae501d9c3bb8f56">spreadWeightedForce</a>(wo_, wh_, wh_, w2.fo_, w2.fh1_, w2.fh2_, w2.fn_);</div>
+<div class="line"><span class="lineno">  196</span>        <a class="code hl_function" href="#a602046fb4b9013437f0db1bc11d9d96e">lennardJonesWithCutoff</a>(w1, w2, energy);</div>
+<div class="line"><span class="lineno">  197</span>      };</div>
+<div class="line"><span class="lineno">  198</span>    };</div>
+<div class="line"><span class="lineno">  199</span>    <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a0d4fca8576a908ceaae501d9c3bb8f56">spreadWeightedForce</a>(wo_, wh_, wh_, w1.fo_, w1.fh1_, w1.fh2_, w1.fn_);</div>
+<div class="line"><span class="lineno">  200</span>  };</div>
+<div class="line"><span class="lineno">  201</span>  assert(not std::isnan(energy) and not std::isinf(energy));</div>
+<div class="line"><span class="lineno">  202</span>}</div>
+<div class="ttc" id="aclassforcefields_1_1Ccl_html_a9f7ee938cdf59318e6ba397e6113482c"><div class="ttname"><a href="classforcefields_1_1Ccl.html#a9f7ee938cdf59318e6ba397e6113482c">forcefields::Ccl::intramolecular</a></div><div class="ttdeci">void intramolecular(double const rh1[], double const rh2[], double const ro[], double fh1[], double fh2[], double fo[], double &amp;energy)</div><div class="ttdoc">Interactions inside one molecules.</div><div class="ttdef"><b>Definition</b> <a href="ccl_8cpp_source.html#l00238">ccl.cpp:238</a></div></div>
+<div class="ttc" id="aclassforcefields_1_1PotentialBase_html_a0d4fca8576a908ceaae501d9c3bb8f56"><div class="ttname"><a href="classforcefields_1_1PotentialBase.html#a0d4fca8576a908ceaae501d9c3bb8f56">forcefields::PotentialBase::spreadWeightedForce</a></div><div class="ttdeci">void spreadWeightedForce(double const w1, double const w2, double const w3, double f1[], double f2[], double f3[], double const fc[])</div><div class="ttdoc">Spread force on barycentre to atoms.</div><div class="ttdef"><b>Definition</b> <a href="potential__base_8cpp_source.html#l00312">potential_base.cpp:312</a></div></div>
+<div class="ttc" id="aclassforcefields_1_1PotentialBase_html_a7a3596d5b7f22cab8d45f18bab685fa2"><div class="ttname"><a href="classforcefields_1_1PotentialBase.html#a7a3596d5b7f22cab8d45f18bab685fa2">forcefields::PotentialBase::calculateCentre</a></div><div class="ttdeci">void calculateCentre(double const r1[], double const r2[], double rc[])</div><div class="ttdoc">Calculate centre of two points.</div><div class="ttdef"><b>Definition</b> <a href="potential__base_8cpp_source.html#l00188">potential_base.cpp:188</a></div></div>
+<div class="ttc" id="aclassforcefields_1_1PotentialBase_html_a7d326b2133661b2677b85ebef011ff7b"><div class="ttname"><a href="classforcefields_1_1PotentialBase.html#a7d326b2133661b2677b85ebef011ff7b">forcefields::PotentialBase::setPeriodicity</a></div><div class="ttdeci">void setPeriodicity(const double periods[])</div><div class="ttdoc">Set periodicity.</div><div class="ttdef"><b>Definition</b> <a href="potential__base_8cpp_source.html#l00603">potential_base.cpp:603</a></div></div>
+<div class="ttc" id="aclassforcefields_1_1PotentialBase_html_acdc6eedf8f7aff5d001da56dc7937176"><div class="ttname"><a href="classforcefields_1_1PotentialBase.html#acdc6eedf8f7aff5d001da56dc7937176">forcefields::PotentialBase::calculateWeightedCentre</a></div><div class="ttdeci">void calculateWeightedCentre(double const w1, double const w2, double const w3, double const r1[], double const r2[], double const r3[], double rc[])</div><div class="ttdoc">Calculate barycentre.</div><div class="ttdef"><b>Definition</b> <a href="potential__base_8cpp_source.html#l00208">potential_base.cpp:208</a></div></div>
+<div class="ttc" id="aclassforcefields_1_1Tip4p_html_a112edec86e86f5473281918797cb0660"><div class="ttname"><a href="#a112edec86e86f5473281918797cb0660">forcefields::Tip4p::coulombWithCutoff</a></div><div class="ttdeci">void coulombWithCutoff(Water &amp;w1, Water &amp;w2, double &amp;U)</div><div class="ttdoc">Interactions between two molecules.</div><div class="ttdef"><b>Definition</b> <a href="tip4p__ccl_8cpp_source.html#l00210">tip4p_ccl.cpp:210</a></div></div>
+<div class="ttc" id="aclassforcefields_1_1Tip4p_html_a602046fb4b9013437f0db1bc11d9d96e"><div class="ttname"><a href="#a602046fb4b9013437f0db1bc11d9d96e">forcefields::Tip4p::lennardJonesWithCutoff</a></div><div class="ttdeci">void lennardJonesWithCutoff(Water &amp;w1, Water &amp;w2, double &amp;U)</div><div class="ttdoc">Interactions between two molecules.</div><div class="ttdef"><b>Definition</b> <a href="tip4p__ccl_8cpp_source.html#l00274">tip4p_ccl.cpp:274</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9b798f17c73122533d33d5ec18627d3e" name="a9b798f17c73122533d33d5ec18627d3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b798f17c73122533d33d5ec18627d3e">&#9670;&#160;</a></span>coulombFull()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tip4p::coulombFull </td>
+          <td>(</td>
+          <td class="paramtype">Water &amp;</td>          <td class="paramname"><span class="paramname"><em>w1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Water &amp;</td>          <td class="paramname"><span class="paramname"><em>w2</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;</td>          <td class="paramname"><span class="paramname"><em>U</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Interactions between two molecules. </p>
+<p>Coulomb interaction between two molecules. Full interaction (i.e. no cutoff). </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">w1</td><td>Molecule 1. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">w2</td><td>Molecule 2. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">U</td><td>Add the potential energy to <em class="arg">U</em>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd>intermolecularFull() and intermolecularSwitching(). </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The function add the force on charge N to Water::fn_ but does not spread it to Water::fh1_, etc ... </dd></dl>
+<dl class="section see"><dt>See also</dt><dd>spreadN(). </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="tip4p__ccl_8cpp_source.html#l00252">252</a> of file <a class="el" href="tip4p__ccl_8cpp_source.html">tip4p_ccl.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  252</span>                                                       {</div>
+<div class="line"><span class="lineno">  253</span>  <span class="comment">// Coulomb interactions between hydrogens</span></div>
+<div class="line"><span class="lineno">  254</span>  <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a6d3c622e1dd72d4c30f0488c32d1cc9e">coulomb</a>(w1.rh1_, w2.rh1_, w1.fh1_, w2.fh1_, U, charge2_);</div>
+<div class="line"><span class="lineno">  255</span>  <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a6d3c622e1dd72d4c30f0488c32d1cc9e">coulomb</a>(w1.rh1_, w2.rh2_, w1.fh1_, w2.fh2_, U, charge2_);</div>
+<div class="line"><span class="lineno">  256</span>  <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a6d3c622e1dd72d4c30f0488c32d1cc9e">coulomb</a>(w1.rh2_, w2.rh1_, w1.fh2_, w2.fh1_, U, charge2_);</div>
+<div class="line"><span class="lineno">  257</span>  <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a6d3c622e1dd72d4c30f0488c32d1cc9e">coulomb</a>(w1.rh2_, w2.rh2_, w1.fh2_, w2.fh2_, U, charge2_);</div>
+<div class="line"><span class="lineno">  258</span>  <span class="comment">// interactions between H and N.</span></div>
+<div class="line"><span class="lineno">  259</span>  <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a6d3c622e1dd72d4c30f0488c32d1cc9e">coulomb</a>(w1.rn_, w2.rh1_, w1.fn_, w2.fh1_, U, -2.0 * charge2_);</div>
+<div class="line"><span class="lineno">  260</span>  <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a6d3c622e1dd72d4c30f0488c32d1cc9e">coulomb</a>(w1.rn_, w2.rh2_, w1.fn_, w2.fh2_, U, -2.0 * charge2_);</div>
+<div class="line"><span class="lineno">  261</span>  <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a6d3c622e1dd72d4c30f0488c32d1cc9e">coulomb</a>(w1.rh1_, w2.rn_, w1.fh1_, w2.fn_, U, -2.0 * charge2_);</div>
+<div class="line"><span class="lineno">  262</span>  <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a6d3c622e1dd72d4c30f0488c32d1cc9e">coulomb</a>(w1.rh2_, w2.rn_, w1.fh2_, w2.fn_, U, -2.0 * charge2_);</div>
+<div class="line"><span class="lineno">  263</span>  <span class="comment">// interactions between N1, N2</span></div>
+<div class="line"><span class="lineno">  264</span>  <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a6d3c622e1dd72d4c30f0488c32d1cc9e">coulomb</a>(w1.rn_, w2.rn_, w1.fn_, w2.fn_, U, 4.0 * charge2_);</div>
+<div class="line"><span class="lineno">  265</span>}</div>
+<div class="ttc" id="aclassforcefields_1_1PotentialBase_html_a6d3c622e1dd72d4c30f0488c32d1cc9e"><div class="ttname"><a href="classforcefields_1_1PotentialBase.html#a6d3c622e1dd72d4c30f0488c32d1cc9e">forcefields::PotentialBase::coulomb</a></div><div class="ttdeci">void coulomb(const double r1[], const double r2[], double f1[], double f2[], double &amp;u, double const qq)</div><div class="ttdoc">Compute Coulomb interaction between two charges.</div><div class="ttdef"><b>Definition</b> <a href="potential__base_8cpp_source.html#l00256">potential_base.cpp:256</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a112edec86e86f5473281918797cb0660" name="a112edec86e86f5473281918797cb0660"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a112edec86e86f5473281918797cb0660">&#9670;&#160;</a></span>coulombWithCutoff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tip4p::coulombWithCutoff </td>
+          <td>(</td>
+          <td class="paramtype">Water &amp;</td>          <td class="paramname"><span class="paramname"><em>w1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Water &amp;</td>          <td class="paramname"><span class="paramname"><em>w2</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;</td>          <td class="paramname"><span class="paramname"><em>U</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Interactions between two molecules. </p>
+<p>Coulomb interaction between two molecules of water with molecules-based cutoff </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">w1</td><td>Molecule 1. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">w2</td><td>Molecule 2. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">U</td><td>Add the potential energy to <em class="arg">U</em>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="tip4p__ccl_8cpp_source.html#l00210">210</a> of file <a class="el" href="tip4p__ccl_8cpp_source.html">tip4p_ccl.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  210</span>                                                             {</div>
+<div class="line"><span class="lineno">  211</span>  <span class="keywordtype">double</span> z[3], z1, z2;</div>
+<div class="line"><span class="lineno">  212</span>  <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a7f21b849d82086603401e6f8183ff7f3">distance</a>(w1.rc_, w2.rc_, z, z1, z2);</div>
+<div class="line"><span class="lineno">  213</span>  <span class="keywordflow">if</span> (z1 &lt;= <a class="code hl_variable" href="classforcefields_1_1PotentialBase.html#acc1769baf153eb0acb5758c5803aa72c">cutoff_</a> - <a class="code hl_variable" href="classforcefields_1_1PotentialBase.html#a6fc0ca510d01a8053262afb747b751c0">switchingWidth_</a>) {</div>
+<div class="line"><span class="lineno">  214</span>    <a class="code hl_function" href="#a9b798f17c73122533d33d5ec18627d3e">coulombFull</a>(w1, w2, U);</div>
+<div class="line"><span class="lineno">  215</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (z1 &lt; <a class="code hl_variable" href="classforcefields_1_1PotentialBase.html#acc1769baf153eb0acb5758c5803aa72c">cutoff_</a>) {</div>
+<div class="line"><span class="lineno">  216</span>    <span class="keywordtype">double</span> f1[3][3] = {{0}}, f2[3][3] = {{0}};</div>
+<div class="line"><span class="lineno">  217</span>    <span class="comment">// f1[0], f1[1], 0, f1[2] are respectively, H1, H2, O, N. There is no charge</span></div>
+<div class="line"><span class="lineno">  218</span>    <span class="comment">// on O.</span></div>
+<div class="line"><span class="lineno">  219</span>    Water v1 = {w1.rh1_, w1.rh2_, w1.ro_, w1.rn_, w1.rc_,</div>
+<div class="line"><span class="lineno">  220</span>                f1[0],   f1[1],   0,      f1[2]};</div>
+<div class="line"><span class="lineno">  221</span>    Water v2 = {w2.rh1_, w2.rh2_, w2.ro_, w2.rn_, w2.rc_,</div>
+<div class="line"><span class="lineno">  222</span>                f2[0],   f2[1],   0,      f2[2]};</div>
+<div class="line"><span class="lineno">  223</span>    <span class="keywordtype">double</span> energy = 0.0;</div>
+<div class="line"><span class="lineno">  224</span>    <a class="code hl_function" href="#a9b798f17c73122533d33d5ec18627d3e">coulombFull</a>(v1, v2, energy);</div>
+<div class="line"><span class="lineno">  225</span>    <a class="code hl_struct" href="structforcefields_1_1PotentialBase_1_1ChargeGroup.html">ChargeGroup&lt;3&gt;</a> g1 = {v1.rc_, 0, f1};</div>
+<div class="line"><span class="lineno">  226</span>    <a class="code hl_struct" href="structforcefields_1_1PotentialBase_1_1ChargeGroup.html">ChargeGroup&lt;3&gt;</a> g2 = {v2.rc_, 0, f2};</div>
+<div class="line"><span class="lineno">  227</span>    <span class="comment">// Calculate the weakened forces and energy.</span></div>
+<div class="line"><span class="lineno">  228</span>    <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a1bebbf9c9cdf48986383f06b8881f84a">switching</a>(g1, g2, energy, <a class="code hl_variable" href="classforcefields_1_1PotentialBase.html#acc1769baf153eb0acb5758c5803aa72c">cutoff_</a>, <a class="code hl_variable" href="classforcefields_1_1PotentialBase.html#a6fc0ca510d01a8053262afb747b751c0">switchingWidth_</a>);</div>
+<div class="line"><span class="lineno">  229</span>    <span class="comment">// add weakened force and energy to those of other interactions.</span></div>
+<div class="line"><span class="lineno">  230</span>    U += energy;</div>
+<div class="line"><span class="lineno">  231</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 3; ++i) {</div>
+<div class="line"><span class="lineno">  232</span>      w1.fh1_[i] += v1.fh1_[i];</div>
+<div class="line"><span class="lineno">  233</span>      w1.fh2_[i] += v1.fh2_[i];</div>
+<div class="line"><span class="lineno">  234</span>      w1.fn_[i] += v1.fn_[i];</div>
+<div class="line"><span class="lineno">  235</span>      w2.fh1_[i] += v2.fh1_[i];</div>
+<div class="line"><span class="lineno">  236</span>      w2.fh2_[i] += v2.fh2_[i];</div>
+<div class="line"><span class="lineno">  237</span>      w2.fn_[i] += v2.fn_[i];</div>
+<div class="line"><span class="lineno">  238</span>    };</div>
+<div class="line"><span class="lineno">  239</span>  }</div>
+<div class="line"><span class="lineno">  240</span>}</div>
+<div class="ttc" id="aclassforcefields_1_1PotentialBase_html_a1bebbf9c9cdf48986383f06b8881f84a"><div class="ttname"><a href="classforcefields_1_1PotentialBase.html#a1bebbf9c9cdf48986383f06b8881f84a">forcefields::PotentialBase::switching</a></div><div class="ttdeci">void switching(ChargeGroup&lt; N, R, F &gt; &amp;g1, ChargeGroup&lt; N, R, F &gt; &amp;g2, double &amp;energy, double cutoff, double switchingWidth)</div><div class="ttdef"><b>Definition</b> <a href="potential__base_8hpp_source.html#l00163">potential_base.hpp:163</a></div></div>
+<div class="ttc" id="aclassforcefields_1_1PotentialBase_html_a6fc0ca510d01a8053262afb747b751c0"><div class="ttname"><a href="classforcefields_1_1PotentialBase.html#a6fc0ca510d01a8053262afb747b751c0">forcefields::PotentialBase::switchingWidth_</a></div><div class="ttdeci">double switchingWidth_</div><div class="ttdef"><b>Definition</b> <a href="potential__base_8hpp_source.html#l00149">potential_base.hpp:149</a></div></div>
+<div class="ttc" id="aclassforcefields_1_1PotentialBase_html_a7f21b849d82086603401e6f8183ff7f3"><div class="ttname"><a href="classforcefields_1_1PotentialBase.html#a7f21b849d82086603401e6f8183ff7f3">forcefields::PotentialBase::distance</a></div><div class="ttdeci">void distance(const double x[], const double y[], double z[], double &amp;z1, double &amp;z2)</div><div class="ttdoc">Distance vector, norm and norm square.</div><div class="ttdef"><b>Definition</b> <a href="potential__base_8cpp_source.html#l00555">potential_base.cpp:555</a></div></div>
+<div class="ttc" id="aclassforcefields_1_1PotentialBase_html_acc1769baf153eb0acb5758c5803aa72c"><div class="ttname"><a href="classforcefields_1_1PotentialBase.html#acc1769baf153eb0acb5758c5803aa72c">forcefields::PotentialBase::cutoff_</a></div><div class="ttdeci">double cutoff_</div><div class="ttdef"><b>Definition</b> <a href="potential__base_8hpp_source.html#l00147">potential_base.hpp:147</a></div></div>
+<div class="ttc" id="aclassforcefields_1_1Tip4p_html_a9b798f17c73122533d33d5ec18627d3e"><div class="ttname"><a href="#a9b798f17c73122533d33d5ec18627d3e">forcefields::Tip4p::coulombFull</a></div><div class="ttdeci">void coulombFull(Water &amp;w1, Water &amp;w2, double &amp;U)</div><div class="ttdoc">Interactions between two molecules.</div><div class="ttdef"><b>Definition</b> <a href="tip4p__ccl_8cpp_source.html#l00252">tip4p_ccl.cpp:252</a></div></div>
+<div class="ttc" id="astructforcefields_1_1PotentialBase_1_1ChargeGroup_html"><div class="ttname"><a href="structforcefields_1_1PotentialBase_1_1ChargeGroup.html">forcefields::PotentialBase::ChargeGroup</a></div><div class="ttdef"><b>Definition</b> <a href="potential__base_8hpp_source.html#l00073">potential_base.hpp:73</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a10ae9a4406a9826ba0ec28dc006a9b58" name="a10ae9a4406a9826ba0ec28dc006a9b58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10ae9a4406a9826ba0ec28dc006a9b58">&#9670;&#160;</a></span>getName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">char const  * Tip4p::getName </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Name of the potential. </p>
+
+<p class="definition">Definition at line <a class="el" href="tip4p__ccl_8cpp_source.html#l00121">121</a> of file <a class="el" href="tip4p__ccl_8cpp_source.html">tip4p_ccl.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  121</span>{ <span class="keywordflow">return</span> <span class="stringliteral">&quot;Tip4p&quot;</span>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a602046fb4b9013437f0db1bc11d9d96e" name="a602046fb4b9013437f0db1bc11d9d96e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a602046fb4b9013437f0db1bc11d9d96e">&#9670;&#160;</a></span>lennardJonesWithCutoff()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Tip4p::lennardJonesWithCutoff </td>
+          <td>(</td>
+          <td class="paramtype">Water &amp;</td>          <td class="paramname"><span class="paramname"><em>w1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Water &amp;</td>          <td class="paramname"><span class="paramname"><em>w2</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;</td>          <td class="paramname"><span class="paramname"><em>U</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Interactions between two molecules. </p>
+<p>Lennard Jones between oxygen only with cutoff </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">w1</td><td>Molecule of water 1. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">w2</td><td>Molecule of water 2. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">U</td><td>Add the potential energy to <em class="arg">U</em>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd>intermolecularFull() and intermolecularSwitching(). </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="tip4p__ccl_8cpp_source.html#l00274">274</a> of file <a class="el" href="tip4p__ccl_8cpp_source.html">tip4p_ccl.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  274</span>                                                                  {</div>
+<div class="line"><span class="lineno">  275</span>  <span class="keywordtype">double</span> z[3], z1;</div>
+<div class="line"><span class="lineno">  276</span>  <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a7f21b849d82086603401e6f8183ff7f3">distance</a>(w1.ro_, w2.ro_, z, z1);</div>
+<div class="line"><span class="lineno">  277</span>  <span class="keywordflow">if</span> (z1 &lt;= <a class="code hl_variable" href="classforcefields_1_1PotentialBase.html#acc1769baf153eb0acb5758c5803aa72c">cutoff_</a> - <a class="code hl_variable" href="classforcefields_1_1PotentialBase.html#a6fc0ca510d01a8053262afb747b751c0">switchingWidth_</a>) {</div>
+<div class="line"><span class="lineno">  278</span>    <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a6fb0ae19383cfa472fcdc7fa79951503">lennardJones</a>(w1.ro_, w2.ro_, w1.fo_, w2.fo_, U, epsilon_, sigma_);</div>
+<div class="line"><span class="lineno">  279</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (z1 &lt; <a class="code hl_variable" href="classforcefields_1_1PotentialBase.html#acc1769baf153eb0acb5758c5803aa72c">cutoff_</a>) {</div>
+<div class="line"><span class="lineno">  280</span>    <span class="keywordtype">double</span> f1[3] = {0}, f2[3] = {0};</div>
+<div class="line"><span class="lineno">  281</span>    <span class="keywordtype">double</span> energy = 0.0;</div>
+<div class="line"><span class="lineno">  282</span>    <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a6fb0ae19383cfa472fcdc7fa79951503">lennardJones</a>(w1.ro_, w2.ro_, f1, f2, energy, epsilon_, sigma_);</div>
+<div class="line"><span class="lineno">  283</span>    <a class="code hl_function" href="classforcefields_1_1PotentialBase.html#a1bebbf9c9cdf48986383f06b8881f84a">switching</a>(w1.ro_, w2.ro_, f1, f2, energy);</div>
+<div class="line"><span class="lineno">  284</span>    U += energy;</div>
+<div class="line"><span class="lineno">  285</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 3; i++) {</div>
+<div class="line"><span class="lineno">  286</span>      w1.fo_[i] += f1[i];</div>
+<div class="line"><span class="lineno">  287</span>      w2.fo_[i] += f2[i];</div>
+<div class="line"><span class="lineno">  288</span>    };</div>
+<div class="line"><span class="lineno">  289</span>  };</div>
+<div class="line"><span class="lineno">  290</span>}</div>
+<div class="ttc" id="aclassforcefields_1_1PotentialBase_html_a6fb0ae19383cfa472fcdc7fa79951503"><div class="ttname"><a href="classforcefields_1_1PotentialBase.html#a6fb0ae19383cfa472fcdc7fa79951503">forcefields::PotentialBase::lennardJones</a></div><div class="ttdeci">void lennardJones(double const distance, double &amp;force, double &amp;energy, double const epsilon, double const sigma)</div><div class="ttdoc">Lennard-Jones 12-6 between two atoms.</div><div class="ttdef"><b>Definition</b> <a href="potential__base_8cpp_source.html#l00347">potential_base.cpp:347</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/potentials/Water/<a class="el" href="tip4p__ccl_8hpp_source.html">tip4p_ccl.hpp</a></li>
+<li>/home/runner/work/eOn/eOn/client/potentials/Water/<a class="el" href="tip4p__ccl_8cpp_source.html">tip4p_ccl.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceforcefields.html">forcefields</a></li><li class="navelem"><a href="classforcefields_1_1Tip4p.html">Tip4p</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

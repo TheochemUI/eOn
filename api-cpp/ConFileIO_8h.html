@@ -1,0 +1,356 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/include/eon/ConFileIO.h File Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('ConFileIO_8h.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">ConFileIO.h File Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &lt;array&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;readcon-core.hpp&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="ConFileIO_8h_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:eonc_3A_3Aio_3A_3AConMetadataValue" id="r_eonc_3A_3Aio_3A_3AConMetadataValue"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1io_1_1ConMetadataValue.html">eonc::io::ConMetadataValue</a></td></tr>
+<tr class="memitem:eonc_3A_3Aio_3A_3AConMetadataText" id="r_eonc_3A_3Aio_3A_3AConMetadataText"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1io_1_1ConMetadataText.html">eonc::io::ConMetadataText</a></td></tr>
+<tr class="memitem:eonc_3A_3Aio_3A_3AConFrameMetadata" id="r_eonc_3A_3Aio_3A_3AConFrameMetadata"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">eonc::io::ConFrameMetadata</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:eonc" id="r_eonc"><td class="memItemLeft">namespace &#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc.html">eonc</a></td></tr>
+<tr class="memdesc:namespaceeonc"><td class="mdescLeft">&#160;</td><td class="mdescRight">RAII resource manager for the ARTn C library with global synchronization. <br /></td></tr>
+<tr class="memitem:eonc_3A_3Aio" id="r_eonc_3A_3Aio"><td class="memItemLeft">namespace &#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html">eonc::io</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:aa96f30005b3cd2485a5da4371602a1c9" id="r_aa96f30005b3cd2485a5da4371602a1c9"><td class="memItemLeft">enum class &#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">eonc::io::IoStatus</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115">eonc::io::Ok</a> = 0
+, <a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9adf9be6f7af7c3f7196c5c3e731de0a87">eonc::io::ReadError</a> = 1
+, <a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9a4a02ea49d454392fd1e3426e53f14b58">eonc::io::WriteError</a> = 2
+, <a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9a58423b208aa79c16dda0160a86283922">eonc::io::AppendError</a> = 3
+, <br />
+&#160;&#160;<a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9ac51a07a6d1b3c8609dc095cc4d540e23">eonc::io::OpenError</a> = 4
+, <a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">eonc::io::InvalidArgument</a> = 5
+<br />
+ }</td></tr>
+<tr class="memdesc:aa96f30005b3cd2485a5da4371602a1c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structured I/O result for the client surface (nanobind-friendly).  <a href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">More...</a><br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:af66b2723d892a4095754f9b0354b4f78" id="r_af66b2723d892a4095754f9b0354b4f78"><td class="memItemLeft">constexpr bool&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a> (<a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> s) noexcept</td></tr>
+<tr class="memitem:aae21eb723a59fc2f645f7199099a117f" id="r_aae21eb723a59fc2f645f7199099a117f"><td class="memItemLeft">constexpr const char *&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#aae21eb723a59fc2f645f7199099a117f">eonc::io::io_status_name</a> (<a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> s) noexcept</td></tr>
+<tr class="memdesc:aae21eb723a59fc2f645f7199099a117f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Human-readable label for logging / bindings.  <br /></td></tr>
+<tr class="memitem:a525b12eff16ef9d00847fc3482745e38" id="r_a525b12eff16ef9d00847fc3482745e38"><td class="memItemLeft"><a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a525b12eff16ef9d00847fc3482745e38">eonc::io::metadata_from_frame</a> (const readcon::ConFrame &amp;frame)</td></tr>
+<tr class="memdesc:a525b12eff16ef9d00847fc3482745e38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract known frame-level fields from a parsed readcon frame.  <br /></td></tr>
+<tr class="memitem:ac1282d2f253eb7c3c17e948e7e663cf8" id="r_ac1282d2f253eb7c3c17e948e7e663cf8"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#ac1282d2f253eb7c3c17e948e7e663cf8">eonc::io::set_write_con_forces</a> (bool enabled) noexcept</td></tr>
+<tr class="memdesc:ac1282d2f253eb7c3c17e948e7e663cf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether written .con frames carry "Forces of Component" sections.  <br /></td></tr>
+<tr class="memitem:a5d3959d80e4c17d49bbbd72e0ac2967f" id="r_a5d3959d80e4c17d49bbbd72e0ac2967f"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a5d3959d80e4c17d49bbbd72e0ac2967f">eonc::io::write_con_forces</a> () noexcept</td></tr>
+<tr class="memitem:a6f13ca53e923b1a8dbb98436987c984c" id="r_a6f13ca53e923b1a8dbb98436987c984c"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a6f13ca53e923b1a8dbb98436987c984c">eonc::io::con2matter</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m, std::string filename)</td></tr>
+<tr class="memitem:a55354e1cf6389c5516c5b99e4a5b5343" id="r_a55354e1cf6389c5516c5b99e4a5b5343"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a55354e1cf6389c5516c5b99e4a5b5343">eonc::io::con2matter</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m, const readcon::ConFrame &amp;frame, <a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> *out_metadata)</td></tr>
+<tr class="memitem:a2b29146d14c962659dbda7d6db479c38" id="r_a2b29146d14c962659dbda7d6db479c38"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a2b29146d14c962659dbda7d6db479c38">eonc::io::convel2matter</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m, std::string filename)</td></tr>
+<tr class="memitem:a5dc824257c3cab0e8a74eec0f3d814df" id="r_a5dc824257c3cab0e8a74eec0f3d814df"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a5dc824257c3cab0e8a74eec0f3d814df">eonc::io::matter2con</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m, std::string filename, bool append=false, const <a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> *metadata=nullptr)</td></tr>
+<tr class="memdesc:a5dc824257c3cab0e8a74eec0f3d814df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a frame to a .con, or truncate and write one frame.  <br /></td></tr>
+<tr class="memitem:a43ddd666235e811420f7a04d00419e1a" id="r_a43ddd666235e811420f7a04d00419e1a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a43ddd666235e811420f7a04d00419e1a">eonc::io::resetConAppendState</a> ()</td></tr>
+<tr class="memdesc:a43ddd666235e811420f7a04d00419e1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop the per-path bookkeeping that lets append-mode writes skip re-parsing frames this process wrote.  <br /></td></tr>
+<tr class="memitem:a34a1ebd1a28026f91910ae3eea60c1c1" id="r_a34a1ebd1a28026f91910ae3eea60c1c1"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a34a1ebd1a28026f91910ae3eea60c1c1">eonc::io::matter2convel</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m, std::string filename)</td></tr>
+<tr class="memitem:a92edb1d2a6c8cbe12752056317c5b889" id="r_a92edb1d2a6c8cbe12752056317c5b889"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a92edb1d2a6c8cbe12752056317c5b889">eonc::io::matter2xyz</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m, std::string filename, bool append=false)</td></tr>
+<tr class="memdesc:a92edb1d2a6c8cbe12752056317c5b889"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write one extended-XYZ frame: Lattice= cell and 17-digit coordinates.  <br /></td></tr>
+<tr class="memitem:af6b4831ef3e56d5233f89c5a9689e7ec" id="r_af6b4831ef3e56d5233f89c5a9689e7ec"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#af6b4831ef3e56d5233f89c5a9689e7ec">eonc::io::writeTibble</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m, std::string filename)</td></tr>
+<tr class="memdesc:af6b4831ef3e56d5233f89c5a9689e7ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debug table (positions, optional cached forces). Not a structure format.  <br /></td></tr>
+<tr class="memitem:ad199f826cc24bd9826a30c68005ddd45" id="r_ad199f826cc24bd9826a30c68005ddd45"><td class="memItemLeft">readcon::ConFrame&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#ad199f826cc24bd9826a30c68005ddd45">eonc::io::matterToConFrame</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m, const <a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> *metadata=nullptr)</td></tr>
+<tr class="memdesc:ad199f826cc24bd9826a30c68005ddd45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a single stamped ConFrame from <a class="el" href="classeonc_1_1Matter.html">Matter</a> (same builder as matter2con).  <br /></td></tr>
+<tr class="memitem:a82c7b62eba032ea919c9cc6abf2ba8af" id="r_a82c7b62eba032ea919c9cc6abf2ba8af"><td class="memItemLeft">std::vector&lt; readcon::ConFrame &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a82c7b62eba032ea919c9cc6abf2ba8af">eonc::io::buildNebPathFrames</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; <a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> &gt; &amp;metadata_per_image)</td></tr>
+<tr class="memdesc:a82c7b62eba032ea919c9cc6abf2ba8af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build NEB band ConFrames without writing (clone builder path of writeNebPath).  <br /></td></tr>
+<tr class="memitem:a2a321dfc9b8cf6c615a518a3f79ccdd0" id="r_a2a321dfc9b8cf6c615a518a3f79ccdd0"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a2a321dfc9b8cf6c615a518a3f79ccdd0">eonc::io::writeConFrames</a> (std::string filename, const std::vector&lt; readcon::ConFrame &gt; &amp;frames)</td></tr>
+<tr class="memdesc:a2a321dfc9b8cf6c615a518a3f79ccdd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write already-built ConFrames to a multi-frame .con (temp or durable).  <br /></td></tr>
+<tr class="memitem:affc6614e11211166631b9bf5947db98c" id="r_affc6614e11211166631b9bf5947db98c"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1io.html#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#affc6614e11211166631b9bf5947db98c">eonc::io::writeNebPath</a> (std::string filename, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; <a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> &gt; &amp;metadata_per_image)</td></tr>
+<tr class="memdesc:affc6614e11211166631b9bf5947db98c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a full NEB path as one multi-frame .con using ConFrameBuilder::clone().  <br /></td></tr>
+<tr class="memitem:a50c7405f7e722186a59eb9180dcf4f8e" id="r_a50c7405f7e722186a59eb9180dcf4f8e"><td class="memItemLeft">std::pair&lt; std::array&lt; double, 3 &gt;, std::array&lt; double, 3 &gt; &gt;&#160;</td><td class="memItemRight"><a class="el" href="namespaceeonc_1_1io.html#a50c7405f7e722186a59eb9180dcf4f8e">eonc::io::cell_to_lengths_angles</a> (const <a class="el" href="classMatter.html">Matter</a> &amp;m)</td></tr>
+</table>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="dir_2527c5cc2e6dc8ce970a4d420439d1d9.html">eon</a></li><li class="navelem"><a href="ConFileIO_8h.html">ConFileIO.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

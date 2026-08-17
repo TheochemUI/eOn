@@ -1,0 +1,1590 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: OHTSTJob Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classOHTSTJob.html','','classOHTSTJob-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">OHTSTJob Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="OHTSTJob_8h_source.html">OHTSTJob.h</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for OHTSTJob:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+ <div class="center">
+  <img src="classOHTSTJob.png" usemap="#OHTSTJob_map" alt=""/>
+  <map id="OHTSTJob_map" name="OHTSTJob_map">
+<area href="classeonc_1_1Job.html" title="Declaration of job class." alt="eonc::Job" shape="rect" coords="0,0,74,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:PlaneAverages" id="r_PlaneAverages"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structOHTSTJob_1_1PlaneAverages.html">PlaneAverages</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a6689b4897e9b2d2dcd75a641a4018790" id="r_a6689b4897e9b2d2dcd75a641a4018790"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a6689b4897e9b2d2dcd75a641a4018790">OHTSTJob</a> (std::unique_ptr&lt; <a class="el" href="classParameters.html">Parameters</a> &gt; parameters)</td></tr>
+<tr class="memitem:a2a6e6043624c107389d465c327a1382a" id="r_a2a6e6043624c107389d465c327a1382a"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a2a6e6043624c107389d465c327a1382a">~OHTSTJob</a> (void)=default</td></tr>
+<tr class="memitem:aa215aa03445eb43b57f3d747da9adf2e" id="r_aa215aa03445eb43b57f3d747da9adf2e"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aa215aa03445eb43b57f3d747da9adf2e">run</a> (void)</td></tr>
+<tr class="memdesc:aa215aa03445eb43b57f3d747da9adf2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual run; used solely for dynamic dispatch.  <br /></td></tr>
+<tr class="inherit_header pub_methods_classeonc_1_1Job"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1Job')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1Job.html">eonc::Job</a></td></tr>
+<tr class="memitem:a4e0abe180a33539a0e8d264775f34a42 inherit pub_methods_classeonc_1_1Job" id="r_a4e0abe180a33539a0e8d264775f34a42"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a4e0abe180a33539a0e8d264775f34a42">Job</a> (std::unique_ptr&lt; <a class="el" href="classParameters.html">Parameters</a> &gt; parameters)</td></tr>
+<tr class="memitem:a7a1103c1eb84772e3bf681e5e53104a6 inherit pub_methods_classeonc_1_1Job" id="r_a7a1103c1eb84772e3bf681e5e53104a6"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a7a1103c1eb84772e3bf681e5e53104a6">Job</a> (std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt; potPassed, const <a class="el" href="classParameters.html">Parameters</a> &amp;parameters)</td></tr>
+<tr class="memitem:a4ba6ee96636fdbc95059c67a10900ea7 inherit pub_methods_classeonc_1_1Job" id="r_a4ba6ee96636fdbc95059c67a10900ea7"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a4ba6ee96636fdbc95059c67a10900ea7">~Job</a> ()=default</td></tr>
+<tr class="memitem:a6a8f2fa4c5209bee4d243fec7b9db59e inherit pub_methods_classeonc_1_1Job" id="r_a6a8f2fa4c5209bee4d243fec7b9db59e"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379">JobType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a6a8f2fa4c5209bee4d243fec7b9db59e">getType</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a227fc390279405af178645df2d62ecde" id="r_a227fc390279405af178645df2d62ecde"><td class="memItemLeft"><a class="el" href="structOHTSTJob_1_1PlaneAverages.html">PlaneAverages</a>&#160;</td><td class="memItemRight"><a class="el" href="#a227fc390279405af178645df2d62ecde">samplePlane</a> (<a class="el" href="classMatter.html">Matter</a> &amp;matter, const VectorXd &amp;gamma, const VectorXd &amp;normal)</td></tr>
+<tr class="memitem:a0d27b29aa70acceac490575b4a9a8c38" id="r_a0d27b29aa70acceac490575b4a9a8c38"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a0d27b29aa70acceac490575b4a9a8c38">reactantQRatio</a> (<a class="el" href="classMatter.html">Matter</a> &amp;matter, const VectorXd &amp;gammaR, const VectorXd &amp;normal)</td></tr>
+<tr class="memitem:a219ae27d87f80971be66637ded219b6e" id="r_a219ae27d87f80971be66637ded219b6e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a219ae27d87f80971be66637ded219b6e">drawThermalVelocities</a> (VectorXd &amp;vel, const VectorXd *normal)</td></tr>
+<tr class="memitem:ae8ea3c44d0e5df5858552571ec5c5857" id="r_ae8ea3c44d0e5df5858552571ec5c5857"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ae8ea3c44d0e5df5858552571ec5c5857">symmetryReflect</a> (const VectorXd &amp;xR, VectorXd &amp;x, VectorXd &amp;v, const VectorXd &amp;xOld, const VectorXd *normal)</td></tr>
+<tr class="memitem:a7407dbf5cadad76061e814764ed70f73" id="r_a7407dbf5cadad76061e814764ed70f73"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a7407dbf5cadad76061e814764ed70f73">uniformDraw</a> ()</td></tr>
+<tr class="memdesc:a7407dbf5cadad76061e814764ed70f73"><td class="mdescLeft">&#160;</td><td class="mdescRight">uniform (0,1)  <br /></td></tr>
+<tr class="memitem:a8f003987a3efad8ccd81892751a1bb86" id="r_a8f003987a3efad8ccd81892751a1bb86"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a8f003987a3efad8ccd81892751a1bb86">gaussDraw</a> ()</td></tr>
+<tr class="memdesc:a8f003987a3efad8ccd81892751a1bb86"><td class="mdescLeft">&#160;</td><td class="mdescRight">standard normal (Box-Muller)  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:ab282d7d930d8bc4b79d66f24f5625519" id="r_ab282d7d930d8bc4b79d66f24f5625519"><td class="memItemLeft">std::vector&lt; VectorXd &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ab282d7d930d8bc4b79d66f24f5625519">m_symDirs</a></td></tr>
+<tr class="memdesc:ab282d7d930d8bc4b79d66f24f5625519"><td class="mdescLeft">&#160;</td><td class="mdescRight">p-hat_i, index 0 = primary  <br /></td></tr>
+<tr class="memitem:ad51d94380bc7299717ba1a42150f6f9d" id="r_ad51d94380bc7299717ba1a42150f6f9d"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#ad51d94380bc7299717ba1a42150f6f9d">m_symXR</a></td></tr>
+<tr class="memdesc:ad51d94380bc7299717ba1a42150f6f9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">reactant anchor R of the half-lines  <br /></td></tr>
+<tr class="memitem:a24b52433a83b2fbe8aa1ea882f64b1a5" id="r_a24b52433a83b2fbe8aa1ea882f64b1a5"><td class="memItemLeft">VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a24b52433a83b2fbe8aa1ea882f64b1a5">m_masses3N</a></td></tr>
+<tr class="memdesc:a24b52433a83b2fbe8aa1ea882f64b1a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">per-DOF masses of the free atoms (amu)  <br /></td></tr>
+<tr class="memitem:ac13d91dbaded831c5788817fb4b0f8f6" id="r_ac13d91dbaded831c5788817fb4b0f8f6"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ac13d91dbaded831c5788817fb4b0f8f6">m_dt</a> {0.0}</td></tr>
+<tr class="memdesc:ac13d91dbaded831c5788817fb4b0f8f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">integration step, internal units  <br /></td></tr>
+<tr class="memitem:a9dc19372258cd22add2540be9224babe" id="r_a9dc19372258cd22add2540be9224babe"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a9dc19372258cd22add2540be9224babe">m_kbt</a> {0.0}</td></tr>
+<tr class="memdesc:a9dc19372258cd22add2540be9224babe"><td class="mdescLeft">&#160;</td><td class="mdescRight">k_B T (eV)  <br /></td></tr>
+<tr class="memitem:a18c6c1151404784c12d00e3cacd18f62" id="r_a18c6c1151404784c12d00e3cacd18f62"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a18c6c1151404784c12d00e3cacd18f62">m_andersenProb</a> {0.0}</td></tr>
+<tr class="memdesc:a18c6c1151404784c12d00e3cacd18f62"><td class="mdescLeft">&#160;</td><td class="mdescRight">per-step Andersen collision probability  <br /></td></tr>
+<tr class="memitem:a6f99592864114a3ca50a592e13265647" id="r_a6f99592864114a3ca50a592e13265647"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a6f99592864114a3ca50a592e13265647">m_seedState</a> {12345}</td></tr>
+<tr class="memdesc:a6f99592864114a3ca50a592e13265647"><td class="mdescLeft">&#160;</td><td class="mdescRight">LCG state for the thermostat draws.  <br /></td></tr>
+<tr class="memitem:aacf35b5d4bbbef550696521eaa48b54b" id="r_aacf35b5d4bbbef550696521eaa48b54b"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aacf35b5d4bbbef550696521eaa48b54b">m_gaussHave</a> {false}</td></tr>
+<tr class="memitem:a82f5ed7f44ad12985f4f57819f575c8b" id="r_a82f5ed7f44ad12985f4f57819f575c8b"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a82f5ed7f44ad12985f4f57819f575c8b">m_gaussSpare</a> {0.0}</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_attribs_classeonc_1_1Job"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1Job')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1Job.html">eonc::Job</a></td></tr>
+<tr class="memitem:a90e97e92096c7c2ea7dec3d9c49f485f inherit pro_attribs_classeonc_1_1Job" id="r_a90e97e92096c7c2ea7dec3d9c49f485f"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379">JobType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f">jtype</a></td></tr>
+<tr class="memitem:a9f0bfab75a98f383ba58f1c592fd2500 inherit pro_attribs_classeonc_1_1Job" id="r_a9f0bfab75a98f383ba58f1c592fd2500"><td class="memItemLeft"><a class="el" href="classParameters.html">Parameters</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a></td></tr>
+<tr class="memitem:a948da0de6ec2575bd6ac975fedaad0c9 inherit pro_attribs_classeonc_1_1Job" id="r_a948da0de6ec2575bd6ac975fedaad0c9"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8h_source.html#l00040">40</a> of file <a class="el" href="OHTSTJob_8h_source.html">OHTSTJob.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a6689b4897e9b2d2dcd75a641a4018790" name="a6689b4897e9b2d2dcd75a641a4018790"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6689b4897e9b2d2dcd75a641a4018790">&#9670;&#160;</a></span>OHTSTJob()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeonc_1_1OHTSTJob.html#a6689b4897e9b2d2dcd75a641a4018790">eonc::OHTSTJob::OHTSTJob</a> </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classParameters.html">Parameters</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>parameters</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8h_source.html#l00043">43</a> of file <a class="el" href="OHTSTJob_8h_source.html">OHTSTJob.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   44</span>      : <a class="code hl_function" href="classeonc_1_1Job.html#a4e0abe180a33539a0e8d264775f34a42">Job</a>(std::move(parameters)) {}</div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a4e0abe180a33539a0e8d264775f34a42"><div class="ttname"><a href="classeonc_1_1Job.html#a4e0abe180a33539a0e8d264775f34a42">eonc::Job::Job</a></div><div class="ttdeci">Job(std::unique_ptr&lt; Parameters &gt; parameters)</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00058">Job.h:58</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2a6e6043624c107389d465c327a1382a" name="a2a6e6043624c107389d465c327a1382a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a6e6043624c107389d465c327a1382a">&#9670;&#160;</a></span>~OHTSTJob()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeonc_1_1OHTSTJob.html#a2a6e6043624c107389d465c327a1382a">eonc::OHTSTJob::~OHTSTJob</a> </td>
+          <td>(</td>
+          <td class="paramtype">void</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a219ae27d87f80971be66637ded219b6e" name="a219ae27d87f80971be66637ded219b6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a219ae27d87f80971be66637ded219b6e">&#9670;&#160;</a></span>drawThermalVelocities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classeonc_1_1OHTSTJob.html#a219ae27d87f80971be66637ded219b6e">eonc::OHTSTJob::drawThermalVelocities</a> </td>
+          <td>(</td>
+          <td class="paramtype">VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>vel</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const VectorXd *</td>          <td class="paramname"><span class="paramname"><em>normal</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Maxwell-Boltzmann draw on the free DOF, then projection onto the plane (n.v = 0) when a normal is supplied. </p>
+
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8cpp_source.html#l00071">71</a> of file <a class="el" href="OHTSTJob_8cpp_source.html">OHTSTJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   71</span>                                                                          {</div>
+<div class="line"><span class="lineno">   72</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> k = 0; k &lt; vel.size(); ++k) {</div>
+<div class="line"><span class="lineno">   73</span>    vel[k] = std::sqrt(<a class="code hl_variable" href="#a9dc19372258cd22add2540be9224babe">m_kbt</a> / <a class="code hl_variable" href="#a24b52433a83b2fbe8aa1ea882f64b1a5">m_masses3N</a>[k]) * <a class="code hl_function" href="classeonc_1_1OHTSTJob.html#a8f003987a3efad8ccd81892751a1bb86">gaussDraw</a>();</div>
+<div class="line"><span class="lineno">   74</span>  }</div>
+<div class="line"><span class="lineno">   75</span>  <span class="keywordflow">if</span> (normal != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">   76</span>    vel -= (*normal) * normal-&gt;dot(vel);</div>
+<div class="line"><span class="lineno">   77</span>  }</div>
+<div class="line"><span class="lineno">   78</span>}</div>
+<div class="ttc" id="aclassOHTSTJob_html_a24b52433a83b2fbe8aa1ea882f64b1a5"><div class="ttname"><a href="#a24b52433a83b2fbe8aa1ea882f64b1a5">OHTSTJob::m_masses3N</a></div><div class="ttdeci">VectorXd m_masses3N</div><div class="ttdoc">per-DOF masses of the free atoms (amu)</div><div class="ttdef"><b>Definition</b> <a href="OHTSTJob_8h_source.html#l00081">OHTSTJob.h:81</a></div></div>
+<div class="ttc" id="aclassOHTSTJob_html_a9dc19372258cd22add2540be9224babe"><div class="ttname"><a href="#a9dc19372258cd22add2540be9224babe">OHTSTJob::m_kbt</a></div><div class="ttdeci">double m_kbt</div><div class="ttdoc">k_B T (eV)</div><div class="ttdef"><b>Definition</b> <a href="OHTSTJob_8h_source.html#l00083">OHTSTJob.h:83</a></div></div>
+<div class="ttc" id="aclasseonc_1_1OHTSTJob_html_a8f003987a3efad8ccd81892751a1bb86"><div class="ttname"><a href="classeonc_1_1OHTSTJob.html#a8f003987a3efad8ccd81892751a1bb86">eonc::OHTSTJob::gaussDraw</a></div><div class="ttdeci">double gaussDraw()</div><div class="ttdoc">standard normal (Box-Muller)</div><div class="ttdef"><b>Definition</b> <a href="OHTSTJob_8cpp_source.html#l00058">OHTSTJob.cpp:58</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8f003987a3efad8ccd81892751a1bb86" name="a8f003987a3efad8ccd81892751a1bb86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f003987a3efad8ccd81892751a1bb86">&#9670;&#160;</a></span>gaussDraw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classeonc_1_1OHTSTJob.html#a8f003987a3efad8ccd81892751a1bb86">eonc::OHTSTJob::gaussDraw</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>standard normal (Box-Muller) </p>
+
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8cpp_source.html#l00058">58</a> of file <a class="el" href="OHTSTJob_8cpp_source.html">OHTSTJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   58</span>                           {</div>
+<div class="line"><span class="lineno">   59</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aacf35b5d4bbbef550696521eaa48b54b">m_gaussHave</a>) {</div>
+<div class="line"><span class="lineno">   60</span>    <a class="code hl_variable" href="#aacf35b5d4bbbef550696521eaa48b54b">m_gaussHave</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   61</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a82f5ed7f44ad12985f4f57819f575c8b">m_gaussSpare</a>;</div>
+<div class="line"><span class="lineno">   62</span>  }</div>
+<div class="line"><span class="lineno">   63</span>  <span class="keywordtype">double</span> u1 = std::max(<a class="code hl_function" href="classeonc_1_1OHTSTJob.html#a7407dbf5cadad76061e814764ed70f73">uniformDraw</a>(), 1e-12);</div>
+<div class="line"><span class="lineno">   64</span>  <span class="keywordtype">double</span> u2 = <a class="code hl_function" href="classeonc_1_1OHTSTJob.html#a7407dbf5cadad76061e814764ed70f73">uniformDraw</a>();</div>
+<div class="line"><span class="lineno">   65</span>  <span class="keywordtype">double</span> r = std::sqrt(-2.0 * std::log(u1));</div>
+<div class="line"><span class="lineno">   66</span>  <a class="code hl_variable" href="#a82f5ed7f44ad12985f4f57819f575c8b">m_gaussSpare</a> = r * std::sin(2.0 * <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">helpers::pi</a> * u2);</div>
+<div class="line"><span class="lineno">   67</span>  <a class="code hl_variable" href="#aacf35b5d4bbbef550696521eaa48b54b">m_gaussHave</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   68</span>  <span class="keywordflow">return</span> r * std::cos(2.0 * <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">helpers::pi</a> * u2);</div>
+<div class="line"><span class="lineno">   69</span>}</div>
+<div class="ttc" id="aclassOHTSTJob_html_a82f5ed7f44ad12985f4f57819f575c8b"><div class="ttname"><a href="#a82f5ed7f44ad12985f4f57819f575c8b">OHTSTJob::m_gaussSpare</a></div><div class="ttdeci">double m_gaussSpare</div><div class="ttdef"><b>Definition</b> <a href="OHTSTJob_8h_source.html#l00089">OHTSTJob.h:89</a></div></div>
+<div class="ttc" id="aclassOHTSTJob_html_aacf35b5d4bbbef550696521eaa48b54b"><div class="ttname"><a href="#aacf35b5d4bbbef550696521eaa48b54b">OHTSTJob::m_gaussHave</a></div><div class="ttdeci">bool m_gaussHave</div><div class="ttdef"><b>Definition</b> <a href="OHTSTJob_8h_source.html#l00088">OHTSTJob.h:88</a></div></div>
+<div class="ttc" id="aclasseonc_1_1OHTSTJob_html_a7407dbf5cadad76061e814764ed70f73"><div class="ttname"><a href="classeonc_1_1OHTSTJob.html#a7407dbf5cadad76061e814764ed70f73">eonc::OHTSTJob::uniformDraw</a></div><div class="ttdeci">double uniformDraw()</div><div class="ttdoc">uniform (0,1)</div><div class="ttdef"><b>Definition</b> <a href="OHTSTJob_8cpp_source.html#l00051">OHTSTJob.cpp:51</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a96a0233e9530dc3963dbcd001e1015c0"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a></div><div class="ttdeci">constexpr double pi</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8h_source.html#l00028">HelperFunctions.h:28</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0d27b29aa70acceac490575b4a9a8c38" name="a0d27b29aa70acceac490575b4a9a8c38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d27b29aa70acceac490575b4a9a8c38">&#9670;&#160;</a></span>reactantQRatio()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classeonc_1_1OHTSTJob.html#a0d27b29aa70acceac490575b4a9a8c38">eonc::OHTSTJob::reactantQRatio</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>matter</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>gammaR</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>normal</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Eq 22: Q^ZR/Q^R from crossing statistics of an unconstrained reactant-basin trajectory through the plane (gammaR, normal). </p>
+
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8cpp_source.html#l00221">221</a> of file <a class="el" href="OHTSTJob_8cpp_source.html">OHTSTJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  222</span>                                                        {</div>
+<div class="line"><span class="lineno">  223</span>  <span class="comment">// Eq 22: Q^ZR/Q^R = (dt / t_tot) * sum over plane crossings of</span></div>
+<div class="line"><span class="lineno">  224</span>  <span class="comment">// 1 / |(r_{i+1} - r_i).n|. The trajectory is unconstrained,</span></div>
+<div class="line"><span class="lineno">  225</span>  <span class="comment">// thermostatted, and stays in the reactant basin by construction</span></div>
+<div class="line"><span class="lineno">  226</span>  <span class="comment">// (it starts there and the barrier is &gt;&gt; kT).</span></div>
+<div class="line"><span class="lineno">  227</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> steps = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.reactant_md_steps;</div>
+<div class="line"><span class="lineno">  228</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> equilSteps = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.equil_steps;</div>
+<div class="line"><span class="lineno">  229</span>  VectorXd x = matter.<a class="code hl_function" href="classeonc_1_1Matter.html#abce266d8f707e6d7a688695c0c7c490e">getPositionsFreeV</a>();</div>
+<div class="line"><span class="lineno">  230</span>  VectorXd v(x.size());</div>
+<div class="line"><span class="lineno">  231</span>  <a class="code hl_function" href="classeonc_1_1OHTSTJob.html#a219ae27d87f80971be66637ded219b6e">drawThermalVelocities</a>(v, <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">  232</span>  std::unique_ptr&lt;GleThermostat&gt; gle;</div>
+<div class="line"><span class="lineno">  233</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.thermostat == <span class="stringliteral">&quot;gle&quot;</span>) {</div>
+<div class="line"><span class="lineno">  234</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> a =</div>
+<div class="line"><span class="lineno">  235</span>        <a class="code hl_function" href="classeonc_1_1GleThermostat.html#af9e7fa1e07fe61e1c0aa0061093eb927">GleThermostat::loadDriftMatrix</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.gle_a_file);</div>
+<div class="line"><span class="lineno">  236</span>    gle = std::make_unique&lt;GleThermostat&gt;(a, <a class="code hl_variable" href="#a9dc19372258cd22add2540be9224babe">m_kbt</a>, 0.5 * <a class="code hl_variable" href="#ac13d91dbaded831c5788817fb4b0f8f6">m_dt</a>, x.size());</div>
+<div class="line"><span class="lineno">  237</span>    <span class="keywordflow">if</span> (!gle-&gt;valid()) {</div>
+<div class="line"><span class="lineno">  238</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;oh_tst: gle thermostat unusable&quot;</span>);</div>
+<div class="line"><span class="lineno">  239</span>    }</div>
+<div class="line"><span class="lineno">  240</span>  }</div>
+<div class="line"><span class="lineno">  241</span>  <span class="keyword">const</span> <span class="keyword">auto</span> gauss = [<span class="keyword">this</span>]() { <span class="keywordflow">return</span> <a class="code hl_function" href="classeonc_1_1OHTSTJob.html#a8f003987a3efad8ccd81892751a1bb86">gaussDraw</a>(); };</div>
+<div class="line"><span class="lineno">  242</span>  VectorXd f = matter.<a class="code hl_function" href="classeonc_1_1Matter.html#ab4bf1850e22f0cf4bf605df8a193642d">getForcesFreeV</a>();</div>
+<div class="line"><span class="lineno">  243</span>  <span class="keywordtype">double</span> side = normal.dot(x - gammaR);</div>
+<div class="line"><span class="lineno">  244</span>  <span class="keywordtype">double</span> crossingSum = 0.0;</div>
+<div class="line"><span class="lineno">  245</span>  <span class="keywordtype">long</span> counted = 0;</div>
+<div class="line"><span class="lineno">  246</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> step = 0; step &lt; equilSteps + steps; ++step) {</div>
+<div class="line"><span class="lineno">  247</span>    <span class="keyword">const</span> VectorXd xOld = x;</div>
+<div class="line"><span class="lineno">  248</span>    <span class="keywordflow">if</span> (gle) {</div>
+<div class="line"><span class="lineno">  249</span>      gle-&gt;apply(v, <a class="code hl_variable" href="#a24b52433a83b2fbe8aa1ea882f64b1a5">m_masses3N</a>, gauss);</div>
+<div class="line"><span class="lineno">  250</span>    }</div>
+<div class="line"><span class="lineno">  251</span>    VectorXd a = f.cwiseQuotient(<a class="code hl_variable" href="#a24b52433a83b2fbe8aa1ea882f64b1a5">m_masses3N</a>);</div>
+<div class="line"><span class="lineno">  252</span>    x += <a class="code hl_variable" href="#ac13d91dbaded831c5788817fb4b0f8f6">m_dt</a> * v + 0.5 * <a class="code hl_variable" href="#ac13d91dbaded831c5788817fb4b0f8f6">m_dt</a> * <a class="code hl_variable" href="#ac13d91dbaded831c5788817fb4b0f8f6">m_dt</a> * a;</div>
+<div class="line"><span class="lineno">  253</span>    matter.<a class="code hl_function" href="classeonc_1_1Matter.html#a164e8df6558062d40b4a1b0f57970c29">setPositionsFreeV</a>(x);</div>
+<div class="line"><span class="lineno">  254</span>    f = matter.<a class="code hl_function" href="classeonc_1_1Matter.html#ab4bf1850e22f0cf4bf605df8a193642d">getForcesFreeV</a>();</div>
+<div class="line"><span class="lineno">  255</span>    VectorXd aNew = f.cwiseQuotient(<a class="code hl_variable" href="#a24b52433a83b2fbe8aa1ea882f64b1a5">m_masses3N</a>);</div>
+<div class="line"><span class="lineno">  256</span>    v += 0.5 * <a class="code hl_variable" href="#ac13d91dbaded831c5788817fb4b0f8f6">m_dt</a> * (a + aNew);</div>
+<div class="line"><span class="lineno">  257</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classeonc_1_1OHTSTJob.html#ae8ea3c44d0e5df5858552571ec5c5857">symmetryReflect</a>(<a class="code hl_variable" href="#ad51d94380bc7299717ba1a42150f6f9d">m_symXR</a>, x, v, xOld, <span class="keyword">nullptr</span>)) {</div>
+<div class="line"><span class="lineno">  258</span>      matter.<a class="code hl_function" href="classeonc_1_1Matter.html#a164e8df6558062d40b4a1b0f57970c29">setPositionsFreeV</a>(x);</div>
+<div class="line"><span class="lineno">  259</span>      f = matter.<a class="code hl_function" href="classeonc_1_1Matter.html#ab4bf1850e22f0cf4bf605df8a193642d">getForcesFreeV</a>();</div>
+<div class="line"><span class="lineno">  260</span>    }</div>
+<div class="line"><span class="lineno">  261</span>    <span class="keywordflow">if</span> (gle) {</div>
+<div class="line"><span class="lineno">  262</span>      gle-&gt;apply(v, <a class="code hl_variable" href="#a24b52433a83b2fbe8aa1ea882f64b1a5">m_masses3N</a>, gauss);</div>
+<div class="line"><span class="lineno">  263</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_function" href="classeonc_1_1OHTSTJob.html#a7407dbf5cadad76061e814764ed70f73">uniformDraw</a>() &lt; <a class="code hl_variable" href="#a18c6c1151404784c12d00e3cacd18f62">m_andersenProb</a>) {</div>
+<div class="line"><span class="lineno">  264</span>      <a class="code hl_function" href="classeonc_1_1OHTSTJob.html#a219ae27d87f80971be66637ded219b6e">drawThermalVelocities</a>(v, <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">  265</span>    }</div>
+<div class="line"><span class="lineno">  266</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> sideNew = normal.dot(x - gammaR);</div>
+<div class="line"><span class="lineno">  267</span>    <span class="keywordflow">if</span> (step &gt;= equilSteps) {</div>
+<div class="line"><span class="lineno">  268</span>      <span class="keywordflow">if</span> (side * sideNew &lt; 0.0) {</div>
+<div class="line"><span class="lineno">  269</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> proj = std::fabs(normal.dot(x - xOld));</div>
+<div class="line"><span class="lineno">  270</span>        <span class="keywordflow">if</span> (proj &gt; 1e-14) {</div>
+<div class="line"><span class="lineno">  271</span>          crossingSum += 1.0 / proj;</div>
+<div class="line"><span class="lineno">  272</span>        }</div>
+<div class="line"><span class="lineno">  273</span>      }</div>
+<div class="line"><span class="lineno">  274</span>      ++counted;</div>
+<div class="line"><span class="lineno">  275</span>    }</div>
+<div class="line"><span class="lineno">  276</span>    side = sideNew;</div>
+<div class="line"><span class="lineno">  277</span>  }</div>
+<div class="line"><span class="lineno">  278</span>  <span class="keywordflow">return</span> counted &gt; 0 ? crossingSum / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(counted) : 0.0;</div>
+<div class="line"><span class="lineno">  279</span>}</div>
+<div class="ttc" id="aEigen_8h_html_a45bb4cbce093fca4dfb193d3f649da30"><div class="ttname"><a href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, eOnStorageOrder &gt; MatrixXd</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00033">Eigen.h:33</a></div></div>
+<div class="ttc" id="aclassOHTSTJob_html_a18c6c1151404784c12d00e3cacd18f62"><div class="ttname"><a href="#a18c6c1151404784c12d00e3cacd18f62">OHTSTJob::m_andersenProb</a></div><div class="ttdeci">double m_andersenProb</div><div class="ttdoc">per-step Andersen collision probability</div><div class="ttdef"><b>Definition</b> <a href="OHTSTJob_8h_source.html#l00084">OHTSTJob.h:84</a></div></div>
+<div class="ttc" id="aclassOHTSTJob_html_ac13d91dbaded831c5788817fb4b0f8f6"><div class="ttname"><a href="#ac13d91dbaded831c5788817fb4b0f8f6">OHTSTJob::m_dt</a></div><div class="ttdeci">double m_dt</div><div class="ttdoc">integration step, internal units</div><div class="ttdef"><b>Definition</b> <a href="OHTSTJob_8h_source.html#l00082">OHTSTJob.h:82</a></div></div>
+<div class="ttc" id="aclassOHTSTJob_html_ad51d94380bc7299717ba1a42150f6f9d"><div class="ttname"><a href="#ad51d94380bc7299717ba1a42150f6f9d">OHTSTJob::m_symXR</a></div><div class="ttdeci">VectorXd m_symXR</div><div class="ttdoc">reactant anchor R of the half-lines</div><div class="ttdef"><b>Definition</b> <a href="OHTSTJob_8h_source.html#l00079">OHTSTJob.h:79</a></div></div>
+<div class="ttc" id="aclasseonc_1_1GleThermostat_html_af9e7fa1e07fe61e1c0aa0061093eb927"><div class="ttname"><a href="classeonc_1_1GleThermostat.html#af9e7fa1e07fe61e1c0aa0061093eb927">eonc::GleThermostat::loadDriftMatrix</a></div><div class="ttdeci">static MatrixXd loadDriftMatrix(const std::string &amp;path)</div><div class="ttdoc">Load a drift matrix from a gle4md-layout text file (&#39;#&#39; starts a comment).</div><div class="ttdef"><b>Definition</b> <a href="GleThermostat_8cpp_source.html#l00022">GleThermostat.cpp:22</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a9f0bfab75a98f383ba58f1c592fd2500"><div class="ttname"><a href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">eonc::Job::params</a></div><div class="ttdeci">Parameters params</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00054">Job.h:54</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a164e8df6558062d40b4a1b0f57970c29"><div class="ttname"><a href="classeonc_1_1Matter.html#a164e8df6558062d40b4a1b0f57970c29">eonc::Matter::setPositionsFreeV</a></div><div class="ttdeci">void setPositionsFreeV(const VectorXd &amp;pos)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00301">Matter.cpp:301</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_ab4bf1850e22f0cf4bf605df8a193642d"><div class="ttname"><a href="classeonc_1_1Matter.html#ab4bf1850e22f0cf4bf605df8a193642d">eonc::Matter::getForcesFreeV</a></div><div class="ttdeci">VectorXd getForcesFreeV() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00354">Matter.cpp:354</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_abce266d8f707e6d7a688695c0c7c490e"><div class="ttname"><a href="classeonc_1_1Matter.html#abce266d8f707e6d7a688695c0c7c490e">eonc::Matter::getPositionsFreeV</a></div><div class="ttdeci">VectorXd getPositionsFreeV() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00268">Matter.cpp:268</a></div></div>
+<div class="ttc" id="aclasseonc_1_1OHTSTJob_html_a219ae27d87f80971be66637ded219b6e"><div class="ttname"><a href="classeonc_1_1OHTSTJob.html#a219ae27d87f80971be66637ded219b6e">eonc::OHTSTJob::drawThermalVelocities</a></div><div class="ttdeci">void drawThermalVelocities(VectorXd &amp;vel, const VectorXd *normal)</div><div class="ttdef"><b>Definition</b> <a href="OHTSTJob_8cpp_source.html#l00071">OHTSTJob.cpp:71</a></div></div>
+<div class="ttc" id="aclasseonc_1_1OHTSTJob_html_ae8ea3c44d0e5df5858552571ec5c5857"><div class="ttname"><a href="classeonc_1_1OHTSTJob.html#ae8ea3c44d0e5df5858552571ec5c5857">eonc::OHTSTJob::symmetryReflect</a></div><div class="ttdeci">bool symmetryReflect(const VectorXd &amp;xR, VectorXd &amp;x, VectorXd &amp;v, const VectorXd &amp;xOld, const VectorXd *normal)</div><div class="ttdef"><b>Definition</b> <a href="OHTSTJob_8cpp_source.html#l00080">OHTSTJob.cpp:80</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa215aa03445eb43b57f3d747da9adf2e" name="aa215aa03445eb43b57f3d747da9adf2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa215aa03445eb43b57f3d747da9adf2e">&#9670;&#160;</a></span>run()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; <a class="el" href="classeonc_1_1OHTSTJob.html#aa215aa03445eb43b57f3d747da9adf2e">eonc::OHTSTJob::run</a> </td>
+          <td>(</td>
+          <td class="paramtype">void</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Virtual run; used solely for dynamic dispatch. </p>
+
+<p>Implements <a class="el" href="classeonc_1_1Job.html#ac23db10c6a90d5c6cc8a3a49d7b0dace">eonc::Job</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8cpp_source.html#l00281">281</a> of file <a class="el" href="OHTSTJob_8cpp_source.html">OHTSTJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  281</span>                                       {</div>
+<div class="line"><span class="lineno">  282</span>  <span class="keyword">auto</span> reactant = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  283</span>  <span class="keyword">auto</span> product = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  284</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(</div>
+<div class="line"><span class="lineno">  285</span>          reactant-&gt;con2matter(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.reactant_filename))) {</div>
+<div class="line"><span class="lineno">  286</span>    <a class="code hl_define" href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a>(<span class="stringliteral">&quot;OH-TST failed to load {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  287</span>                      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.reactant_filename);</div>
+<div class="line"><span class="lineno">  288</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;oh_tst: failed to load reactant&quot;</span>);</div>
+<div class="line"><span class="lineno">  289</span>  }</div>
+<div class="line"><span class="lineno">  290</span>  <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(</div>
+<div class="line"><span class="lineno">  291</span>          product-&gt;con2matter(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.product_filename))) {</div>
+<div class="line"><span class="lineno">  292</span>    <a class="code hl_define" href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a>(<span class="stringliteral">&quot;OH-TST failed to load {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  293</span>                      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.product_filename);</div>
+<div class="line"><span class="lineno">  294</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;oh_tst: failed to load product&quot;</span>);</div>
+<div class="line"><span class="lineno">  295</span>  }</div>
+<div class="line"><span class="lineno">  296</span> </div>
+<div class="line"><span class="lineno">  297</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> temperature = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options.temperature;</div>
+<div class="line"><span class="lineno">  298</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[oh_tst] thermostat = {}{}&quot;</span>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.thermostat,</div>
+<div class="line"><span class="lineno">  299</span>                <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.thermostat == <span class="stringliteral">&quot;gle&quot;</span></div>
+<div class="line"><span class="lineno">  300</span>                    ? std::string(<span class="stringliteral">&quot; (drift: &quot;</span>) +</div>
+<div class="line"><span class="lineno">  301</span>                          <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.gle_a_file + <span class="stringliteral">&quot;)&quot;</span></div>
+<div class="line"><span class="lineno">  302</span>                    : std::string());</div>
+<div class="line"><span class="lineno">  303</span>  <a class="code hl_variable" href="#a9dc19372258cd22add2540be9224babe">m_kbt</a> = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.kB * temperature;</div>
+<div class="line"><span class="lineno">  304</span>  <a class="code hl_variable" href="#ac13d91dbaded831c5788817fb4b0f8f6">m_dt</a> = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.time_step / <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit;</div>
+<div class="line"><span class="lineno">  305</span>  <a class="code hl_variable" href="#a6f99592864114a3ca50a592e13265647">m_seedState</a> = (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options.randomSeed &gt; 0)</div>
+<div class="line"><span class="lineno">  306</span>                    ? <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options.randomSeed</div>
+<div class="line"><span class="lineno">  307</span>                    : 12345;</div>
+<div class="line"><span class="lineno">  308</span>  <span class="comment">// Per-step collision probability from the Andersen collision period.</span></div>
+<div class="line"><span class="lineno">  309</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> tcol =</div>
+<div class="line"><span class="lineno">  310</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.thermostat_options.andersen_tcol_input / <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit;</div>
+<div class="line"><span class="lineno">  311</span>  <a class="code hl_variable" href="#a18c6c1151404784c12d00e3cacd18f62">m_andersenProb</a> = (tcol &gt; 0.0) ? std::min(1.0, <a class="code hl_variable" href="#ac13d91dbaded831c5788817fb4b0f8f6">m_dt</a> / tcol) : 0.1;</div>
+<div class="line"><span class="lineno">  312</span> </div>
+<div class="line"><span class="lineno">  313</span>  <span class="comment">// Free-DOF mass vector (amu per coordinate).</span></div>
+<div class="line"><span class="lineno">  314</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> nAtoms = reactant-&gt;numberOfAtoms();</div>
+<div class="line"><span class="lineno">  315</span>  <span class="keyword">auto</span> masses = reactant-&gt;getMasses();</div>
+<div class="line"><span class="lineno">  316</span>  std::vector&lt;double&gt; m3;</div>
+<div class="line"><span class="lineno">  317</span>  m3.reserve(3 * nAtoms);</div>
+<div class="line"><span class="lineno">  318</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nAtoms; ++i) {</div>
+<div class="line"><span class="lineno">  319</span>    <span class="keywordflow">if</span> (!reactant-&gt;getFixed(i)) {</div>
+<div class="line"><span class="lineno">  320</span>      <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 3; ++j)</div>
+<div class="line"><span class="lineno">  321</span>        m3.push_back(masses[i]);</div>
+<div class="line"><span class="lineno">  322</span>    }</div>
+<div class="line"><span class="lineno">  323</span>  }</div>
+<div class="line"><span class="lineno">  324</span>  <a class="code hl_variable" href="#a24b52433a83b2fbe8aa1ea882f64b1a5">m_masses3N</a> = VectorXd::Map(m3.data(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(m3.size()));</div>
+<div class="line"><span class="lineno">  325</span> </div>
+<div class="line"><span class="lineno">  326</span>  <span class="comment">// Straight guideline in 3N space, minimum-image on the endpoint</span></div>
+<div class="line"><span class="lineno">  327</span>  <span class="comment">// difference so the plane never strides a cell boundary.</span></div>
+<div class="line"><span class="lineno">  328</span>  <span class="keyword">const</span> VectorXd xR = reactant-&gt;getPositionsFreeV();</div>
+<div class="line"><span class="lineno">  329</span>  VectorXd diff = product-&gt;getPositionsFreeV() - xR;</div>
+<div class="line"><span class="lineno">  330</span>  {</div>
+<div class="line"><span class="lineno">  331</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> d(AtomMatrix::Map(diff.data(), diff.size() / 3, 3));</div>
+<div class="line"><span class="lineno">  332</span>    <span class="comment">// Rigid-translation alignment under PBC: AV-embedded state frames</span></div>
+<div class="line"><span class="lineno">  333</span>    <span class="comment">// ride the defect (drift = one hop vector, a/2&lt;011&gt; observed), so</span></div>
+<div class="line"><span class="lineno">  334</span>    <span class="comment">// atoms near cell boundaries min-image inconsistently until the</span></div>
+<div class="line"><span class="lineno">  335</span>    <span class="comment">// drift is gone. Iterate min-image -&gt; de-drift to the fixed point;</span></div>
+<div class="line"><span class="lineno">  336</span>    <span class="comment">// the converged residual is the localized reaction coordinate.</span></div>
+<div class="line"><span class="lineno">  337</span>    Eigen::RowVector3d total_drift = Eigen::RowVector3d::Zero();</div>
+<div class="line"><span class="lineno">  338</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> pass = 0; pass &lt; 6; ++pass) {</div>
+<div class="line"><span class="lineno">  339</span>      d = reactant-&gt;pbc(d);</div>
+<div class="line"><span class="lineno">  340</span>      <span class="keyword">const</span> Eigen::RowVector3d drift =</div>
+<div class="line"><span class="lineno">  341</span>          d.colwise().sum() / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(d.rows());</div>
+<div class="line"><span class="lineno">  342</span>      d.rowwise() -= drift;</div>
+<div class="line"><span class="lineno">  343</span>      total_drift += drift;</div>
+<div class="line"><span class="lineno">  344</span>      <span class="keywordflow">if</span> (drift.norm() &lt; 1e-6) {</div>
+<div class="line"><span class="lineno">  345</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  346</span>      }</div>
+<div class="line"><span class="lineno">  347</span>    }</div>
+<div class="line"><span class="lineno">  348</span>    <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[oh_tst] rigid drift removed: ({:.4f}, {:.4f}, &quot;</span></div>
+<div class="line"><span class="lineno">  349</span>                  <span class="stringliteral">&quot;{:.4f}) A per atom&quot;</span>,</div>
+<div class="line"><span class="lineno">  350</span>                  total_drift[0], total_drift[1], total_drift[2]);</div>
+<div class="line"><span class="lineno">  351</span>    diff = VectorXd::Map(d.data(), diff.size());</div>
+<div class="line"><span class="lineno">  352</span>  }</div>
+<div class="line"><span class="lineno">  353</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> guideLen = diff.norm();</div>
+<div class="line"><span class="lineno">  354</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[oh_tst] guideline length |P - R| = {:.4f} A over {} free &quot;</span></div>
+<div class="line"><span class="lineno">  355</span>                <span class="stringliteral">&quot;DOF&quot;</span>,</div>
+<div class="line"><span class="lineno">  356</span>                guideLen, xR.size());</div>
+<div class="line"><span class="lineno">  357</span>  <span class="comment">// A sub-Angstrom guideline is an on-site shuffle (dumbbell rotation,</span></div>
+<div class="line"><span class="lineno">  358</span>  <span class="comment">// flicker partner): the plane progression has no room to climb and</span></div>
+<div class="line"><span class="lineno">  359</span>  <span class="comment">// the run would &quot;converge&quot; at s = 0 measuring nothing.</span></div>
+<div class="line"><span class="lineno">  360</span>  <span class="keywordflow">if</span> (guideLen &lt; 0.5) {</div>
+<div class="line"><span class="lineno">  361</span>    <a class="code hl_define" href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a>(<span class="stringliteral">&quot;[oh_tst] guideline too short ({:.4f} A) -- pick a &quot;</span></div>
+<div class="line"><span class="lineno">  362</span>                      <span class="stringliteral">&quot;translation-class endpoint pair&quot;</span>,</div>
+<div class="line"><span class="lineno">  363</span>                      guideLen);</div>
+<div class="line"><span class="lineno">  364</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;oh_tst: degenerate guideline&quot;</span>);</div>
+<div class="line"><span class="lineno">  365</span>  }</div>
+<div class="line"><span class="lineno">  366</span>  <span class="keyword">const</span> VectorXd u = diff / guideLen;</div>
+<div class="line"><span class="lineno">  367</span> </div>
+<div class="line"><span class="lineno">  368</span>  <span class="comment">// Eqs 13-14: unit vectors to every symmetry-equivalent product;</span></div>
+<div class="line"><span class="lineno">  369</span>  <span class="comment">// index 0 is the primary product the guideline points to.</span></div>
+<div class="line"><span class="lineno">  370</span>  <a class="code hl_variable" href="#ad51d94380bc7299717ba1a42150f6f9d">m_symXR</a> = xR;</div>
+<div class="line"><span class="lineno">  371</span>  <a class="code hl_variable" href="#ab282d7d930d8bc4b79d66f24f5625519">m_symDirs</a>.clear();</div>
+<div class="line"><span class="lineno">  372</span>  <a class="code hl_variable" href="#ab282d7d930d8bc4b79d66f24f5625519">m_symDirs</a>.push_back(u);</div>
+<div class="line"><span class="lineno">  373</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.symmetry_products.empty()) {</div>
+<div class="line"><span class="lineno">  374</span>    std::string rest = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.symmetry_products;</div>
+<div class="line"><span class="lineno">  375</span>    <span class="keywordflow">while</span> (!rest.empty()) {</div>
+<div class="line"><span class="lineno">  376</span>      <span class="keyword">const</span> <span class="keyword">auto</span> comma = rest.find(<span class="charliteral">&#39;,&#39;</span>);</div>
+<div class="line"><span class="lineno">  377</span>      std::string fname = rest.substr(0, comma);</div>
+<div class="line"><span class="lineno">  378</span>      rest = (comma == std::string::npos) ? <span class="stringliteral">&quot;&quot;</span> : rest.substr(comma + 1);</div>
+<div class="line"><span class="lineno">  379</span>      <span class="keywordflow">if</span> (fname.empty()) {</div>
+<div class="line"><span class="lineno">  380</span>        continue;</div>
+<div class="line"><span class="lineno">  381</span>      }</div>
+<div class="line"><span class="lineno">  382</span>      Matter other(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">  383</span>      <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(other.con2matter(fname))) {</div>
+<div class="line"><span class="lineno">  384</span>        EONC_LOG_CRITICAL(<span class="stringliteral">&quot;OH-TST failed to load symmetry product {}&quot;</span>, fname);</div>
+<div class="line"><span class="lineno">  385</span>        throw std::runtime_error(<span class="stringliteral">&quot;oh_tst: failed to load symmetry product&quot;</span>);</div>
+<div class="line"><span class="lineno">  386</span>      }</div>
+<div class="line"><span class="lineno">  387</span>      VectorXd d = other.getPositionsFreeV() - xR;</div>
+<div class="line"><span class="lineno">  388</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dm(AtomMatrix::Map(d.data(), d.size() / 3, 3));</div>
+<div class="line"><span class="lineno">  389</span>      dm = reactant-&gt;pbc(dm);</div>
+<div class="line"><span class="lineno">  390</span>      d = VectorXd::Map(dm.data(), d.size());</div>
+<div class="line"><span class="lineno">  391</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> dn = d.norm();</div>
+<div class="line"><span class="lineno">  392</span>      if (dn &gt; 1e-8) {</div>
+<div class="line"><span class="lineno">  393</span>        <a class="code hl_variable" href="#ab282d7d930d8bc4b79d66f24f5625519">m_symDirs</a>.push_back(d / dn);</div>
+<div class="line"><span class="lineno">  394</span>      }</div>
+<div class="line"><span class="lineno">  395</span>    }</div>
+<div class="line"><span class="lineno">  396</span>    <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[oh_tst] symmetry restriction active over {} product &quot;</span></div>
+<div class="line"><span class="lineno">  397</span>                  <span class="stringliteral">&quot;directions&quot;</span>,</div>
+<div class="line"><span class="lineno">  398</span>                  <a class="code hl_variable" href="#ab282d7d930d8bc4b79d66f24f5625519">m_symDirs</a>.size());</div>
+<div class="line"><span class="lineno">  399</span>  }</div>
+<div class="line"><span class="lineno">  400</span> </div>
+<div class="line"><span class="lineno">  401</span>  <span class="comment">// Plane state: progression coordinate s, normal n, their conjugate</span></div>
+<div class="line"><span class="lineno">  402</span>  <span class="comment">// velocities, and the previous-iteration driving forces for the</span></div>
+<div class="line"><span class="lineno">  403</span>  <span class="comment">// two-force velocity Verlet updates (Eqs 6-7 and 9-10).</span></div>
+<div class="line"><span class="lineno">  404</span>  <span class="keywordtype">double</span> s = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.s_init * guideLen;</div>
+<div class="line"><span class="lineno">  405</span>  <span class="keywordtype">double</span> vS = 0.0;</div>
+<div class="line"><span class="lineno">  406</span>  VectorXd n = u;</div>
+<div class="line"><span class="lineno">  407</span>  VectorXd omega = VectorXd::Zero(n.size());</div>
+<div class="line"><span class="lineno">  408</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> mS = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.plane_mass;</div>
+<div class="line"><span class="lineno">  409</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dtPlane = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.plane_time_step;</div>
+<div class="line"><span class="lineno">  410</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dsMax = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.ds_max;</div>
+<div class="line"><span class="lineno">  411</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dThetaMax = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.dtheta_max;</div>
+<div class="line"><span class="lineno">  412</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> fTol = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.force_tol;</div>
+<div class="line"><span class="lineno">  413</span> </div>
+<div class="line"><span class="lineno">  414</span>  Matter walker(*reactant);</div>
+<div class="line"><span class="lineno">  415</span> </div>
+<div class="line"><span class="lineno">  416</span>  <span class="comment">// Reversible-work accumulators and the previous plane&#39;s averages</span></div>
+<div class="line"><span class="lineno">  417</span>  <span class="comment">// for the trapezoid rules of Eqs 18-19.</span></div>
+<div class="line"><span class="lineno">  418</span>  <span class="keywordtype">double</span> aTrans = 0.0, aRot = 0.0, aBest = 0.0, sBest = s;</div>
+<div class="line"><span class="lineno">  419</span>  VectorXd nBest = n;</div>
+<div class="line"><span class="lineno">  420</span>  <span class="keywordtype">bool</span> havePrev = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  421</span>  <span class="keywordtype">double</span> fnPrev = 0.0;</div>
+<div class="line"><span class="lineno">  422</span>  VectorXd rotRawPrev, posPrev, nPrev;</div>
+<div class="line"><span class="lineno">  423</span>  <span class="keywordtype">double</span> gSPrev = 0.0;</div>
+<div class="line"><span class="lineno">  424</span>  VectorXd gRotPrev;</div>
+<div class="line"><span class="lineno">  425</span>  <span class="keywordtype">int</span> sideSign = 0; <span class="comment">// sign of &lt;F.n&gt; at plane 1 (grooming, Sec IIE)</span></div>
+<div class="line"><span class="lineno">  426</span> </div>
+<div class="line"><span class="lineno">  427</span>  <span class="comment">// RAII: the divergence guard and samplePlane both throw out of the plane</span></div>
+<div class="line"><span class="lineno">  428</span>  <span class="comment">// loop below, so the handle has to close itself.</span></div>
+<div class="line"><span class="lineno">  429</span>  std::ofstream prog(<span class="stringliteral">&quot;oh_tst_progression.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  430</span>  <span class="keywordflow">if</span> (prog) {</div>
+<div class="line"><span class="lineno">  431</span>    prog &lt;&lt; <span class="stringliteral">&quot;# plane  s/L  &lt;F.n&gt; (eV/A)  dA_trans (eV)  dA_rot (eV)  &quot;</span></div>
+<div class="line"><span class="lineno">  432</span>            <span class="stringliteral">&quot;A (eV)  n.u\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  433</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  434</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[oh_tst] cannot open oh_tst_progression.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  435</span>  }</div>
+<div class="line"><span class="lineno">  436</span> </div>
+<div class="line"><span class="lineno">  437</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> scanMode = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.pmf_scan;</div>
+<div class="line"><span class="lineno">  438</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> nScan = std::max(2L, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.scan_planes);</div>
+<div class="line"><span class="lineno">  439</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> dsScan = scanMode ? (guideLen / (double)(nScan - 1)) : 0.0;</div>
+<div class="line"><span class="lineno">  440</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> nPlanes = scanMode ? nScan : <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.max_planes;</div>
+<div class="line"><span class="lineno">  441</span>  <span class="keywordtype">long</span> plane = 0;</div>
+<div class="line"><span class="lineno">  442</span>  <span class="keywordtype">bool</span> converged = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  443</span>  <span class="comment">// Sec IIC guideline refinement: after the translational force first</span></div>
+<div class="line"><span class="lineno">  444</span>  <span class="comment">// changes sign the guideline is re-anchored every step through the</span></div>
+<div class="line"><span class="lineno">  445</span>  <span class="comment">// previous plane&#39;s average position along the current normal, so a</span></div>
+<div class="line"><span class="lineno">  446</span>  <span class="comment">// small rotational force no longer demands a huge s move (the</span></div>
+<div class="line"><span class="lineno">  447</span>  <span class="comment">// failure mode that made small-inertia mechanism discovery diverge).</span></div>
+<div class="line"><span class="lineno">  448</span>  <span class="keywordtype">bool</span> guidelineMoving = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  449</span>  VectorXd gOrigin = xR;</div>
+<div class="line"><span class="lineno">  450</span>  VectorXd gDir = u;</div>
+<div class="line"><span class="lineno">  451</span>  <span class="keywordtype">long</span> rotOnlySteps = 0;</div>
+<div class="line"><span class="lineno">  452</span>  <span class="keywordflow">for</span> (; plane &lt; nPlanes; ++plane) {</div>
+<div class="line"><span class="lineno">  453</span>    <span class="keyword">const</span> VectorXd gamma = gOrigin + s * gDir;</div>
+<div class="line"><span class="lineno">  454</span>    <a class="code hl_struct" href="structOHTSTJob_1_1PlaneAverages.html">PlaneAverages</a> avg = <a class="code hl_function" href="classeonc_1_1OHTSTJob.html#a227fc390279405af178645df2d62ecde">samplePlane</a>(walker, gamma, n);</div>
+<div class="line"><span class="lineno">  455</span> </div>
+<div class="line"><span class="lineno">  456</span>    <span class="comment">// Driving forces: translation climbs against &lt;F.n&gt; (Eq 5 with the</span></div>
+<div class="line"><span class="lineno">  457</span>    <span class="comment">// reversed-force convention); the normal is driven along</span></div>
+<div class="line"><span class="lineno">  458</span>    <span class="comment">// +&lt;(n.F) R/(alpha |R|^2)&gt; (Appendix A, Eq A1), projected onto</span></div>
+<div class="line"><span class="lineno">  459</span>    <span class="comment">// the tangent space of the unit sphere.</span></div>
+<div class="line"><span class="lineno">  460</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> gS = -avg.fn / mS;</div>
+<div class="line"><span class="lineno">  461</span>    VectorXd gRot = avg.rotNorm - n * n.dot(avg.rotNorm);</div>
+<div class="line"><span class="lineno">  462</span> </div>
+<div class="line"><span class="lineno">  463</span>    <span class="keywordflow">if</span> (plane == 0) {</div>
+<div class="line"><span class="lineno">  464</span>      sideSign = (avg.fn &lt; 0.0) ? -1 : 1;</div>
+<div class="line"><span class="lineno">  465</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!guidelineMoving &amp;&amp; ((avg.fn &lt; 0.0) ? -1 : 1) != sideSign) {</div>
+<div class="line"><span class="lineno">  466</span>      guidelineMoving = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  467</span>      <a class="code hl_define" href="EonLogger_8h.html#a3985f57d817b8b5bac1a2f71f12ea439">EONC_LOG_DEBUG</a>(<span class="stringliteral">&quot;[oh_tst] plane {}: translational force changed &quot;</span></div>
+<div class="line"><span class="lineno">  468</span>                     <span class="stringliteral">&quot;sign; guideline now follows &lt;r&gt; along the normal&quot;</span>,</div>
+<div class="line"><span class="lineno">  469</span>                     plane);</div>
+<div class="line"><span class="lineno">  470</span>    }</div>
+<div class="line"><span class="lineno">  471</span> </div>
+<div class="line"><span class="lineno">  472</span>    <span class="comment">// Reversible work (Eqs 18-19), trapezoid between consecutive</span></div>
+<div class="line"><span class="lineno">  473</span>    <span class="comment">// planes: the translational path is the piecewise-linear track of</span></div>
+<div class="line"><span class="lineno">  474</span>    <span class="comment">// the average configuration &lt;r&gt;, and the rotational work pairs</span></div>
+<div class="line"><span class="lineno">  475</span>    <span class="comment">// the unnormalized &lt;(n.F) R&gt; with the actual change of the</span></div>
+<div class="line"><span class="lineno">  476</span>    <span class="comment">// normal. Grooming (Sec IIE): only planes on the reactant side of</span></div>
+<div class="line"><span class="lineno">  477</span>    <span class="comment">// the ridge (same sign of &lt;F.n&gt; as plane 1) contribute.</span></div>
+<div class="line"><span class="lineno">  478</span>    <span class="keywordflow">if</span> (havePrev) {</div>
+<div class="line"><span class="lineno">  479</span>      <span class="comment">// Scan mode integrates the whole reactant-&gt;product path; the</span></div>
+<div class="line"><span class="lineno">  480</span>      <span class="comment">// adaptive run grooms to the reactant side of the ridge only.</span></div>
+<div class="line"><span class="lineno">  481</span>      <span class="keyword">const</span> <span class="keywordtype">bool</span> sameSide = scanMode || ((fnPrev &lt; 0.0 ? -1 : 1) == sideSign &amp;&amp;</div>
+<div class="line"><span class="lineno">  482</span>                                         (avg.fn &lt; 0.0 ? -1 : 1) == sideSign);</div>
+<div class="line"><span class="lineno">  483</span>      <span class="keywordflow">if</span> (sameSide) {</div>
+<div class="line"><span class="lineno">  484</span>        <span class="keyword">const</span> VectorXd fParMean = 0.5 * (fnPrev * nPrev + avg.fn * n);</div>
+<div class="line"><span class="lineno">  485</span>        aTrans += -fParMean.dot(avg.pos - posPrev);</div>
+<div class="line"><span class="lineno">  486</span>        <span class="keyword">const</span> VectorXd rotMean = 0.5 * (rotRawPrev + avg.rotRaw);</div>
+<div class="line"><span class="lineno">  487</span>        aRot += rotMean.dot(n - nPrev);</div>
+<div class="line"><span class="lineno">  488</span>      }</div>
+<div class="line"><span class="lineno">  489</span>    }</div>
+<div class="line"><span class="lineno">  490</span> </div>
+<div class="line"><span class="lineno">  491</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> aTotal = aTrans + aRot;</div>
+<div class="line"><span class="lineno">  492</span>    <span class="keywordflow">if</span> (aTotal &gt; aBest) {</div>
+<div class="line"><span class="lineno">  493</span>      aBest = aTotal;</div>
+<div class="line"><span class="lineno">  494</span>      sBest = s;</div>
+<div class="line"><span class="lineno">  495</span>      nBest = n;</div>
+<div class="line"><span class="lineno">  496</span>    }</div>
+<div class="line"><span class="lineno">  497</span>    <span class="keywordflow">if</span> (prog) {</div>
+<div class="line"><span class="lineno">  498</span>      prog &lt;&lt; std::format(<span class="stringliteral">&quot;{:6} {:10.6f} {:14.6e} {:12.6f} {:12.6f} {:12.6f} &quot;</span></div>
+<div class="line"><span class="lineno">  499</span>                          <span class="stringliteral">&quot;{:10.6f}\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  500</span>                          plane, s / guideLen, avg.fn, aTrans, aRot, aTotal,</div>
+<div class="line"><span class="lineno">  501</span>                          n.dot(u));</div>
+<div class="line"><span class="lineno">  502</span>      prog.flush();</div>
+<div class="line"><span class="lineno">  503</span>    }</div>
+<div class="line"><span class="lineno">  504</span>    <a class="code hl_define" href="EonLogger_8h.html#a3985f57d817b8b5bac1a2f71f12ea439">EONC_LOG_DEBUG</a>(<span class="stringliteral">&quot;[oh_tst] plane {} s/L {:.4f} &lt;F.n&gt; {:.4e} A {:.4f} eV&quot;</span>,</div>
+<div class="line"><span class="lineno">  505</span>                   plane, s / guideLen, avg.fn, aTotal);</div>
+<div class="line"><span class="lineno">  506</span> </div>
+<div class="line"><span class="lineno">  507</span>    <span class="comment">// Divergence guard: reversible work beyond any physical barrier</span></div>
+<div class="line"><span class="lineno">  508</span>    <span class="comment">// means the endpoints were not minimized (static relaxation</span></div>
+<div class="line"><span class="lineno">  509</span>    <span class="comment">// forces leak into &lt;F.n&gt;) or the plane is chasing a drifting</span></div>
+<div class="line"><span class="lineno">  510</span>    <span class="comment">// ensemble; 300 planes of that is pure waste.</span></div>
+<div class="line"><span class="lineno">  511</span>    <span class="keywordflow">if</span> (aTotal &gt; <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.max_delta_a) {</div>
+<div class="line"><span class="lineno">  512</span>      <a class="code hl_define" href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a>(</div>
+<div class="line"><span class="lineno">  513</span>          <span class="stringliteral">&quot;[oh_tst] accumulated work {:.2f} eV exceeds max_delta_a &quot;</span></div>
+<div class="line"><span class="lineno">  514</span>          <span class="stringliteral">&quot;{:.2f} eV at plane {} -- endpoints likely unminimized&quot;</span>,</div>
+<div class="line"><span class="lineno">  515</span>          aTotal, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.max_delta_a, plane);</div>
+<div class="line"><span class="lineno">  516</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;oh_tst: diverging reversible work&quot;</span>);</div>
+<div class="line"><span class="lineno">  517</span>    }</div>
+<div class="line"><span class="lineno">  518</span>    <span class="comment">// A stationary plane only counts as the variational maximum</span></div>
+<div class="line"><span class="lineno">  519</span>    <span class="comment">// after the progression has actually climbed: the reactant basin</span></div>
+<div class="line"><span class="lineno">  520</span>    <span class="comment">// bottom is also force-free, and a short guideline puts the first</span></div>
+<div class="line"><span class="lineno">  521</span>    <span class="comment">// plane inside it. Two thermal energies of accumulated reversible</span></div>
+<div class="line"><span class="lineno">  522</span>    <span class="comment">// work is the cheapest evidence of a ridge.</span></div>
+<div class="line"><span class="lineno">  523</span>    <span class="keywordflow">if</span> (!scanMode &amp;&amp; plane &gt; 2 &amp;&amp; aTotal &gt; 2.0 * <a class="code hl_variable" href="#a9dc19372258cd22add2540be9224babe">m_kbt</a> &amp;&amp;</div>
+<div class="line"><span class="lineno">  524</span>        std::fabs(avg.fn) &lt; fTol &amp;&amp;</div>
+<div class="line"><span class="lineno">  525</span>        gRot.norm() * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.alpha_rot &lt; fTol) {</div>
+<div class="line"><span class="lineno">  526</span>      converged = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  527</span>      <span class="comment">// The converged plane is the optimal one even if sampling noise</span></div>
+<div class="line"><span class="lineno">  528</span>      <span class="comment">// put an earlier plane marginally higher.</span></div>
+<div class="line"><span class="lineno">  529</span>      aBest = aTotal;</div>
+<div class="line"><span class="lineno">  530</span>      sBest = s;</div>
+<div class="line"><span class="lineno">  531</span>      nBest = n;</div>
+<div class="line"><span class="lineno">  532</span>      <span class="keywordflow">if</span> (prog) {</div>
+<div class="line"><span class="lineno">  533</span>        prog &lt;&lt; std::format(<span class="stringliteral">&quot;# converged at plane {}\n&quot;</span>, plane);</div>
+<div class="line"><span class="lineno">  534</span>      }</div>
+<div class="line"><span class="lineno">  535</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  536</span>    }</div>
+<div class="line"><span class="lineno">  537</span> </div>
+<div class="line"><span class="lineno">  538</span>    <span class="keywordflow">if</span> (scanMode) {</div>
+<div class="line"><span class="lineno">  539</span>      <span class="comment">// Fixed-increment PMF scan: normal stays along the guideline,</span></div>
+<div class="line"><span class="lineno">  540</span>      <span class="comment">// s advances uniformly, and the walker is projected onto the</span></div>
+<div class="line"><span class="lineno">  541</span>      <span class="comment">// next constraint plane for samplePlane to re-equilibrate. The</span></div>
+<div class="line"><span class="lineno">  542</span>      <span class="comment">// A(s) profile is the PMF; aBest already tracks its maximum.</span></div>
+<div class="line"><span class="lineno">  543</span>      fnPrev = avg.fn;</div>
+<div class="line"><span class="lineno">  544</span>      nPrev = n;</div>
+<div class="line"><span class="lineno">  545</span>      rotRawPrev = avg.rotRaw;</div>
+<div class="line"><span class="lineno">  546</span>      posPrev = avg.pos;</div>
+<div class="line"><span class="lineno">  547</span>      gSPrev = gS;</div>
+<div class="line"><span class="lineno">  548</span>      gRotPrev = gRot;</div>
+<div class="line"><span class="lineno">  549</span>      havePrev = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  550</span>      s = (double)(plane + 1) * dsScan;</div>
+<div class="line"><span class="lineno">  551</span>      <span class="keyword">const</span> VectorXd gammaNext = xR + s * u;</div>
+<div class="line"><span class="lineno">  552</span>      VectorXd xStart = walker.getPositionsFreeV();</div>
+<div class="line"><span class="lineno">  553</span>      xStart -= u * (u.dot(xStart - gammaNext));</div>
+<div class="line"><span class="lineno">  554</span>      walker.setPositionsFreeV(xStart);</div>
+<div class="line"><span class="lineno">  555</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  556</span>    }</div>
+<div class="line"><span class="lineno">  557</span>    <span class="comment">// Damped two-force Verlet on s (Eqs 6-7): the velocity is zeroed</span></div>
+<div class="line"><span class="lineno">  558</span>    <span class="comment">// when it opposes the driving force, so the plane settles at the</span></div>
+<div class="line"><span class="lineno">  559</span>    <span class="comment">// free-energy maximum instead of oscillating over it (&quot;the</span></div>
+<div class="line"><span class="lineno">  560</span>    <span class="comment">// velocity of the plane is zeroed if the plane has gone past the</span></div>
+<div class="line"><span class="lineno">  561</span>    <span class="comment">// maximum free energy position&quot;).</span></div>
+<div class="line"><span class="lineno">  562</span>    <span class="comment">// Pure-rotation step (Sec IIC): right after a guideline change a</span></div>
+<div class="line"><span class="lineno">  563</span>    <span class="comment">// spiked rotational force is relaxed at fixed s before the plane</span></div>
+<div class="line"><span class="lineno">  564</span>    <span class="comment">// translates again.</span></div>
+<div class="line"><span class="lineno">  565</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> rotationOnly =</div>
+<div class="line"><span class="lineno">  566</span>        guidelineMoving &amp;&amp;</div>
+<div class="line"><span class="lineno">  567</span>        gRot.norm() * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.alpha_rot &gt; 5.0 * fTol &amp;&amp;</div>
+<div class="line"><span class="lineno">  568</span>        rotOnlySteps &lt; 10;</div>
+<div class="line"><span class="lineno">  569</span>    <span class="keywordflow">if</span> (rotationOnly) {</div>
+<div class="line"><span class="lineno">  570</span>      ++rotOnlySteps;</div>
+<div class="line"><span class="lineno">  571</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  572</span>      rotOnlySteps = 0;</div>
+<div class="line"><span class="lineno">  573</span>    }</div>
+<div class="line"><span class="lineno">  574</span>    <span class="keywordflow">if</span> (havePrev) {</div>
+<div class="line"><span class="lineno">  575</span>      vS += 0.5 * dtPlane * (gS + gSPrev);</div>
+<div class="line"><span class="lineno">  576</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  577</span>      vS += dtPlane * gS;</div>
+<div class="line"><span class="lineno">  578</span>    }</div>
+<div class="line"><span class="lineno">  579</span>    <span class="keywordflow">if</span> (vS * gS &lt; 0.0)</div>
+<div class="line"><span class="lineno">  580</span>      vS = 0.0;</div>
+<div class="line"><span class="lineno">  581</span>    <span class="keywordtype">double</span> ds = dtPlane * vS + 0.5 * dtPlane * dtPlane * gS;</div>
+<div class="line"><span class="lineno">  582</span>    ds = std::clamp(ds, -dsMax, dsMax);</div>
+<div class="line"><span class="lineno">  583</span>    <span class="keywordflow">if</span> (rotationOnly) {</div>
+<div class="line"><span class="lineno">  584</span>      ds = 0.0;</div>
+<div class="line"><span class="lineno">  585</span>      vS = 0.0;</div>
+<div class="line"><span class="lineno">  586</span>    }</div>
+<div class="line"><span class="lineno">  587</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> sNew =</div>
+<div class="line"><span class="lineno">  588</span>        guidelineMoving ? s + ds : std::clamp(s + ds, 0.0, guideLen);</div>
+<div class="line"><span class="lineno">  589</span> </div>
+<div class="line"><span class="lineno">  590</span>    <span class="comment">// Damped rotation (Eqs 9-10 with the Appendix A driving): the</span></div>
+<div class="line"><span class="lineno">  591</span>    <span class="comment">// angular velocity keeps only its projection along the current</span></div>
+<div class="line"><span class="lineno">  592</span>    <span class="comment">// driving force while aligned with it, and is zeroed otherwise.</span></div>
+<div class="line"><span class="lineno">  593</span>    <span class="keywordflow">if</span> (havePrev &amp;&amp; gRotPrev.size() == gRot.size()) {</div>
+<div class="line"><span class="lineno">  594</span>      omega += 0.5 * dtPlane * (gRot + gRotPrev);</div>
+<div class="line"><span class="lineno">  595</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  596</span>      omega += dtPlane * gRot;</div>
+<div class="line"><span class="lineno">  597</span>    }</div>
+<div class="line"><span class="lineno">  598</span>    omega -= n * n.dot(omega);</div>
+<div class="line"><span class="lineno">  599</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> gNorm = gRot.norm();</div>
+<div class="line"><span class="lineno">  600</span>    <span class="keywordflow">if</span> (gNorm &gt; 1e-14) {</div>
+<div class="line"><span class="lineno">  601</span>      <span class="keyword">const</span> VectorXd gHat = gRot / gNorm;</div>
+<div class="line"><span class="lineno">  602</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> along = omega.dot(gHat);</div>
+<div class="line"><span class="lineno">  603</span>      <span class="keywordflow">if</span> (along &gt; 0.0) {</div>
+<div class="line"><span class="lineno">  604</span>        omega = gHat * along;</div>
+<div class="line"><span class="lineno">  605</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  606</span>        omega.setZero();</div>
+<div class="line"><span class="lineno">  607</span>      }</div>
+<div class="line"><span class="lineno">  608</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  609</span>      omega.setZero();</div>
+<div class="line"><span class="lineno">  610</span>    }</div>
+<div class="line"><span class="lineno">  611</span>    VectorXd dn = dtPlane * omega + 0.5 * dtPlane * dtPlane * gRot;</div>
+<div class="line"><span class="lineno">  612</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> dTheta = dn.norm();</div>
+<div class="line"><span class="lineno">  613</span>    <span class="keywordflow">if</span> (dTheta &gt; dThetaMax) {</div>
+<div class="line"><span class="lineno">  614</span>      dn *= dThetaMax / dTheta;</div>
+<div class="line"><span class="lineno">  615</span>    }</div>
+<div class="line"><span class="lineno">  616</span>    <span class="keyword">const</span> VectorXd nOld = n;</div>
+<div class="line"><span class="lineno">  617</span>    n = (n + dn).normalized();</div>
+<div class="line"><span class="lineno">  618</span>    <span class="keywordflow">if</span> (n.dot(gDir) &lt; 0.0) {</div>
+<div class="line"><span class="lineno">  619</span>      <span class="comment">// Keep the normal pointing towards increasing s.</span></div>
+<div class="line"><span class="lineno">  620</span>      n = -n;</div>
+<div class="line"><span class="lineno">  621</span>    }</div>
+<div class="line"><span class="lineno">  622</span> </div>
+<div class="line"><span class="lineno">  623</span>    <span class="comment">// Eq 11-12 restart: place the walker in the new plane at the</span></div>
+<div class="line"><span class="lineno">  624</span>    <span class="comment">// rotated image of the average arm, rescaled so rotation does not</span></div>
+<div class="line"><span class="lineno">  625</span>    <span class="comment">// change the arm length.</span></div>
+<div class="line"><span class="lineno">  626</span>    VectorXd arm = avg.pos - gamma;</div>
+<div class="line"><span class="lineno">  627</span>    VectorXd armNew = arm - nOld * arm.dot(n - nOld);</div>
+<div class="line"><span class="lineno">  628</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> armLen = arm.norm();</div>
+<div class="line"><span class="lineno">  629</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> armNewLen = armNew.norm();</div>
+<div class="line"><span class="lineno">  630</span>    <span class="keywordflow">if</span> (armLen &gt; 1e-12 &amp;&amp; armNewLen &gt; 1e-12) {</div>
+<div class="line"><span class="lineno">  631</span>      armNew *= armLen / armNewLen;</div>
+<div class="line"><span class="lineno">  632</span>    }</div>
+<div class="line"><span class="lineno">  633</span>    VectorXd gammaNew;</div>
+<div class="line"><span class="lineno">  634</span>    <span class="keywordflow">if</span> (guidelineMoving) {</div>
+<div class="line"><span class="lineno">  635</span>      <span class="comment">// Re-anchor: the guideline passes through the previous plane&#39;s</span></div>
+<div class="line"><span class="lineno">  636</span>      <span class="comment">// average position along the CURRENT normal, and the plane</span></div>
+<div class="line"><span class="lineno">  637</span>      <span class="comment">// ADVANCES by this iteration&#39;s ds along the fresh line. (A</span></div>
+<div class="line"><span class="lineno">  638</span>      <span class="comment">// dead re-assignment here used to pin the plane at &lt;r&gt; forever:</span></div>
+<div class="line"><span class="lineno">  639</span>      <span class="comment">// the walker drifted downhill and the trans-work integral ran</span></div>
+<div class="line"><span class="lineno">  640</span>      <span class="comment">// away by ~20 eV per plane on the Cu doorway.)</span></div>
+<div class="line"><span class="lineno">  641</span>      gOrigin = avg.pos;</div>
+<div class="line"><span class="lineno">  642</span>      gDir = n;</div>
+<div class="line"><span class="lineno">  643</span>      s = ds;</div>
+<div class="line"><span class="lineno">  644</span>      gammaNew = gOrigin + s * gDir;</div>
+<div class="line"><span class="lineno">  645</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  646</span>      gammaNew = gOrigin + sNew * gDir;</div>
+<div class="line"><span class="lineno">  647</span>    }</div>
+<div class="line"><span class="lineno">  648</span>    VectorXd xStart = gammaNew + armNew;</div>
+<div class="line"><span class="lineno">  649</span>    xStart -= n * n.dot(xStart - gammaNew);</div>
+<div class="line"><span class="lineno">  650</span>    walker.setPositionsFreeV(xStart);</div>
+<div class="line"><span class="lineno">  651</span> </div>
+<div class="line"><span class="lineno">  652</span>    fnPrev = avg.fn;</div>
+<div class="line"><span class="lineno">  653</span>    nPrev = nOld;</div>
+<div class="line"><span class="lineno">  654</span>    rotRawPrev = avg.rotRaw;</div>
+<div class="line"><span class="lineno">  655</span>    posPrev = avg.pos;</div>
+<div class="line"><span class="lineno">  656</span>    gSPrev = gS;</div>
+<div class="line"><span class="lineno">  657</span>    gRotPrev = gRot;</div>
+<div class="line"><span class="lineno">  658</span>    havePrev = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  659</span>    <span class="keywordflow">if</span> (!guidelineMoving) {</div>
+<div class="line"><span class="lineno">  660</span>      s = sNew;</div>
+<div class="line"><span class="lineno">  661</span>    }</div>
+<div class="line"><span class="lineno">  662</span>  }</div>
+<div class="line"><span class="lineno">  663</span>  <span class="keywordtype">bool</span> progOk = prog.is_open();</div>
+<div class="line"><span class="lineno">  664</span>  <span class="keywordflow">if</span> (progOk) {</div>
+<div class="line"><span class="lineno">  665</span>    prog.close();</div>
+<div class="line"><span class="lineno">  666</span>    progOk = <span class="keyword">static_cast&lt;</span><span class="keywordtype">bool</span><span class="keyword">&gt;</span>(prog);</div>
+<div class="line"><span class="lineno">  667</span>    <span class="keywordflow">if</span> (!progOk) {</div>
+<div class="line"><span class="lineno">  668</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[oh_tst] failed to write oh_tst_progression.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  669</span>    }</div>
+<div class="line"><span class="lineno">  670</span>  }</div>
+<div class="line"><span class="lineno">  671</span>  <span class="comment">// A completed scan yields a valid PMF even with no interior</span></div>
+<div class="line"><span class="lineno">  672</span>  <span class="comment">// maximum; report it as converged so downstream tooling accepts</span></div>
+<div class="line"><span class="lineno">  673</span>  <span class="comment">// the profile (barrier = aBest, the max of A(s)).</span></div>
+<div class="line"><span class="lineno">  674</span>  <span class="keywordflow">if</span> (scanMode &amp;&amp; plane &gt;= nPlanes)</div>
+<div class="line"><span class="lineno">  675</span>    converged = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  676</span> </div>
+<div class="line"><span class="lineno">  677</span>  <span class="comment">// Direction-dependent effective mass (Eq 24) and the one-sided</span></div>
+<div class="line"><span class="lineno">  678</span>  <span class="comment">// thermal flux factor sqrt(kBT / 2 pi mu) (Eq 23).</span></div>
+<div class="line"><span class="lineno">  679</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> mu = (<a class="code hl_variable" href="#a24b52433a83b2fbe8aa1ea882f64b1a5">m_masses3N</a>.array() * nBest.array().square()).sum();</div>
+<div class="line"><span class="lineno">  680</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> vFlux = std::sqrt(<a class="code hl_variable" href="#a9dc19372258cd22add2540be9224babe">m_kbt</a> / (2.0 * <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">helpers::pi</a> * mu));</div>
+<div class="line"><span class="lineno">  681</span> </div>
+<div class="line"><span class="lineno">  682</span>  <span class="comment">// Q^ZR/Q^R at the FIRST plane of the progression (Z^R), whose</span></div>
+<div class="line"><span class="lineno">  683</span>  <span class="comment">// reversible work to the optimal plane is what aBest measures.</span></div>
+<div class="line"><span class="lineno">  684</span>  Matter rWalker(*reactant);</div>
+<div class="line"><span class="lineno">  685</span>  <span class="keyword">const</span> VectorXd gammaR = xR + (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.s_init * guideLen) * u;</div>
+<div class="line"><span class="lineno">  686</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> qRatio = <a class="code hl_function" href="classeonc_1_1OHTSTJob.html#a0d27b29aa70acceac490575b4a9a8c38">reactantQRatio</a>(rWalker, gammaR, u);</div>
+<div class="line"><span class="lineno">  687</span> </div>
+<div class="line"><span class="lineno">  688</span>  <span class="comment">// Rate in internal units (1/internal-time), then SI.</span></div>
+<div class="line"><span class="lineno">  689</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> kInternal = vFlux * qRatio * std::exp(-aBest / <a class="code hl_variable" href="#a9dc19372258cd22add2540be9224babe">m_kbt</a>);</div>
+<div class="line"><span class="lineno">  690</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> kSI = kInternal / (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit * 1.0e-15);</div>
+<div class="line"><span class="lineno">  691</span> </div>
+<div class="line"><span class="lineno">  692</span>  std::vector&lt;std::string&gt; returnFiles;</div>
+<div class="line"><span class="lineno">  693</span>  std::ofstream out(<span class="stringliteral">&quot;results.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  694</span>  <span class="keywordflow">if</span> (!out) {</div>
+<div class="line"><span class="lineno">  695</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[oh_tst] cannot open results.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  696</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;oh_tst: cannot open results.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  697</span>  }</div>
+<div class="line"><span class="lineno">  698</span>  out &lt;&lt; <span class="stringliteral">&quot;oh_tst job_type\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  699</span>  out &lt;&lt; std::format(<span class="stringliteral">&quot;{} converged\n&quot;</span>, converged ? 1 : 0);</div>
+<div class="line"><span class="lineno">  700</span>  out &lt;&lt; std::format(<span class="stringliteral">&quot;{} planes_used\n&quot;</span>, plane);</div>
+<div class="line"><span class="lineno">  701</span>  out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.8f} free_energy_barrier_eV\n&quot;</span>, aBest);</div>
+<div class="line"><span class="lineno">  702</span>  out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.8f} delta_a_trans_eV\n&quot;</span>, aTrans);</div>
+<div class="line"><span class="lineno">  703</span>  out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.8f} delta_a_rot_eV\n&quot;</span>, aRot);</div>
+<div class="line"><span class="lineno">  704</span>  out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.8f} s_star_over_L\n&quot;</span>, sBest / guideLen);</div>
+<div class="line"><span class="lineno">  705</span>  out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.8f} guideline_length_A\n&quot;</span>, guideLen);</div>
+<div class="line"><span class="lineno">  706</span>  out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.8f} normal_overlap_with_guideline\n&quot;</span>, nBest.dot(u));</div>
+<div class="line"><span class="lineno">  707</span>  out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.8e} effective_mass_amu\n&quot;</span>, mu);</div>
+<div class="line"><span class="lineno">  708</span>  out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.8e} q_ratio_per_A\n&quot;</span>, qRatio);</div>
+<div class="line"><span class="lineno">  709</span>  out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.8e} rate_ohtst_per_s\n&quot;</span>, kSI);</div>
+<div class="line"><span class="lineno">  710</span>  out &lt;&lt; std::format(<span class="stringliteral">&quot;{:.4f} temperature_K\n&quot;</span>, temperature);</div>
+<div class="line"><span class="lineno">  711</span>  out.close();</div>
+<div class="line"><span class="lineno">  712</span>  <span class="keywordflow">if</span> (!out) {</div>
+<div class="line"><span class="lineno">  713</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[oh_tst] failed to write results.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  714</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;oh_tst: failed to write results.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  715</span>  }</div>
+<div class="line"><span class="lineno">  716</span>  returnFiles.push_back(<span class="stringliteral">&quot;results.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  717</span>  <span class="keywordflow">if</span> (progOk) {</div>
+<div class="line"><span class="lineno">  718</span>    returnFiles.push_back(<span class="stringliteral">&quot;oh_tst_progression.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  719</span>  }</div>
+<div class="line"><span class="lineno">  720</span>  <a class="code hl_define" href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a>(<span class="stringliteral">&quot;[oh_tst] {} after {} planes: A = {:.4f} eV at s/L = {:.4f}, &quot;</span></div>
+<div class="line"><span class="lineno">  721</span>                <span class="stringliteral">&quot;k = {:.4e} 1/s at {:.1f} K&quot;</span>,</div>
+<div class="line"><span class="lineno">  722</span>                converged ? <span class="stringliteral">&quot;converged&quot;</span> : <span class="stringliteral">&quot;max planes&quot;</span>, plane, aBest,</div>
+<div class="line"><span class="lineno">  723</span>                sBest / guideLen, kSI, temperature);</div>
+<div class="line"><span class="lineno">  724</span>  <span class="keywordflow">return</span> returnFiles;</div>
+<div class="line"><span class="lineno">  725</span>}</div>
+<div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html_a3985f57d817b8b5bac1a2f71f12ea439"><div class="ttname"><a href="EonLogger_8h.html#a3985f57d817b8b5bac1a2f71f12ea439">EONC_LOG_DEBUG</a></div><div class="ttdeci">#define EONC_LOG_DEBUG(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00244">EonLogger.h:244</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html_a4cf9b473cf6a1d850b3725fca6805f86"><div class="ttname"><a href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a></div><div class="ttdeci">#define EONC_LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00262">EonLogger.h:262</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html_afba240899b90f3996875577cc095dc00"><div class="ttname"><a href="EonLogger_8h.html#afba240899b90f3996875577cc095dc00">EONC_LOG_INFO</a></div><div class="ttdeci">#define EONC_LOG_INFO(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00250">EonLogger.h:250</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html_afe4077bbe89c5bc6e818b057a692e64a"><div class="ttname"><a href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a></div><div class="ttdeci">#define EONC_LOG_CRITICAL(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00268">EonLogger.h:268</a></div></div>
+<div class="ttc" id="aclassOHTSTJob_html_a6f99592864114a3ca50a592e13265647"><div class="ttname"><a href="#a6f99592864114a3ca50a592e13265647">OHTSTJob::m_seedState</a></div><div class="ttdeci">long m_seedState</div><div class="ttdoc">LCG state for the thermostat draws.</div><div class="ttdef"><b>Definition</b> <a href="OHTSTJob_8h_source.html#l00085">OHTSTJob.h:85</a></div></div>
+<div class="ttc" id="aclassOHTSTJob_html_ab282d7d930d8bc4b79d66f24f5625519"><div class="ttname"><a href="#ab282d7d930d8bc4b79d66f24f5625519">OHTSTJob::m_symDirs</a></div><div class="ttdeci">std::vector&lt; VectorXd &gt; m_symDirs</div><div class="ttdoc">p-hat_i, index 0 = primary</div><div class="ttdef"><b>Definition</b> <a href="OHTSTJob_8h_source.html#l00078">OHTSTJob.h:78</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a948da0de6ec2575bd6ac975fedaad0c9"><div class="ttname"><a href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">eonc::Job::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00055">Job.h:55</a></div></div>
+<div class="ttc" id="aclasseonc_1_1OHTSTJob_html_a0d27b29aa70acceac490575b4a9a8c38"><div class="ttname"><a href="classeonc_1_1OHTSTJob.html#a0d27b29aa70acceac490575b4a9a8c38">eonc::OHTSTJob::reactantQRatio</a></div><div class="ttdeci">double reactantQRatio(Matter &amp;matter, const VectorXd &amp;gammaR, const VectorXd &amp;normal)</div><div class="ttdef"><b>Definition</b> <a href="OHTSTJob_8cpp_source.html#l00221">OHTSTJob.cpp:221</a></div></div>
+<div class="ttc" id="aclasseonc_1_1OHTSTJob_html_a227fc390279405af178645df2d62ecde"><div class="ttname"><a href="classeonc_1_1OHTSTJob.html#a227fc390279405af178645df2d62ecde">eonc::OHTSTJob::samplePlane</a></div><div class="ttdeci">PlaneAverages samplePlane(Matter &amp;matter, const VectorXd &amp;gamma, const VectorXd &amp;normal)</div><div class="ttdef"><b>Definition</b> <a href="OHTSTJob_8cpp_source.html#l00125">OHTSTJob.cpp:125</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_af66b2723d892a4095754f9b0354b4f78"><div class="ttname"><a href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a></div><div class="ttdeci">constexpr bool io_ok(IoStatus s) noexcept</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00038">ConFileIO.h:38</a></div></div>
+<div class="ttc" id="astructOHTSTJob_1_1PlaneAverages_html"><div class="ttname"><a href="structOHTSTJob_1_1PlaneAverages.html">OHTSTJob::PlaneAverages</a></div><div class="ttdef"><b>Definition</b> <a href="OHTSTJob_8h_source.html#l00051">OHTSTJob.h:51</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a227fc390279405af178645df2d62ecde" name="a227fc390279405af178645df2d62ecde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a227fc390279405af178645df2d62ecde">&#9670;&#160;</a></span>samplePlane()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structOHTSTJob_1_1PlaneAverages.html">OHTSTJob::PlaneAverages</a> <a class="el" href="classeonc_1_1OHTSTJob.html#a227fc390279405af178645df2d62ecde">eonc::OHTSTJob::samplePlane</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>matter</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>gamma</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>normal</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8cpp_source.html#l00125">125</a> of file <a class="el" href="OHTSTJob_8cpp_source.html">OHTSTJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  127</span>                                                                      {</div>
+<div class="line"><span class="lineno">  128</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> equilSteps = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.equil_steps;</div>
+<div class="line"><span class="lineno">  129</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> sampleSteps = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.sample_steps;</div>
+<div class="line"><span class="lineno">  130</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> alphaRot = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.alpha_rot;</div>
+<div class="line"><span class="lineno">  131</span> </div>
+<div class="line"><span class="lineno">  132</span>  <span class="comment">// Constrain the current geometry exactly onto the plane.</span></div>
+<div class="line"><span class="lineno">  133</span>  VectorXd x = matter.<a class="code hl_function" href="classeonc_1_1Matter.html#abce266d8f707e6d7a688695c0c7c490e">getPositionsFreeV</a>();</div>
+<div class="line"><span class="lineno">  134</span>  x -= normal * normal.dot(x - gamma);</div>
+<div class="line"><span class="lineno">  135</span>  matter.<a class="code hl_function" href="classeonc_1_1Matter.html#a164e8df6558062d40b4a1b0f57970c29">setPositionsFreeV</a>(x);</div>
+<div class="line"><span class="lineno">  136</span> </div>
+<div class="line"><span class="lineno">  137</span>  VectorXd v(x.size());</div>
+<div class="line"><span class="lineno">  138</span>  <a class="code hl_function" href="classeonc_1_1OHTSTJob.html#a219ae27d87f80971be66637ded219b6e">drawThermalVelocities</a>(v, &amp;normal);</div>
+<div class="line"><span class="lineno">  139</span> </div>
+<div class="line"><span class="lineno">  140</span>  <span class="comment">// Colored-noise option: an exact OU half-step before and after each</span></div>
+<div class="line"><span class="lineno">  141</span>  <span class="comment">// Verlet step (the auxiliary momenta start fresh per sampling</span></div>
+<div class="line"><span class="lineno">  142</span>  <span class="comment">// block); velocities re-project onto the plane after every kick.</span></div>
+<div class="line"><span class="lineno">  143</span>  std::unique_ptr&lt;GleThermostat&gt; gle;</div>
+<div class="line"><span class="lineno">  144</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.thermostat == <span class="stringliteral">&quot;gle&quot;</span>) {</div>
+<div class="line"><span class="lineno">  145</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> a =</div>
+<div class="line"><span class="lineno">  146</span>        <a class="code hl_function" href="classeonc_1_1GleThermostat.html#af9e7fa1e07fe61e1c0aa0061093eb927">GleThermostat::loadDriftMatrix</a>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.gle_a_file);</div>
+<div class="line"><span class="lineno">  147</span>    gle = std::make_unique&lt;GleThermostat&gt;(a, <a class="code hl_variable" href="#a9dc19372258cd22add2540be9224babe">m_kbt</a>, 0.5 * <a class="code hl_variable" href="#ac13d91dbaded831c5788817fb4b0f8f6">m_dt</a>, x.size());</div>
+<div class="line"><span class="lineno">  148</span>    <span class="keywordflow">if</span> (!gle-&gt;valid()) {</div>
+<div class="line"><span class="lineno">  149</span>      <a class="code hl_define" href="EonLogger_8h.html#afe4077bbe89c5bc6e818b057a692e64a">EONC_LOG_CRITICAL</a>(<span class="stringliteral">&quot;OH-TST gle thermostat unusable (gle_a_file = {})&quot;</span>,</div>
+<div class="line"><span class="lineno">  150</span>                        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.oh_tst_options.gle_a_file);</div>
+<div class="line"><span class="lineno">  151</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;oh_tst: gle thermostat unusable&quot;</span>);</div>
+<div class="line"><span class="lineno">  152</span>    }</div>
+<div class="line"><span class="lineno">  153</span>  }</div>
+<div class="line"><span class="lineno">  154</span>  <span class="keyword">const</span> <span class="keyword">auto</span> gauss = [<span class="keyword">this</span>]() { <span class="keywordflow">return</span> <a class="code hl_function" href="classeonc_1_1OHTSTJob.html#a8f003987a3efad8ccd81892751a1bb86">gaussDraw</a>(); };</div>
+<div class="line"><span class="lineno">  155</span> </div>
+<div class="line"><span class="lineno">  156</span>  VectorXd f = matter.<a class="code hl_function" href="classeonc_1_1Matter.html#ab4bf1850e22f0cf4bf605df8a193642d">getForcesFreeV</a>();</div>
+<div class="line"><span class="lineno">  157</span>  VectorXd fPlane = f - normal * normal.dot(f);</div>
+<div class="line"><span class="lineno">  158</span> </div>
+<div class="line"><span class="lineno">  159</span>  <a class="code hl_struct" href="structOHTSTJob_1_1PlaneAverages.html">PlaneAverages</a> avg;</div>
+<div class="line"><span class="lineno">  160</span>  avg.<a class="code hl_variable" href="structOHTSTJob_1_1PlaneAverages.html#aeb276652bc2e5ad8864424e900d01ea1">rotNorm</a> = VectorXd::Zero(x.size());</div>
+<div class="line"><span class="lineno">  161</span>  avg.rotRaw = VectorXd::Zero(x.size());</div>
+<div class="line"><span class="lineno">  162</span>  avg.pos = VectorXd::Zero(x.size());</div>
+<div class="line"><span class="lineno">  163</span>  <span class="keywordtype">long</span> nAccum = 0;</div>
+<div class="line"><span class="lineno">  164</span> </div>
+<div class="line"><span class="lineno">  165</span>  VectorXd xPrev = x;</div>
+<div class="line"><span class="lineno">  166</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> step = 0; step &lt; equilSteps + sampleSteps; ++step) {</div>
+<div class="line"><span class="lineno">  167</span>    <span class="comment">// Velocity Verlet on the plane: forces and velocities projected,</span></div>
+<div class="line"><span class="lineno">  168</span>    <span class="comment">// positions corrected back onto the constraint (RATTLE for a</span></div>
+<div class="line"><span class="lineno">  169</span>    <span class="comment">// linear constraint is an exact projection).</span></div>
+<div class="line"><span class="lineno">  170</span>    xPrev = x;</div>
+<div class="line"><span class="lineno">  171</span>    <span class="keywordflow">if</span> (gle) {</div>
+<div class="line"><span class="lineno">  172</span>      gle-&gt;apply(v, <a class="code hl_variable" href="#a24b52433a83b2fbe8aa1ea882f64b1a5">m_masses3N</a>, gauss);</div>
+<div class="line"><span class="lineno">  173</span>      v -= normal * normal.dot(v);</div>
+<div class="line"><span class="lineno">  174</span>    }</div>
+<div class="line"><span class="lineno">  175</span>    VectorXd a = fPlane.cwiseQuotient(<a class="code hl_variable" href="#a24b52433a83b2fbe8aa1ea882f64b1a5">m_masses3N</a>);</div>
+<div class="line"><span class="lineno">  176</span>    x += <a class="code hl_variable" href="#ac13d91dbaded831c5788817fb4b0f8f6">m_dt</a> * v + 0.5 * <a class="code hl_variable" href="#ac13d91dbaded831c5788817fb4b0f8f6">m_dt</a> * <a class="code hl_variable" href="#ac13d91dbaded831c5788817fb4b0f8f6">m_dt</a> * a;</div>
+<div class="line"><span class="lineno">  177</span>    x -= normal * normal.dot(x - gamma);</div>
+<div class="line"><span class="lineno">  178</span>    matter.<a class="code hl_function" href="classeonc_1_1Matter.html#a164e8df6558062d40b4a1b0f57970c29">setPositionsFreeV</a>(x);</div>
+<div class="line"><span class="lineno">  179</span>    f = matter.<a class="code hl_function" href="classeonc_1_1Matter.html#ab4bf1850e22f0cf4bf605df8a193642d">getForcesFreeV</a>();</div>
+<div class="line"><span class="lineno">  180</span>    fPlane = f - normal * normal.dot(f);</div>
+<div class="line"><span class="lineno">  181</span>    VectorXd aNew = fPlane.cwiseQuotient(<a class="code hl_variable" href="#a24b52433a83b2fbe8aa1ea882f64b1a5">m_masses3N</a>);</div>
+<div class="line"><span class="lineno">  182</span>    v += 0.5 * <a class="code hl_variable" href="#ac13d91dbaded831c5788817fb4b0f8f6">m_dt</a> * (a + aNew);</div>
+<div class="line"><span class="lineno">  183</span>    v -= normal * normal.dot(v);</div>
+<div class="line"><span class="lineno">  184</span>    <span class="comment">// Eqs 14-17: keep the sampling in the primary product subregion.</span></div>
+<div class="line"><span class="lineno">  185</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classeonc_1_1OHTSTJob.html#ae8ea3c44d0e5df5858552571ec5c5857">symmetryReflect</a>(<a class="code hl_variable" href="#ad51d94380bc7299717ba1a42150f6f9d">m_symXR</a>, x, v, xPrev, &amp;normal)) {</div>
+<div class="line"><span class="lineno">  186</span>      x -= normal * normal.dot(x - gamma);</div>
+<div class="line"><span class="lineno">  187</span>      matter.<a class="code hl_function" href="classeonc_1_1Matter.html#a164e8df6558062d40b4a1b0f57970c29">setPositionsFreeV</a>(x);</div>
+<div class="line"><span class="lineno">  188</span>      f = matter.<a class="code hl_function" href="classeonc_1_1Matter.html#ab4bf1850e22f0cf4bf605df8a193642d">getForcesFreeV</a>();</div>
+<div class="line"><span class="lineno">  189</span>      fPlane = f - normal * normal.dot(f);</div>
+<div class="line"><span class="lineno">  190</span>    }</div>
+<div class="line"><span class="lineno">  191</span>    <span class="keywordflow">if</span> (gle) {</div>
+<div class="line"><span class="lineno">  192</span>      gle-&gt;apply(v, <a class="code hl_variable" href="#a24b52433a83b2fbe8aa1ea882f64b1a5">m_masses3N</a>, gauss);</div>
+<div class="line"><span class="lineno">  193</span>      v -= normal * normal.dot(v);</div>
+<div class="line"><span class="lineno">  194</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_function" href="classeonc_1_1OHTSTJob.html#a7407dbf5cadad76061e814764ed70f73">uniformDraw</a>() &lt; <a class="code hl_variable" href="#a18c6c1151404784c12d00e3cacd18f62">m_andersenProb</a>) {</div>
+<div class="line"><span class="lineno">  195</span>      <span class="comment">// Andersen collisions keep the constrained ensemble canonical.</span></div>
+<div class="line"><span class="lineno">  196</span>      <a class="code hl_function" href="classeonc_1_1OHTSTJob.html#a219ae27d87f80971be66637ded219b6e">drawThermalVelocities</a>(v, &amp;normal);</div>
+<div class="line"><span class="lineno">  197</span>    }</div>
+<div class="line"><span class="lineno">  198</span>    <span class="keywordflow">if</span> (step &gt;= equilSteps) {</div>
+<div class="line"><span class="lineno">  199</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> fn = normal.dot(f);</div>
+<div class="line"><span class="lineno">  200</span>      <span class="keyword">const</span> VectorXd arm = x - gamma;</div>
+<div class="line"><span class="lineno">  201</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> arm2 = arm.squaredNorm();</div>
+<div class="line"><span class="lineno">  202</span>      avg.fn += fn;</div>
+<div class="line"><span class="lineno">  203</span>      <span class="keywordflow">if</span> (arm2 &gt; 1e-16) {</div>
+<div class="line"><span class="lineno">  204</span>        avg.rotNorm.noalias() += (fn / (alphaRot * arm2)) * arm;</div>
+<div class="line"><span class="lineno">  205</span>      }</div>
+<div class="line"><span class="lineno">  206</span>      avg.rotRaw.noalias() += fn * arm;</div>
+<div class="line"><span class="lineno">  207</span>      avg.pos.noalias() += x;</div>
+<div class="line"><span class="lineno">  208</span>      ++nAccum;</div>
+<div class="line"><span class="lineno">  209</span>    }</div>
+<div class="line"><span class="lineno">  210</span>  }</div>
+<div class="line"><span class="lineno">  211</span>  <span class="keywordflow">if</span> (nAccum &gt; 0) {</div>
+<div class="line"><span class="lineno">  212</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> inv = 1.0 / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(nAccum);</div>
+<div class="line"><span class="lineno">  213</span>    avg.fn *= inv;</div>
+<div class="line"><span class="lineno">  214</span>    avg.rotNorm *= inv;</div>
+<div class="line"><span class="lineno">  215</span>    avg.rotRaw *= inv;</div>
+<div class="line"><span class="lineno">  216</span>    avg.pos *= inv;</div>
+<div class="line"><span class="lineno">  217</span>  }</div>
+<div class="line"><span class="lineno">  218</span>  <span class="keywordflow">return</span> avg;</div>
+<div class="line"><span class="lineno">  219</span>}</div>
+<div class="ttc" id="astructOHTSTJob_1_1PlaneAverages_html_aeb276652bc2e5ad8864424e900d01ea1"><div class="ttname"><a href="structOHTSTJob_1_1PlaneAverages.html#aeb276652bc2e5ad8864424e900d01ea1">OHTSTJob::PlaneAverages::rotNorm</a></div><div class="ttdeci">VectorXd rotNorm</div><div class="ttdoc">&lt;(n.F) R / (alpha |R|^2)&gt;, drives rotation</div><div class="ttdef"><b>Definition</b> <a href="OHTSTJob_8h_source.html#l00053">OHTSTJob.h:53</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae8ea3c44d0e5df5858552571ec5c5857" name="ae8ea3c44d0e5df5858552571ec5c5857"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8ea3c44d0e5df5858552571ec5c5857">&#9670;&#160;</a></span>symmetryReflect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classeonc_1_1OHTSTJob.html#ae8ea3c44d0e5df5858552571ec5c5857">eonc::OHTSTJob::symmetryReflect</a> </td>
+          <td>(</td>
+          <td class="paramtype">const VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>xR</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>v</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>xOld</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const VectorXd *</td>          <td class="paramname"><span class="paramname"><em>normal</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Eqs 14-17 symmetry restriction: if the configuration is closer to another equivalent product half-line than to the primary one, revert the position and reflect the velocity about the mirror that maps the primary direction onto the offending one. Returns true when a reflection was applied. </p>
+
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8cpp_source.html#l00080">80</a> of file <a class="el" href="OHTSTJob_8cpp_source.html">OHTSTJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   81</span>                                                                             {</div>
+<div class="line"><span class="lineno">   82</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ab282d7d930d8bc4b79d66f24f5625519">m_symDirs</a>.size() &lt; 2) {</div>
+<div class="line"><span class="lineno">   83</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   84</span>  }</div>
+<div class="line"><span class="lineno">   85</span>  <span class="comment">// Eq 15: distance from the configuration to each half-line</span></div>
+<div class="line"><span class="lineno">   86</span>  <span class="comment">// l_i = { R + t p_i, t &gt;= 0 }.</span></div>
+<div class="line"><span class="lineno">   87</span>  <span class="keyword">const</span> VectorXd rel = x - xR;</div>
+<div class="line"><span class="lineno">   88</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> rel2 = rel.squaredNorm();</div>
+<div class="line"><span class="lineno">   89</span>  <span class="keywordtype">double</span> dPrimary = 0.0;</div>
+<div class="line"><span class="lineno">   90</span>  <span class="keywordtype">size_t</span> closest = 0;</div>
+<div class="line"><span class="lineno">   91</span>  <span class="keywordtype">double</span> dMin = 0.0;</div>
+<div class="line"><span class="lineno">   92</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="#ab282d7d930d8bc4b79d66f24f5625519">m_symDirs</a>.size(); ++i) {</div>
+<div class="line"><span class="lineno">   93</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> proj = rel.dot(<a class="code hl_variable" href="#ab282d7d930d8bc4b79d66f24f5625519">m_symDirs</a>[i]);</div>
+<div class="line"><span class="lineno">   94</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> d2 = std::max(0.0, rel2 - proj * proj);</div>
+<div class="line"><span class="lineno">   95</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> d = std::sqrt(d2);</div>
+<div class="line"><span class="lineno">   96</span>    <span class="keywordflow">if</span> (i == 0) {</div>
+<div class="line"><span class="lineno">   97</span>      dPrimary = d;</div>
+<div class="line"><span class="lineno">   98</span>      dMin = d;</div>
+<div class="line"><span class="lineno">   99</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (d &lt; dMin) {</div>
+<div class="line"><span class="lineno">  100</span>      dMin = d;</div>
+<div class="line"><span class="lineno">  101</span>      closest = i;</div>
+<div class="line"><span class="lineno">  102</span>    }</div>
+<div class="line"><span class="lineno">  103</span>  }</div>
+<div class="line"><span class="lineno">  104</span>  <span class="keywordflow">if</span> (closest == 0 || dPrimary &lt;= dMin) {</div>
+<div class="line"><span class="lineno">  105</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  106</span>  }</div>
+<div class="line"><span class="lineno">  107</span>  <span class="comment">// Eqs 16-17: step back and reflect the velocity about the mirror</span></div>
+<div class="line"><span class="lineno">  108</span>  <span class="comment">// that maps p_1 onto the offending p_i; the component of the mirror</span></div>
+<div class="line"><span class="lineno">  109</span>  <span class="comment">// normal along the hyperplane normal is removed so the reflected</span></div>
+<div class="line"><span class="lineno">  110</span>  <span class="comment">// velocity stays within the plane.</span></div>
+<div class="line"><span class="lineno">  111</span>  VectorXd q = <a class="code hl_variable" href="#ab282d7d930d8bc4b79d66f24f5625519">m_symDirs</a>[0] - <a class="code hl_variable" href="#ab282d7d930d8bc4b79d66f24f5625519">m_symDirs</a>[closest];</div>
+<div class="line"><span class="lineno">  112</span>  <span class="keywordflow">if</span> (normal != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  113</span>    q -= (*normal) * normal-&gt;dot(q);</div>
+<div class="line"><span class="lineno">  114</span>  }</div>
+<div class="line"><span class="lineno">  115</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> qn = q.norm();</div>
+<div class="line"><span class="lineno">  116</span>  <span class="keywordflow">if</span> (qn &lt; 1e-12) {</div>
+<div class="line"><span class="lineno">  117</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  118</span>  }</div>
+<div class="line"><span class="lineno">  119</span>  q /= qn;</div>
+<div class="line"><span class="lineno">  120</span>  x = xOld;</div>
+<div class="line"><span class="lineno">  121</span>  v -= 2.0 * v.dot(q) * q;</div>
+<div class="line"><span class="lineno">  122</span>  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  123</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7407dbf5cadad76061e814764ed70f73" name="a7407dbf5cadad76061e814764ed70f73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7407dbf5cadad76061e814764ed70f73">&#9670;&#160;</a></span>uniformDraw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classeonc_1_1OHTSTJob.html#a7407dbf5cadad76061e814764ed70f73">eonc::OHTSTJob::uniformDraw</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>uniform (0,1) </p>
+
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8cpp_source.html#l00051">51</a> of file <a class="el" href="OHTSTJob_8cpp_source.html">OHTSTJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   51</span>                             {</div>
+<div class="line"><span class="lineno">   52</span>  <span class="comment">// Deterministic LCG: the job must be reproducible for a given</span></div>
+<div class="line"><span class="lineno">   53</span>  <span class="comment">// random_seed across MPI farm workers.</span></div>
+<div class="line"><span class="lineno">   54</span>  <a class="code hl_variable" href="#a6f99592864114a3ca50a592e13265647">m_seedState</a> = (1664525L * <a class="code hl_variable" href="#a6f99592864114a3ca50a592e13265647">m_seedState</a> + 1013904223L) &amp; 0x7fffffffL;</div>
+<div class="line"><span class="lineno">   55</span>  <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a6f99592864114a3ca50a592e13265647">m_seedState</a>) / 2147483648.0;</div>
+<div class="line"><span class="lineno">   56</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a18c6c1151404784c12d00e3cacd18f62" name="a18c6c1151404784c12d00e3cacd18f62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18c6c1151404784c12d00e3cacd18f62">&#9670;&#160;</a></span>m_andersenProb</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classeonc_1_1OHTSTJob.html#a18c6c1151404784c12d00e3cacd18f62">eonc::OHTSTJob::m_andersenProb</a> {0.0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>per-step Andersen collision probability </p>
+
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8h_source.html#l00084">84</a> of file <a class="el" href="OHTSTJob_8h_source.html">OHTSTJob.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   84</span>{0.0}; </div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac13d91dbaded831c5788817fb4b0f8f6" name="ac13d91dbaded831c5788817fb4b0f8f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac13d91dbaded831c5788817fb4b0f8f6">&#9670;&#160;</a></span>m_dt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classeonc_1_1OHTSTJob.html#ac13d91dbaded831c5788817fb4b0f8f6">eonc::OHTSTJob::m_dt</a> {0.0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>integration step, internal units </p>
+
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8h_source.html#l00082">82</a> of file <a class="el" href="OHTSTJob_8h_source.html">OHTSTJob.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   82</span>{0.0};           </div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aacf35b5d4bbbef550696521eaa48b54b" name="aacf35b5d4bbbef550696521eaa48b54b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacf35b5d4bbbef550696521eaa48b54b">&#9670;&#160;</a></span>m_gaussHave</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classeonc_1_1OHTSTJob.html#aacf35b5d4bbbef550696521eaa48b54b">eonc::OHTSTJob::m_gaussHave</a> {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8h_source.html#l00088">88</a> of file <a class="el" href="OHTSTJob_8h_source.html">OHTSTJob.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   88</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a82f5ed7f44ad12985f4f57819f575c8b" name="a82f5ed7f44ad12985f4f57819f575c8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82f5ed7f44ad12985f4f57819f575c8b">&#9670;&#160;</a></span>m_gaussSpare</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classeonc_1_1OHTSTJob.html#a82f5ed7f44ad12985f4f57819f575c8b">eonc::OHTSTJob::m_gaussSpare</a> {0.0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8h_source.html#l00089">89</a> of file <a class="el" href="OHTSTJob_8h_source.html">OHTSTJob.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   89</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9dc19372258cd22add2540be9224babe" name="a9dc19372258cd22add2540be9224babe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dc19372258cd22add2540be9224babe">&#9670;&#160;</a></span>m_kbt</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classeonc_1_1OHTSTJob.html#a9dc19372258cd22add2540be9224babe">eonc::OHTSTJob::m_kbt</a> {0.0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>k_B T (eV) </p>
+
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8h_source.html#l00083">83</a> of file <a class="el" href="OHTSTJob_8h_source.html">OHTSTJob.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   83</span>{0.0};          </div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a24b52433a83b2fbe8aa1ea882f64b1a5" name="a24b52433a83b2fbe8aa1ea882f64b1a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24b52433a83b2fbe8aa1ea882f64b1a5">&#9670;&#160;</a></span>m_masses3N</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">VectorXd <a class="el" href="classeonc_1_1OHTSTJob.html#a24b52433a83b2fbe8aa1ea882f64b1a5">eonc::OHTSTJob::m_masses3N</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>per-DOF masses of the free atoms (amu) </p>
+
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8h_source.html#l00081">81</a> of file <a class="el" href="OHTSTJob_8h_source.html">OHTSTJob.h</a>.</p>
+
+</div>
+</div>
+<a id="a6f99592864114a3ca50a592e13265647" name="a6f99592864114a3ca50a592e13265647"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f99592864114a3ca50a592e13265647">&#9670;&#160;</a></span>m_seedState</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long <a class="el" href="classeonc_1_1OHTSTJob.html#a6f99592864114a3ca50a592e13265647">eonc::OHTSTJob::m_seedState</a> {12345}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>LCG state for the thermostat draws. </p>
+
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8h_source.html#l00085">85</a> of file <a class="el" href="OHTSTJob_8h_source.html">OHTSTJob.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   85</span>{12345};    </div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab282d7d930d8bc4b79d66f24f5625519" name="ab282d7d930d8bc4b79d66f24f5625519"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab282d7d930d8bc4b79d66f24f5625519">&#9670;&#160;</a></span>m_symDirs</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;VectorXd&gt; <a class="el" href="classeonc_1_1OHTSTJob.html#ab282d7d930d8bc4b79d66f24f5625519">eonc::OHTSTJob::m_symDirs</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>p-hat_i, index 0 = primary </p>
+
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8h_source.html#l00078">78</a> of file <a class="el" href="OHTSTJob_8h_source.html">OHTSTJob.h</a>.</p>
+
+</div>
+</div>
+<a id="ad51d94380bc7299717ba1a42150f6f9d" name="ad51d94380bc7299717ba1a42150f6f9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad51d94380bc7299717ba1a42150f6f9d">&#9670;&#160;</a></span>m_symXR</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">VectorXd <a class="el" href="classeonc_1_1OHTSTJob.html#ad51d94380bc7299717ba1a42150f6f9d">eonc::OHTSTJob::m_symXR</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>reactant anchor R of the half-lines </p>
+
+<p class="definition">Definition at line <a class="el" href="OHTSTJob_8h_source.html#l00079">79</a> of file <a class="el" href="OHTSTJob_8h_source.html">OHTSTJob.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="OHTSTJob_8h_source.html">OHTSTJob.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/<a class="el" href="OHTSTJob_8cpp_source.html">OHTSTJob.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="classOHTSTJob.html">OHTSTJob</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

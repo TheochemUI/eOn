@@ -1,0 +1,325 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: File Members</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('globals_func_x.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contents">
+<div class="textblock">Here is a list of all functions with links to the files they belong to:</div><br/>
+<div class="qindex"><a class="qindex" href="globals_func.html#index_c">C</a><div class="alphasepar"></div><a class="qindex" href="globals_func_e.html#index_e">E</a><div class="alphasepar"></div><a class="qindex" href="globals_func_l.html#index_l">L</a><div class="alphasepar"></div><a class="qindex" href="globals_func_m.html#index_m">M</a><div class="alphasepar"></div><a class="qindex" href="globals_func_n.html#index_n">N</a><div class="alphasepar"></div><a class="qindex" href="globals_func_p.html#index_p">P</a><div class="alphasepar"></div><a class="qindex" href="globals_func_r.html#index_r">R</a><div class="alphasepar"></div><a class="qindex" href="globals_func_s.html#index_s">S</a><div class="alphasepar"></div><a class="qindex" href="globals_func_v.html#index_v">V</a><div class="alphasepar"></div><a class="qindex" href="globals_func_x.html#index_x">X</a></div>
+
+
+<h3 class="doxsection"><a id="index_x" name="index_x"></a>- x -</h3><ul>
+<li>xtb_checkEnvironment()&#160;:&#160;<a class="el" href="xtb_8h.html#a4d0135a16c8b40ef960211c1244c6066">xtb.h</a></li>
+<li>xtb_copyResults()&#160;:&#160;<a class="el" href="xtb_8h.html#a315ae6db9ddcdcc10f97c26d34f80b19">xtb.h</a></li>
+<li>xtb_cpcmx_calc()&#160;:&#160;<a class="el" href="xtb_8h.html#a00eae8f45c54440d8a0922d71a2b0d58">xtb.h</a></li>
+<li>xtb_delCalculator()&#160;:&#160;<a class="el" href="xtb_8h.html#af2849fb9a570a2bbc417da509d05a84b">xtb.h</a></li>
+<li>xtb_delEnvironment()&#160;:&#160;<a class="el" href="xtb_8h.html#aa694a88ef8e5da705aba80dd07a93a56">xtb.h</a></li>
+<li>xtb_delMolecule()&#160;:&#160;<a class="el" href="xtb_8h.html#a50ddd91c72088c64f6470cf8e675c10b">xtb.h</a></li>
+<li>xtb_delResults()&#160;:&#160;<a class="el" href="xtb_8h.html#a535eb9de7c7e1ec381ef27ff3b82befa">xtb.h</a></li>
+<li>xtb_getAPIVersion()&#160;:&#160;<a class="el" href="xtb_8h.html#ad1323aad3162112e6e711718d7e43e66">xtb.h</a></li>
+<li>xtb_getBondOrders()&#160;:&#160;<a class="el" href="xtb_8h.html#a0319d96ca9ee0a625b360e13914372a1">xtb.h</a></li>
+<li>xtb_getCharges()&#160;:&#160;<a class="el" href="xtb_8h.html#aa5718b15ecd98aa981ac8a1aaf152d7f">xtb.h</a></li>
+<li>xtb_getDipole()&#160;:&#160;<a class="el" href="xtb_8h.html#ad3f28efa50c096dd39c07ad8507485a2">xtb.h</a></li>
+<li>xtb_getEnergy()&#160;:&#160;<a class="el" href="xtb_8h.html#a369ae4dfb3ab5cc4e9d74e6295ae71ae">xtb.h</a></li>
+<li>xtb_getError()&#160;:&#160;<a class="el" href="xtb_8h.html#ae08f9a75280d77e4c4fd487a05b38eea">xtb.h</a></li>
+<li>xtb_getGradient()&#160;:&#160;<a class="el" href="xtb_8h.html#a0474fb0dfdbfffded5147bdeb3673dfc">xtb.h</a></li>
+<li>xtb_getNao()&#160;:&#160;<a class="el" href="xtb_8h.html#a539b3ec4366e9b03e5f78c86e2e5b770">xtb.h</a></li>
+<li>xtb_getOrbitalCoefficients()&#160;:&#160;<a class="el" href="xtb_8h.html#ab833803ccd25a9877debf93c6313d83f">xtb.h</a></li>
+<li>xtb_getOrbitalEigenvalues()&#160;:&#160;<a class="el" href="xtb_8h.html#a9ef265dc36323e4af5bb1cec0e5d3b7b">xtb.h</a></li>
+<li>xtb_getOrbitalOccupations()&#160;:&#160;<a class="el" href="xtb_8h.html#a48dcd811235c148e6fcb141702a635e6">xtb.h</a></li>
+<li>xtb_getPCGradient()&#160;:&#160;<a class="el" href="xtb_8h.html#af3f97f4b2b5a09f49ef4c918a77a60b7">xtb.h</a></li>
+<li>xtb_getSolvationEnergy()&#160;:&#160;<a class="el" href="xtb_8h.html#ae16e1909af90586c2e9ac86740f10b2b">xtb.h</a></li>
+<li>xtb_getVirial()&#160;:&#160;<a class="el" href="xtb_8h.html#ad6ac441d23346805fa5330a1c4541aa8">xtb.h</a></li>
+<li>xtb_hessian()&#160;:&#160;<a class="el" href="xtb_8h.html#a41f8a2e3e64f7b77635cdd57b6565099">xtb.h</a></li>
+<li>xtb_loadGFN0xTB()&#160;:&#160;<a class="el" href="xtb_8h.html#a478b5452a0fe34d7b8d124a573ceb3b4">xtb.h</a></li>
+<li>xtb_loadGFN1xTB()&#160;:&#160;<a class="el" href="xtb_8h.html#a86c164100dcba00c9d4d794ccd820018">xtb.h</a></li>
+<li>xtb_loadGFN2xTB()&#160;:&#160;<a class="el" href="xtb_8h.html#ad0a8969cb9393b84e69e9334d5c14fdc">xtb.h</a></li>
+<li>xtb_loadGFNFF()&#160;:&#160;<a class="el" href="xtb_8h.html#a687ddc5fcc3fdac24804b376a7348448">xtb.h</a></li>
+<li>xtb_newCalculator()&#160;:&#160;<a class="el" href="xtb_8h.html#a054f5e1a8f0e858a60d23f6e132d201b">xtb.h</a></li>
+<li>xtb_newEnvironment()&#160;:&#160;<a class="el" href="xtb_8h.html#a71d8e8c70c478f53c235e16e6de90352">xtb.h</a></li>
+<li>xtb_newMolecule()&#160;:&#160;<a class="el" href="xtb_8h.html#a07c5c503de2eb5e189cca9fd1fc00fd8">xtb.h</a></li>
+<li>xtb_newResults()&#160;:&#160;<a class="el" href="xtb_8h.html#ac18a87a8013d19aeefe7d9f220689179">xtb.h</a></li>
+<li>xtb_releaseExternalCharges()&#160;:&#160;<a class="el" href="xtb_8h.html#a82a3de8002ba9b9b3994b92a3f2ad224">xtb.h</a></li>
+<li>xtb_releaseOutput()&#160;:&#160;<a class="el" href="xtb_8h.html#aa5e9f1a6e87c5cd61a50cda8805ecf1e">xtb.h</a></li>
+<li>xtb_releaseSolvent()&#160;:&#160;<a class="el" href="xtb_8h.html#a38658d8e0b3f037bc3c36d0bed081742">xtb.h</a></li>
+<li>xtb_setAccuracy()&#160;:&#160;<a class="el" href="xtb_8h.html#abda00d451987dd287cbdd6f2eeb36275">xtb.h</a></li>
+<li>xtb_setElectronicTemp()&#160;:&#160;<a class="el" href="xtb_8h.html#a5aea769cc6c55679c76089df18b33358">xtb.h</a></li>
+<li>xtb_setExternalCharges()&#160;:&#160;<a class="el" href="xtb_8h.html#a7f950201bcb59e03fdd943db153ffdd3">xtb.h</a></li>
+<li>xtb_setMaxIter()&#160;:&#160;<a class="el" href="xtb_8h.html#ac51c937bea8c228a219faa298900de9f">xtb.h</a></li>
+<li>xtb_setOutput()&#160;:&#160;<a class="el" href="xtb_8h.html#ac4999abe290c5f518f3e7ff80eb5a0e7">xtb.h</a></li>
+<li>xtb_setSolvent()&#160;:&#160;<a class="el" href="xtb_8h.html#a4ccc7f73c03036bd0d938d8e807a9eb9">xtb.h</a></li>
+<li>xtb_setVerbosity()&#160;:&#160;<a class="el" href="xtb_8h.html#a9fb75efcb52c295779ae9e39f5fc1d6b">xtb.h</a></li>
+<li>xtb_showEnvironment()&#160;:&#160;<a class="el" href="xtb_8h.html#aed7b94383c8fdf60b3e29cd4f79fc982">xtb.h</a></li>
+<li>xtb_singlepoint()&#160;:&#160;<a class="el" href="xtb_8h.html#adb3f42280b2b3bc08a4def8e6910967f">xtb.h</a></li>
+<li>xtb_updateMolecule()&#160;:&#160;<a class="el" href="xtb_8h.html#a54d5d0e96b6d99495676c0a204553aef">xtb.h</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

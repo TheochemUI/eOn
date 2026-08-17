@@ -1,0 +1,405 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: Member List</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classSpceCcl.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">SpceCcl Member List</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>This is the complete list of members for <a class="el" href="classSpceCcl.html">SpceCcl</a>, including all inherited members.</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#a01a995b25fe82b5404df44c285627d5b">A_</a></td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a866d5d81f2440152a6fd1b0efa588eb8">addForces</a>(ChargeGroup&lt; N, R, F &gt; const &amp;g1, ChargeGroup&lt; N, R, F &gt; &amp;g2)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a16a4ff3004563cbae05b1f797d6ef245">applyPeriodicity0</a>(double r, double const period)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#addbaf7e0063265711af335e80530e395">applyPeriodicity0</a>(double r[], double const periods[])</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a9024403ecf6c10f072809dcf46151535">applyPeriodicity1</a>(double r, int const axis)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a6c1f38fb44b59b2b4bfea180f13a9cd6">applyPeriodicity1</a>(double r[])</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#afbee8d5012a2355638b6ab24d47f8241">B_</a></td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a7a3596d5b7f22cab8d45f18bab685fa2">calculateCentre</a>(double const r1[], double const r2[], double rc[])</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#ad07f26fc59fed3c2224c6feab54bd794">calculateCentre</a>(double const r1[], double const r2[], double const r3[], double rc[])</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#acdc6eedf8f7aff5d001da56dc7937176">calculateWeightedCentre</a>(double const w1, double const w2, double const w3, double const r1[], double const r2[], double const r3[], double rc[])</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#adaee7339131b9f01b70c2d055d4a099b">Ccl</a>()</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#a28da394ac0567004197baff0f49848cc">Ccl</a>(double cutoff, double switchingWidth)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#ad1c242978e967f511b4b4b377eb6a90f">charge2_</a></td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#a85b2a5e865ecd8534d3533cf64c3f9a9">charge_</a></td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classSpceCcl.html#aa139d0ff7b501abcd7ed52738f8f9bfe">cleanMemory</a>(void)</td><td class="entry"><a class="el" href="classSpceCcl.html">SpceCcl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#aed5b7640358c5598d31b866b395f76ee">computeHH_O_</a>(const int nAtoms, const double R[], double F[], double &amp;U, const double b[])</td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#ad4a1a47a251b782cd5903bf2d90baf5c">computeHH_O_</a>(const int nAtoms, const double R[], double F[], double &amp;U, const double b[], const bool fixed[])</td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a94036e65047de49552a0e0a5f171e4ff">computePt</a>(int const nAtoms, double positions[], double forces[], double &amp;energy, double const periods[], bool const fixed[])</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#ad9c5f54ca6c58e86da827c296afab1ee">computeTemplate</a>(const int nMolecules, const double(*const rh1)[H *3], const double(*const rh2)[H *3], const double(*const ro)[O *3], double(*const fh1)[H *3], double(*const fh2)[H *3], double(*const fo)[O *3], double &amp;energy, double const b[], bool const (*const xh1)[H]=0, bool const (*const xh2)[H]=0, bool const (*const xo)[O]=0)</td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a6d3c622e1dd72d4c30f0488c32d1cc9e">coulomb</a>(const double r1[], const double r2[], double f1[], double f2[], double &amp;u, double const qq)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a09daf208eba4f9e72cea80b98bfb0c5f">coulomb</a>(double distance, double &amp;force, double &amp;energy, double const qq)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#ad630077b122a9616392b0f29e714d0a6">coulombFull</a>(Water &amp;w1, Water &amp;w2, double &amp;U)</td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#a3b2a34ba6c68938daee53d26c80e1daa">coulombWithCutoff</a>(Water &amp;w1, Water &amp;w2, double &amp;U)</td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#abdd7962614f460f5f4584fb4d714907a">forcefields::Ccl::coulombWithCutoff</a>(const double r1[], const double r2[], double f1[], double f2[], double &amp;u, double const qq)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="group__vector3d.html#gac73e01ad1d8e9b7f328a9fd0ab6eeecf">crossProduct</a>(const double v[], const double w[], double e[])</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#acc1769baf153eb0acb5758c5803aa72c">cutoff_</a></td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a7f21b849d82086603401e6f8183ff7f3">distance</a>(const double x[], const double y[], double z[], double &amp;z1, double &amp;z2)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#ae7c4fb67af7b5f183598048c4afa4f8b">distance</a>(const double x[], const double y[], double z[], double &amp;z1)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a5fbbe47bf7e7397090e6e6e1d362049a">distance</a>(const double x[], const double y[], double z[])</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#ae2e716177f7a2642d19f2f165122fe5b">distance</a>(const double x[], const double y[], double &amp;z1)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a7f2f556efb650ee4d549cdf2f28249c1">distance</a>(const double x[], const double y[], Vector3 &amp;z)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="group__vector3d.html#ga23adf8fa148d5eb07c549f357ce1d60b">divide</a>(double v[], double const divisor)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="group__vector3d.html#ga3ef54f1a24b645df2792949829635d63">dotProduct</a>(double const v[], double const w[])</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#aa3d8635481e741415a057fc10dad1059">epsilon</a>(double const A, double const B)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#ae804d9f06a10f135a3abf92994740294">epsilon_</a></td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a8735dcd5e17bb2b7a85ed02865e951bc">EPSILON_PT</a></td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classSpceCcl.html#a3e27c1683578a458ed5002065f41c2a1">force</a>(long N, const double *R, const int *atomicNrs, double *F, double *U, double *variance, const double *box) override</td><td class="entry"><a class="el" href="classSpceCcl.html">SpceCcl</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1">forceBatch</a>(long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</td><td class="entry"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a></td><td class="entry"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeonc_1_1Potential.html#ac00fe80dcbd4f5887da244047aaf63f5">get_ef</a>(const AtomMatrix &amp;pos, const VectorXi &amp;atmnrs, const Matrix3d &amp;box)</td><td class="entry"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a6bea63adfa83bdb6e7a5d4fdce454955">getCutoff</a>() const</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#a988c8b475180b2e4edece397eb8af391">getName</a>() const</td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#abbc99205a45a285c85ff5b58657265f4">getSwitchingWidth</a>() const</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeonc_1_1Potential.html#a4f0274548044ab1f714e4801352c4547">getType</a>() const</td><td class="entry"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#a7a93f5761d0f7201d7e5c81ef24ca21a">initialiseDtheta</a>(Vector3 const &amp;v1, Vector3 const &amp;v2, Dtheta &amp;dth, double const thetaEquilibrium)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#a0c6e40b2cd039cbc0f6ab5f215c26765">initialiseRho</a>(Vector3 const &amp;v, Rho &amp;r)</td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#a70b17f8cdbc9e728c650724b97ad4987">intramolecular</a>(Water &amp;water, double &amp;U)</td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#a9f7ee938cdf59318e6ba397e6113482c">forcefields::Ccl::intramolecular</a>(double const rh1[], double const rh2[], double const ro[], double fh1[], double fh2[], double fo[], double &amp;energy)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#ad0d7a21d96074aaf905e7feacd9b762d">forcefields::Ccl::intramolecular</a>(Rho const &amp;ro1, Rho const &amp;ro2, Dtheta const &amp;dth, double &amp;energy, double fh1[], double fh2[], double fo[])</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#ac91445db4bba4fcb9f616267a1222147">isoscelesBase</a>(double length, double angle)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeonc_1_1Potential.html#a8065b9661fcb0b025d397928243c987c">isSharedInstanceThreadSafe</a>() const noexcept</td><td class="entry"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeonc_1_1Potential.html#a85b0a3456f6528d8c464ab4b5774878e">isSurrogate</a>() const noexcept</td><td class="entry"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeonc_1_1Potential.html#af6c385eb52d3764246416ea389c84131">isThreadSafe</a>() const noexcept</td><td class="entry"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a6fb0ae19383cfa472fcdc7fa79951503">lennardJones</a>(double const distance, double &amp;force, double &amp;energy, double const epsilon, double const sigma)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a8c829f076d66d2e4b4f1c95007ae5bec">lennardJones</a>(const double R1[], const double R2[], double F1[], double F2[], double &amp;E, double const epsilon, double const sigma)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#a8e29993e665071e5699bb480997c44f8">lennardJonesWithCutoff</a>(Water &amp;w1, Water &amp;w2, double &amp;U)</td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a8224374e2a0c646a57a252631e02c330">forcefields::Ccl::lennardJonesWithCutoff</a>(double const r1[], double const r2[], double f1[], double f2[], double &amp;energy, double const epsilon, double const sigma)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeonc_1_1Potential.html#a9580a7fb76d5c41e4f052838a3d68a69">m_created_at</a></td><td class="entry"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeonc_1_1Potential.html#a89996ec4a056354127a36791380a6689">m_registry_id</a></td><td class="entry"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="group__vector3d.html#ga4cf47e84487baa308a7a6a91cba9a016">multiply</a>(double v[], double const factor)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeonc_1_1Potential.html#a8b83745c9898990f848daafa4c351c2f">needsPerImageInstance</a>() const noexcept</td><td class="entry"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="group__vector3d.html#ga10b1a4e7d6cd70f9cc666e9fdde887f3">norm</a>(double const v[])</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="group__vector3d.html#gaccc278445568626e20341caded5616db">normalise</a>(double v[])</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#ade862af6fe691fe650a2c5bb8cd4f262">ONE_OVER_4_PI_EPSILON0</a></td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a91206cd71c4c2b41735ca990c7c44441">periods_</a></td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#adaa0e9b891b15a51a0ca6dc3d5a8e4f6">polarisationEnergy_</a></td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a>(PotType a_ptype)</td><td class="entry"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">explicit</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeonc_1_1Potential.html#a2aaa7956f073f9db72277909e51c40c9">Potential</a>(PotType a_ptype, const Parameters &amp;)</td><td class="entry"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeonc_1_1Potential.html#ac908414bc07e7c33019e01abb4a7d9ee">Potential</a>(const Parameters &amp;a_params)</td><td class="entry"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a0c0bbe743a98331b6e928c0065fd294d">PotentialBase</a>()</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a60e07d0902e72e128baf942974199810">PotentialBase</a>(double cutoff, double switchingWidth)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a></td><td class="entry"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td><td class="entry"><span class="mlabel">protected</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#a06f1a4e8492bf7ff82ab9c905b378a0b">re_</a></td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeonc_1_1Potential.html#ac4c9e9deaa0e73fa27ff97b6d6acad98">requiresIsolatedMoleculeLayout</a>() const noexcept</td><td class="entry"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a4e0fb50fca0290376bdeca8c1fcbe114">restrainAngle</a>(double const r1[], double const r2[], double const r3[], double f1[], double f2[], double f3[], double &amp;u, const double k, const double aeq)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a30d31334c47fb6f59423aa6a5ac1b581">restrainLength</a>(const double R1[], const double R2[], double F1[], double F2[], double &amp;u, const double k, const double r0)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#ad0dfbee7164ed6467cf0f368a23713a9">rhh_</a></td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#afdec27d46df073e18716e47f20c667e8">ro1_2_ro2_2</a>(Rho const &amp;s1, Rho const &amp;s2, double &amp;energy, double &amp;d1, double &amp;d2)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#a5c6933dcb321f4fdeb8f4d095e57adb1">ro1_ro2</a>(Rho const &amp;s1, Rho const &amp;s2, double &amp;energy, double &amp;d1, double &amp;d2)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#ae035ad388edc95cb42b393aecdcd134f">ro1_ro2_ro_2</a>(Rho const &amp;s1, Rho const &amp;s2, double &amp;energy, double &amp;d1, double &amp;d2)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#a46a93515ac889d0ee7c51e23599235fd">ro1_ro2_theta</a>(Rho const &amp;s1, Rho const &amp;s2, Dtheta const &amp;s3, double &amp;energy, double &amp;d1, double &amp;d2, double &amp;d3)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#af7fa2ac3c65bcd9017e8f46a1148909d">ro1_ro2_theta_2</a>(Rho const &amp;s1, Rho const &amp;s2, Dtheta const &amp;s3, double &amp;energy, double &amp;d1, double &amp;d2, double &amp;d3)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#aa2fb3e05298ea67bd7faf639dc8571e9">ro_2</a>(Rho const &amp;ro1, Rho const &amp;ro2, double &amp;energy, double &amp;d1, double &amp;d2)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#ad4dfa2bb8ee545dfa1126f81a5a32a5e">ro_2_theta</a>(Rho const &amp;s1, Rho const &amp;s2, Dtheta const &amp;s3, double &amp;energy, double &amp;d1, double &amp;d2, double &amp;d3)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#ac868cac2123b88a02c534dff1995dc58">ro_2_theta_2</a>(Rho const &amp;s1, Rho const &amp;s2, Dtheta const &amp;s3, double &amp;energy, double &amp;d1, double &amp;d2, double &amp;d3)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#a2690a4d78e03cb19e90186e825f6ba9d">ro_3</a>(Rho const &amp;s1, Rho const &amp;s2, double &amp;energy, double &amp;d1, double &amp;d2)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#a3d25561990e4ac470ea5703264893909">ro_3_theta</a>(Rho const &amp;s1, Rho const &amp;s2, Dtheta const &amp;s3, double &amp;energy, double &amp;d1, double &amp;d2, double &amp;d3)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#ac365314e7cd52dd0cb6573d6bf143e3e">ro_4</a>(Rho const &amp;s1, Rho const &amp;s2, double &amp;energy, double &amp;d1, double &amp;d2)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#afc57c81e3c64eaf3215c2ccfc22d3d15">ro_ro1_ro2</a>(Rho const &amp;s1, Rho const &amp;s2, double &amp;energy, double &amp;d1, double &amp;d2)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#a326a444b9834f2b9e268778199cd83f7">ro_ro1_ro2_theta</a>(Rho const &amp;s1, Rho const &amp;s2, Dtheta const &amp;s3, double &amp;energy, double &amp;d1, double &amp;d2, double &amp;d3)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#a3cfdfafccfa4535a3eafbde8022b8ba0">ro_theta</a>(Rho const &amp;s1, Rho const &amp;s2, Dtheta const &amp;s3, double &amp;energy, double &amp;d1, double &amp;d2, double &amp;d3)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#af1aef857199e963f96ecbaeb0497fe98">ro_theta_2</a>(Rho const &amp;s1, Rho const &amp;s2, Dtheta const &amp;s3, double &amp;energy, double &amp;d1, double &amp;d2, double &amp;d3)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#a37ed0d811642d27b1e594e7a95549cb0">roh_</a></td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a6bb51f7d2223741ca65263a8f76b1f5b">setCutoff</a>(double cutoff)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a7d326b2133661b2677b85ebef011ff7b">setPeriodicity</a>(const double periods[])</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a7f469cdccc446844de8ec4f288a58d5e">setSwitchingWidth</a>(double width)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a0c28fa522a9f561e202338e2424a39af">sigma</a>(double const A, double const B)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#ad329b69040646b35daec81695b97113e">sigma_</a></td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a97a258d5e5df42cbc604753f6babfab9">SIGMA_PT</a></td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#aa02d0785396ffb5fbd11ad6de7348f43">smithKongEpsilon</a>(double sigma1, double epsilon1, double sigma2, double epsilon2)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a6958c8fbace6e12619ee5f3ae2b11641">smithKongSigma</a>(double sigma1, double epsilon1, double sigma2, double epsilon2)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classSpceCcl.html#a864604fb1bddaadb4156baa875a0373f">SpceCcl</a>(const Parameters &amp;params)</td><td class="entry"><a class="el" href="classSpceCcl.html">SpceCcl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#a878008775a0d97a1e15330369c0a1a3d">forcefields::SpceCcl::SpceCcl</a>()</td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#a2eab208c2e7c6415fd5730616c21dcac">forcefields::SpceCcl::SpceCcl</a>(double cutoff, double switchingWidth)</td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#aa88b67f8351de8f205951bfbcdb6e9da">spreadForce</a>(double f1[], double f2[], double const fc[])</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#ae47c59948aa60495a8d59ed8fda8f030">spreadForce</a>(double f1[], double f2[], double f3[], double const fc[])</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a0d4fca8576a908ceaae501d9c3bb8f56">spreadWeightedForce</a>(double const w1, double const w2, double const w3, double f1[], double f2[], double f3[], double const fc[])</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeonc_1_1Potential.html#a2d8781e3cbea888f88b7523c5d00bc43">supportsBatchEvaluation</a>() const noexcept</td><td class="entry"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a1bebbf9c9cdf48986383f06b8881f84a">switching</a>(ChargeGroup&lt; N, R, F &gt; &amp;g1, ChargeGroup&lt; N, R, F &gt; &amp;g2, double &amp;energy, double cutoff, double switchingWidth)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a047feed131c79bfdf02e4ca85df8ee14">switching</a>(double const distance, double &amp;force, double &amp;energy)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a397bae8d91b979763e06f9a7ce1a413f">switching</a>(double const r1[], double const r2[], double f1[], double f2[], double &amp;energy)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a6fc0ca510d01a8053262afb747b751c0">switchingWidth_</a></td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html#abb8efd2148fda5319a97d5b9a8845f9b">theta_</a></td><td class="entry"><a class="el" href="classforcefields_1_1SpceCcl.html">forcefields::SpceCcl</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#a3d48681b22608fbe42eba1fc22e984fd">theta_2</a>(Dtheta const &amp;s3, double &amp;energy, double &amp;d3)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#a2ac17360f314c4cc8fe8a97f4dc05d33">theta_3</a>(Dtheta const &amp;s3, double &amp;energy, double &amp;d3)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#a0de5477e4b8fabdbc3e7bc40da0075c4">theta_4</a>(Dtheta const &amp;s3, double &amp;energy, double &amp;d3)</td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html#a0b292f41430d6466207ea99b5bfa70bd">thetae_</a></td><td class="entry"><a class="el" href="classforcefields_1_1Ccl.html">forcefields::Ccl</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a2f4ee68c190639e702ec47b0e60debb1">unBreak0</a>(double const r, double const ref, double const period)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a6484b31df79e68710399afb723b35f82">unBreak0</a>(double r[], double const ref[], double const periods[])</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#a1ab71bb1df6ccf3c3413644c4b672be5">unBreak1</a>(double const r, double const ref, int const axis)</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#aa876f9724170c56f52856fbe45dd0d7d">unBreak1</a>(double r[], double const ref[])</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeonc_1_1Potential.html#a57af1d92eeff9618f873a0241e390de2">~Potential</a>()</td><td class="entry"><a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html#ab4a0946f1a33688584a184665c481c94">~PotentialBase</a>()</td><td class="entry"><a class="el" href="classforcefields_1_1PotentialBase.html">forcefields::PotentialBase</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">private</span><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

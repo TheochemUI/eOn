@@ -1,0 +1,1735 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: MetatomicPotential Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classMetatomicPotential.html','','classMetatomicPotential-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">MetatomicPotential Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>A potential class that uses a metatomic model for energy and force calculations.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for MetatomicPotential:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+ <div class="center">
+  <img src="classMetatomicPotential.png" usemap="#MetatomicPotential_map" alt=""/>
+  <map id="MetatomicPotential_map" name="MetatomicPotential_map">
+<area href="classeonc_1_1Potential.html" alt="eonc::Potential" shape="rect" coords="0,0,117,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a8cba5b4418c9fb6edd9582d256a976c8" id="r_a8cba5b4418c9fb6edd9582d256a976c8"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a8cba5b4418c9fb6edd9582d256a976c8">MetatomicPotential</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
+<tr class="memdesc:a8cba5b4418c9fb6edd9582d256a976c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for the <a class="el" href="classMetatomicPotential.html" title="A potential class that uses a metatomic model for energy and force calculations.">MetatomicPotential</a>.  <br /></td></tr>
+<tr class="memitem:abd9f0b8c2238a5108f710ab4830eb031" id="r_abd9f0b8c2238a5108f710ab4830eb031"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#abd9f0b8c2238a5108f710ab4830eb031">~MetatomicPotential</a> () override=default</td></tr>
+<tr class="memdesc:abd9f0b8c2238a5108f710ab4830eb031"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
+<tr class="memitem:a06640aa432a3e8994c6074a60cb92a92" id="r_a06640aa432a3e8994c6074a60cb92a92"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a06640aa432a3e8994c6074a60cb92a92">force</a> (long nAtoms, const double *positions, const int *atomicNrs, double *forces, double *energy, double *variance, const double *box) override</td></tr>
+<tr class="memdesc:a06640aa432a3e8994c6074a60cb92a92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculates the energy and forces for a given atomic configuration.  <br /></td></tr>
+<tr class="memitem:a67cf280dee7c9ea210be7038b80f0673" id="r_a67cf280dee7c9ea210be7038b80f0673"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a67cf280dee7c9ea210be7038b80f0673">isThreadSafe</a> () const noexcept override</td></tr>
+<tr class="memdesc:a67cf280dee7c9ea210be7038b80f0673"><td class="mdescLeft">&#160;</td><td class="mdescRight">Single shared instance, serialized via mutex.  <br /></td></tr>
+<tr class="memitem:a1345a4da1b9a96efb94f8ab12a1dc597" id="r_a1345a4da1b9a96efb94f8ab12a1dc597"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a1345a4da1b9a96efb94f8ab12a1dc597">needsPerImageInstance</a> () const noexcept override</td></tr>
+<tr class="memdesc:a1345a4da1b9a96efb94f8ab12a1dc597"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether NEB should create separate <a class="el" href="classPotential.html">Potential</a> instances per image for true parallel force evaluation.  <br /></td></tr>
+<tr class="memitem:a1d1230f9247bc0e0c5be9062be0d6bde" id="r_a1d1230f9247bc0e0c5be9062be0d6bde"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a1d1230f9247bc0e0c5be9062be0d6bde">supportsBatchEvaluation</a> () const noexcept override</td></tr>
+<tr class="memdesc:a1d1230f9247bc0e0c5be9062be0d6bde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Batched evaluation via single shared instance.  <br /></td></tr>
+<tr class="memitem:a4425775e22771c363739a4920b88aa9b" id="r_a4425775e22771c363739a4920b88aa9b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a4425775e22771c363739a4920b88aa9b">forceBatch</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes) override</td></tr>
+<tr class="memdesc:a4425775e22771c363739a4920b88aa9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate forces for N systems in a single call.  <br /></td></tr>
+<tr class="inherit_header pub_methods_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
+<tr class="memitem:af81acd9a6775ff13fab861a51fb9ba95 inherit pub_methods_classeonc_1_1Potential" id="r_af81acd9a6775ff13fab861a51fb9ba95"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype)</td></tr>
+<tr class="memitem:a2aaa7956f073f9db72277909e51c40c9 inherit pub_methods_classeonc_1_1Potential" id="r_a2aaa7956f073f9db72277909e51c40c9"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2aaa7956f073f9db72277909e51c40c9">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype, const <a class="el" href="classParameters.html">Parameters</a> &amp;)</td></tr>
+<tr class="memitem:ac908414bc07e7c33019e01abb4a7d9ee inherit pub_methods_classeonc_1_1Potential" id="r_ac908414bc07e7c33019e01abb4a7d9ee"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac908414bc07e7c33019e01abb4a7d9ee">Potential</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memitem:a57af1d92eeff9618f873a0241e390de2 inherit pub_methods_classeonc_1_1Potential" id="r_a57af1d92eeff9618f873a0241e390de2"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a57af1d92eeff9618f873a0241e390de2">~Potential</a> ()</td></tr>
+<tr class="memitem:ac00fe80dcbd4f5887da244047aaf63f5 inherit pub_methods_classeonc_1_1Potential" id="r_ac00fe80dcbd4f5887da244047aaf63f5"><td class="memItemLeft">std::tuple&lt; double, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac00fe80dcbd4f5887da244047aaf63f5">get_ef</a> (const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;pos, const VectorXi &amp;atmnrs, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;box)</td></tr>
+<tr class="memitem:a4f0274548044ab1f714e4801352c4547 inherit pub_methods_classeonc_1_1Potential" id="r_a4f0274548044ab1f714e4801352c4547"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a4f0274548044ab1f714e4801352c4547">getType</a> () const</td></tr>
+<tr class="memitem:a85b0a3456f6528d8c464ab4b5774878e inherit pub_methods_classeonc_1_1Potential" id="r_a85b0a3456f6528d8c464ab4b5774878e"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a85b0a3456f6528d8c464ab4b5774878e">isSurrogate</a> () const noexcept</td></tr>
+<tr class="memdesc:a85b0a3456f6528d8c464ab4b5774878e inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this is a surrogate (GP) potential.  <br /></td></tr>
+<tr class="memitem:ac4c9e9deaa0e73fa27ff97b6d6acad98 inherit pub_methods_classeonc_1_1Potential" id="r_ac4c9e9deaa0e73fa27ff97b6d6acad98"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac4c9e9deaa0e73fa27ff97b6d6acad98">requiresIsolatedMoleculeLayout</a> () const noexcept</td></tr>
+<tr class="memdesc:ac4c9e9deaa0e73fa27ff97b6d6acad98 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">True for molecular QM / non-PBC backends (NWChem socket, <a class="el" href="classASE.html">ASE</a> ORCA/NWChem, …).  <br /></td></tr>
+<tr class="memitem:a8065b9661fcb0b025d397928243c987c inherit pub_methods_classeonc_1_1Potential" id="r_a8065b9661fcb0b025d397928243c987c"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a8065b9661fcb0b025d397928243c987c">isSharedInstanceThreadSafe</a> () const noexcept</td></tr>
+<tr class="memdesc:a8065b9661fcb0b025d397928243c987c inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conservative gate for sharing one <a class="el" href="classeonc_1_1Potential.html">Potential</a> instance across threads.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a8e6d7512bcc2dd29c797831f50ee3f45" id="r_a8e6d7512bcc2dd29c797831f50ee3f45"><td class="memItemLeft">metatensor_torch::TensorBlock&#160;</td><td class="memItemRight"><a class="el" href="#a8e6d7512bcc2dd29c797831f50ee3f45">computeNeighbors</a> (metatomic_torch::NeighborListOptions request, long nAtoms, const double *positions, const double *box, const bool periodic[3])</td></tr>
+<tr class="memdesc:a8e6d7512bcc2dd29c797831f50ee3f45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes neighbor list using the vesin library.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a3f88b5d02ec4d6a3fc8531d0c5a978f0" id="r_a3f88b5d02ec4d6a3fc8531d0c5a978f0"><td class="memItemLeft"><a class="el" href="structeonc_1_1log_1_1Scoped.html">eonc::log::Scoped</a>&#160;</td><td class="memItemRight"><a class="el" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a></td></tr>
+<tr class="memitem:aedf2c9ed32f61cb37b008a733188e301" id="r_aedf2c9ed32f61cb37b008a733188e301"><td class="memItemLeft"><a class="el" href="structParameters_1_1metatomic__options__t.html">Parameters::metatomic_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a></td></tr>
+<tr class="memitem:af81efaf717da2e86654be758421c59ea" id="r_af81efaf717da2e86654be758421c59ea"><td class="memItemLeft">metatensor_torch::Module&#160;</td><td class="memItemRight"><a class="el" href="#af81efaf717da2e86654be758421c59ea">model_</a></td></tr>
+<tr class="memitem:a6298ad13791d519f169a9db96d92d294" id="r_a6298ad13791d519f169a9db96d92d294"><td class="memItemLeft">metatomic_torch::ModelCapabilities&#160;</td><td class="memItemRight"><a class="el" href="#a6298ad13791d519f169a9db96d92d294">capabilities_</a></td></tr>
+<tr class="memitem:a0f816c137059a98cd678a92c7d893123" id="r_a0f816c137059a98cd678a92c7d893123"><td class="memItemLeft">std::vector&lt; metatomic_torch::NeighborListOptions &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a0f816c137059a98cd678a92c7d893123">nl_requests_</a></td></tr>
+<tr class="memitem:a23ce9c13310a97d39c64dabb479b8606" id="r_a23ce9c13310a97d39c64dabb479b8606"><td class="memItemLeft">metatomic_torch::ModelEvaluationOptions&#160;</td><td class="memItemRight"><a class="el" href="#a23ce9c13310a97d39c64dabb479b8606">evaluations_options_</a></td></tr>
+<tr class="memitem:afdf318e397544dd495a0254c81500a0d" id="r_afdf318e397544dd495a0254c81500a0d"><td class="memItemLeft">torch::ScalarType&#160;</td><td class="memItemRight"><a class="el" href="#afdf318e397544dd495a0254c81500a0d">dtype_</a></td></tr>
+<tr class="memitem:a8472d468900324b7de78fa600869d6cd" id="r_a8472d468900324b7de78fa600869d6cd"><td class="memItemLeft">c10::DeviceType&#160;</td><td class="memItemRight"><a class="el" href="#a8472d468900324b7de78fa600869d6cd">device_type_</a></td></tr>
+<tr class="memitem:a74023d0a5b5c16372dbc37723e8a6349" id="r_a74023d0a5b5c16372dbc37723e8a6349"><td class="memItemLeft">torch::Device&#160;</td><td class="memItemRight"><a class="el" href="#a74023d0a5b5c16372dbc37723e8a6349">device_</a></td></tr>
+<tr class="memitem:aa59bbc5c5e2e908a0ee45993dfd571ae" id="r_aa59bbc5c5e2e908a0ee45993dfd571ae"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aa59bbc5c5e2e908a0ee45993dfd571ae">check_consistency_</a></td></tr>
+<tr class="memitem:a7af739e784d796b1baf20cb3e9d380fd" id="r_a7af739e784d796b1baf20cb3e9d380fd"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a7af739e784d796b1baf20cb3e9d380fd">energy_key_</a></td></tr>
+<tr class="memitem:a6f4563edcce48e4c7d4e879540067cf6" id="r_a6f4563edcce48e4c7d4e879540067cf6"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a6f4563edcce48e4c7d4e879540067cf6">energy_uncertainty_key_</a></td></tr>
+<tr class="memitem:a97ff5915a06a5815d55841d07c07374f" id="r_a97ff5915a06a5815d55841d07c07374f"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a97ff5915a06a5815d55841d07c07374f">nc_forces_key_</a></td></tr>
+<tr class="memitem:a1840ee15a27447a6f42c8c9014135d1f" id="r_a1840ee15a27447a6f42c8c9014135d1f"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a1840ee15a27447a6f42c8c9014135d1f">non_conservative_</a> {false}</td></tr>
+<tr class="memitem:a713e5c2a80eb8a76d444f9392ec12110" id="r_a713e5c2a80eb8a76d444f9392ec12110"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a713e5c2a80eb8a76d444f9392ec12110">random_rotation_</a> {false}</td></tr>
+<tr class="memitem:af52f1d74f7f583a1f0168daeeb258d1f" id="r_af52f1d74f7f583a1f0168daeeb258d1f"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#af52f1d74f7f583a1f0168daeeb258d1f">n_symmetry_rotations_</a> {0}</td></tr>
+<tr class="memitem:a9a34447e4edd32d27727d704a068ec16" id="r_a9a34447e4edd32d27727d704a068ec16"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a9a34447e4edd32d27727d704a068ec16">uncertainty_threshold_</a> {-1.0}</td></tr>
+<tr class="memitem:a88809b804eda8d73fb8946ac4b58a323" id="r_a88809b804eda8d73fb8946ac4b58a323"><td class="memItemLeft">std::mutex&#160;</td><td class="memItemRight"><a class="el" href="#a88809b804eda8d73fb8946ac4b58a323">inference_mutex_</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_attribs_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
+<tr class="memitem:a2ae7cca425e3d69d2825c58d1c7704eb inherit pub_attribs_classeonc_1_1Potential" id="r_a2ae7cca425e3d69d2825c58d1c7704eb"><td class="memItemLeft">std::atomic&lt; size_t &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a></td></tr>
+<tr class="inherit_header pro_attribs_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
+<tr class="memitem:ac102f249b890f52d06d96feff8f2047a inherit pro_attribs_classeonc_1_1Potential" id="r_ac102f249b890f52d06d96feff8f2047a"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A potential class that uses a metatomic model for energy and force calculations. </p>
+<p>This class loads a pre-trained atomistic model (via metatomic/PyTorch) and uses it to compute the potential energy and corresponding forces on atoms. It uses the <span class="tt">vesin</span> library to compute neighbor lists required by the model. </p>
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00053">53</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a8cba5b4418c9fb6edd9582d256a976c8" name="a8cba5b4418c9fb6edd9582d256a976c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cba5b4418c9fb6edd9582d256a976c8">&#9670;&#160;</a></span>MetatomicPotential()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MetatomicPotential::MetatomicPotential </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor for the <a class="el" href="classMetatomicPotential.html" title="A potential class that uses a metatomic model for energy and force calculations.">MetatomicPotential</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>A shared pointer to the simulation parameters object. This object should contain the settings needed for the metatomic model. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8cpp_source.html#l00058">58</a> of file <a class="el" href="MetatomicPotential_8cpp_source.html">MetatomicPotential.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   59</span>    : <a class="code hl_function" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a>(<a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a2da9f88c4946c305ed6794006f56e8f3">PotType::METATOMIC</a>),</div>
+<div class="line"><span class="lineno">   60</span>      <a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>{params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#abe39c95c9363fce1a030dc4c55634705">metatomic_options</a>},</div>
+<div class="line"><span class="lineno">   61</span>      <a class="code hl_variable" href="#af81efaf717da2e86654be758421c59ea">model_</a>(torch::jit::Module()),</div>
+<div class="line"><span class="lineno">   62</span>      <a class="code hl_variable" href="#a8472d468900324b7de78fa600869d6cd">device_type_</a>(c10::DeviceType::CPU),</div>
+<div class="line"><span class="lineno">   63</span>      <a class="code hl_variable" href="#a74023d0a5b5c16372dbc37723e8a6349">device_</a>(torch::Device(<a class="code hl_variable" href="#a8472d468900324b7de78fa600869d6cd">device_type_</a>)) {</div>
+<div class="line"><span class="lineno">   64</span> </div>
+<div class="line"><span class="lineno">   65</span>  <span class="comment">// Determinism knobs (see</span></div>
+<div class="line"><span class="lineno">   66</span>  <span class="comment">// https://rgoswami.me/snippets/pytorch-deterministic-regression/): JIT</span></div>
+<div class="line"><span class="lineno">   67</span>  <span class="comment">// profiling specializes graphs after the first few forwards, so a fresh model</span></div>
+<div class="line"><span class="lineno">   68</span>  <span class="comment">// instance can differ at ULP level from a warm one — bad for parallel NEB.</span></div>
+<div class="line"><span class="lineno">   69</span>  <span class="comment">// cuBLAS / index_add_ on CUDA are likewise nondeterministic unless forced.</span></div>
+<div class="line"><span class="lineno">   70</span>  <span class="comment">// [Metatomic] deterministic=true (default) applies the safe defaults;</span></div>
+<div class="line"><span class="lineno">   71</span>  <span class="comment">// deterministic_strict=true requires CUBLAS_WORKSPACE_CONFIG (e.g. :4096:8)</span></div>
+<div class="line"><span class="lineno">   72</span>  <span class="comment">// and fails on nondeterministic ops instead of warning.</span></div>
+<div class="line"><span class="lineno">   73</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.deterministic) {</div>
+<div class="line"><span class="lineno">   74</span>    torch::jit::getProfilingMode() = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   75</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> strict = <a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.deterministic_strict ||</div>
+<div class="line"><span class="lineno">   76</span>                        (std::getenv(<span class="stringliteral">&quot;CUBLAS_WORKSPACE_CONFIG&quot;</span>) != <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">   77</span>    at::globalContext().setDeterministicAlgorithms(<span class="keyword">true</span>,</div>
+<div class="line"><span class="lineno">   78</span>                                                   <span class="comment">/*warn_only=*/</span>!strict);</div>
+<div class="line"><span class="lineno">   79</span>    at::globalContext().setBenchmarkCuDNN(<span class="keyword">false</span>);</div>
+<div class="line"><span class="lineno">   80</span>    QUILL_LOG_INFO(<a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>,</div>
+<div class="line"><span class="lineno">   81</span>                   <span class="stringliteral">&quot;[MetatomicPotential] Deterministic algorithms enabled &quot;</span></div>
+<div class="line"><span class="lineno">   82</span>                   <span class="stringliteral">&quot;(strict={})&quot;</span>,</div>
+<div class="line"><span class="lineno">   83</span>                   strict);</div>
+<div class="line"><span class="lineno">   84</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   85</span>    QUILL_LOG_INFO(<a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>,</div>
+<div class="line"><span class="lineno">   86</span>                   <span class="stringliteral">&quot;[MetatomicPotential] Deterministic algorithms disabled &quot;</span></div>
+<div class="line"><span class="lineno">   87</span>                   <span class="stringliteral">&quot;(faster, may diverge across runs / NEB images)&quot;</span>);</div>
+<div class="line"><span class="lineno">   88</span>  }</div>
+<div class="line"><span class="lineno">   89</span> </div>
+<div class="line"><span class="lineno">   90</span>  eonc::FPEHandler fpeh;</div>
+<div class="line"><span class="lineno">   91</span>  fpeh.<a class="code hl_function" href="classeonc_1_1FPEHandler.html#afd34f29eda64117a665d8340a5b43a1c">eat_fpe</a>();</div>
+<div class="line"><span class="lineno">   92</span> </div>
+<div class="line"><span class="lineno">   93</span>  QUILL_LOG_INFO(<a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>, <span class="stringliteral">&quot;[MetatomicPotential] Initializing...&quot;</span>);</div>
+<div class="line"><span class="lineno">   94</span> </div>
+<div class="line"><span class="lineno">   95</span>  <span class="comment">// 1. Load the model from the path specified in parameters</span></div>
+<div class="line"><span class="lineno">   96</span>  torch::optional&lt;std::string&gt; extensions_directory = torch::nullopt;</div>
+<div class="line"><span class="lineno">   97</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.extensions_directory.empty()) {</div>
+<div class="line"><span class="lineno">   98</span>    extensions_directory = <a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.extensions_directory;</div>
+<div class="line"><span class="lineno">   99</span>  }</div>
+<div class="line"><span class="lineno">  100</span> </div>
+<div class="line"><span class="lineno">  101</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  102</span>    QUILL_LOG_INFO(<a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>, <span class="stringliteral">&quot;[MetatomicPotential] Loading model from &#39;{}&#39;&quot;</span>,</div>
+<div class="line"><span class="lineno">  103</span>                   <a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.model_path);</div>
+<div class="line"><span class="lineno">  104</span>    this-&gt;<a class="code hl_variable" href="#af81efaf717da2e86654be758421c59ea">model_</a> = metatomic_torch::load_atomistic_model(</div>
+<div class="line"><span class="lineno">  105</span>        <a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.model_path, extensions_directory);</div>
+<div class="line"><span class="lineno">  106</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><span class="lineno">  107</span>    QUILL_LOG_ERROR(<a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>, <span class="stringliteral">&quot;[MetatomicPotential] Failed to load model: {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  108</span>                    e.what());</div>
+<div class="line"><span class="lineno">  109</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  110</span>  }</div>
+<div class="line"><span class="lineno">  111</span> </div>
+<div class="line"><span class="lineno">  112</span>  <span class="comment">// 2. Extract capabilities and neighbor list requests from the model</span></div>
+<div class="line"><span class="lineno">  113</span>  this-&gt;<a class="code hl_variable" href="#a6298ad13791d519f169a9db96d92d294">capabilities_</a> =</div>
+<div class="line"><span class="lineno">  114</span>      this-&gt;<a class="code hl_variable" href="#af81efaf717da2e86654be758421c59ea">model_</a>.run_method(<span class="stringliteral">&quot;capabilities&quot;</span>)</div>
+<div class="line"><span class="lineno">  115</span>          .toCustomClass&lt;metatomic_torch::ModelCapabilitiesHolder&gt;();</div>
+<div class="line"><span class="lineno">  116</span>  <span class="keyword">auto</span> requests_ivalue = this-&gt;<a class="code hl_variable" href="#af81efaf717da2e86654be758421c59ea">model_</a>.run_method(<span class="stringliteral">&quot;requested_neighbor_lists&quot;</span>);</div>
+<div class="line"><span class="lineno">  117</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;request_ivalue : requests_ivalue.toList()) {</div>
+<div class="line"><span class="lineno">  118</span>    <span class="keyword">auto</span> request =</div>
+<div class="line"><span class="lineno">  119</span>        request_ivalue.get()</div>
+<div class="line"><span class="lineno">  120</span>            .toCustomClass&lt;metatomic_torch::NeighborListOptionsHolder&gt;();</div>
+<div class="line"><span class="lineno">  121</span>    this-&gt;<a class="code hl_variable" href="#a0f816c137059a98cd678a92c7d893123">nl_requests_</a>.push_back(request);</div>
+<div class="line"><span class="lineno">  122</span>  }</div>
+<div class="line"><span class="lineno">  123</span> </div>
+<div class="line"><span class="lineno">  124</span>  <span class="comment">// 3. Determine and set up the device (CPU/CUDA/MPS)</span></div>
+<div class="line"><span class="lineno">  125</span>  torch::optional&lt;std::string&gt; desired = torch::nullopt;</div>
+<div class="line"><span class="lineno">  126</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.device.empty()) {</div>
+<div class="line"><span class="lineno">  127</span>    desired = <a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.device;</div>
+<div class="line"><span class="lineno">  128</span>  }</div>
+<div class="line"><span class="lineno">  129</span>  <a class="code hl_variable" href="#a8472d468900324b7de78fa600869d6cd">device_type_</a> = metatomic_torch::pick_device(</div>
+<div class="line"><span class="lineno">  130</span>      this-&gt;<a class="code hl_variable" href="#a6298ad13791d519f169a9db96d92d294">capabilities_</a>-&gt;supported_devices, desired);</div>
+<div class="line"><span class="lineno">  131</span> </div>
+<div class="line"><span class="lineno">  132</span>  <a class="code hl_variable" href="#a74023d0a5b5c16372dbc37723e8a6349">device_</a> = torch::Device(<a class="code hl_variable" href="#a8472d468900324b7de78fa600869d6cd">device_type_</a>);</div>
+<div class="line"><span class="lineno">  133</span>  QUILL_LOG_INFO(<a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>, <span class="stringliteral">&quot;[MetatomicPotential] Using device: {}&quot;</span>, <a class="code hl_variable" href="#a74023d0a5b5c16372dbc37723e8a6349">device_</a>.str());</div>
+<div class="line"><span class="lineno">  134</span> </div>
+<div class="line"><span class="lineno">  135</span>  move_atomistic_model(this-&gt;<a class="code hl_variable" href="#af81efaf717da2e86654be758421c59ea">model_</a>, this-&gt;<a class="code hl_variable" href="#a74023d0a5b5c16372dbc37723e8a6349">device_</a>);</div>
+<div class="line"><span class="lineno">  136</span> </div>
+<div class="line"><span class="lineno">  137</span>  <span class="comment">// 4. Set data type (float32/float64) based on model capabilities</span></div>
+<div class="line"><span class="lineno">  138</span>  <span class="keywordflow">if</span> (this-&gt;<a class="code hl_variable" href="#a6298ad13791d519f169a9db96d92d294">capabilities_</a>-&gt;dtype() == <span class="stringliteral">&quot;float64&quot;</span>) {</div>
+<div class="line"><span class="lineno">  139</span>    this-&gt;<a class="code hl_variable" href="#afdf318e397544dd495a0254c81500a0d">dtype_</a> = torch::kFloat64;</div>
+<div class="line"><span class="lineno">  140</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (this-&gt;<a class="code hl_variable" href="#a6298ad13791d519f169a9db96d92d294">capabilities_</a>-&gt;dtype() == <span class="stringliteral">&quot;float32&quot;</span>) {</div>
+<div class="line"><span class="lineno">  141</span>    this-&gt;<a class="code hl_variable" href="#afdf318e397544dd495a0254c81500a0d">dtype_</a> = torch::kFloat32;</div>
+<div class="line"><span class="lineno">  142</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  143</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Unsupported dtype: &quot;</span> +</div>
+<div class="line"><span class="lineno">  144</span>                             this-&gt;<a class="code hl_variable" href="#a6298ad13791d519f169a9db96d92d294">capabilities_</a>-&gt;dtype());</div>
+<div class="line"><span class="lineno">  145</span>  }</div>
+<div class="line"><span class="lineno">  146</span>  QUILL_LOG_INFO(<a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>, <span class="stringliteral">&quot;[MetatomicPotential] Using dtype: {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  147</span>                 this-&gt;<a class="code hl_variable" href="#a6298ad13791d519f169a9db96d92d294">capabilities_</a>-&gt;dtype().c_str());</div>
+<div class="line"><span class="lineno">  148</span> </div>
+<div class="line"><span class="lineno">  149</span>  <span class="comment">// 5. Resolve energy / force output keys: explicit keys (#215) or variants</span></div>
+<div class="line"><span class="lineno">  150</span>  <span class="comment">// (#296 for non_conservative_force)</span></div>
+<div class="line"><span class="lineno">  151</span>  <span class="keyword">auto</span> outputs = this-&gt;<a class="code hl_variable" href="#a6298ad13791d519f169a9db96d92d294">capabilities_</a>-&gt;outputs();</div>
+<div class="line"><span class="lineno">  152</span> </div>
+<div class="line"><span class="lineno">  153</span>  <span class="keyword">auto</span> v_base = <a class="code hl_function" href="MetatomicPotential_8cpp.html#aad659721cb763ae609500a7b92ffd45f">normalize_variant</a>(<a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.variant.base);</div>
+<div class="line"><span class="lineno">  154</span>  <span class="keyword">auto</span> v_energy = <a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.variant.energy.empty()</div>
+<div class="line"><span class="lineno">  155</span>                      ? v_base</div>
+<div class="line"><span class="lineno">  156</span>                      : <a class="code hl_function" href="MetatomicPotential_8cpp.html#aad659721cb763ae609500a7b92ffd45f">normalize_variant</a>(<a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.variant.energy);</div>
+<div class="line"><span class="lineno">  157</span>  <span class="keyword">auto</span> v_energy_uq =</div>
+<div class="line"><span class="lineno">  158</span>      <a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.variant.energy_uncertainty.empty()</div>
+<div class="line"><span class="lineno">  159</span>          ? v_energy</div>
+<div class="line"><span class="lineno">  160</span>          : <a class="code hl_function" href="MetatomicPotential_8cpp.html#aad659721cb763ae609500a7b92ffd45f">normalize_variant</a>(<a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.variant.energy_uncertainty);</div>
+<div class="line"><span class="lineno">  161</span>  <span class="keyword">auto</span> v_force = <a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.variant.force.empty()</div>
+<div class="line"><span class="lineno">  162</span>                     ? v_energy</div>
+<div class="line"><span class="lineno">  163</span>                     : <a class="code hl_function" href="MetatomicPotential_8cpp.html#aad659721cb763ae609500a7b92ffd45f">normalize_variant</a>(<a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.variant.force);</div>
+<div class="line"><span class="lineno">  164</span> </div>
+<div class="line"><span class="lineno">  165</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.energy_output.empty()) {</div>
+<div class="line"><span class="lineno">  166</span>    this-&gt;<a class="code hl_variable" href="#a7af739e784d796b1baf20cb3e9d380fd">energy_key_</a> = <a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.energy_output;</div>
+<div class="line"><span class="lineno">  167</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  168</span>    this-&gt;<a class="code hl_variable" href="#a7af739e784d796b1baf20cb3e9d380fd">energy_key_</a> =</div>
+<div class="line"><span class="lineno">  169</span>        metatomic_torch::pick_output(<span class="stringliteral">&quot;energy&quot;</span>, outputs, v_energy);</div>
+<div class="line"><span class="lineno">  170</span>  }</div>
+<div class="line"><span class="lineno">  171</span> </div>
+<div class="line"><span class="lineno">  172</span>  this-&gt;<a class="code hl_variable" href="#a1840ee15a27447a6f42c8c9014135d1f">non_conservative_</a> = <a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.non_conservative;</div>
+<div class="line"><span class="lineno">  173</span>  this-&gt;<a class="code hl_variable" href="#a713e5c2a80eb8a76d444f9392ec12110">random_rotation_</a> = <a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.random_rotation;</div>
+<div class="line"><span class="lineno">  174</span>  this-&gt;<a class="code hl_variable" href="#af52f1d74f7f583a1f0168daeeb258d1f">n_symmetry_rotations_</a> = <a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.n_symmetry_rotations;</div>
+<div class="line"><span class="lineno">  175</span>  <span class="keywordflow">if</span> (this-&gt;<a class="code hl_variable" href="#a1840ee15a27447a6f42c8c9014135d1f">non_conservative_</a>) {</div>
+<div class="line"><span class="lineno">  176</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.force_output.empty()) {</div>
+<div class="line"><span class="lineno">  177</span>      this-&gt;<a class="code hl_variable" href="#a97ff5915a06a5815d55841d07c07374f">nc_forces_key_</a> = <a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.force_output;</div>
+<div class="line"><span class="lineno">  178</span>      <span class="keywordflow">if</span> (!outputs.contains(this-&gt;nc_forces_key_)) {</div>
+<div class="line"><span class="lineno">  179</span>        <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  180</span>            <span class="stringliteral">&quot;Missing explicit force_output in metatomic model: &quot;</span> +</div>
+<div class="line"><span class="lineno">  181</span>            this-&gt;<a class="code hl_variable" href="#a97ff5915a06a5815d55841d07c07374f">nc_forces_key_</a>);</div>
+<div class="line"><span class="lineno">  182</span>      }</div>
+<div class="line"><span class="lineno">  183</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  184</span>      this-&gt;<a class="code hl_variable" href="#a97ff5915a06a5815d55841d07c07374f">nc_forces_key_</a> = metatomic_torch::pick_output(</div>
+<div class="line"><span class="lineno">  185</span>          <span class="stringliteral">&quot;non_conservative_force&quot;</span>, outputs, v_force);</div>
+<div class="line"><span class="lineno">  186</span>    }</div>
+<div class="line"><span class="lineno">  187</span>    QUILL_LOG_INFO(<a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>,</div>
+<div class="line"><span class="lineno">  188</span>                   <span class="stringliteral">&quot;[MetatomicPotential] Non-conservative forces from &#39;{}&#39;&quot;</span>,</div>
+<div class="line"><span class="lineno">  189</span>                   this-&gt;<a class="code hl_variable" href="#a97ff5915a06a5815d55841d07c07374f">nc_forces_key_</a>);</div>
+<div class="line"><span class="lineno">  190</span>  }</div>
+<div class="line"><span class="lineno">  191</span>  <span class="keywordflow">if</span> (this-&gt;<a class="code hl_variable" href="#af52f1d74f7f583a1f0168daeeb258d1f">n_symmetry_rotations_</a> &gt; 0) {</div>
+<div class="line"><span class="lineno">  192</span>    QUILL_LOG_INFO(<a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>,</div>
+<div class="line"><span class="lineno">  193</span>                   <span class="stringliteral">&quot;[MetatomicPotential] Symmetry averaging over {} rotations&quot;</span>,</div>
+<div class="line"><span class="lineno">  194</span>                   this-&gt;<a class="code hl_variable" href="#af52f1d74f7f583a1f0168daeeb258d1f">n_symmetry_rotations_</a>);</div>
+<div class="line"><span class="lineno">  195</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (this-&gt;<a class="code hl_variable" href="#a713e5c2a80eb8a76d444f9392ec12110">random_rotation_</a>) {</div>
+<div class="line"><span class="lineno">  196</span>    QUILL_LOG_INFO(</div>
+<div class="line"><span class="lineno">  197</span>        <a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>, <span class="stringliteral">&quot;[MetatomicPotential] Per-call random SO(3) rotation enabled&quot;</span>);</div>
+<div class="line"><span class="lineno">  198</span>  }</div>
+<div class="line"><span class="lineno">  199</span> </div>
+<div class="line"><span class="lineno">  200</span>  <span class="keywordflow">if</span> (!outputs.contains(this-&gt;energy_key_)) {</div>
+<div class="line"><span class="lineno">  201</span>    QUILL_LOG_ERROR(</div>
+<div class="line"><span class="lineno">  202</span>        <a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>,</div>
+<div class="line"><span class="lineno">  203</span>        <span class="stringliteral">&quot;[MetatomicPotential] The model does not provide an &#39;{}&#39; output.&quot;</span>,</div>
+<div class="line"><span class="lineno">  204</span>        this-&gt;<a class="code hl_variable" href="#a7af739e784d796b1baf20cb3e9d380fd">energy_key_</a>);</div>
+<div class="line"><span class="lineno">  205</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Missing energy output in metatomic model&quot;</span>);</div>
+<div class="line"><span class="lineno">  206</span>  }</div>
+<div class="line"><span class="lineno">  207</span> </div>
+<div class="line"><span class="lineno">  208</span>  <span class="comment">// 6. Set up evaluation options to request total energy</span></div>
+<div class="line"><span class="lineno">  209</span>  this-&gt;<a class="code hl_variable" href="#a23ce9c13310a97d39c64dabb479b8606">evaluations_options_</a> =</div>
+<div class="line"><span class="lineno">  210</span>      torch::make_intrusive&lt;metatomic_torch::ModelEvaluationOptionsHolder&gt;();</div>
+<div class="line"><span class="lineno">  211</span>  <a class="code hl_variable" href="#a23ce9c13310a97d39c64dabb479b8606">evaluations_options_</a>-&gt;set_length_unit(<a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.length_unit);</div>
+<div class="line"><span class="lineno">  212</span> </div>
+<div class="line"><span class="lineno">  213</span>  <span class="keyword">auto</span> model_output = outputs.at(this-&gt;<a class="code hl_variable" href="#a7af739e784d796b1baf20cb3e9d380fd">energy_key_</a>);</div>
+<div class="line"><span class="lineno">  214</span>  <span class="keyword">auto</span> requested_output =</div>
+<div class="line"><span class="lineno">  215</span>      torch::make_intrusive&lt;metatomic_torch::ModelOutputHolder&gt;();</div>
+<div class="line"><span class="lineno">  216</span> </div>
+<div class="line"><span class="lineno">  217</span>  <span class="comment">// Per-atom granularity is sample_kind == &quot;atom&quot; (get/set_per_atom removed).</span></div>
+<div class="line"><span class="lineno">  218</span>  requested_output-&gt;set_sample_kind(model_output-&gt;sample_kind());</div>
+<div class="line"><span class="lineno">  219</span>  requested_output-&gt;explicit_gradients = {};</div>
+<div class="line"><span class="lineno">  220</span>  requested_output-&gt;set_unit(<span class="stringliteral">&quot;eV&quot;</span>);</div>
+<div class="line"><span class="lineno">  221</span>  <a class="code hl_variable" href="#a23ce9c13310a97d39c64dabb479b8606">evaluations_options_</a>-&gt;outputs.insert(this-&gt;<a class="code hl_variable" href="#a7af739e784d796b1baf20cb3e9d380fd">energy_key_</a>, requested_output);</div>
+<div class="line"><span class="lineno">  222</span> </div>
+<div class="line"><span class="lineno">  223</span>  <span class="comment">// Request non-conservative forces when enabled (#296)</span></div>
+<div class="line"><span class="lineno">  224</span>  <span class="keywordflow">if</span> (this-&gt;<a class="code hl_variable" href="#a1840ee15a27447a6f42c8c9014135d1f">non_conservative_</a> &amp;&amp; !this-&gt;<a class="code hl_variable" href="#a97ff5915a06a5815d55841d07c07374f">nc_forces_key_</a>.empty()) {</div>
+<div class="line"><span class="lineno">  225</span>    <span class="keyword">auto</span> nc_info = outputs.at(this-&gt;<a class="code hl_variable" href="#a97ff5915a06a5815d55841d07c07374f">nc_forces_key_</a>);</div>
+<div class="line"><span class="lineno">  226</span>    <span class="keyword">auto</span> requested_nc =</div>
+<div class="line"><span class="lineno">  227</span>        torch::make_intrusive&lt;metatomic_torch::ModelOutputHolder&gt;();</div>
+<div class="line"><span class="lineno">  228</span>    requested_nc-&gt;set_sample_kind(nc_info-&gt;sample_kind());</div>
+<div class="line"><span class="lineno">  229</span>    requested_nc-&gt;explicit_gradients = {};</div>
+<div class="line"><span class="lineno">  230</span>    requested_nc-&gt;set_unit(<span class="stringliteral">&quot;eV/Angstrom&quot;</span>);</div>
+<div class="line"><span class="lineno">  231</span>    <a class="code hl_variable" href="#a23ce9c13310a97d39c64dabb479b8606">evaluations_options_</a>-&gt;outputs.insert(this-&gt;<a class="code hl_variable" href="#a97ff5915a06a5815d55841d07c07374f">nc_forces_key_</a>, requested_nc);</div>
+<div class="line"><span class="lineno">  232</span>  }</div>
+<div class="line"><span class="lineno">  233</span> </div>
+<div class="line"><span class="lineno">  234</span>  <span class="comment">// 7. Optionally request energy uncertainty if threshold is positive</span></div>
+<div class="line"><span class="lineno">  235</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.uncertainty_threshold &gt; 0) {</div>
+<div class="line"><span class="lineno">  236</span>    this-&gt;<a class="code hl_variable" href="#a9a34447e4edd32d27727d704a068ec16">uncertainty_threshold_</a> = <a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.uncertainty_threshold;</div>
+<div class="line"><span class="lineno">  237</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> explicit_uq_key =</div>
+<div class="line"><span class="lineno">  238</span>        !<a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.energy_uncertainty_output.empty();</div>
+<div class="line"><span class="lineno">  239</span>    <span class="keywordflow">if</span> (explicit_uq_key) {</div>
+<div class="line"><span class="lineno">  240</span>      <span class="comment">// User-specified key: hard fail if missing (not soft-disabled).</span></div>
+<div class="line"><span class="lineno">  241</span>      this-&gt;<a class="code hl_variable" href="#a6f4563edcce48e4c7d4e879540067cf6">energy_uncertainty_key_</a> =</div>
+<div class="line"><span class="lineno">  242</span>          <a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.energy_uncertainty_output;</div>
+<div class="line"><span class="lineno">  243</span>      <span class="keywordflow">if</span> (!outputs.contains(this-&gt;energy_uncertainty_key_)) {</div>
+<div class="line"><span class="lineno">  244</span>        QUILL_LOG_ERROR(<a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>,</div>
+<div class="line"><span class="lineno">  245</span>                        <span class="stringliteral">&quot;[MetatomicPotential] energy_uncertainty_output &#39;{}&#39; &quot;</span></div>
+<div class="line"><span class="lineno">  246</span>                        <span class="stringliteral">&quot;is not provided by the model.&quot;</span>,</div>
+<div class="line"><span class="lineno">  247</span>                        this-&gt;<a class="code hl_variable" href="#a6f4563edcce48e4c7d4e879540067cf6">energy_uncertainty_key_</a>);</div>
+<div class="line"><span class="lineno">  248</span>        <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  249</span>            <span class="stringliteral">&quot;Missing explicit energy_uncertainty_output in metatomic model: &quot;</span> +</div>
+<div class="line"><span class="lineno">  250</span>            this-&gt;<a class="code hl_variable" href="#a6f4563edcce48e4c7d4e879540067cf6">energy_uncertainty_key_</a>);</div>
+<div class="line"><span class="lineno">  251</span>      }</div>
+<div class="line"><span class="lineno">  252</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  253</span>      <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  254</span>        this-&gt;<a class="code hl_variable" href="#a6f4563edcce48e4c7d4e879540067cf6">energy_uncertainty_key_</a> = metatomic_torch::pick_output(</div>
+<div class="line"><span class="lineno">  255</span>            <span class="stringliteral">&quot;energy_uncertainty&quot;</span>, outputs, v_energy_uq);</div>
+<div class="line"><span class="lineno">  256</span>      } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><span class="lineno">  257</span>        QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">  258</span>            <a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>, <span class="stringliteral">&quot;[MetatomicPotential] No uncertainty output available: {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  259</span>            e.what());</div>
+<div class="line"><span class="lineno">  260</span>        this-&gt;<a class="code hl_variable" href="#a9a34447e4edd32d27727d704a068ec16">uncertainty_threshold_</a> = -1.0;</div>
+<div class="line"><span class="lineno">  261</span>      }</div>
+<div class="line"><span class="lineno">  262</span>    }</div>
+<div class="line"><span class="lineno">  263</span> </div>
+<div class="line"><span class="lineno">  264</span>    <span class="keywordflow">if</span> (this-&gt;<a class="code hl_variable" href="#a9a34447e4edd32d27727d704a068ec16">uncertainty_threshold_</a> &gt; 0) {</div>
+<div class="line"><span class="lineno">  265</span>      <span class="keyword">auto</span> uncertainty_info = outputs.at(this-&gt;<a class="code hl_variable" href="#a6f4563edcce48e4c7d4e879540067cf6">energy_uncertainty_key_</a>);</div>
+<div class="line"><span class="lineno">  266</span>      <span class="keywordflow">if</span> (uncertainty_info-&gt;sample_kind() == <span class="stringliteral">&quot;atom&quot;</span>) {</div>
+<div class="line"><span class="lineno">  267</span>        <span class="keyword">auto</span> requested_uncertainty =</div>
+<div class="line"><span class="lineno">  268</span>            torch::make_intrusive&lt;metatomic_torch::ModelOutputHolder&gt;();</div>
+<div class="line"><span class="lineno">  269</span>        requested_uncertainty-&gt;set_sample_kind(<span class="stringliteral">&quot;atom&quot;</span>);</div>
+<div class="line"><span class="lineno">  270</span>        requested_uncertainty-&gt;explicit_gradients = {};</div>
+<div class="line"><span class="lineno">  271</span>        requested_uncertainty-&gt;set_unit(<span class="stringliteral">&quot;eV&quot;</span>);</div>
+<div class="line"><span class="lineno">  272</span>        <a class="code hl_variable" href="#a23ce9c13310a97d39c64dabb479b8606">evaluations_options_</a>-&gt;outputs.insert(this-&gt;<a class="code hl_variable" href="#a6f4563edcce48e4c7d4e879540067cf6">energy_uncertainty_key_</a>,</div>
+<div class="line"><span class="lineno">  273</span>                                             requested_uncertainty);</div>
+<div class="line"><span class="lineno">  274</span>        QUILL_LOG_INFO(<a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>,</div>
+<div class="line"><span class="lineno">  275</span>                       <span class="stringliteral">&quot;[MetatomicPotential] Requested per-atom &quot;</span></div>
+<div class="line"><span class="lineno">  276</span>                       <span class="stringliteral">&quot;&#39;{}&#39; from model (threshold = {})&quot;</span>,</div>
+<div class="line"><span class="lineno">  277</span>                       this-&gt;<a class="code hl_variable" href="#a6f4563edcce48e4c7d4e879540067cf6">energy_uncertainty_key_</a>,</div>
+<div class="line"><span class="lineno">  278</span>                       this-&gt;<a class="code hl_variable" href="#a9a34447e4edd32d27727d704a068ec16">uncertainty_threshold_</a>);</div>
+<div class="line"><span class="lineno">  279</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  280</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>,</div>
+<div class="line"><span class="lineno">  281</span>                        <span class="stringliteral">&quot;[MetatomicPotential] Model provides &#39;{}&#39; &quot;</span></div>
+<div class="line"><span class="lineno">  282</span>                        <span class="stringliteral">&quot;but sample_kind is not \&quot;atom\&quot;; skipping uncertainty &quot;</span></div>
+<div class="line"><span class="lineno">  283</span>                        <span class="stringliteral">&quot;checks.&quot;</span>,</div>
+<div class="line"><span class="lineno">  284</span>                        this-&gt;<a class="code hl_variable" href="#a6f4563edcce48e4c7d4e879540067cf6">energy_uncertainty_key_</a>);</div>
+<div class="line"><span class="lineno">  285</span>        this-&gt;<a class="code hl_variable" href="#a9a34447e4edd32d27727d704a068ec16">uncertainty_threshold_</a> = -1.0;</div>
+<div class="line"><span class="lineno">  286</span>      }</div>
+<div class="line"><span class="lineno">  287</span>    }</div>
+<div class="line"><span class="lineno">  288</span>  }</div>
+<div class="line"><span class="lineno">  289</span> </div>
+<div class="line"><span class="lineno">  290</span>  this-&gt;<a class="code hl_variable" href="#aa59bbc5c5e2e908a0ee45993dfd571ae">check_consistency_</a> = <a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.check_consistency;</div>
+<div class="line"><span class="lineno">  291</span>  QUILL_LOG_INFO(<a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>, <span class="stringliteral">&quot;[MetatomicPotential] Initialization complete.&quot;</span>);</div>
+<div class="line"><span class="lineno">  292</span> </div>
+<div class="line"><span class="lineno">  293</span>  fpeh.<a class="code hl_function" href="classeonc_1_1FPEHandler.html#abce91443c8e3c366d6932a457145540a">restore_fpe</a>();</div>
+<div class="line"><span class="lineno">  294</span>}</div>
+<div class="ttc" id="aMetatomicPotential_8cpp_html_aad659721cb763ae609500a7b92ffd45f"><div class="ttname"><a href="MetatomicPotential_8cpp.html#aad659721cb763ae609500a7b92ffd45f">normalize_variant</a></div><div class="ttdeci">static torch::optional&lt; std::string &gt; normalize_variant(const std::string &amp;s)</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8cpp_source.html#l00052">MetatomicPotential.cpp:52</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_a0f816c137059a98cd678a92c7d893123"><div class="ttname"><a href="#a0f816c137059a98cd678a92c7d893123">MetatomicPotential::nl_requests_</a></div><div class="ttdeci">std::vector&lt; metatomic_torch::NeighborListOptions &gt; nl_requests_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00060">MetatomicPotential.h:60</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_a1840ee15a27447a6f42c8c9014135d1f"><div class="ttname"><a href="#a1840ee15a27447a6f42c8c9014135d1f">MetatomicPotential::non_conservative_</a></div><div class="ttdeci">bool non_conservative_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00071">MetatomicPotential.h:71</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_a23ce9c13310a97d39c64dabb479b8606"><div class="ttname"><a href="#a23ce9c13310a97d39c64dabb479b8606">MetatomicPotential::evaluations_options_</a></div><div class="ttdeci">metatomic_torch::ModelEvaluationOptions evaluations_options_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00061">MetatomicPotential.h:61</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_a3f88b5d02ec4d6a3fc8531d0c5a978f0"><div class="ttname"><a href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">MetatomicPotential::m_log</a></div><div class="ttdeci">eonc::log::Scoped m_log</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00055">MetatomicPotential.h:55</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_a6298ad13791d519f169a9db96d92d294"><div class="ttname"><a href="#a6298ad13791d519f169a9db96d92d294">MetatomicPotential::capabilities_</a></div><div class="ttdeci">metatomic_torch::ModelCapabilities capabilities_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00059">MetatomicPotential.h:59</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_a6f4563edcce48e4c7d4e879540067cf6"><div class="ttname"><a href="#a6f4563edcce48e4c7d4e879540067cf6">MetatomicPotential::energy_uncertainty_key_</a></div><div class="ttdeci">std::string energy_uncertainty_key_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00069">MetatomicPotential.h:69</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_a713e5c2a80eb8a76d444f9392ec12110"><div class="ttname"><a href="#a713e5c2a80eb8a76d444f9392ec12110">MetatomicPotential::random_rotation_</a></div><div class="ttdeci">bool random_rotation_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00072">MetatomicPotential.h:72</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_a74023d0a5b5c16372dbc37723e8a6349"><div class="ttname"><a href="#a74023d0a5b5c16372dbc37723e8a6349">MetatomicPotential::device_</a></div><div class="ttdeci">torch::Device device_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00065">MetatomicPotential.h:65</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_a7af739e784d796b1baf20cb3e9d380fd"><div class="ttname"><a href="#a7af739e784d796b1baf20cb3e9d380fd">MetatomicPotential::energy_key_</a></div><div class="ttdeci">std::string energy_key_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00068">MetatomicPotential.h:68</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_a8472d468900324b7de78fa600869d6cd"><div class="ttname"><a href="#a8472d468900324b7de78fa600869d6cd">MetatomicPotential::device_type_</a></div><div class="ttdeci">c10::DeviceType device_type_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00064">MetatomicPotential.h:64</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_a97ff5915a06a5815d55841d07c07374f"><div class="ttname"><a href="#a97ff5915a06a5815d55841d07c07374f">MetatomicPotential::nc_forces_key_</a></div><div class="ttdeci">std::string nc_forces_key_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00070">MetatomicPotential.h:70</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_a9a34447e4edd32d27727d704a068ec16"><div class="ttname"><a href="#a9a34447e4edd32d27727d704a068ec16">MetatomicPotential::uncertainty_threshold_</a></div><div class="ttdeci">double uncertainty_threshold_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00076">MetatomicPotential.h:76</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_aa59bbc5c5e2e908a0ee45993dfd571ae"><div class="ttname"><a href="#aa59bbc5c5e2e908a0ee45993dfd571ae">MetatomicPotential::check_consistency_</a></div><div class="ttdeci">bool check_consistency_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00066">MetatomicPotential.h:66</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_aedf2c9ed32f61cb37b008a733188e301"><div class="ttname"><a href="#aedf2c9ed32f61cb37b008a733188e301">MetatomicPotential::m_metatomic_opts</a></div><div class="ttdeci">Parameters::metatomic_options_t m_metatomic_opts</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00056">MetatomicPotential.h:56</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_af52f1d74f7f583a1f0168daeeb258d1f"><div class="ttname"><a href="#af52f1d74f7f583a1f0168daeeb258d1f">MetatomicPotential::n_symmetry_rotations_</a></div><div class="ttdeci">long n_symmetry_rotations_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00073">MetatomicPotential.h:73</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_af81efaf717da2e86654be758421c59ea"><div class="ttname"><a href="#af81efaf717da2e86654be758421c59ea">MetatomicPotential::model_</a></div><div class="ttdeci">metatensor_torch::Module model_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00058">MetatomicPotential.h:58</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_afdf318e397544dd495a0254c81500a0d"><div class="ttname"><a href="#afdf318e397544dd495a0254c81500a0d">MetatomicPotential::dtype_</a></div><div class="ttdeci">torch::ScalarType dtype_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00063">MetatomicPotential.h:63</a></div></div>
+<div class="ttc" id="aclasseonc_1_1FPEHandler_html_abce91443c8e3c366d6932a457145540a"><div class="ttname"><a href="classeonc_1_1FPEHandler.html#abce91443c8e3c366d6932a457145540a">eonc::FPEHandler::restore_fpe</a></div><div class="ttdeci">void restore_fpe()</div><div class="ttdef"><b>Definition</b> <a href="fpe__handler_8cpp_source.html#l00251">fpe_handler.cpp:251</a></div></div>
+<div class="ttc" id="aclasseonc_1_1FPEHandler_html_afd34f29eda64117a665d8340a5b43a1c"><div class="ttname"><a href="classeonc_1_1FPEHandler.html#afd34f29eda64117a665d8340a5b43a1c">eonc::FPEHandler::eat_fpe</a></div><div class="ttdeci">void eat_fpe()</div><div class="ttdef"><b>Definition</b> <a href="fpe__handler_8cpp_source.html#l00246">fpe_handler.cpp:246</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_abe39c95c9363fce1a030dc4c55634705"><div class="ttname"><a href="classeonc_1_1Parameters.html#abe39c95c9363fce1a030dc4c55634705">eonc::Parameters::metatomic_options</a></div><div class="ttdeci">struct eonc::Parameters::metatomic_options_t metatomic_options</div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_af81acd9a6775ff13fab861a51fb9ba95"><div class="ttname"><a href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">eonc::Potential::Potential</a></div><div class="ttdeci">Potential(PotType a_ptype)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00035">Potential.h:35</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a2da9f88c4946c305ed6794006f56e8f3"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a2da9f88c4946c305ed6794006f56e8f3">eonc::PotType::METATOMIC</a></div><div class="ttdeci">@ METATOMIC</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00067">BaseStructures.h:67</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="abd9f0b8c2238a5108f710ab4830eb031" name="abd9f0b8c2238a5108f710ab4830eb031"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd9f0b8c2238a5108f710ab4830eb031">&#9670;&#160;</a></span>~MetatomicPotential()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">MetatomicPotential::~MetatomicPotential </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destructor. </p>
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a8e6d7512bcc2dd29c797831f50ee3f45" name="a8e6d7512bcc2dd29c797831f50ee3f45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e6d7512bcc2dd29c797831f50ee3f45">&#9670;&#160;</a></span>computeNeighbors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors </td>
+          <td>(</td>
+          <td class="paramtype">metatomic_torch::NeighborListOptions</td>          <td class="paramname"><span class="paramname"><em>request</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>nAtoms</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>positions</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>box</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool</td>          <td class="paramname"><span class="paramname"><em>periodic</em></span>[3]&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes neighbor list using the vesin library. </p>
+<p>This function calls <span class="tt">vesin_neighbors</span> to build a neighbor list based on the model's requirements (cutoff, full/half list) and converts it into a metatensor::TensorBlock suitable for metatomic.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">request</td><td>The neighbor list options requested by the model. </td></tr>
+    <tr><td class="paramname">nAtoms</td><td>The number of atoms in the system. </td></tr>
+    <tr><td class="paramname">positions</td><td>Pointer to the atomic positions array. </td></tr>
+    <tr><td class="paramname">box</td><td>Pointer to the simulation box matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A metatensor_torch::TensorBlock containing the neighbor list. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8cpp_source.html#l00530">530</a> of file <a class="el" href="MetatomicPotential_8cpp_source.html">MetatomicPotential.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  532</span>                                                                        {</div>
+<div class="line"><span class="lineno">  533</span> </div>
+<div class="line"><span class="lineno">  534</span>  <span class="keyword">auto</span> cutoff = request-&gt;engine_cutoff(<a class="code hl_variable" href="#aedf2c9ed32f61cb37b008a733188e301">m_metatomic_opts</a>.length_unit);</div>
+<div class="line"><span class="lineno">  535</span> </div>
+<div class="line"><span class="lineno">  536</span>  <span class="comment">// Zero-init so vesin 0.6 skin/n_threads stay 0 when compiling against 0.6</span></div>
+<div class="line"><span class="lineno">  537</span>  <span class="comment">// headers (must match linked libvesin — pin vesin&gt;=0.6 for metatomic builds).</span></div>
+<div class="line"><span class="lineno">  538</span>  VesinOptions options{};</div>
+<div class="line"><span class="lineno">  539</span>  options.cutoff = cutoff;</div>
+<div class="line"><span class="lineno">  540</span>  options.full = request-&gt;full_list();</div>
+<div class="line"><span class="lineno">  541</span>  options.sorted = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  542</span>  options.return_shifts = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  543</span>  options.return_distances = <span class="keyword">false</span>; <span class="comment">// we don&#39;t need distances</span></div>
+<div class="line"><span class="lineno">  544</span>  options.return_vectors = <span class="keyword">true</span>;    <span class="comment">// metatomic uses vectors for autograd</span></div>
+<div class="line"><span class="lineno">  545</span> </div>
+<div class="line"><span class="lineno">  546</span>  VesinNeighborList *vesin_neighbor_list = <span class="keyword">new</span> VesinNeighborList();</div>
+<div class="line"><span class="lineno">  547</span> </div>
+<div class="line"><span class="lineno">  548</span>  VesinDevice cpu{VesinCPU, 0};</div>
+<div class="line"><span class="lineno">  549</span>  <span class="keyword">const</span> <span class="keywordtype">char</span> *error_message = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  550</span>  <span class="keywordtype">int</span> status = vesin_neighbors(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">double</span> (*)[3]<span class="keyword">&gt;</span>(positions),</div>
+<div class="line"><span class="lineno">  551</span>                               <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nAtoms),</div>
+<div class="line"><span class="lineno">  552</span>                               <span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">double</span> (*)[3]<span class="keyword">&gt;</span>(box),</div>
+<div class="line"><span class="lineno">  553</span>                               <span class="keyword">const_cast&lt;</span><span class="keywordtype">bool</span> *<span class="keyword">&gt;</span>(periodic), cpu, options,</div>
+<div class="line"><span class="lineno">  554</span>                               vesin_neighbor_list, &amp;error_message);</div>
+<div class="line"><span class="lineno">  555</span> </div>
+<div class="line"><span class="lineno">  556</span>  <span class="keywordflow">if</span> (status != EXIT_SUCCESS) {</div>
+<div class="line"><span class="lineno">  557</span>    std::string err_str = <span class="stringliteral">&quot;vesin_neighbors failed&quot;</span>;</div>
+<div class="line"><span class="lineno">  558</span>    <span class="keywordflow">if</span> (error_message != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  559</span>      err_str += <span class="stringliteral">&quot;: &quot;</span> + std::string(error_message);</div>
+<div class="line"><span class="lineno">  560</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  561</span>      err_str += <span class="stringliteral">&quot; (no message; vesin header/lib ABI mismatch? need vesin&gt;=0.6 &quot;</span></div>
+<div class="line"><span class="lineno">  562</span>                 <span class="stringliteral">&quot;with matching engine)&quot;</span>;</div>
+<div class="line"><span class="lineno">  563</span>    }</div>
+<div class="line"><span class="lineno">  564</span>    <span class="keyword">delete</span> vesin_neighbor_list;</div>
+<div class="line"><span class="lineno">  565</span>    <span class="keywordflow">throw</span> std::runtime_error(err_str);</div>
+<div class="line"><span class="lineno">  566</span>  }</div>
+<div class="line"><span class="lineno">  567</span> </div>
+<div class="line"><span class="lineno">  568</span>  <span class="comment">// Convert from vesin to metatomic format</span></div>
+<div class="line"><span class="lineno">  569</span>  <span class="keyword">auto</span> n_pairs = <span class="keyword">static_cast&lt;</span>int64_t<span class="keyword">&gt;</span>(vesin_neighbor_list-&gt;length);</div>
+<div class="line"><span class="lineno">  570</span>  <span class="keyword">auto</span> labels_options_cpu =</div>
+<div class="line"><span class="lineno">  571</span>      torch::TensorOptions().dtype(torch::kInt32).device(torch::kCPU);</div>
+<div class="line"><span class="lineno">  572</span> </div>
+<div class="line"><span class="lineno">  573</span>  <span class="keyword">auto</span> pair_samples_values = torch::empty({n_pairs, 5}, labels_options_cpu);</div>
+<div class="line"><span class="lineno">  574</span>  <span class="keyword">auto</span> pair_samples_values_ptr = pair_samples_values.accessor&lt;int32_t, 2&gt;();</div>
+<div class="line"><span class="lineno">  575</span>  <span class="keywordflow">for</span> (int64_t i = 0; i &lt; n_pairs; i++) {</div>
+<div class="line"><span class="lineno">  576</span>    pair_samples_values_ptr[i][0] =</div>
+<div class="line"><span class="lineno">  577</span>        <span class="keyword">static_cast&lt;</span>int32_t<span class="keyword">&gt;</span>(vesin_neighbor_list-&gt;pairs[i][0]);</div>
+<div class="line"><span class="lineno">  578</span>    pair_samples_values_ptr[i][1] =</div>
+<div class="line"><span class="lineno">  579</span>        <span class="keyword">static_cast&lt;</span>int32_t<span class="keyword">&gt;</span>(vesin_neighbor_list-&gt;pairs[i][1]);</div>
+<div class="line"><span class="lineno">  580</span>    pair_samples_values_ptr[i][2] = vesin_neighbor_list-&gt;shifts[i][0];</div>
+<div class="line"><span class="lineno">  581</span>    pair_samples_values_ptr[i][3] = vesin_neighbor_list-&gt;shifts[i][1];</div>
+<div class="line"><span class="lineno">  582</span>    pair_samples_values_ptr[i][4] = vesin_neighbor_list-&gt;shifts[i][2];</div>
+<div class="line"><span class="lineno">  583</span>  }</div>
+<div class="line"><span class="lineno">  584</span> </div>
+<div class="line"><span class="lineno">  585</span>  <span class="comment">// Custom deleter to free vesin&#39;s memory when the torch tensor is destroyed</span></div>
+<div class="line"><span class="lineno">  586</span>  <span class="keyword">auto</span> deleter = [=](<span class="keywordtype">void</span> *) {</div>
+<div class="line"><span class="lineno">  587</span>    vesin_free(vesin_neighbor_list);</div>
+<div class="line"><span class="lineno">  588</span>    <span class="keyword">delete</span> vesin_neighbor_list;</div>
+<div class="line"><span class="lineno">  589</span>  };</div>
+<div class="line"><span class="lineno">  590</span> </div>
+<div class="line"><span class="lineno">  591</span>  <span class="keyword">auto</span> pair_vectors = torch::from_blob(</div>
+<div class="line"><span class="lineno">  592</span>      vesin_neighbor_list-&gt;vectors, {n_pairs, 3, 1}, deleter,</div>
+<div class="line"><span class="lineno">  593</span>      torch::TensorOptions().dtype(torch::kFloat64).device(torch::kCPU));</div>
+<div class="line"><span class="lineno">  594</span> </div>
+<div class="line"><span class="lineno">  595</span>  <span class="keyword">auto</span> neighbor_samples = torch::make_intrusive&lt;metatensor_torch::LabelsHolder&gt;(</div>
+<div class="line"><span class="lineno">  596</span>      std::vector&lt;std::string&gt;{<span class="stringliteral">&quot;first_atom&quot;</span>, <span class="stringliteral">&quot;second_atom&quot;</span>, <span class="stringliteral">&quot;cell_shift_a&quot;</span>,</div>
+<div class="line"><span class="lineno">  597</span>                               <span class="stringliteral">&quot;cell_shift_b&quot;</span>, <span class="stringliteral">&quot;cell_shift_c&quot;</span>},</div>
+<div class="line"><span class="lineno">  598</span>      pair_samples_values.to(this-&gt;<a class="code hl_variable" href="#a74023d0a5b5c16372dbc37723e8a6349">device_</a>));</div>
+<div class="line"><span class="lineno">  599</span> </div>
+<div class="line"><span class="lineno">  600</span>  <span class="keyword">auto</span> labels_options_dev =</div>
+<div class="line"><span class="lineno">  601</span>      torch::TensorOptions().dtype(torch::kInt32).device(this-&gt;<a class="code hl_variable" href="#a74023d0a5b5c16372dbc37723e8a6349">device_</a>);</div>
+<div class="line"><span class="lineno">  602</span>  <span class="keyword">auto</span> neighbor_component =</div>
+<div class="line"><span class="lineno">  603</span>      torch::make_intrusive&lt;metatensor_torch::LabelsHolder&gt;(</div>
+<div class="line"><span class="lineno">  604</span>          <span class="stringliteral">&quot;xyz&quot;</span>, torch::tensor({0, 1, 2}, labels_options_dev).reshape({3, 1}));</div>
+<div class="line"><span class="lineno">  605</span>  <span class="keyword">auto</span> neighbor_properties =</div>
+<div class="line"><span class="lineno">  606</span>      torch::make_intrusive&lt;metatensor_torch::LabelsHolder&gt;(</div>
+<div class="line"><span class="lineno">  607</span>          <span class="stringliteral">&quot;distance&quot;</span>, torch::zeros({1, 1}, labels_options_dev));</div>
+<div class="line"><span class="lineno">  608</span> </div>
+<div class="line"><span class="lineno">  609</span>  <span class="keywordflow">return</span> torch::make_intrusive&lt;metatensor_torch::TensorBlockHolder&gt;(</div>
+<div class="line"><span class="lineno">  610</span>      pair_vectors.to(this-&gt;dtype_).to(this-&gt;device_), neighbor_samples,</div>
+<div class="line"><span class="lineno">  611</span>      std::vector&lt;metatensor_torch::Labels&gt;{neighbor_component},</div>
+<div class="line"><span class="lineno">  612</span>      neighbor_properties);</div>
+<div class="line"><span class="lineno">  613</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a06640aa432a3e8994c6074a60cb92a92" name="a06640aa432a3e8994c6074a60cb92a92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06640aa432a3e8994c6074a60cb92a92">&#9670;&#160;</a></span>force()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MetatomicPotential::force </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>nAtoms</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>positions</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em>atomicNrs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>forces</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>energy</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>variance</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>box</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Calculates the energy and forces for a given atomic configuration. </p>
+<p>This is the core method of the potential. It takes the current atomic positions, builds the necessary data structures for metatomic, executes the model to get the potential energy, and uses PyTorch's autograd to compute forces.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nAtoms</td><td>Number of atoms. </td></tr>
+    <tr><td class="paramname">positions</td><td>Flat array of atomic positions (size nAtoms * 3). </td></tr>
+    <tr><td class="paramname">atomicNrs</td><td>Flat array of atomic numbers (size nAtoms), used for consistency checks. </td></tr>
+    <tr><td class="paramname">forces</td><td>Flat array to store the calculated forces (size nAtoms * 3). </td></tr>
+    <tr><td class="paramname">energy</td><td>Pointer to a double to store the calculated potential energy. </td></tr>
+    <tr><td class="paramname">variance</td><td>Pointer to a double to store the variance of the energy (currently unused, set to NULL). </td></tr>
+    <tr><td class="paramname">box</td><td>The simulation box vectors (3x3 matrix). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8cpp_source.html#l00320">320</a> of file <a class="el" href="MetatomicPotential_8cpp_source.html">MetatomicPotential.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  323</span>                                                  {</div>
+<div class="line"><span class="lineno">  324</span>  <span class="comment">// Serialize concurrent calls -- PyTorch model inference on the same</span></div>
+<div class="line"><span class="lineno">  325</span>  <span class="comment">// Module instance is not thread-safe</span></div>
+<div class="line"><span class="lineno">  326</span>  std::lock_guard&lt;std::mutex&gt; lock(<a class="code hl_variable" href="#a88809b804eda8d73fb8946ac4b58a323">inference_mutex_</a>);</div>
+<div class="line"><span class="lineno">  327</span> </div>
+<div class="line"><span class="lineno">  328</span>  eonc::FPEHandler fpeh;</div>
+<div class="line"><span class="lineno">  329</span>  fpeh.<a class="code hl_function" href="classeonc_1_1FPEHandler.html#afd34f29eda64117a665d8340a5b43a1c">eat_fpe</a>();</div>
+<div class="line"><span class="lineno">  330</span> </div>
+<div class="line"><span class="lineno">  331</span>  <span class="keywordflow">if</span> (!atomicNrs) {</div>
+<div class="line"><span class="lineno">  332</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  333</span>        <span class="stringliteral">&quot;[MetatomicPotential] `atomicNrs` must be provided.&quot;</span>);</div>
+<div class="line"><span class="lineno">  334</span>  }</div>
+<div class="line"><span class="lineno">  335</span> </div>
+<div class="line"><span class="lineno">  336</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> n_avg = this-&gt;<a class="code hl_variable" href="#af52f1d74f7f583a1f0168daeeb258d1f">n_symmetry_rotations_</a> &gt; 0</div>
+<div class="line"><span class="lineno">  337</span>                         ? this-&gt;<a class="code hl_variable" href="#af52f1d74f7f583a1f0168daeeb258d1f">n_symmetry_rotations_</a></div>
+<div class="line"><span class="lineno">  338</span>                         : (this-&gt;<a class="code hl_variable" href="#a713e5c2a80eb8a76d444f9392ec12110">random_rotation_</a> ? 1 : 1);</div>
+<div class="line"><span class="lineno">  339</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> use_rotation =</div>
+<div class="line"><span class="lineno">  340</span>      this-&gt;<a class="code hl_variable" href="#a713e5c2a80eb8a76d444f9392ec12110">random_rotation_</a> || this-&gt;<a class="code hl_variable" href="#af52f1d74f7f583a1f0168daeeb258d1f">n_symmetry_rotations_</a> &gt; 0;</div>
+<div class="line"><span class="lineno">  341</span>  <span class="comment">// n_symmetry_rotations averages; random_rotation alone is one rotated eval</span></div>
+<div class="line"><span class="lineno">  342</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> n_passes =</div>
+<div class="line"><span class="lineno">  343</span>      this-&gt;<a class="code hl_variable" href="#af52f1d74f7f583a1f0168daeeb258d1f">n_symmetry_rotations_</a> &gt; 0 ? this-&gt;<a class="code hl_variable" href="#af52f1d74f7f583a1f0168daeeb258d1f">n_symmetry_rotations_</a> : 1;</div>
+<div class="line"><span class="lineno">  344</span> </div>
+<div class="line"><span class="lineno">  345</span>  <span class="keyword">auto</span> f64_options =</div>
+<div class="line"><span class="lineno">  346</span>      torch::TensorOptions().dtype(torch::kFloat64).device(torch::kCPU);</div>
+<div class="line"><span class="lineno">  347</span>  std::vector&lt;int32_t&gt; types_vec(atomicNrs, atomicNrs + nAtoms);</div>
+<div class="line"><span class="lineno">  348</span>  <span class="keyword">auto</span> atomic_types_cpu =</div>
+<div class="line"><span class="lineno">  349</span>      torch::tensor(types_vec, torch::TensorOptions().dtype(torch::kInt32));</div>
+<div class="line"><span class="lineno">  350</span> </div>
+<div class="line"><span class="lineno">  351</span>  <span class="keywordtype">double</span> energy_acc = 0.0;</div>
+<div class="line"><span class="lineno">  352</span>  <span class="keyword">auto</span> forces_acc = torch::zeros({nAtoms, 3}, f64_options);</div>
+<div class="line"><span class="lineno">  353</span>  <span class="keywordtype">bool</span> variance_set = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  354</span> </div>
+<div class="line"><span class="lineno">  355</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i_pass = 0; i_pass &lt; n_passes; ++i_pass) {</div>
+<div class="line"><span class="lineno">  356</span>    torch::Tensor R = torch::eye(</div>
+<div class="line"><span class="lineno">  357</span>        3, torch::TensorOptions().dtype(this-&gt;<a class="code hl_variable" href="#afdf318e397544dd495a0254c81500a0d">dtype_</a>).device(this-&gt;<a class="code hl_variable" href="#a74023d0a5b5c16372dbc37723e8a6349">device_</a>));</div>
+<div class="line"><span class="lineno">  358</span>    <span class="keywordflow">if</span> (use_rotation) {</div>
+<div class="line"><span class="lineno">  359</span>      R = random_so3(this-&gt;<a class="code hl_variable" href="#a74023d0a5b5c16372dbc37723e8a6349">device_</a>, this-&gt;<a class="code hl_variable" href="#afdf318e397544dd495a0254c81500a0d">dtype_</a>);</div>
+<div class="line"><span class="lineno">  360</span>    }</div>
+<div class="line"><span class="lineno">  361</span>    <span class="comment">// R is applied to row vectors: pos&#39; = pos @ R^T  (equiv. R @ pos for cols)</span></div>
+<div class="line"><span class="lineno">  362</span>    <span class="keyword">auto</span> R_cpu = R.to(torch::kCPU).to(torch::kFloat64);</div>
+<div class="line"><span class="lineno">  363</span>    <span class="keyword">auto</span> R_T = R.transpose(0, 1);</div>
+<div class="line"><span class="lineno">  364</span> </div>
+<div class="line"><span class="lineno">  365</span>    <span class="keyword">auto</span> pos_cpu = torch::from_blob(<span class="keyword">const_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(positions),</div>
+<div class="line"><span class="lineno">  366</span>                                    {nAtoms, 3}, f64_options)</div>
+<div class="line"><span class="lineno">  367</span>                       .clone();</div>
+<div class="line"><span class="lineno">  368</span>    <span class="keyword">auto</span> cell_cpu =</div>
+<div class="line"><span class="lineno">  369</span>        torch::from_blob(<span class="keyword">const_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(box), {3, 3}, f64_options)</div>
+<div class="line"><span class="lineno">  370</span>            .clone();</div>
+<div class="line"><span class="lineno">  371</span>    <span class="keywordflow">if</span> (use_rotation) {</div>
+<div class="line"><span class="lineno">  372</span>      pos_cpu = pos_cpu.matmul(R_cpu.transpose(0, 1));</div>
+<div class="line"><span class="lineno">  373</span>      <span class="comment">// Rotate cell vectors (rows) the same way</span></div>
+<div class="line"><span class="lineno">  374</span>      cell_cpu = cell_cpu.matmul(R_cpu.transpose(0, 1));</div>
+<div class="line"><span class="lineno">  375</span>    }</div>
+<div class="line"><span class="lineno">  376</span> </div>
+<div class="line"><span class="lineno">  377</span>    std::vector&lt;double&gt; pos_buf(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nAtoms) * 3);</div>
+<div class="line"><span class="lineno">  378</span>    std::vector&lt;double&gt; cell_buf(9);</div>
+<div class="line"><span class="lineno">  379</span>    std::memcpy(pos_buf.data(), pos_cpu.contiguous().data_ptr&lt;<span class="keywordtype">double</span>&gt;(),</div>
+<div class="line"><span class="lineno">  380</span>                pos_buf.size() * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
+<div class="line"><span class="lineno">  381</span>    std::memcpy(cell_buf.data(), cell_cpu.contiguous().data_ptr&lt;<span class="keywordtype">double</span>&gt;(),</div>
+<div class="line"><span class="lineno">  382</span>                9 * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
+<div class="line"><span class="lineno">  383</span> </div>
+<div class="line"><span class="lineno">  384</span>    <span class="keyword">auto</span> torch_positions =</div>
+<div class="line"><span class="lineno">  385</span>        torch::from_blob(pos_buf.data(), {nAtoms, 3}, f64_options)</div>
+<div class="line"><span class="lineno">  386</span>            .to(this-&gt;<a class="code hl_variable" href="#afdf318e397544dd495a0254c81500a0d">dtype_</a>)</div>
+<div class="line"><span class="lineno">  387</span>            .to(this-&gt;<a class="code hl_variable" href="#a74023d0a5b5c16372dbc37723e8a6349">device_</a>)</div>
+<div class="line"><span class="lineno">  388</span>            .set_requires_grad(!this-&gt;<a class="code hl_variable" href="#a1840ee15a27447a6f42c8c9014135d1f">non_conservative_</a>);</div>
+<div class="line"><span class="lineno">  389</span> </div>
+<div class="line"><span class="lineno">  390</span>    <span class="keyword">auto</span> torch_cell = torch::from_blob(cell_buf.data(), {3, 3}, f64_options)</div>
+<div class="line"><span class="lineno">  391</span>                          .to(this-&gt;<a class="code hl_variable" href="#afdf318e397544dd495a0254c81500a0d">dtype_</a>)</div>
+<div class="line"><span class="lineno">  392</span>                          .to(this-&gt;<a class="code hl_variable" href="#a74023d0a5b5c16372dbc37723e8a6349">device_</a>);</div>
+<div class="line"><span class="lineno">  393</span> </div>
+<div class="line"><span class="lineno">  394</span>    <span class="keyword">auto</span> cell_norms = torch::norm(torch_cell, 2, <span class="comment">/*dim=*/</span>1);</div>
+<div class="line"><span class="lineno">  395</span>    <span class="keyword">auto</span> torch_pbc = cell_norms.abs() &gt; 1e-9;</div>
+<div class="line"><span class="lineno">  396</span>    <span class="keywordtype">bool</span> periodic[3] = {torch_pbc[0].item&lt;<span class="keywordtype">bool</span>&gt;(), torch_pbc[1].item&lt;bool&gt;(),</div>
+<div class="line"><span class="lineno">  397</span>                        torch_pbc[2].item&lt;<span class="keywordtype">bool</span>&gt;()};</div>
+<div class="line"><span class="lineno">  398</span> </div>
+<div class="line"><span class="lineno">  399</span>    <span class="keyword">auto</span> atomic_types = atomic_types_cpu.to(this-&gt;<a class="code hl_variable" href="#a74023d0a5b5c16372dbc37723e8a6349">device_</a>);</div>
+<div class="line"><span class="lineno">  400</span> </div>
+<div class="line"><span class="lineno">  401</span>    <span class="keyword">auto</span> system = torch::make_intrusive&lt;metatomic_torch::SystemHolder&gt;(</div>
+<div class="line"><span class="lineno">  402</span>        atomic_types, torch_positions, torch_cell, torch_pbc);</div>
+<div class="line"><span class="lineno">  403</span> </div>
+<div class="line"><span class="lineno">  404</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;request : this-&gt;<a class="code hl_variable" href="#a0f816c137059a98cd678a92c7d893123">nl_requests_</a>) {</div>
+<div class="line"><span class="lineno">  405</span>      <span class="keyword">auto</span> neighbors = this-&gt;<a class="code hl_function" href="#a8e6d7512bcc2dd29c797831f50ee3f45">computeNeighbors</a>(request, nAtoms, pos_buf.data(),</div>
+<div class="line"><span class="lineno">  406</span>                                              cell_buf.data(), periodic);</div>
+<div class="line"><span class="lineno">  407</span>      metatomic_torch::register_autograd_neighbors(system, neighbors,</div>
+<div class="line"><span class="lineno">  408</span>                                                   this-&gt;<a class="code hl_variable" href="#aa59bbc5c5e2e908a0ee45993dfd571ae">check_consistency_</a>);</div>
+<div class="line"><span class="lineno">  409</span>      system-&gt;add_neighbor_list(request, neighbors);</div>
+<div class="line"><span class="lineno">  410</span>    }</div>
+<div class="line"><span class="lineno">  411</span> </div>
+<div class="line"><span class="lineno">  412</span>    torch::Tensor forces_tensor;</div>
+<div class="line"><span class="lineno">  413</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  414</span>      <span class="keyword">auto</span> ivalue_output = this-&gt;<a class="code hl_variable" href="#af81efaf717da2e86654be758421c59ea">model_</a>.forward({</div>
+<div class="line"><span class="lineno">  415</span>          std::vector&lt;metatomic_torch::System&gt;{system},</div>
+<div class="line"><span class="lineno">  416</span>          <a class="code hl_variable" href="#a23ce9c13310a97d39c64dabb479b8606">evaluations_options_</a>,</div>
+<div class="line"><span class="lineno">  417</span>          this-&gt;<a class="code hl_variable" href="#aa59bbc5c5e2e908a0ee45993dfd571ae">check_consistency_</a>,</div>
+<div class="line"><span class="lineno">  418</span>      });</div>
+<div class="line"><span class="lineno">  419</span>      <span class="keyword">auto</span> dict_output = ivalue_output.toGenericDict();</div>
+<div class="line"><span class="lineno">  420</span>      <span class="keyword">auto</span> output_map = dict_output.at(this-&gt;<a class="code hl_variable" href="#a7af739e784d796b1baf20cb3e9d380fd">energy_key_</a>)</div>
+<div class="line"><span class="lineno">  421</span>                            .toCustomClass&lt;metatensor_torch::TensorMapHolder&gt;();</div>
+<div class="line"><span class="lineno">  422</span> </div>
+<div class="line"><span class="lineno">  423</span>      <span class="keywordflow">if</span> (this-&gt;<a class="code hl_variable" href="#a9a34447e4edd32d27727d704a068ec16">uncertainty_threshold_</a> &gt; 0 &amp;&amp; i_pass == 0) {</div>
+<div class="line"><span class="lineno">  424</span>        <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  425</span>          <span class="keywordflow">if</span> (dict_output.contains(this-&gt;energy_uncertainty_key_)) {</div>
+<div class="line"><span class="lineno">  426</span>            <span class="keyword">auto</span> uncertainty_map =</div>
+<div class="line"><span class="lineno">  427</span>                dict_output.at(this-&gt;<a class="code hl_variable" href="#a6f4563edcce48e4c7d4e879540067cf6">energy_uncertainty_key_</a>)</div>
+<div class="line"><span class="lineno">  428</span>                    .toCustomClass&lt;metatensor_torch::TensorMapHolder&gt;();</div>
+<div class="line"><span class="lineno">  429</span>            <span class="keyword">auto</span> uncertainty_block =</div>
+<div class="line"><span class="lineno">  430</span>                metatensor_torch::TensorMapHolder::block_by_id(uncertainty_map,</div>
+<div class="line"><span class="lineno">  431</span>                                                               0);</div>
+<div class="line"><span class="lineno">  432</span>            <span class="keyword">auto</span> flat_uncertainty =</div>
+<div class="line"><span class="lineno">  433</span>                uncertainty_block-&gt;values().reshape({-1}).to(torch::kCPU);</div>
+<div class="line"><span class="lineno">  434</span>            <span class="keywordflow">if</span> (variance != <span class="keyword">nullptr</span> &amp;&amp; flat_uncertainty.numel() &gt; 0) {</div>
+<div class="line"><span class="lineno">  435</span>              <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  436</span>                *variance =</div>
+<div class="line"><span class="lineno">  437</span>                    flat_uncertainty.to(torch::kFloat64).mean().item&lt;<span class="keywordtype">double</span>&gt;();</div>
+<div class="line"><span class="lineno">  438</span>                variance_set = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  439</span>              } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  440</span>                QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>,</div>
+<div class="line"><span class="lineno">  441</span>                                <span class="stringliteral">&quot;[MetatomicPotential] Failed to compute mean &quot;</span></div>
+<div class="line"><span class="lineno">  442</span>                                <span class="stringliteral">&quot;uncertainty for variance.&quot;</span>);</div>
+<div class="line"><span class="lineno">  443</span>              }</div>
+<div class="line"><span class="lineno">  444</span>            }</div>
+<div class="line"><span class="lineno">  445</span>            <span class="keyword">auto</span> atoms_above_threshold =</div>
+<div class="line"><span class="lineno">  446</span>                flat_uncertainty &gt; this-&gt;<a class="code hl_variable" href="#a9a34447e4edd32d27727d704a068ec16">uncertainty_threshold_</a>;</div>
+<div class="line"><span class="lineno">  447</span>            <span class="keywordflow">if</span> (torch::any(atoms_above_threshold).item&lt;bool&gt;()) {</div>
+<div class="line"><span class="lineno">  448</span>              <span class="keyword">auto</span> samples = uncertainty_block-&gt;samples();</div>
+<div class="line"><span class="lineno">  449</span>              <span class="keyword">auto</span> atom_indices_all = samples-&gt;column(<span class="stringliteral">&quot;atom&quot;</span>).to(torch::kCPU);</div>
+<div class="line"><span class="lineno">  450</span>              <span class="keyword">auto</span> atom_indices_above =</div>
+<div class="line"><span class="lineno">  451</span>                  atom_indices_all.index({atoms_above_threshold});</div>
+<div class="line"><span class="lineno">  452</span>              std::ostringstream ss;</div>
+<div class="line"><span class="lineno">  453</span>              ss &lt;&lt; <span class="stringliteral">&quot;atoms at index [&quot;</span>;</div>
+<div class="line"><span class="lineno">  454</span>              <span class="keyword">auto</span> n_report = std::min&lt;int64_t&gt;(10, atom_indices_above.size(0));</div>
+<div class="line"><span class="lineno">  455</span>              <span class="keywordflow">for</span> (int64_t i = 0; i &lt; n_report; ++i) {</div>
+<div class="line"><span class="lineno">  456</span>                <span class="keywordflow">if</span> (i &gt; 0)</div>
+<div class="line"><span class="lineno">  457</span>                  ss &lt;&lt; <span class="stringliteral">&quot;, &quot;</span>;</div>
+<div class="line"><span class="lineno">  458</span>                ss &lt;&lt; atom_indices_above[i].item&lt;int32_t&gt;();</div>
+<div class="line"><span class="lineno">  459</span>              }</div>
+<div class="line"><span class="lineno">  460</span>              ss &lt;&lt; <span class="stringliteral">&quot;]&quot;</span>;</div>
+<div class="line"><span class="lineno">  461</span>              <span class="keywordflow">if</span> (atom_indices_above.size(0) &gt; n_report) {</div>
+<div class="line"><span class="lineno">  462</span>                ss &lt;&lt; <span class="stringliteral">&quot; and &quot;</span> &lt;&lt; (atom_indices_above.size(0) - n_report)</div>
+<div class="line"><span class="lineno">  463</span>                   &lt;&lt; <span class="stringliteral">&quot; more&quot;</span>;</div>
+<div class="line"><span class="lineno">  464</span>              }</div>
+<div class="line"><span class="lineno">  465</span>              QUILL_LOG_WARNING(</div>
+<div class="line"><span class="lineno">  466</span>                  <a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>,</div>
+<div class="line"><span class="lineno">  467</span>                  <span class="stringliteral">&quot;[MetatomicPotential] The uncertainty on atomic energies for &quot;</span></div>
+<div class="line"><span class="lineno">  468</span>                  <span class="stringliteral">&quot;{} are larger than the threshold of {}. (Key: {}) Be &quot;</span></div>
+<div class="line"><span class="lineno">  469</span>                  <span class="stringliteral">&quot;careful &quot;</span></div>
+<div class="line"><span class="lineno">  470</span>                  <span class="stringliteral">&quot;when analyzing the results, and consider retraining the &quot;</span></div>
+<div class="line"><span class="lineno">  471</span>                  <span class="stringliteral">&quot;model to better describe these configurations.&quot;</span>,</div>
+<div class="line"><span class="lineno">  472</span>                  ss.str(), this-&gt;uncertainty_threshold_,</div>
+<div class="line"><span class="lineno">  473</span>                  this-&gt;energy_uncertainty_key_);</div>
+<div class="line"><span class="lineno">  474</span>            }</div>
+<div class="line"><span class="lineno">  475</span>          }</div>
+<div class="line"><span class="lineno">  476</span>        } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><span class="lineno">  477</span>          QUILL_LOG_WARNING(<a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>,</div>
+<div class="line"><span class="lineno">  478</span>                            <span class="stringliteral">&quot;[MetatomicPotential] Failed to check {}: {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  479</span>                            this-&gt;<a class="code hl_variable" href="#a6f4563edcce48e4c7d4e879540067cf6">energy_uncertainty_key_</a>, e.what());</div>
+<div class="line"><span class="lineno">  480</span>        }</div>
+<div class="line"><span class="lineno">  481</span>      }</div>
+<div class="line"><span class="lineno">  482</span> </div>
+<div class="line"><span class="lineno">  483</span>      <span class="keyword">auto</span> energy_block =</div>
+<div class="line"><span class="lineno">  484</span>          metatensor_torch::TensorMapHolder::block_by_id(output_map, 0);</div>
+<div class="line"><span class="lineno">  485</span>      <span class="keyword">auto</span> energy_tensor = energy_block-&gt;values();</div>
+<div class="line"><span class="lineno">  486</span>      energy_acc += energy_tensor.sum().item&lt;<span class="keywordtype">double</span>&gt;();</div>
+<div class="line"><span class="lineno">  487</span> </div>
+<div class="line"><span class="lineno">  488</span>      <span class="keywordflow">if</span> (this-&gt;<a class="code hl_variable" href="#a1840ee15a27447a6f42c8c9014135d1f">non_conservative_</a> &amp;&amp; !this-&gt;<a class="code hl_variable" href="#a97ff5915a06a5815d55841d07c07374f">nc_forces_key_</a>.empty()) {</div>
+<div class="line"><span class="lineno">  489</span>        <span class="keyword">auto</span> nc_map = dict_output.at(this-&gt;<a class="code hl_variable" href="#a97ff5915a06a5815d55841d07c07374f">nc_forces_key_</a>)</div>
+<div class="line"><span class="lineno">  490</span>                          .toCustomClass&lt;metatensor_torch::TensorMapHolder&gt;();</div>
+<div class="line"><span class="lineno">  491</span>        <span class="keyword">auto</span> nc_block =</div>
+<div class="line"><span class="lineno">  492</span>            metatensor_torch::TensorMapHolder::block_by_id(nc_map, 0);</div>
+<div class="line"><span class="lineno">  493</span>        forces_tensor = nc_block-&gt;values()</div>
+<div class="line"><span class="lineno">  494</span>                            .reshape({nAtoms, 3})</div>
+<div class="line"><span class="lineno">  495</span>                            .to(torch::kCPU)</div>
+<div class="line"><span class="lineno">  496</span>                            .to(torch::kFloat64);</div>
+<div class="line"><span class="lineno">  497</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  498</span>        energy_tensor.backward(torch::ones_like(energy_tensor));</div>
+<div class="line"><span class="lineno">  499</span>        <span class="keyword">auto</span> positions_grad = system-&gt;positions().grad();</div>
+<div class="line"><span class="lineno">  500</span>        forces_tensor = (-positions_grad).to(torch::kCPU).to(torch::kFloat64);</div>
+<div class="line"><span class="lineno">  501</span>      }</div>
+<div class="line"><span class="lineno">  502</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><span class="lineno">  503</span>      QUILL_LOG_ERROR(<a class="code hl_variable" href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">m_log</a>, <span class="stringliteral">&quot;[MetatomicPotential] Model evaluation failed: {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  504</span>                      e.what());</div>
+<div class="line"><span class="lineno">  505</span>      <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  506</span>    }</div>
+<div class="line"><span class="lineno">  507</span> </div>
+<div class="line"><span class="lineno">  508</span>    <span class="comment">// Rotate forces back to original frame: F = F&#39; @ R  (since pos&#39; = pos @</span></div>
+<div class="line"><span class="lineno">  509</span>    <span class="comment">// R^T)</span></div>
+<div class="line"><span class="lineno">  510</span>    <span class="keywordflow">if</span> (use_rotation) {</div>
+<div class="line"><span class="lineno">  511</span>      forces_tensor = forces_tensor.matmul(R_cpu);</div>
+<div class="line"><span class="lineno">  512</span>    }</div>
+<div class="line"><span class="lineno">  513</span>    forces_acc += forces_tensor;</div>
+<div class="line"><span class="lineno">  514</span>  }</div>
+<div class="line"><span class="lineno">  515</span> </div>
+<div class="line"><span class="lineno">  516</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> inv_n = 1.0 / <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(n_passes);</div>
+<div class="line"><span class="lineno">  517</span>  *energy = energy_acc * inv_n;</div>
+<div class="line"><span class="lineno">  518</span>  forces_acc = forces_acc * inv_n;</div>
+<div class="line"><span class="lineno">  519</span>  (void)variance_set;</div>
+<div class="line"><span class="lineno">  520</span>  (void)n_avg;</div>
+<div class="line"><span class="lineno">  521</span> </div>
+<div class="line"><span class="lineno">  522</span>  std::memcpy(forces, forces_acc.contiguous().data_ptr&lt;<span class="keywordtype">double</span>&gt;(),</div>
+<div class="line"><span class="lineno">  523</span>              nAtoms * 3 * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
+<div class="line"><span class="lineno">  524</span> </div>
+<div class="line"><span class="lineno">  525</span>  fpeh.<a class="code hl_function" href="classeonc_1_1FPEHandler.html#abce91443c8e3c366d6932a457145540a">restore_fpe</a>();</div>
+<div class="line"><span class="lineno">  526</span>}</div>
+<div class="ttc" id="aclassMetatomicPotential_html_a88809b804eda8d73fb8946ac4b58a323"><div class="ttname"><a href="#a88809b804eda8d73fb8946ac4b58a323">MetatomicPotential::inference_mutex_</a></div><div class="ttdeci">std::mutex inference_mutex_</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8h_source.html#l00154">MetatomicPotential.h:154</a></div></div>
+<div class="ttc" id="aclassMetatomicPotential_html_a8e6d7512bcc2dd29c797831f50ee3f45"><div class="ttname"><a href="#a8e6d7512bcc2dd29c797831f50ee3f45">MetatomicPotential::computeNeighbors</a></div><div class="ttdeci">metatensor_torch::TensorBlock computeNeighbors(metatomic_torch::NeighborListOptions request, long nAtoms, const double *positions, const double *box, const bool periodic[3])</div><div class="ttdoc">Computes neighbor list using the vesin library.</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8cpp_source.html#l00530">MetatomicPotential.cpp:530</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a4425775e22771c363739a4920b88aa9b" name="a4425775e22771c363739a4920b88aa9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4425775e22771c363739a4920b88aa9b">&#9670;&#160;</a></span>forceBatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MetatomicPotential::forceBatch </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>nSystems</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>nAtoms</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *const *</td>          <td class="paramname"><span class="paramname"><em>positions</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *const *</td>          <td class="paramname"><span class="paramname"><em>atomicNrs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *const *</td>          <td class="paramname"><span class="paramname"><em>forces</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>energies</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>variances</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *const *</td>          <td class="paramname"><span class="paramname"><em>boxes</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Evaluate forces for N systems in a single call. </p>
+<p>Default: loops over <a class="el" href="#a06640aa432a3e8994c6074a60cb92a92" title="Calculates the energy and forces for a given atomic configuration.">force()</a>. Override in potentials that support native batching (e.g. <a class="el" href="classMetatomicPotential.html" title="A potential class that uses a metatomic model for energy and force calculations.">MetatomicPotential</a> uses a single model.forward() for all N systems). </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8cpp_source.html#l00621">621</a> of file <a class="el" href="MetatomicPotential_8cpp_source.html">MetatomicPotential.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  626</span>                                                                {</div>
+<div class="line"><span class="lineno">  627</span>  <span class="comment">// Sequential evaluation through force() -- numerically identical to</span></div>
+<div class="line"><span class="lineno">  628</span>  <span class="comment">// N individual computePotential() calls. The mutex inside force()</span></div>
+<div class="line"><span class="lineno">  629</span>  <span class="comment">// serializes, and all calls share the same model instance + JIT state.</span></div>
+<div class="line"><span class="lineno">  630</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> s = 0; s &lt; nSystems; s++) {</div>
+<div class="line"><span class="lineno">  631</span>    <span class="keywordtype">double</span> var = 0;</div>
+<div class="line"><span class="lineno">  632</span>    <a class="code hl_function" href="#a06640aa432a3e8994c6074a60cb92a92">force</a>(nAtoms, positions[s], atomicNrs[s], forces[s], &amp;energies[s], &amp;var,</div>
+<div class="line"><span class="lineno">  633</span>          boxes[s]);</div>
+<div class="line"><span class="lineno">  634</span>    <span class="keywordflow">if</span> (variances)</div>
+<div class="line"><span class="lineno">  635</span>      variances[s] = var;</div>
+<div class="line"><span class="lineno">  636</span>    <a class="code hl_variable" href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a>++;</div>
+<div class="line"><span class="lineno">  637</span>    <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a7fa50cef22325357f44654437e9876b3">on_force_call</a>(<a class="code hl_variable" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a>);</div>
+<div class="line"><span class="lineno">  638</span>  }</div>
+<div class="line"><span class="lineno">  639</span>}</div>
+<div class="ttc" id="aclassMetatomicPotential_html_a06640aa432a3e8994c6074a60cb92a92"><div class="ttname"><a href="#a06640aa432a3e8994c6074a60cb92a92">MetatomicPotential::force</a></div><div class="ttdeci">void force(long nAtoms, const double *positions, const int *atomicNrs, double *forces, double *energy, double *variance, const double *box) override</div><div class="ttdoc">Calculates the energy and forces for a given atomic configuration.</div><div class="ttdef"><b>Definition</b> <a href="MetatomicPotential_8cpp_source.html#l00320">MetatomicPotential.cpp:320</a></div></div>
+<div class="ttc" id="aclasseonc_1_1PotRegistry_html_a5d307a4845d9c0d6d16031a5a637e23b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a></div><div class="ttdeci">static PotRegistry &amp; get() noexcept</div><div class="ttdoc">Process-lifetime singleton.</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00050">PotRegistry.cpp:50</a></div></div>
+<div class="ttc" id="aclasseonc_1_1PotRegistry_html_a7fa50cef22325357f44654437e9876b3"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a7fa50cef22325357f44654437e9876b3">eonc::PotRegistry::on_force_call</a></div><div class="ttdeci">void on_force_call(PotType t) noexcept</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00088">PotRegistry.cpp:88</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_a2ae7cca425e3d69d2825c58d1c7704eb"><div class="ttname"><a href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">eonc::Potential::forceCallCounter</a></div><div class="ttdeci">std::atomic&lt; size_t &gt; forceCallCounter</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00032">Potential.h:32</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_ac102f249b890f52d06d96feff8f2047a"><div class="ttname"><a href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">eonc::Potential::ptype</a></div><div class="ttdeci">PotType ptype</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00025">Potential.h:25</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a67cf280dee7c9ea210be7038b80f0673" name="a67cf280dee7c9ea210be7038b80f0673"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67cf280dee7c9ea210be7038b80f0673">&#9670;&#160;</a></span>isThreadSafe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MetatomicPotential::isThreadSafe </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Single shared instance, serialized via mutex. </p>
+<p>Sequential evaluation through computePotential() ensures correct force counting, removeNetForce, and <a class="el" href="classPotRegistry.html">PotRegistry</a> bookkeeping. JIT profiling is disabled so all calls on the same instance produce deterministic results. </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#af6c385eb52d3764246416ea389c84131">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00136">136</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  136</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1345a4da1b9a96efb94f8ab12a1dc597" name="a1345a4da1b9a96efb94f8ab12a1dc597"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1345a4da1b9a96efb94f8ab12a1dc597">&#9670;&#160;</a></span>needsPerImageInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MetatomicPotential::needsPerImageInstance </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether NEB should create separate <a class="el" href="classPotential.html">Potential</a> instances per image for true parallel force evaluation. </p>
+<p>When true, NEB calls makePotential() once per image instead of sharing one instance. Override in potentials that use internal mutexes (e.g. <a class="el" href="classMetatomicPotential.html" title="A potential class that uses a metatomic model for energy and force calculations.">MetatomicPotential</a>). </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a8b83745c9898990f848daafa4c351c2f">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00137">137</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  137</span>                                                                     {</div>
+<div class="line"><span class="lineno">  138</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  139</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1d1230f9247bc0e0c5be9062be0d6bde" name="a1d1230f9247bc0e0c5be9062be0d6bde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d1230f9247bc0e0c5be9062be0d6bde">&#9670;&#160;</a></span>supportsBatchEvaluation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MetatomicPotential::supportsBatchEvaluation </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Batched evaluation via single shared instance. </p>
+<p>Processes each system sequentially through the same model (identical to N <a class="el" href="#a06640aa432a3e8994c6074a60cb92a92" title="Calculates the energy and forces for a given atomic configuration.">force()</a> calls but bypasses <a class="el" href="classMatter.html#a3bc576b16fb424940848c0eafb2f1d64">Matter::computePotential</a> overhead). Forces, energies, and forceCallCounter are handled correctly. </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a2d8781e3cbea888f88b7523c5d00bc43">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00145">145</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  145</span>                                                                       {</div>
+<div class="line"><span class="lineno">  146</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  147</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a6298ad13791d519f169a9db96d92d294" name="a6298ad13791d519f169a9db96d92d294"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6298ad13791d519f169a9db96d92d294">&#9670;&#160;</a></span>capabilities_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">metatomic_torch::ModelCapabilities MetatomicPotential::capabilities_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00059">59</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+
+</div>
+</div>
+<a id="aa59bbc5c5e2e908a0ee45993dfd571ae" name="aa59bbc5c5e2e908a0ee45993dfd571ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa59bbc5c5e2e908a0ee45993dfd571ae">&#9670;&#160;</a></span>check_consistency_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MetatomicPotential::check_consistency_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00066">66</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+
+</div>
+</div>
+<a id="a74023d0a5b5c16372dbc37723e8a6349" name="a74023d0a5b5c16372dbc37723e8a6349"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74023d0a5b5c16372dbc37723e8a6349">&#9670;&#160;</a></span>device_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">torch::Device MetatomicPotential::device_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00065">65</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+
+</div>
+</div>
+<a id="a8472d468900324b7de78fa600869d6cd" name="a8472d468900324b7de78fa600869d6cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8472d468900324b7de78fa600869d6cd">&#9670;&#160;</a></span>device_type_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">c10::DeviceType MetatomicPotential::device_type_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00064">64</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+
+</div>
+</div>
+<a id="afdf318e397544dd495a0254c81500a0d" name="afdf318e397544dd495a0254c81500a0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdf318e397544dd495a0254c81500a0d">&#9670;&#160;</a></span>dtype_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">torch::ScalarType MetatomicPotential::dtype_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00063">63</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+
+</div>
+</div>
+<a id="a7af739e784d796b1baf20cb3e9d380fd" name="a7af739e784d796b1baf20cb3e9d380fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7af739e784d796b1baf20cb3e9d380fd">&#9670;&#160;</a></span>energy_key_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string MetatomicPotential::energy_key_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00068">68</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+
+</div>
+</div>
+<a id="a6f4563edcce48e4c7d4e879540067cf6" name="a6f4563edcce48e4c7d4e879540067cf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f4563edcce48e4c7d4e879540067cf6">&#9670;&#160;</a></span>energy_uncertainty_key_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string MetatomicPotential::energy_uncertainty_key_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00069">69</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+
+</div>
+</div>
+<a id="a23ce9c13310a97d39c64dabb479b8606" name="a23ce9c13310a97d39c64dabb479b8606"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23ce9c13310a97d39c64dabb479b8606">&#9670;&#160;</a></span>evaluations_options_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">metatomic_torch::ModelEvaluationOptions MetatomicPotential::evaluations_options_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00061">61</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+
+</div>
+</div>
+<a id="a88809b804eda8d73fb8946ac4b58a323" name="a88809b804eda8d73fb8946ac4b58a323"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88809b804eda8d73fb8946ac4b58a323">&#9670;&#160;</a></span>inference_mutex_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::mutex MetatomicPotential::inference_mutex_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel mutable">mutable</span><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00154">154</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+
+</div>
+</div>
+<a id="a3f88b5d02ec4d6a3fc8531d0c5a978f0" name="a3f88b5d02ec4d6a3fc8531d0c5a978f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f88b5d02ec4d6a3fc8531d0c5a978f0">&#9670;&#160;</a></span>m_log</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1log_1_1Scoped.html">eonc::log::Scoped</a> MetatomicPotential::m_log</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00055">55</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+
+</div>
+</div>
+<a id="aedf2c9ed32f61cb37b008a733188e301" name="aedf2c9ed32f61cb37b008a733188e301"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedf2c9ed32f61cb37b008a733188e301">&#9670;&#160;</a></span>m_metatomic_opts</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structParameters_1_1metatomic__options__t.html">Parameters::metatomic_options_t</a> MetatomicPotential::m_metatomic_opts</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00056">56</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+
+</div>
+</div>
+<a id="af81efaf717da2e86654be758421c59ea" name="af81efaf717da2e86654be758421c59ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af81efaf717da2e86654be758421c59ea">&#9670;&#160;</a></span>model_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">metatensor_torch::Module MetatomicPotential::model_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00058">58</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+
+</div>
+</div>
+<a id="af52f1d74f7f583a1f0168daeeb258d1f" name="af52f1d74f7f583a1f0168daeeb258d1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af52f1d74f7f583a1f0168daeeb258d1f">&#9670;&#160;</a></span>n_symmetry_rotations_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long MetatomicPotential::n_symmetry_rotations_ {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00073">73</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   73</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a97ff5915a06a5815d55841d07c07374f" name="a97ff5915a06a5815d55841d07c07374f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97ff5915a06a5815d55841d07c07374f">&#9670;&#160;</a></span>nc_forces_key_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string MetatomicPotential::nc_forces_key_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00070">70</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+
+</div>
+</div>
+<a id="a0f816c137059a98cd678a92c7d893123" name="a0f816c137059a98cd678a92c7d893123"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f816c137059a98cd678a92c7d893123">&#9670;&#160;</a></span>nl_requests_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;metatomic_torch::NeighborListOptions&gt; MetatomicPotential::nl_requests_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00060">60</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+
+</div>
+</div>
+<a id="a1840ee15a27447a6f42c8c9014135d1f" name="a1840ee15a27447a6f42c8c9014135d1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1840ee15a27447a6f42c8c9014135d1f">&#9670;&#160;</a></span>non_conservative_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MetatomicPotential::non_conservative_ {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00071">71</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   71</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a713e5c2a80eb8a76d444f9392ec12110" name="a713e5c2a80eb8a76d444f9392ec12110"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a713e5c2a80eb8a76d444f9392ec12110">&#9670;&#160;</a></span>random_rotation_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MetatomicPotential::random_rotation_ {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00072">72</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   72</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9a34447e4edd32d27727d704a068ec16" name="a9a34447e4edd32d27727d704a068ec16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a34447e4edd32d27727d704a068ec16">&#9670;&#160;</a></span>uncertainty_threshold_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double MetatomicPotential::uncertainty_threshold_ {-1.0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicPotential_8h_source.html#l00076">76</a> of file <a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   76</span>{-1.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/potentials/Metatomic/<a class="el" href="MetatomicPotential_8h_source.html">MetatomicPotential.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/potentials/Metatomic/<a class="el" href="MetatomicPotential_8cpp_source.html">MetatomicPotential.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="classMetatomicPotential.html">MetatomicPotential</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

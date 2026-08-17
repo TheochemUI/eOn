@@ -1,0 +1,503 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/include/eon/potentials/EMT/Asap/EMT.h Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('EMT_8h_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">EMT.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EMT_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#ifndef _EMT_H</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#define _EMT_H</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="EMTParameterProvider_8h.html">EMTParameterProvider.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="potentials_2EMT_2Asap_2Potential_8h.html">Potential.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="TinyMatrix_8h.html">TinyMatrix.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">using </span>std::vector;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>AtomsBase;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">class </span><a class="code hl_class" href="classAtoms.html">Atoms</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">class </span><a class="code hl_class" href="classGhostAtoms.html">GhostAtoms</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">class </span><a class="code hl_class" href="classNeighborList.html">NeighborList</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">struct </span><a class="code hl_struct" href="structemt__parameters.html">emt_parameters</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span></div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classEMT.html">   24</a></span><span class="keyword">class </span><a class="code hl_function" href="classEMT.html#a867725590570ce05a20e470ef0048edd">EMT</a> : <span class="keyword">public</span> <a class="code hl_class" href="classAsapPotential.html">AsapPotential</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classEMT.html#a867725590570ce05a20e470ef0048edd">   27</a></span>  <a class="code hl_function" href="classEMT.html#a867725590570ce05a20e470ef0048edd">EMT</a>(<a class="code hl_class" href="classEMTParameterProvider.html">EMTParameterProvider</a> *prov = 0);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classEMT.html#a17d71f97dbb0cab6a0f8faee947121ed">   30</a></span>  <span class="keyword">virtual</span> <a class="code hl_function" href="classEMT.html#a17d71f97dbb0cab6a0f8faee947121ed">~EMT</a>();</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classEMT.html#af3668b1918ca65a734adeb85ba5a1599">   31</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#af3668b1918ca65a734adeb85ba5a1599">SetSubtractE0</a>(<span class="keywordtype">bool</span> <a class="code hl_variable" href="classEMT.html#a7f347244c79b697a878adf6cc8b1b258">subtractE0</a>) { this-&gt;subtractE0 = <a class="code hl_variable" href="classEMT.html#a7f347244c79b697a878adf6cc8b1b258">subtractE0</a>; }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classEMT.html#abbbd7a09c0befda4e238281f2f43b030">   33</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#abbbd7a09c0befda4e238281f2f43b030">SetAtoms</a>(<a class="code hl_class" href="classAtoms.html">Atoms</a> *<a class="code hl_variable" href="classEMT.html#aada388c4a75f758e624695cc56f7f31a">atoms</a>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classEMT.html#ad581a81229aabf6808b3bed4e77ba1d7">   34</a></span>  <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code hl_class" href="classVec.html">Vec</a> *<a class="code hl_function" href="classEMT.html#ad581a81229aabf6808b3bed4e77ba1d7">GetCartesianForces</a>();</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classEMT.html#aac4c597a04609d21b0acc088f9c108a2">   35</a></span>  <span class="keyword">virtual</span> <span class="keyword">const</span> <span class="keywordtype">double</span> *<a class="code hl_function" href="classEMT.html#aac4c597a04609d21b0acc088f9c108a2">GetPotentialEnergies</a>();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classEMT.html#adcf55fb767418aef28b24612c204f964">   36</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">double</span> <a class="code hl_function" href="classEMT.html#adcf55fb767418aef28b24612c204f964">GetPotentialEnergy</a>();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classEMT.html#aaab2d0a52a2ef43cb9cc5bd767bd73e2">   37</a></span>  <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code hl_typedef" href="potentials_2EMT_2Asap_2Potential_8h.html#a46c4f0a0c486fad7b2847c30f64a891b">symTensor</a> *<a class="code hl_function" href="classEMT.html#aaab2d0a52a2ef43cb9cc5bd767bd73e2">GetStresses</a>(<span class="keyword">const</span> <a class="code hl_class" href="classVec.html">Vec</a> *momenta = 0);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classEMT.html#a477a252615c3eb1cd99e385baf2c7ff8">   38</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#a477a252615c3eb1cd99e385baf2c7ff8">GetStress</a>(<span class="keywordtype">double</span> <a class="code hl_variable" href="classEMT.html#a34adcd866e860e046bd6a478b7566dfd">stress</a>[6], <span class="keyword">const</span> <a class="code hl_class" href="classVec.html">Vec</a> *momenta = 0);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classEMT.html#af8e4a3beb12ee3b293b7d645b9f57d5d">   40</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#af8e4a3beb12ee3b293b7d645b9f57d5d">CheckNeighborLists</a>();</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classEMT.html#a78906ddd6632db572e10eff45efb87ae">   42</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">double</span> <a class="code hl_function" href="classEMT.html#a78906ddd6632db572e10eff45efb87ae">GetCutoffRadius</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classEMT.html#a996555347f93529b7846d8a92438e0a9">rNbCut</a>; }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classEMT.html#a4f021561ecc75d0fc844f4d38f0789db">   43</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">double</span> <a class="code hl_function" href="classEMT.html#a4f021561ecc75d0fc844f4d38f0789db">GetLatticeConstant</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classEMT.html#aeb188d9b3ced4f560461ab36e79ee8f9">   44</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classEMT.html#aeb188d9b3ced4f560461ab36e79ee8f9">GetNumberOfAtoms</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classEMT.html#a922a93cb6e0d99477e781fae8f689a39">nAtoms</a>; }</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classEMT.html#a174f7974ec1d14623f1b63329573e9cd">   48</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#a174f7974ec1d14623f1b63329573e9cd">SetContinuumElement</a>(<span class="keywordtype">int</span> z);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classEMT.html#a352c3d0d14fa977614e016ddf5c362ba">   49</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#a352c3d0d14fa977614e016ddf5c362ba">UpdateSuperCell</a>(<span class="keyword">const</span> <a class="code hl_class" href="classSuperCell.html">SuperCell</a> *newSuperCell);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  <span class="comment">// Quasicontinuum stuff</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classEMT.html#a36f6b0a7c8d8c559fb4be53e4488c53b">   52</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">double</span> <a class="code hl_function" href="classEMT.html#a36f6b0a7c8d8c559fb4be53e4488c53b">CalculateLatticeEnergy</a>(<span class="keyword">const</span> <a class="code hl_class" href="classVec.html">Vec</a> a[3]);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classEMT.html#a398a9df46d5f9cff69ae14d7a6949cc7">   53</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#a398a9df46d5f9cff69ae14d7a6949cc7">CalculateDerivatives</a>(<span class="keyword">const</span> <a class="code hl_class" href="classVec.html">Vec</a> a[3], <span class="keywordtype">double</span> dEdaDota[6]);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classEMT.html#adead49a30534236077691e25406351f4">   54</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">double</span> <a class="code hl_function" href="classEMT.html#adead49a30534236077691e25406351f4">GetData</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classEMT.html#a7121148582f94c0f716bc3d92572ba77">dataSigma1</a>; }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classEMT.html#ad7f9248a914e4339d41cda2a1786bbd7">   57</a></span>  <span class="keyword">const</span> <span class="keywordtype">double</span> *<a class="code hl_function" href="classEMT.html#ad7f9248a914e4339d41cda2a1786bbd7">GetSigma1</a>(<span class="keywordtype">int</span> n) { <span class="keywordflow">return</span> &amp;<a class="code hl_variable" href="classEMT.html#ad4b3a22fa89cea62534f3c68280cea95">sigma1</a>[n][0]; }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classEMT.html#aaf539c0723e0c0313103ffd45bd629ad">   59</a></span>  <span class="keyword">const</span> <span class="keywordtype">double</span> *<a class="code hl_function" href="classEMT.html#aaf539c0723e0c0313103ffd45bd629ad">GetSigma2</a>(<span class="keywordtype">int</span> n) { <span class="keywordflow">return</span> &amp;<a class="code hl_variable" href="classEMT.html#a38d3cd562792463449b84a9ad940762b">sigma2</a>[n][0]; }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classEMT.html#acf792495f18b2c5fdde90b8dd1f380d4">   62</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#acf792495f18b2c5fdde90b8dd1f380d4">PrintParameters</a>();</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classEMT.html#a97ffab1cf99a06d645697b9cbd322788">   65</a></span>  <a class="code hl_class" href="classNeighborList.html">NeighborList</a> *<a class="code hl_function" href="classEMT.html#a97ffab1cf99a06d645697b9cbd322788">GetNeighborList</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classEMT.html#a57df6279cd07f3b41af78bfa6721f9d3">nblist</a>; }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classEMT.html#ab1af82288949a8b5587008d07b2a96f9">   69</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#ab1af82288949a8b5587008d07b2a96f9">InitParameters</a>();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classEMT.html#aab4df399f1eadb268f11af6ffc79c0b2">   71</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#aab4df399f1eadb268f11af6ffc79c0b2">Allocate</a>();</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classEMT.html#a495a1020c61ed36d160e4578b409b04a">   73</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#a495a1020c61ed36d160e4578b409b04a">AllocateStress</a>();</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classEMT.html#affa3e45bbc25f42c65ebb98c6335434b">   75</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#affa3e45bbc25f42c65ebb98c6335434b">CalculateIDs</a>();</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classEMT.html#af833e860b8bb58c458de87802a9bdec3">   77</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#af833e860b8bb58c458de87802a9bdec3">CalculateSigmas</a>(<span class="keywordtype">int</span> calculatesigma2 = 1);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classEMT.html#a669cb9270365f5bf26eda0f3bcdfaf83">   82</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#a669cb9270365f5bf26eda0f3bcdfaf83">CalculateEnergiesAfterSigmas</a>(<span class="keywordtype">double</span> *Epot = 0);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classEMT.html#a468da1c235dff1f4cb436d8251cff488">   85</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#a468da1c235dff1f4cb436d8251cff488">CalculateForcesAfterEnergies</a>(<a class="code hl_class" href="classVec.html">Vec</a> *<a class="code hl_variable" href="classEMT.html#a5b057973233292a4be5ff82441943a28">forces</a>,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                                            <span class="keywordtype">double</span> <a class="code hl_variable" href="classEMT.html#a34adcd866e860e046bd6a478b7566dfd">stress</a>[][6] = 0);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="classEMT.html#a0dcbe62f6613265be1a89a0ecdbb12b4">   89</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#a0dcbe62f6613265be1a89a0ecdbb12b4">CalculateForcesAfterEnergiesSingle</a>(<a class="code hl_class" href="classVec.html">Vec</a> *<a class="code hl_variable" href="classEMT.html#a5b057973233292a4be5ff82441943a28">forces</a>,</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                                                  <span class="keywordtype">double</span> <a class="code hl_variable" href="classEMT.html#a34adcd866e860e046bd6a478b7566dfd">stress</a>[][6] = 0);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classEMT.html#a45b275ea82f91073ad1c7f77be517d9f">   93</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#a45b275ea82f91073ad1c7f77be517d9f">CalculateStuff</a>(<span class="keyword">const</span> <a class="code hl_class" href="classVec.html">Vec</a> a[3], <span class="keywordtype">double</span> &amp;<a class="code hl_variable" href="classEMT.html#ad4b3a22fa89cea62534f3c68280cea95">sigma1</a>, <span class="keywordtype">double</span> &amp;<a class="code hl_variable" href="classEMT.html#a38d3cd562792463449b84a9ad940762b">sigma2</a>,</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                              <span class="keywordtype">double</span> *diffs2, <span class="keywordtype">double</span> *wght, <span class="keywordtype">double</span> *dsigma1,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                              <span class="keywordtype">double</span> *dsigma2);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="keyword">private</span>: <span class="comment">// Methods.</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classEMT.html#aa352ba9522c974969514c55fcce389dc">  103</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#aa352ba9522c974969514c55fcce389dc">sigma_batch</a>(<span class="keywordtype">int</span> *self, <span class="keywordtype">int</span> *other, <a class="code hl_class" href="classVec.html">Vec</a> rnb[], <span class="keywordtype">double</span> *sq_dist, <span class="keywordtype">int</span> zs,</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                   <span class="keywordtype">int</span> zo, <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> calculatesigma2);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="classEMT.html#abe144ac70a2a7acd339a0ec92f39744a">  111</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classEMT.html#abe144ac70a2a7acd339a0ec92f39744a">force_batch</a>(<span class="keywordtype">int</span> *self, <span class="keywordtype">int</span> *other, <a class="code hl_class" href="classVec.html">Vec</a> rnb[], <span class="keywordtype">double</span> *sq_dist,</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                   <span class="keywordtype">double</span> dEdss[], <span class="keywordtype">double</span> dEdso[], <span class="keywordtype">int</span> zs, <span class="keywordtype">int</span> zo, <span class="keywordtype">int</span> n,</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                   <a class="code hl_class" href="classVec.html">Vec</a> *<a class="code hl_variable" href="classEMT.html#a1f03f80a916e0d21ea4f5467574d967b">force</a>, <span class="keywordtype">double</span> (*<a class="code hl_variable" href="classEMT.html#a34adcd866e860e046bd6a478b7566dfd">stress</a>)[6]);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="keyword">protected</span>:                        <span class="comment">// Data</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="classEMT.html#aada388c4a75f758e624695cc56f7f31a">  116</a></span>  <a class="code hl_class" href="classAtoms.html">Atoms</a> *<a class="code hl_variable" href="classEMT.html#aada388c4a75f758e624695cc56f7f31a">atoms</a>;                   </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="classEMT.html#a92e6e5451149334a04a89f9efdda4ac8">  117</a></span>  <a class="code hl_class" href="classGhostAtoms.html">GhostAtoms</a> *<a class="code hl_variable" href="classEMT.html#a92e6e5451149334a04a89f9efdda4ac8">ghostatoms</a>;         </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="classEMT.html#a922a93cb6e0d99477e781fae8f689a39">  118</a></span>  <span class="keywordtype">int</span> <a class="code hl_variable" href="classEMT.html#a922a93cb6e0d99477e781fae8f689a39">nAtoms</a>;                     </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="classEMT.html#a026bde2c7085ad98e8f977333a8a8f56">  119</a></span>  <span class="keywordtype">int</span> <a class="code hl_variable" href="classEMT.html#a026bde2c7085ad98e8f977333a8a8f56">nSize</a>;                      </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="classEMT.html#a57df6279cd07f3b41af78bfa6721f9d3">  120</a></span>  <a class="code hl_class" href="classNeighborList.html">NeighborList</a> *<a class="code hl_variable" href="classEMT.html#a57df6279cd07f3b41af78bfa6721f9d3">nblist</a>;           </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="classEMT.html#a4ac555bbd93edce56043227090dc6099">  121</a></span>  <a class="code hl_class" href="classEMTParameterProvider.html">EMTParameterProvider</a> *<a class="code hl_variable" href="classEMT.html#a4ac555bbd93edce56043227090dc6099">provider</a>; </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno"><a class="line" href="classEMT.html#a53c157cf5c58fa25af4e64b9b7b3f462">  122</a></span>  <span class="keywordtype">bool</span> <a class="code hl_variable" href="classEMT.html#a53c157cf5c58fa25af4e64b9b7b3f462">ownProvider</a>;               </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="classEMT.html#a7f347244c79b697a878adf6cc8b1b258">  124</a></span>  <span class="keywordtype">bool</span> <a class="code hl_variable" href="classEMT.html#a7f347244c79b697a878adf6cc8b1b258">subtractE0</a>; </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno"><a class="line" href="classEMT.html#ab5bab3ab8fc6bd3ceba3ef25f4fad44c">  129</a></span>  std::vector&lt;const emt_parameters *&gt; <a class="code hl_variable" href="classEMT.html#ab5bab3ab8fc6bd3ceba3ef25f4fad44c">parameters</a>; </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno"><a class="line" href="classEMT.html#a3a8b6b1fcc27b44fbea268dd9b14aee0">  130</a></span>  <span class="keyword">const</span> <a class="code hl_struct" href="structemt__parameters.html">emt_parameters</a> *<a class="code hl_variable" href="classEMT.html#a3a8b6b1fcc27b44fbea268dd9b14aee0">continuumelement</a>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="classEMT.html#a3aaf6ab7dbd7d54a7be55c8b05bfe33d">  132</a></span>  <span class="keyword">const</span> <a class="code hl_typedef" href="TinyMatrix_8h.html#a5a43ffc502871015bd20ba69f5bbcd61">TinyDoubleMatrix</a> *<a class="code hl_variable" href="classEMT.html#a3aaf6ab7dbd7d54a7be55c8b05bfe33d">chi</a>; </div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno"><a class="line" href="classEMT.html#a03a1cdd2fcbe27afa708a9d3f06e44f4">  133</a></span>  <span class="keywordtype">int</span> <a class="code hl_variable" href="classEMT.html#a03a1cdd2fcbe27afa708a9d3f06e44f4">nelements</a>; </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno"><a class="line" href="classEMT.html#aeb06826ee0753068da2cb843dac47f25">  135</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="classEMT.html#aeb06826ee0753068da2cb843dac47f25">rFermi</a>, <a class="code hl_variable" href="classEMT.html#a996555347f93529b7846d8a92438e0a9">rNbCut</a>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="classEMT.html#a54255dfaff35bcb994561bffffb70cb8">  137</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="classEMT.html#a54255dfaff35bcb994561bffffb70cb8">cutoffslope</a>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>  <span class="comment">//  int maxleaflen;         // Lenght of the longest leaf.</span></div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="classEMT.html#a2a9ef7e6c33c36a3062f12446ce9f0fb">  139</a></span>  <span class="keywordtype">int</span> <a class="code hl_variable" href="classEMT.html#a2a9ef7e6c33c36a3062f12446ce9f0fb">sigma2isvalid</a>; </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span></div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span></div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="classEMT.html#ad4b3a22fa89cea62534f3c68280cea95">  145</a></span>  vector&lt;vector&lt;double&gt;&gt; <a class="code hl_variable" href="classEMT.html#ad4b3a22fa89cea62534f3c68280cea95">sigma1</a>;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="classEMT.html#a38d3cd562792463449b84a9ad940762b">  146</a></span>  vector&lt;vector&lt;double&gt;&gt; <a class="code hl_variable" href="classEMT.html#a38d3cd562792463449b84a9ad940762b">sigma2</a>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span></div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span></div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classEMT.html#affd0ac5ddbfe4e84dc07f76dfac74766">  150</a></span>  vector&lt;double&gt; <a class="code hl_variable" href="classEMT.html#affd0ac5ddbfe4e84dc07f76dfac74766">Ec</a>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno"><a class="line" href="classEMT.html#ae1643377ea31fa2930b167d4bb87f23f">  151</a></span>  vector&lt;double&gt; <a class="code hl_variable" href="classEMT.html#ae1643377ea31fa2930b167d4bb87f23f">Eas</a>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classEMT.html#a6625da9a21c7ddaa0078d4de193f0159">  152</a></span>  vector&lt;double&gt; <a class="code hl_variable" href="classEMT.html#a6625da9a21c7ddaa0078d4de193f0159">potentialenergy</a>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno"><a class="line" href="classEMT.html#a446d71f4a9d7ed04df43ce5cdeaeb88c">  153</a></span>  vector&lt;double&gt; <a class="code hl_variable" href="classEMT.html#a446d71f4a9d7ed04df43ce5cdeaeb88c">radius</a>;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno"><a class="line" href="classEMT.html#afc58090ca85a8f235aa0edfe68e9f49f">  154</a></span>  vector&lt;double&gt; <a class="code hl_variable" href="classEMT.html#afc58090ca85a8f235aa0edfe68e9f49f">dEds</a>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="classEMT.html#a1f03f80a916e0d21ea4f5467574d967b">  155</a></span>  vector&lt;Vec&gt; <a class="code hl_variable" href="classEMT.html#a1f03f80a916e0d21ea4f5467574d967b">force</a>;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span></div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno"><a class="line" href="classEMT.html#a34adcd866e860e046bd6a478b7566dfd">  160</a></span>  vector&lt;double&gt; <a class="code hl_variable" href="classEMT.html#a34adcd866e860e046bd6a478b7566dfd">stress</a>;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno"><a class="line" href="classEMT.html#ad0824ac542d82f5e8e1af90cb8339f2a">  163</a></span>  <span class="keywordtype">int</span> <a class="code hl_variable" href="classEMT.html#ad0824ac542d82f5e8e1af90cb8339f2a">nAtomsRes</a>, <a class="code hl_variable" href="classEMT.html#a587c1ac63d83901b16cc16bf09d354b0">nSizeRes</a>;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span></div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="classEMT.html#a8c9fe7d00be23b23b15355413c0cbd72">  167</a></span>  vector&lt;int&gt; <a class="code hl_variable" href="classEMT.html#a8c9fe7d00be23b23b15355413c0cbd72">id</a>;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>  <span class="comment">/* The buffers for batch processing */</span></div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>  <span class="comment">// static const int BUFLEN;  // The batch--buffer size.  Avoid powers of 2</span></div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>  <span class="comment">// static const int NMAXELEMENTS;</span></div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classEMT.html#a3e617e45e4b41fdd60074c4b8be75869">  173</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="classEMT.html#a3e617e45e4b41fdd60074c4b8be75869">unnormalizedstress</a>[6]; </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno"><a class="line" href="classEMT.html#a9117e90c68b7382dfff1bb421a23fa30">  174</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="classEMT.html#a9117e90c68b7382dfff1bb421a23fa30">totalvolume</a>;           </div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno"><a class="line" href="classEMT.html#aa1612c42e8f3cfee79c272fa00301069">  176</a></span>  <span class="keywordtype">int</span> <a class="code hl_variable" href="classEMT.html#aa1612c42e8f3cfee79c272fa00301069">nHalfNeighbors</a>; </div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno"><a class="line" href="classEMT.html#a04690dcf2e11eee5825e0056480e2ba6">  177</a></span>  int (*<a class="code hl_variable" href="classEMT.html#a04690dcf2e11eee5825e0056480e2ba6">coef</a>)[6];     </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno"><a class="line" href="classEMT.html#a7121148582f94c0f716bc3d92572ba77">  178</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="classEMT.html#a7121148582f94c0f716bc3d92572ba77">dataSigma1</a>;  </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span></div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>  <span class="keyword">struct </span>{</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno"><a class="line" href="classEMT.html#a4c48e02c242fc9053e4cfff675d5495e">  182</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classEMT.html#a4c48e02c242fc9053e4cfff675d5495e">ids</a>;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno"><a class="line" href="classEMT.html#aab3aa1f98d747ec7249f26b0c9d6f127">  183</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classEMT.html#a57df6279cd07f3b41af78bfa6721f9d3">nblist</a>;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno"><a class="line" href="classEMT.html#a43a92317e0f41f35c5922ff097998a29">  184</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classEMT.html#ad4b3a22fa89cea62534f3c68280cea95">sigma1</a>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno"><a class="line" href="classEMT.html#a22bff169dcaafd11e445fe790637eaeb">  185</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classEMT.html#a38d3cd562792463449b84a9ad940762b">sigma2</a>;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno"><a class="line" href="classEMT.html#aca2239df41379a2943d6b67a2062fc72">  186</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classEMT.html#aca2239df41379a2943d6b67a2062fc72">beforeforces</a>;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno"><a class="line" href="classEMT.html#a3dc602b95e1118813eeb782b7763f587">  187</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classEMT.html#a3dc602b95e1118813eeb782b7763f587">energies</a>;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno"><a class="line" href="classEMT.html#a5b057973233292a4be5ff82441943a28">  188</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classEMT.html#a5b057973233292a4be5ff82441943a28">forces</a>;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno"><a class="line" href="classEMT.html#a1cf20d970112f19d9d9bc546a7fb4925">  189</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classEMT.html#a1cf20d970112f19d9d9bc546a7fb4925">stresses</a>;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno"><a class="line" href="classEMT.html#a20c75707d41618d357c839f9348605f5">  190</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="classEMT.html#a20c75707d41618d357c839f9348605f5">fullstresses</a>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno"><a class="line" href="classEMT.html#a0ceb4ef8f94e9e238fba1b05ab352192">  191</a></span>  } <a class="code hl_variable" href="classEMT.html#a0ceb4ef8f94e9e238fba1b05ab352192">counters</a>;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>};</div>
+</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span><span class="preprocessor">#endif </span><span class="comment">// ! _EMT_H</span></div>
+<div class="ttc" id="aEMTParameterProvider_8h_html"><div class="ttname"><a href="EMTParameterProvider_8h.html">EMTParameterProvider.h</a></div></div>
+<div class="ttc" id="aTinyMatrix_8h_html"><div class="ttname"><a href="TinyMatrix_8h.html">TinyMatrix.h</a></div></div>
+<div class="ttc" id="aTinyMatrix_8h_html_a5a43ffc502871015bd20ba69f5bbcd61"><div class="ttname"><a href="TinyMatrix_8h.html#a5a43ffc502871015bd20ba69f5bbcd61">TinyDoubleMatrix</a></div><div class="ttdeci">TinyMatrix&lt; double &gt; TinyDoubleMatrix</div><div class="ttdef"><b>Definition</b> <a href="TinyMatrix_8h_source.html#l00024">TinyMatrix.h:24</a></div></div>
+<div class="ttc" id="aclassAsapPotential_html"><div class="ttname"><a href="classAsapPotential.html">AsapPotential</a></div><div class="ttdoc">Abstract base class of all potentials.</div><div class="ttdef"><b>Definition</b> <a href="potentials_2EMT_2Asap_2Potential_8h_source.html#l00029">Potential.h:29</a></div></div>
+<div class="ttc" id="aclassAtoms_html"><div class="ttname"><a href="classAtoms.html">Atoms</a></div><div class="ttdoc">The main list of atoms class.</div><div class="ttdef"><b>Definition</b> <a href="Atoms_8h_source.html#l00036">Atoms.h:36</a></div></div>
+<div class="ttc" id="aclassEMTParameterProvider_html"><div class="ttname"><a href="classEMTParameterProvider.html">EMTParameterProvider</a></div><div class="ttdef"><b>Definition</b> <a href="EMTParameterProvider_8h_source.html#l00039">EMTParameterProvider.h:39</a></div></div>
+<div class="ttc" id="aclassEMT_html_a026bde2c7085ad98e8f977333a8a8f56"><div class="ttname"><a href="classEMT.html#a026bde2c7085ad98e8f977333a8a8f56">EMT::nSize</a></div><div class="ttdeci">int nSize</div><div class="ttdoc">Number of atoms including ghost atoms.</div><div class="ttdef"><b>Definition</b> <a href="#l00119">EMT.h:119</a></div></div>
+<div class="ttc" id="aclassEMT_html_a03a1cdd2fcbe27afa708a9d3f06e44f4"><div class="ttname"><a href="classEMT.html#a03a1cdd2fcbe27afa708a9d3f06e44f4">EMT::nelements</a></div><div class="ttdeci">int nelements</div><div class="ttdoc">The number of different elements in the simulation.</div><div class="ttdef"><b>Definition</b> <a href="#l00133">EMT.h:133</a></div></div>
+<div class="ttc" id="aclassEMT_html_a04690dcf2e11eee5825e0056480e2ba6"><div class="ttname"><a href="classEMT.html#a04690dcf2e11eee5825e0056480e2ba6">EMT::coef</a></div><div class="ttdeci">int(* coef)[6]</div><div class="ttdoc">For the quasicontinuum stuff.</div><div class="ttdef"><b>Definition</b> <a href="#l00177">EMT.h:177</a></div></div>
+<div class="ttc" id="aclassEMT_html_a0ceb4ef8f94e9e238fba1b05ab352192"><div class="ttname"><a href="classEMT.html#a0ceb4ef8f94e9e238fba1b05ab352192">EMT::counters</a></div><div class="ttdeci">struct EMT::@046145273270354152231013235041337011202147127021 counters</div><div class="ttdoc">A structure of counters to check if recalculations are necessary.</div></div>
+<div class="ttc" id="aclassEMT_html_a0dcbe62f6613265be1a89a0ecdbb12b4"><div class="ttname"><a href="classEMT.html#a0dcbe62f6613265be1a89a0ecdbb12b4">EMT::CalculateForcesAfterEnergiesSingle</a></div><div class="ttdeci">virtual void CalculateForcesAfterEnergiesSingle(Vec *forces, double stress[][6]=0)</div><div class="ttdoc">Calculate forces in a system with only one element.</div></div>
+<div class="ttc" id="aclassEMT_html_a174f7974ec1d14623f1b63329573e9cd"><div class="ttname"><a href="classEMT.html#a174f7974ec1d14623f1b63329573e9cd">EMT::SetContinuumElement</a></div><div class="ttdeci">virtual void SetContinuumElement(int z)</div><div class="ttdoc">Specify the element in the continuum region of a QuasiContinuum simulation.</div></div>
+<div class="ttc" id="aclassEMT_html_a17d71f97dbb0cab6a0f8faee947121ed"><div class="ttname"><a href="classEMT.html#a17d71f97dbb0cab6a0f8faee947121ed">EMT::~EMT</a></div><div class="ttdeci">virtual ~EMT()</div><div class="ttdoc">Delete the EMT potential.</div></div>
+<div class="ttc" id="aclassEMT_html_a1cf20d970112f19d9d9bc546a7fb4925"><div class="ttname"><a href="classEMT.html#a1cf20d970112f19d9d9bc546a7fb4925">EMT::stresses</a></div><div class="ttdeci">int stresses</div><div class="ttdef"><b>Definition</b> <a href="#l00189">EMT.h:189</a></div></div>
+<div class="ttc" id="aclassEMT_html_a1f03f80a916e0d21ea4f5467574d967b"><div class="ttname"><a href="classEMT.html#a1f03f80a916e0d21ea4f5467574d967b">EMT::force</a></div><div class="ttdeci">vector&lt; Vec &gt; force</div><div class="ttdef"><b>Definition</b> <a href="#l00155">EMT.h:155</a></div></div>
+<div class="ttc" id="aclassEMT_html_a20c75707d41618d357c839f9348605f5"><div class="ttname"><a href="classEMT.html#a20c75707d41618d357c839f9348605f5">EMT::fullstresses</a></div><div class="ttdeci">int fullstresses</div><div class="ttdef"><b>Definition</b> <a href="#l00190">EMT.h:190</a></div></div>
+<div class="ttc" id="aclassEMT_html_a2a9ef7e6c33c36a3062f12446ce9f0fb"><div class="ttname"><a href="classEMT.html#a2a9ef7e6c33c36a3062f12446ce9f0fb">EMT::sigma2isvalid</a></div><div class="ttdeci">int sigma2isvalid</div><div class="ttdoc">For consistency checks.</div><div class="ttdef"><b>Definition</b> <a href="#l00139">EMT.h:139</a></div></div>
+<div class="ttc" id="aclassEMT_html_a34adcd866e860e046bd6a478b7566dfd"><div class="ttname"><a href="classEMT.html#a34adcd866e860e046bd6a478b7566dfd">EMT::stress</a></div><div class="ttdeci">vector&lt; double &gt; stress</div><div class="ttdoc">The stresses. Always remember to use six per atoms!</div><div class="ttdef"><b>Definition</b> <a href="#l00160">EMT.h:160</a></div></div>
+<div class="ttc" id="aclassEMT_html_a352c3d0d14fa977614e016ddf5c362ba"><div class="ttname"><a href="classEMT.html#a352c3d0d14fa977614e016ddf5c362ba">EMT::UpdateSuperCell</a></div><div class="ttdeci">virtual void UpdateSuperCell(const SuperCell *newSuperCell)</div><div class="ttdoc">Tell the Potential that a new SuperCell has been assigned to the atoms.</div></div>
+<div class="ttc" id="aclassEMT_html_a36f6b0a7c8d8c559fb4be53e4488c53b"><div class="ttname"><a href="classEMT.html#a36f6b0a7c8d8c559fb4be53e4488c53b">EMT::CalculateLatticeEnergy</a></div><div class="ttdeci">virtual double CalculateLatticeEnergy(const Vec a[3])</div><div class="ttdoc">Calculate the energy of an atom in a regular fcc(?) lattice.</div></div>
+<div class="ttc" id="aclassEMT_html_a38d3cd562792463449b84a9ad940762b"><div class="ttname"><a href="classEMT.html#a38d3cd562792463449b84a9ad940762b">EMT::sigma2</a></div><div class="ttdeci">vector&lt; vector&lt; double &gt; &gt; sigma2</div><div class="ttdef"><b>Definition</b> <a href="#l00146">EMT.h:146</a></div></div>
+<div class="ttc" id="aclassEMT_html_a398a9df46d5f9cff69ae14d7a6949cc7"><div class="ttname"><a href="classEMT.html#a398a9df46d5f9cff69ae14d7a6949cc7">EMT::CalculateDerivatives</a></div><div class="ttdeci">virtual void CalculateDerivatives(const Vec a[3], double dEdaDota[6])</div><div class="ttdoc">Calculate derivative of the energy of an atom in a regular lattice.</div></div>
+<div class="ttc" id="aclassEMT_html_a3a8b6b1fcc27b44fbea268dd9b14aee0"><div class="ttname"><a href="classEMT.html#a3a8b6b1fcc27b44fbea268dd9b14aee0">EMT::continuumelement</a></div><div class="ttdeci">const emt_parameters * continuumelement</div><div class="ttdoc">The element in the continuum region.</div><div class="ttdef"><b>Definition</b> <a href="#l00130">EMT.h:130</a></div></div>
+<div class="ttc" id="aclassEMT_html_a3aaf6ab7dbd7d54a7be55c8b05bfe33d"><div class="ttname"><a href="classEMT.html#a3aaf6ab7dbd7d54a7be55c8b05bfe33d">EMT::chi</a></div><div class="ttdeci">const TinyDoubleMatrix * chi</div><div class="ttdoc">The Chi matrix of EMT.</div><div class="ttdef"><b>Definition</b> <a href="#l00132">EMT.h:132</a></div></div>
+<div class="ttc" id="aclassEMT_html_a3dc602b95e1118813eeb782b7763f587"><div class="ttname"><a href="classEMT.html#a3dc602b95e1118813eeb782b7763f587">EMT::energies</a></div><div class="ttdeci">int energies</div><div class="ttdef"><b>Definition</b> <a href="#l00187">EMT.h:187</a></div></div>
+<div class="ttc" id="aclassEMT_html_a3e617e45e4b41fdd60074c4b8be75869"><div class="ttname"><a href="classEMT.html#a3e617e45e4b41fdd60074c4b8be75869">EMT::unnormalizedstress</a></div><div class="ttdeci">double unnormalizedstress[6]</div><div class="ttdoc">The total stress before division by volume.</div><div class="ttdef"><b>Definition</b> <a href="#l00173">EMT.h:173</a></div></div>
+<div class="ttc" id="aclassEMT_html_a446d71f4a9d7ed04df43ce5cdeaeb88c"><div class="ttname"><a href="classEMT.html#a446d71f4a9d7ed04df43ce5cdeaeb88c">EMT::radius</a></div><div class="ttdeci">vector&lt; double &gt; radius</div><div class="ttdef"><b>Definition</b> <a href="#l00153">EMT.h:153</a></div></div>
+<div class="ttc" id="aclassEMT_html_a45b275ea82f91073ad1c7f77be517d9f"><div class="ttname"><a href="classEMT.html#a45b275ea82f91073ad1c7f77be517d9f">EMT::CalculateStuff</a></div><div class="ttdeci">virtual void CalculateStuff(const Vec a[3], double &amp;sigma1, double &amp;sigma2, double *diffs2, double *wght, double *dsigma1, double *dsigma2)</div><div class="ttdoc">Internal function used for the QuasiContinuum stuff.</div></div>
+<div class="ttc" id="aclassEMT_html_a468da1c235dff1f4cb436d8251cff488"><div class="ttname"><a href="classEMT.html#a468da1c235dff1f4cb436d8251cff488">EMT::CalculateForcesAfterEnergies</a></div><div class="ttdeci">virtual void CalculateForcesAfterEnergies(Vec *forces, double stress[][6]=0)</div><div class="ttdoc">Calculate forces in a multicomponent system.</div></div>
+<div class="ttc" id="aclassEMT_html_a477a252615c3eb1cd99e385baf2c7ff8"><div class="ttname"><a href="classEMT.html#a477a252615c3eb1cd99e385baf2c7ff8">EMT::GetStress</a></div><div class="ttdeci">virtual void GetStress(double stress[6], const Vec *momenta=0)</div><div class="ttdoc">Calculate the total stress of the system.</div></div>
+<div class="ttc" id="aclassEMT_html_a495a1020c61ed36d160e4578b409b04a"><div class="ttname"><a href="classEMT.html#a495a1020c61ed36d160e4578b409b04a">EMT::AllocateStress</a></div><div class="ttdeci">virtual void AllocateStress()</div><div class="ttdoc">(Re)allocate storage for stresses</div></div>
+<div class="ttc" id="aclassEMT_html_a4ac555bbd93edce56043227090dc6099"><div class="ttname"><a href="classEMT.html#a4ac555bbd93edce56043227090dc6099">EMT::provider</a></div><div class="ttdeci">EMTParameterProvider * provider</div><div class="ttdoc">The source of the EMT parameters.</div><div class="ttdef"><b>Definition</b> <a href="#l00121">EMT.h:121</a></div></div>
+<div class="ttc" id="aclassEMT_html_a4c48e02c242fc9053e4cfff675d5495e"><div class="ttname"><a href="classEMT.html#a4c48e02c242fc9053e4cfff675d5495e">EMT::ids</a></div><div class="ttdeci">int ids</div><div class="ttdef"><b>Definition</b> <a href="#l00182">EMT.h:182</a></div></div>
+<div class="ttc" id="aclassEMT_html_a4f021561ecc75d0fc844f4d38f0789db"><div class="ttname"><a href="classEMT.html#a4f021561ecc75d0fc844f4d38f0789db">EMT::GetLatticeConstant</a></div><div class="ttdeci">virtual double GetLatticeConstant() const</div><div class="ttdoc">Return the lattice constant of the material, if well-defined.</div></div>
+<div class="ttc" id="aclassEMT_html_a53c157cf5c58fa25af4e64b9b7b3f462"><div class="ttname"><a href="classEMT.html#a53c157cf5c58fa25af4e64b9b7b3f462">EMT::ownProvider</a></div><div class="ttdeci">bool ownProvider</div><div class="ttdoc">May we delete the provider?</div><div class="ttdef"><b>Definition</b> <a href="#l00122">EMT.h:122</a></div></div>
+<div class="ttc" id="aclassEMT_html_a54255dfaff35bcb994561bffffb70cb8"><div class="ttname"><a href="classEMT.html#a54255dfaff35bcb994561bffffb70cb8">EMT::cutoffslope</a></div><div class="ttdeci">double cutoffslope</div><div class="ttdoc">Cutoff slope.</div><div class="ttdef"><b>Definition</b> <a href="#l00137">EMT.h:137</a></div></div>
+<div class="ttc" id="aclassEMT_html_a57df6279cd07f3b41af78bfa6721f9d3"><div class="ttname"><a href="classEMT.html#a57df6279cd07f3b41af78bfa6721f9d3">EMT::nblist</a></div><div class="ttdeci">NeighborList * nblist</div><div class="ttdoc">The neighborlist object.</div><div class="ttdef"><b>Definition</b> <a href="#l00120">EMT.h:120</a></div></div>
+<div class="ttc" id="aclassEMT_html_a587c1ac63d83901b16cc16bf09d354b0"><div class="ttname"><a href="classEMT.html#a587c1ac63d83901b16cc16bf09d354b0">EMT::nSizeRes</a></div><div class="ttdeci">int nSizeRes</div><div class="ttdoc">If there are ghostatoms, some extra space is reserved for the arrays.</div><div class="ttdef"><b>Definition</b> <a href="#l00163">EMT.h:163</a></div></div>
+<div class="ttc" id="aclassEMT_html_a5b057973233292a4be5ff82441943a28"><div class="ttname"><a href="classEMT.html#a5b057973233292a4be5ff82441943a28">EMT::forces</a></div><div class="ttdeci">int forces</div><div class="ttdef"><b>Definition</b> <a href="#l00188">EMT.h:188</a></div></div>
+<div class="ttc" id="aclassEMT_html_a6625da9a21c7ddaa0078d4de193f0159"><div class="ttname"><a href="classEMT.html#a6625da9a21c7ddaa0078d4de193f0159">EMT::potentialenergy</a></div><div class="ttdeci">vector&lt; double &gt; potentialenergy</div><div class="ttdef"><b>Definition</b> <a href="#l00152">EMT.h:152</a></div></div>
+<div class="ttc" id="aclassEMT_html_a669cb9270365f5bf26eda0f3bcdfaf83"><div class="ttname"><a href="classEMT.html#a669cb9270365f5bf26eda0f3bcdfaf83">EMT::CalculateEnergiesAfterSigmas</a></div><div class="ttdeci">virtual void CalculateEnergiesAfterSigmas(double *Epot=0)</div><div class="ttdoc">Calculate energies once sigma1 is known.</div></div>
+<div class="ttc" id="aclassEMT_html_a7121148582f94c0f716bc3d92572ba77"><div class="ttname"><a href="classEMT.html#a7121148582f94c0f716bc3d92572ba77">EMT::dataSigma1</a></div><div class="ttdeci">double dataSigma1</div><div class="ttdoc">For the quasicontinuum stuff.</div><div class="ttdef"><b>Definition</b> <a href="#l00178">EMT.h:178</a></div></div>
+<div class="ttc" id="aclassEMT_html_a78906ddd6632db572e10eff45efb87ae"><div class="ttname"><a href="classEMT.html#a78906ddd6632db572e10eff45efb87ae">EMT::GetCutoffRadius</a></div><div class="ttdeci">virtual double GetCutoffRadius() const</div><div class="ttdoc">Return the cutoff radius used in the potential.</div><div class="ttdef"><b>Definition</b> <a href="#l00042">EMT.h:42</a></div></div>
+<div class="ttc" id="aclassEMT_html_a7f347244c79b697a878adf6cc8b1b258"><div class="ttname"><a href="classEMT.html#a7f347244c79b697a878adf6cc8b1b258">EMT::subtractE0</a></div><div class="ttdeci">bool subtractE0</div><div class="ttdoc">Whether we subtract E0 from atomic energies (defines the zero of potential energy; if we don&#39;t subtra...</div><div class="ttdef"><b>Definition</b> <a href="#l00124">EMT.h:124</a></div></div>
+<div class="ttc" id="aclassEMT_html_a867725590570ce05a20e470ef0048edd"><div class="ttname"><a href="classEMT.html#a867725590570ce05a20e470ef0048edd">EMT::EMT</a></div><div class="ttdeci">EMT(EMTParameterProvider *prov=0)</div><div class="ttdoc">Create an EMT potential optionally using a parameter provider.</div></div>
+<div class="ttc" id="aclassEMT_html_a8c9fe7d00be23b23b15355413c0cbd72"><div class="ttname"><a href="classEMT.html#a8c9fe7d00be23b23b15355413c0cbd72">EMT::id</a></div><div class="ttdeci">vector&lt; int &gt; id</div><div class="ttdoc">The atomic numbers are translated into IDs, integers in [0, nelements-1].</div><div class="ttdef"><b>Definition</b> <a href="#l00167">EMT.h:167</a></div></div>
+<div class="ttc" id="aclassEMT_html_a9117e90c68b7382dfff1bb421a23fa30"><div class="ttname"><a href="classEMT.html#a9117e90c68b7382dfff1bb421a23fa30">EMT::totalvolume</a></div><div class="ttdeci">double totalvolume</div><div class="ttdoc">Total volume during stresscalculation.</div><div class="ttdef"><b>Definition</b> <a href="#l00174">EMT.h:174</a></div></div>
+<div class="ttc" id="aclassEMT_html_a922a93cb6e0d99477e781fae8f689a39"><div class="ttname"><a href="classEMT.html#a922a93cb6e0d99477e781fae8f689a39">EMT::nAtoms</a></div><div class="ttdeci">int nAtoms</div><div class="ttdoc">The number of (real) atoms.</div><div class="ttdef"><b>Definition</b> <a href="#l00118">EMT.h:118</a></div></div>
+<div class="ttc" id="aclassEMT_html_a92e6e5451149334a04a89f9efdda4ac8"><div class="ttname"><a href="classEMT.html#a92e6e5451149334a04a89f9efdda4ac8">EMT::ghostatoms</a></div><div class="ttdeci">GhostAtoms * ghostatoms</div><div class="ttdoc">Non-NULL if atoms are GhostAtoms.</div><div class="ttdef"><b>Definition</b> <a href="#l00117">EMT.h:117</a></div></div>
+<div class="ttc" id="aclassEMT_html_a97ffab1cf99a06d645697b9cbd322788"><div class="ttname"><a href="classEMT.html#a97ffab1cf99a06d645697b9cbd322788">EMT::GetNeighborList</a></div><div class="ttdeci">NeighborList * GetNeighborList() const</div><div class="ttdoc">Return a pointer to the neighbor list.</div><div class="ttdef"><b>Definition</b> <a href="#l00065">EMT.h:65</a></div></div>
+<div class="ttc" id="aclassEMT_html_a996555347f93529b7846d8a92438e0a9"><div class="ttname"><a href="classEMT.html#a996555347f93529b7846d8a92438e0a9">EMT::rNbCut</a></div><div class="ttdeci">double rNbCut</div><div class="ttdef"><b>Definition</b> <a href="#l00135">EMT.h:135</a></div></div>
+<div class="ttc" id="aclassEMT_html_aa1612c42e8f3cfee79c272fa00301069"><div class="ttname"><a href="classEMT.html#aa1612c42e8f3cfee79c272fa00301069">EMT::nHalfNeighbors</a></div><div class="ttdeci">int nHalfNeighbors</div><div class="ttdoc">For the quasicontinuum stuff.</div><div class="ttdef"><b>Definition</b> <a href="#l00176">EMT.h:176</a></div></div>
+<div class="ttc" id="aclassEMT_html_aa352ba9522c974969514c55fcce389dc"><div class="ttname"><a href="classEMT.html#aa352ba9522c974969514c55fcce389dc">EMT::sigma_batch</a></div><div class="ttdeci">void sigma_batch(int *self, int *other, Vec rnb[], double *sq_dist, int zs, int zo, int n, int calculatesigma2)</div><div class="ttdoc">sigma_batch does the hard work in CalculateSigmas().</div></div>
+<div class="ttc" id="aclassEMT_html_aaab2d0a52a2ef43cb9cc5bd767bd73e2"><div class="ttname"><a href="classEMT.html#aaab2d0a52a2ef43cb9cc5bd767bd73e2">EMT::GetStresses</a></div><div class="ttdeci">virtual const symTensor * GetStresses(const Vec *momenta=0)</div><div class="ttdoc">Calculate the stress on all atoms.</div></div>
+<div class="ttc" id="aclassEMT_html_aab4df399f1eadb268f11af6ffc79c0b2"><div class="ttname"><a href="classEMT.html#aab4df399f1eadb268f11af6ffc79c0b2">EMT::Allocate</a></div><div class="ttdeci">virtual void Allocate()</div><div class="ttdoc">(Re)allocate storage for forces, energies and intermediate results.</div></div>
+<div class="ttc" id="aclassEMT_html_aac4c597a04609d21b0acc088f9c108a2"><div class="ttname"><a href="classEMT.html#aac4c597a04609d21b0acc088f9c108a2">EMT::GetPotentialEnergies</a></div><div class="ttdeci">virtual const double * GetPotentialEnergies()</div><div class="ttdoc">Calculate the energy of all atoms.</div></div>
+<div class="ttc" id="aclassEMT_html_aada388c4a75f758e624695cc56f7f31a"><div class="ttname"><a href="classEMT.html#aada388c4a75f758e624695cc56f7f31a">EMT::atoms</a></div><div class="ttdeci">Atoms * atoms</div><div class="ttdoc">The atoms we are working on.</div><div class="ttdef"><b>Definition</b> <a href="#l00116">EMT.h:116</a></div></div>
+<div class="ttc" id="aclassEMT_html_aaf539c0723e0c0313103ffd45bd629ad"><div class="ttname"><a href="classEMT.html#aaf539c0723e0c0313103ffd45bd629ad">EMT::GetSigma2</a></div><div class="ttdeci">const double * GetSigma2(int n)</div><div class="ttdoc">Return a pointer to the EMT &quot;density&quot; sigma2.</div><div class="ttdef"><b>Definition</b> <a href="#l00059">EMT.h:59</a></div></div>
+<div class="ttc" id="aclassEMT_html_ab1af82288949a8b5587008d07b2a96f9"><div class="ttname"><a href="classEMT.html#ab1af82288949a8b5587008d07b2a96f9">EMT::InitParameters</a></div><div class="ttdeci">virtual void InitParameters()</div><div class="ttdoc">Initialization of the EMT parameters.</div></div>
+<div class="ttc" id="aclassEMT_html_ab5bab3ab8fc6bd3ceba3ef25f4fad44c"><div class="ttname"><a href="classEMT.html#ab5bab3ab8fc6bd3ceba3ef25f4fad44c">EMT::parameters</a></div><div class="ttdeci">std::vector&lt; const emt_parameters * &gt; parameters</div><div class="ttdoc">The EMT parameters.</div><div class="ttdef"><b>Definition</b> <a href="#l00129">EMT.h:129</a></div></div>
+<div class="ttc" id="aclassEMT_html_abbbd7a09c0befda4e238281f2f43b030"><div class="ttname"><a href="classEMT.html#abbbd7a09c0befda4e238281f2f43b030">EMT::SetAtoms</a></div><div class="ttdeci">virtual void SetAtoms(Atoms *atoms)</div><div class="ttdoc">Set the atoms belonging to this potential.</div></div>
+<div class="ttc" id="aclassEMT_html_abe144ac70a2a7acd339a0ec92f39744a"><div class="ttname"><a href="classEMT.html#abe144ac70a2a7acd339a0ec92f39744a">EMT::force_batch</a></div><div class="ttdeci">void force_batch(int *self, int *other, Vec rnb[], double *sq_dist, double dEdss[], double dEdso[], int zs, int zo, int n, Vec *force, double(*stress)[6])</div><div class="ttdoc">force_batch does the hard work in CalculateForcesAfterEnergy().</div></div>
+<div class="ttc" id="aclassEMT_html_aca2239df41379a2943d6b67a2062fc72"><div class="ttname"><a href="classEMT.html#aca2239df41379a2943d6b67a2062fc72">EMT::beforeforces</a></div><div class="ttdeci">int beforeforces</div><div class="ttdef"><b>Definition</b> <a href="#l00186">EMT.h:186</a></div></div>
+<div class="ttc" id="aclassEMT_html_acf792495f18b2c5fdde90b8dd1f380d4"><div class="ttname"><a href="classEMT.html#acf792495f18b2c5fdde90b8dd1f380d4">EMT::PrintParameters</a></div><div class="ttdeci">void PrintParameters()</div><div class="ttdoc">Print the EMT parameters.</div></div>
+<div class="ttc" id="aclassEMT_html_ad0824ac542d82f5e8e1af90cb8339f2a"><div class="ttname"><a href="classEMT.html#ad0824ac542d82f5e8e1af90cb8339f2a">EMT::nAtomsRes</a></div><div class="ttdeci">int nAtomsRes</div><div class="ttdef"><b>Definition</b> <a href="#l00163">EMT.h:163</a></div></div>
+<div class="ttc" id="aclassEMT_html_ad4b3a22fa89cea62534f3c68280cea95"><div class="ttname"><a href="classEMT.html#ad4b3a22fa89cea62534f3c68280cea95">EMT::sigma1</a></div><div class="ttdeci">vector&lt; vector&lt; double &gt; &gt; sigma1</div><div class="ttdoc">Temporary data for the atoms.</div><div class="ttdef"><b>Definition</b> <a href="#l00145">EMT.h:145</a></div></div>
+<div class="ttc" id="aclassEMT_html_ad581a81229aabf6808b3bed4e77ba1d7"><div class="ttname"><a href="classEMT.html#ad581a81229aabf6808b3bed4e77ba1d7">EMT::GetCartesianForces</a></div><div class="ttdeci">virtual const Vec * GetCartesianForces()</div><div class="ttdoc">Calculate the forces on all atoms and return the result.</div></div>
+<div class="ttc" id="aclassEMT_html_ad7f9248a914e4339d41cda2a1786bbd7"><div class="ttname"><a href="classEMT.html#ad7f9248a914e4339d41cda2a1786bbd7">EMT::GetSigma1</a></div><div class="ttdeci">const double * GetSigma1(int n)</div><div class="ttdoc">Return a pointer to the EMT &quot;density&quot; sigma1.</div><div class="ttdef"><b>Definition</b> <a href="#l00057">EMT.h:57</a></div></div>
+<div class="ttc" id="aclassEMT_html_adcf55fb767418aef28b24612c204f964"><div class="ttname"><a href="classEMT.html#adcf55fb767418aef28b24612c204f964">EMT::GetPotentialEnergy</a></div><div class="ttdeci">virtual double GetPotentialEnergy()</div><div class="ttdoc">Calculate the total energy of the system.</div></div>
+<div class="ttc" id="aclassEMT_html_adead49a30534236077691e25406351f4"><div class="ttname"><a href="classEMT.html#adead49a30534236077691e25406351f4">EMT::GetData</a></div><div class="ttdeci">virtual double GetData() const</div><div class="ttdoc">Get data used by the QuasiContinuum method.</div><div class="ttdef"><b>Definition</b> <a href="#l00054">EMT.h:54</a></div></div>
+<div class="ttc" id="aclassEMT_html_ae1643377ea31fa2930b167d4bb87f23f"><div class="ttname"><a href="classEMT.html#ae1643377ea31fa2930b167d4bb87f23f">EMT::Eas</a></div><div class="ttdeci">vector&lt; double &gt; Eas</div><div class="ttdef"><b>Definition</b> <a href="#l00151">EMT.h:151</a></div></div>
+<div class="ttc" id="aclassEMT_html_aeb06826ee0753068da2cb843dac47f25"><div class="ttname"><a href="classEMT.html#aeb06826ee0753068da2cb843dac47f25">EMT::rFermi</a></div><div class="ttdeci">double rFermi</div><div class="ttdoc">Cutoff parameters (from EMTParameterProvider).</div><div class="ttdef"><b>Definition</b> <a href="#l00135">EMT.h:135</a></div></div>
+<div class="ttc" id="aclassEMT_html_aeb188d9b3ced4f560461ab36e79ee8f9"><div class="ttname"><a href="classEMT.html#aeb188d9b3ced4f560461ab36e79ee8f9">EMT::GetNumberOfAtoms</a></div><div class="ttdeci">virtual int GetNumberOfAtoms() const</div><div class="ttdoc">Get the number of atoms.</div><div class="ttdef"><b>Definition</b> <a href="#l00044">EMT.h:44</a></div></div>
+<div class="ttc" id="aclassEMT_html_af3668b1918ca65a734adeb85ba5a1599"><div class="ttname"><a href="classEMT.html#af3668b1918ca65a734adeb85ba5a1599">EMT::SetSubtractE0</a></div><div class="ttdeci">void SetSubtractE0(bool subtractE0)</div><div class="ttdef"><b>Definition</b> <a href="#l00031">EMT.h:31</a></div></div>
+<div class="ttc" id="aclassEMT_html_af833e860b8bb58c458de87802a9bdec3"><div class="ttname"><a href="classEMT.html#af833e860b8bb58c458de87802a9bdec3">EMT::CalculateSigmas</a></div><div class="ttdeci">virtual void CalculateSigmas(int calculatesigma2=1)</div><div class="ttdoc">Calculate sigma1 and perhaps sigma2.</div></div>
+<div class="ttc" id="aclassEMT_html_af8e4a3beb12ee3b293b7d645b9f57d5d"><div class="ttname"><a href="classEMT.html#af8e4a3beb12ee3b293b7d645b9f57d5d">EMT::CheckNeighborLists</a></div><div class="ttdeci">virtual void CheckNeighborLists()</div><div class="ttdoc">Check that neighbor lists are up to date, update them if not.</div></div>
+<div class="ttc" id="aclassEMT_html_afc58090ca85a8f235aa0edfe68e9f49f"><div class="ttname"><a href="classEMT.html#afc58090ca85a8f235aa0edfe68e9f49f">EMT::dEds</a></div><div class="ttdeci">vector&lt; double &gt; dEds</div><div class="ttdef"><b>Definition</b> <a href="#l00154">EMT.h:154</a></div></div>
+<div class="ttc" id="aclassEMT_html_affa3e45bbc25f42c65ebb98c6335434b"><div class="ttname"><a href="classEMT.html#affa3e45bbc25f42c65ebb98c6335434b">EMT::CalculateIDs</a></div><div class="ttdeci">virtual void CalculateIDs()</div><div class="ttdoc">Calculate type numbers from the atomic numbers.</div></div>
+<div class="ttc" id="aclassEMT_html_affd0ac5ddbfe4e84dc07f76dfac74766"><div class="ttname"><a href="classEMT.html#affd0ac5ddbfe4e84dc07f76dfac74766">EMT::Ec</a></div><div class="ttdeci">vector&lt; double &gt; Ec</div><div class="ttdoc">Each atom has a single Ec, Eas, radius etc.</div><div class="ttdef"><b>Definition</b> <a href="#l00150">EMT.h:150</a></div></div>
+<div class="ttc" id="aclassGhostAtoms_html"><div class="ttname"><a href="classGhostAtoms.html">GhostAtoms</a></div><div class="ttdef"><b>Definition</b> <a href="GhostAtoms_8h_source.html#l00010">GhostAtoms.h:10</a></div></div>
+<div class="ttc" id="aclassNeighborList_html"><div class="ttname"><a href="classNeighborList.html">NeighborList</a></div><div class="ttdoc">&quot;Half&quot; neighbor lists for atoms.</div><div class="ttdef"><b>Definition</b> <a href="NeighborList_8h_source.html#l00024">NeighborList.h:24</a></div></div>
+<div class="ttc" id="aclassSuperCell_html"><div class="ttname"><a href="classSuperCell.html">SuperCell</a></div><div class="ttdoc">The SuperCell defines the size, shape and boundary condx of a simulation.</div><div class="ttdef"><b>Definition</b> <a href="SuperCell_8h_source.html#l00020">SuperCell.h:20</a></div></div>
+<div class="ttc" id="aclassVec_html"><div class="ttname"><a href="classVec.html">Vec</a></div><div class="ttdoc">A 3-vector useful for postions etc.</div><div class="ttdef"><b>Definition</b> <a href="Vec_8h_source.html#l00018">Vec.h:18</a></div></div>
+<div class="ttc" id="apotentials_2EMT_2Asap_2Potential_8h_html"><div class="ttname"><a href="potentials_2EMT_2Asap_2Potential_8h.html">Potential.h</a></div></div>
+<div class="ttc" id="apotentials_2EMT_2Asap_2Potential_8h_html_a46c4f0a0c486fad7b2847c30f64a891b"><div class="ttname"><a href="potentials_2EMT_2Asap_2Potential_8h.html#a46c4f0a0c486fad7b2847c30f64a891b">symTensor</a></div><div class="ttdeci">double symTensor[6]</div><div class="ttdef"><b>Definition</b> <a href="potentials_2EMT_2Asap_2Potential_8h_source.html#l00013">Potential.h:13</a></div></div>
+<div class="ttc" id="astructemt__parameters_html"><div class="ttname"><a href="structemt__parameters.html">emt_parameters</a></div><div class="ttdef"><b>Definition</b> <a href="EMTParameterProvider_8h_source.html#l00012">EMTParameterProvider.h:12</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="dir_2527c5cc2e6dc8ce970a4d420439d1d9.html">eon</a></li><li class="navelem"><a href="dir_858247b18a1611539d1f444885056636.html">potentials</a></li><li class="navelem"><a href="dir_c4f24ddb43260f54c676a167ee997112.html">EMT</a></li><li class="navelem"><a href="dir_a24b55182b44800073fdaa243f5c19fa.html">Asap</a></li><li class="navelem"><a href="EMT_8h.html">EMT.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

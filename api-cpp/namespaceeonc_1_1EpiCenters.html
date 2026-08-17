@@ -1,0 +1,847 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::EpiCenters Namespace Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('namespaceeonc_1_1EpiCenters.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::EpiCenters Namespace Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a3c7a5ac1a947ab0bdfe256865ad03c01" id="r_a3c7a5ac1a947ab0bdfe256865ad03c01"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a3c7a5ac1a947ab0bdfe256865ad03c01">cnaEpiCenter</a> (const <a class="el" href="classMatter.html">Matter</a> *matter, double neighborCutoff)</td></tr>
+<tr class="memitem:ac1cd35bd93127441db232f1951122e07" id="r_ac1cd35bd93127441db232f1951122e07"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#ac1cd35bd93127441db232f1951122e07">minCoordinatedEpiCenter</a> (const <a class="el" href="classMatter.html">Matter</a> *matter, double neighborCutoff)</td></tr>
+<tr class="memitem:a0303feddb20a9a859c87015d81d6d001" id="r_a0303feddb20a9a859c87015d81d6d001"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a0303feddb20a9a859c87015d81d6d001">lastAtom</a> (const <a class="el" href="classMatter.html">Matter</a> *matter)</td></tr>
+<tr class="memitem:a82b3f115d3403e23532f9667771f5bd2" id="r_a82b3f115d3403e23532f9667771f5bd2"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a82b3f115d3403e23532f9667771f5bd2">randomFreeAtomEpiCenter</a> (const <a class="el" href="classMatter.html">Matter</a> *matter)</td></tr>
+<tr class="memitem:a94a86c223fa8a161a77239bfd398f370" id="r_a94a86c223fa8a161a77239bfd398f370"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a94a86c223fa8a161a77239bfd398f370">listedAtomEpiCenter</a> (const <a class="el" href="classMatter.html">Matter</a> *matter, const std::vector&lt; long &gt; &amp;atomList)</td></tr>
+<tr class="memitem:a38dc59e4f64af399a0a6d1233ae27877" id="r_a38dc59e4f64af399a0a6d1233ae27877"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a38dc59e4f64af399a0a6d1233ae27877">cna</a> (long *cna, const <a class="el" href="classMatter.html">Matter</a> *matter, double neighborCutoff)</td></tr>
+<tr class="memitem:aeade0cfb3f3bade6b10d45a2c6ba02a9" id="r_aeade0cfb3f3bade6b10d45a2c6ba02a9"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aeade0cfb3f3bade6b10d45a2c6ba02a9">coordination</a> (long *coordinationVal, const <a class="el" href="classMatter.html">Matter</a> *matter, double neighborCutoff)</td></tr>
+<tr class="memitem:a8dec8a4107cf1820433b5342f3eaa341" id="r_a8dec8a4107cf1820433b5342f3eaa341"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a8dec8a4107cf1820433b5342f3eaa341">coordinationLessOrEqual</a> (bool *result, long coordinationMaxVal, const <a class="el" href="classMatter.html">Matter</a> *matter, double neighborCutoff)</td></tr>
+<tr class="memitem:a1aac322e73b0dc9d74e2e086ff281699" id="r_a1aac322e73b0dc9d74e2e086ff281699"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a1aac322e73b0dc9d74e2e086ff281699">minCoordination</a> (const <a class="el" href="classMatter.html">Matter</a> *matter, double neighborCutoff)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-var-members" class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a3daeffdce455426b6819b083964fa53a" id="r_a3daeffdce455426b6819b083964fa53a"><td class="memItemLeft">const char&#160;</td><td class="memItemRight"><a class="el" href="#a3daeffdce455426b6819b083964fa53a">DISP_LOAD</a> [] = &quot;load&quot;</td></tr>
+<tr class="memitem:a1b0f030a0abb6b01ca86e1fff1df1c6a" id="r_a1b0f030a0abb6b01ca86e1fff1df1c6a"><td class="memItemLeft">const char&#160;</td><td class="memItemRight"><a class="el" href="#a1b0f030a0abb6b01ca86e1fff1df1c6a">DISP_NOT_FCC_OR_HCP</a> [] = &quot;not_fcc_hcp_coordinated&quot;</td></tr>
+<tr class="memitem:a1df5e79b97a359bd4cc97c1721dab149" id="r_a1df5e79b97a359bd4cc97c1721dab149"><td class="memItemLeft">const char&#160;</td><td class="memItemRight"><a class="el" href="#a1df5e79b97a359bd4cc97c1721dab149">DISP_MIN_COORDINATED</a> [] = &quot;least_coordinated&quot;</td></tr>
+<tr class="memitem:a3f879a934b81e169ba20a6a75c3340bb" id="r_a3f879a934b81e169ba20a6a75c3340bb"><td class="memItemLeft">const char&#160;</td><td class="memItemRight"><a class="el" href="#a3f879a934b81e169ba20a6a75c3340bb">DISP_LAST_ATOM</a> [] = &quot;last_atom&quot;</td></tr>
+<tr class="memitem:a00d53e225a73ad2031a555a9e7c0eaf2" id="r_a00d53e225a73ad2031a555a9e7c0eaf2"><td class="memItemLeft">const char&#160;</td><td class="memItemRight"><a class="el" href="#a00d53e225a73ad2031a555a9e7c0eaf2">DISP_RANDOM</a> [] = &quot;random&quot;</td></tr>
+<tr class="memitem:a19fef5e0ac89301cce85298814fc04bd" id="r_a19fef5e0ac89301cce85298814fc04bd"><td class="memItemLeft">const char&#160;</td><td class="memItemRight"><a class="el" href="#a19fef5e0ac89301cce85298814fc04bd">DISP_LISTED_ATOMS</a> [] = &quot;listed_atoms&quot;</td></tr>
+</table>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a38dc59e4f64af399a0a6d1233ae27877" name="a38dc59e4f64af399a0a6d1233ae27877"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38dc59e4f64af399a0a6d1233ae27877">&#9670;&#160;</a></span>cna()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::EpiCenters::cna </td>
+          <td>(</td>
+          <td class="paramtype">long *</td>          <td class="paramname"><span class="paramname"><em>cna</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>matter</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>neighborCutoff</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EpiCenters_8cpp_source.html#l00114">114</a> of file <a class="el" href="EpiCenters_8cpp_source.html">EpiCenters.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  115</span>                                                  {</div>
+<div class="line"><span class="lineno">  116</span>  <span class="keywordtype">long</span> nAtoms = matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>();</div>
+<div class="line"><span class="lineno">  117</span>  std::vector&lt;int&gt; nFCC(nAtoms, 0);</div>
+<div class="line"><span class="lineno">  118</span>  std::vector&lt;int&gt; nHCP(nAtoms, 0);</div>
+<div class="line"><span class="lineno">  119</span>  std::vector&lt;std::vector&lt;int&gt;&gt; neighborLists(nAtoms);</div>
+<div class="line"><span class="lineno">  120</span> </div>
+<div class="line"><span class="lineno">  121</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nAtoms - 1; i++) {</div>
+<div class="line"><span class="lineno">  122</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = i + 1; j &lt; nAtoms; j++) {</div>
+<div class="line"><span class="lineno">  123</span>      <span class="keywordtype">double</span> diffR = matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a3f0aa81cd1f3f1ec16c682c72aa18111">distance</a>(i, j);</div>
+<div class="line"><span class="lineno">  124</span>      <span class="keywordflow">if</span> (diffR &lt; neighborCutoff) {</div>
+<div class="line"><span class="lineno">  125</span>        neighborLists[i].push_back(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(j));</div>
+<div class="line"><span class="lineno">  126</span>        neighborLists[j].push_back(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(i));</div>
+<div class="line"><span class="lineno">  127</span>      }</div>
+<div class="line"><span class="lineno">  128</span>    }</div>
+<div class="line"><span class="lineno">  129</span>  }</div>
+<div class="line"><span class="lineno">  130</span> </div>
+<div class="line"><span class="lineno">  131</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> a2 = 0; a2 &lt; nAtoms; a2++) {</div>
+<div class="line"><span class="lineno">  132</span>    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;nbs2 = neighborLists[a2];</div>
+<div class="line"><span class="lineno">  133</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> n2 = 0; n2 &lt; nbs2.size(); n2++) {</div>
+<div class="line"><span class="lineno">  134</span>      <span class="keywordtype">int</span> a1 = nbs2[n2];</div>
+<div class="line"><span class="lineno">  135</span>      <span class="keywordflow">if</span> (a1 &lt; a2) {</div>
+<div class="line"><span class="lineno">  136</span>        std::vector&lt;int&gt; common;</div>
+<div class="line"><span class="lineno">  137</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;nbs1 = neighborLists[a1];</div>
+<div class="line"><span class="lineno">  138</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> n1 = 0; n1 &lt; nbs1.size(); n1++) {</div>
+<div class="line"><span class="lineno">  139</span>          <span class="keywordtype">int</span> a3 = nbs1[n1];</div>
+<div class="line"><span class="lineno">  140</span>          <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> m2 = 0; m2 &lt; nbs2.size(); m2++) {</div>
+<div class="line"><span class="lineno">  141</span>            <span class="keywordflow">if</span> (a3 == nbs2[m2])</div>
+<div class="line"><span class="lineno">  142</span>              common.push_back(a3);</div>
+<div class="line"><span class="lineno">  143</span>          }</div>
+<div class="line"><span class="lineno">  144</span>        }</div>
+<div class="line"><span class="lineno">  145</span>        <span class="keywordflow">if</span> (common.size() == 4) {</div>
+<div class="line"><span class="lineno">  146</span>          <span class="keywordtype">int</span> nBonds = 0;</div>
+<div class="line"><span class="lineno">  147</span>          <span class="keywordtype">int</span> bondsSum = 0;</div>
+<div class="line"><span class="lineno">  148</span>          <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j2 = 1; j2 &lt; 4; j2++) {</div>
+<div class="line"><span class="lineno">  149</span>            <span class="keyword">const</span> <span class="keyword">auto</span> &amp;nbs = neighborLists[common[j2]];</div>
+<div class="line"><span class="lineno">  150</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j1 = 0; j1 &lt; j2; j1++) {</div>
+<div class="line"><span class="lineno">  151</span>              <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> n = 0; n &lt; nbs.size(); n++) {</div>
+<div class="line"><span class="lineno">  152</span>                <span class="keywordflow">if</span> (common[j1] == nbs[n]) {</div>
+<div class="line"><span class="lineno">  153</span>                  nBonds++;</div>
+<div class="line"><span class="lineno">  154</span>                  bondsSum += j1 + j2;</div>
+<div class="line"><span class="lineno">  155</span>                  <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  156</span>                }</div>
+<div class="line"><span class="lineno">  157</span>              }</div>
+<div class="line"><span class="lineno">  158</span>            }</div>
+<div class="line"><span class="lineno">  159</span>          }</div>
+<div class="line"><span class="lineno">  160</span>          <span class="keywordflow">if</span> (nBonds == 2) {</div>
+<div class="line"><span class="lineno">  161</span>            <span class="keywordflow">if</span> (bondsSum == 6) {</div>
+<div class="line"><span class="lineno">  162</span>              nFCC[a1]++;</div>
+<div class="line"><span class="lineno">  163</span>              nFCC[a2]++;</div>
+<div class="line"><span class="lineno">  164</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  165</span>              nHCP[a1]++;</div>
+<div class="line"><span class="lineno">  166</span>              nHCP[a2]++;</div>
+<div class="line"><span class="lineno">  167</span>            }</div>
+<div class="line"><span class="lineno">  168</span>          }</div>
+<div class="line"><span class="lineno">  169</span>        }</div>
+<div class="line"><span class="lineno">  170</span>      }</div>
+<div class="line"><span class="lineno">  171</span>    }</div>
+<div class="line"><span class="lineno">  172</span>  }</div>
+<div class="line"><span class="lineno">  173</span>  <span class="comment">// 0: fcc (421), 1: hcp (422), 2: other</span></div>
+<div class="line"><span class="lineno">  174</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nAtoms; i++) {</div>
+<div class="line"><span class="lineno">  175</span>    <span class="keywordflow">if</span> (neighborLists[i].size() == 12) {</div>
+<div class="line"><span class="lineno">  176</span>      <span class="keywordflow">if</span> (nFCC[i] == 12)</div>
+<div class="line"><span class="lineno">  177</span>        <a class="code hl_function" href="#a38dc59e4f64af399a0a6d1233ae27877">cna</a>[i] = 0;</div>
+<div class="line"><span class="lineno">  178</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span> (nFCC[i] == 6 &amp;&amp; nHCP[i] == 6)</div>
+<div class="line"><span class="lineno">  179</span>        <a class="code hl_function" href="#a38dc59e4f64af399a0a6d1233ae27877">cna</a>[i] = 1;</div>
+<div class="line"><span class="lineno">  180</span>      <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  181</span>        <a class="code hl_function" href="#a38dc59e4f64af399a0a6d1233ae27877">cna</a>[i] = 2;</div>
+<div class="line"><span class="lineno">  182</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  183</span>      <a class="code hl_function" href="#a38dc59e4f64af399a0a6d1233ae27877">cna</a>[i] = 2;</div>
+<div class="line"><span class="lineno">  184</span>    }</div>
+<div class="line"><span class="lineno">  185</span>  }</div>
+<div class="line"><span class="lineno">  186</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a3f0aa81cd1f3f1ec16c682c72aa18111"><div class="ttname"><a href="classeonc_1_1Matter.html#a3f0aa81cd1f3f1ec16c682c72aa18111">eonc::Matter::distance</a></div><div class="ttdeci">double distance(long index1, long index2) const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00360">Matter.cpp:360</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a6d270e335854296565eaa5ba015753b5"><div class="ttname"><a href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">eonc::Matter::numberOfAtoms</a></div><div class="ttdeci">long int numberOfAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00209">Matter.cpp:209</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1EpiCenters_html_a38dc59e4f64af399a0a6d1233ae27877"><div class="ttname"><a href="#a38dc59e4f64af399a0a6d1233ae27877">eonc::EpiCenters::cna</a></div><div class="ttdeci">void cna(long *cna, const Matter *matter, double neighborCutoff)</div><div class="ttdef"><b>Definition</b> <a href="EpiCenters_8cpp_source.html#l00114">EpiCenters.cpp:114</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a3c7a5ac1a947ab0bdfe256865ad03c01" name="a3c7a5ac1a947ab0bdfe256865ad03c01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c7a5ac1a947ab0bdfe256865ad03c01">&#9670;&#160;</a></span>cnaEpiCenter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::EpiCenters::cnaEpiCenter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>matter</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>neighborCutoff</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EpiCenters_8cpp_source.html#l00022">22</a> of file <a class="el" href="EpiCenters_8cpp_source.html">EpiCenters.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   23</span>                                                           {</div>
+<div class="line"><span class="lineno">   24</span>  <span class="keywordtype">long</span> nAtoms = matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>();</div>
+<div class="line"><span class="lineno">   25</span>  std::vector&lt;long&gt; cnaList(nAtoms);</div>
+<div class="line"><span class="lineno">   26</span>  <span class="keywordtype">long</span> indexEpiCenter = -2;</div>
+<div class="line"><span class="lineno">   27</span> </div>
+<div class="line"><span class="lineno">   28</span>  <a class="code hl_function" href="#a38dc59e4f64af399a0a6d1233ae27877">cna</a>(cnaList.data(), matter, neighborCutoff);</div>
+<div class="line"><span class="lineno">   29</span> </div>
+<div class="line"><span class="lineno">   30</span>  <span class="comment">// Count atoms that are not FCC or HCP and are free to move</span></div>
+<div class="line"><span class="lineno">   31</span>  <span class="keywordtype">long</span> count = 0;</div>
+<div class="line"><span class="lineno">   32</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nAtoms; i++) {</div>
+<div class="line"><span class="lineno">   33</span>    <span class="keywordflow">if</span> (cnaList[i] == 2 &amp;&amp; !matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#afe2636574f8f27addf59661ecc77f910">getFixed</a>(i))</div>
+<div class="line"><span class="lineno">   34</span>      count++;</div>
+<div class="line"><span class="lineno">   35</span>  }</div>
+<div class="line"><span class="lineno">   36</span>  <span class="comment">// Pick a random atom being both free and not FCC or HCP coordinated</span></div>
+<div class="line"><span class="lineno">   37</span>  <span class="keywordtype">long</span> pick = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a699a6770b311d7f44a437f4f915bad69">randomDouble</a>(count)) + 1;</div>
+<div class="line"><span class="lineno">   38</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nAtoms; i++) {</div>
+<div class="line"><span class="lineno">   39</span>    <span class="keywordflow">if</span> (cnaList[i] == 2 &amp;&amp; !matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#afe2636574f8f27addf59661ecc77f910">getFixed</a>(i)) {</div>
+<div class="line"><span class="lineno">   40</span>      pick--;</div>
+<div class="line"><span class="lineno">   41</span>      <span class="keywordflow">if</span> (!pick) {</div>
+<div class="line"><span class="lineno">   42</span>        indexEpiCenter = i;</div>
+<div class="line"><span class="lineno">   43</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">   44</span>      }</div>
+<div class="line"><span class="lineno">   45</span>    }</div>
+<div class="line"><span class="lineno">   46</span>  }</div>
+<div class="line"><span class="lineno">   47</span> </div>
+<div class="line"><span class="lineno">   48</span>  assert(indexEpiCenter &gt; -1 &amp;&amp; indexEpiCenter &lt; nAtoms);</div>
+<div class="line"><span class="lineno">   49</span>  <span class="keywordflow">return</span> indexEpiCenter;</div>
+<div class="line"><span class="lineno">   50</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_afe2636574f8f27addf59661ecc77f910"><div class="ttname"><a href="classeonc_1_1Matter.html#afe2636574f8f27addf59661ecc77f910">eonc::Matter::getFixed</a></div><div class="ttdeci">int getFixed(long int atom) const</div><div class="ttdoc">1 if every Cartesian axis of the atom is fixed, else 0.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00402">Matter.cpp:402</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a699a6770b311d7f44a437f4f915bad69"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a699a6770b311d7f44a437f4f915bad69">eonc::helpers::randomDouble</a></div><div class="ttdeci">double randomDouble()</div><div class="ttdef"><b>Definition</b> <a href="RandomNumbers_8cpp_source.html#l00036">RandomNumbers.cpp:62</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aeade0cfb3f3bade6b10d45a2c6ba02a9" name="aeade0cfb3f3bade6b10d45a2c6ba02a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeade0cfb3f3bade6b10d45a2c6ba02a9">&#9670;&#160;</a></span>coordination()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::EpiCenters::coordination </td>
+          <td>(</td>
+          <td class="paramtype">long *</td>          <td class="paramname"><span class="paramname"><em>coordinationVal</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>matter</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>neighborCutoff</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EpiCenters_8cpp_source.html#l00188">188</a> of file <a class="el" href="EpiCenters_8cpp_source.html">EpiCenters.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  189</span>                                                           {</div>
+<div class="line"><span class="lineno">  190</span>  <span class="keywordtype">long</span> nAtoms = matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>();</div>
+<div class="line"><span class="lineno">  191</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nAtoms; i++)</div>
+<div class="line"><span class="lineno">  192</span>    coordinationVal[i] = 0;</div>
+<div class="line"><span class="lineno">  193</span> </div>
+<div class="line"><span class="lineno">  194</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nAtoms - 1; i++) {</div>
+<div class="line"><span class="lineno">  195</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = i + 1; j &lt; nAtoms; j++) {</div>
+<div class="line"><span class="lineno">  196</span>      <span class="keywordtype">double</span> diffR = matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a3f0aa81cd1f3f1ec16c682c72aa18111">distance</a>(i, j);</div>
+<div class="line"><span class="lineno">  197</span>      <span class="keywordflow">if</span> (diffR &lt; neighborCutoff) {</div>
+<div class="line"><span class="lineno">  198</span>        coordinationVal[i]++;</div>
+<div class="line"><span class="lineno">  199</span>        coordinationVal[j]++;</div>
+<div class="line"><span class="lineno">  200</span>      }</div>
+<div class="line"><span class="lineno">  201</span>    }</div>
+<div class="line"><span class="lineno">  202</span>  }</div>
+<div class="line"><span class="lineno">  203</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8dec8a4107cf1820433b5342f3eaa341" name="a8dec8a4107cf1820433b5342f3eaa341"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dec8a4107cf1820433b5342f3eaa341">&#9670;&#160;</a></span>coordinationLessOrEqual()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::EpiCenters::coordinationLessOrEqual </td>
+          <td>(</td>
+          <td class="paramtype">bool *</td>          <td class="paramname"><span class="paramname"><em>result</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>coordinationMaxVal</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>matter</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>neighborCutoff</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EpiCenters_8cpp_source.html#l00205">205</a> of file <a class="el" href="EpiCenters_8cpp_source.html">EpiCenters.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  208</span>                                                                      {</div>
+<div class="line"><span class="lineno">  209</span>  <span class="keywordtype">long</span> nAtoms = matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>();</div>
+<div class="line"><span class="lineno">  210</span>  std::vector&lt;long&gt; coordinationVal(nAtoms);</div>
+<div class="line"><span class="lineno">  211</span> </div>
+<div class="line"><span class="lineno">  212</span>  <a class="code hl_function" href="#aeade0cfb3f3bade6b10d45a2c6ba02a9">coordination</a>(coordinationVal.data(), matter, neighborCutoff);</div>
+<div class="line"><span class="lineno">  213</span> </div>
+<div class="line"><span class="lineno">  214</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nAtoms; i++) {</div>
+<div class="line"><span class="lineno">  215</span>    result[i] =</div>
+<div class="line"><span class="lineno">  216</span>        (coordinationVal[i] &lt;= coordinationMaxVal) &amp;&amp; !matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#afe2636574f8f27addf59661ecc77f910">getFixed</a>(i);</div>
+<div class="line"><span class="lineno">  217</span>  }</div>
+<div class="line"><span class="lineno">  218</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1EpiCenters_html_aeade0cfb3f3bade6b10d45a2c6ba02a9"><div class="ttname"><a href="#aeade0cfb3f3bade6b10d45a2c6ba02a9">eonc::EpiCenters::coordination</a></div><div class="ttdeci">void coordination(long *coordinationVal, const Matter *matter, double neighborCutoff)</div><div class="ttdef"><b>Definition</b> <a href="EpiCenters_8cpp_source.html#l00188">EpiCenters.cpp:188</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0303feddb20a9a859c87015d81d6d001" name="a0303feddb20a9a859c87015d81d6d001"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0303feddb20a9a859c87015d81d6d001">&#9670;&#160;</a></span>lastAtom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::EpiCenters::lastAtom </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>matter</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EpiCenters_8cpp_source.html#l00086">86</a> of file <a class="el" href="EpiCenters_8cpp_source.html">EpiCenters.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   86</span>                                                  {</div>
+<div class="line"><span class="lineno">   87</span>  <span class="keywordtype">long</span> nAtoms = matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>();</div>
+<div class="line"><span class="lineno">   88</span>  <span class="keywordtype">long</span> indexEpiCenter = nAtoms - 1;</div>
+<div class="line"><span class="lineno">   89</span>  assert(indexEpiCenter &gt; -1 &amp;&amp; indexEpiCenter &lt; nAtoms);</div>
+<div class="line"><span class="lineno">   90</span>  <span class="keywordflow">return</span> indexEpiCenter;</div>
+<div class="line"><span class="lineno">   91</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a94a86c223fa8a161a77239bfd398f370" name="a94a86c223fa8a161a77239bfd398f370"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94a86c223fa8a161a77239bfd398f370">&#9670;&#160;</a></span>listedAtomEpiCenter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::EpiCenters::listedAtomEpiCenter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>matter</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; long &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>atomList</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EpiCenters_8cpp_source.html#l00220">220</a> of file <a class="el" href="EpiCenters_8cpp_source.html">EpiCenters.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  221</span>                                                                            {</div>
+<div class="line"><span class="lineno">  222</span>  <span class="keywordtype">long</span> nAtoms = matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>();</div>
+<div class="line"><span class="lineno">  223</span>  <span class="comment">// Filter to only free atoms from the provided list</span></div>
+<div class="line"><span class="lineno">  224</span>  std::vector&lt;long&gt; freeAtoms;</div>
+<div class="line"><span class="lineno">  225</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx : atomList) {</div>
+<div class="line"><span class="lineno">  226</span>    <span class="keywordflow">if</span> (idx &gt;= 0 &amp;&amp; idx &lt; nAtoms &amp;&amp; !matter-&gt;getFixed(idx)) {</div>
+<div class="line"><span class="lineno">  227</span>      freeAtoms.push_back(idx);</div>
+<div class="line"><span class="lineno">  228</span>    }</div>
+<div class="line"><span class="lineno">  229</span>  }</div>
+<div class="line"><span class="lineno">  230</span>  assert(!freeAtoms.empty());</div>
+<div class="line"><span class="lineno">  231</span>  <span class="keywordtype">long</span> pick =</div>
+<div class="line"><span class="lineno">  232</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a699a6770b311d7f44a437f4f915bad69">randomDouble</a>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(freeAtoms.size() - 1)));</div>
+<div class="line"><span class="lineno">  233</span>  <span class="keywordflow">return</span> freeAtoms[pick];</div>
+<div class="line"><span class="lineno">  234</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac1cd35bd93127441db232f1951122e07" name="ac1cd35bd93127441db232f1951122e07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1cd35bd93127441db232f1951122e07">&#9670;&#160;</a></span>minCoordinatedEpiCenter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::EpiCenters::minCoordinatedEpiCenter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>matter</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>neighborCutoff</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EpiCenters_8cpp_source.html#l00052">52</a> of file <a class="el" href="EpiCenters_8cpp_source.html">EpiCenters.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   53</span>                                                                      {</div>
+<div class="line"><span class="lineno">   54</span>  <span class="keywordtype">long</span> nAtoms = matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>();</div>
+<div class="line"><span class="lineno">   55</span>  <span class="comment">// Can&#39;t use vector&lt;bool&gt; (.data() is deleted), use unique_ptr&lt;bool[]&gt;</span></div>
+<div class="line"><span class="lineno">   56</span>  <span class="keyword">auto</span> minCoordinatedList = std::make_unique&lt;bool[]&gt;(nAtoms);</div>
+<div class="line"><span class="lineno">   57</span>  <span class="keywordtype">long</span> indexEpiCenter = -2;</div>
+<div class="line"><span class="lineno">   58</span> </div>
+<div class="line"><span class="lineno">   59</span>  <span class="keywordtype">long</span> minCoordinationVal = <a class="code hl_function" href="#a1aac322e73b0dc9d74e2e086ff281699">minCoordination</a>(matter, neighborCutoff);</div>
+<div class="line"><span class="lineno">   60</span>  <a class="code hl_function" href="#a8dec8a4107cf1820433b5342f3eaa341">coordinationLessOrEqual</a>(minCoordinatedList.get(), minCoordinationVal, matter,</div>
+<div class="line"><span class="lineno">   61</span>                          neighborCutoff);</div>
+<div class="line"><span class="lineno">   62</span> </div>
+<div class="line"><span class="lineno">   63</span>  <span class="comment">// Count all atoms that are minimally coordinated and free to move</span></div>
+<div class="line"><span class="lineno">   64</span>  <span class="keywordtype">long</span> count = 0;</div>
+<div class="line"><span class="lineno">   65</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nAtoms; i++) {</div>
+<div class="line"><span class="lineno">   66</span>    <span class="keywordflow">if</span> (minCoordinatedList[i] &amp;&amp; !matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#afe2636574f8f27addf59661ecc77f910">getFixed</a>(i))</div>
+<div class="line"><span class="lineno">   67</span>      count++;</div>
+<div class="line"><span class="lineno">   68</span>  }</div>
+<div class="line"><span class="lineno">   69</span>  <span class="comment">// Pick a random atom that is free and minimally coordinated</span></div>
+<div class="line"><span class="lineno">   70</span>  <span class="keywordtype">long</span> pick = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a699a6770b311d7f44a437f4f915bad69">randomDouble</a>(count));</div>
+<div class="line"><span class="lineno">   71</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nAtoms; i++) {</div>
+<div class="line"><span class="lineno">   72</span>    <span class="keywordflow">if</span> (minCoordinatedList[i] &amp;&amp; !matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#afe2636574f8f27addf59661ecc77f910">getFixed</a>(i)) {</div>
+<div class="line"><span class="lineno">   73</span>      <span class="keywordflow">if</span> (!pick) {</div>
+<div class="line"><span class="lineno">   74</span>        indexEpiCenter = i;</div>
+<div class="line"><span class="lineno">   75</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">   76</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   77</span>        pick--;</div>
+<div class="line"><span class="lineno">   78</span>      }</div>
+<div class="line"><span class="lineno">   79</span>    }</div>
+<div class="line"><span class="lineno">   80</span>  }</div>
+<div class="line"><span class="lineno">   81</span> </div>
+<div class="line"><span class="lineno">   82</span>  assert(indexEpiCenter &gt; -1 &amp;&amp; indexEpiCenter &lt; nAtoms);</div>
+<div class="line"><span class="lineno">   83</span>  <span class="keywordflow">return</span> indexEpiCenter;</div>
+<div class="line"><span class="lineno">   84</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1EpiCenters_html_a1aac322e73b0dc9d74e2e086ff281699"><div class="ttname"><a href="#a1aac322e73b0dc9d74e2e086ff281699">eonc::EpiCenters::minCoordination</a></div><div class="ttdeci">long minCoordination(const Matter *matter, double neighborCutoff)</div><div class="ttdef"><b>Definition</b> <a href="EpiCenters_8cpp_source.html#l00236">EpiCenters.cpp:236</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1EpiCenters_html_a8dec8a4107cf1820433b5342f3eaa341"><div class="ttname"><a href="#a8dec8a4107cf1820433b5342f3eaa341">eonc::EpiCenters::coordinationLessOrEqual</a></div><div class="ttdeci">void coordinationLessOrEqual(bool *result, long coordinationMaxVal, const Matter *matter, double neighborCutoff)</div><div class="ttdef"><b>Definition</b> <a href="EpiCenters_8cpp_source.html#l00205">EpiCenters.cpp:205</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1aac322e73b0dc9d74e2e086ff281699" name="a1aac322e73b0dc9d74e2e086ff281699"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1aac322e73b0dc9d74e2e086ff281699">&#9670;&#160;</a></span>minCoordination()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::EpiCenters::minCoordination </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>matter</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>neighborCutoff</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EpiCenters_8cpp_source.html#l00236">236</a> of file <a class="el" href="EpiCenters_8cpp_source.html">EpiCenters.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  237</span>                                                              {</div>
+<div class="line"><span class="lineno">  238</span>  <span class="keywordtype">long</span> nAtoms = matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>();</div>
+<div class="line"><span class="lineno">  239</span>  std::vector&lt;long&gt; coordinationVal(nAtoms);</div>
+<div class="line"><span class="lineno">  240</span> </div>
+<div class="line"><span class="lineno">  241</span>  <a class="code hl_function" href="#aeade0cfb3f3bade6b10d45a2c6ba02a9">coordination</a>(coordinationVal.data(), matter, neighborCutoff);</div>
+<div class="line"><span class="lineno">  242</span> </div>
+<div class="line"><span class="lineno">  243</span>  <span class="keywordtype">long</span> minVal = LONG_MAX;</div>
+<div class="line"><span class="lineno">  244</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nAtoms; i++) {</div>
+<div class="line"><span class="lineno">  245</span>    <span class="keywordflow">if</span> (coordinationVal[i] &lt; minVal &amp;&amp; !matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#afe2636574f8f27addf59661ecc77f910">getFixed</a>(i)) {</div>
+<div class="line"><span class="lineno">  246</span>      minVal = coordinationVal[i];</div>
+<div class="line"><span class="lineno">  247</span>    }</div>
+<div class="line"><span class="lineno">  248</span>  }</div>
+<div class="line"><span class="lineno">  249</span>  <span class="keywordflow">return</span> minVal;</div>
+<div class="line"><span class="lineno">  250</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a82b3f115d3403e23532f9667771f5bd2" name="a82b3f115d3403e23532f9667771f5bd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82b3f115d3403e23532f9667771f5bd2">&#9670;&#160;</a></span>randomFreeAtomEpiCenter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">long eonc::EpiCenters::randomFreeAtomEpiCenter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>matter</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EpiCenters_8cpp_source.html#l00093">93</a> of file <a class="el" href="EpiCenters_8cpp_source.html">EpiCenters.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   93</span>                                                                 {</div>
+<div class="line"><span class="lineno">   94</span>  <span class="keywordtype">long</span> nAtoms = matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>();</div>
+<div class="line"><span class="lineno">   95</span>  <span class="keywordtype">long</span> indexEpiCenter = -2;</div>
+<div class="line"><span class="lineno">   96</span> </div>
+<div class="line"><span class="lineno">   97</span>  <span class="keywordtype">long</span> freeCount = matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#acf7568f3207c071f206a8db116ed03c1">numberOfFreeAtoms</a>() - 1;</div>
+<div class="line"><span class="lineno">   98</span>  <span class="keywordtype">long</span> pick = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="namespaceeonc_1_1helpers.html#a699a6770b311d7f44a437f4f915bad69">randomDouble</a>(freeCount));</div>
+<div class="line"><span class="lineno">   99</span> </div>
+<div class="line"><span class="lineno">  100</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; nAtoms; i++) {</div>
+<div class="line"><span class="lineno">  101</span>    <span class="keywordflow">if</span> (!matter-&gt;<a class="code hl_function" href="classeonc_1_1Matter.html#afe2636574f8f27addf59661ecc77f910">getFixed</a>(i)) {</div>
+<div class="line"><span class="lineno">  102</span>      <span class="keywordflow">if</span> (!pick) {</div>
+<div class="line"><span class="lineno">  103</span>        indexEpiCenter = i;</div>
+<div class="line"><span class="lineno">  104</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  105</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  106</span>        pick--;</div>
+<div class="line"><span class="lineno">  107</span>      }</div>
+<div class="line"><span class="lineno">  108</span>    }</div>
+<div class="line"><span class="lineno">  109</span>  }</div>
+<div class="line"><span class="lineno">  110</span>  assert(indexEpiCenter &gt; -1 &amp;&amp; indexEpiCenter &lt; nAtoms);</div>
+<div class="line"><span class="lineno">  111</span>  <span class="keywordflow">return</span> indexEpiCenter;</div>
+<div class="line"><span class="lineno">  112</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_acf7568f3207c071f206a8db116ed03c1"><div class="ttname"><a href="classeonc_1_1Matter.html#acf7568f3207c071f206a8db116ed03c1">eonc::Matter::numberOfFreeAtoms</a></div><div class="ttdeci">long int numberOfFreeAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00475">Matter.cpp:475</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-var-members" id="doc-var-members"></a><h2 id="header-doc-var-members" class="groupheader">Variable Documentation</h2>
+<a id="a3f879a934b81e169ba20a6a75c3340bb" name="a3f879a934b81e169ba20a6a75c3340bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f879a934b81e169ba20a6a75c3340bb">&#9670;&#160;</a></span>DISP_LAST_ATOM</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char eonc::EpiCenters::DISP_LAST_ATOM[] = &quot;last_atom&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EpiCenters_8h_source.html#l00023">23</a> of file <a class="el" href="EpiCenters_8h_source.html">EpiCenters.h</a>.</p>
+
+</div>
+</div>
+<a id="a19fef5e0ac89301cce85298814fc04bd" name="a19fef5e0ac89301cce85298814fc04bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19fef5e0ac89301cce85298814fc04bd">&#9670;&#160;</a></span>DISP_LISTED_ATOMS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char eonc::EpiCenters::DISP_LISTED_ATOMS[] = &quot;listed_atoms&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EpiCenters_8h_source.html#l00025">25</a> of file <a class="el" href="EpiCenters_8h_source.html">EpiCenters.h</a>.</p>
+
+</div>
+</div>
+<a id="a3daeffdce455426b6819b083964fa53a" name="a3daeffdce455426b6819b083964fa53a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3daeffdce455426b6819b083964fa53a">&#9670;&#160;</a></span>DISP_LOAD</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char eonc::EpiCenters::DISP_LOAD[] = &quot;load&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EpiCenters_8h_source.html#l00020">20</a> of file <a class="el" href="EpiCenters_8h_source.html">EpiCenters.h</a>.</p>
+
+</div>
+</div>
+<a id="a1df5e79b97a359bd4cc97c1721dab149" name="a1df5e79b97a359bd4cc97c1721dab149"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1df5e79b97a359bd4cc97c1721dab149">&#9670;&#160;</a></span>DISP_MIN_COORDINATED</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char eonc::EpiCenters::DISP_MIN_COORDINATED[] = &quot;least_coordinated&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EpiCenters_8h_source.html#l00022">22</a> of file <a class="el" href="EpiCenters_8h_source.html">EpiCenters.h</a>.</p>
+
+</div>
+</div>
+<a id="a1b0f030a0abb6b01ca86e1fff1df1c6a" name="a1b0f030a0abb6b01ca86e1fff1df1c6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b0f030a0abb6b01ca86e1fff1df1c6a">&#9670;&#160;</a></span>DISP_NOT_FCC_OR_HCP</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char eonc::EpiCenters::DISP_NOT_FCC_OR_HCP[] = &quot;not_fcc_hcp_coordinated&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EpiCenters_8h_source.html#l00021">21</a> of file <a class="el" href="EpiCenters_8h_source.html">EpiCenters.h</a>.</p>
+
+</div>
+</div>
+<a id="a00d53e225a73ad2031a555a9e7c0eaf2" name="a00d53e225a73ad2031a555a9e7c0eaf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00d53e225a73ad2031a555a9e7c0eaf2">&#9670;&#160;</a></span>DISP_RANDOM</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char eonc::EpiCenters::DISP_RANDOM[] = &quot;random&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EpiCenters_8h_source.html#l00024">24</a> of file <a class="el" href="EpiCenters_8h_source.html">EpiCenters.h</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="namespaceeonc_1_1EpiCenters.html">EpiCenters</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/include/eon/ConjugateGradients.h Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('ConjugateGradients_8h_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">ConjugateGradients.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ConjugateGradients_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">** This file is part of eOn.</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">**</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">** SPDX-License-Identifier: BSD-3-Clause</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">**</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">** Copyright (c) 2010--present, eOn Development Team</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">** All rights reserved.</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">**</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">** Repo:</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">** https://github.com/TheochemUI/eOn</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">*/</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="Eigen_8h.html">Eigen.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="EonLogger_8h.html">EonLogger.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="HelperFunctions_8h.html">HelperFunctions.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="Matter_8h.html">Matter.h</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="Optimizer_8h.html">Optimizer.h</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="Parameters_8h.html">Parameters.h</a>&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classConjugateGradients.html">   38</a></span><span class="keyword">class </span><a class="code hl_function" href="classConjugateGradients.html#a64fdf457c0ab0d0e5172b88039915c6e">ConjugateGradients</a> : <span class="keyword">public</span> <a class="code hl_function" href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer</a> {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span></div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="}">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeonc_1_1ConjugateGradients.html#a64fdf457c0ab0d0e5172b88039915c6e">   46</a></span>  <a class="code hl_function" href="classeonc_1_1ConjugateGradients.html#a64fdf457c0ab0d0e5172b88039915c6e">ConjugateGradients</a>(std::shared_ptr&lt;ObjectiveFunction&gt; a_objf,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                     <span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;a_params)</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>      : <a class="code hl_function" href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer</a>(a_objf, <a class="code hl_enumeration" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a>::<a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">CG</a>, a_params),</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <a class="code hl_variable" href="classeonc_1_1ConjugateGradients.html#a2fa4863deaee58bd920e5bcfd447ab28">m_directionOld</a>{(a_objf-&gt;getPositions()).setZero()},</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <a class="code hl_variable" href="classeonc_1_1ConjugateGradients.html#ae01c04ea295a7d03490538974ba0ddab">m_forceOld</a>{(a_objf-&gt;getPositions()).setZero()}, <span class="comment">// use setZero instead</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <a class="code hl_variable" href="classeonc_1_1ConjugateGradients.html#a59e7cb42c970482dd523e0f52956433e">m_cg_i</a>{0} {}</div>
+</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeonc_1_1ConjugateGradients.html#a32f6e1640c158c52e3eaa3529d62aa8c">   53</a></span>  <a class="code hl_function" href="classeonc_1_1ConjugateGradients.html#a32f6e1640c158c52e3eaa3529d62aa8c">~ConjugateGradients</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>  <span class="keywordtype">int</span> <a class="code hl_function" href="classeonc_1_1ConjugateGradients.html#ad89001cedae22690017c65e1d87c0baf">step</a>(<span class="keywordtype">double</span> a_maxMove) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  <span class="keywordtype">int</span> <a class="code hl_function" href="classeonc_1_1ConjugateGradients.html#a72375a449b4b7c023e594389284f0378">run</a>(<span class="keywordtype">size_t</span> a_maxIterations, <span class="keywordtype">double</span> a_maxMove) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  Eigen::VectorXd <a class="code hl_function" href="classeonc_1_1ConjugateGradients.html#aa6214e378d939d58e4bb00b924fbec83">getStep</a>();</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeonc_1_1ConjugateGradients.html#aade8c61d0393fcc5bac7b5db8ce31614">   72</a></span>  Eigen::VectorXd <a class="code hl_variable" href="classeonc_1_1ConjugateGradients.html#aade8c61d0393fcc5bac7b5db8ce31614">m_direction</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeonc_1_1ConjugateGradients.html#a2fa4863deaee58bd920e5bcfd447ab28">   74</a></span>  Eigen::VectorXd <a class="code hl_variable" href="classeonc_1_1ConjugateGradients.html#a2fa4863deaee58bd920e5bcfd447ab28">m_directionOld</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeonc_1_1ConjugateGradients.html#a2de0bdb23d86e6eeb445a1fa0d4158d2">   76</a></span>  Eigen::VectorXd <a class="code hl_variable" href="classeonc_1_1ConjugateGradients.html#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeonc_1_1ConjugateGradients.html#a25bb3119cc6c478296f09434f7dcafbe">   78</a></span>  Eigen::VectorXd <a class="code hl_variable" href="classeonc_1_1ConjugateGradients.html#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classeonc_1_1ConjugateGradients.html#ae01c04ea295a7d03490538974ba0ddab">   80</a></span>  Eigen::VectorXd <a class="code hl_variable" href="classeonc_1_1ConjugateGradients.html#ae01c04ea295a7d03490538974ba0ddab">m_forceOld</a>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeonc_1_1ConjugateGradients.html#ae4cd215ba150decb4fd0dde059fc91c0">   81</a></span>  <a class="code hl_struct" href="structeonc_1_1log_1_1FileScoped.html">eonc::log::FileScoped</a> <a class="code hl_variable" href="classeonc_1_1ConjugateGradients.html#ae4cd215ba150decb4fd0dde059fc91c0">m_log</a>{<span class="stringliteral">&quot;cg&quot;</span>, <span class="stringliteral">&quot;_cg.log&quot;</span>};</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classeonc_1_1ConjugateGradients.html#a59e7cb42c970482dd523e0f52956433e">   84</a></span>  <span class="keywordtype">size_t</span> <a class="code hl_variable" href="classeonc_1_1ConjugateGradients.html#a59e7cb42c970482dd523e0f52956433e">m_cg_i</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>  <span class="keywordtype">int</span> <a class="code hl_function" href="classeonc_1_1ConjugateGradients.html#a66e0103a00a5d69034f0d6c33a315b77">single_step</a>(<span class="keywordtype">double</span> a_maxMove);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>  <span class="keywordtype">int</span> <a class="code hl_function" href="classeonc_1_1ConjugateGradients.html#a09e77586c503aed788dbdcbca1bb1f7b">line_search</a>(<span class="keywordtype">double</span> a_maxMove);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>};</div>
+</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>} <span class="comment">// namespace eonc</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="keyword">using </span><a class="code hl_class" href="classeonc_1_1ConjugateGradients.html">eonc::ConjugateGradients</a>;</div>
+<div class="ttc" id="aEigen_8h_html"><div class="ttname"><a href="Eigen_8h.html">Eigen.h</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html"><div class="ttname"><a href="EonLogger_8h.html">EonLogger.h</a></div></div>
+<div class="ttc" id="aHelperFunctions_8h_html"><div class="ttname"><a href="HelperFunctions_8h.html">HelperFunctions.h</a></div></div>
+<div class="ttc" id="aMatter_8h_html"><div class="ttname"><a href="Matter_8h.html">Matter.h</a></div></div>
+<div class="ttc" id="aOptimizer_8h_html"><div class="ttname"><a href="Optimizer_8h.html">Optimizer.h</a></div><div class="ttdoc">The optimizer class is used to serve as an abstract class for all optimizers, as well as to call an o...</div></div>
+<div class="ttc" id="aParameters_8h_html"><div class="ttname"><a href="Parameters_8h.html">Parameters.h</a></div></div>
+<div class="ttc" id="aclassConjugateGradients_html_a64fdf457c0ab0d0e5172b88039915c6e"><div class="ttname"><a href="classConjugateGradients.html#a64fdf457c0ab0d0e5172b88039915c6e">ConjugateGradients::ConjugateGradients</a></div><div class="ttdeci">ConjugateGradients(std::shared_ptr&lt; ObjectiveFunction &gt; a_objf, const Parameters &amp;a_params)</div><div class="ttdoc">Conjugate Gradients optimizer constructor.</div><div class="ttdef"><b>Definition</b> <a href="#l00046">ConjugateGradients.h:46</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html"><div class="ttname"><a href="classeonc_1_1ConjugateGradients.html">eonc::ConjugateGradients</a></div><div class="ttdoc">Decleration of the Conjugate Gradients optimizer.</div><div class="ttdef"><b>Definition</b> <a href="#l00038">ConjugateGradients.h:38</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a09e77586c503aed788dbdcbca1bb1f7b"><div class="ttname"><a href="classeonc_1_1ConjugateGradients.html#a09e77586c503aed788dbdcbca1bb1f7b">eonc::ConjugateGradients::line_search</a></div><div class="ttdeci">int line_search(double a_maxMove)</div><div class="ttdoc">Steps the conjugate gradient.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8cpp_source.html#l00057">ConjugateGradients.cpp:57</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a25bb3119cc6c478296f09434f7dcafbe"><div class="ttname"><a href="classeonc_1_1ConjugateGradients.html#a25bb3119cc6c478296f09434f7dcafbe">eonc::ConjugateGradients::m_force</a></div><div class="ttdeci">Eigen::VectorXd m_force</div><div class="ttdoc">Current force vector.</div><div class="ttdef"><b>Definition</b> <a href="#l00078">ConjugateGradients.h:78</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a2de0bdb23d86e6eeb445a1fa0d4158d2"><div class="ttname"><a href="classeonc_1_1ConjugateGradients.html#a2de0bdb23d86e6eeb445a1fa0d4158d2">eonc::ConjugateGradients::m_directionNorm</a></div><div class="ttdeci">Eigen::VectorXd m_directionNorm</div><div class="ttdoc">Normalised version of the current direction vector.</div><div class="ttdef"><b>Definition</b> <a href="#l00076">ConjugateGradients.h:76</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a2fa4863deaee58bd920e5bcfd447ab28"><div class="ttname"><a href="classeonc_1_1ConjugateGradients.html#a2fa4863deaee58bd920e5bcfd447ab28">eonc::ConjugateGradients::m_directionOld</a></div><div class="ttdeci">Eigen::VectorXd m_directionOld</div><div class="ttdoc">Algorithms previous step direction.</div><div class="ttdef"><b>Definition</b> <a href="#l00074">ConjugateGradients.h:74</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a32f6e1640c158c52e3eaa3529d62aa8c"><div class="ttname"><a href="classeonc_1_1ConjugateGradients.html#a32f6e1640c158c52e3eaa3529d62aa8c">eonc::ConjugateGradients::~ConjugateGradients</a></div><div class="ttdeci">~ConjugateGradients()=default</div><div class="ttdoc">Conjugant Gradient deconstructor.</div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a59e7cb42c970482dd523e0f52956433e"><div class="ttname"><a href="classeonc_1_1ConjugateGradients.html#a59e7cb42c970482dd523e0f52956433e">eonc::ConjugateGradients::m_cg_i</a></div><div class="ttdeci">size_t m_cg_i</div><div class="ttdoc">Counts the number of discrete steps until algorithm convergence.</div><div class="ttdef"><b>Definition</b> <a href="#l00084">ConjugateGradients.h:84</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a64fdf457c0ab0d0e5172b88039915c6e"><div class="ttname"><a href="classeonc_1_1ConjugateGradients.html#a64fdf457c0ab0d0e5172b88039915c6e">eonc::ConjugateGradients::ConjugateGradients</a></div><div class="ttdeci">ConjugateGradients(std::shared_ptr&lt; ObjectiveFunction &gt; a_objf, const Parameters &amp;a_params)</div><div class="ttdoc">Conjugate Gradients optimizer constructor.</div><div class="ttdef"><b>Definition</b> <a href="#l00046">ConjugateGradients.h:46</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a66e0103a00a5d69034f0d6c33a315b77"><div class="ttname"><a href="classeonc_1_1ConjugateGradients.html#a66e0103a00a5d69034f0d6c33a315b77">eonc::ConjugateGradients::single_step</a></div><div class="ttdeci">int single_step(double a_maxMove)</div><div class="ttdoc">Steps the conjugate gradient.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8cpp_source.html#l00114">ConjugateGradients.cpp:114</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a72375a449b4b7c023e594389284f0378"><div class="ttname"><a href="classeonc_1_1ConjugateGradients.html#a72375a449b4b7c023e594389284f0378">eonc::ConjugateGradients::run</a></div><div class="ttdeci">int run(size_t a_maxIterations, double a_maxMove) override</div><div class="ttdoc">Runs the conjugate gradient.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8cpp_source.html#l00192">ConjugateGradients.cpp:192</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_aa6214e378d939d58e4bb00b924fbec83"><div class="ttname"><a href="classeonc_1_1ConjugateGradients.html#aa6214e378d939d58e4bb00b924fbec83">eonc::ConjugateGradients::getStep</a></div><div class="ttdeci">Eigen::VectorXd getStep()</div><div class="ttdoc">Gets the direction of the next step.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8cpp_source.html#l00017">ConjugateGradients.cpp:17</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_aade8c61d0393fcc5bac7b5db8ce31614"><div class="ttname"><a href="classeonc_1_1ConjugateGradients.html#aade8c61d0393fcc5bac7b5db8ce31614">eonc::ConjugateGradients::m_direction</a></div><div class="ttdeci">Eigen::VectorXd m_direction</div><div class="ttdoc">Current step direction of the conjugate gradient.</div><div class="ttdef"><b>Definition</b> <a href="#l00072">ConjugateGradients.h:72</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_ad89001cedae22690017c65e1d87c0baf"><div class="ttname"><a href="classeonc_1_1ConjugateGradients.html#ad89001cedae22690017c65e1d87c0baf">eonc::ConjugateGradients::step</a></div><div class="ttdeci">int step(double a_maxMove) override</div><div class="ttdoc">Calls the next step in the algorithm.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8cpp_source.html#l00045">ConjugateGradients.cpp:45</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_ae01c04ea295a7d03490538974ba0ddab"><div class="ttname"><a href="classeonc_1_1ConjugateGradients.html#ae01c04ea295a7d03490538974ba0ddab">eonc::ConjugateGradients::m_forceOld</a></div><div class="ttdeci">Eigen::VectorXd m_forceOld</div><div class="ttdoc">Previous force vector.</div><div class="ttdef"><b>Definition</b> <a href="#l00080">ConjugateGradients.h:80</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_ae4cd215ba150decb4fd0dde059fc91c0"><div class="ttname"><a href="classeonc_1_1ConjugateGradients.html#ae4cd215ba150decb4fd0dde059fc91c0">eonc::ConjugateGradients::m_log</a></div><div class="ttdeci">eonc::log::FileScoped m_log</div><div class="ttdef"><b>Definition</b> <a href="#l00081">ConjugateGradients.h:81</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Optimizer_html_a51ef8ef5f774fa7125131d8a5dd72710"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">eonc::Optimizer::Optimizer</a></div><div class="ttdeci">Optimizer(std::shared_ptr&lt; ObjectiveFunction &gt; a_objf, const OptimizerConfig &amp;a_config)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00071">Optimizer.h:71</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html"><div class="ttname"><a href="classeonc_1_1Parameters.html">eonc::Parameters</a></div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00028">Parameters.h:28</a></div></div>
+<div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00019">ARTnSaddleSearch.cpp:19</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">eonc::OptType</a></div><div class="ttdeci">OptType</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00098">BaseStructures.h:98</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">eonc::OptType::CG</a></div><div class="ttdeci">@ CG</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00103">BaseStructures.h:103</a></div></div>
+<div class="ttc" id="astructeonc_1_1log_1_1FileScoped_html"><div class="ttname"><a href="structeonc_1_1log_1_1FileScoped.html">eonc::log::FileScoped</a></div><div class="ttdoc">RAII helper for file-based logging in a class.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00208">EonLogger.h:208</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="dir_2527c5cc2e6dc8ce970a4d420439d1d9.html">eon</a></li><li class="navelem"><a href="ConjugateGradients_8h.html">ConjugateGradients.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

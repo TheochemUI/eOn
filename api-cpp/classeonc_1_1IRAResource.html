@@ -1,0 +1,930 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::IRAResource Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1IRAResource.html','','classeonc_1_1IRAResource-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::IRAResource Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a0b28145ff3fc12fb23229e18a3029d8a" id="r_a0b28145ff3fc12fb23229e18a3029d8a"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a0b28145ff3fc12fb23229e18a3029d8a">libira_match_fn</a></td></tr>
+<tr class="memitem:a86501f7f5b0b028abbbcdeeee809e92a" id="r_a86501f7f5b0b028abbbcdeeee809e92a"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a86501f7f5b0b028abbbcdeeee809e92a">libira_cshda_pbc_fn</a></td></tr>
+<tr class="memitem:a623c2193ed7dc5066ec5e7c378dbc3f0" id="r_a623c2193ed7dc5066ec5e7c378dbc3f0"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a623c2193ed7dc5066ec5e7c378dbc3f0">libira_compute_all_fn</a></td></tr>
+<tr class="memitem:aeafd2b2e09ea748c9bfdf77c52822707" id="r_aeafd2b2e09ea748c9bfdf77c52822707"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#aeafd2b2e09ea748c9bfdf77c52822707">libira_get_nmax_fn</a> = int (*)()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ac87ba45c7dd5633ecfaeb3115facb49e" id="r_ac87ba45c7dd5633ecfaeb3115facb49e"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ac87ba45c7dd5633ecfaeb3115facb49e">is_loaded</a> () const noexcept</td></tr>
+<tr class="memdesc:ac87ba45c7dd5633ecfaeb3115facb49e"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if libira was successfully loaded.  <br /></td></tr>
+<tr class="memitem:a319fa532e0cc5ecd87b5fa490f65b8a3" id="r_a319fa532e0cc5ecd87b5fa490f65b8a3"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a319fa532e0cc5ecd87b5fa490f65b8a3">require_loaded</a> () const</td></tr>
+<tr class="memdesc:a319fa532e0cc5ecd87b5fa490f65b8a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Throws std::runtime_error if libira is not available.  <br /></td></tr>
+<tr class="memitem:af0c688f3ef94e9dd12ec29deaca4c3cc" id="r_af0c688f3ef94e9dd12ec29deaca4c3cc"><td class="memItemLeft"><a class="el" href="#a0b28145ff3fc12fb23229e18a3029d8a">libira_match_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#af0c688f3ef94e9dd12ec29deaca4c3cc">get_match_fn</a> () const</td></tr>
+<tr class="memitem:ae32a7022761183b4da0e167ec55c279a" id="r_ae32a7022761183b4da0e167ec55c279a"><td class="memItemLeft"><a class="el" href="#a86501f7f5b0b028abbbcdeeee809e92a">libira_cshda_pbc_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae32a7022761183b4da0e167ec55c279a">get_cshda_pbc_fn</a> () const</td></tr>
+<tr class="memitem:a7bf0d8debdef2bc33f6f841b04a9fb92" id="r_a7bf0d8debdef2bc33f6f841b04a9fb92"><td class="memItemLeft"><a class="el" href="#a623c2193ed7dc5066ec5e7c378dbc3f0">libira_compute_all_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a7bf0d8debdef2bc33f6f841b04a9fb92">get_compute_all_fn</a> () const</td></tr>
+<tr class="memitem:ac3532bbecdd24b6157bbc3169b9e725d" id="r_ac3532bbecdd24b6157bbc3169b9e725d"><td class="memItemLeft"><a class="el" href="#aeafd2b2e09ea748c9bfdf77c52822707">libira_get_nmax_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#ac3532bbecdd24b6157bbc3169b9e725d">get_get_nmax_fn</a> () const</td></tr>
+<tr class="memitem:aa6ee4c226d12ffa9af713ea1653f0ace" id="r_aa6ee4c226d12ffa9af713ea1653f0ace"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#aa6ee4c226d12ffa9af713ea1653f0ace">IRAResource</a> (const IRAResource &amp;)=delete</td></tr>
+<tr class="memdesc:aa6ee4c226d12ffa9af713ea1653f0ace"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-copyable, non-movable.  <br /></td></tr>
+<tr class="memitem:af3e45227d5dcd69fb59e3d9393529f69" id="r_af3e45227d5dcd69fb59e3d9393529f69"><td class="memItemLeft"><a class="el" href="#aa6ee4c226d12ffa9af713ea1653f0ace">IRAResource</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#af3e45227d5dcd69fb59e3d9393529f69">operator=</a> (const <a class="el" href="#aa6ee4c226d12ffa9af713ea1653f0ace">IRAResource</a> &amp;)=delete</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ac964af424cde7befecbcca7ebba704b3" id="r_ac964af424cde7befecbcca7ebba704b3"><td class="memItemLeft">static <a class="el" href="#aa6ee4c226d12ffa9af713ea1653f0ace">IRAResource</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#ac964af424cde7befecbcca7ebba704b3">instance</a> ()</td></tr>
+<tr class="memdesc:ac964af424cde7befecbcca7ebba704b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Singleton accessor (Meyer's pattern).  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a7bacb5f96889a03665d85124f44732f7" id="r_a7bacb5f96889a03665d85124f44732f7"><td class="memItemLeft">std::mutex&#160;</td><td class="memItemRight"><a class="el" href="#a7bacb5f96889a03665d85124f44732f7">library_mutex</a></td></tr>
+<tr class="memdesc:a7bacb5f96889a03665d85124f44732f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Global mutex to ensure only one thread accesses IRA library at a time.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a1511f3c7ee8aa02907cde5e804147b19" id="r_a1511f3c7ee8aa02907cde5e804147b19"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a1511f3c7ee8aa02907cde5e804147b19">IRAResource</a> ()</td></tr>
+<tr class="memitem:a96b703123ec62ec118761b86ea42e43b" id="r_a96b703123ec62ec118761b86ea42e43b"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a96b703123ec62ec118761b86ea42e43b">~IRAResource</a> ()</td></tr>
+<tr class="memitem:a8bde0d2d9b651bdd45158a4272b6577f" id="r_a8bde0d2d9b651bdd45158a4272b6577f"><td class="memTemplParams" colspan="2">template&lt;typename Fn&gt; </td></tr>
+<tr class="memitem:a8bde0d2d9b651bdd45158a4272b6577f template"><td class="memItemLeft">Fn&#160;</td><td class="memItemRight"><a class="el" href="#a8bde0d2d9b651bdd45158a4272b6577f">load_sym</a> (const char *name) const</td></tr>
+<tr class="memdesc:a8bde0d2d9b651bdd45158a4272b6577f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Try to load a symbol; returns nullptr on failure.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a1ed19100666b9caea864505a179a1844" id="r_a1ed19100666b9caea864505a179a1844"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a1ed19100666b9caea864505a179a1844">m_loaded</a> {false}</td></tr>
+<tr class="memitem:addddab46b7db2fd7e14afe824cb064c3" id="r_addddab46b7db2fd7e14afe824cb064c3"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1dynlib.html#a77fed09f5c75a2dc000c73773884df69">dynlib::Handle</a>&#160;</td><td class="memItemRight"><a class="el" href="#addddab46b7db2fd7e14afe824cb064c3">m_handle</a> {}</td></tr>
+<tr class="memitem:ab6a2cee128a6de4ad26f6d880c0d8ce2" id="r_ab6a2cee128a6de4ad26f6d880c0d8ce2"><td class="memItemLeft"><a class="el" href="#a0b28145ff3fc12fb23229e18a3029d8a">libira_match_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#ab6a2cee128a6de4ad26f6d880c0d8ce2">libira_match_</a> {nullptr}</td></tr>
+<tr class="memitem:ae58040e2522a2a743d6dd93a822a2a3e" id="r_ae58040e2522a2a743d6dd93a822a2a3e"><td class="memItemLeft"><a class="el" href="#a86501f7f5b0b028abbbcdeeee809e92a">libira_cshda_pbc_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae58040e2522a2a743d6dd93a822a2a3e">libira_cshda_pbc_</a> {nullptr}</td></tr>
+<tr class="memitem:ac4a8de3d7bca9e37bb513718f1de8ad6" id="r_ac4a8de3d7bca9e37bb513718f1de8ad6"><td class="memItemLeft"><a class="el" href="#a623c2193ed7dc5066ec5e7c378dbc3f0">libira_compute_all_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#ac4a8de3d7bca9e37bb513718f1de8ad6">libira_compute_all_</a> {nullptr}</td></tr>
+<tr class="memitem:aaa3fee48c50baeaf36a13b5e6c93c612" id="r_aaa3fee48c50baeaf36a13b5e6c93c612"><td class="memItemLeft"><a class="el" href="#aeafd2b2e09ea748c9bfdf77c52822707">libira_get_nmax_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#aaa3fee48c50baeaf36a13b5e6c93c612">libira_get_nmax_</a> {nullptr}</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00034">34</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+</div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
+<a id="a623c2193ed7dc5066ec5e7c378dbc3f0" name="a623c2193ed7dc5066ec5e7c378dbc3f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a623c2193ed7dc5066ec5e7c378dbc3f0">&#9670;&#160;</a></span>libira_compute_all_fn</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a623c2193ed7dc5066ec5e7c378dbc3f0">eonc::IRAResource::libira_compute_all_fn</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line"> </div>
+<div class="line">void (*)(<span class="keywordtype">int</span> nat, <span class="keyword">const</span> <span class="keywordtype">int</span> *typ, <span class="keyword">const</span> <span class="keywordtype">double</span> *coords, <span class="keywordtype">double</span> threshold,</div>
+<div class="line">         <span class="keywordtype">int</span> prescreenIh, <span class="keywordtype">int</span> *n_mat, <span class="keywordtype">double</span> **mat, <span class="keywordtype">int</span> **perm, <span class="keywordtype">char</span> **op,</div>
+<div class="line">         <span class="keywordtype">int</span> **n, <span class="keywordtype">int</span> **p, <span class="keywordtype">double</span> **ax, <span class="keywordtype">double</span> **angle, <span class="keywordtype">double</span> **dH,</div>
+<div class="line">         <span class="keywordtype">char</span> **pg, <span class="keywordtype">int</span> *n_prin_ax, <span class="keywordtype">double</span> **prin_ax, <span class="keywordtype">int</span> *cerr)</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00049">49</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+
+</div>
+</div>
+<a id="a86501f7f5b0b028abbbcdeeee809e92a" name="a86501f7f5b0b028abbbcdeeee809e92a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86501f7f5b0b028abbbcdeeee809e92a">&#9670;&#160;</a></span>libira_cshda_pbc_fn</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a86501f7f5b0b028abbbcdeeee809e92a">eonc::IRAResource::libira_cshda_pbc_fn</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">void (*)(<span class="keywordtype">int</span> nat1, <span class="keyword">const</span> <span class="keywordtype">int</span> *typ1,</div>
+<div class="line">                                      <span class="keyword">const</span> <span class="keywordtype">double</span> *coords1, <span class="keywordtype">int</span> nat2,</div>
+<div class="line">                                      <span class="keyword">const</span> <span class="keywordtype">int</span> *typ2, <span class="keyword">const</span> <span class="keywordtype">double</span> *coords2,</div>
+<div class="line">                                      <span class="keyword">const</span> <span class="keywordtype">double</span> *lat, <span class="keywordtype">double</span> distThreshold,</div>
+<div class="line">                                      <span class="keywordtype">int</span> **found, <span class="keywordtype">double</span> **dists)</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00044">44</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+
+</div>
+</div>
+<a id="aeafd2b2e09ea748c9bfdf77c52822707" name="aeafd2b2e09ea748c9bfdf77c52822707"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeafd2b2e09ea748c9bfdf77c52822707">&#9670;&#160;</a></span>libira_get_nmax_fn</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#aeafd2b2e09ea748c9bfdf77c52822707">eonc::IRAResource::libira_get_nmax_fn</a> = int (*)()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00054">54</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+
+</div>
+</div>
+<a id="a0b28145ff3fc12fb23229e18a3029d8a" name="a0b28145ff3fc12fb23229e18a3029d8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b28145ff3fc12fb23229e18a3029d8a">&#9670;&#160;</a></span>libira_match_fn</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a0b28145ff3fc12fb23229e18a3029d8a">eonc::IRAResource::libira_match_fn</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">void (*)(<span class="keywordtype">int</span> nat1, <span class="keyword">const</span> <span class="keywordtype">int</span> *typ1,</div>
+<div class="line">                                  <span class="keyword">const</span> <span class="keywordtype">double</span> *coords1, <span class="keyword">const</span> <span class="keywordtype">int</span> *cand1,</div>
+<div class="line">                                  <span class="keywordtype">int</span> nat2, <span class="keyword">const</span> <span class="keywordtype">int</span> *typ2,</div>
+<div class="line">                                  <span class="keyword">const</span> <span class="keywordtype">double</span> *coords2, <span class="keyword">const</span> <span class="keywordtype">int</span> *cand2,</div>
+<div class="line">                                  <span class="keywordtype">double</span> distThreshold, <span class="keywordtype">double</span> **rotMat,</div>
+<div class="line">                                  <span class="keywordtype">double</span> **trans, <span class="keywordtype">int</span> **perm,</div>
+<div class="line">                                  <span class="keywordtype">double</span> *hausdorffDist, <span class="keywordtype">int</span> *ierr)</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00037">37</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+
+</div>
+</div>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="aa6ee4c226d12ffa9af713ea1653f0ace" name="aa6ee4c226d12ffa9af713ea1653f0ace"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6ee4c226d12ffa9af713ea1653f0ace">&#9670;&#160;</a></span>IRAResource() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eonc::IRAResource::IRAResource </td>
+          <td>(</td>
+          <td class="paramtype">const IRAResource &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Non-copyable, non-movable. </p>
+
+</div>
+</div>
+<a id="a1511f3c7ee8aa02907cde5e804147b19" name="a1511f3c7ee8aa02907cde5e804147b19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1511f3c7ee8aa02907cde5e804147b19">&#9670;&#160;</a></span>IRAResource() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eonc::IRAResource::IRAResource </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a96b703123ec62ec118761b86ea42e43b" name="a96b703123ec62ec118761b86ea42e43b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96b703123ec62ec118761b86ea42e43b">&#9670;&#160;</a></span>~IRAResource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eonc::IRAResource::~IRAResource </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a7bf0d8debdef2bc33f6f841b04a9fb92" name="a7bf0d8debdef2bc33f6f841b04a9fb92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bf0d8debdef2bc33f6f841b04a9fb92">&#9670;&#160;</a></span>get_compute_all_fn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a623c2193ed7dc5066ec5e7c378dbc3f0">libira_compute_all_fn</a> eonc::IRAResource::get_compute_all_fn </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00071">71</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   71</span>                                                   {</div>
+<div class="line"><span class="lineno">   72</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#ac4a8de3d7bca9e37bb513718f1de8ad6">libira_compute_all_</a>;</div>
+<div class="line"><span class="lineno">   73</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1IRAResource_html_ac4a8de3d7bca9e37bb513718f1de8ad6"><div class="ttname"><a href="#ac4a8de3d7bca9e37bb513718f1de8ad6">eonc::IRAResource::libira_compute_all_</a></div><div class="ttdeci">libira_compute_all_fn libira_compute_all_</div><div class="ttdef"><b>Definition</b> <a href="IRAResource_8h_source.html#l00090">IRAResource.h:90</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae32a7022761183b4da0e167ec55c279a" name="ae32a7022761183b4da0e167ec55c279a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae32a7022761183b4da0e167ec55c279a">&#9670;&#160;</a></span>get_cshda_pbc_fn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a86501f7f5b0b028abbbcdeeee809e92a">libira_cshda_pbc_fn</a> eonc::IRAResource::get_cshda_pbc_fn </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00070">70</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   70</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#ae58040e2522a2a743d6dd93a822a2a3e">libira_cshda_pbc_</a>; }</div>
+<div class="ttc" id="aclasseonc_1_1IRAResource_html_ae58040e2522a2a743d6dd93a822a2a3e"><div class="ttname"><a href="#ae58040e2522a2a743d6dd93a822a2a3e">eonc::IRAResource::libira_cshda_pbc_</a></div><div class="ttdeci">libira_cshda_pbc_fn libira_cshda_pbc_</div><div class="ttdef"><b>Definition</b> <a href="IRAResource_8h_source.html#l00089">IRAResource.h:89</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac3532bbecdd24b6157bbc3169b9e725d" name="ac3532bbecdd24b6157bbc3169b9e725d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3532bbecdd24b6157bbc3169b9e725d">&#9670;&#160;</a></span>get_get_nmax_fn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#aeafd2b2e09ea748c9bfdf77c52822707">libira_get_nmax_fn</a> eonc::IRAResource::get_get_nmax_fn </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00074">74</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   74</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#aaa3fee48c50baeaf36a13b5e6c93c612">libira_get_nmax_</a>; }</div>
+<div class="ttc" id="aclasseonc_1_1IRAResource_html_aaa3fee48c50baeaf36a13b5e6c93c612"><div class="ttname"><a href="#aaa3fee48c50baeaf36a13b5e6c93c612">eonc::IRAResource::libira_get_nmax_</a></div><div class="ttdeci">libira_get_nmax_fn libira_get_nmax_</div><div class="ttdef"><b>Definition</b> <a href="IRAResource_8h_source.html#l00091">IRAResource.h:91</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af0c688f3ef94e9dd12ec29deaca4c3cc" name="af0c688f3ef94e9dd12ec29deaca4c3cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0c688f3ef94e9dd12ec29deaca4c3cc">&#9670;&#160;</a></span>get_match_fn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a0b28145ff3fc12fb23229e18a3029d8a">libira_match_fn</a> eonc::IRAResource::get_match_fn </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00069">69</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   69</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#ab6a2cee128a6de4ad26f6d880c0d8ce2">libira_match_</a>; }</div>
+<div class="ttc" id="aclasseonc_1_1IRAResource_html_ab6a2cee128a6de4ad26f6d880c0d8ce2"><div class="ttname"><a href="#ab6a2cee128a6de4ad26f6d880c0d8ce2">eonc::IRAResource::libira_match_</a></div><div class="ttdeci">libira_match_fn libira_match_</div><div class="ttdef"><b>Definition</b> <a href="IRAResource_8h_source.html#l00088">IRAResource.h:88</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac964af424cde7befecbcca7ebba704b3" name="ac964af424cde7befecbcca7ebba704b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac964af424cde7befecbcca7ebba704b3">&#9670;&#160;</a></span>instance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#aa6ee4c226d12ffa9af713ea1653f0ace">IRAResource</a> &amp; eonc::IRAResource::instance </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Singleton accessor (Meyer's pattern). </p>
+
+</div>
+</div>
+<a id="ac87ba45c7dd5633ecfaeb3115facb49e" name="ac87ba45c7dd5633ecfaeb3115facb49e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac87ba45c7dd5633ecfaeb3115facb49e">&#9670;&#160;</a></span>is_loaded()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::IRAResource::is_loaded </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True if libira was successfully loaded. </p>
+
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00063">63</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   63</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a1ed19100666b9caea864505a179a1844">m_loaded</a>; }</div>
+<div class="ttc" id="aclasseonc_1_1IRAResource_html_a1ed19100666b9caea864505a179a1844"><div class="ttname"><a href="#a1ed19100666b9caea864505a179a1844">eonc::IRAResource::m_loaded</a></div><div class="ttdeci">bool m_loaded</div><div class="ttdef"><b>Definition</b> <a href="IRAResource_8h_source.html#l00084">IRAResource.h:84</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8bde0d2d9b651bdd45158a4272b6577f" name="a8bde0d2d9b651bdd45158a4272b6577f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bde0d2d9b651bdd45158a4272b6577f">&#9670;&#160;</a></span>load_sym()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Fn&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Fn eonc::IRAResource::load_sym </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Try to load a symbol; returns nullptr on failure. </p>
+
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00094">94</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   94</span>                                                             {</div>
+<div class="line"><span class="lineno">   95</span>    <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>Fn<span class="keyword">&gt;</span>(<a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a37bed29f19bcf42ee7abe5dff7bb1820">dynlib::sym</a>(<a class="code hl_variable" href="#addddab46b7db2fd7e14afe824cb064c3">m_handle</a>, name));</div>
+<div class="line"><span class="lineno">   96</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1IRAResource_html_addddab46b7db2fd7e14afe824cb064c3"><div class="ttname"><a href="#addddab46b7db2fd7e14afe824cb064c3">eonc::IRAResource::m_handle</a></div><div class="ttdeci">dynlib::Handle m_handle</div><div class="ttdef"><b>Definition</b> <a href="IRAResource_8h_source.html#l00085">IRAResource.h:85</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1dynlib_html_a37bed29f19bcf42ee7abe5dff7bb1820"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a37bed29f19bcf42ee7abe5dff7bb1820">eonc::dynlib::sym</a></div><div class="ttdeci">void * sym(Handle h, const char *name) noexcept</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00075">DynLib.h:75</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af3e45227d5dcd69fb59e3d9393529f69" name="af3e45227d5dcd69fb59e3d9393529f69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3e45227d5dcd69fb59e3d9393529f69">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#aa6ee4c226d12ffa9af713ea1653f0ace">IRAResource</a> &amp; eonc::IRAResource::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#aa6ee4c226d12ffa9af713ea1653f0ace">IRAResource</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a319fa532e0cc5ecd87b5fa490f65b8a3" name="a319fa532e0cc5ecd87b5fa490f65b8a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a319fa532e0cc5ecd87b5fa490f65b8a3">&#9670;&#160;</a></span>require_loaded()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::IRAResource::require_loaded </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Throws std::runtime_error if libira is not available. </p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="ac4a8de3d7bca9e37bb513718f1de8ad6" name="ac4a8de3d7bca9e37bb513718f1de8ad6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4a8de3d7bca9e37bb513718f1de8ad6">&#9670;&#160;</a></span>libira_compute_all_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a623c2193ed7dc5066ec5e7c378dbc3f0">libira_compute_all_fn</a> eonc::IRAResource::libira_compute_all_ {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00090">90</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   90</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae58040e2522a2a743d6dd93a822a2a3e" name="ae58040e2522a2a743d6dd93a822a2a3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae58040e2522a2a743d6dd93a822a2a3e">&#9670;&#160;</a></span>libira_cshda_pbc_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a86501f7f5b0b028abbbcdeeee809e92a">libira_cshda_pbc_fn</a> eonc::IRAResource::libira_cshda_pbc_ {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00089">89</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   89</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aaa3fee48c50baeaf36a13b5e6c93c612" name="aaa3fee48c50baeaf36a13b5e6c93c612"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa3fee48c50baeaf36a13b5e6c93c612">&#9670;&#160;</a></span>libira_get_nmax_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#aeafd2b2e09ea748c9bfdf77c52822707">libira_get_nmax_fn</a> eonc::IRAResource::libira_get_nmax_ {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00091">91</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   91</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab6a2cee128a6de4ad26f6d880c0d8ce2" name="ab6a2cee128a6de4ad26f6d880c0d8ce2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6a2cee128a6de4ad26f6d880c0d8ce2">&#9670;&#160;</a></span>libira_match_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a0b28145ff3fc12fb23229e18a3029d8a">libira_match_fn</a> eonc::IRAResource::libira_match_ {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00088">88</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   88</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7bacb5f96889a03665d85124f44732f7" name="a7bacb5f96889a03665d85124f44732f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bacb5f96889a03665d85124f44732f7">&#9670;&#160;</a></span>library_mutex</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::mutex eonc::IRAResource::library_mutex</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Global mutex to ensure only one thread accesses IRA library at a time. </p>
+
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00060">60</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+
+</div>
+</div>
+<a id="addddab46b7db2fd7e14afe824cb064c3" name="addddab46b7db2fd7e14afe824cb064c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addddab46b7db2fd7e14afe824cb064c3">&#9670;&#160;</a></span>m_handle</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeonc_1_1dynlib.html#a77fed09f5c75a2dc000c73773884df69">dynlib::Handle</a> eonc::IRAResource::m_handle {}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00085">85</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   85</span>{};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1ed19100666b9caea864505a179a1844" name="a1ed19100666b9caea864505a179a1844"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ed19100666b9caea864505a179a1844">&#9670;&#160;</a></span>m_loaded</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::IRAResource::m_loaded {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="IRAResource_8h_source.html#l00084">84</a> of file <a class="el" href="IRAResource_8h_source.html">IRAResource.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   84</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/libs/IRA/<a class="el" href="IRAResource_8h_source.html">IRAResource.h</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="classeonc_1_1IRAResource.html">IRAResource</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

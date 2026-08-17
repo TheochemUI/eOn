@@ -1,0 +1,414 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: Member List</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classMatter.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Matter Member List</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>This is the complete list of members for <a class="el" href="classMatter.html">Matter</a>, including all inherited members.</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a8c114b053047b48613893cdb90b1e194">applyPeriodicBoundary</a>()</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a82f835ef09fdd1f41cc330c9526aca34">applyPeriodicBoundary</a>(double &amp;component, int axis)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#af62dbd1481b42a5d540399ed996e30a2">applyPeriodicBoundary</a>(AtomMatrix &amp;diff)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a54be4d629faaa2d65e05f3735e4ec195">applyPeriodicBoundaryIfEnabled</a>()</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#aa8feb78cd6d46aed293cd6b907f92299">assertIsolatedMoleculeLayoutSafe</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a3fc176e8560265e0afa67e62edf4255b">atomicNrs</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a15f81bd85695aedcaf86f5a31ba4f59a">atomIndex</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#af219c82b036170bc1d41fc460861d0b0">biasForces</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a64cda196ae6018764cc382677d341489">biasPotential</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#ab9bc346506f7b77b0fe0dbbec22b32cf">cell</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#abf29de5c9adf2c789c5b2ed448448e7d">cellInverse</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#aa5ffaaf248437da2e5f87994b392cb2d">clearMovieFrames</a>()</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#ad7d9542e1ed3e7ffe913620602a06943">compare</a>(const Matter &amp;matter, bool indistinguishable=false)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a3bc576b16fb424940848c0eafb2f1d64">computePotential</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#af17fe3d2cdea5c7c82ff23b39a43219f">con2matter</a>(std::string filename)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a9915d4cdba6e8d3d0bdb05f6d2c00acd">con2matter</a>(const readcon::ConFrame &amp;frame, io::ConFrameMetadata *out_metadata=nullptr)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a1883b92cc253543dda0ae48c18cb326d">convel2matter</a>(std::string filename)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a3f0aa81cd1f3f1ec16c682c72aa18111">distance</a>(long index1, long index2) const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#ac49b2dd4bc8c1c2b36ffd1746e67a682">distance</a>(const Matter &amp;matter, long index) const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#aeec911c636e035d7422ecbac5572b9ab">distanceTo</a>(const Matter &amp;matter)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#ae176c4b4d49e5281dc4e53f60ed1ad47">energyVariance</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">mutable</span><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a76942fe65d2f8ee60e1d2884cd38b958">forceCalls</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">mutable</span><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a8bdadf93e454cfd261d3e3f823797e42">forces</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">mutable</span><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a9d7154880723d96ff9565411cb09b6df">forcesData</a>()</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">mutable</span><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a84f5529b0194cd2cfbadfdf4f87ce4b1">freeMask</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">mutable</span><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#af5577896bc79fbb6d1cc8a9410811a26">getAccelerations</a>()</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#ada91063399840e5900d861c2472a8bbc">getAtomicNr</a>(long int atom) const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a54255c1a9e5b9fbce7cf04dab61c49ad">getAtomicNrs</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#ac74baec03c3e226e9d63814132c73d69">getAtomicNrsFree</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#ad17ea2f3b6ea4b9d8a6f6427d16696b7">getAtomIndex</a>(long int atom) const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#af63f40bcd9ea9744e15216afc359412f">getBiasForces</a>()</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#adc4d758cf3f8a737ddb2e985c212f986">getCell</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a60e8d3e7887b5deda232958abf1e8004">getEnergyVariance</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#afe2636574f8f27addf59661ecc77f910">getFixed</a>(long int atom) const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a5c4bd234cdd6d01c5247b65a70d5cdd3">getFixed</a>(long int atom, int axis) const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#ab28f935aaa7c2d05e5a7004895f0f2c5">getFixedMask</a>(long int atom) const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a3546d0851270d2c9c2f7d6784970628a">getForceCalls</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a48cee072b3bab26b5e045d02fbd83860">getForces</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#ae72c60ebf1da59f6877eb7238f412f9a">getForcesFree</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#ab4bf1850e22f0cf4bf605df8a193642d">getForcesFreeV</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a8fd2866a1d614a4d19e3c6052fc41dee">getForcesRaw</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a5fe24e7e536637c308586a6bcba03e4e">getForcesV</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a42c2c5ca606659d564e05f09ba452601">getFree</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a109c73418bd3c7f9642acb67081db14d">getFreeV</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#ad0c4ab075cb363bd641e015609c54079">getHeaderCon</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#ae9aecd3182f017d726f7fdf40200da3e">getKineticEnergy</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#aec83c6643272c49c4f0de7126ec50386">getMass</a>(long int atom) const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a713f47f28b5dd6b0eafe906cae0e3317">getMasses</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#ac82dceb96ac4e838d7264f8a5a369ac4">getMechanicalEnergy</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a71cdf5fcafff1dca4137d50fcd39a0ac">getPbcConvention</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a42dc44f980e80210ff324a97ae554717">getPeriodic</a>() const noexcept</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a7f6c4f1bb73440455e412ed3824dafce">getPosition</a>(long int atom, int axis) const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a61f92d3857a9c627aa1085b6ee912858">getPositionsCopy</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a73fde5b1c2df94e368e2f785101ebfc1">getPositionsFree</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#abce266d8f707e6d7a688695c0c7c490e">getPositionsFreeV</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a2d7d554a3a95b50358d1701cd78852b8">getPositionsV</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a78ada888b42ce36915927e24c8ec4568">getPotential</a>()</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#aeedc6e532d1dc4497825ba229abb49f6">getPotentialCalls</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a0f627d29055314e02df9c51bdc05e53f">getPotentialEnergy</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#adefda147883ed7bea47974811355f481">getVelocities</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a108221cb91ea3df82614be0db79f86c9">getWriteConForces</a>() const noexcept</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#aa325fdebfaf34c23fde537e5cb456e25">headerCon</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a7175e6caa341624da3671cea49a28644">io::con2matter</a>(Matter &amp;, const readcon::ConFrame &amp;, io::ConFrameMetadata *)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#ab05ecd045a03152a267ceaff6534654d">isFixed</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a3657e5845594fe587174a9ae8e0ad4d1">m_log</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#aeb2dfebfe956179a0eb3b9362bd1c1c6">maskedForces</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">mutable</span><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a322f9a95ee0c89b2c627a42f4209e14f">masses</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#abc1668b8fe0f9886c55949fc2d7e76c8">Matter</a>(std::shared_ptr&lt; Potential &gt; pot, const Parameters &amp;params)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a693fcd6261d45c88bae54dbf6bbbd3c5">Matter</a>(const Matter &amp;matter)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a1a7c8df0dbfe95de17f02b78f0705c7e">Matter</a>(Matter &amp;&amp;other) noexcept</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#ae8ecf570ce353f150952bc8038371222">matter2con</a>(std::string filename, bool append=false, const io::ConFrameMetadata *metadata=nullptr)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a3aaae87bee027afecde9cf1afb081ded">matter2convel</a>(std::string filename)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#acbf5f17511fed06b18e763f3d27db8c6">matter2xyz</a>(std::string filename, bool append=false)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a4a8fbf93d473d8f1d1995fafa587c000">maxForce</a>(void) const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a34a601b54aac55bdde187ad3d97c5e41">movie_frames_</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a8cb829c799f9eef04d3270fe1580ade8">movieFrames</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#aa093532bd3da96f1e556173582439ba8">needsForceUpdate</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a125a4e2f91291a42888a92bce0757a6f">numberOfFixedAtoms</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#acf7568f3207c071f206a8db116ed03c1">numberOfFreeAtoms</a>() const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#acb4d744be5ad0e47633a4963de368382">operator=</a>(const Matter &amp;matter)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#ad2624e03efe79b6496e373db421eb773">operator=</a>(Matter &amp;&amp;other) noexcept</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a5821bbfdfc09d67cf89f039a84a2f8e6">parameters</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(const AtomMatrix &amp;diff) const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a2365242b8fa8d2e3eef8b4047d531938">pbcConvention</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a7baa0454463e9fa9ff93ff8da9288798">pbcV</a>(const VectorXd &amp;diff) const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#af7c5e008d3d3bcc8591482e43c34d2f2">pdistance</a>(long index1, long index2, int axis) const</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#ae6b71cd2e17f5a1979a4b7d8632a44fe">perAtomNorm</a>(const Matter &amp;matter)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#af8290bf4afd79fd95fbd50e79d265eb0">positions</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a606ed724f40629b85d76d449226bc10b">potential</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a006dfbc2f8e6976a0a3fe529b7fe6c05">potentialEnergy</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">mutable</span><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a1775e0e0a39c045c4311afa84c812062">recomputeFreeMask</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">mutable</span><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">mutable</span><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a94d412b1be09524d9d598dede472e25c">recomputePotential</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">mutable</span><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a9d360a92ec06c45c9d46691b31ab9b4f">relax</a>(bool quiet=false, bool writeMovie=false, bool checkpoint=false, std::string prefixMovie=std::string(), std::string prefixCheckpoint=std::string(), bool retainMovieFrames=false)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a58f5e1f746e363570a818161de3e140f">removeNetForce</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a8d9f3b1c85173fe1f87ec1236b110150">resetForceCalls</a>()</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a896d4984116557422d7774705d4eca5a">resize</a>(long int nAtoms)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#afad1ddb71e4a9cee4e53426731a3bead">setAtomicNr</a>(long int atom, long atomicNr)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a27b3b3354514294f1c2c1e4b0d4f1caa">setAtomicNrs</a>(const VectorXi &amp;atmnrs)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a6d6d51b783b4d307f500fa07d8ff46be">setAtomIndex</a>(long int atom, std::int64_t index)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a5beb6bbeb7aa4f0134b1e7ee7b71f9ab">setBiasForces</a>(const AtomMatrix &amp;bf)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a45bafbba633d9f043b6ae00e9ec21bc3">setBiasPotential</a>(BondBoost *bondBoost)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a9a7ab53872772b1e61e4d0234af1d5d8">setCell</a>(const Matrix3d &amp;newCell)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a147b227eef2f2be514d2390a892a529e">setComputedPotential</a>(double energy, double variance)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#ada842824868f9498651d2375d61300d7">setFixed</a>(long int atom, int isFixed)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a7dba2ce010e3d6beb91efeeac4212573">setFixed</a>(long int atom, int axis, int isFixed)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#adaaa781979ad1b98cb82976f3ff23db8">setFixedMask</a>(long int atom, std::array&lt; bool, 3 &gt; mask)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a14d89b71ad6494517de0b8fe03d59610">setForces</a>(const AtomMatrix &amp;f)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#aae32c1fee545067bb5ddbc4f8c8615ae">setHeaderCon</a>(const std::array&lt; std::string, 5 &gt; &amp;headers)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a37ba235f74cde02d0824cee566b4be9c">setHeaderConLine</a>(size_t i, std::string line)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a93c4ffc04dcb6fe3730a13806ec7105e">setMass</a>(long int atom, double mass)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a35a3894ee9a59e2fb9447480b31b25c5">setMasses</a>(const VectorXd &amp;massesIn)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a4cb36033019cb08f0f91f7de69ace572">setPbcConvention</a>(PbcConvention convention)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a5206e37570d8949d5d4ecf3316db34f9">setPeriodic</a>(bool periodic)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a3a2febe2397caf120ddedf2dd6500ce2">setPosition</a>(long int atom, int axis, double position)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#ae81d805ef12ff7ce616ddaf2c8da2990">setPositions</a>(const AtomMatrix &amp;pos)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a7eaf0ffdfbf7eaff092d6088b8895c2d">setPositionsFree</a>(const AtomMatrix &amp;pos)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a164e8df6558062d40b4a1b0f57970c29">setPositionsFreeV</a>(const VectorXd &amp;pos)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a992ee15afccb977c494b23bcf67bbedc">setPositionsV</a>(const VectorXd &amp;pos)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#afb94271c6fb8fb446dc1ef803bd15428">setPotential</a>(std::shared_ptr&lt; Potential &gt; pot)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a53c3d67314edbf0fab9591c902921206">setVelocities</a>(const AtomMatrix &amp;v)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#af0387acfee53460cd8cf7aca5bb23b06">setVelocity</a>(long int atom, int axis, double velocity)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a0b75416d04641e08a829552bcb34dca3">structComp</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#af33ca3547c358e8c53e834ab39775ca3">takeMovieFrames</a>()</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#aaf6a7b6df1641c0e351abefb3bf5f6bd">usePeriodicBoundaries</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#a4cf3e65a663f6fe1059deb9735f1ede5">velocities</a></td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMatter.html#a0937750cfe196a94470bbe0f565f6bc8">writeTibble</a>(std::string filename)</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMatter.html#aae47783556f5b30eb3c7edf1e0d25dfe">~Matter</a>()=default</td><td class="entry"><a class="el" href="classMatter.html">Matter</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

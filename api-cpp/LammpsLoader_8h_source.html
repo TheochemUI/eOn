@@ -1,0 +1,383 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/include/eon/potentials/LAMMPS/LammpsLoader.h Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('LammpsLoader_8h_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">LammpsLoader.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="LammpsLoader_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">** This file is part of eOn.</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">**</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">** SPDX-License-Identifier: BSD-3-Clause</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">**</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">** Copyright (c) 2010--present, eOn Development Team</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">** All rights reserved.</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">**</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">** Repo:</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">** https://github.com/TheochemUI/eOn</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">*/</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;<a class="code" href="DynLib_8h.html">eon/DynLib.h</a>&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#ifdef EONMPI</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &lt;mpi.h&gt;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="comment">// LammpsLoader: singleton that loads liblammps function pointers at runtime</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment">// ---------------------------------------------------------------------------</span></div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html">   34</a></span><span class="keyword">class </span><a class="code hl_function" href="classeonc_1_1LammpsLoader.html#a4ffcb6a3a01d9cf76e3f2ac376599785">LammpsLoader</a> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  <span class="comment">// LAMMPS C API function pointer types (from library.h)</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#abef3b08a18b5514f4e5454fd9e567f04">   37</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="classeonc_1_1LammpsLoader.html#abef3b08a18b5514f4e5454fd9e567f04">open_no_mpi_fn</a> = <span class="keywordtype">void</span> *(*)(<span class="keywordtype">int</span>, <span class="keywordtype">char</span> **, <span class="keywordtype">void</span> **);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#aae7652de2e090c34d687078e1ddd814d">   38</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="classeonc_1_1LammpsLoader.html#aae7652de2e090c34d687078e1ddd814d">close_fn</a> = void (*)(<span class="keywordtype">void</span> *);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#a05745085815c8e4a6a4fb8cd591ff16b">   39</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="classeonc_1_1LammpsLoader.html#a05745085815c8e4a6a4fb8cd591ff16b">command_fn</a> = <span class="keywordtype">char</span> *(*)(<span class="keywordtype">void</span> *, <span class="keyword">const</span> <span class="keywordtype">char</span> *);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#ae40b9d0b68d0f2f9cec0e292fcc0b58f">   40</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="classeonc_1_1LammpsLoader.html#ae40b9d0b68d0f2f9cec0e292fcc0b58f">file_fn</a> = void (*)(<span class="keywordtype">void</span> *, <span class="keyword">const</span> <span class="keywordtype">char</span> *);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#a46f3a5d7c0faad82dd300556180a284f">   41</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="classeonc_1_1LammpsLoader.html#a46f3a5d7c0faad82dd300556180a284f">scatter_atoms_fn</a> = void (*)(<span class="keywordtype">void</span> *, <span class="keyword">const</span> <span class="keywordtype">char</span> *, int, int, <span class="keywordtype">void</span> *);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#a104e94e1454f88b6a551bf7c8249e1f0">   42</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="classeonc_1_1LammpsLoader.html#a104e94e1454f88b6a551bf7c8249e1f0">extract_var_fn</a> = <span class="keywordtype">void</span> *(*)(<span class="keywordtype">void</span> *, <span class="keyword">const</span> <span class="keywordtype">char</span> *, <span class="keyword">const</span> <span class="keywordtype">char</span> *);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="preprocessor">#ifdef EONMPI</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  <span class="keyword">using </span>open_mpi_fn = <span class="keywordtype">void</span> *(*)(<span class="keywordtype">int</span>, <span class="keywordtype">char</span> **, MPI_Comm, <span class="keywordtype">void</span> **);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <span class="keyword">static</span> <a class="code hl_function" href="classeonc_1_1LammpsLoader.html#a4ffcb6a3a01d9cf76e3f2ac376599785">LammpsLoader</a> &amp;<a class="code hl_function" href="classeonc_1_1LammpsLoader.html#ad258a0e488b7535cbdb5b62a57d67edc">instance</a>();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  <span class="comment">// Loaded function pointers (null if library not found)</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#a31d80b4d677653fd2c56b01a6f72896f">   51</a></span>  <a class="code hl_typedef" href="classeonc_1_1LammpsLoader.html#abef3b08a18b5514f4e5454fd9e567f04">open_no_mpi_fn</a> <a class="code hl_variable" href="classeonc_1_1LammpsLoader.html#a31d80b4d677653fd2c56b01a6f72896f">open_no_mpi</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#ac7e3d027d196d639d26c8e36e83377f7">   52</a></span>  <a class="code hl_typedef" href="classeonc_1_1LammpsLoader.html#aae7652de2e090c34d687078e1ddd814d">close_fn</a> <a class="code hl_variable" href="classeonc_1_1LammpsLoader.html#ac7e3d027d196d639d26c8e36e83377f7">close</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#a68fa685304f474e1519b293e970f0615">   53</a></span>  <a class="code hl_typedef" href="classeonc_1_1LammpsLoader.html#a05745085815c8e4a6a4fb8cd591ff16b">command_fn</a> <a class="code hl_variable" href="classeonc_1_1LammpsLoader.html#a68fa685304f474e1519b293e970f0615">command</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#a5e6b6cddffcecdc68de934a58577adeb">   54</a></span>  <a class="code hl_typedef" href="classeonc_1_1LammpsLoader.html#ae40b9d0b68d0f2f9cec0e292fcc0b58f">file_fn</a> <a class="code hl_variable" href="classeonc_1_1LammpsLoader.html#a5e6b6cddffcecdc68de934a58577adeb">file</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#a14583691ef3b85326c7e9d9676bd2ac0">   55</a></span>  <a class="code hl_typedef" href="classeonc_1_1LammpsLoader.html#a46f3a5d7c0faad82dd300556180a284f">scatter_atoms_fn</a> <a class="code hl_variable" href="classeonc_1_1LammpsLoader.html#a14583691ef3b85326c7e9d9676bd2ac0">scatter_atoms</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#ae501ef7bead3d35eccda26e3335a4fd2">   56</a></span>  <a class="code hl_typedef" href="classeonc_1_1LammpsLoader.html#a104e94e1454f88b6a551bf7c8249e1f0">extract_var_fn</a> <a class="code hl_variable" href="classeonc_1_1LammpsLoader.html#ae501ef7bead3d35eccda26e3335a4fd2">extract_variable</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="preprocessor">#ifdef EONMPI</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>  open_mpi_fn open_mpi{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#aee7d41cf84533ce9338f7ebc06304b19">   62</a></span>  [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeonc_1_1LammpsLoader.html#aee7d41cf84533ce9338f7ebc06304b19">is_loaded</a>() const noexcept { <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1LammpsLoader.html#a99db7acfa05c390ef00337eb5c05faac">m_loaded</a>; }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeonc_1_1LammpsLoader.html#a1586ae65e5db2287e173cf287e573e6a">available</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1LammpsLoader.html#a21f37a53a4b81e8aee6d4fe571e48dcc">require_loaded</a>();</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#a4ffcb6a3a01d9cf76e3f2ac376599785">   71</a></span>  <a class="code hl_function" href="classeonc_1_1LammpsLoader.html#a4ffcb6a3a01d9cf76e3f2ac376599785">LammpsLoader</a>(<span class="keyword">const</span> <a class="code hl_function" href="classeonc_1_1LammpsLoader.html#a4ffcb6a3a01d9cf76e3f2ac376599785">LammpsLoader</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#aa4f1f22fbc40e4f193118776d1984336">   72</a></span>  <a class="code hl_function" href="classeonc_1_1LammpsLoader.html#a4ffcb6a3a01d9cf76e3f2ac376599785">LammpsLoader</a> &amp;<a class="code hl_function" href="classeonc_1_1LammpsLoader.html#aa4f1f22fbc40e4f193118776d1984336">operator=</a>(<span class="keyword">const</span> <a class="code hl_function" href="classeonc_1_1LammpsLoader.html#a4ffcb6a3a01d9cf76e3f2ac376599785">LammpsLoader</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#ad8c1d3cb0e07cf643c1e4f7f4b262db3">   75</a></span>  <a class="code hl_function" href="classeonc_1_1LammpsLoader.html#ad8c1d3cb0e07cf643c1e4f7f4b262db3">LammpsLoader</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>  <a class="code hl_function" href="classeonc_1_1LammpsLoader.html#a2100266df25ab9deb30698c613ccf5bf">~LammpsLoader</a>();</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1LammpsLoader.html#ad051404779d30e2e2ffc51a4bfd0fa7b">ensure_loaded</a>();</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#a99db7acfa05c390ef00337eb5c05faac">   80</a></span>  <span class="keywordtype">bool</span> <a class="code hl_variable" href="classeonc_1_1LammpsLoader.html#a99db7acfa05c390ef00337eb5c05faac">m_loaded</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#aeadbba19cbbbee3dbfd4c1c775a0c66e">   81</a></span>  <span class="keywordtype">bool</span> <a class="code hl_variable" href="classeonc_1_1LammpsLoader.html#aeadbba19cbbbee3dbfd4c1c775a0c66e">m_tried</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#ad786b8ef70444a38b875dc627f3aedea">   82</a></span>  <a class="code hl_typedef" href="namespaceeonc_1_1dynlib.html#a77fed09f5c75a2dc000c73773884df69">dynlib::Handle</a> <a class="code hl_variable" href="classeonc_1_1LammpsLoader.html#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>{};</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span></div>
+<div class="foldopen" id="foldopen00085" data-start="{" data-end="}">
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classeonc_1_1LammpsLoader.html#a5cc4c3ae1a59d4161c5b7a1aaac835bb">   85</a></span>  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Fn&gt; Fn <a class="code hl_function" href="classeonc_1_1LammpsLoader.html#a5cc4c3ae1a59d4161c5b7a1aaac835bb">load_sym</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *name) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>Fn<span class="keyword">&gt;</span>(<a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a37bed29f19bcf42ee7abe5dff7bb1820">dynlib::sym</a>(<a class="code hl_variable" href="classeonc_1_1LammpsLoader.html#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>, name));</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>  }</div>
+</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>};</div>
+</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>} <span class="comment">// namespace eonc</span></div>
+<div class="ttc" id="aDynLib_8h_html"><div class="ttname"><a href="DynLib_8h.html">DynLib.h</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a05745085815c8e4a6a4fb8cd591ff16b"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#a05745085815c8e4a6a4fb8cd591ff16b">eonc::LammpsLoader::command_fn</a></div><div class="ttdeci">char *(*)(void *, const char *) command_fn</div><div class="ttdef"><b>Definition</b> <a href="#l00039">LammpsLoader.h:39</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a104e94e1454f88b6a551bf7c8249e1f0"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#a104e94e1454f88b6a551bf7c8249e1f0">eonc::LammpsLoader::extract_var_fn</a></div><div class="ttdeci">void *(*)(void *, const char *, const char *) extract_var_fn</div><div class="ttdef"><b>Definition</b> <a href="#l00042">LammpsLoader.h:42</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a14583691ef3b85326c7e9d9676bd2ac0"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#a14583691ef3b85326c7e9d9676bd2ac0">eonc::LammpsLoader::scatter_atoms</a></div><div class="ttdeci">scatter_atoms_fn scatter_atoms</div><div class="ttdef"><b>Definition</b> <a href="#l00055">LammpsLoader.h:55</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a1586ae65e5db2287e173cf287e573e6a"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#a1586ae65e5db2287e173cf287e573e6a">eonc::LammpsLoader::available</a></div><div class="ttdeci">bool available() const</div><div class="ttdoc">Filesystem probe: a candidate liblammps file is visible without dlopen, so LAMMPS static initializers...</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8cpp_source.html#l00120">LammpsLoader.cpp:120</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a2100266df25ab9deb30698c613ccf5bf"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#a2100266df25ab9deb30698c613ccf5bf">eonc::LammpsLoader::~LammpsLoader</a></div><div class="ttdeci">~LammpsLoader()</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8cpp_source.html#l00118">LammpsLoader.cpp:118</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a21f37a53a4b81e8aee6d4fe571e48dcc"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#a21f37a53a4b81e8aee6d4fe571e48dcc">eonc::LammpsLoader::require_loaded</a></div><div class="ttdeci">void require_loaded()</div><div class="ttdoc">Load on first use, then throw if liblammps is not available.</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8cpp_source.html#l00124">LammpsLoader.cpp:124</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a31d80b4d677653fd2c56b01a6f72896f"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#a31d80b4d677653fd2c56b01a6f72896f">eonc::LammpsLoader::open_no_mpi</a></div><div class="ttdeci">open_no_mpi_fn open_no_mpi</div><div class="ttdef"><b>Definition</b> <a href="#l00051">LammpsLoader.h:51</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a46f3a5d7c0faad82dd300556180a284f"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#a46f3a5d7c0faad82dd300556180a284f">eonc::LammpsLoader::scatter_atoms_fn</a></div><div class="ttdeci">void(*)(void *, const char *, int, int, void *) scatter_atoms_fn</div><div class="ttdef"><b>Definition</b> <a href="#l00041">LammpsLoader.h:41</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a4ffcb6a3a01d9cf76e3f2ac376599785"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#a4ffcb6a3a01d9cf76e3f2ac376599785">eonc::LammpsLoader::LammpsLoader</a></div><div class="ttdeci">LammpsLoader(const LammpsLoader &amp;)=delete</div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a5cc4c3ae1a59d4161c5b7a1aaac835bb"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#a5cc4c3ae1a59d4161c5b7a1aaac835bb">eonc::LammpsLoader::load_sym</a></div><div class="ttdeci">Fn load_sym(const char *name)</div><div class="ttdoc">Try to load a symbol; returns nullptr on failure.</div><div class="ttdef"><b>Definition</b> <a href="#l00085">LammpsLoader.h:85</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a5e6b6cddffcecdc68de934a58577adeb"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#a5e6b6cddffcecdc68de934a58577adeb">eonc::LammpsLoader::file</a></div><div class="ttdeci">file_fn file</div><div class="ttdef"><b>Definition</b> <a href="#l00054">LammpsLoader.h:54</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a68fa685304f474e1519b293e970f0615"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#a68fa685304f474e1519b293e970f0615">eonc::LammpsLoader::command</a></div><div class="ttdeci">command_fn command</div><div class="ttdef"><b>Definition</b> <a href="#l00053">LammpsLoader.h:53</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a99db7acfa05c390ef00337eb5c05faac"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#a99db7acfa05c390ef00337eb5c05faac">eonc::LammpsLoader::m_loaded</a></div><div class="ttdeci">bool m_loaded</div><div class="ttdef"><b>Definition</b> <a href="#l00080">LammpsLoader.h:80</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_aa4f1f22fbc40e4f193118776d1984336"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#aa4f1f22fbc40e4f193118776d1984336">eonc::LammpsLoader::operator=</a></div><div class="ttdeci">LammpsLoader &amp; operator=(const LammpsLoader &amp;)=delete</div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_aae7652de2e090c34d687078e1ddd814d"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#aae7652de2e090c34d687078e1ddd814d">eonc::LammpsLoader::close_fn</a></div><div class="ttdeci">void(*)(void *) close_fn</div><div class="ttdef"><b>Definition</b> <a href="#l00038">LammpsLoader.h:38</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_abef3b08a18b5514f4e5454fd9e567f04"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#abef3b08a18b5514f4e5454fd9e567f04">eonc::LammpsLoader::open_no_mpi_fn</a></div><div class="ttdeci">void *(*)(int, char **, void **) open_no_mpi_fn</div><div class="ttdef"><b>Definition</b> <a href="#l00037">LammpsLoader.h:37</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_ac7e3d027d196d639d26c8e36e83377f7"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#ac7e3d027d196d639d26c8e36e83377f7">eonc::LammpsLoader::close</a></div><div class="ttdeci">close_fn close</div><div class="ttdef"><b>Definition</b> <a href="#l00052">LammpsLoader.h:52</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_ad051404779d30e2e2ffc51a4bfd0fa7b"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#ad051404779d30e2e2ffc51a4bfd0fa7b">eonc::LammpsLoader::ensure_loaded</a></div><div class="ttdeci">void ensure_loaded()</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8cpp_source.html#l00084">LammpsLoader.cpp:84</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_ad258a0e488b7535cbdb5b62a57d67edc"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#ad258a0e488b7535cbdb5b62a57d67edc">eonc::LammpsLoader::instance</a></div><div class="ttdeci">static LammpsLoader &amp; instance()</div><div class="ttdoc">Thread-safe singleton accessor (Meyer&#39;s pattern). Does not dlopen.</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8cpp_source.html#l00079">LammpsLoader.cpp:79</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_ad786b8ef70444a38b875dc627f3aedea"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#ad786b8ef70444a38b875dc627f3aedea">eonc::LammpsLoader::m_handle</a></div><div class="ttdeci">dynlib::Handle m_handle</div><div class="ttdef"><b>Definition</b> <a href="#l00082">LammpsLoader.h:82</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_ad8c1d3cb0e07cf643c1e4f7f4b262db3"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#ad8c1d3cb0e07cf643c1e4f7f4b262db3">eonc::LammpsLoader::LammpsLoader</a></div><div class="ttdeci">LammpsLoader()=default</div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_ae40b9d0b68d0f2f9cec0e292fcc0b58f"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#ae40b9d0b68d0f2f9cec0e292fcc0b58f">eonc::LammpsLoader::file_fn</a></div><div class="ttdeci">void(*)(void *, const char *) file_fn</div><div class="ttdef"><b>Definition</b> <a href="#l00040">LammpsLoader.h:40</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_ae501ef7bead3d35eccda26e3335a4fd2"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#ae501ef7bead3d35eccda26e3335a4fd2">eonc::LammpsLoader::extract_variable</a></div><div class="ttdeci">extract_var_fn extract_variable</div><div class="ttdef"><b>Definition</b> <a href="#l00056">LammpsLoader.h:56</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_aeadbba19cbbbee3dbfd4c1c775a0c66e"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#aeadbba19cbbbee3dbfd4c1c775a0c66e">eonc::LammpsLoader::m_tried</a></div><div class="ttdeci">bool m_tried</div><div class="ttdef"><b>Definition</b> <a href="#l00081">LammpsLoader.h:81</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_aee7d41cf84533ce9338f7ebc06304b19"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#aee7d41cf84533ce9338f7ebc06304b19">eonc::LammpsLoader::is_loaded</a></div><div class="ttdeci">bool is_loaded() const noexcept</div><div class="ttdoc">True if liblammps was successfully dlopened and the C ABI resolved.</div><div class="ttdef"><b>Definition</b> <a href="#l00062">LammpsLoader.h:62</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1dynlib_html_a37bed29f19bcf42ee7abe5dff7bb1820"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a37bed29f19bcf42ee7abe5dff7bb1820">eonc::dynlib::sym</a></div><div class="ttdeci">void * sym(Handle h, const char *name) noexcept</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00075">DynLib.h:75</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1dynlib_html_a77fed09f5c75a2dc000c73773884df69"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a77fed09f5c75a2dc000c73773884df69">eonc::dynlib::Handle</a></div><div class="ttdeci">void * Handle</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00060">DynLib.h:60</a></div></div>
+<div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00019">ARTnSaddleSearch.cpp:19</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="dir_2527c5cc2e6dc8ce970a4d420439d1d9.html">eon</a></li><li class="navelem"><a href="dir_858247b18a1611539d1f444885056636.html">potentials</a></li><li class="navelem"><a href="dir_3ee8f5330fdd41d595e8e0f9e32d594b.html">LAMMPS</a></li><li class="navelem"><a href="LammpsLoader_8h.html">LammpsLoader.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

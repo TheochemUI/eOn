@@ -1,0 +1,626 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::helpers::surrogate Namespace Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('namespaceeonc_1_1helpers_1_1surrogate.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::helpers::surrogate Namespace Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a3895f2fd64833fa86f60fd8864cd1a5e" id="r_a3895f2fd64833fa86f60fd8864cd1a5e"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a>&#160;</td><td class="memItemRight"><a class="el" href="#a3895f2fd64833fa86f60fd8864cd1a5e">get_features</a> (const std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &amp;matobjs)</td></tr>
+<tr class="memitem:af4af46b3d290dd4254148bcbf21b7b75" id="r_af4af46b3d290dd4254148bcbf21b7b75"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a>&#160;</td><td class="memItemRight"><a class="el" href="#af4af46b3d290dd4254148bcbf21b7b75">get_features</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;matobjs)</td></tr>
+<tr class="memitem:a1ee2a877a277a5a6c38099faf6c20491" id="r_a1ee2a877a277a5a6c38099faf6c20491"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a>&#160;</td><td class="memItemRight"><a class="el" href="#a1ee2a877a277a5a6c38099faf6c20491">get_targets</a> (std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &amp;matobjs, std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt; true_pot)</td></tr>
+<tr class="memitem:a658bae767bbacb52642e55a720d7d838" id="r_a658bae767bbacb52642e55a720d7d838"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a>&#160;</td><td class="memItemRight"><a class="el" href="#a658bae767bbacb52642e55a720d7d838">get_targets</a> (std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;matobjs, std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt; true_pot)</td></tr>
+<tr class="memitem:aaede3b08f0458b8672275775707683ef" id="r_aaede3b08f0458b8672275775707683ef"><td class="memItemLeft">std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aaede3b08f0458b8672275775707683ef">getMidSlice</a> (const std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &amp;matobjs)</td></tr>
+<tr class="memitem:afb72d01ef6c1e32950b58b359c000cc7" id="r_afb72d01ef6c1e32950b58b359c000cc7"><td class="memItemLeft">Eigen::VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#afb72d01ef6c1e32950b58b359c000cc7">make_target</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m1, std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt; true_pot)</td></tr>
+<tr class="memitem:a92339fc198f1b112c18bbaa6869867db" id="r_a92339fc198f1b112c18bbaa6869867db"><td class="memItemLeft">std::pair&lt; double, Eigen::VectorXd::Index &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a92339fc198f1b112c18bbaa6869867db">getMaxUncertainty</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;matobjs)</td></tr>
+<tr class="memitem:af67f7e8d7be3a02cff90285871e0c2c9" id="r_af67f7e8d7be3a02cff90285871e0c2c9"><td class="memItemLeft">std::pair&lt; Eigen::VectorXd, Eigen::VectorXd &gt;&#160;</td><td class="memItemRight"><a class="el" href="#af67f7e8d7be3a02cff90285871e0c2c9">getNewDataPoint</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;matobjs, std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt; true_pot)</td></tr>
+<tr class="memitem:a632252aee9cda89a9e0585851bcbc53b" id="r_a632252aee9cda89a9e0585851bcbc53b"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a632252aee9cda89a9e0585851bcbc53b">accuratePES</a> (std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;matobjs, std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt; true_pot)</td></tr>
+</table>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a632252aee9cda89a9e0585851bcbc53b" name="a632252aee9cda89a9e0585851bcbc53b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a632252aee9cda89a9e0585851bcbc53b">&#9670;&#160;</a></span>accuratePES()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::helpers::surrogate::accuratePES </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>matobjs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>true_pot</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00293">293</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  294</span>                                                    {</div>
+<div class="line"><span class="lineno">  295</span>  Eigen::VectorXd predEnergies{Eigen::VectorXd::Zero(matobjs.size())};</div>
+<div class="line"><span class="lineno">  296</span>  Eigen::VectorXd trueEnergies{Eigen::VectorXd::Zero(matobjs.size())};</div>
+<div class="line"><span class="lineno">  297</span>  Eigen::VectorXd accuracy{Eigen::VectorXd::Zero(matobjs.size())};</div>
+<div class="line"><span class="lineno">  298</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> idx{0}; idx &lt; predEnergies.size(); idx++) {</div>
+<div class="line"><span class="lineno">  299</span>    predEnergies[idx] = matobjs[idx]-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  300</span>    matobjs[idx]-&gt;setPotential(true_pot);</div>
+<div class="line"><span class="lineno">  301</span>    trueEnergies[idx] = matobjs[idx]-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  302</span> </div>
+<div class="line"><span class="lineno">  303</span>    accuracy[idx] = std::sqrt(predEnergies[idx] * predEnergies[idx] -</div>
+<div class="line"><span class="lineno">  304</span>                              trueEnergies[idx] * trueEnergies[idx]);</div>
+<div class="line"><span class="lineno">  305</span>  }</div>
+<div class="line"><span class="lineno">  306</span>  Eigen::VectorXd difference = predEnergies - trueEnergies;</div>
+<div class="line"><span class="lineno">  307</span>  <span class="keyword">auto</span> mae = difference.array()</div>
+<div class="line"><span class="lineno">  308</span>                 .abs()</div>
+<div class="line"><span class="lineno">  309</span>                 .maxCoeff(); <span class="comment">//.squaredNorm() / predEnergies.size();</span></div>
+<div class="line"><span class="lineno">  310</span>  std::ostringstream oss;</div>
+<div class="line"><span class="lineno">  311</span>  oss &lt;&lt; <span class="stringliteral">&quot;predicted\n&quot;</span></div>
+<div class="line"><span class="lineno">  312</span>      &lt;&lt; predEnergies &lt;&lt; <span class="stringliteral">&quot;\ntrue\n&quot;</span></div>
+<div class="line"><span class="lineno">  313</span>      &lt;&lt; trueEnergies &lt;&lt; <span class="stringliteral">&quot;\ndifference\n&quot;</span></div>
+<div class="line"><span class="lineno">  314</span>      &lt;&lt; difference &lt;&lt; <span class="stringliteral">&quot;\n MAE: &quot;</span> &lt;&lt; mae;</div>
+<div class="line"><span class="lineno">  315</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;{}&quot;</span>, oss.str());</div>
+<div class="line"><span class="lineno">  316</span>  <span class="keywordflow">return</span> mae &lt; 0.05;</div>
+<div class="line"><span class="lineno">  317</span>}</div>
+<div class="ttc" id="aEonLogger_8h_html_a3a49ea217a42f6fa30a666949f43447b"><div class="ttname"><a href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a></div><div class="ttdeci">#define EONC_LOG_TRACE(...)</div><div class="ttdoc">Convenience macro for one-shot logging without storing a logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00238">EonLogger.h:238</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a3895f2fd64833fa86f60fd8864cd1a5e" name="a3895f2fd64833fa86f60fd8864cd1a5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3895f2fd64833fa86f60fd8864cd1a5e">&#9670;&#160;</a></span>get_features() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> eonc::helpers::surrogate::get_features </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>matobjs</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00188">188</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  188</span>                                                        {</div>
+<div class="line"><span class="lineno">  189</span>  <span class="comment">// Calculate dimensions</span></div>
+<div class="line"><span class="lineno">  190</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> features(matobjs.size(), matobjs.front().numberOfFreeAtoms() * 3);</div>
+<div class="line"><span class="lineno">  191</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;rows: {}, cols:{}&quot;</span>, matobjs.size(),</div>
+<div class="line"><span class="lineno">  192</span>                 matobjs.front().numberOfFreeAtoms() * 3);</div>
+<div class="line"><span class="lineno">  193</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx{0}; idx &lt; features.rows(); idx++) {</div>
+<div class="line"><span class="lineno">  194</span>    features.row(idx) = matobjs[idx].getPositionsFreeV();</div>
+<div class="line"><span class="lineno">  195</span>  }</div>
+<div class="line"><span class="lineno">  196</span>  std::ostringstream oss;</div>
+<div class="line"><span class="lineno">  197</span>  oss &lt;&lt; features;</div>
+<div class="line"><span class="lineno">  198</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;Features\n:{}&quot;</span>, oss.str());</div>
+<div class="line"><span class="lineno">  199</span>  <span class="keywordflow">return</span> features;</div>
+<div class="line"><span class="lineno">  200</span>}</div>
+<div class="ttc" id="aEigen_8h_html_a45bb4cbce093fca4dfb193d3f649da30"><div class="ttname"><a href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, eOnStorageOrder &gt; MatrixXd</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00033">Eigen.h:33</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af4af46b3d290dd4254148bcbf21b7b75" name="af4af46b3d290dd4254148bcbf21b7b75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4af46b3d290dd4254148bcbf21b7b75">&#9670;&#160;</a></span>get_features() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> eonc::helpers::surrogate::get_features </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>matobjs</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00201">201</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  201</span>                                                                       {</div>
+<div class="line"><span class="lineno">  202</span>  <span class="comment">// Calculate dimensions</span></div>
+<div class="line"><span class="lineno">  203</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> features(matobjs.size(), matobjs.front()-&gt;numberOfFreeAtoms() * 3);</div>
+<div class="line"><span class="lineno">  204</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;rows: {}, cols:{}\n&quot;</span>, matobjs.size(),</div>
+<div class="line"><span class="lineno">  205</span>                 matobjs.front()-&gt;numberOfFreeAtoms() * 3);</div>
+<div class="line"><span class="lineno">  206</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx{0}; idx &lt; features.rows(); idx++) {</div>
+<div class="line"><span class="lineno">  207</span>    features.row(idx) = matobjs[idx]-&gt;getPositionsFreeV();</div>
+<div class="line"><span class="lineno">  208</span>  }</div>
+<div class="line"><span class="lineno">  209</span>  std::ostringstream oss;</div>
+<div class="line"><span class="lineno">  210</span>  oss &lt;&lt; features;</div>
+<div class="line"><span class="lineno">  211</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;Features\n:{}&quot;</span>, oss.str());</div>
+<div class="line"><span class="lineno">  212</span>  <span class="keywordflow">return</span> features;</div>
+<div class="line"><span class="lineno">  213</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1ee2a877a277a5a6c38099faf6c20491" name="a1ee2a877a277a5a6c38099faf6c20491"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ee2a877a277a5a6c38099faf6c20491">&#9670;&#160;</a></span>get_targets() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> eonc::helpers::surrogate::get_targets </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>matobjs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>true_pot</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00214">214</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  215</span>                                                        {</div>
+<div class="line"><span class="lineno">  216</span>  <span class="comment">// Always with derivatives for now</span></div>
+<div class="line"><span class="lineno">  217</span>  <span class="comment">// Energy + Derivatives for each row</span></div>
+<div class="line"><span class="lineno">  218</span>  <span class="keyword">const</span> <span class="keyword">auto</span> nrows = matobjs.size();</div>
+<div class="line"><span class="lineno">  219</span>  <span class="keyword">const</span> <span class="keyword">auto</span> ncols = (matobjs.front().numberOfFreeAtoms() * 3) + 1;</div>
+<div class="line"><span class="lineno">  220</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> targets(nrows, ncols);</div>
+<div class="line"><span class="lineno">  221</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx{0}; idx &lt; targets.rows(); idx++) {</div>
+<div class="line"><span class="lineno">  222</span>    matobjs[idx].setPotential(true_pot);</div>
+<div class="line"><span class="lineno">  223</span>    targets.row(idx)[0] = matobjs[idx].getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  224</span>    targets.block(idx, 1, 1, ncols - 1) =</div>
+<div class="line"><span class="lineno">  225</span>        matobjs[idx].getForcesFree().array() * -1;</div>
+<div class="line"><span class="lineno">  226</span>  }</div>
+<div class="line"><span class="lineno">  227</span>  std::ostringstream oss;</div>
+<div class="line"><span class="lineno">  228</span>  oss &lt;&lt; targets;</div>
+<div class="line"><span class="lineno">  229</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;Targets\n:{}&quot;</span>, oss.str());</div>
+<div class="line"><span class="lineno">  230</span>  <span class="keywordflow">return</span> targets;</div>
+<div class="line"><span class="lineno">  231</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a658bae767bbacb52642e55a720d7d838" name="a658bae767bbacb52642e55a720d7d838"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a658bae767bbacb52642e55a720d7d838">&#9670;&#160;</a></span>get_targets() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> eonc::helpers::surrogate::get_targets </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>matobjs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>true_pot</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00232">232</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  233</span>                                                        {</div>
+<div class="line"><span class="lineno">  234</span>  <span class="keyword">const</span> <span class="keyword">auto</span> nrows = matobjs.size();</div>
+<div class="line"><span class="lineno">  235</span>  <span class="keyword">const</span> <span class="keyword">auto</span> ncols = (matobjs.front()-&gt;numberOfFreeAtoms() * 3) + 1;</div>
+<div class="line"><span class="lineno">  236</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> targets(nrows, ncols);</div>
+<div class="line"><span class="lineno">  237</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx{0}; idx &lt; targets.rows(); idx++) {</div>
+<div class="line"><span class="lineno">  238</span>    matobjs[idx]-&gt;setPotential(true_pot);</div>
+<div class="line"><span class="lineno">  239</span>    targets.row(idx)[0] = matobjs[idx]-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  240</span>    targets.block(idx, 1, 1, ncols - 1) =</div>
+<div class="line"><span class="lineno">  241</span>        matobjs[idx]-&gt;getForcesFree().array() * -1;</div>
+<div class="line"><span class="lineno">  242</span>  }</div>
+<div class="line"><span class="lineno">  243</span>  std::ostringstream oss;</div>
+<div class="line"><span class="lineno">  244</span>  oss &lt;&lt; targets;</div>
+<div class="line"><span class="lineno">  245</span>  <a class="code hl_define" href="EonLogger_8h.html#a3a49ea217a42f6fa30a666949f43447b">EONC_LOG_TRACE</a>(<span class="stringliteral">&quot;Targets\n:{}&quot;</span>, oss.str());</div>
+<div class="line"><span class="lineno">  246</span>  <span class="keywordflow">return</span> targets;</div>
+<div class="line"><span class="lineno">  247</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a92339fc198f1b112c18bbaa6869867db" name="a92339fc198f1b112c18bbaa6869867db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92339fc198f1b112c18bbaa6869867db">&#9670;&#160;</a></span>getMaxUncertainty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::pair&lt; double, Eigen::VectorXd::Index &gt; eonc::helpers::surrogate::getMaxUncertainty </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>matobjs</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00272">272</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  272</span>                                                                   {</div>
+<div class="line"><span class="lineno">  273</span>  Eigen::VectorXd pathUncertainty{Eigen::VectorXd::Zero(matobjs.size() - 2)};</div>
+<div class="line"><span class="lineno">  274</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> idx{0}; idx &lt; pathUncertainty.size(); idx++) {</div>
+<div class="line"><span class="lineno">  275</span>    pathUncertainty[idx] = matobjs[idx + 1]-&gt;getEnergyVariance();</div>
+<div class="line"><span class="lineno">  276</span>  }</div>
+<div class="line"><span class="lineno">  277</span>  Eigen::VectorXd::Index maxIndex;</div>
+<div class="line"><span class="lineno">  278</span>  <span class="keywordtype">double</span> maxUnc{pathUncertainty.maxCoeff()};</div>
+<div class="line"><span class="lineno">  279</span>  pathUncertainty.maxCoeff(&amp;maxIndex);</div>
+<div class="line"><span class="lineno">  280</span>  <span class="comment">// EONC_LOG_TRACE(&quot;Uncertainty along path</span></div>
+<div class="line"><span class="lineno">  281</span>  <span class="comment">// is {}\nmax_index: {}, maxVal: {}&quot;,</span></div>
+<div class="line"><span class="lineno">  282</span>  <span class="comment">//              fmt::streamed(pathUncertainty), maxIndex, maxUnc);</span></div>
+<div class="line"><span class="lineno">  283</span>  <span class="keywordflow">return</span> std::make_pair(maxUnc, maxIndex);</div>
+<div class="line"><span class="lineno">  284</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aaede3b08f0458b8672275775707683ef" name="aaede3b08f0458b8672275775707683ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaede3b08f0458b8672275775707683ef">&#9670;&#160;</a></span>getMidSlice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; eonc::helpers::surrogate::getMidSlice </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>matobjs</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00248">248</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  248</span>                                                                {</div>
+<div class="line"><span class="lineno">  249</span>  <span class="comment">// Used to get the initial data slice, endpoints and the midpoint</span></div>
+<div class="line"><span class="lineno">  250</span>  std::vector&lt;Matter&gt; res;</div>
+<div class="line"><span class="lineno">  251</span>  res.reserve(3);</div>
+<div class="line"><span class="lineno">  252</span>  res.push_back(matobjs.front());</div>
+<div class="line"><span class="lineno">  253</span>  <span class="comment">// BUG: THIS ISN&#39;T THE MIDDLE!!!!</span></div>
+<div class="line"><span class="lineno">  254</span>  <span class="comment">// XXX: Why does this have to be in the same order?</span></div>
+<div class="line"><span class="lineno">  255</span>  <span class="comment">// front mid back doesn&#39;t work</span></div>
+<div class="line"><span class="lineno">  256</span>  <span class="comment">// front back mid works</span></div>
+<div class="line"><span class="lineno">  257</span>  res.push_back(matobjs.back());</div>
+<div class="line"><span class="lineno">  258</span>  res.push_back(matobjs[((matobjs.size() - 2) * 2.0 / 3.0) + 1]);</div>
+<div class="line"><span class="lineno">  259</span>  <span class="keywordflow">return</span> res;</div>
+<div class="line"><span class="lineno">  260</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af67f7e8d7be3a02cff90285871e0c2c9" name="af67f7e8d7be3a02cff90285871e0c2c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af67f7e8d7be3a02cff90285871e0c2c9">&#9670;&#160;</a></span>getNewDataPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::pair&lt; Eigen::VectorXd, Eigen::VectorXd &gt; eonc::helpers::surrogate::getNewDataPoint </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>matobjs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>true_pot</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00286">286</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  287</span>                                                   {</div>
+<div class="line"><span class="lineno">  288</span>  <span class="keyword">auto</span> [maxUnc, maxIndex] = <a class="code hl_function" href="#a92339fc198f1b112c18bbaa6869867db">getMaxUncertainty</a>(matobjs);</div>
+<div class="line"><span class="lineno">  289</span>  <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> candidate{*matobjs[maxIndex + 1]};</div>
+<div class="line"><span class="lineno">  290</span>  <span class="keywordflow">return</span> std::make_pair&lt;Eigen::VectorXd, Eigen::VectorXd&gt;(</div>
+<div class="line"><span class="lineno">  291</span>      candidate.<a class="code hl_function" href="classeonc_1_1Matter.html#abce266d8f707e6d7a688695c0c7c490e">getPositionsFreeV</a>(), <a class="code hl_function" href="#afb72d01ef6c1e32950b58b359c000cc7">make_target</a>(candidate, true_pot));</div>
+<div class="line"><span class="lineno">  292</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html"><div class="ttname"><a href="classeonc_1_1Matter.html">eonc::Matter</a></div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00092">Matter.h:92</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_abce266d8f707e6d7a688695c0c7c490e"><div class="ttname"><a href="classeonc_1_1Matter.html#abce266d8f707e6d7a688695c0c7c490e">eonc::Matter::getPositionsFreeV</a></div><div class="ttdeci">VectorXd getPositionsFreeV() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00268">Matter.cpp:268</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_1_1surrogate_html_a92339fc198f1b112c18bbaa6869867db"><div class="ttname"><a href="#a92339fc198f1b112c18bbaa6869867db">eonc::helpers::surrogate::getMaxUncertainty</a></div><div class="ttdeci">std::pair&lt; double, Eigen::VectorXd::Index &gt; getMaxUncertainty(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;matobjs)</div><div class="ttdef"><b>Definition</b> <a href="GPSurrogateJob_8cpp_source.html#l00272">GPSurrogateJob.cpp:272</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_1_1surrogate_html_afb72d01ef6c1e32950b58b359c000cc7"><div class="ttname"><a href="#afb72d01ef6c1e32950b58b359c000cc7">eonc::helpers::surrogate::make_target</a></div><div class="ttdeci">Eigen::VectorXd make_target(Matter &amp;m1, std::shared_ptr&lt; Potential &gt; true_pot)</div><div class="ttdef"><b>Definition</b> <a href="GPSurrogateJob_8cpp_source.html#l00261">GPSurrogateJob.cpp:261</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="afb72d01ef6c1e32950b58b359c000cc7" name="afb72d01ef6c1e32950b58b359c000cc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb72d01ef6c1e32950b58b359c000cc7">&#9670;&#160;</a></span>make_target()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd eonc::helpers::surrogate::make_target </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>m1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>true_pot</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="GPSurrogateJob_8cpp_source.html#l00261">261</a> of file <a class="el" href="GPSurrogateJob_8cpp_source.html">GPSurrogateJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  261</span>                                                                         {</div>
+<div class="line"><span class="lineno">  262</span>  <span class="keyword">const</span> <span class="keyword">auto</span> ncols = (m1.<a class="code hl_function" href="classeonc_1_1Matter.html#acf7568f3207c071f206a8db116ed03c1">numberOfFreeAtoms</a>() * 3) + 1;</div>
+<div class="line"><span class="lineno">  263</span>  Eigen::VectorXd target(ncols);</div>
+<div class="line"><span class="lineno">  264</span>  m1.<a class="code hl_function" href="classeonc_1_1Matter.html#afb94271c6fb8fb446dc1ef803bd15428">setPotential</a>(true_pot);</div>
+<div class="line"><span class="lineno">  265</span>  target(0) = m1.<a class="code hl_function" href="classeonc_1_1Matter.html#a0f627d29055314e02df9c51bdc05e53f">getPotentialEnergy</a>();</div>
+<div class="line"><span class="lineno">  266</span>  target.segment(1, ncols - 1) = m1.<a class="code hl_function" href="classeonc_1_1Matter.html#ab4bf1850e22f0cf4bf605df8a193642d">getForcesFreeV</a>() * -1;</div>
+<div class="line"><span class="lineno">  267</span>  <span class="comment">// EONC_LOG_TRACE(&quot;Generated Target:\n{}&quot;,</span></div>
+<div class="line"><span class="lineno">  268</span>  <span class="comment">// fmt::streamed(target));</span></div>
+<div class="line"><span class="lineno">  269</span>  <span class="keywordflow">return</span> target;</div>
+<div class="line"><span class="lineno">  270</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a0f627d29055314e02df9c51bdc05e53f"><div class="ttname"><a href="classeonc_1_1Matter.html#a0f627d29055314e02df9c51bdc05e53f">eonc::Matter::getPotentialEnergy</a></div><div class="ttdeci">double getPotentialEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00446">Matter.cpp:446</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_ab4bf1850e22f0cf4bf605df8a193642d"><div class="ttname"><a href="classeonc_1_1Matter.html#ab4bf1850e22f0cf4bf605df8a193642d">eonc::Matter::getForcesFreeV</a></div><div class="ttdeci">VectorXd getForcesFreeV() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00354">Matter.cpp:354</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_acf7568f3207c071f206a8db116ed03c1"><div class="ttname"><a href="classeonc_1_1Matter.html#acf7568f3207c071f206a8db116ed03c1">eonc::Matter::numberOfFreeAtoms</a></div><div class="ttdeci">long int numberOfFreeAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00475">Matter.cpp:475</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_afb94271c6fb8fb446dc1ef803bd15428"><div class="ttname"><a href="classeonc_1_1Matter.html#afb94271c6fb8fb446dc1ef803bd15428">eonc::Matter::setPotential</a></div><div class="ttdeci">void setPotential(std::shared_ptr&lt; Potential &gt; pot)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00625">Matter.cpp:625</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="namespaceeonc_1_1helpers.html">helpers</a></li><li class="navelem"><a href="namespaceeonc_1_1helpers_1_1surrogate.html">surrogate</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

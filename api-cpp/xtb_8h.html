@@ -1,0 +1,2251 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/include/eon/potentials/XTBPot/xtb.h File Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('xtb_8h.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">xtb.h File Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
+</div>
+<p><a href="xtb_8h_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-define-members" class="groupheader"><a id="define-members" name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a55dae45cf2502df7a0e9ff521eceb000" id="r_a55dae45cf2502df7a0e9ff521eceb000"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a></td></tr>
+<tr class="memitem:a1ed9bda2b8d808b9cb84972b51207191" id="r_a1ed9bda2b8d808b9cb84972b51207191"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a></td></tr>
+<tr class="memitem:ad87c63959a77029d188158322ea995fc" id="r_ad87c63959a77029d188158322ea995fc"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memitem:a73dd4c32452929b9e94fac1f9e9867b5" id="r_a73dd4c32452929b9e94fac1f9e9867b5"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a73dd4c32452929b9e94fac1f9e9867b5">XTB_API_VERSION</a>&#160;&#160;&#160;20000</td></tr>
+<tr class="memdesc:a73dd4c32452929b9e94fac1f9e9867b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define proprocessor to allow to check for specific API features.  <br /></td></tr>
+<tr class="memitem:a517c23e05b60763bc370b4db0eb4161d" id="r_a517c23e05b60763bc370b4db0eb4161d"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a517c23e05b60763bc370b4db0eb4161d">XTB_VERSION_6_3_0</a>&#160;&#160;&#160;1</td></tr>
+<tr class="memitem:a1a0332ddd0b84b58ccf9fc4452dc8597" id="r_a1a0332ddd0b84b58ccf9fc4452dc8597"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a1a0332ddd0b84b58ccf9fc4452dc8597">XTB_VERSION_6_3_1</a>&#160;&#160;&#160;1</td></tr>
+<tr class="memitem:ae0ece287f0ed7f0e072599fe86b715ad" id="r_ae0ece287f0ed7f0e072599fe86b715ad"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#ae0ece287f0ed7f0e072599fe86b715ad">XTB_VERSION_6_3_2</a>&#160;&#160;&#160;1</td></tr>
+<tr class="memitem:a7b4ce7b7bcce73645f7ece30659cb079" id="r_a7b4ce7b7bcce73645f7ece30659cb079"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a7b4ce7b7bcce73645f7ece30659cb079">XTB_VERSION_6_3_3</a>&#160;&#160;&#160;1</td></tr>
+<tr class="memitem:a8f267d0b86935f95915833312a170c94" id="r_a8f267d0b86935f95915833312a170c94"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a8f267d0b86935f95915833312a170c94">XTB_VERBOSITY_FULL</a>&#160;&#160;&#160;2</td></tr>
+<tr class="memdesc:a8f267d0b86935f95915833312a170c94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Possible print levels for API calls.  <br /></td></tr>
+<tr class="memitem:a65ce47b7c0fb697a0e7bddbf6fb18f62" id="r_a65ce47b7c0fb697a0e7bddbf6fb18f62"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a65ce47b7c0fb697a0e7bddbf6fb18f62">XTB_VERBOSITY_MINIMAL</a>&#160;&#160;&#160;1</td></tr>
+<tr class="memitem:a7e9d7f10882d3f7afca709605684dfdc" id="r_a7e9d7f10882d3f7afca709605684dfdc"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a7e9d7f10882d3f7afca709605684dfdc">XTB_VERBOSITY_MUTED</a>&#160;&#160;&#160;0</td></tr>
+<tr class="memitem:a0f4105e2d4311c60c8da74cb7f525bad" id="r_a0f4105e2d4311c60c8da74cb7f525bad"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#a0f4105e2d4311c60c8da74cb7f525bad">xtb_delete</a>(ptr)</td></tr>
+<tr class="memdesc:a0f4105e2d4311c60c8da74cb7f525bad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convencience macro for deleting a handle.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-typedef-members" class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a3e459ec98eb99f93b639bee1f067e487" id="r_a3e459ec98eb99f93b639bee1f067e487"><td class="memItemLeft">typedef struct _xtb_TEnvironment *&#160;</td><td class="memItemRight"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td></tr>
+<tr class="memdesc:a3e459ec98eb99f93b639bee1f067e487"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculation environment class.  <br /></td></tr>
+<tr class="memitem:a5be621396eff41e0ed5e01f8881468be" id="r_a5be621396eff41e0ed5e01f8881468be"><td class="memItemLeft">typedef struct _xtb_TMolecule *&#160;</td><td class="memItemRight"><a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a></td></tr>
+<tr class="memdesc:a5be621396eff41e0ed5e01f8881468be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Molecular structure data class.  <br /></td></tr>
+<tr class="memitem:a1addcca86f44e692bb6f1164c36d8ec5" id="r_a1addcca86f44e692bb6f1164c36d8ec5"><td class="memItemLeft">typedef struct _xtb_TCalculator *&#160;</td><td class="memItemRight"><a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a></td></tr>
+<tr class="memdesc:a1addcca86f44e692bb6f1164c36d8ec5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Single point calculator class.  <br /></td></tr>
+<tr class="memitem:ae7e66e63839df3ba108dfded47c8a7e5" id="r_ae7e66e63839df3ba108dfded47c8a7e5"><td class="memItemLeft">typedef struct _xtb_TResults *&#160;</td><td class="memItemRight"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td></tr>
+<tr class="memdesc:ae7e66e63839df3ba108dfded47c8a7e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Single point results class.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ad1323aad3162112e6e711718d7e43e66" id="r_ad1323aad3162112e6e711718d7e43e66"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> int <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#ad1323aad3162112e6e711718d7e43e66">xtb_getAPIVersion</a> () <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:ad1323aad3162112e6e711718d7e43e66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns API version as 10000 * major + 100 * minor + 1 * patch.  <br /></td></tr>
+<tr class="memitem:a71d8e8c70c478f53c235e16e6de90352" id="r_a71d8e8c70c478f53c235e16e6de90352"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> <a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a> <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a71d8e8c70c478f53c235e16e6de90352">xtb_newEnvironment</a> (void) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a71d8e8c70c478f53c235e16e6de90352"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create new xtb calculation environment object.  <br /></td></tr>
+<tr class="memitem:aa694a88ef8e5da705aba80dd07a93a56" id="r_aa694a88ef8e5da705aba80dd07a93a56"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#aa694a88ef8e5da705aba80dd07a93a56">xtb_delEnvironment</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a> *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:aa694a88ef8e5da705aba80dd07a93a56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete a xtb calculation environment object.  <br /></td></tr>
+<tr class="memitem:a4d0135a16c8b40ef960211c1244c6066" id="r_a4d0135a16c8b40ef960211c1244c6066"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> int <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a4d0135a16c8b40ef960211c1244c6066">xtb_checkEnvironment</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a4d0135a16c8b40ef960211c1244c6066"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check current status of calculation environment.  <br /></td></tr>
+<tr class="memitem:aed7b94383c8fdf60b3e29cd4f79fc982" id="r_aed7b94383c8fdf60b3e29cd4f79fc982"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#aed7b94383c8fdf60b3e29cd4f79fc982">xtb_showEnvironment</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, const char *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:aed7b94383c8fdf60b3e29cd4f79fc982"><td class="mdescLeft">&#160;</td><td class="mdescRight">Show and empty error stack.  <br /></td></tr>
+<tr class="memitem:ae08f9a75280d77e4c4fd487a05b38eea" id="r_ae08f9a75280d77e4c4fd487a05b38eea"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae08f9a75280d77e4c4fd487a05b38eea">xtb_getError</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, char *, const int *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:ae08f9a75280d77e4c4fd487a05b38eea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return and empty error stack.  <br /></td></tr>
+<tr class="memitem:ac4999abe290c5f518f3e7ff80eb5a0e7" id="r_ac4999abe290c5f518f3e7ff80eb5a0e7"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#ac4999abe290c5f518f3e7ff80eb5a0e7">xtb_setOutput</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, const char *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:ac4999abe290c5f518f3e7ff80eb5a0e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind output from this environment.  <br /></td></tr>
+<tr class="memitem:aa5e9f1a6e87c5cd61a50cda8805ecf1e" id="r_aa5e9f1a6e87c5cd61a50cda8805ecf1e"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#aa5e9f1a6e87c5cd61a50cda8805ecf1e">xtb_releaseOutput</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:aa5e9f1a6e87c5cd61a50cda8805ecf1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release output unit from this environment.  <br /></td></tr>
+<tr class="memitem:a9fb75efcb52c295779ae9e39f5fc1d6b" id="r_a9fb75efcb52c295779ae9e39f5fc1d6b"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a9fb75efcb52c295779ae9e39f5fc1d6b">xtb_setVerbosity</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, int) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a9fb75efcb52c295779ae9e39f5fc1d6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set verbosity of calculation output.  <br /></td></tr>
+<tr class="memitem:a07c5c503de2eb5e189cca9fd1fc00fd8" id="r_a07c5c503de2eb5e189cca9fd1fc00fd8"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> <a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a> <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a07c5c503de2eb5e189cca9fd1fc00fd8">xtb_newMolecule</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, const int *, const int *, const double *, const double *, const int *, const double *, const bool *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a07c5c503de2eb5e189cca9fd1fc00fd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create new molecular structure data (quantities in Bohr).  <br /></td></tr>
+<tr class="memitem:a50ddd91c72088c64f6470cf8e675c10b" id="r_a50ddd91c72088c64f6470cf8e675c10b"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a50ddd91c72088c64f6470cf8e675c10b">xtb_delMolecule</a> (<a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a> *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a50ddd91c72088c64f6470cf8e675c10b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete molecular structure data.  <br /></td></tr>
+<tr class="memitem:a54d5d0e96b6d99495676c0a204553aef" id="r_a54d5d0e96b6d99495676c0a204553aef"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a54d5d0e96b6d99495676c0a204553aef">xtb_updateMolecule</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a>, const double *, const double *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a54d5d0e96b6d99495676c0a204553aef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update coordinates and lattice parameters (quantities in Bohr).  <br /></td></tr>
+<tr class="memitem:a054f5e1a8f0e858a60d23f6e132d201b" id="r_a054f5e1a8f0e858a60d23f6e132d201b"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> <a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a> <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a054f5e1a8f0e858a60d23f6e132d201b">xtb_newCalculator</a> (void) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a054f5e1a8f0e858a60d23f6e132d201b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create new calculator object.  <br /></td></tr>
+<tr class="memitem:af2849fb9a570a2bbc417da509d05a84b" id="r_af2849fb9a570a2bbc417da509d05a84b"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#af2849fb9a570a2bbc417da509d05a84b">xtb_delCalculator</a> (<a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a> *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:af2849fb9a570a2bbc417da509d05a84b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete calculator object.  <br /></td></tr>
+<tr class="memitem:a478b5452a0fe34d7b8d124a573ceb3b4" id="r_a478b5452a0fe34d7b8d124a573ceb3b4"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a478b5452a0fe34d7b8d124a573ceb3b4">xtb_loadGFN0xTB</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a>, <a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a>, char *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a478b5452a0fe34d7b8d124a573ceb3b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load GFN0-xTB calculator.  <br /></td></tr>
+<tr class="memitem:a86c164100dcba00c9d4d794ccd820018" id="r_a86c164100dcba00c9d4d794ccd820018"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a86c164100dcba00c9d4d794ccd820018">xtb_loadGFN1xTB</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a>, <a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a>, char *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a86c164100dcba00c9d4d794ccd820018"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load GFN1-xTB calculator.  <br /></td></tr>
+<tr class="memitem:ad0a8969cb9393b84e69e9334d5c14fdc" id="r_ad0a8969cb9393b84e69e9334d5c14fdc"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#ad0a8969cb9393b84e69e9334d5c14fdc">xtb_loadGFN2xTB</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a>, <a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a>, char *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:ad0a8969cb9393b84e69e9334d5c14fdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load GFN2-xTB calculator.  <br /></td></tr>
+<tr class="memitem:a687ddc5fcc3fdac24804b376a7348448" id="r_a687ddc5fcc3fdac24804b376a7348448"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a687ddc5fcc3fdac24804b376a7348448">xtb_loadGFNFF</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a>, <a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a>, char *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a687ddc5fcc3fdac24804b376a7348448"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load GFN-FF calculator.  <br /></td></tr>
+<tr class="memitem:a4ccc7f73c03036bd0d938d8e807a9eb9" id="r_a4ccc7f73c03036bd0d938d8e807a9eb9"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a4ccc7f73c03036bd0d938d8e807a9eb9">xtb_setSolvent</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a>, char *, int *, double *, int *, char *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a4ccc7f73c03036bd0d938d8e807a9eb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a solvation model to calculator (requires loaded parametrisation).  <br /></td></tr>
+<tr class="memitem:a38658d8e0b3f037bc3c36d0bed081742" id="r_a38658d8e0b3f037bc3c36d0bed081742"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a38658d8e0b3f037bc3c36d0bed081742">xtb_releaseSolvent</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a>) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a38658d8e0b3f037bc3c36d0bed081742"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unset the solvation model.  <br /></td></tr>
+<tr class="memitem:a7f950201bcb59e03fdd943db153ffdd3" id="r_a7f950201bcb59e03fdd943db153ffdd3"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a7f950201bcb59e03fdd943db153ffdd3">xtb_setExternalCharges</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a>, int *, int *, double *, double *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a7f950201bcb59e03fdd943db153ffdd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a external charge potential to calculator (only supported in GFN1/2-xTB).  <br /></td></tr>
+<tr class="memitem:a82a3de8002ba9b9b3994b92a3f2ad224" id="r_a82a3de8002ba9b9b3994b92a3f2ad224"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a82a3de8002ba9b9b3994b92a3f2ad224">xtb_releaseExternalCharges</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a>) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a82a3de8002ba9b9b3994b92a3f2ad224"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unset the external charge potential.  <br /></td></tr>
+<tr class="memitem:abda00d451987dd287cbdd6f2eeb36275" id="r_abda00d451987dd287cbdd6f2eeb36275"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#abda00d451987dd287cbdd6f2eeb36275">xtb_setAccuracy</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a>, double) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:abda00d451987dd287cbdd6f2eeb36275"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set numerical accuracy of calculator in the range of 1000 to 0.0001.  <br /></td></tr>
+<tr class="memitem:ac51c937bea8c228a219faa298900de9f" id="r_ac51c937bea8c228a219faa298900de9f"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#ac51c937bea8c228a219faa298900de9f">xtb_setMaxIter</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a>, int) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:ac51c937bea8c228a219faa298900de9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set maximum number of iterations for self-consistent TB calculators.  <br /></td></tr>
+<tr class="memitem:a5aea769cc6c55679c76089df18b33358" id="r_a5aea769cc6c55679c76089df18b33358"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a5aea769cc6c55679c76089df18b33358">xtb_setElectronicTemp</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a>, double) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a5aea769cc6c55679c76089df18b33358"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set electronic temperature for level filling in tight binding calculators in K.  <br /></td></tr>
+<tr class="memitem:a00eae8f45c54440d8a0922d71a2b0d58" id="r_a00eae8f45c54440d8a0922d71a2b0d58"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a00eae8f45c54440d8a0922d71a2b0d58">xtb_cpcmx_calc</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a>, <a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a>, <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memitem:adb3f42280b2b3bc08a4def8e6910967f" id="r_adb3f42280b2b3bc08a4def8e6910967f"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#adb3f42280b2b3bc08a4def8e6910967f">xtb_singlepoint</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a>, <a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a>, <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:adb3f42280b2b3bc08a4def8e6910967f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform singlepoint calculation.  <br /></td></tr>
+<tr class="memitem:a41f8a2e3e64f7b77635cdd57b6565099" id="r_a41f8a2e3e64f7b77635cdd57b6565099"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a41f8a2e3e64f7b77635cdd57b6565099">xtb_hessian</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a>, <a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a>, <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>, double *, int *, int *, double *, double *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a41f8a2e3e64f7b77635cdd57b6565099"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform hessian calculation.  <br /></td></tr>
+<tr class="memitem:ac18a87a8013d19aeefe7d9f220689179" id="r_ac18a87a8013d19aeefe7d9f220689179"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a> <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#ac18a87a8013d19aeefe7d9f220689179">xtb_newResults</a> (void) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:ac18a87a8013d19aeefe7d9f220689179"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create new singlepoint results object.  <br /></td></tr>
+<tr class="memitem:a535eb9de7c7e1ec381ef27ff3b82befa" id="r_a535eb9de7c7e1ec381ef27ff3b82befa"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a535eb9de7c7e1ec381ef27ff3b82befa">xtb_delResults</a> (<a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a> *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a535eb9de7c7e1ec381ef27ff3b82befa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete singlepoint results object.  <br /></td></tr>
+<tr class="memitem:a315ae6db9ddcdcc10f97c26d34f80b19" id="r_a315ae6db9ddcdcc10f97c26d34f80b19"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a> <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a315ae6db9ddcdcc10f97c26d34f80b19">xtb_copyResults</a> (<a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a315ae6db9ddcdcc10f97c26d34f80b19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create copy from a singlepoint results object.  <br /></td></tr>
+<tr class="memitem:a369ae4dfb3ab5cc4e9d74e6295ae71ae" id="r_a369ae4dfb3ab5cc4e9d74e6295ae71ae"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a369ae4dfb3ab5cc4e9d74e6295ae71ae">xtb_getEnergy</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>, double *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a369ae4dfb3ab5cc4e9d74e6295ae71ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query singlepoint results object for energy in Hartree.  <br /></td></tr>
+<tr class="memitem:ae16e1909af90586c2e9ac86740f10b2b" id="r_ae16e1909af90586c2e9ac86740f10b2b"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae16e1909af90586c2e9ac86740f10b2b">xtb_getSolvationEnergy</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>, double *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:ae16e1909af90586c2e9ac86740f10b2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query singlepoint results object for solvation energy in Hartree.  <br /></td></tr>
+<tr class="memitem:a0474fb0dfdbfffded5147bdeb3673dfc" id="r_a0474fb0dfdbfffded5147bdeb3673dfc"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a0474fb0dfdbfffded5147bdeb3673dfc">xtb_getGradient</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>, double *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a0474fb0dfdbfffded5147bdeb3673dfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query singlepoint results object for gradient in Hartree / Bohr.  <br /></td></tr>
+<tr class="memitem:af3f97f4b2b5a09f49ef4c918a77a60b7" id="r_af3f97f4b2b5a09f49ef4c918a77a60b7"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#af3f97f4b2b5a09f49ef4c918a77a60b7">xtb_getPCGradient</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>, double *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:af3f97f4b2b5a09f49ef4c918a77a60b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query singlepoint results object for pc gradient in Hartree / Bohr.  <br /></td></tr>
+<tr class="memitem:ad6ac441d23346805fa5330a1c4541aa8" id="r_ad6ac441d23346805fa5330a1c4541aa8"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#ad6ac441d23346805fa5330a1c4541aa8">xtb_getVirial</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>, double *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:ad6ac441d23346805fa5330a1c4541aa8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query singlepoint results object for virial in Hartree.  <br /></td></tr>
+<tr class="memitem:ad3f28efa50c096dd39c07ad8507485a2" id="r_ad3f28efa50c096dd39c07ad8507485a2"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#ad3f28efa50c096dd39c07ad8507485a2">xtb_getDipole</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>, double *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:ad3f28efa50c096dd39c07ad8507485a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query singlepoint results object for dipole in e Bohr.  <br /></td></tr>
+<tr class="memitem:aa5718b15ecd98aa981ac8a1aaf152d7f" id="r_aa5718b15ecd98aa981ac8a1aaf152d7f"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#aa5718b15ecd98aa981ac8a1aaf152d7f">xtb_getCharges</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>, double *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:aa5718b15ecd98aa981ac8a1aaf152d7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query singlepoint results object for partial charges in e.  <br /></td></tr>
+<tr class="memitem:a0319d96ca9ee0a625b360e13914372a1" id="r_a0319d96ca9ee0a625b360e13914372a1"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a0319d96ca9ee0a625b360e13914372a1">xtb_getBondOrders</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>, double *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a0319d96ca9ee0a625b360e13914372a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query singlepoint results object for bond orders.  <br /></td></tr>
+<tr class="memitem:a539b3ec4366e9b03e5f78c86e2e5b770" id="r_a539b3ec4366e9b03e5f78c86e2e5b770"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a539b3ec4366e9b03e5f78c86e2e5b770">xtb_getNao</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>, int *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a539b3ec4366e9b03e5f78c86e2e5b770"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query singlepoint results object for the number of basis functions.  <br /></td></tr>
+<tr class="memitem:a9ef265dc36323e4af5bb1cec0e5d3b7b" id="r_a9ef265dc36323e4af5bb1cec0e5d3b7b"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a9ef265dc36323e4af5bb1cec0e5d3b7b">xtb_getOrbitalEigenvalues</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>, double *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a9ef265dc36323e4af5bb1cec0e5d3b7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query singlepoint results object for orbital energies in Hartree [nao].  <br /></td></tr>
+<tr class="memitem:a48dcd811235c148e6fcb141702a635e6" id="r_a48dcd811235c148e6fcb141702a635e6"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#a48dcd811235c148e6fcb141702a635e6">xtb_getOrbitalOccupations</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>, double *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:a48dcd811235c148e6fcb141702a635e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query singlepoint results object for occupation numbers [nao].  <br /></td></tr>
+<tr class="memitem:ab833803ccd25a9877debf93c6313d83f" id="r_ab833803ccd25a9877debf93c6313d83f"><td class="memItemLeft"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a>&#160;</td><td class="memItemRight"><a class="el" href="#ab833803ccd25a9877debf93c6313d83f">xtb_getOrbitalCoefficients</a> (<a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>, <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>, double *) <a class="el" href="#ad87c63959a77029d188158322ea995fc">XTB_API_SUFFIX__VERSION_2_0_0</a></td></tr>
+<tr class="memdesc:ab833803ccd25a9877debf93c6313d83f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query singlepoint results object for orbital coefficients [nao][nao].  <br /></td></tr>
+</table>
+<a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
+<a id="a1ed9bda2b8d808b9cb84972b51207191" name="a1ed9bda2b8d808b9cb84972b51207191"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ed9bda2b8d808b9cb84972b51207191">&#9670;&#160;</a></span>XTB_API_CALL</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XTB_API_CALL</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="xtb_8h_source.html#l00021">21</a> of file <a class="el" href="xtb_8h_source.html">xtb.h</a>.</p>
+
+</div>
+</div>
+<a id="a55dae45cf2502df7a0e9ff521eceb000" name="a55dae45cf2502df7a0e9ff521eceb000"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55dae45cf2502df7a0e9ff521eceb000">&#9670;&#160;</a></span>XTB_API_ENTRY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XTB_API_ENTRY</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="xtb_8h_source.html#l00020">20</a> of file <a class="el" href="xtb_8h_source.html">xtb.h</a>.</p>
+
+</div>
+</div>
+<a id="ad87c63959a77029d188158322ea995fc" name="ad87c63959a77029d188158322ea995fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad87c63959a77029d188158322ea995fc">&#9670;&#160;</a></span>XTB_API_SUFFIX__VERSION_2_0_0</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XTB_API_SUFFIX__VERSION_2_0_0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="xtb_8h_source.html#l00022">22</a> of file <a class="el" href="xtb_8h_source.html">xtb.h</a>.</p>
+
+</div>
+</div>
+<a id="a73dd4c32452929b9e94fac1f9e9867b5" name="a73dd4c32452929b9e94fac1f9e9867b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73dd4c32452929b9e94fac1f9e9867b5">&#9670;&#160;</a></span>XTB_API_VERSION</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XTB_API_VERSION&#160;&#160;&#160;20000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Define proprocessor to allow to check for specific API features. </p>
+
+<p class="definition">Definition at line <a class="el" href="xtb_8h_source.html#l00025">25</a> of file <a class="el" href="xtb_8h_source.html">xtb.h</a>.</p>
+
+</div>
+</div>
+<a id="a0f4105e2d4311c60c8da74cb7f525bad" name="a0f4105e2d4311c60c8da74cb7f525bad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f4105e2d4311c60c8da74cb7f525bad">&#9670;&#160;</a></span>xtb_delete</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define xtb_delete</td>
+          <td>(</td>
+          <td class="paramtype"></td>          <td class="paramname"><span class="paramname"><em>ptr</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">_Generic((ptr), \</div>
+<div class="line"><a class="code hl_typedef" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>: <a class="code hl_function" href="#aa694a88ef8e5da705aba80dd07a93a56">xtb_delEnvironment</a>, \</div>
+<div class="line">   <a class="code hl_typedef" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a>: <a class="code hl_function" href="#a50ddd91c72088c64f6470cf8e675c10b">xtb_delMolecule</a>, \</div>
+<div class="line"> <a class="code hl_typedef" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a>: <a class="code hl_function" href="#af2849fb9a570a2bbc417da509d05a84b">xtb_delCalculator</a>, \</div>
+<div class="line">    <a class="code hl_typedef" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>: <a class="code hl_function" href="#a535eb9de7c7e1ec381ef27ff3b82befa">xtb_delResults</a> \</div>
+<div class="line">                )(&amp;ptr)</div>
+<div class="ttc" id="axtb_8h_html_a1addcca86f44e692bb6f1164c36d8ec5"><div class="ttname"><a href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a></div><div class="ttdeci">struct _xtb_TCalculator * xtb_TCalculator</div><div class="ttdoc">Single point calculator class.</div><div class="ttdef"><b>Definition</b> <a href="xtb_8h_source.html#l00061">xtb.h:61</a></div></div>
+<div class="ttc" id="axtb_8h_html_a3e459ec98eb99f93b639bee1f067e487"><div class="ttname"><a href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></div><div class="ttdeci">struct _xtb_TEnvironment * xtb_TEnvironment</div><div class="ttdoc">Calculation environment class.</div><div class="ttdef"><b>Definition</b> <a href="xtb_8h_source.html#l00055">xtb.h:55</a></div></div>
+<div class="ttc" id="axtb_8h_html_a50ddd91c72088c64f6470cf8e675c10b"><div class="ttname"><a href="#a50ddd91c72088c64f6470cf8e675c10b">xtb_delMolecule</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_delMolecule(xtb_TMolecule *) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Delete molecular structure data.</div></div>
+<div class="ttc" id="axtb_8h_html_a535eb9de7c7e1ec381ef27ff3b82befa"><div class="ttname"><a href="#a535eb9de7c7e1ec381ef27ff3b82befa">xtb_delResults</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_delResults(xtb_TResults *) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Delete singlepoint results object.</div></div>
+<div class="ttc" id="axtb_8h_html_a5be621396eff41e0ed5e01f8881468be"><div class="ttname"><a href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a></div><div class="ttdeci">struct _xtb_TMolecule * xtb_TMolecule</div><div class="ttdoc">Molecular structure data class.</div><div class="ttdef"><b>Definition</b> <a href="xtb_8h_source.html#l00058">xtb.h:58</a></div></div>
+<div class="ttc" id="axtb_8h_html_aa694a88ef8e5da705aba80dd07a93a56"><div class="ttname"><a href="#aa694a88ef8e5da705aba80dd07a93a56">xtb_delEnvironment</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_delEnvironment(xtb_TEnvironment *) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Delete a xtb calculation environment object.</div></div>
+<div class="ttc" id="axtb_8h_html_ae7e66e63839df3ba108dfded47c8a7e5"><div class="ttname"><a href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></div><div class="ttdeci">struct _xtb_TResults * xtb_TResults</div><div class="ttdoc">Single point results class.</div><div class="ttdef"><b>Definition</b> <a href="xtb_8h_source.html#l00064">xtb.h:64</a></div></div>
+<div class="ttc" id="axtb_8h_html_af2849fb9a570a2bbc417da509d05a84b"><div class="ttname"><a href="#af2849fb9a570a2bbc417da509d05a84b">xtb_delCalculator</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_delCalculator(xtb_TCalculator *) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Delete calculator object.</div></div>
+</div><!-- fragment -->
+<p>Convencience macro for deleting a handle. </p>
+
+<p class="definition">Definition at line <a class="el" href="xtb_8h_source.html#l00037">37</a> of file <a class="el" href="xtb_8h_source.html">xtb.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   37</span><span class="preprocessor">#define xtb_delete(ptr) _Generic((ptr), \</span></div>
+<div class="line"><span class="lineno">   38</span><span class="preprocessor">                xtb_TEnvironment: xtb_delEnvironment, \</span></div>
+<div class="line"><span class="lineno">   39</span><span class="preprocessor">                   xtb_TMolecule: xtb_delMolecule, \</span></div>
+<div class="line"><span class="lineno">   40</span><span class="preprocessor">                 xtb_TCalculator: xtb_delCalculator, \</span></div>
+<div class="line"><span class="lineno">   41</span><span class="preprocessor">                    xtb_TResults: xtb_delResults \</span></div>
+<div class="line"><span class="lineno">   42</span><span class="preprocessor">                                )(&amp;ptr)</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8f267d0b86935f95915833312a170c94" name="a8f267d0b86935f95915833312a170c94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f267d0b86935f95915833312a170c94">&#9670;&#160;</a></span>XTB_VERBOSITY_FULL</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XTB_VERBOSITY_FULL&#160;&#160;&#160;2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Possible print levels for API calls. </p>
+
+<p class="definition">Definition at line <a class="el" href="xtb_8h_source.html#l00032">32</a> of file <a class="el" href="xtb_8h_source.html">xtb.h</a>.</p>
+
+</div>
+</div>
+<a id="a65ce47b7c0fb697a0e7bddbf6fb18f62" name="a65ce47b7c0fb697a0e7bddbf6fb18f62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65ce47b7c0fb697a0e7bddbf6fb18f62">&#9670;&#160;</a></span>XTB_VERBOSITY_MINIMAL</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XTB_VERBOSITY_MINIMAL&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="xtb_8h_source.html#l00033">33</a> of file <a class="el" href="xtb_8h_source.html">xtb.h</a>.</p>
+
+</div>
+</div>
+<a id="a7e9d7f10882d3f7afca709605684dfdc" name="a7e9d7f10882d3f7afca709605684dfdc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e9d7f10882d3f7afca709605684dfdc">&#9670;&#160;</a></span>XTB_VERBOSITY_MUTED</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XTB_VERBOSITY_MUTED&#160;&#160;&#160;0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="xtb_8h_source.html#l00034">34</a> of file <a class="el" href="xtb_8h_source.html">xtb.h</a>.</p>
+
+</div>
+</div>
+<a id="a517c23e05b60763bc370b4db0eb4161d" name="a517c23e05b60763bc370b4db0eb4161d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a517c23e05b60763bc370b4db0eb4161d">&#9670;&#160;</a></span>XTB_VERSION_6_3_0</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XTB_VERSION_6_3_0&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="xtb_8h_source.html#l00026">26</a> of file <a class="el" href="xtb_8h_source.html">xtb.h</a>.</p>
+
+</div>
+</div>
+<a id="a1a0332ddd0b84b58ccf9fc4452dc8597" name="a1a0332ddd0b84b58ccf9fc4452dc8597"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a0332ddd0b84b58ccf9fc4452dc8597">&#9670;&#160;</a></span>XTB_VERSION_6_3_1</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XTB_VERSION_6_3_1&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="xtb_8h_source.html#l00027">27</a> of file <a class="el" href="xtb_8h_source.html">xtb.h</a>.</p>
+
+</div>
+</div>
+<a id="ae0ece287f0ed7f0e072599fe86b715ad" name="ae0ece287f0ed7f0e072599fe86b715ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0ece287f0ed7f0e072599fe86b715ad">&#9670;&#160;</a></span>XTB_VERSION_6_3_2</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XTB_VERSION_6_3_2&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="xtb_8h_source.html#l00028">28</a> of file <a class="el" href="xtb_8h_source.html">xtb.h</a>.</p>
+
+</div>
+</div>
+<a id="a7b4ce7b7bcce73645f7ece30659cb079" name="a7b4ce7b7bcce73645f7ece30659cb079"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b4ce7b7bcce73645f7ece30659cb079">&#9670;&#160;</a></span>XTB_VERSION_6_3_3</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define XTB_VERSION_6_3_3&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="xtb_8h_source.html#l00029">29</a> of file <a class="el" href="xtb_8h_source.html">xtb.h</a>.</p>
+
+</div>
+</div>
+<a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Typedef Documentation</h2>
+<a id="a1addcca86f44e692bb6f1164c36d8ec5" name="a1addcca86f44e692bb6f1164c36d8ec5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1addcca86f44e692bb6f1164c36d8ec5">&#9670;&#160;</a></span>xtb_TCalculator</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef struct _xtb_TCalculator* <a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Single point calculator class. </p>
+
+<p class="definition">Definition at line <a class="el" href="xtb_8h_source.html#l00061">61</a> of file <a class="el" href="xtb_8h_source.html">xtb.h</a>.</p>
+
+</div>
+</div>
+<a id="a3e459ec98eb99f93b639bee1f067e487" name="a3e459ec98eb99f93b639bee1f067e487"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e459ec98eb99f93b639bee1f067e487">&#9670;&#160;</a></span>xtb_TEnvironment</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef struct _xtb_TEnvironment* <a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Calculation environment class. </p>
+
+<p class="definition">Definition at line <a class="el" href="xtb_8h_source.html#l00055">55</a> of file <a class="el" href="xtb_8h_source.html">xtb.h</a>.</p>
+
+</div>
+</div>
+<a id="a5be621396eff41e0ed5e01f8881468be" name="a5be621396eff41e0ed5e01f8881468be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5be621396eff41e0ed5e01f8881468be">&#9670;&#160;</a></span>xtb_TMolecule</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef struct _xtb_TMolecule* <a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Molecular structure data class. </p>
+
+<p class="definition">Definition at line <a class="el" href="xtb_8h_source.html#l00058">58</a> of file <a class="el" href="xtb_8h_source.html">xtb.h</a>.</p>
+
+</div>
+</div>
+<a id="ae7e66e63839df3ba108dfded47c8a7e5" name="ae7e66e63839df3ba108dfded47c8a7e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7e66e63839df3ba108dfded47c8a7e5">&#9670;&#160;</a></span>xtb_TResults</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef struct _xtb_TResults* <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Single point results class. </p>
+
+<p class="definition">Definition at line <a class="el" href="xtb_8h_source.html#l00064">64</a> of file <a class="el" href="xtb_8h_source.html">xtb.h</a>.</p>
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a4d0135a16c8b40ef960211c1244c6066" name="a4d0135a16c8b40ef960211c1244c6066"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d0135a16c8b40ef960211c1244c6066">&#9670;&#160;</a></span>xtb_checkEnvironment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> int <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_checkEnvironment </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check current status of calculation environment. </p>
+
+</div>
+</div>
+<a id="a315ae6db9ddcdcc10f97c26d34f80b19" name="a315ae6db9ddcdcc10f97c26d34f80b19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a315ae6db9ddcdcc10f97c26d34f80b19">&#9670;&#160;</a></span>xtb_copyResults()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a> <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_copyResults </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create copy from a singlepoint results object. </p>
+
+</div>
+</div>
+<a id="a00eae8f45c54440d8a0922d71a2b0d58" name="a00eae8f45c54440d8a0922d71a2b0d58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00eae8f45c54440d8a0922d71a2b0d58">&#9670;&#160;</a></span>xtb_cpcmx_calc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_cpcmx_calc </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af2849fb9a570a2bbc417da509d05a84b" name="af2849fb9a570a2bbc417da509d05a84b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2849fb9a570a2bbc417da509d05a84b">&#9670;&#160;</a></span>xtb_delCalculator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_delCalculator </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a> *</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Delete calculator object. </p>
+
+</div>
+</div>
+<a id="aa694a88ef8e5da705aba80dd07a93a56" name="aa694a88ef8e5da705aba80dd07a93a56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa694a88ef8e5da705aba80dd07a93a56">&#9670;&#160;</a></span>xtb_delEnvironment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_delEnvironment </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a> *</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Delete a xtb calculation environment object. </p>
+
+</div>
+</div>
+<a id="a50ddd91c72088c64f6470cf8e675c10b" name="a50ddd91c72088c64f6470cf8e675c10b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50ddd91c72088c64f6470cf8e675c10b">&#9670;&#160;</a></span>xtb_delMolecule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_delMolecule </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a> *</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Delete molecular structure data. </p>
+
+</div>
+</div>
+<a id="a535eb9de7c7e1ec381ef27ff3b82befa" name="a535eb9de7c7e1ec381ef27ff3b82befa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a535eb9de7c7e1ec381ef27ff3b82befa">&#9670;&#160;</a></span>xtb_delResults()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_delResults </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a> *</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Delete singlepoint results object. </p>
+
+</div>
+</div>
+<a id="ad1323aad3162112e6e711718d7e43e66" name="ad1323aad3162112e6e711718d7e43e66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1323aad3162112e6e711718d7e43e66">&#9670;&#160;</a></span>xtb_getAPIVersion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> int <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_getAPIVersion </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns API version as 10000 * major + 100 * minor + 1 * patch. </p>
+
+</div>
+</div>
+<a id="a0319d96ca9ee0a625b360e13914372a1" name="a0319d96ca9ee0a625b360e13914372a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0319d96ca9ee0a625b360e13914372a1">&#9670;&#160;</a></span>xtb_getBondOrders()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_getBondOrders </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query singlepoint results object for bond orders. </p>
+
+</div>
+</div>
+<a id="aa5718b15ecd98aa981ac8a1aaf152d7f" name="aa5718b15ecd98aa981ac8a1aaf152d7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5718b15ecd98aa981ac8a1aaf152d7f">&#9670;&#160;</a></span>xtb_getCharges()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_getCharges </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query singlepoint results object for partial charges in e. </p>
+
+</div>
+</div>
+<a id="ad3f28efa50c096dd39c07ad8507485a2" name="ad3f28efa50c096dd39c07ad8507485a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3f28efa50c096dd39c07ad8507485a2">&#9670;&#160;</a></span>xtb_getDipole()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_getDipole </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query singlepoint results object for dipole in e Bohr. </p>
+
+</div>
+</div>
+<a id="a369ae4dfb3ab5cc4e9d74e6295ae71ae" name="a369ae4dfb3ab5cc4e9d74e6295ae71ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a369ae4dfb3ab5cc4e9d74e6295ae71ae">&#9670;&#160;</a></span>xtb_getEnergy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_getEnergy </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query singlepoint results object for energy in Hartree. </p>
+
+</div>
+</div>
+<a id="ae08f9a75280d77e4c4fd487a05b38eea" name="ae08f9a75280d77e4c4fd487a05b38eea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae08f9a75280d77e4c4fd487a05b38eea">&#9670;&#160;</a></span>xtb_getError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_getError </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return and empty error stack. </p>
+
+</div>
+</div>
+<a id="a0474fb0dfdbfffded5147bdeb3673dfc" name="a0474fb0dfdbfffded5147bdeb3673dfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0474fb0dfdbfffded5147bdeb3673dfc">&#9670;&#160;</a></span>xtb_getGradient()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_getGradient </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query singlepoint results object for gradient in Hartree / Bohr. </p>
+
+</div>
+</div>
+<a id="a539b3ec4366e9b03e5f78c86e2e5b770" name="a539b3ec4366e9b03e5f78c86e2e5b770"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a539b3ec4366e9b03e5f78c86e2e5b770">&#9670;&#160;</a></span>xtb_getNao()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_getNao </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query singlepoint results object for the number of basis functions. </p>
+
+</div>
+</div>
+<a id="ab833803ccd25a9877debf93c6313d83f" name="ab833803ccd25a9877debf93c6313d83f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab833803ccd25a9877debf93c6313d83f">&#9670;&#160;</a></span>xtb_getOrbitalCoefficients()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_getOrbitalCoefficients </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query singlepoint results object for orbital coefficients [nao][nao]. </p>
+
+</div>
+</div>
+<a id="a9ef265dc36323e4af5bb1cec0e5d3b7b" name="a9ef265dc36323e4af5bb1cec0e5d3b7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ef265dc36323e4af5bb1cec0e5d3b7b">&#9670;&#160;</a></span>xtb_getOrbitalEigenvalues()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_getOrbitalEigenvalues </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query singlepoint results object for orbital energies in Hartree [nao]. </p>
+
+</div>
+</div>
+<a id="a48dcd811235c148e6fcb141702a635e6" name="a48dcd811235c148e6fcb141702a635e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48dcd811235c148e6fcb141702a635e6">&#9670;&#160;</a></span>xtb_getOrbitalOccupations()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_getOrbitalOccupations </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query singlepoint results object for occupation numbers [nao]. </p>
+
+</div>
+</div>
+<a id="af3f97f4b2b5a09f49ef4c918a77a60b7" name="af3f97f4b2b5a09f49ef4c918a77a60b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3f97f4b2b5a09f49ef4c918a77a60b7">&#9670;&#160;</a></span>xtb_getPCGradient()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_getPCGradient </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query singlepoint results object for pc gradient in Hartree / Bohr. </p>
+
+</div>
+</div>
+<a id="ae16e1909af90586c2e9ac86740f10b2b" name="ae16e1909af90586c2e9ac86740f10b2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae16e1909af90586c2e9ac86740f10b2b">&#9670;&#160;</a></span>xtb_getSolvationEnergy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_getSolvationEnergy </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query singlepoint results object for solvation energy in Hartree. </p>
+
+</div>
+</div>
+<a id="ad6ac441d23346805fa5330a1c4541aa8" name="ad6ac441d23346805fa5330a1c4541aa8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6ac441d23346805fa5330a1c4541aa8">&#9670;&#160;</a></span>xtb_getVirial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_getVirial </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query singlepoint results object for virial in Hartree. </p>
+
+</div>
+</div>
+<a id="a41f8a2e3e64f7b77635cdd57b6565099" name="a41f8a2e3e64f7b77635cdd57b6565099"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41f8a2e3e64f7b77635cdd57b6565099">&#9670;&#160;</a></span>xtb_hessian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_hessian </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Perform hessian calculation. </p>
+
+</div>
+</div>
+<a id="a478b5452a0fe34d7b8d124a573ceb3b4" name="a478b5452a0fe34d7b8d124a573ceb3b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a478b5452a0fe34d7b8d124a573ceb3b4">&#9670;&#160;</a></span>xtb_loadGFN0xTB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_loadGFN0xTB </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Load GFN0-xTB calculator. </p>
+
+</div>
+</div>
+<a id="a86c164100dcba00c9d4d794ccd820018" name="a86c164100dcba00c9d4d794ccd820018"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86c164100dcba00c9d4d794ccd820018">&#9670;&#160;</a></span>xtb_loadGFN1xTB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_loadGFN1xTB </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Load GFN1-xTB calculator. </p>
+
+</div>
+</div>
+<a id="ad0a8969cb9393b84e69e9334d5c14fdc" name="ad0a8969cb9393b84e69e9334d5c14fdc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0a8969cb9393b84e69e9334d5c14fdc">&#9670;&#160;</a></span>xtb_loadGFN2xTB()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_loadGFN2xTB </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Load GFN2-xTB calculator. </p>
+
+</div>
+</div>
+<a id="a687ddc5fcc3fdac24804b376a7348448" name="a687ddc5fcc3fdac24804b376a7348448"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a687ddc5fcc3fdac24804b376a7348448">&#9670;&#160;</a></span>xtb_loadGFNFF()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_loadGFNFF </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Load GFN-FF calculator. </p>
+
+</div>
+</div>
+<a id="a054f5e1a8f0e858a60d23f6e132d201b" name="a054f5e1a8f0e858a60d23f6e132d201b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a054f5e1a8f0e858a60d23f6e132d201b">&#9670;&#160;</a></span>xtb_newCalculator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> <a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a> <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_newCalculator </td>
+          <td>(</td>
+          <td class="paramtype">void</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create new calculator object. </p>
+
+</div>
+</div>
+<a id="a71d8e8c70c478f53c235e16e6de90352" name="a71d8e8c70c478f53c235e16e6de90352"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71d8e8c70c478f53c235e16e6de90352">&#9670;&#160;</a></span>xtb_newEnvironment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> <a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a> <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_newEnvironment </td>
+          <td>(</td>
+          <td class="paramtype">void</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create new xtb calculation environment object. </p>
+
+</div>
+</div>
+<a id="a07c5c503de2eb5e189cca9fd1fc00fd8" name="a07c5c503de2eb5e189cca9fd1fc00fd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07c5c503de2eb5e189cca9fd1fc00fd8">&#9670;&#160;</a></span>xtb_newMolecule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> <a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a> <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_newMolecule </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create new molecular structure data (quantities in Bohr). </p>
+
+</div>
+</div>
+<a id="ac18a87a8013d19aeefe7d9f220689179" name="ac18a87a8013d19aeefe7d9f220689179"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac18a87a8013d19aeefe7d9f220689179">&#9670;&#160;</a></span>xtb_newResults()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> <a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a> <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_newResults </td>
+          <td>(</td>
+          <td class="paramtype">void</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create new singlepoint results object. </p>
+
+</div>
+</div>
+<a id="a82a3de8002ba9b9b3994b92a3f2ad224" name="a82a3de8002ba9b9b3994b92a3f2ad224"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82a3de8002ba9b9b3994b92a3f2ad224">&#9670;&#160;</a></span>xtb_releaseExternalCharges()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_releaseExternalCharges </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a></td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unset the external charge potential. </p>
+
+</div>
+</div>
+<a id="aa5e9f1a6e87c5cd61a50cda8805ecf1e" name="aa5e9f1a6e87c5cd61a50cda8805ecf1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5e9f1a6e87c5cd61a50cda8805ecf1e">&#9670;&#160;</a></span>xtb_releaseOutput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_releaseOutput </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Release output unit from this environment. </p>
+
+</div>
+</div>
+<a id="a38658d8e0b3f037bc3c36d0bed081742" name="a38658d8e0b3f037bc3c36d0bed081742"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38658d8e0b3f037bc3c36d0bed081742">&#9670;&#160;</a></span>xtb_releaseSolvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_releaseSolvent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a></td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unset the solvation model. </p>
+
+</div>
+</div>
+<a id="abda00d451987dd287cbdd6f2eeb36275" name="abda00d451987dd287cbdd6f2eeb36275"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abda00d451987dd287cbdd6f2eeb36275">&#9670;&#160;</a></span>xtb_setAccuracy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_setAccuracy </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set numerical accuracy of calculator in the range of 1000 to 0.0001. </p>
+
+</div>
+</div>
+<a id="a5aea769cc6c55679c76089df18b33358" name="a5aea769cc6c55679c76089df18b33358"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5aea769cc6c55679c76089df18b33358">&#9670;&#160;</a></span>xtb_setElectronicTemp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_setElectronicTemp </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set electronic temperature for level filling in tight binding calculators in K. </p>
+
+</div>
+</div>
+<a id="a7f950201bcb59e03fdd943db153ffdd3" name="a7f950201bcb59e03fdd943db153ffdd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f950201bcb59e03fdd943db153ffdd3">&#9670;&#160;</a></span>xtb_setExternalCharges()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_setExternalCharges </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Add a external charge potential to calculator (only supported in GFN1/2-xTB). </p>
+
+</div>
+</div>
+<a id="ac51c937bea8c228a219faa298900de9f" name="ac51c937bea8c228a219faa298900de9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac51c937bea8c228a219faa298900de9f">&#9670;&#160;</a></span>xtb_setMaxIter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_setMaxIter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set maximum number of iterations for self-consistent TB calculators. </p>
+
+</div>
+</div>
+<a id="ac4999abe290c5f518f3e7ff80eb5a0e7" name="ac4999abe290c5f518f3e7ff80eb5a0e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4999abe290c5f518f3e7ff80eb5a0e7">&#9670;&#160;</a></span>xtb_setOutput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_setOutput </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bind output from this environment. </p>
+
+</div>
+</div>
+<a id="a4ccc7f73c03036bd0d938d8e807a9eb9" name="a4ccc7f73c03036bd0d938d8e807a9eb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4ccc7f73c03036bd0d938d8e807a9eb9">&#9670;&#160;</a></span>xtb_setSolvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_setSolvent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Add a solvation model to calculator (requires loaded parametrisation). </p>
+
+</div>
+</div>
+<a id="a9fb75efcb52c295779ae9e39f5fc1d6b" name="a9fb75efcb52c295779ae9e39f5fc1d6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fb75efcb52c295779ae9e39f5fc1d6b">&#9670;&#160;</a></span>xtb_setVerbosity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_setVerbosity </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set verbosity of calculation output. </p>
+
+</div>
+</div>
+<a id="aed7b94383c8fdf60b3e29cd4f79fc982" name="aed7b94383c8fdf60b3e29cd4f79fc982"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed7b94383c8fdf60b3e29cd4f79fc982">&#9670;&#160;</a></span>xtb_showEnvironment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_showEnvironment </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Show and empty error stack. </p>
+
+</div>
+</div>
+<a id="adb3f42280b2b3bc08a4def8e6910967f" name="adb3f42280b2b3bc08a4def8e6910967f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb3f42280b2b3bc08a4def8e6910967f">&#9670;&#160;</a></span>xtb_singlepoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_singlepoint </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a></td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Perform singlepoint calculation. </p>
+
+</div>
+</div>
+<a id="a54d5d0e96b6d99495676c0a204553aef" name="a54d5d0e96b6d99495676c0a204553aef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54d5d0e96b6d99495676c0a204553aef">&#9670;&#160;</a></span>xtb_updateMolecule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a55dae45cf2502df7a0e9ff521eceb000">XTB_API_ENTRY</a> void <a class="el" href="#a1ed9bda2b8d808b9cb84972b51207191">XTB_API_CALL</a> xtb_updateMolecule </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a></td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel extern">extern</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Update coordinates and lattice parameters (quantities in Bohr). </p>
+
+</div>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="dir_2527c5cc2e6dc8ce970a4d420439d1d9.html">eon</a></li><li class="navelem"><a href="dir_858247b18a1611539d1f444885056636.html">potentials</a></li><li class="navelem"><a href="dir_048c41c2660e30dc880defa6dce491b8.html">XTBPot</a></li><li class="navelem"><a href="xtb_8h.html">xtb.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

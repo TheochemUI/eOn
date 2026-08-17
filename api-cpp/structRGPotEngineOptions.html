@@ -1,0 +1,795 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: RGPotEngineOptions Struct Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('structRGPotEngineOptions.html','','structRGPotEngineOptions-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">RGPotEngineOptions Struct Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a8dec74e532101f1ce4380e05489f6ad4" id="r_a8dec74e532101f1ce4380e05489f6ad4"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a8dec74e532101f1ce4380e05489f6ad4">backend</a></td></tr>
+<tr class="memitem:a3cce8b08621932e92a7a234f47bfc314" id="r_a3cce8b08621932e92a7a234f47bfc314"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a3cce8b08621932e92a7a234f47bfc314">basis</a> {&quot;sto-3g&quot;}</td></tr>
+<tr class="memitem:ad922d97dfdfdabc9cb828a45247eb81a" id="r_ad922d97dfdfdabc9cb828a45247eb81a"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#ad922d97dfdfdabc9cb828a45247eb81a">theory</a> {&quot;scf&quot;}</td></tr>
+<tr class="memitem:a06e36eb8ac4cb37ce9691971cfb9d08e" id="r_a06e36eb8ac4cb37ce9691971cfb9d08e"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a06e36eb8ac4cb37ce9691971cfb9d08e">scf_type</a> {&quot;rhf&quot;}</td></tr>
+<tr class="memitem:a9fa540f49d27738ce93c1e35fc223b79" id="r_a9fa540f49d27738ce93c1e35fc223b79"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a9fa540f49d27738ce93c1e35fc223b79">functional</a> {&quot;BLYP&quot;}</td></tr>
+<tr class="memitem:a684ca46659b5c02341399ba05cdd9a54" id="r_a684ca46659b5c02341399ba05cdd9a54"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a684ca46659b5c02341399ba05cdd9a54">cutoff_ry</a> {70.0}</td></tr>
+<tr class="memitem:a9c7eab255bd69147d5909fc6907655d3" id="r_a9c7eab255bd69147d5909fc6907655d3"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a9c7eab255bd69147d5909fc6907655d3">charge</a> {0}</td></tr>
+<tr class="memitem:a34d4c067f03853de114c4d33a8c45224" id="r_a34d4c067f03853de114c4d33a8c45224"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a34d4c067f03853de114c4d33a8c45224">multiplicity</a> {1}</td></tr>
+<tr class="memitem:a591d88061482f5def5fbc0e8ab7e2038" id="r_a591d88061482f5def5fbc0e8ab7e2038"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a591d88061482f5def5fbc0e8ab7e2038">engine_path</a></td></tr>
+<tr class="memitem:a948f90c314c2e469761f2b706cf34dc0" id="r_a948f90c314c2e469761f2b706cf34dc0"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a948f90c314c2e469761f2b706cf34dc0">engine_library</a></td></tr>
+<tr class="memitem:ac640a410bf18066058185cdc8a7d1d6d" id="r_ac640a410bf18066058185cdc8a7d1d6d"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#ac640a410bf18066058185cdc8a7d1d6d">engine_root</a></td></tr>
+<tr class="memitem:a1bc5ed5c8b23207f381d0bf2fe34f3bd" id="r_a1bc5ed5c8b23207f381d0bf2fe34f3bd"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a1bc5ed5c8b23207f381d0bf2fe34f3bd">title</a></td></tr>
+<tr class="memitem:a7d02521ee1febe74307e5e611f710118" id="r_a7d02521ee1febe74307e5e611f710118"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a7d02521ee1febe74307e5e611f710118">memory_mb</a> {0}</td></tr>
+<tr class="memitem:a464193c68f85bdf6ccecf730f959c505" id="r_a464193c68f85bdf6ccecf730f959c505"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a464193c68f85bdf6ccecf730f959c505">scratch_dir</a></td></tr>
+<tr class="memitem:ada72be4995d9ae99c0ff2de2109ad237" id="r_ada72be4995d9ae99c0ff2de2109ad237"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#ada72be4995d9ae99c0ff2de2109ad237">input_block</a></td></tr>
+<tr class="memitem:abfb903d95fa45ace3ab69edcaa5cdd64" id="r_abfb903d95fa45ace3ab69edcaa5cdd64"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#abfb903d95fa45ace3ab69edcaa5cdd64">model_path</a></td></tr>
+<tr class="memitem:abfb38b12db96f664dd9c0ca9b8b9bb8a" id="r_abfb38b12db96f664dd9c0ca9b8b9bb8a"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#abfb38b12db96f664dd9c0ca9b8b9bb8a">device</a> {&quot;cpu&quot;}</td></tr>
+<tr class="memitem:aab407eb3f992b78720bcd735acd9b0bb" id="r_aab407eb3f992b78720bcd735acd9b0bb"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#aab407eb3f992b78720bcd735acd9b0bb">length_unit</a> {&quot;angstrom&quot;}</td></tr>
+<tr class="memitem:a91dc280179d43f152dd50fcbb8762795" id="r_a91dc280179d43f152dd50fcbb8762795"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a91dc280179d43f152dd50fcbb8762795">extensions_directory</a></td></tr>
+<tr class="memitem:a0ff1f7f3fee0daa8b0017e4c470d4d1d" id="r_a0ff1f7f3fee0daa8b0017e4c470d4d1d"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a0ff1f7f3fee0daa8b0017e4c470d4d1d">check_consistency</a> {false}</td></tr>
+<tr class="memitem:ad6c2d8b5cd78684e5bac6ae19dcdbe42" id="r_ad6c2d8b5cd78684e5bac6ae19dcdbe42"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ad6c2d8b5cd78684e5bac6ae19dcdbe42">uncertainty_threshold</a> {-1.0}</td></tr>
+<tr class="memitem:aadaadd6c54afcc8c57a879938761ac4f" id="r_aadaadd6c54afcc8c57a879938761ac4f"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aadaadd6c54afcc8c57a879938761ac4f">torch_determinism_strict</a> {false}</td></tr>
+<tr class="memitem:a3a761a3378f874ca2e41764d5797cace" id="r_a3a761a3378f874ca2e41764d5797cace"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a3a761a3378f874ca2e41764d5797cace">xtb_paramset</a> {&quot;GFN2xTB&quot;}</td></tr>
+<tr class="memitem:ac3f15f0a8041fdf192e328e2a35a7e37" id="r_ac3f15f0a8041fdf192e328e2a35a7e37"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ac3f15f0a8041fdf192e328e2a35a7e37">xtb_accuracy</a> {1.0}</td></tr>
+<tr class="memitem:a9b5a6f95eb4a8016c265fc197664b7a0" id="r_a9b5a6f95eb4a8016c265fc197664b7a0"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a9b5a6f95eb4a8016c265fc197664b7a0">xtb_electronic_temperature</a> {300.0}</td></tr>
+<tr class="memitem:a7b78f1852bb38cf382a601c4f4ebfb93" id="r_a7b78f1852bb38cf382a601c4f4ebfb93"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a7b78f1852bb38cf382a601c4f4ebfb93">xtb_max_iterations</a> {250}</td></tr>
+<tr class="memitem:aece5083dcb8102323094779244c07f19" id="r_aece5083dcb8102323094779244c07f19"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#aece5083dcb8102323094779244c07f19">xtb_charge</a> {0.0}</td></tr>
+<tr class="memitem:a05cbeb421682b503889b914da920aa08" id="r_a05cbeb421682b503889b914da920aa08"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a05cbeb421682b503889b914da920aa08">xtb_uhf</a> {0}</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00006">6</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+</div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a8dec74e532101f1ce4380e05489f6ad4" name="a8dec74e532101f1ce4380e05489f6ad4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dec74e532101f1ce4380e05489f6ad4">&#9670;&#160;</a></span>backend</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string RGPotEngineOptions::backend</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00007">7</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+
+</div>
+</div>
+<a id="a3cce8b08621932e92a7a234f47bfc314" name="a3cce8b08621932e92a7a234f47bfc314"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cce8b08621932e92a7a234f47bfc314">&#9670;&#160;</a></span>basis</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string RGPotEngineOptions::basis {&quot;sto-3g&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00008">8</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">    8</span>{<span class="stringliteral">&quot;sto-3g&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9c7eab255bd69147d5909fc6907655d3" name="a9c7eab255bd69147d5909fc6907655d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c7eab255bd69147d5909fc6907655d3">&#9670;&#160;</a></span>charge</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int RGPotEngineOptions::charge {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00013">13</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   13</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0ff1f7f3fee0daa8b0017e4c470d4d1d" name="a0ff1f7f3fee0daa8b0017e4c470d4d1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ff1f7f3fee0daa8b0017e4c470d4d1d">&#9670;&#160;</a></span>check_consistency</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool RGPotEngineOptions::check_consistency {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00027">27</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   27</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a684ca46659b5c02341399ba05cdd9a54" name="a684ca46659b5c02341399ba05cdd9a54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a684ca46659b5c02341399ba05cdd9a54">&#9670;&#160;</a></span>cutoff_ry</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double RGPotEngineOptions::cutoff_ry {70.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00012">12</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   12</span>{70.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="abfb38b12db96f664dd9c0ca9b8b9bb8a" name="abfb38b12db96f664dd9c0ca9b8b9bb8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfb38b12db96f664dd9c0ca9b8b9bb8a">&#9670;&#160;</a></span>device</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string RGPotEngineOptions::device {&quot;cpu&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00024">24</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   24</span>{<span class="stringliteral">&quot;cpu&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a948f90c314c2e469761f2b706cf34dc0" name="a948f90c314c2e469761f2b706cf34dc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a948f90c314c2e469761f2b706cf34dc0">&#9670;&#160;</a></span>engine_library</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string RGPotEngineOptions::engine_library</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00016">16</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+
+</div>
+</div>
+<a id="a591d88061482f5def5fbc0e8ab7e2038" name="a591d88061482f5def5fbc0e8ab7e2038"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a591d88061482f5def5fbc0e8ab7e2038">&#9670;&#160;</a></span>engine_path</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string RGPotEngineOptions::engine_path</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00015">15</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+
+</div>
+</div>
+<a id="ac640a410bf18066058185cdc8a7d1d6d" name="ac640a410bf18066058185cdc8a7d1d6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac640a410bf18066058185cdc8a7d1d6d">&#9670;&#160;</a></span>engine_root</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string RGPotEngineOptions::engine_root</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00017">17</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+
+</div>
+</div>
+<a id="a91dc280179d43f152dd50fcbb8762795" name="a91dc280179d43f152dd50fcbb8762795"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91dc280179d43f152dd50fcbb8762795">&#9670;&#160;</a></span>extensions_directory</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string RGPotEngineOptions::extensions_directory</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00026">26</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+
+</div>
+</div>
+<a id="a9fa540f49d27738ce93c1e35fc223b79" name="a9fa540f49d27738ce93c1e35fc223b79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fa540f49d27738ce93c1e35fc223b79">&#9670;&#160;</a></span>functional</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string RGPotEngineOptions::functional {&quot;BLYP&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00011">11</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   11</span>{<span class="stringliteral">&quot;BLYP&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ada72be4995d9ae99c0ff2de2109ad237" name="ada72be4995d9ae99c0ff2de2109ad237"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada72be4995d9ae99c0ff2de2109ad237">&#9670;&#160;</a></span>input_block</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string RGPotEngineOptions::input_block</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00021">21</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+
+</div>
+</div>
+<a id="aab407eb3f992b78720bcd735acd9b0bb" name="aab407eb3f992b78720bcd735acd9b0bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab407eb3f992b78720bcd735acd9b0bb">&#9670;&#160;</a></span>length_unit</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string RGPotEngineOptions::length_unit {&quot;angstrom&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00025">25</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   25</span>{<span class="stringliteral">&quot;angstrom&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7d02521ee1febe74307e5e611f710118" name="a7d02521ee1febe74307e5e611f710118"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d02521ee1febe74307e5e611f710118">&#9670;&#160;</a></span>memory_mb</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int RGPotEngineOptions::memory_mb {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00019">19</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   19</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="abfb903d95fa45ace3ab69edcaa5cdd64" name="abfb903d95fa45ace3ab69edcaa5cdd64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfb903d95fa45ace3ab69edcaa5cdd64">&#9670;&#160;</a></span>model_path</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string RGPotEngineOptions::model_path</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00023">23</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+
+</div>
+</div>
+<a id="a34d4c067f03853de114c4d33a8c45224" name="a34d4c067f03853de114c4d33a8c45224"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34d4c067f03853de114c4d33a8c45224">&#9670;&#160;</a></span>multiplicity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int RGPotEngineOptions::multiplicity {1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00014">14</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   14</span>{1};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a06e36eb8ac4cb37ce9691971cfb9d08e" name="a06e36eb8ac4cb37ce9691971cfb9d08e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06e36eb8ac4cb37ce9691971cfb9d08e">&#9670;&#160;</a></span>scf_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string RGPotEngineOptions::scf_type {&quot;rhf&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00010">10</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   10</span>{<span class="stringliteral">&quot;rhf&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a464193c68f85bdf6ccecf730f959c505" name="a464193c68f85bdf6ccecf730f959c505"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a464193c68f85bdf6ccecf730f959c505">&#9670;&#160;</a></span>scratch_dir</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string RGPotEngineOptions::scratch_dir</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00020">20</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+
+</div>
+</div>
+<a id="ad922d97dfdfdabc9cb828a45247eb81a" name="ad922d97dfdfdabc9cb828a45247eb81a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad922d97dfdfdabc9cb828a45247eb81a">&#9670;&#160;</a></span>theory</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string RGPotEngineOptions::theory {&quot;scf&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00009">9</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">    9</span>{<span class="stringliteral">&quot;scf&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1bc5ed5c8b23207f381d0bf2fe34f3bd" name="a1bc5ed5c8b23207f381d0bf2fe34f3bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1bc5ed5c8b23207f381d0bf2fe34f3bd">&#9670;&#160;</a></span>title</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string RGPotEngineOptions::title</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00018">18</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+
+</div>
+</div>
+<a id="aadaadd6c54afcc8c57a879938761ac4f" name="aadaadd6c54afcc8c57a879938761ac4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadaadd6c54afcc8c57a879938761ac4f">&#9670;&#160;</a></span>torch_determinism_strict</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool RGPotEngineOptions::torch_determinism_strict {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00029">29</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   29</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad6c2d8b5cd78684e5bac6ae19dcdbe42" name="ad6c2d8b5cd78684e5bac6ae19dcdbe42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6c2d8b5cd78684e5bac6ae19dcdbe42">&#9670;&#160;</a></span>uncertainty_threshold</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double RGPotEngineOptions::uncertainty_threshold {-1.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00028">28</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   28</span>{-1.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac3f15f0a8041fdf192e328e2a35a7e37" name="ac3f15f0a8041fdf192e328e2a35a7e37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3f15f0a8041fdf192e328e2a35a7e37">&#9670;&#160;</a></span>xtb_accuracy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double RGPotEngineOptions::xtb_accuracy {1.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00032">32</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   32</span>{1.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aece5083dcb8102323094779244c07f19" name="aece5083dcb8102323094779244c07f19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aece5083dcb8102323094779244c07f19">&#9670;&#160;</a></span>xtb_charge</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double RGPotEngineOptions::xtb_charge {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00035">35</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   35</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9b5a6f95eb4a8016c265fc197664b7a0" name="a9b5a6f95eb4a8016c265fc197664b7a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b5a6f95eb4a8016c265fc197664b7a0">&#9670;&#160;</a></span>xtb_electronic_temperature</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double RGPotEngineOptions::xtb_electronic_temperature {300.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00033">33</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   33</span>{300.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7b78f1852bb38cf382a601c4f4ebfb93" name="a7b78f1852bb38cf382a601c4f4ebfb93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b78f1852bb38cf382a601c4f4ebfb93">&#9670;&#160;</a></span>xtb_max_iterations</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int RGPotEngineOptions::xtb_max_iterations {250}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00034">34</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   34</span>{250};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a3a761a3378f874ca2e41764d5797cace" name="a3a761a3378f874ca2e41764d5797cace"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a761a3378f874ca2e41764d5797cace">&#9670;&#160;</a></span>xtb_paramset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string RGPotEngineOptions::xtb_paramset {&quot;GFN2xTB&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00031">31</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   31</span>{<span class="stringliteral">&quot;GFN2xTB&quot;</span>}; <span class="comment">// GFNFF / GFN0xTB / GFN1xTB / GFN2xTB</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a05cbeb421682b503889b914da920aa08" name="a05cbeb421682b503889b914da920aa08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05cbeb421682b503889b914da920aa08">&#9670;&#160;</a></span>xtb_uhf</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int RGPotEngineOptions::xtb_uhf {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="RGPotEngine_8h_source.html#l00036">36</a> of file <a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   36</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/potentials/Rgpot/<a class="el" href="RGPotEngine_8h_source.html">RGPotEngine.h</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="structRGPotEngineOptions.html">RGPotEngineOptions</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

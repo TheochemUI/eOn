@@ -1,0 +1,3048 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/include/eon/potentials/LAMMPS/library.h File Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('library_8h.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">library.h File Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
+</div>
+<p><a href="library_8h_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-define-members" class="groupheader"><a id="define-members" name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:ad03951957166c33afc872342e6271f94" id="r_ad03951957166c33afc872342e6271f94"><td class="memItemLeft">#define&#160;</td><td class="memItemRight"><a class="el" href="#ad03951957166c33afc872342e6271f94">LAMMPS_SMALLBIG</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-typedef-members" class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a38f369494b0be77168b8d52184c30fcb" id="r_a38f369494b0be77168b8d52184c30fcb"><td class="memItemLeft">typedef void(*&#160;</td><td class="memItemRight"><a class="el" href="#a38f369494b0be77168b8d52184c30fcb">FixExternalFnPtr</a>) (void *, int64_t, int, int *, double **, double **)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a8f60df5cd520b67959d22185afcdacc5" id="r_a8f60df5cd520b67959d22185afcdacc5"><td class="memItemLeft">enum &#160;</td><td class="memItemRight"><a class="el" href="#a8f60df5cd520b67959d22185afcdacc5">_LMP_DATATYPE_CONST</a> { <br />
+&#160;&#160;<a class="el" href="#a8f60df5cd520b67959d22185afcdacc5a2092f040c8fd7fd46efa6591c4f03515">LAMMPS_NONE</a> = -1
+, <a class="el" href="#a8f60df5cd520b67959d22185afcdacc5a6f4597ad5c533e63a78fe90151d4d348">LAMMPS_INT</a> = 0
+, <a class="el" href="#a8f60df5cd520b67959d22185afcdacc5acdc5b9e5771b685c0f5c0377a06380da">LAMMPS_INT_2D</a> = 1
+, <a class="el" href="#a8f60df5cd520b67959d22185afcdacc5a5a6c3a30d227047ab64e210c8a2fd468">LAMMPS_DOUBLE</a> = 2
+, <br />
+&#160;&#160;<a class="el" href="#a8f60df5cd520b67959d22185afcdacc5a515e6e960fa5de1f4e22596ede33fdeb">LAMMPS_DOUBLE_2D</a> = 3
+, <a class="el" href="#a8f60df5cd520b67959d22185afcdacc5a3e0db9f4dfd611ebb971372cc245e80c">LAMMPS_INT64</a> = 4
+, <a class="el" href="#a8f60df5cd520b67959d22185afcdacc5abfc022018c51b292be00cbc87760ab60">LAMMPS_INT64_2D</a> = 5
+, <a class="el" href="#a8f60df5cd520b67959d22185afcdacc5ae8c997bf96560c2d658a3d2a01518d72">LAMMPS_STRING</a> = 6
+<br />
+ }</td></tr>
+<tr class="memdesc:a8f60df5cd520b67959d22185afcdacc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data type constants for extracting data from atoms, computes and fixes.  <a href="#a8f60df5cd520b67959d22185afcdacc5">More...</a><br /></td></tr>
+<tr class="memitem:af78e950523b27d0aa9b74ccf93666d36" id="r_af78e950523b27d0aa9b74ccf93666d36"><td class="memItemLeft">enum &#160;</td><td class="memItemRight"><a class="el" href="#af78e950523b27d0aa9b74ccf93666d36">_LMP_STYLE_CONST</a> { <a class="el" href="#af78e950523b27d0aa9b74ccf93666d36a5d9f763d2a7c13c4aea83405aaf4b3f3">LMP_STYLE_GLOBAL</a> = 0
+, <a class="el" href="#af78e950523b27d0aa9b74ccf93666d36aa1e72b0a28e28261262774733cdbadfa">LMP_STYLE_ATOM</a> = 1
+, <a class="el" href="#af78e950523b27d0aa9b74ccf93666d36a9b74ce240cd632e21f8c1a5a1cf07ed0">LMP_STYLE_LOCAL</a> = 2
+ }</td></tr>
+<tr class="memdesc:af78e950523b27d0aa9b74ccf93666d36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Style constants for extracting data from computes and fixes.  <a href="#af78e950523b27d0aa9b74ccf93666d36">More...</a><br /></td></tr>
+<tr class="memitem:a30cd6a0606720be7addec2816760879e" id="r_a30cd6a0606720be7addec2816760879e"><td class="memItemLeft">enum &#160;</td><td class="memItemRight"><a class="el" href="#a30cd6a0606720be7addec2816760879e">_LMP_TYPE_CONST</a> { <br />
+&#160;&#160;<a class="el" href="#a30cd6a0606720be7addec2816760879ea3a0d5e6c49cc929d953b366ed58c821b">LMP_TYPE_SCALAR</a> = 0
+, <a class="el" href="#a30cd6a0606720be7addec2816760879ead7beec11786a3dc637fcdd2ac62506e8">LMP_TYPE_VECTOR</a> = 1
+, <a class="el" href="#a30cd6a0606720be7addec2816760879eaaacd44f7a32b76b06051cb01ff40451a">LMP_TYPE_ARRAY</a> = 2
+, <a class="el" href="#a30cd6a0606720be7addec2816760879eab7e39a6a361f8bc210064c9d853b4ded">LMP_SIZE_VECTOR</a> = 3
+, <br />
+&#160;&#160;<a class="el" href="#a30cd6a0606720be7addec2816760879eaa65d78d0215fbb5d1f8cf6dfa05ed485">LMP_SIZE_ROWS</a> = 4
+, <a class="el" href="#a30cd6a0606720be7addec2816760879ea0213053b1c6d4283bb6d662a00fecc16">LMP_SIZE_COLS</a> = 5
+<br />
+ }</td></tr>
+<tr class="memdesc:a30cd6a0606720be7addec2816760879e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type and size constants for extracting data from computes and fixes.  <a href="#a30cd6a0606720be7addec2816760879e">More...</a><br /></td></tr>
+<tr class="memitem:a0a21501a166632d8dbabb0e8e5447a26" id="r_a0a21501a166632d8dbabb0e8e5447a26"><td class="memItemLeft">enum &#160;</td><td class="memItemRight"><a class="el" href="#a0a21501a166632d8dbabb0e8e5447a26">_LMP_ERROR_CONST</a> { <br />
+&#160;&#160;<a class="el" href="#a0a21501a166632d8dbabb0e8e5447a26a075aa9d1918f3abd34441c5a978df2a0">LMP_ERROR_WARNING</a> = 0
+, <a class="el" href="#a0a21501a166632d8dbabb0e8e5447a26abe11bcded9b243338dd6ee3e80db923f">LMP_ERROR_ONE</a> = 1
+, <a class="el" href="#a0a21501a166632d8dbabb0e8e5447a26a1ef79788d8579adde50ede733fb68e5f">LMP_ERROR_ALL</a> = 2
+, <a class="el" href="#a0a21501a166632d8dbabb0e8e5447a26a203eb1d032ac5ce0cad7deb634b3635b">LMP_ERROR_WORLD</a> = 4
+, <br />
+&#160;&#160;<a class="el" href="#a0a21501a166632d8dbabb0e8e5447a26a12d5d8e53105a4802eb80c80a5de4710">LMP_ERROR_UNIVERSE</a> = 8
+<br />
+ }</td></tr>
+<tr class="memdesc:a0a21501a166632d8dbabb0e8e5447a26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error codes to select the suitable function in the Error class.  <a href="#a0a21501a166632d8dbabb0e8e5447a26">More...</a><br /></td></tr>
+<tr class="memitem:a09d7d9d1e5512d11257c5b6fce67ee37" id="r_a09d7d9d1e5512d11257c5b6fce67ee37"><td class="memItemLeft">enum &#160;</td><td class="memItemRight"><a class="el" href="#a09d7d9d1e5512d11257c5b6fce67ee37">_LMP_VAR_CONST</a> { <a class="el" href="#a09d7d9d1e5512d11257c5b6fce67ee37aeb6a1c0a08cdfb496bcaef2cc37d5047">LMP_VAR_EQUAL</a> = 0
+, <a class="el" href="#a09d7d9d1e5512d11257c5b6fce67ee37a4a336ec13f20754d421f7d0d218cc1a4">LMP_VAR_ATOM</a> = 1
+, <a class="el" href="#a09d7d9d1e5512d11257c5b6fce67ee37a381da764a4e3a5f1bc183cc9905be43c">LMP_VAR_VECTOR</a> = 2
+, <a class="el" href="#a09d7d9d1e5512d11257c5b6fce67ee37a52551a127731cf3f7e193b9d1d83e6e8">LMP_VAR_STRING</a> = 3
+ }</td></tr>
+<tr class="memdesc:a09d7d9d1e5512d11257c5b6fce67ee37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Variable style constants for extracting data from variables.  <a href="#a09d7d9d1e5512d11257c5b6fce67ee37">More...</a><br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a2532f747f8b8f91310a03e81b191c85b" id="r_a2532f747f8b8f91310a03e81b191c85b"><td class="memItemLeft">void *&#160;</td><td class="memItemRight"><a class="el" href="#a2532f747f8b8f91310a03e81b191c85b">lammps_open_no_mpi</a> (int argc, char **argv, void **ptr)</td></tr>
+<tr class="memitem:a00b91f3fe0d663da088490b873ae80d1" id="r_a00b91f3fe0d663da088490b873ae80d1"><td class="memItemLeft">void *&#160;</td><td class="memItemRight"><a class="el" href="#a00b91f3fe0d663da088490b873ae80d1">lammps_open_fortran</a> (int argc, char **argv, int f_comm)</td></tr>
+<tr class="memitem:a75570a623be78c153a75eb533a0b65d2" id="r_a75570a623be78c153a75eb533a0b65d2"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a75570a623be78c153a75eb533a0b65d2">lammps_close</a> (void *handle)</td></tr>
+<tr class="memitem:afee0113d4bcf1cbe55a8f83176b39b59" id="r_afee0113d4bcf1cbe55a8f83176b39b59"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#afee0113d4bcf1cbe55a8f83176b39b59">lammps_mpi_init</a> ()</td></tr>
+<tr class="memitem:a181557f91cb6d49ba67083a51cf110dc" id="r_a181557f91cb6d49ba67083a51cf110dc"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a181557f91cb6d49ba67083a51cf110dc">lammps_mpi_finalize</a> ()</td></tr>
+<tr class="memitem:a295c98b87692b72b5bf594e7b291905b" id="r_a295c98b87692b72b5bf594e7b291905b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a295c98b87692b72b5bf594e7b291905b">lammps_kokkos_finalize</a> ()</td></tr>
+<tr class="memitem:a5d625667e3988ecae35e94490cb5aa8f" id="r_a5d625667e3988ecae35e94490cb5aa8f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a5d625667e3988ecae35e94490cb5aa8f">lammps_python_finalize</a> ()</td></tr>
+<tr class="memitem:ad365a1950c1e4e6bf21e414cab86a57a" id="r_ad365a1950c1e4e6bf21e414cab86a57a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ad365a1950c1e4e6bf21e414cab86a57a">lammps_error</a> (void *handle, int error_type, const char *error_text)</td></tr>
+<tr class="memitem:a76c1ce1af98c09978578c7a94d778c0b" id="r_a76c1ce1af98c09978578c7a94d778c0b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a76c1ce1af98c09978578c7a94d778c0b">lammps_file</a> (void *handle, const char *file)</td></tr>
+<tr class="memitem:a48721b1903a79541cb680dabea9b84d5" id="r_a48721b1903a79541cb680dabea9b84d5"><td class="memItemLeft">char *&#160;</td><td class="memItemRight"><a class="el" href="#a48721b1903a79541cb680dabea9b84d5">lammps_command</a> (void *handle, const char *cmd)</td></tr>
+<tr class="memitem:ab542f51c42bcf8e39b64722ffa426890" id="r_ab542f51c42bcf8e39b64722ffa426890"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ab542f51c42bcf8e39b64722ffa426890">lammps_commands_list</a> (void *handle, int ncmd, const char **cmds)</td></tr>
+<tr class="memitem:a82b8d3fb9db7e0a834f6da0996e61d6b" id="r_a82b8d3fb9db7e0a834f6da0996e61d6b"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a82b8d3fb9db7e0a834f6da0996e61d6b">lammps_commands_string</a> (void *handle, const char *str)</td></tr>
+<tr class="memitem:aa7d4ad0dc261c21fa41cffa38ea3ac21" id="r_aa7d4ad0dc261c21fa41cffa38ea3ac21"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#aa7d4ad0dc261c21fa41cffa38ea3ac21">lammps_get_natoms</a> (void *handle)</td></tr>
+<tr class="memitem:a5f54fbac6f7be9c20605c0faf71ec77a" id="r_a5f54fbac6f7be9c20605c0faf71ec77a"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a5f54fbac6f7be9c20605c0faf71ec77a">lammps_get_thermo</a> (void *handle, const char *keyword)</td></tr>
+<tr class="memitem:a3d51693ba1f7f0cb5b703b1ddead146a" id="r_a3d51693ba1f7f0cb5b703b1ddead146a"><td class="memItemLeft">void *&#160;</td><td class="memItemRight"><a class="el" href="#a3d51693ba1f7f0cb5b703b1ddead146a">lammps_last_thermo</a> (void *handle, const char *what, int index)</td></tr>
+<tr class="memitem:a5280ea3a305969261faa1a0258b9c7f9" id="r_a5280ea3a305969261faa1a0258b9c7f9"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a5280ea3a305969261faa1a0258b9c7f9">lammps_extract_box</a> (void *handle, double *boxlo, double *boxhi, double *xy, double *yz, double *xz, int *pflags, int *boxflag)</td></tr>
+<tr class="memitem:ada23ca4aacdcc9b5991af9968e0369e8" id="r_ada23ca4aacdcc9b5991af9968e0369e8"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ada23ca4aacdcc9b5991af9968e0369e8">lammps_reset_box</a> (void *handle, double *boxlo, double *boxhi, double xy, double yz, double xz)</td></tr>
+<tr class="memitem:ab1a5d06bc29dd1233cde03c857ff0821" id="r_ab1a5d06bc29dd1233cde03c857ff0821"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ab1a5d06bc29dd1233cde03c857ff0821">lammps_memory_usage</a> (void *handle, double *meminfo)</td></tr>
+<tr class="memitem:a27501b4b00aa53f6621e996e3eeeb149" id="r_a27501b4b00aa53f6621e996e3eeeb149"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a27501b4b00aa53f6621e996e3eeeb149">lammps_get_mpi_comm</a> (void *handle)</td></tr>
+<tr class="memitem:aec668a9f577e41295afb673f7edc99da" id="r_aec668a9f577e41295afb673f7edc99da"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#aec668a9f577e41295afb673f7edc99da">lammps_extract_setting</a> (void *handle, const char *keyword)</td></tr>
+<tr class="memitem:a7a5da49a662d7cc3e8eaa79d7cc344e0" id="r_a7a5da49a662d7cc3e8eaa79d7cc344e0"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a7a5da49a662d7cc3e8eaa79d7cc344e0">lammps_extract_global_datatype</a> (void *handle, const char *name)</td></tr>
+<tr class="memitem:ae1abe908414c1dbb01548581f8fc74a9" id="r_ae1abe908414c1dbb01548581f8fc74a9"><td class="memItemLeft">void *&#160;</td><td class="memItemRight"><a class="el" href="#ae1abe908414c1dbb01548581f8fc74a9">lammps_extract_global</a> (void *handle, const char *name)</td></tr>
+<tr class="memitem:a40e85a5c09ff9cc7763d119fea9603ec" id="r_a40e85a5c09ff9cc7763d119fea9603ec"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a40e85a5c09ff9cc7763d119fea9603ec">lammps_map_atom</a> (void *handle, const void *id)</td></tr>
+<tr class="memitem:aed36a77c70d91c9497b5eee075d18aab" id="r_aed36a77c70d91c9497b5eee075d18aab"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#aed36a77c70d91c9497b5eee075d18aab">lammps_extract_atom_datatype</a> (void *handle, const char *name)</td></tr>
+<tr class="memitem:aa195b895bff9cd756ec18ca2e9cab90d" id="r_aa195b895bff9cd756ec18ca2e9cab90d"><td class="memItemLeft">void *&#160;</td><td class="memItemRight"><a class="el" href="#aa195b895bff9cd756ec18ca2e9cab90d">lammps_extract_atom</a> (void *handle, const char *name)</td></tr>
+<tr class="memitem:a2e90e8ad6e8a2566e3fe7970c1965567" id="r_a2e90e8ad6e8a2566e3fe7970c1965567"><td class="memItemLeft">void *&#160;</td><td class="memItemRight"><a class="el" href="#a2e90e8ad6e8a2566e3fe7970c1965567">lammps_extract_compute</a> (void *handle, const char *id, int style, int type)</td></tr>
+<tr class="memitem:aa7a9a4e488fa0d717a9bfb637f2c6a4e" id="r_aa7a9a4e488fa0d717a9bfb637f2c6a4e"><td class="memItemLeft">void *&#160;</td><td class="memItemRight"><a class="el" href="#aa7a9a4e488fa0d717a9bfb637f2c6a4e">lammps_extract_fix</a> (void *handle, const char *id, int style, int type, int nrow, int ncol)</td></tr>
+<tr class="memitem:a95cb08b988b86d74a9fded90c47ad5a1" id="r_a95cb08b988b86d74a9fded90c47ad5a1"><td class="memItemLeft">void *&#160;</td><td class="memItemRight"><a class="el" href="#a95cb08b988b86d74a9fded90c47ad5a1">lammps_extract_variable</a> (void *handle, const char *name, const char *group)</td></tr>
+<tr class="memitem:a5725944733b98157d3f6993c2f6499ce" id="r_a5725944733b98157d3f6993c2f6499ce"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a5725944733b98157d3f6993c2f6499ce">lammps_extract_variable_datatype</a> (void *handle, const char *name)</td></tr>
+<tr class="memitem:ab3cc202eaec7472181870b4747b3d577" id="r_ab3cc202eaec7472181870b4747b3d577"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ab3cc202eaec7472181870b4747b3d577">lammps_set_variable</a> (void *handle, const char *name, const char *str)</td></tr>
+<tr class="memitem:a540ffa539718883760eb6fafab3627bc" id="r_a540ffa539718883760eb6fafab3627bc"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a540ffa539718883760eb6fafab3627bc">lammps_set_string_variable</a> (void *handle, const char *name, const char *str)</td></tr>
+<tr class="memitem:a250fd1b00f6b69daf98cc4a879c78059" id="r_a250fd1b00f6b69daf98cc4a879c78059"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a250fd1b00f6b69daf98cc4a879c78059">lammps_set_internal_variable</a> (void *handle, const char *name, double value)</td></tr>
+<tr class="memitem:a7d42a4fb49036f76e6042ca8302aa567" id="r_a7d42a4fb49036f76e6042ca8302aa567"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a7d42a4fb49036f76e6042ca8302aa567">lammps_variable_info</a> (void *handle, int idx, char *buf, int bufsize)</td></tr>
+<tr class="memitem:ad3208ce7d03d54f74573a80565dc335d" id="r_ad3208ce7d03d54f74573a80565dc335d"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ad3208ce7d03d54f74573a80565dc335d">lammps_gather_atoms</a> (void *handle, const char *name, int type, int count, void *data)</td></tr>
+<tr class="memitem:a5e433d99895ca2aa9d87843bc7ee49d5" id="r_a5e433d99895ca2aa9d87843bc7ee49d5"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a5e433d99895ca2aa9d87843bc7ee49d5">lammps_gather_atoms_concat</a> (void *handle, const char *name, int type, int count, void *data)</td></tr>
+<tr class="memitem:adb2aa14375aa277b1c32ad17a5f4a39f" id="r_adb2aa14375aa277b1c32ad17a5f4a39f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#adb2aa14375aa277b1c32ad17a5f4a39f">lammps_gather_atoms_subset</a> (void *handle, const char *name, int type, int count, int ndata, int *ids, void *data)</td></tr>
+<tr class="memitem:a912e450e211db31d9396ad5f421d500d" id="r_a912e450e211db31d9396ad5f421d500d"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a912e450e211db31d9396ad5f421d500d">lammps_scatter_atoms</a> (void *handle, const char *name, int type, int count, void *data)</td></tr>
+<tr class="memitem:a42726943d284b0edad9b8f3cd3129398" id="r_a42726943d284b0edad9b8f3cd3129398"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a42726943d284b0edad9b8f3cd3129398">lammps_scatter_atoms_subset</a> (void *handle, const char *name, int type, int count, int ndata, int *ids, void *data)</td></tr>
+<tr class="memitem:a360d274b56e28d7a9fd0e195ff2171af" id="r_a360d274b56e28d7a9fd0e195ff2171af"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a360d274b56e28d7a9fd0e195ff2171af">lammps_gather_bonds</a> (void *handle, void *data)</td></tr>
+<tr class="memitem:a6f8c39008d113b5c3450c2cffaadcf3c" id="r_a6f8c39008d113b5c3450c2cffaadcf3c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a6f8c39008d113b5c3450c2cffaadcf3c">lammps_gather_angles</a> (void *handle, void *data)</td></tr>
+<tr class="memitem:a93dac1f42646ebfa89521fc77a38a785" id="r_a93dac1f42646ebfa89521fc77a38a785"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a93dac1f42646ebfa89521fc77a38a785">lammps_gather_dihedrals</a> (void *handle, void *data)</td></tr>
+<tr class="memitem:abf81ea4427e375c6605fb7362e995b92" id="r_abf81ea4427e375c6605fb7362e995b92"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#abf81ea4427e375c6605fb7362e995b92">lammps_gather_impropers</a> (void *handle, void *data)</td></tr>
+<tr class="memitem:aeaf5356f9fafd2fd9dbab0958a0a8ac3" id="r_aeaf5356f9fafd2fd9dbab0958a0a8ac3"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aeaf5356f9fafd2fd9dbab0958a0a8ac3">lammps_gather</a> (void *handle, const char *name, int type, int count, void *data)</td></tr>
+<tr class="memitem:add32cd75d71123448c752d69d96a9009" id="r_add32cd75d71123448c752d69d96a9009"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#add32cd75d71123448c752d69d96a9009">lammps_gather_concat</a> (void *handle, const char *name, int type, int count, void *data)</td></tr>
+<tr class="memitem:ab098fa5d18996508a54430ff5e3a0faf" id="r_ab098fa5d18996508a54430ff5e3a0faf"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ab098fa5d18996508a54430ff5e3a0faf">lammps_gather_subset</a> (void *handle, const char *name, int type, int count, int ndata, int *ids, void *data)</td></tr>
+<tr class="memitem:a1251a6d15588762a6810ed4021bfce11" id="r_a1251a6d15588762a6810ed4021bfce11"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1251a6d15588762a6810ed4021bfce11">lammps_scatter</a> (void *handle, const char *name, int type, int count, void *data)</td></tr>
+<tr class="memitem:ae379c37f2f8136e130030ddbe832695a" id="r_ae379c37f2f8136e130030ddbe832695a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae379c37f2f8136e130030ddbe832695a">lammps_scatter_subset</a> (void *handle, const char *name, int type, int count, int ndata, int *ids, void *data)</td></tr>
+<tr class="memitem:aeebd5ebadb0c014f80e2c25dd369ff44" id="r_aeebd5ebadb0c014f80e2c25dd369ff44"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#aeebd5ebadb0c014f80e2c25dd369ff44">lammps_create_atoms</a> (void *handle, int n, const int *id, const int *type, const double *x, const double *v, const int *image, int bexpand)</td></tr>
+<tr class="memitem:a859b206fea42bc2db03c992acc478cbc" id="r_a859b206fea42bc2db03c992acc478cbc"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a859b206fea42bc2db03c992acc478cbc">lammps_find_pair_neighlist</a> (void *handle, const char *style, int exact, int nsub, int request)</td></tr>
+<tr class="memitem:a51652806cc5a984712a87de083396a48" id="r_a51652806cc5a984712a87de083396a48"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a51652806cc5a984712a87de083396a48">lammps_find_fix_neighlist</a> (void *handle, const char *id, int request)</td></tr>
+<tr class="memitem:a04b80d34fe95f6931d9f6906a2c7f869" id="r_a04b80d34fe95f6931d9f6906a2c7f869"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a04b80d34fe95f6931d9f6906a2c7f869">lammps_find_compute_neighlist</a> (void *handle, const char *id, int request)</td></tr>
+<tr class="memitem:ab4cd0310c0638fad6352d0081194bdd8" id="r_ab4cd0310c0638fad6352d0081194bdd8"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ab4cd0310c0638fad6352d0081194bdd8">lammps_neighlist_num_elements</a> (void *handle, int idx)</td></tr>
+<tr class="memitem:a0bd03926cf3a3ebb93311dab400c792c" id="r_a0bd03926cf3a3ebb93311dab400c792c"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a0bd03926cf3a3ebb93311dab400c792c">lammps_neighlist_element_neighbors</a> (void *handle, int idx, int element, int *iatom, int *numneigh, int **neighbors)</td></tr>
+<tr class="memitem:a41f44a4eef975f8a189d3186259a8ef9" id="r_a41f44a4eef975f8a189d3186259a8ef9"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a41f44a4eef975f8a189d3186259a8ef9">lammps_version</a> (void *handle)</td></tr>
+<tr class="memitem:ae4b6178f693ff83002ee8a1559edd6ed" id="r_ae4b6178f693ff83002ee8a1559edd6ed"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae4b6178f693ff83002ee8a1559edd6ed">lammps_get_os_info</a> (char *buffer, int buf_size)</td></tr>
+<tr class="memitem:ada45e7d079fddf8400e31cc98710b5f8" id="r_ada45e7d079fddf8400e31cc98710b5f8"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ada45e7d079fddf8400e31cc98710b5f8">lammps_config_has_mpi_support</a> ()</td></tr>
+<tr class="memitem:a0bd41d39a5dd5992d614e150b6d88a5f" id="r_a0bd41d39a5dd5992d614e150b6d88a5f"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a0bd41d39a5dd5992d614e150b6d88a5f">lammps_config_has_gzip_support</a> ()</td></tr>
+<tr class="memitem:a9de61d7686a3db2344fb94a4a22c67e4" id="r_a9de61d7686a3db2344fb94a4a22c67e4"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a9de61d7686a3db2344fb94a4a22c67e4">lammps_config_has_png_support</a> ()</td></tr>
+<tr class="memitem:ac3835bbc1c6797e56f8aa47443d11af6" id="r_ac3835bbc1c6797e56f8aa47443d11af6"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ac3835bbc1c6797e56f8aa47443d11af6">lammps_config_has_jpeg_support</a> ()</td></tr>
+<tr class="memitem:acbbc33bf81d78002a4ed94e2b7ff8f06" id="r_acbbc33bf81d78002a4ed94e2b7ff8f06"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#acbbc33bf81d78002a4ed94e2b7ff8f06">lammps_config_has_ffmpeg_support</a> ()</td></tr>
+<tr class="memitem:ade5f1cc597079d8cb32a9765cbfff44c" id="r_ade5f1cc597079d8cb32a9765cbfff44c"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ade5f1cc597079d8cb32a9765cbfff44c">lammps_config_has_exceptions</a> ()</td></tr>
+<tr class="memitem:adca5959e5b824ab7413c74ee05eb9f0d" id="r_adca5959e5b824ab7413c74ee05eb9f0d"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#adca5959e5b824ab7413c74ee05eb9f0d">lammps_config_has_package</a> (const char *)</td></tr>
+<tr class="memitem:a233aefab279fd9290f14fae1e4c16be4" id="r_a233aefab279fd9290f14fae1e4c16be4"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a233aefab279fd9290f14fae1e4c16be4">lammps_config_package_count</a> ()</td></tr>
+<tr class="memitem:aca1da31b8eb4342ee1eff02d721fa48d" id="r_aca1da31b8eb4342ee1eff02d721fa48d"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#aca1da31b8eb4342ee1eff02d721fa48d">lammps_config_package_name</a> (int, char *, int)</td></tr>
+<tr class="memitem:a503c6feaadbab30ac00b978fcf199399" id="r_a503c6feaadbab30ac00b978fcf199399"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a503c6feaadbab30ac00b978fcf199399">lammps_config_accelerator</a> (const char *, const char *, const char *)</td></tr>
+<tr class="memitem:acd3fd9fa79e08b7fb530b51b9ca79c8e" id="r_acd3fd9fa79e08b7fb530b51b9ca79c8e"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#acd3fd9fa79e08b7fb530b51b9ca79c8e">lammps_has_gpu_device</a> ()</td></tr>
+<tr class="memitem:a8439a498ff1b8117a45e705e2a636c18" id="r_a8439a498ff1b8117a45e705e2a636c18"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a8439a498ff1b8117a45e705e2a636c18">lammps_get_gpu_device_info</a> (char *buffer, int buf_size)</td></tr>
+<tr class="memitem:a74aa598ce1e183ed70ce5eabf7202bec" id="r_a74aa598ce1e183ed70ce5eabf7202bec"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a74aa598ce1e183ed70ce5eabf7202bec">lammps_has_style</a> (void *, const char *, const char *)</td></tr>
+<tr class="memitem:aef8b5d9f8c06dc22c55deb9088dbafd6" id="r_aef8b5d9f8c06dc22c55deb9088dbafd6"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#aef8b5d9f8c06dc22c55deb9088dbafd6">lammps_style_count</a> (void *, const char *)</td></tr>
+<tr class="memitem:ab91b5c7e97982f7a804d8d7cfa0f190a" id="r_ab91b5c7e97982f7a804d8d7cfa0f190a"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ab91b5c7e97982f7a804d8d7cfa0f190a">lammps_style_name</a> (void *, const char *, int, char *, int)</td></tr>
+<tr class="memitem:ad1ee62546d5d560747379cba84bea178" id="r_ad1ee62546d5d560747379cba84bea178"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ad1ee62546d5d560747379cba84bea178">lammps_has_id</a> (void *, const char *, const char *)</td></tr>
+<tr class="memitem:aaa1311b9ce55c53bfae199c2ee9cb955" id="r_aaa1311b9ce55c53bfae199c2ee9cb955"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#aaa1311b9ce55c53bfae199c2ee9cb955">lammps_id_count</a> (void *, const char *)</td></tr>
+<tr class="memitem:a42ba710155bca355ba451fd45dcda0f9" id="r_a42ba710155bca355ba451fd45dcda0f9"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a42ba710155bca355ba451fd45dcda0f9">lammps_id_name</a> (void *, const char *, int, char *, int)</td></tr>
+<tr class="memitem:ad757b2f1e707a1ac0ab59967c9e3bcd0" id="r_ad757b2f1e707a1ac0ab59967c9e3bcd0"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ad757b2f1e707a1ac0ab59967c9e3bcd0">lammps_plugin_count</a> ()</td></tr>
+<tr class="memitem:a8610437ec2c055efd550d493b9019dab" id="r_a8610437ec2c055efd550d493b9019dab"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a8610437ec2c055efd550d493b9019dab">lammps_plugin_name</a> (int, char *, char *, int)</td></tr>
+<tr class="memitem:ad12aad3df456f3c85418ff8af6e55e10" id="r_ad12aad3df456f3c85418ff8af6e55e10"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ad12aad3df456f3c85418ff8af6e55e10">lammps_encode_image_flags</a> (int ix, int iy, int iz)</td></tr>
+<tr class="memitem:ae774bc2a40ffa11e7a7aecfac7a9c3c6" id="r_ae774bc2a40ffa11e7a7aecfac7a9c3c6"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae774bc2a40ffa11e7a7aecfac7a9c3c6">lammps_decode_image_flags</a> (int image, int *flags)</td></tr>
+<tr class="memitem:a2b2994fdf05652cb2f3fe2afc4d00d1a" id="r_a2b2994fdf05652cb2f3fe2afc4d00d1a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2b2994fdf05652cb2f3fe2afc4d00d1a">lammps_set_fix_external_callback</a> (void *handle, const char *id, <a class="el" href="#a38f369494b0be77168b8d52184c30fcb">FixExternalFnPtr</a> funcptr, void *ptr)</td></tr>
+<tr class="memitem:a3e5a4c1f126c6b6cdd756f99764e69d7" id="r_a3e5a4c1f126c6b6cdd756f99764e69d7"><td class="memItemLeft">double **&#160;</td><td class="memItemRight"><a class="el" href="#a3e5a4c1f126c6b6cdd756f99764e69d7">lammps_fix_external_get_force</a> (void *handle, const char *id)</td></tr>
+<tr class="memitem:a6ac4888e2c82846dcb9b1d013ef90f96" id="r_a6ac4888e2c82846dcb9b1d013ef90f96"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a6ac4888e2c82846dcb9b1d013ef90f96">lammps_fix_external_set_energy_global</a> (void *handle, const char *id, double eng)</td></tr>
+<tr class="memitem:aac2c2027c2779613dfe2ffa47205bbdf" id="r_aac2c2027c2779613dfe2ffa47205bbdf"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aac2c2027c2779613dfe2ffa47205bbdf">lammps_fix_external_set_energy_peratom</a> (void *handle, const char *id, double *eng)</td></tr>
+<tr class="memitem:af707a45ddf44addec9b8345546deb83e" id="r_af707a45ddf44addec9b8345546deb83e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#af707a45ddf44addec9b8345546deb83e">lammps_fix_external_set_virial_global</a> (void *handle, const char *id, double *virial)</td></tr>
+<tr class="memitem:ae85311d7c556c3c7aace6e329ab352a2" id="r_ae85311d7c556c3c7aace6e329ab352a2"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae85311d7c556c3c7aace6e329ab352a2">lammps_fix_external_set_virial_peratom</a> (void *handle, const char *id, double **virial)</td></tr>
+<tr class="memitem:a65eccbce0a2c1154051c56296acc7598" id="r_a65eccbce0a2c1154051c56296acc7598"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a65eccbce0a2c1154051c56296acc7598">lammps_fix_external_set_vector_length</a> (void *handle, const char *id, int len)</td></tr>
+<tr class="memitem:a627a37da0a0f1cd076cfac35ea488c18" id="r_a627a37da0a0f1cd076cfac35ea488c18"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a627a37da0a0f1cd076cfac35ea488c18">lammps_fix_external_set_vector</a> (void *handle, const char *id, int idx, double val)</td></tr>
+<tr class="memitem:af54eb973fef3aa2bfe7708a0cf1139ff" id="r_af54eb973fef3aa2bfe7708a0cf1139ff"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#af54eb973fef3aa2bfe7708a0cf1139ff">lammps_flush_buffers</a> (void *ptr)</td></tr>
+<tr class="memitem:aa521d27718fc92e9a58a255ae9f9cf87" id="r_aa521d27718fc92e9a58a255ae9f9cf87"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aa521d27718fc92e9a58a255ae9f9cf87">lammps_free</a> (void *ptr)</td></tr>
+<tr class="memitem:a96130bd0ac1fcfbb01f56fe92f8cf7da" id="r_a96130bd0ac1fcfbb01f56fe92f8cf7da"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a96130bd0ac1fcfbb01f56fe92f8cf7da">lammps_is_running</a> (void *handle)</td></tr>
+<tr class="memitem:a298dbff8f43185d82bcbf0a8d76b9aa9" id="r_a298dbff8f43185d82bcbf0a8d76b9aa9"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a298dbff8f43185d82bcbf0a8d76b9aa9">lammps_force_timeout</a> (void *handle)</td></tr>
+<tr class="memitem:a6f2f23eeafb8d56983ef90ad55e0c37d" id="r_a6f2f23eeafb8d56983ef90ad55e0c37d"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a6f2f23eeafb8d56983ef90ad55e0c37d">lammps_has_error</a> (void *handle)</td></tr>
+<tr class="memitem:a1900bdb6311f7f9649b5c82e20257cff" id="r_a1900bdb6311f7f9649b5c82e20257cff"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a1900bdb6311f7f9649b5c82e20257cff">lammps_get_last_error_message</a> (void *handle, char *buffer, int buf_size)</td></tr>
+<tr class="memitem:ac696ed37ed39b295adbf05577111da90" id="r_ac696ed37ed39b295adbf05577111da90"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ac696ed37ed39b295adbf05577111da90">lammps_python_api_version</a> ()</td></tr>
+</table>
+<a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
+<a id="ad03951957166c33afc872342e6271f94" name="ad03951957166c33afc872342e6271f94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad03951957166c33afc872342e6271f94">&#9670;&#160;</a></span>LAMMPS_SMALLBIG</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define LAMMPS_SMALLBIG</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="library_8h_source.html#l00029">29</a> of file <a class="el" href="library_8h_source.html">library.h</a>.</p>
+
+</div>
+</div>
+<a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Typedef Documentation</h2>
+<a id="a38f369494b0be77168b8d52184c30fcb" name="a38f369494b0be77168b8d52184c30fcb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38f369494b0be77168b8d52184c30fcb">&#9670;&#160;</a></span>FixExternalFnPtr</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef void(* FixExternalFnPtr) (void *, int64_t, int, int *, double **, double **)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="library_8h_source.html#l00299">299</a> of file <a class="el" href="library_8h_source.html">library.h</a>.</p>
+
+</div>
+</div>
+<a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
+<a id="a8f60df5cd520b67959d22185afcdacc5" name="a8f60df5cd520b67959d22185afcdacc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f60df5cd520b67959d22185afcdacc5">&#9670;&#160;</a></span>_LMP_DATATYPE_CONST</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#a8f60df5cd520b67959d22185afcdacc5">_LMP_DATATYPE_CONST</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Data type constants for extracting data from atoms, computes and fixes. </p>
+<p>Must be kept in sync with the equivalent constants in <span class="tt">python/lammps/constants.py</span>, <span class="tt">fortran/lammps.f90</span>, <span class="tt">tools/swig/lammps.i</span>, <span class="tt">src/lmptype.h</span>, and <span class="tt">examples/COUPLE/plugin/liblammpsplugin.h</span> </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a8f60df5cd520b67959d22185afcdacc5a2092f040c8fd7fd46efa6591c4f03515" name="a8f60df5cd520b67959d22185afcdacc5a2092f040c8fd7fd46efa6591c4f03515"></a>LAMMPS_NONE&#160;</td><td class="fielddoc"><p>no data type assigned (yet) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a8f60df5cd520b67959d22185afcdacc5a6f4597ad5c533e63a78fe90151d4d348" name="a8f60df5cd520b67959d22185afcdacc5a6f4597ad5c533e63a78fe90151d4d348"></a>LAMMPS_INT&#160;</td><td class="fielddoc"><p>32-bit integer (array) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a8f60df5cd520b67959d22185afcdacc5acdc5b9e5771b685c0f5c0377a06380da" name="a8f60df5cd520b67959d22185afcdacc5acdc5b9e5771b685c0f5c0377a06380da"></a>LAMMPS_INT_2D&#160;</td><td class="fielddoc"><p>two-dimensional 32-bit integer array </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a8f60df5cd520b67959d22185afcdacc5a5a6c3a30d227047ab64e210c8a2fd468" name="a8f60df5cd520b67959d22185afcdacc5a5a6c3a30d227047ab64e210c8a2fd468"></a>LAMMPS_DOUBLE&#160;</td><td class="fielddoc"><p>64-bit double (array) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a8f60df5cd520b67959d22185afcdacc5a515e6e960fa5de1f4e22596ede33fdeb" name="a8f60df5cd520b67959d22185afcdacc5a515e6e960fa5de1f4e22596ede33fdeb"></a>LAMMPS_DOUBLE_2D&#160;</td><td class="fielddoc"><p>two-dimensional 64-bit double array </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a8f60df5cd520b67959d22185afcdacc5a3e0db9f4dfd611ebb971372cc245e80c" name="a8f60df5cd520b67959d22185afcdacc5a3e0db9f4dfd611ebb971372cc245e80c"></a>LAMMPS_INT64&#160;</td><td class="fielddoc"><p>64-bit integer (array) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a8f60df5cd520b67959d22185afcdacc5abfc022018c51b292be00cbc87760ab60" name="a8f60df5cd520b67959d22185afcdacc5abfc022018c51b292be00cbc87760ab60"></a>LAMMPS_INT64_2D&#160;</td><td class="fielddoc"><p>two-dimensional 64-bit integer array </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a8f60df5cd520b67959d22185afcdacc5ae8c997bf96560c2d658a3d2a01518d72" name="a8f60df5cd520b67959d22185afcdacc5ae8c997bf96560c2d658a3d2a01518d72"></a>LAMMPS_STRING&#160;</td><td class="fielddoc"><p>C-String </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="library_8h_source.html#l00049">49</a> of file <a class="el" href="library_8h_source.html">library.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   49</span>                         {</div>
+<div class="line"><span class="lineno">   50</span>  <a class="code hl_enumvalue" href="#a8f60df5cd520b67959d22185afcdacc5a2092f040c8fd7fd46efa6591c4f03515">LAMMPS_NONE</a> = -1,     </div>
+<div class="line"><span class="lineno">   51</span>  <a class="code hl_enumvalue" href="#a8f60df5cd520b67959d22185afcdacc5a6f4597ad5c533e63a78fe90151d4d348">LAMMPS_INT</a> = 0,       </div>
+<div class="line"><span class="lineno">   52</span>  <a class="code hl_enumvalue" href="#a8f60df5cd520b67959d22185afcdacc5acdc5b9e5771b685c0f5c0377a06380da">LAMMPS_INT_2D</a> = 1,    </div>
+<div class="line"><span class="lineno">   53</span>  <a class="code hl_enumvalue" href="#a8f60df5cd520b67959d22185afcdacc5a5a6c3a30d227047ab64e210c8a2fd468">LAMMPS_DOUBLE</a> = 2,    </div>
+<div class="line"><span class="lineno">   54</span>  <a class="code hl_enumvalue" href="#a8f60df5cd520b67959d22185afcdacc5a515e6e960fa5de1f4e22596ede33fdeb">LAMMPS_DOUBLE_2D</a> = 3, </div>
+<div class="line"><span class="lineno">   55</span>  <a class="code hl_enumvalue" href="#a8f60df5cd520b67959d22185afcdacc5a3e0db9f4dfd611ebb971372cc245e80c">LAMMPS_INT64</a> = 4,     </div>
+<div class="line"><span class="lineno">   56</span>  <a class="code hl_enumvalue" href="#a8f60df5cd520b67959d22185afcdacc5abfc022018c51b292be00cbc87760ab60">LAMMPS_INT64_2D</a> = 5,  </div>
+<div class="line"><span class="lineno">   57</span>  <a class="code hl_enumvalue" href="#a8f60df5cd520b67959d22185afcdacc5ae8c997bf96560c2d658a3d2a01518d72">LAMMPS_STRING</a> = 6     </div>
+<div class="line"><span class="lineno">   58</span>};</div>
+<div class="ttc" id="alibrary_8h_html_a8f60df5cd520b67959d22185afcdacc5a2092f040c8fd7fd46efa6591c4f03515"><div class="ttname"><a href="#a8f60df5cd520b67959d22185afcdacc5a2092f040c8fd7fd46efa6591c4f03515">LAMMPS_NONE</a></div><div class="ttdeci">@ LAMMPS_NONE</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00050">library.h:50</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a8f60df5cd520b67959d22185afcdacc5a3e0db9f4dfd611ebb971372cc245e80c"><div class="ttname"><a href="#a8f60df5cd520b67959d22185afcdacc5a3e0db9f4dfd611ebb971372cc245e80c">LAMMPS_INT64</a></div><div class="ttdeci">@ LAMMPS_INT64</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00055">library.h:55</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a8f60df5cd520b67959d22185afcdacc5a515e6e960fa5de1f4e22596ede33fdeb"><div class="ttname"><a href="#a8f60df5cd520b67959d22185afcdacc5a515e6e960fa5de1f4e22596ede33fdeb">LAMMPS_DOUBLE_2D</a></div><div class="ttdeci">@ LAMMPS_DOUBLE_2D</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00054">library.h:54</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a8f60df5cd520b67959d22185afcdacc5a5a6c3a30d227047ab64e210c8a2fd468"><div class="ttname"><a href="#a8f60df5cd520b67959d22185afcdacc5a5a6c3a30d227047ab64e210c8a2fd468">LAMMPS_DOUBLE</a></div><div class="ttdeci">@ LAMMPS_DOUBLE</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00053">library.h:53</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a8f60df5cd520b67959d22185afcdacc5a6f4597ad5c533e63a78fe90151d4d348"><div class="ttname"><a href="#a8f60df5cd520b67959d22185afcdacc5a6f4597ad5c533e63a78fe90151d4d348">LAMMPS_INT</a></div><div class="ttdeci">@ LAMMPS_INT</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00051">library.h:51</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a8f60df5cd520b67959d22185afcdacc5abfc022018c51b292be00cbc87760ab60"><div class="ttname"><a href="#a8f60df5cd520b67959d22185afcdacc5abfc022018c51b292be00cbc87760ab60">LAMMPS_INT64_2D</a></div><div class="ttdeci">@ LAMMPS_INT64_2D</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00056">library.h:56</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a8f60df5cd520b67959d22185afcdacc5acdc5b9e5771b685c0f5c0377a06380da"><div class="ttname"><a href="#a8f60df5cd520b67959d22185afcdacc5acdc5b9e5771b685c0f5c0377a06380da">LAMMPS_INT_2D</a></div><div class="ttdeci">@ LAMMPS_INT_2D</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00052">library.h:52</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a8f60df5cd520b67959d22185afcdacc5ae8c997bf96560c2d658a3d2a01518d72"><div class="ttname"><a href="#a8f60df5cd520b67959d22185afcdacc5ae8c997bf96560c2d658a3d2a01518d72">LAMMPS_STRING</a></div><div class="ttdeci">@ LAMMPS_STRING</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00057">library.h:57</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0a21501a166632d8dbabb0e8e5447a26" name="a0a21501a166632d8dbabb0e8e5447a26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a21501a166632d8dbabb0e8e5447a26">&#9670;&#160;</a></span>_LMP_ERROR_CONST</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#a0a21501a166632d8dbabb0e8e5447a26">_LMP_ERROR_CONST</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Error codes to select the suitable function in the Error class. </p>
+<p>Must be kept in sync with the equivalent constants in <span class="tt">python/lammps/constants.py</span>, <span class="tt">fortran/lammps.f90</span>, <span class="tt">tools/swig/lammps.i</span>, and <span class="tt">examples/COUPLE/plugin/liblammpsplugin.h</span> </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a0a21501a166632d8dbabb0e8e5447a26a075aa9d1918f3abd34441c5a978df2a0" name="a0a21501a166632d8dbabb0e8e5447a26a075aa9d1918f3abd34441c5a978df2a0"></a>LMP_ERROR_WARNING&#160;</td><td class="fielddoc"><p>call Error::warning() </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a0a21501a166632d8dbabb0e8e5447a26abe11bcded9b243338dd6ee3e80db923f" name="a0a21501a166632d8dbabb0e8e5447a26abe11bcded9b243338dd6ee3e80db923f"></a>LMP_ERROR_ONE&#160;</td><td class="fielddoc"><p>called from one MPI rank </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a0a21501a166632d8dbabb0e8e5447a26a1ef79788d8579adde50ede733fb68e5f" name="a0a21501a166632d8dbabb0e8e5447a26a1ef79788d8579adde50ede733fb68e5f"></a>LMP_ERROR_ALL&#160;</td><td class="fielddoc"><p>called from all MPI ranks </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a0a21501a166632d8dbabb0e8e5447a26a203eb1d032ac5ce0cad7deb634b3635b" name="a0a21501a166632d8dbabb0e8e5447a26a203eb1d032ac5ce0cad7deb634b3635b"></a>LMP_ERROR_WORLD&#160;</td><td class="fielddoc"><p>error on Comm::world </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a0a21501a166632d8dbabb0e8e5447a26a12d5d8e53105a4802eb80c80a5de4710" name="a0a21501a166632d8dbabb0e8e5447a26a12d5d8e53105a4802eb80c80a5de4710"></a>LMP_ERROR_UNIVERSE&#160;</td><td class="fielddoc"><p>error on Comm::universe </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="library_8h_source.html#l00096">96</a> of file <a class="el" href="library_8h_source.html">library.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   96</span>                      {</div>
+<div class="line"><span class="lineno">   97</span>  <a class="code hl_enumvalue" href="#a0a21501a166632d8dbabb0e8e5447a26a075aa9d1918f3abd34441c5a978df2a0">LMP_ERROR_WARNING</a> = 0, </div>
+<div class="line"><span class="lineno">   98</span>  <a class="code hl_enumvalue" href="#a0a21501a166632d8dbabb0e8e5447a26abe11bcded9b243338dd6ee3e80db923f">LMP_ERROR_ONE</a> = 1,     </div>
+<div class="line"><span class="lineno">   99</span>  <a class="code hl_enumvalue" href="#a0a21501a166632d8dbabb0e8e5447a26a1ef79788d8579adde50ede733fb68e5f">LMP_ERROR_ALL</a> = 2,     </div>
+<div class="line"><span class="lineno">  100</span>  <a class="code hl_enumvalue" href="#a0a21501a166632d8dbabb0e8e5447a26a203eb1d032ac5ce0cad7deb634b3635b">LMP_ERROR_WORLD</a> = 4,   </div>
+<div class="line"><span class="lineno">  101</span>  <a class="code hl_enumvalue" href="#a0a21501a166632d8dbabb0e8e5447a26a12d5d8e53105a4802eb80c80a5de4710">LMP_ERROR_UNIVERSE</a> = 8 </div>
+<div class="line"><span class="lineno">  102</span>};</div>
+<div class="ttc" id="alibrary_8h_html_a0a21501a166632d8dbabb0e8e5447a26a075aa9d1918f3abd34441c5a978df2a0"><div class="ttname"><a href="#a0a21501a166632d8dbabb0e8e5447a26a075aa9d1918f3abd34441c5a978df2a0">LMP_ERROR_WARNING</a></div><div class="ttdeci">@ LMP_ERROR_WARNING</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00097">library.h:97</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a0a21501a166632d8dbabb0e8e5447a26a12d5d8e53105a4802eb80c80a5de4710"><div class="ttname"><a href="#a0a21501a166632d8dbabb0e8e5447a26a12d5d8e53105a4802eb80c80a5de4710">LMP_ERROR_UNIVERSE</a></div><div class="ttdeci">@ LMP_ERROR_UNIVERSE</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00101">library.h:101</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a0a21501a166632d8dbabb0e8e5447a26a1ef79788d8579adde50ede733fb68e5f"><div class="ttname"><a href="#a0a21501a166632d8dbabb0e8e5447a26a1ef79788d8579adde50ede733fb68e5f">LMP_ERROR_ALL</a></div><div class="ttdeci">@ LMP_ERROR_ALL</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00099">library.h:99</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a0a21501a166632d8dbabb0e8e5447a26a203eb1d032ac5ce0cad7deb634b3635b"><div class="ttname"><a href="#a0a21501a166632d8dbabb0e8e5447a26a203eb1d032ac5ce0cad7deb634b3635b">LMP_ERROR_WORLD</a></div><div class="ttdeci">@ LMP_ERROR_WORLD</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00100">library.h:100</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a0a21501a166632d8dbabb0e8e5447a26abe11bcded9b243338dd6ee3e80db923f"><div class="ttname"><a href="#a0a21501a166632d8dbabb0e8e5447a26abe11bcded9b243338dd6ee3e80db923f">LMP_ERROR_ONE</a></div><div class="ttdeci">@ LMP_ERROR_ONE</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00098">library.h:98</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af78e950523b27d0aa9b74ccf93666d36" name="af78e950523b27d0aa9b74ccf93666d36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af78e950523b27d0aa9b74ccf93666d36">&#9670;&#160;</a></span>_LMP_STYLE_CONST</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#af78e950523b27d0aa9b74ccf93666d36">_LMP_STYLE_CONST</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Style constants for extracting data from computes and fixes. </p>
+<p>Must be kept in sync with the equivalent constants in <span class="tt">python/lammps/constants.py</span>, <span class="tt">fortran/lammps.f90</span>, <span class="tt">tools/swig/lammps.i</span>, and <span class="tt">examples/COUPLE/plugin/liblammpsplugin.h</span> </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="af78e950523b27d0aa9b74ccf93666d36a5d9f763d2a7c13c4aea83405aaf4b3f3" name="af78e950523b27d0aa9b74ccf93666d36a5d9f763d2a7c13c4aea83405aaf4b3f3"></a>LMP_STYLE_GLOBAL&#160;</td><td class="fielddoc"><p>return global data </p>
+</td></tr>
+<tr><td class="fieldname"><a id="af78e950523b27d0aa9b74ccf93666d36aa1e72b0a28e28261262774733cdbadfa" name="af78e950523b27d0aa9b74ccf93666d36aa1e72b0a28e28261262774733cdbadfa"></a>LMP_STYLE_ATOM&#160;</td><td class="fielddoc"><p>return per-atom data </p>
+</td></tr>
+<tr><td class="fieldname"><a id="af78e950523b27d0aa9b74ccf93666d36a9b74ce240cd632e21f8c1a5a1cf07ed0" name="af78e950523b27d0aa9b74ccf93666d36a9b74ce240cd632e21f8c1a5a1cf07ed0"></a>LMP_STYLE_LOCAL&#160;</td><td class="fielddoc"><p>return local data </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="library_8h_source.html#l00067">67</a> of file <a class="el" href="library_8h_source.html">library.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   67</span>                      {</div>
+<div class="line"><span class="lineno">   68</span>  <a class="code hl_enumvalue" href="#af78e950523b27d0aa9b74ccf93666d36a5d9f763d2a7c13c4aea83405aaf4b3f3">LMP_STYLE_GLOBAL</a> = 0, </div>
+<div class="line"><span class="lineno">   69</span>  <a class="code hl_enumvalue" href="#af78e950523b27d0aa9b74ccf93666d36aa1e72b0a28e28261262774733cdbadfa">LMP_STYLE_ATOM</a> = 1,   </div>
+<div class="line"><span class="lineno">   70</span>  <a class="code hl_enumvalue" href="#af78e950523b27d0aa9b74ccf93666d36a9b74ce240cd632e21f8c1a5a1cf07ed0">LMP_STYLE_LOCAL</a> = 2   </div>
+<div class="line"><span class="lineno">   71</span>};</div>
+<div class="ttc" id="alibrary_8h_html_af78e950523b27d0aa9b74ccf93666d36a5d9f763d2a7c13c4aea83405aaf4b3f3"><div class="ttname"><a href="#af78e950523b27d0aa9b74ccf93666d36a5d9f763d2a7c13c4aea83405aaf4b3f3">LMP_STYLE_GLOBAL</a></div><div class="ttdeci">@ LMP_STYLE_GLOBAL</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00068">library.h:68</a></div></div>
+<div class="ttc" id="alibrary_8h_html_af78e950523b27d0aa9b74ccf93666d36a9b74ce240cd632e21f8c1a5a1cf07ed0"><div class="ttname"><a href="#af78e950523b27d0aa9b74ccf93666d36a9b74ce240cd632e21f8c1a5a1cf07ed0">LMP_STYLE_LOCAL</a></div><div class="ttdeci">@ LMP_STYLE_LOCAL</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00070">library.h:70</a></div></div>
+<div class="ttc" id="alibrary_8h_html_af78e950523b27d0aa9b74ccf93666d36aa1e72b0a28e28261262774733cdbadfa"><div class="ttname"><a href="#af78e950523b27d0aa9b74ccf93666d36aa1e72b0a28e28261262774733cdbadfa">LMP_STYLE_ATOM</a></div><div class="ttdeci">@ LMP_STYLE_ATOM</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00069">library.h:69</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a30cd6a0606720be7addec2816760879e" name="a30cd6a0606720be7addec2816760879e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30cd6a0606720be7addec2816760879e">&#9670;&#160;</a></span>_LMP_TYPE_CONST</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#a30cd6a0606720be7addec2816760879e">_LMP_TYPE_CONST</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Type and size constants for extracting data from computes and fixes. </p>
+<p>Must be kept in sync with the equivalent constants in <span class="tt">python/lammps/constants.py</span>, <span class="tt">fortran/lammps.f90</span>, <span class="tt">tools/swig/lammps.i</span>, and <span class="tt">examples/COUPLE/plugin/liblammpsplugin.h</span> </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a30cd6a0606720be7addec2816760879ea3a0d5e6c49cc929d953b366ed58c821b" name="a30cd6a0606720be7addec2816760879ea3a0d5e6c49cc929d953b366ed58c821b"></a>LMP_TYPE_SCALAR&#160;</td><td class="fielddoc"><p>return scalar </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30cd6a0606720be7addec2816760879ead7beec11786a3dc637fcdd2ac62506e8" name="a30cd6a0606720be7addec2816760879ead7beec11786a3dc637fcdd2ac62506e8"></a>LMP_TYPE_VECTOR&#160;</td><td class="fielddoc"><p>return vector </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30cd6a0606720be7addec2816760879eaaacd44f7a32b76b06051cb01ff40451a" name="a30cd6a0606720be7addec2816760879eaaacd44f7a32b76b06051cb01ff40451a"></a>LMP_TYPE_ARRAY&#160;</td><td class="fielddoc"><p>return array </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30cd6a0606720be7addec2816760879eab7e39a6a361f8bc210064c9d853b4ded" name="a30cd6a0606720be7addec2816760879eab7e39a6a361f8bc210064c9d853b4ded"></a>LMP_SIZE_VECTOR&#160;</td><td class="fielddoc"><p>return length of vector </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30cd6a0606720be7addec2816760879eaa65d78d0215fbb5d1f8cf6dfa05ed485" name="a30cd6a0606720be7addec2816760879eaa65d78d0215fbb5d1f8cf6dfa05ed485"></a>LMP_SIZE_ROWS&#160;</td><td class="fielddoc"><p>return number of rows </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a30cd6a0606720be7addec2816760879ea0213053b1c6d4283bb6d662a00fecc16" name="a30cd6a0606720be7addec2816760879ea0213053b1c6d4283bb6d662a00fecc16"></a>LMP_SIZE_COLS&#160;</td><td class="fielddoc"><p>return number of columns </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="library_8h_source.html#l00080">80</a> of file <a class="el" href="library_8h_source.html">library.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   80</span>                     {</div>
+<div class="line"><span class="lineno">   81</span>  <a class="code hl_enumvalue" href="#a30cd6a0606720be7addec2816760879ea3a0d5e6c49cc929d953b366ed58c821b">LMP_TYPE_SCALAR</a> = 0, </div>
+<div class="line"><span class="lineno">   82</span>  <a class="code hl_enumvalue" href="#a30cd6a0606720be7addec2816760879ead7beec11786a3dc637fcdd2ac62506e8">LMP_TYPE_VECTOR</a> = 1, </div>
+<div class="line"><span class="lineno">   83</span>  <a class="code hl_enumvalue" href="#a30cd6a0606720be7addec2816760879eaaacd44f7a32b76b06051cb01ff40451a">LMP_TYPE_ARRAY</a> = 2,  </div>
+<div class="line"><span class="lineno">   84</span>  <a class="code hl_enumvalue" href="#a30cd6a0606720be7addec2816760879eab7e39a6a361f8bc210064c9d853b4ded">LMP_SIZE_VECTOR</a> = 3, </div>
+<div class="line"><span class="lineno">   85</span>  <a class="code hl_enumvalue" href="#a30cd6a0606720be7addec2816760879eaa65d78d0215fbb5d1f8cf6dfa05ed485">LMP_SIZE_ROWS</a> = 4,   </div>
+<div class="line"><span class="lineno">   86</span>  <a class="code hl_enumvalue" href="#a30cd6a0606720be7addec2816760879ea0213053b1c6d4283bb6d662a00fecc16">LMP_SIZE_COLS</a> = 5    </div>
+<div class="line"><span class="lineno">   87</span>};</div>
+<div class="ttc" id="alibrary_8h_html_a30cd6a0606720be7addec2816760879ea0213053b1c6d4283bb6d662a00fecc16"><div class="ttname"><a href="#a30cd6a0606720be7addec2816760879ea0213053b1c6d4283bb6d662a00fecc16">LMP_SIZE_COLS</a></div><div class="ttdeci">@ LMP_SIZE_COLS</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00086">library.h:86</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a30cd6a0606720be7addec2816760879ea3a0d5e6c49cc929d953b366ed58c821b"><div class="ttname"><a href="#a30cd6a0606720be7addec2816760879ea3a0d5e6c49cc929d953b366ed58c821b">LMP_TYPE_SCALAR</a></div><div class="ttdeci">@ LMP_TYPE_SCALAR</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00081">library.h:81</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a30cd6a0606720be7addec2816760879eaa65d78d0215fbb5d1f8cf6dfa05ed485"><div class="ttname"><a href="#a30cd6a0606720be7addec2816760879eaa65d78d0215fbb5d1f8cf6dfa05ed485">LMP_SIZE_ROWS</a></div><div class="ttdeci">@ LMP_SIZE_ROWS</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00085">library.h:85</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a30cd6a0606720be7addec2816760879eaaacd44f7a32b76b06051cb01ff40451a"><div class="ttname"><a href="#a30cd6a0606720be7addec2816760879eaaacd44f7a32b76b06051cb01ff40451a">LMP_TYPE_ARRAY</a></div><div class="ttdeci">@ LMP_TYPE_ARRAY</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00083">library.h:83</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a30cd6a0606720be7addec2816760879eab7e39a6a361f8bc210064c9d853b4ded"><div class="ttname"><a href="#a30cd6a0606720be7addec2816760879eab7e39a6a361f8bc210064c9d853b4ded">LMP_SIZE_VECTOR</a></div><div class="ttdeci">@ LMP_SIZE_VECTOR</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00084">library.h:84</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a30cd6a0606720be7addec2816760879ead7beec11786a3dc637fcdd2ac62506e8"><div class="ttname"><a href="#a30cd6a0606720be7addec2816760879ead7beec11786a3dc637fcdd2ac62506e8">LMP_TYPE_VECTOR</a></div><div class="ttdeci">@ LMP_TYPE_VECTOR</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00082">library.h:82</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a09d7d9d1e5512d11257c5b6fce67ee37" name="a09d7d9d1e5512d11257c5b6fce67ee37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09d7d9d1e5512d11257c5b6fce67ee37">&#9670;&#160;</a></span>_LMP_VAR_CONST</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="#a09d7d9d1e5512d11257c5b6fce67ee37">_LMP_VAR_CONST</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Variable style constants for extracting data from variables. </p>
+<p>Must be kept in sync with the equivalent constants in <span class="tt">python/lammps/constants.py</span>, <span class="tt">fortran/lammps.f90</span>, <span class="tt">tools/swig/lammps.i</span>, and <span class="tt">examples/COUPLE/plugin/liblammpsplugin.h</span> </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a09d7d9d1e5512d11257c5b6fce67ee37aeb6a1c0a08cdfb496bcaef2cc37d5047" name="a09d7d9d1e5512d11257c5b6fce67ee37aeb6a1c0a08cdfb496bcaef2cc37d5047"></a>LMP_VAR_EQUAL&#160;</td><td class="fielddoc"><p>compatible with equal-style variables </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a09d7d9d1e5512d11257c5b6fce67ee37a4a336ec13f20754d421f7d0d218cc1a4" name="a09d7d9d1e5512d11257c5b6fce67ee37a4a336ec13f20754d421f7d0d218cc1a4"></a>LMP_VAR_ATOM&#160;</td><td class="fielddoc"><p>compatible with atom-style variables </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a09d7d9d1e5512d11257c5b6fce67ee37a381da764a4e3a5f1bc183cc9905be43c" name="a09d7d9d1e5512d11257c5b6fce67ee37a381da764a4e3a5f1bc183cc9905be43c"></a>LMP_VAR_VECTOR&#160;</td><td class="fielddoc"><p>compatible with vector-style variables </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a09d7d9d1e5512d11257c5b6fce67ee37a52551a127731cf3f7e193b9d1d83e6e8" name="a09d7d9d1e5512d11257c5b6fce67ee37a52551a127731cf3f7e193b9d1d83e6e8"></a>LMP_VAR_STRING&#160;</td><td class="fielddoc"><p>return value will be a string (catch-all) </p>
+</td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="library_8h_source.html#l00111">111</a> of file <a class="el" href="library_8h_source.html">library.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  111</span>                    {</div>
+<div class="line"><span class="lineno">  112</span>  <a class="code hl_enumvalue" href="#a09d7d9d1e5512d11257c5b6fce67ee37aeb6a1c0a08cdfb496bcaef2cc37d5047">LMP_VAR_EQUAL</a> = 0,  </div>
+<div class="line"><span class="lineno">  113</span>  <a class="code hl_enumvalue" href="#a09d7d9d1e5512d11257c5b6fce67ee37a4a336ec13f20754d421f7d0d218cc1a4">LMP_VAR_ATOM</a> = 1,   </div>
+<div class="line"><span class="lineno">  114</span>  <a class="code hl_enumvalue" href="#a09d7d9d1e5512d11257c5b6fce67ee37a381da764a4e3a5f1bc183cc9905be43c">LMP_VAR_VECTOR</a> = 2, </div>
+<div class="line"><span class="lineno">  115</span>  <a class="code hl_enumvalue" href="#a09d7d9d1e5512d11257c5b6fce67ee37a52551a127731cf3f7e193b9d1d83e6e8">LMP_VAR_STRING</a> = 3  </div>
+<div class="line"><span class="lineno">  116</span>};</div>
+<div class="ttc" id="alibrary_8h_html_a09d7d9d1e5512d11257c5b6fce67ee37a381da764a4e3a5f1bc183cc9905be43c"><div class="ttname"><a href="#a09d7d9d1e5512d11257c5b6fce67ee37a381da764a4e3a5f1bc183cc9905be43c">LMP_VAR_VECTOR</a></div><div class="ttdeci">@ LMP_VAR_VECTOR</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00114">library.h:114</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a09d7d9d1e5512d11257c5b6fce67ee37a4a336ec13f20754d421f7d0d218cc1a4"><div class="ttname"><a href="#a09d7d9d1e5512d11257c5b6fce67ee37a4a336ec13f20754d421f7d0d218cc1a4">LMP_VAR_ATOM</a></div><div class="ttdeci">@ LMP_VAR_ATOM</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00113">library.h:113</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a09d7d9d1e5512d11257c5b6fce67ee37a52551a127731cf3f7e193b9d1d83e6e8"><div class="ttname"><a href="#a09d7d9d1e5512d11257c5b6fce67ee37a52551a127731cf3f7e193b9d1d83e6e8">LMP_VAR_STRING</a></div><div class="ttdeci">@ LMP_VAR_STRING</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00115">library.h:115</a></div></div>
+<div class="ttc" id="alibrary_8h_html_a09d7d9d1e5512d11257c5b6fce67ee37aeb6a1c0a08cdfb496bcaef2cc37d5047"><div class="ttname"><a href="#a09d7d9d1e5512d11257c5b6fce67ee37aeb6a1c0a08cdfb496bcaef2cc37d5047">LMP_VAR_EQUAL</a></div><div class="ttdeci">@ LMP_VAR_EQUAL</div><div class="ttdef"><b>Definition</b> <a href="library_8h_source.html#l00112">library.h:112</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a75570a623be78c153a75eb533a0b65d2" name="a75570a623be78c153a75eb533a0b65d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75570a623be78c153a75eb533a0b65d2">&#9670;&#160;</a></span>lammps_close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_close </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a48721b1903a79541cb680dabea9b84d5" name="a48721b1903a79541cb680dabea9b84d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48721b1903a79541cb680dabea9b84d5">&#9670;&#160;</a></span>lammps_command()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char * lammps_command </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>cmd</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab542f51c42bcf8e39b64722ffa426890" name="ab542f51c42bcf8e39b64722ffa426890"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab542f51c42bcf8e39b64722ffa426890">&#9670;&#160;</a></span>lammps_commands_list()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_commands_list </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ncmd</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char **</td>          <td class="paramname"><span class="paramname"><em>cmds</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a82b8d3fb9db7e0a834f6da0996e61d6b" name="a82b8d3fb9db7e0a834f6da0996e61d6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82b8d3fb9db7e0a834f6da0996e61d6b">&#9670;&#160;</a></span>lammps_commands_string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_commands_string </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>str</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a503c6feaadbab30ac00b978fcf199399" name="a503c6feaadbab30ac00b978fcf199399"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a503c6feaadbab30ac00b978fcf199399">&#9670;&#160;</a></span>lammps_config_accelerator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_config_accelerator </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ade5f1cc597079d8cb32a9765cbfff44c" name="ade5f1cc597079d8cb32a9765cbfff44c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade5f1cc597079d8cb32a9765cbfff44c">&#9670;&#160;</a></span>lammps_config_has_exceptions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_config_has_exceptions </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acbbc33bf81d78002a4ed94e2b7ff8f06" name="acbbc33bf81d78002a4ed94e2b7ff8f06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbbc33bf81d78002a4ed94e2b7ff8f06">&#9670;&#160;</a></span>lammps_config_has_ffmpeg_support()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_config_has_ffmpeg_support </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0bd41d39a5dd5992d614e150b6d88a5f" name="a0bd41d39a5dd5992d614e150b6d88a5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bd41d39a5dd5992d614e150b6d88a5f">&#9670;&#160;</a></span>lammps_config_has_gzip_support()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_config_has_gzip_support </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac3835bbc1c6797e56f8aa47443d11af6" name="ac3835bbc1c6797e56f8aa47443d11af6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3835bbc1c6797e56f8aa47443d11af6">&#9670;&#160;</a></span>lammps_config_has_jpeg_support()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_config_has_jpeg_support </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ada45e7d079fddf8400e31cc98710b5f8" name="ada45e7d079fddf8400e31cc98710b5f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada45e7d079fddf8400e31cc98710b5f8">&#9670;&#160;</a></span>lammps_config_has_mpi_support()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_config_has_mpi_support </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adca5959e5b824ab7413c74ee05eb9f0d" name="adca5959e5b824ab7413c74ee05eb9f0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adca5959e5b824ab7413c74ee05eb9f0d">&#9670;&#160;</a></span>lammps_config_has_package()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_config_has_package </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9de61d7686a3db2344fb94a4a22c67e4" name="a9de61d7686a3db2344fb94a4a22c67e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9de61d7686a3db2344fb94a4a22c67e4">&#9670;&#160;</a></span>lammps_config_has_png_support()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_config_has_png_support </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a233aefab279fd9290f14fae1e4c16be4" name="a233aefab279fd9290f14fae1e4c16be4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a233aefab279fd9290f14fae1e4c16be4">&#9670;&#160;</a></span>lammps_config_package_count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_config_package_count </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aca1da31b8eb4342ee1eff02d721fa48d" name="aca1da31b8eb4342ee1eff02d721fa48d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca1da31b8eb4342ee1eff02d721fa48d">&#9670;&#160;</a></span>lammps_config_package_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_config_package_name </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeebd5ebadb0c014f80e2c25dd369ff44" name="aeebd5ebadb0c014f80e2c25dd369ff44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeebd5ebadb0c014f80e2c25dd369ff44">&#9670;&#160;</a></span>lammps_create_atoms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_create_atoms </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>n</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em>id</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em>type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>v</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em>image</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>bexpand</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae774bc2a40ffa11e7a7aecfac7a9c3c6" name="ae774bc2a40ffa11e7a7aecfac7a9c3c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae774bc2a40ffa11e7a7aecfac7a9c3c6">&#9670;&#160;</a></span>lammps_decode_image_flags()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_decode_image_flags </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>image</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *</td>          <td class="paramname"><span class="paramname"><em>flags</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad12aad3df456f3c85418ff8af6e55e10" name="ad12aad3df456f3c85418ff8af6e55e10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad12aad3df456f3c85418ff8af6e55e10">&#9670;&#160;</a></span>lammps_encode_image_flags()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_encode_image_flags </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ix</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>iy</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>iz</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad365a1950c1e4e6bf21e414cab86a57a" name="ad365a1950c1e4e6bf21e414cab86a57a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad365a1950c1e4e6bf21e414cab86a57a">&#9670;&#160;</a></span>lammps_error()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_error </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>error_type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>error_text</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa195b895bff9cd756ec18ca2e9cab90d" name="aa195b895bff9cd756ec18ca2e9cab90d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa195b895bff9cd756ec18ca2e9cab90d">&#9670;&#160;</a></span>lammps_extract_atom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * lammps_extract_atom </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aed36a77c70d91c9497b5eee075d18aab" name="aed36a77c70d91c9497b5eee075d18aab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed36a77c70d91c9497b5eee075d18aab">&#9670;&#160;</a></span>lammps_extract_atom_datatype()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_extract_atom_datatype </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5280ea3a305969261faa1a0258b9c7f9" name="a5280ea3a305969261faa1a0258b9c7f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5280ea3a305969261faa1a0258b9c7f9">&#9670;&#160;</a></span>lammps_extract_box()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_extract_box </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>boxlo</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>boxhi</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>xy</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>yz</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>xz</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *</td>          <td class="paramname"><span class="paramname"><em>pflags</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *</td>          <td class="paramname"><span class="paramname"><em>boxflag</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2e90e8ad6e8a2566e3fe7970c1965567" name="a2e90e8ad6e8a2566e3fe7970c1965567"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e90e8ad6e8a2566e3fe7970c1965567">&#9670;&#160;</a></span>lammps_extract_compute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * lammps_extract_compute </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>id</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>style</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>type</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa7a9a4e488fa0d717a9bfb637f2c6a4e" name="aa7a9a4e488fa0d717a9bfb637f2c6a4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7a9a4e488fa0d717a9bfb637f2c6a4e">&#9670;&#160;</a></span>lammps_extract_fix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * lammps_extract_fix </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>id</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>style</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nrow</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ncol</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae1abe908414c1dbb01548581f8fc74a9" name="ae1abe908414c1dbb01548581f8fc74a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1abe908414c1dbb01548581f8fc74a9">&#9670;&#160;</a></span>lammps_extract_global()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * lammps_extract_global </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7a5da49a662d7cc3e8eaa79d7cc344e0" name="a7a5da49a662d7cc3e8eaa79d7cc344e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a5da49a662d7cc3e8eaa79d7cc344e0">&#9670;&#160;</a></span>lammps_extract_global_datatype()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_extract_global_datatype </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aec668a9f577e41295afb673f7edc99da" name="aec668a9f577e41295afb673f7edc99da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec668a9f577e41295afb673f7edc99da">&#9670;&#160;</a></span>lammps_extract_setting()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_extract_setting </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>keyword</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a95cb08b988b86d74a9fded90c47ad5a1" name="a95cb08b988b86d74a9fded90c47ad5a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95cb08b988b86d74a9fded90c47ad5a1">&#9670;&#160;</a></span>lammps_extract_variable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * lammps_extract_variable </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>group</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5725944733b98157d3f6993c2f6499ce" name="a5725944733b98157d3f6993c2f6499ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5725944733b98157d3f6993c2f6499ce">&#9670;&#160;</a></span>lammps_extract_variable_datatype()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_extract_variable_datatype </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a76c1ce1af98c09978578c7a94d778c0b" name="a76c1ce1af98c09978578c7a94d778c0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76c1ce1af98c09978578c7a94d778c0b">&#9670;&#160;</a></span>lammps_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_file </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>file</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a04b80d34fe95f6931d9f6906a2c7f869" name="a04b80d34fe95f6931d9f6906a2c7f869"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04b80d34fe95f6931d9f6906a2c7f869">&#9670;&#160;</a></span>lammps_find_compute_neighlist()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_find_compute_neighlist </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>id</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>request</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a51652806cc5a984712a87de083396a48" name="a51652806cc5a984712a87de083396a48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51652806cc5a984712a87de083396a48">&#9670;&#160;</a></span>lammps_find_fix_neighlist()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_find_fix_neighlist </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>id</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>request</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a859b206fea42bc2db03c992acc478cbc" name="a859b206fea42bc2db03c992acc478cbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a859b206fea42bc2db03c992acc478cbc">&#9670;&#160;</a></span>lammps_find_pair_neighlist()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_find_pair_neighlist </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>style</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>exact</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>nsub</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>request</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3e5a4c1f126c6b6cdd756f99764e69d7" name="a3e5a4c1f126c6b6cdd756f99764e69d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e5a4c1f126c6b6cdd756f99764e69d7">&#9670;&#160;</a></span>lammps_fix_external_get_force()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double ** lammps_fix_external_get_force </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>id</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6ac4888e2c82846dcb9b1d013ef90f96" name="a6ac4888e2c82846dcb9b1d013ef90f96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ac4888e2c82846dcb9b1d013ef90f96">&#9670;&#160;</a></span>lammps_fix_external_set_energy_global()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_fix_external_set_energy_global </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>id</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>eng</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aac2c2027c2779613dfe2ffa47205bbdf" name="aac2c2027c2779613dfe2ffa47205bbdf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac2c2027c2779613dfe2ffa47205bbdf">&#9670;&#160;</a></span>lammps_fix_external_set_energy_peratom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_fix_external_set_energy_peratom </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>id</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>eng</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a627a37da0a0f1cd076cfac35ea488c18" name="a627a37da0a0f1cd076cfac35ea488c18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a627a37da0a0f1cd076cfac35ea488c18">&#9670;&#160;</a></span>lammps_fix_external_set_vector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_fix_external_set_vector </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>id</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>idx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>val</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a65eccbce0a2c1154051c56296acc7598" name="a65eccbce0a2c1154051c56296acc7598"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65eccbce0a2c1154051c56296acc7598">&#9670;&#160;</a></span>lammps_fix_external_set_vector_length()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_fix_external_set_vector_length </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>id</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>len</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af707a45ddf44addec9b8345546deb83e" name="af707a45ddf44addec9b8345546deb83e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af707a45ddf44addec9b8345546deb83e">&#9670;&#160;</a></span>lammps_fix_external_set_virial_global()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_fix_external_set_virial_global </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>id</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>virial</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae85311d7c556c3c7aace6e329ab352a2" name="ae85311d7c556c3c7aace6e329ab352a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae85311d7c556c3c7aace6e329ab352a2">&#9670;&#160;</a></span>lammps_fix_external_set_virial_peratom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_fix_external_set_virial_peratom </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>id</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double **</td>          <td class="paramname"><span class="paramname"><em>virial</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af54eb973fef3aa2bfe7708a0cf1139ff" name="af54eb973fef3aa2bfe7708a0cf1139ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af54eb973fef3aa2bfe7708a0cf1139ff">&#9670;&#160;</a></span>lammps_flush_buffers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_flush_buffers </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>ptr</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a298dbff8f43185d82bcbf0a8d76b9aa9" name="a298dbff8f43185d82bcbf0a8d76b9aa9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a298dbff8f43185d82bcbf0a8d76b9aa9">&#9670;&#160;</a></span>lammps_force_timeout()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_force_timeout </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa521d27718fc92e9a58a255ae9f9cf87" name="aa521d27718fc92e9a58a255ae9f9cf87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa521d27718fc92e9a58a255ae9f9cf87">&#9670;&#160;</a></span>lammps_free()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_free </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>ptr</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aeaf5356f9fafd2fd9dbab0958a0a8ac3" name="aeaf5356f9fafd2fd9dbab0958a0a8ac3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeaf5356f9fafd2fd9dbab0958a0a8ac3">&#9670;&#160;</a></span>lammps_gather()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_gather </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>count</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6f8c39008d113b5c3450c2cffaadcf3c" name="a6f8c39008d113b5c3450c2cffaadcf3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f8c39008d113b5c3450c2cffaadcf3c">&#9670;&#160;</a></span>lammps_gather_angles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_gather_angles </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad3208ce7d03d54f74573a80565dc335d" name="ad3208ce7d03d54f74573a80565dc335d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3208ce7d03d54f74573a80565dc335d">&#9670;&#160;</a></span>lammps_gather_atoms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_gather_atoms </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>count</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5e433d99895ca2aa9d87843bc7ee49d5" name="a5e433d99895ca2aa9d87843bc7ee49d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e433d99895ca2aa9d87843bc7ee49d5">&#9670;&#160;</a></span>lammps_gather_atoms_concat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_gather_atoms_concat </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>count</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adb2aa14375aa277b1c32ad17a5f4a39f" name="adb2aa14375aa277b1c32ad17a5f4a39f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb2aa14375aa277b1c32ad17a5f4a39f">&#9670;&#160;</a></span>lammps_gather_atoms_subset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_gather_atoms_subset </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>count</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ndata</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *</td>          <td class="paramname"><span class="paramname"><em>ids</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a360d274b56e28d7a9fd0e195ff2171af" name="a360d274b56e28d7a9fd0e195ff2171af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a360d274b56e28d7a9fd0e195ff2171af">&#9670;&#160;</a></span>lammps_gather_bonds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_gather_bonds </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="add32cd75d71123448c752d69d96a9009" name="add32cd75d71123448c752d69d96a9009"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add32cd75d71123448c752d69d96a9009">&#9670;&#160;</a></span>lammps_gather_concat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_gather_concat </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>count</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a93dac1f42646ebfa89521fc77a38a785" name="a93dac1f42646ebfa89521fc77a38a785"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93dac1f42646ebfa89521fc77a38a785">&#9670;&#160;</a></span>lammps_gather_dihedrals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_gather_dihedrals </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abf81ea4427e375c6605fb7362e995b92" name="abf81ea4427e375c6605fb7362e995b92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf81ea4427e375c6605fb7362e995b92">&#9670;&#160;</a></span>lammps_gather_impropers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_gather_impropers </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab098fa5d18996508a54430ff5e3a0faf" name="ab098fa5d18996508a54430ff5e3a0faf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab098fa5d18996508a54430ff5e3a0faf">&#9670;&#160;</a></span>lammps_gather_subset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_gather_subset </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>count</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ndata</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *</td>          <td class="paramname"><span class="paramname"><em>ids</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8439a498ff1b8117a45e705e2a636c18" name="a8439a498ff1b8117a45e705e2a636c18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8439a498ff1b8117a45e705e2a636c18">&#9670;&#160;</a></span>lammps_get_gpu_device_info()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_get_gpu_device_info </td>
+          <td>(</td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>buf_size</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1900bdb6311f7f9649b5c82e20257cff" name="a1900bdb6311f7f9649b5c82e20257cff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1900bdb6311f7f9649b5c82e20257cff">&#9670;&#160;</a></span>lammps_get_last_error_message()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_get_last_error_message </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>buf_size</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a27501b4b00aa53f6621e996e3eeeb149" name="a27501b4b00aa53f6621e996e3eeeb149"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27501b4b00aa53f6621e996e3eeeb149">&#9670;&#160;</a></span>lammps_get_mpi_comm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_get_mpi_comm </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa7d4ad0dc261c21fa41cffa38ea3ac21" name="aa7d4ad0dc261c21fa41cffa38ea3ac21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7d4ad0dc261c21fa41cffa38ea3ac21">&#9670;&#160;</a></span>lammps_get_natoms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double lammps_get_natoms </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae4b6178f693ff83002ee8a1559edd6ed" name="ae4b6178f693ff83002ee8a1559edd6ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4b6178f693ff83002ee8a1559edd6ed">&#9670;&#160;</a></span>lammps_get_os_info()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_get_os_info </td>
+          <td>(</td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>buf_size</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5f54fbac6f7be9c20605c0faf71ec77a" name="a5f54fbac6f7be9c20605c0faf71ec77a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f54fbac6f7be9c20605c0faf71ec77a">&#9670;&#160;</a></span>lammps_get_thermo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double lammps_get_thermo </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>keyword</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6f2f23eeafb8d56983ef90ad55e0c37d" name="a6f2f23eeafb8d56983ef90ad55e0c37d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f2f23eeafb8d56983ef90ad55e0c37d">&#9670;&#160;</a></span>lammps_has_error()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_has_error </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acd3fd9fa79e08b7fb530b51b9ca79c8e" name="acd3fd9fa79e08b7fb530b51b9ca79c8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd3fd9fa79e08b7fb530b51b9ca79c8e">&#9670;&#160;</a></span>lammps_has_gpu_device()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_has_gpu_device </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad1ee62546d5d560747379cba84bea178" name="ad1ee62546d5d560747379cba84bea178"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1ee62546d5d560747379cba84bea178">&#9670;&#160;</a></span>lammps_has_id()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_has_id </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a74aa598ce1e183ed70ce5eabf7202bec" name="a74aa598ce1e183ed70ce5eabf7202bec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74aa598ce1e183ed70ce5eabf7202bec">&#9670;&#160;</a></span>lammps_has_style()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_has_style </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aaa1311b9ce55c53bfae199c2ee9cb955" name="aaa1311b9ce55c53bfae199c2ee9cb955"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa1311b9ce55c53bfae199c2ee9cb955">&#9670;&#160;</a></span>lammps_id_count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_id_count </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a42ba710155bca355ba451fd45dcda0f9" name="a42ba710155bca355ba451fd45dcda0f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42ba710155bca355ba451fd45dcda0f9">&#9670;&#160;</a></span>lammps_id_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_id_name </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a96130bd0ac1fcfbb01f56fe92f8cf7da" name="a96130bd0ac1fcfbb01f56fe92f8cf7da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96130bd0ac1fcfbb01f56fe92f8cf7da">&#9670;&#160;</a></span>lammps_is_running()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_is_running </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a295c98b87692b72b5bf594e7b291905b" name="a295c98b87692b72b5bf594e7b291905b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a295c98b87692b72b5bf594e7b291905b">&#9670;&#160;</a></span>lammps_kokkos_finalize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_kokkos_finalize </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3d51693ba1f7f0cb5b703b1ddead146a" name="a3d51693ba1f7f0cb5b703b1ddead146a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d51693ba1f7f0cb5b703b1ddead146a">&#9670;&#160;</a></span>lammps_last_thermo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * lammps_last_thermo </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>what</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>index</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a40e85a5c09ff9cc7763d119fea9603ec" name="a40e85a5c09ff9cc7763d119fea9603ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40e85a5c09ff9cc7763d119fea9603ec">&#9670;&#160;</a></span>lammps_map_atom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_map_atom </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *</td>          <td class="paramname"><span class="paramname"><em>id</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab1a5d06bc29dd1233cde03c857ff0821" name="ab1a5d06bc29dd1233cde03c857ff0821"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1a5d06bc29dd1233cde03c857ff0821">&#9670;&#160;</a></span>lammps_memory_usage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_memory_usage </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>meminfo</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a181557f91cb6d49ba67083a51cf110dc" name="a181557f91cb6d49ba67083a51cf110dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a181557f91cb6d49ba67083a51cf110dc">&#9670;&#160;</a></span>lammps_mpi_finalize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_mpi_finalize </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afee0113d4bcf1cbe55a8f83176b39b59" name="afee0113d4bcf1cbe55a8f83176b39b59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afee0113d4bcf1cbe55a8f83176b39b59">&#9670;&#160;</a></span>lammps_mpi_init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_mpi_init </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0bd03926cf3a3ebb93311dab400c792c" name="a0bd03926cf3a3ebb93311dab400c792c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bd03926cf3a3ebb93311dab400c792c">&#9670;&#160;</a></span>lammps_neighlist_element_neighbors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_neighlist_element_neighbors </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>idx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>element</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *</td>          <td class="paramname"><span class="paramname"><em>iatom</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *</td>          <td class="paramname"><span class="paramname"><em>numneigh</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int **</td>          <td class="paramname"><span class="paramname"><em>neighbors</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab4cd0310c0638fad6352d0081194bdd8" name="ab4cd0310c0638fad6352d0081194bdd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4cd0310c0638fad6352d0081194bdd8">&#9670;&#160;</a></span>lammps_neighlist_num_elements()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_neighlist_num_elements </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>idx</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a00b91f3fe0d663da088490b873ae80d1" name="a00b91f3fe0d663da088490b873ae80d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00b91f3fe0d663da088490b873ae80d1">&#9670;&#160;</a></span>lammps_open_fortran()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * lammps_open_fortran </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>argc</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char **</td>          <td class="paramname"><span class="paramname"><em>argv</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>f_comm</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2532f747f8b8f91310a03e81b191c85b" name="a2532f747f8b8f91310a03e81b191c85b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2532f747f8b8f91310a03e81b191c85b">&#9670;&#160;</a></span>lammps_open_no_mpi()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * lammps_open_no_mpi </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>argc</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char **</td>          <td class="paramname"><span class="paramname"><em>argv</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void **</td>          <td class="paramname"><span class="paramname"><em>ptr</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad757b2f1e707a1ac0ab59967c9e3bcd0" name="ad757b2f1e707a1ac0ab59967c9e3bcd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad757b2f1e707a1ac0ab59967c9e3bcd0">&#9670;&#160;</a></span>lammps_plugin_count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_plugin_count </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8610437ec2c055efd550d493b9019dab" name="a8610437ec2c055efd550d493b9019dab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8610437ec2c055efd550d493b9019dab">&#9670;&#160;</a></span>lammps_plugin_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_plugin_name </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac696ed37ed39b295adbf05577111da90" name="ac696ed37ed39b295adbf05577111da90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac696ed37ed39b295adbf05577111da90">&#9670;&#160;</a></span>lammps_python_api_version()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_python_api_version </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5d625667e3988ecae35e94490cb5aa8f" name="a5d625667e3988ecae35e94490cb5aa8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d625667e3988ecae35e94490cb5aa8f">&#9670;&#160;</a></span>lammps_python_finalize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_python_finalize </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ada23ca4aacdcc9b5991af9968e0369e8" name="ada23ca4aacdcc9b5991af9968e0369e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada23ca4aacdcc9b5991af9968e0369e8">&#9670;&#160;</a></span>lammps_reset_box()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_reset_box </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>boxlo</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>boxhi</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>xy</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>yz</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>xz</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1251a6d15588762a6810ed4021bfce11" name="a1251a6d15588762a6810ed4021bfce11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1251a6d15588762a6810ed4021bfce11">&#9670;&#160;</a></span>lammps_scatter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_scatter </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>count</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a912e450e211db31d9396ad5f421d500d" name="a912e450e211db31d9396ad5f421d500d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a912e450e211db31d9396ad5f421d500d">&#9670;&#160;</a></span>lammps_scatter_atoms()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_scatter_atoms </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>count</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a42726943d284b0edad9b8f3cd3129398" name="a42726943d284b0edad9b8f3cd3129398"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42726943d284b0edad9b8f3cd3129398">&#9670;&#160;</a></span>lammps_scatter_atoms_subset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_scatter_atoms_subset </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>count</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ndata</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *</td>          <td class="paramname"><span class="paramname"><em>ids</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae379c37f2f8136e130030ddbe832695a" name="ae379c37f2f8136e130030ddbe832695a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae379c37f2f8136e130030ddbe832695a">&#9670;&#160;</a></span>lammps_scatter_subset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_scatter_subset </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>type</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>count</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ndata</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *</td>          <td class="paramname"><span class="paramname"><em>ids</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2b2994fdf05652cb2f3fe2afc4d00d1a" name="a2b2994fdf05652cb2f3fe2afc4d00d1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b2994fdf05652cb2f3fe2afc4d00d1a">&#9670;&#160;</a></span>lammps_set_fix_external_callback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void lammps_set_fix_external_callback </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>id</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a38f369494b0be77168b8d52184c30fcb">FixExternalFnPtr</a></td>          <td class="paramname"><span class="paramname"><em>funcptr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>ptr</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a250fd1b00f6b69daf98cc4a879c78059" name="a250fd1b00f6b69daf98cc4a879c78059"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a250fd1b00f6b69daf98cc4a879c78059">&#9670;&#160;</a></span>lammps_set_internal_variable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_set_internal_variable </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>value</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a540ffa539718883760eb6fafab3627bc" name="a540ffa539718883760eb6fafab3627bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a540ffa539718883760eb6fafab3627bc">&#9670;&#160;</a></span>lammps_set_string_variable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_set_string_variable </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>str</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab3cc202eaec7472181870b4747b3d577" name="ab3cc202eaec7472181870b4747b3d577"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3cc202eaec7472181870b4747b3d577">&#9670;&#160;</a></span>lammps_set_variable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_set_variable </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>str</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aef8b5d9f8c06dc22c55deb9088dbafd6" name="aef8b5d9f8c06dc22c55deb9088dbafd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef8b5d9f8c06dc22c55deb9088dbafd6">&#9670;&#160;</a></span>lammps_style_count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_style_count </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab91b5c7e97982f7a804d8d7cfa0f190a" name="ab91b5c7e97982f7a804d8d7cfa0f190a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab91b5c7e97982f7a804d8d7cfa0f190a">&#9670;&#160;</a></span>lammps_style_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_style_name </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em></em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7d42a4fb49036f76e6042ca8302aa567" name="a7d42a4fb49036f76e6042ca8302aa567"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d42a4fb49036f76e6042ca8302aa567">&#9670;&#160;</a></span>lammps_variable_info()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_variable_info </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>idx</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>buf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>bufsize</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a41f44a4eef975f8a189d3186259a8ef9" name="a41f44a4eef975f8a189d3186259a8ef9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41f44a4eef975f8a189d3186259a8ef9">&#9670;&#160;</a></span>lammps_version()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int lammps_version </td>
+          <td>(</td>
+          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>handle</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="dir_2527c5cc2e6dc8ce970a4d420439d1d9.html">eon</a></li><li class="navelem"><a href="dir_858247b18a1611539d1f444885056636.html">potentials</a></li><li class="navelem"><a href="dir_3ee8f5330fdd41d595e8e0f9e32d594b.html">LAMMPS</a></li><li class="navelem"><a href="library_8h.html">library.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

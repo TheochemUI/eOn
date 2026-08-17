@@ -1,0 +1,562 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/client/ParametersSSOT.cpp Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('ParametersSSOT_8cpp_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">ParametersSSOT.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ParametersSSOT_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">** Apply defaults originating from schema/eon_params.capnp (via codegen).</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">*/</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="ParametersSSOT_8h.html">eon/ParametersSSOT.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="BaseStructures_8h.html">eon/BaseStructures.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="ParametersSSOTDefaults_8h.html">eon/generated/ParametersSSOTDefaults.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;unordered_set&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc_1_1config.html">eonc::config</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">using </span>GD = eonc::params_ssot::GeneratedDefaults;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">// Catalog field index for ssot_has_field (mirrors generated catalog sections).</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">const</span> std::unordered_set&lt;std::string&gt; &amp;field_index() {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>  <span class="keyword">static</span> <span class="keyword">const</span> std::unordered_set&lt;std::string&gt; idx = {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;eon/generated/ParametersSSOTFieldIndex.inc&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  };</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>  <span class="keywordflow">return</span> idx;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><a class="code hl_enumeration" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379">JobType</a> job_from_ssot(std::string_view j) {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;process_search&quot;</span>)</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a9fc45f090022ce2dfd190f63f008f36d">JobType::Process_Search</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;minimization&quot;</span>)</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aace1337f7aedb992174668251cfd946b">JobType::Minimization</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;saddle_search&quot;</span>)</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ab8dec34ded54db4ac86e3883ed47661f">JobType::Saddle_Search</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;basin_hopping&quot;</span>)</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379afd39326af66a5a13a2ea55c6d3bdb3a8">JobType::Basin_Hopping</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;parallel_replica&quot;</span> || j == <span class="stringliteral">&quot;unbiased_parallel_replica&quot;</span>)</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379af076a029e047148cf37c119bd998cedc">JobType::Parallel_Replica</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;nudged_elastic_band&quot;</span>)</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7ce58f798b6fb341e7f66d164a9d4c74">JobType::Nudged_Elastic_Band</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;dynamics&quot;</span> || j == <span class="stringliteral">&quot;molecular_dynamics&quot;</span>)</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a405d9a69e5139b9df0df6b66e18fc9e2">JobType::Dynamics</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;hessian&quot;</span>)</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ac05b513f4ff7ad2680f4528f5c8136b9">JobType::Hessian</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;point&quot;</span>)</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a2a3cd5946cfd317eb99c3d32e35e2d4c">JobType::Point</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;prefactor&quot;</span>)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a6fbb561d946449c7994b2d21a153d22e">JobType::Prefactor</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;monte_carlo&quot;</span>)</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a9de6455dd98217681c11484dd32f373b">JobType::Monte_Carlo</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;structure_comparison&quot;</span>)</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a01dd0e56540fc70c33e9e7c6ee8a030a">JobType::Structure_Comparison</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;gp_surrogate&quot;</span>)</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aaff099e938d23e84611548dcfd6be790">JobType::GP_Surrogate</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;safe_hyperdynamics&quot;</span>)</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a360b447a439813c2804550b27e59a3bf">JobType::Safe_Hyperdynamics</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;tad&quot;</span>)</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7217318fc4a1f9dfcc38a67a97e0ada8">JobType::TAD</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;replica_exchange&quot;</span>)</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7b7087e25ad045bdcc44bcb3fde8cbd9">JobType::Replica_Exchange</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;finite_difference&quot;</span> || j == <span class="stringliteral">&quot;finite_differences&quot;</span>)</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a8e2d35d1e552fb300a8b7b20104946b5">JobType::Finite_Difference</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>  <span class="keywordflow">if</span> (j == <span class="stringliteral">&quot;global_optimization&quot;</span>)</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aa1b95ecf144fcfaa820cc44eb5508d29">JobType::Global_Optimization</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>  <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a9fc45f090022ce2dfd190f63f008f36d">JobType::Process_Search</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><a class="code hl_enumeration" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> pot_from_ssot(std::string_view pot) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>  <span class="keywordflow">if</span> (pot == <span class="stringliteral">&quot;lj&quot;</span>)</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a388d9e1171b3e4aeae9adc4e26ca15ae">PotType::LJ</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>  <span class="keywordflow">if</span> (pot == <span class="stringliteral">&quot;eam_al&quot;</span>)</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ab65e908410eb266ddc3a2ebd0823d20e">PotType::EAM_AL</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>  <span class="keywordflow">if</span> (pot == <span class="stringliteral">&quot;emt&quot;</span>)</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a043a87d3c77eef398c11f7ac3e13cbb9">PotType::EMT</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  <span class="keywordflow">if</span> (pot == <span class="stringliteral">&quot;lammps&quot;</span>)</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2acdbe6663305ad47936de845cc1350d57">PotType::LAMMPS</a>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  <span class="keywordflow">if</span> (pot == <span class="stringliteral">&quot;morse_pt&quot;</span>)</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ae736d948b5e7ace5ddda0e3ff9ee9015">PotType::MORSE_PT</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>  <span class="keywordflow">if</span> (pot == <span class="stringliteral">&quot;metatomic&quot;</span>)</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a2da9f88c4946c305ed6794006f56e8f3">PotType::METATOMIC</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  <span class="keywordflow">if</span> (pot == <span class="stringliteral">&quot;xtb&quot;</span>)</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a1664de04ffa04bc035a8ab84fa11dba4">PotType::XTB</a>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  <span class="keywordflow">if</span> (pot == <span class="stringliteral">&quot;rgpot&quot;</span>)</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a483ab577e2e85e858725c5ee67d8b470">PotType::RGPOT</a>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>  <span class="keywordflow">if</span> (pot == <span class="stringliteral">&quot;ext_pot&quot;</span>)</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2acca9af0728aa14565a927d5f29e51b76">PotType::EXT_POT</a>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>  <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a388d9e1171b3e4aeae9adc4e26ca15ae">PotType::LJ</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><a class="code hl_enumeration" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> opt_from_ssot(std::string_view m) {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>  <span class="keywordflow">if</span> (m == <span class="stringliteral">&quot;cg&quot;</span>)</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">OptType::CG</a>;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>  <span class="keywordflow">if</span> (m == <span class="stringliteral">&quot;lbfgs&quot;</span>)</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c">OptType::LBFGS</a>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>  <span class="keywordflow">if</span> (m == <span class="stringliteral">&quot;qm&quot;</span> || m == <span class="stringliteral">&quot;quickmin&quot;</span>)</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ad86cb697d0458a9fbfbadb6cd1e9e936">OptType::QM</a>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>  <span class="keywordflow">if</span> (m == <span class="stringliteral">&quot;sd&quot;</span>)</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0">OptType::SD</a>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>  <span class="keywordflow">if</span> (m == <span class="stringliteral">&quot;fire&quot;</span>)</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ab7426fb9c3932995306fceba2874d057">OptType::FIRE</a>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>  <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">OptType::CG</a>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>}</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>} <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="foldopen" id="foldopen00102" data-start="{" data-end="}">
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1config.html#a26678e5e35275ab0aa6eb96a1f1b3012">  102</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeonc_1_1config.html#a26678e5e35275ab0aa6eb96a1f1b3012">apply_ssot_defaults</a>(<a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;p) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#a3b0c080415611d16523e196ab127d846">job</a> = job_from_ssot(GD::MAIN_JOB);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#aead1dd4e662d598764067c2e67b5058d">randomSeed</a> = GD::MAIN_RANDOM_SEED;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#a41cc292ecf79c5c916ae324987a486ce">temperature</a> = GD::MAIN_TEMPERATURE;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#a92c27036ffcab9f5e5d46a1cd0c99c30">quiet</a> = GD::MAIN_QUIET;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#a01c374e2cfab6bc1effb1b18fe1fec6c">writeLog</a> = GD::MAIN_WRITE_LOG;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#abe2492109e4801caeafa033438ec7024">checkpoint</a> = GD::MAIN_CHECKPOINT;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#a26a797bbd9625b8de33719528cc0a04a">iniFilename</a> = std::string(GD::MAIN_INI_FILENAME);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#a271433b36fc5302bf9000d0d137de8a4">conFilename</a> = std::string(GD::MAIN_CON_FILENAME);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#ab526c658d542548a060a20728af4afe9">finiteDifference</a> = GD::MAIN_FINITE_DIFFERENCE;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#afe3045b1d6ff3d93de5633665bac8ea9">maxForceCalls</a> = GD::MAIN_MAX_FORCE_CALLS;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#af396c8263d5816e84a342915cefff156">removeNetForce</a> = GD::MAIN_REMOVE_NET_FORCE;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#add418683af3de6dce1aeb37b8de6987f">writeConForces</a> = GD::MAIN_WRITE_CON_FORCES;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1main__options__t.html#a511691b8d4f5ae32aa237367a5ca2ff0">parallel</a> = GD::MAIN_PARALLEL;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">potential_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1potential__options__t.html#a8c62d8e8c2374eff1672e72ec2bae1c8">potential</a> = pot_from_ssot(GD::POTENTIAL_POTENTIAL);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">potential_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1potential__options__t.html#ab83399b55759769183b0c885c90535f6">MPIPollPeriod</a> = GD::POTENTIAL_MPI_POLL_PERIOD;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">potential_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1potential__options__t.html#a5e49c818acfac15e518ab9803327e1d0">LAMMPSLogging</a> = GD::POTENTIAL_LAMMPS_LOGGING;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">potential_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1potential__options__t.html#a663d97dfac589d4cb1158b68d8eaa0f7">LAMMPSThreads</a> = GD::POTENTIAL_LAMMPS_THREADS;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">potential_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1potential__options__t.html#a6f8641a6b16d5627c361d4e07b0c58ff">EMTRasmussen</a> = GD::POTENTIAL_EMT_RASMUSSEN;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">potential_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1potential__options__t.html#ade27820beea97bb7595f4b20f5d43437">LogPotential</a> = GD::POTENTIAL_LOG_POTENTIAL;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">potential_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1potential__options__t.html#acaed7dcc30ec1af72ef09ebbbca88db5">extPotPath</a> = std::string(GD::POTENTIAL_EXT_POT_PATH);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">potential_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1potential__options__t.html#a71f370d93e841300288cb0122f182172">potentialsPath</a> =</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>      std::string(GD::POTENTIAL_POTENTIALS_PATH);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a6a05f3bbfd2d579807f438e91880ba95">structure_comparison_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html#a54e5cc574511db990f1f974cb8193499">distance_difference</a> =</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>      GD::STRUCTURE_COMPARISON_DISTANCE_DIFFERENCE;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a6a05f3bbfd2d579807f438e91880ba95">structure_comparison_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html#aa75e996aeffa00028c0be542ce3bd8e8">neighbor_cutoff</a> =</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>      GD::STRUCTURE_COMPARISON_NEIGHBOR_CUTOFF;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a6a05f3bbfd2d579807f438e91880ba95">structure_comparison_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html#a1b0d3ba2b2c2ecf662e0c6f2ad2fd918">check_rotation</a> =</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>      GD::STRUCTURE_COMPARISON_CHECK_ROTATION;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a6a05f3bbfd2d579807f438e91880ba95">structure_comparison_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html#a260ca4f57786fe9f4f678ff15d88453e">indistinguishable_atoms</a> =</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>      GD::STRUCTURE_COMPARISON_INDISTINGUISHABLE_ATOMS;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a6a05f3bbfd2d579807f438e91880ba95">structure_comparison_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html#aed18086bc5cacd529e82af0d93aa84d7">energy_difference</a> =</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>      GD::STRUCTURE_COMPARISON_ENERGY_DIFFERENCE;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a6a05f3bbfd2d579807f438e91880ba95">structure_comparison_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html#ad35ecbe555e8810670621ec2bd9289cc">remove_translation</a> =</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>      GD::STRUCTURE_COMPARISON_REMOVE_TRANSLATION;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#addc8c0b6222f19ae6a0242cee89a9788">process_search_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1process__search__options__t.html#ac4f48037038dcaca94ccf9fbd88921b3">minimize_first</a> = GD::PROCESS_SEARCH_MINIMIZE_FIRST;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#addc8c0b6222f19ae6a0242cee89a9788">process_search_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1process__search__options__t.html#a685535e0cfad39d5546430c76d3649bb">minimization_offset</a> =</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>      GD::PROCESS_SEARCH_MINIMIZATION_OFFSET;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a0dec1fee49290062cf4c04e5338c0de4">method</a> = opt_from_ssot(GD::OPTIMIZER_OPT_METHOD);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a6229153f337699d3b13500b9957adfef">convergence_metric</a> =</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>      std::string(GD::OPTIMIZER_CONVERGENCE_METRIC);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a0114e7ce183767636b2d990b6b44367b">max_iterations</a> = GD::OPTIMIZER_MAX_ITERATIONS;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#af4fcd22b349db9419c51039f62290c33">max_move</a> = GD::OPTIMIZER_MAX_MOVE;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a482d7c5ab2a44ccf805445fbb84e8944">converged_force</a> = GD::OPTIMIZER_CONVERGED_FORCE;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#aeb2d93aeec8304c81f186f733740b81c">time_step_input</a> = GD::OPTIMIZER_TIME_STEP;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#ac061f2c295b68890d7720787684e808e">max_time_step_input</a> = GD::OPTIMIZER_MAX_TIME_STEP;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#adf104c114e04b2f0a8c5bbaed2132a53">lbfgs</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t.html#aaa31bf8b162bc52c68d6ef6a1df30540">memory</a> = GD::OPTIMIZER_LBFGS_MEMORY;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#adf104c114e04b2f0a8c5bbaed2132a53">lbfgs</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t.html#af90b843faddaf67661e16ffb90fb8c83">inverse_curvature</a> =</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>      GD::OPTIMIZER_LBFGS_INVERSE_CURVATURE;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#adf104c114e04b2f0a8c5bbaed2132a53">lbfgs</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t.html#a4d4f26973e151e9c3f75b151956e7dff">max_inverse_curvature</a> =</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>      GD::OPTIMIZER_LBFGS_MAX_INVERSE_CURVATURE;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#adf104c114e04b2f0a8c5bbaed2132a53">lbfgs</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t.html#a5acd987c778fb670f2613f9f9da3a80a">auto_scale</a> = GD::OPTIMIZER_LBFGS_AUTO_SCALE;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#adf104c114e04b2f0a8c5bbaed2132a53">lbfgs</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t.html#a9b508a834169b234e6e2c22db40d3cff">angle_reset</a> = GD::OPTIMIZER_LBFGS_ANGLE_RESET;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#adf104c114e04b2f0a8c5bbaed2132a53">lbfgs</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t.html#a263c47f41424b90e6fd5e554b09e021b">distance_reset</a> = GD::OPTIMIZER_LBFGS_DISTANCE_RESET;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a9e312f473954470e18eb1d5f7cff3bca">cg</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t.html#a29f695404f78872fce8aa2371d8a0036">no_overshooting</a> = GD::OPTIMIZER_CG_NO_OVERSHOOTING;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a9e312f473954470e18eb1d5f7cff3bca">cg</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t.html#add0af83f364b03b4f9b81553e1c5680a">knock_out_max_move</a> =</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>      GD::OPTIMIZER_CG_KNOCK_OUT_MAX_MOVE;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a9e312f473954470e18eb1d5f7cff3bca">cg</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t.html#a2d2d3810341cdf84ddef1625f4855fa3">line_search</a> = GD::OPTIMIZER_CG_LINE_SEARCH;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a9e312f473954470e18eb1d5f7cff3bca">cg</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t.html#a4457def3f16953bd2db5fd8255d30333">line_converged</a> = GD::OPTIMIZER_CG_LINE_CONVERGED;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a9e312f473954470e18eb1d5f7cff3bca">cg</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t.html#abb59eb877afc7da4fd75bbd26e400877">line_search_max_iter</a> =</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>      GD::OPTIMIZER_CG_LINE_SEARCH_MAX_ITER;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a9e312f473954470e18eb1d5f7cff3bca">cg</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t.html#a2c45b476b3b2b3f2c0fc469bdbbe1d09">max_iter_before_reset</a> =</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>      GD::OPTIMIZER_CG_MAX_ITER_BEFORE_RESET;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a2b345bbf2d16b5f4d43dbd0cc37ce681">quickmin</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1quickmin__t.html#ae94653722a542b7f7d9d2311a822bf1c">steepest_descent</a> =</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>      GD::OPTIMIZER_QUICKMIN_STEEPEST_DESCENT;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a33af6f528c2c3a63a6877519c333f30d">sd</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1sd__t.html#a201c87c51df9989f78b6e71c6c53ef78">alpha</a> = GD::OPTIMIZER_SD_ALPHA;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>  p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a33af6f528c2c3a63a6877519c333f30d">sd</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1sd__t.html#aa41d63f5135e8e98463ce6f413e9da02">two_point</a> = GD::OPTIMIZER_SD_TWO_POINT;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>}</div>
+</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="foldopen" id="foldopen00178" data-start="{" data-end="}">
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno"><a class="line" href="namespaceeonc_1_1config.html#aae185ff05a0769209eef4e308712ce2e">  178</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeonc_1_1config.html#aae185ff05a0769209eef4e308712ce2e">ssot_has_field</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *section, <span class="keyword">const</span> <span class="keywordtype">char</span> *key) {</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>  <span class="keywordflow">if</span> (!section || !key)</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>  std::string <span class="keywordtype">id</span> = std::string(section) + <span class="stringliteral">&quot;.&quot;</span> + key;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>  <span class="keywordflow">return</span> field_index().count(<span class="keywordtype">id</span>) &gt; 0;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>}</div>
+</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>} <span class="comment">// namespace eonc::config</span></div>
+<div class="ttc" id="aBaseStructures_8h_html"><div class="ttname"><a href="BaseStructures_8h.html">BaseStructures.h</a></div></div>
+<div class="ttc" id="aParametersSSOTDefaults_8h_html"><div class="ttname"><a href="ParametersSSOTDefaults_8h.html">ParametersSSOTDefaults.h</a></div></div>
+<div class="ttc" id="aParametersSSOT_8h_html"><div class="ttname"><a href="ParametersSSOT_8h.html">ParametersSSOT.h</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html"><div class="ttname"><a href="classeonc_1_1Parameters.html">eonc::Parameters</a></div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00028">Parameters.h:28</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a1c3ba2cdc8f797e5ab2d8961720fe896"><div class="ttname"><a href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">eonc::Parameters::optimizer_options</a></div><div class="ttdeci">struct eonc::Parameters::optimizer_options_t optimizer_options</div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a6a05f3bbfd2d579807f438e91880ba95"><div class="ttname"><a href="classeonc_1_1Parameters.html#a6a05f3bbfd2d579807f438e91880ba95">eonc::Parameters::structure_comparison_options</a></div><div class="ttdeci">struct eonc::Parameters::structure_comparison_options_t structure_comparison_options</div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a75c3a463dab97989d367d624e455606c"><div class="ttname"><a href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">eonc::Parameters::potential_options</a></div><div class="ttdeci">struct eonc::Parameters::potential_options_t potential_options</div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_addc8c0b6222f19ae6a0242cee89a9788"><div class="ttname"><a href="classeonc_1_1Parameters.html#addc8c0b6222f19ae6a0242cee89a9788">eonc::Parameters::process_search_options</a></div><div class="ttdeci">struct eonc::Parameters::process_search_options_t process_search_options</div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_afd8b76ca52c432bb56efd1a73ebf8234"><div class="ttname"><a href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">eonc::Parameters::main_options</a></div><div class="ttdeci">struct eonc::Parameters::main_options_t main_options</div></div>
+<div class="ttc" id="anamespaceeonc_1_1config_html"><div class="ttname"><a href="namespaceeonc_1_1config.html">eonc::config</a></div><div class="ttdef"><b>Definition</b> <a href="ParametersINI_8cpp_source.html#l00040">ParametersINI.cpp:40</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1config_html_a26678e5e35275ab0aa6eb96a1f1b3012"><div class="ttname"><a href="namespaceeonc_1_1config.html#a26678e5e35275ab0aa6eb96a1f1b3012">eonc::config::apply_ssot_defaults</a></div><div class="ttdeci">void apply_ssot_defaults(Parameters &amp;p)</div><div class="ttdoc">Apply SSoT defaults for covered groups (Main, Potential, Optimizer, Structure Comparison,...</div><div class="ttdef"><b>Definition</b> <a href="#l00102">ParametersSSOT.cpp:102</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1config_html_aae185ff05a0769209eef4e308712ce2e"><div class="ttname"><a href="namespaceeonc_1_1config.html#aae185ff05a0769209eef4e308712ce2e">eonc::config::ssot_has_field</a></div><div class="ttdeci">bool ssot_has_field(const char *section, const char *key)</div><div class="ttdoc">Return true if section‍/*key* (snake_case INI name) is declared in the Cap&#39;n Proto L0 catalog for cov...</div><div class="ttdef"><b>Definition</b> <a href="#l00178">ParametersSSOT.cpp:178</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">eonc::OptType</a></div><div class="ttdeci">OptType</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00098">BaseStructures.h:98</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c">eonc::OptType::LBFGS</a></div><div class="ttdeci">@ LBFGS</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00104">BaseStructures.h:104</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0">eonc::OptType::SD</a></div><div class="ttdeci">@ SD</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00106">BaseStructures.h:106</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">eonc::OptType::CG</a></div><div class="ttdeci">@ CG</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00103">BaseStructures.h:103</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56ab7426fb9c3932995306fceba2874d057"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ab7426fb9c3932995306fceba2874d057">eonc::OptType::FIRE</a></div><div class="ttdeci">@ FIRE</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00105">BaseStructures.h:105</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56ad86cb697d0458a9fbfbadb6cd1e9e936"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ad86cb697d0458a9fbfbadb6cd1e9e936">eonc::OptType::QM</a></div><div class="ttdeci">@ QM</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00102">BaseStructures.h:102</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">eonc::PotType</a></div><div class="ttdeci">PotType</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00036">BaseStructures.h:36</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a043a87d3c77eef398c11f7ac3e13cbb9"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a043a87d3c77eef398c11f7ac3e13cbb9">eonc::PotType::EMT</a></div><div class="ttdeci">@ EMT</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00039">BaseStructures.h:39</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a1664de04ffa04bc035a8ab84fa11dba4"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a1664de04ffa04bc035a8ab84fa11dba4">eonc::PotType::XTB</a></div><div class="ttdeci">@ XTB</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00063">BaseStructures.h:63</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a2da9f88c4946c305ed6794006f56e8f3"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a2da9f88c4946c305ed6794006f56e8f3">eonc::PotType::METATOMIC</a></div><div class="ttdeci">@ METATOMIC</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00067">BaseStructures.h:67</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a388d9e1171b3e4aeae9adc4e26ca15ae"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a388d9e1171b3e4aeae9adc4e26ca15ae">eonc::PotType::LJ</a></div><div class="ttdeci">@ LJ</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00041">BaseStructures.h:41</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a483ab577e2e85e858725c5ee67d8b470"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a483ab577e2e85e858725c5ee67d8b470">eonc::PotType::RGPOT</a></div><div class="ttdeci">@ RGPOT</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00070">BaseStructures.h:70</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2ab65e908410eb266ddc3a2ebd0823d20e"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ab65e908410eb266ddc3a2ebd0823d20e">eonc::PotType::EAM_AL</a></div><div class="ttdeci">@ EAM_AL</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00049">BaseStructures.h:49</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2acca9af0728aa14565a927d5f29e51b76"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2acca9af0728aa14565a927d5f29e51b76">eonc::PotType::EXT_POT</a></div><div class="ttdeci">@ EXT_POT</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00040">BaseStructures.h:40</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2acdbe6663305ad47936de845cc1350d57"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2acdbe6663305ad47936de845cc1350d57">eonc::PotType::LAMMPS</a></div><div class="ttdeci">@ LAMMPS</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00056">BaseStructures.h:56</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2ae736d948b5e7ace5ddda0e3ff9ee9015"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ae736d948b5e7ace5ddda0e3ff9ee9015">eonc::PotType::MORSE_PT</a></div><div class="ttdeci">@ MORSE_PT</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00043">BaseStructures.h:43</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379">eonc::JobType</a></div><div class="ttdeci">JobType</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00073">BaseStructures.h:73</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a01dd0e56540fc70c33e9e7c6ee8a030a"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a01dd0e56540fc70c33e9e7c6ee8a030a">eonc::JobType::Structure_Comparison</a></div><div class="ttdeci">@ Structure_Comparison</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00091">BaseStructures.h:91</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a2a3cd5946cfd317eb99c3d32e35e2d4c"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a2a3cd5946cfd317eb99c3d32e35e2d4c">eonc::JobType::Point</a></div><div class="ttdeci">@ Point</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00079">BaseStructures.h:79</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a360b447a439813c2804550b27e59a3bf"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a360b447a439813c2804550b27e59a3bf">eonc::JobType::Safe_Hyperdynamics</a></div><div class="ttdeci">@ Safe_Hyperdynamics</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00081">BaseStructures.h:81</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a405d9a69e5139b9df0df6b66e18fc9e2"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a405d9a69e5139b9df0df6b66e18fc9e2">eonc::JobType::Dynamics</a></div><div class="ttdeci">@ Dynamics</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00088">BaseStructures.h:88</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a6fbb561d946449c7994b2d21a153d22e"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a6fbb561d946449c7994b2d21a153d22e">eonc::JobType::Prefactor</a></div><div class="ttdeci">@ Prefactor</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00089">BaseStructures.h:89</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a7217318fc4a1f9dfcc38a67a97e0ada8"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7217318fc4a1f9dfcc38a67a97e0ada8">eonc::JobType::TAD</a></div><div class="ttdeci">@ TAD</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00082">BaseStructures.h:82</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a7b7087e25ad045bdcc44bcb3fde8cbd9"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7b7087e25ad045bdcc44bcb3fde8cbd9">eonc::JobType::Replica_Exchange</a></div><div class="ttdeci">@ Replica_Exchange</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00083">BaseStructures.h:83</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a7ce58f798b6fb341e7f66d164a9d4c74"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7ce58f798b6fb341e7f66d164a9d4c74">eonc::JobType::Nudged_Elastic_Band</a></div><div class="ttdeci">@ Nudged_Elastic_Band</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00087">BaseStructures.h:87</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a8e2d35d1e552fb300a8b7b20104946b5"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a8e2d35d1e552fb300a8b7b20104946b5">eonc::JobType::Finite_Difference</a></div><div class="ttdeci">@ Finite_Difference</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00086">BaseStructures.h:86</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a9de6455dd98217681c11484dd32f373b"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a9de6455dd98217681c11484dd32f373b">eonc::JobType::Monte_Carlo</a></div><div class="ttdeci">@ Monte_Carlo</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00092">BaseStructures.h:92</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a9fc45f090022ce2dfd190f63f008f36d"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a9fc45f090022ce2dfd190f63f008f36d">eonc::JobType::Process_Search</a></div><div class="ttdeci">@ Process_Search</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00076">BaseStructures.h:76</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379aa1b95ecf144fcfaa820cc44eb5508d29"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aa1b95ecf144fcfaa820cc44eb5508d29">eonc::JobType::Global_Optimization</a></div><div class="ttdeci">@ Global_Optimization</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00090">BaseStructures.h:90</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379aace1337f7aedb992174668251cfd946b"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aace1337f7aedb992174668251cfd946b">eonc::JobType::Minimization</a></div><div class="ttdeci">@ Minimization</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00078">BaseStructures.h:78</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379aaff099e938d23e84611548dcfd6be790"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aaff099e938d23e84611548dcfd6be790">eonc::JobType::GP_Surrogate</a></div><div class="ttdeci">@ GP_Surrogate</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00094">BaseStructures.h:94</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379ab8dec34ded54db4ac86e3883ed47661f"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ab8dec34ded54db4ac86e3883ed47661f">eonc::JobType::Saddle_Search</a></div><div class="ttdeci">@ Saddle_Search</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00077">BaseStructures.h:77</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379ac05b513f4ff7ad2680f4528f5c8136b9"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ac05b513f4ff7ad2680f4528f5c8136b9">eonc::JobType::Hessian</a></div><div class="ttdeci">@ Hessian</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00085">BaseStructures.h:85</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379af076a029e047148cf37c119bd998cedc"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379af076a029e047148cf37c119bd998cedc">eonc::JobType::Parallel_Replica</a></div><div class="ttdeci">@ Parallel_Replica</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00080">BaseStructures.h:80</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379afd39326af66a5a13a2ea55c6d3bdb3a8"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379afd39326af66a5a13a2ea55c6d3bdb3a8">eonc::JobType::Basin_Hopping</a></div><div class="ttdeci">@ Basin_Hopping</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00084">BaseStructures.h:84</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1main__options__t_html_a01c374e2cfab6bc1effb1b18fe1fec6c"><div class="ttname"><a href="structeonc_1_1Parameters_1_1main__options__t.html#a01c374e2cfab6bc1effb1b18fe1fec6c">eonc::Parameters::main_options_t::writeLog</a></div><div class="ttdeci">bool writeLog</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00051">Parameters.h:51</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1main__options__t_html_a26a797bbd9625b8de33719528cc0a04a"><div class="ttname"><a href="structeonc_1_1Parameters_1_1main__options__t.html#a26a797bbd9625b8de33719528cc0a04a">eonc::Parameters::main_options_t::iniFilename</a></div><div class="ttdeci">std::string iniFilename</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00053">Parameters.h:53</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1main__options__t_html_a271433b36fc5302bf9000d0d137de8a4"><div class="ttname"><a href="structeonc_1_1Parameters_1_1main__options__t.html#a271433b36fc5302bf9000d0d137de8a4">eonc::Parameters::main_options_t::conFilename</a></div><div class="ttdeci">std::string conFilename</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00054">Parameters.h:54</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1main__options__t_html_a3b0c080415611d16523e196ab127d846"><div class="ttname"><a href="structeonc_1_1Parameters_1_1main__options__t.html#a3b0c080415611d16523e196ab127d846">eonc::Parameters::main_options_t::job</a></div><div class="ttdeci">JobType job</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00047">Parameters.h:47</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1main__options__t_html_a41cc292ecf79c5c916ae324987a486ce"><div class="ttname"><a href="structeonc_1_1Parameters_1_1main__options__t.html#a41cc292ecf79c5c916ae324987a486ce">eonc::Parameters::main_options_t::temperature</a></div><div class="ttdeci">double temperature</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00049">Parameters.h:49</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1main__options__t_html_a511691b8d4f5ae32aa237367a5ca2ff0"><div class="ttname"><a href="structeonc_1_1Parameters_1_1main__options__t.html#a511691b8d4f5ae32aa237367a5ca2ff0">eonc::Parameters::main_options_t::parallel</a></div><div class="ttdeci">bool parallel</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00058">Parameters.h:58</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1main__options__t_html_a92c27036ffcab9f5e5d46a1cd0c99c30"><div class="ttname"><a href="structeonc_1_1Parameters_1_1main__options__t.html#a92c27036ffcab9f5e5d46a1cd0c99c30">eonc::Parameters::main_options_t::quiet</a></div><div class="ttdeci">bool quiet</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00050">Parameters.h:50</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1main__options__t_html_ab526c658d542548a060a20728af4afe9"><div class="ttname"><a href="structeonc_1_1Parameters_1_1main__options__t.html#ab526c658d542548a060a20728af4afe9">eonc::Parameters::main_options_t::finiteDifference</a></div><div class="ttdeci">double finiteDifference</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00055">Parameters.h:55</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1main__options__t_html_abe2492109e4801caeafa033438ec7024"><div class="ttname"><a href="structeonc_1_1Parameters_1_1main__options__t.html#abe2492109e4801caeafa033438ec7024">eonc::Parameters::main_options_t::checkpoint</a></div><div class="ttdeci">bool checkpoint</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00052">Parameters.h:52</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1main__options__t_html_add418683af3de6dce1aeb37b8de6987f"><div class="ttname"><a href="structeonc_1_1Parameters_1_1main__options__t.html#add418683af3de6dce1aeb37b8de6987f">eonc::Parameters::main_options_t::writeConForces</a></div><div class="ttdeci">bool writeConForces</div><div class="ttdoc">Opt-in &quot;Forces of Component&quot; sections in written .con frames (enables force+energy co-load on restart...</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00062">Parameters.h:62</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1main__options__t_html_aead1dd4e662d598764067c2e67b5058d"><div class="ttname"><a href="structeonc_1_1Parameters_1_1main__options__t.html#aead1dd4e662d598764067c2e67b5058d">eonc::Parameters::main_options_t::randomSeed</a></div><div class="ttdeci">long randomSeed</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00048">Parameters.h:48</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1main__options__t_html_af396c8263d5816e84a342915cefff156"><div class="ttname"><a href="structeonc_1_1Parameters_1_1main__options__t.html#af396c8263d5816e84a342915cefff156">eonc::Parameters::main_options_t::removeNetForce</a></div><div class="ttdeci">bool removeNetForce</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00057">Parameters.h:57</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1main__options__t_html_afe3045b1d6ff3d93de5633665bac8ea9"><div class="ttname"><a href="structeonc_1_1Parameters_1_1main__options__t.html#afe3045b1d6ff3d93de5633665bac8ea9">eonc::Parameters::main_options_t::maxForceCalls</a></div><div class="ttdeci">long maxForceCalls</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00056">Parameters.h:56</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t_html_a29f695404f78872fce8aa2371d8a0036"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t.html#a29f695404f78872fce8aa2371d8a0036">eonc::Parameters::optimizer_options_t::cg_t::no_overshooting</a></div><div class="ttdeci">bool no_overshooting</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00243">Parameters.h:243</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t_html_a2c45b476b3b2b3f2c0fc469bdbbe1d09"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t.html#a2c45b476b3b2b3f2c0fc469bdbbe1d09">eonc::Parameters::optimizer_options_t::cg_t::max_iter_before_reset</a></div><div class="ttdeci">long max_iter_before_reset</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00248">Parameters.h:248</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t_html_a2d2d3810341cdf84ddef1625f4855fa3"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t.html#a2d2d3810341cdf84ddef1625f4855fa3">eonc::Parameters::optimizer_options_t::cg_t::line_search</a></div><div class="ttdeci">bool line_search</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00245">Parameters.h:245</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t_html_a4457def3f16953bd2db5fd8255d30333"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t.html#a4457def3f16953bd2db5fd8255d30333">eonc::Parameters::optimizer_options_t::cg_t::line_converged</a></div><div class="ttdeci">double line_converged</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00246">Parameters.h:246</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t_html_abb59eb877afc7da4fd75bbd26e400877"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t.html#abb59eb877afc7da4fd75bbd26e400877">eonc::Parameters::optimizer_options_t::cg_t::line_search_max_iter</a></div><div class="ttdeci">long line_search_max_iter</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00247">Parameters.h:247</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t_html_add0af83f364b03b4f9b81553e1c5680a"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t.html#add0af83f364b03b4f9b81553e1c5680a">eonc::Parameters::optimizer_options_t::cg_t::knock_out_max_move</a></div><div class="ttdeci">bool knock_out_max_move</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00244">Parameters.h:244</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t_html_a263c47f41424b90e6fd5e554b09e021b"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t.html#a263c47f41424b90e6fd5e554b09e021b">eonc::Parameters::optimizer_options_t::lbfgs_t::distance_reset</a></div><div class="ttdeci">bool distance_reset</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00240">Parameters.h:240</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t_html_a4d4f26973e151e9c3f75b151956e7dff"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t.html#a4d4f26973e151e9c3f75b151956e7dff">eonc::Parameters::optimizer_options_t::lbfgs_t::max_inverse_curvature</a></div><div class="ttdeci">double max_inverse_curvature</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00237">Parameters.h:237</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t_html_a5acd987c778fb670f2613f9f9da3a80a"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t.html#a5acd987c778fb670f2613f9f9da3a80a">eonc::Parameters::optimizer_options_t::lbfgs_t::auto_scale</a></div><div class="ttdeci">bool auto_scale</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00238">Parameters.h:238</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t_html_a9b508a834169b234e6e2c22db40d3cff"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t.html#a9b508a834169b234e6e2c22db40d3cff">eonc::Parameters::optimizer_options_t::lbfgs_t::angle_reset</a></div><div class="ttdeci">bool angle_reset</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00239">Parameters.h:239</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t_html_aaa31bf8b162bc52c68d6ef6a1df30540"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t.html#aaa31bf8b162bc52c68d6ef6a1df30540">eonc::Parameters::optimizer_options_t::lbfgs_t::memory</a></div><div class="ttdeci">long memory</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00235">Parameters.h:235</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t_html_af90b843faddaf67661e16ffb90fb8c83"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t.html#af90b843faddaf67661e16ffb90fb8c83">eonc::Parameters::optimizer_options_t::lbfgs_t::inverse_curvature</a></div><div class="ttdeci">double inverse_curvature</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00236">Parameters.h:236</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_1_1quickmin__t_html_ae94653722a542b7f7d9d2311a822bf1c"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1quickmin__t.html#ae94653722a542b7f7d9d2311a822bf1c">eonc::Parameters::optimizer_options_t::quickmin_t::steepest_descent</a></div><div class="ttdeci">bool steepest_descent</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00251">Parameters.h:251</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_1_1sd__t_html_a201c87c51df9989f78b6e71c6c53ef78"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1sd__t.html#a201c87c51df9989f78b6e71c6c53ef78">eonc::Parameters::optimizer_options_t::sd_t::alpha</a></div><div class="ttdeci">double alpha</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00254">Parameters.h:254</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_1_1sd__t_html_aa41d63f5135e8e98463ce6f413e9da02"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1sd__t.html#aa41d63f5135e8e98463ce6f413e9da02">eonc::Parameters::optimizer_options_t::sd_t::two_point</a></div><div class="ttdeci">bool two_point</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00255">Parameters.h:255</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_html_a0114e7ce183767636b2d990b6b44367b"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a0114e7ce183767636b2d990b6b44367b">eonc::Parameters::optimizer_options_t::max_iterations</a></div><div class="ttdeci">size_t max_iterations</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00223">Parameters.h:223</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_html_a0dec1fee49290062cf4c04e5338c0de4"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a0dec1fee49290062cf4c04e5338c0de4">eonc::Parameters::optimizer_options_t::method</a></div><div class="ttdeci">OptType method</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00220">Parameters.h:220</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_html_a2b345bbf2d16b5f4d43dbd0cc37ce681"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a2b345bbf2d16b5f4d43dbd0cc37ce681">eonc::Parameters::optimizer_options_t::quickmin</a></div><div class="ttdeci">struct eonc::Parameters::optimizer_options_t::quickmin_t quickmin</div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_html_a33af6f528c2c3a63a6877519c333f30d"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a33af6f528c2c3a63a6877519c333f30d">eonc::Parameters::optimizer_options_t::sd</a></div><div class="ttdeci">struct eonc::Parameters::optimizer_options_t::sd_t sd</div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_html_a482d7c5ab2a44ccf805445fbb84e8944"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a482d7c5ab2a44ccf805445fbb84e8944">eonc::Parameters::optimizer_options_t::converged_force</a></div><div class="ttdeci">double converged_force</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00225">Parameters.h:225</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_html_a6229153f337699d3b13500b9957adfef"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a6229153f337699d3b13500b9957adfef">eonc::Parameters::optimizer_options_t::convergence_metric</a></div><div class="ttdeci">std::string convergence_metric</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00221">Parameters.h:221</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_html_a9e312f473954470e18eb1d5f7cff3bca"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t.html#a9e312f473954470e18eb1d5f7cff3bca">eonc::Parameters::optimizer_options_t::cg</a></div><div class="ttdeci">struct eonc::Parameters::optimizer_options_t::cg_t cg</div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_html_ac061f2c295b68890d7720787684e808e"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t.html#ac061f2c295b68890d7720787684e808e">eonc::Parameters::optimizer_options_t::max_time_step_input</a></div><div class="ttdeci">double max_time_step_input</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00228">Parameters.h:228</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_html_adf104c114e04b2f0a8c5bbaed2132a53"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t.html#adf104c114e04b2f0a8c5bbaed2132a53">eonc::Parameters::optimizer_options_t::lbfgs</a></div><div class="ttdeci">struct eonc::Parameters::optimizer_options_t::lbfgs_t lbfgs</div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_html_aeb2d93aeec8304c81f186f733740b81c"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t.html#aeb2d93aeec8304c81f186f733740b81c">eonc::Parameters::optimizer_options_t::time_step_input</a></div><div class="ttdeci">double time_step_input</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00226">Parameters.h:226</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_html_af4fcd22b349db9419c51039f62290c33"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t.html#af4fcd22b349db9419c51039f62290c33">eonc::Parameters::optimizer_options_t::max_move</a></div><div class="ttdeci">double max_move</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00224">Parameters.h:224</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1potential__options__t_html_a5e49c818acfac15e518ab9803327e1d0"><div class="ttname"><a href="structeonc_1_1Parameters_1_1potential__options__t.html#a5e49c818acfac15e518ab9803327e1d0">eonc::Parameters::potential_options_t::LAMMPSLogging</a></div><div class="ttdeci">bool LAMMPSLogging</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00069">Parameters.h:69</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1potential__options__t_html_a663d97dfac589d4cb1158b68d8eaa0f7"><div class="ttname"><a href="structeonc_1_1Parameters_1_1potential__options__t.html#a663d97dfac589d4cb1158b68d8eaa0f7">eonc::Parameters::potential_options_t::LAMMPSThreads</a></div><div class="ttdeci">int LAMMPSThreads</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00070">Parameters.h:70</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1potential__options__t_html_a6f8641a6b16d5627c361d4e07b0c58ff"><div class="ttname"><a href="structeonc_1_1Parameters_1_1potential__options__t.html#a6f8641a6b16d5627c361d4e07b0c58ff">eonc::Parameters::potential_options_t::EMTRasmussen</a></div><div class="ttdeci">bool EMTRasmussen</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00071">Parameters.h:71</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1potential__options__t_html_a71f370d93e841300288cb0122f182172"><div class="ttname"><a href="structeonc_1_1Parameters_1_1potential__options__t.html#a71f370d93e841300288cb0122f182172">eonc::Parameters::potential_options_t::potentialsPath</a></div><div class="ttdeci">std::string potentialsPath</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00074">Parameters.h:74</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1potential__options__t_html_a8c62d8e8c2374eff1672e72ec2bae1c8"><div class="ttname"><a href="structeonc_1_1Parameters_1_1potential__options__t.html#a8c62d8e8c2374eff1672e72ec2bae1c8">eonc::Parameters::potential_options_t::potential</a></div><div class="ttdeci">PotType potential</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00067">Parameters.h:67</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1potential__options__t_html_ab83399b55759769183b0c885c90535f6"><div class="ttname"><a href="structeonc_1_1Parameters_1_1potential__options__t.html#ab83399b55759769183b0c885c90535f6">eonc::Parameters::potential_options_t::MPIPollPeriod</a></div><div class="ttdeci">double MPIPollPeriod</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00068">Parameters.h:68</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1potential__options__t_html_acaed7dcc30ec1af72ef09ebbbca88db5"><div class="ttname"><a href="structeonc_1_1Parameters_1_1potential__options__t.html#acaed7dcc30ec1af72ef09ebbbca88db5">eonc::Parameters::potential_options_t::extPotPath</a></div><div class="ttdeci">std::string extPotPath</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00073">Parameters.h:73</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1potential__options__t_html_ade27820beea97bb7595f4b20f5d43437"><div class="ttname"><a href="structeonc_1_1Parameters_1_1potential__options__t.html#ade27820beea97bb7595f4b20f5d43437">eonc::Parameters::potential_options_t::LogPotential</a></div><div class="ttdeci">bool LogPotential</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00072">Parameters.h:72</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1process__search__options__t_html_a685535e0cfad39d5546430c76d3649bb"><div class="ttname"><a href="structeonc_1_1Parameters_1_1process__search__options__t.html#a685535e0cfad39d5546430c76d3649bb">eonc::Parameters::process_search_options_t::minimization_offset</a></div><div class="ttdeci">double minimization_offset</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00176">Parameters.h:176</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1process__search__options__t_html_ac4f48037038dcaca94ccf9fbd88921b3"><div class="ttname"><a href="structeonc_1_1Parameters_1_1process__search__options__t.html#ac4f48037038dcaca94ccf9fbd88921b3">eonc::Parameters::process_search_options_t::minimize_first</a></div><div class="ttdeci">bool minimize_first</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00175">Parameters.h:175</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1structure__comparison__options__t_html_a1b0d3ba2b2c2ecf662e0c6f2ad2fd918"><div class="ttname"><a href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html#a1b0d3ba2b2c2ecf662e0c6f2ad2fd918">eonc::Parameters::structure_comparison_options_t::check_rotation</a></div><div class="ttdeci">bool check_rotation</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00167">Parameters.h:167</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1structure__comparison__options__t_html_a260ca4f57786fe9f4f678ff15d88453e"><div class="ttname"><a href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html#a260ca4f57786fe9f4f678ff15d88453e">eonc::Parameters::structure_comparison_options_t::indistinguishable_atoms</a></div><div class="ttdeci">bool indistinguishable_atoms</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00168">Parameters.h:168</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1structure__comparison__options__t_html_a54e5cc574511db990f1f974cb8193499"><div class="ttname"><a href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html#a54e5cc574511db990f1f974cb8193499">eonc::Parameters::structure_comparison_options_t::distance_difference</a></div><div class="ttdeci">double distance_difference</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00165">Parameters.h:165</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1structure__comparison__options__t_html_aa75e996aeffa00028c0be542ce3bd8e8"><div class="ttname"><a href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html#aa75e996aeffa00028c0be542ce3bd8e8">eonc::Parameters::structure_comparison_options_t::neighbor_cutoff</a></div><div class="ttdeci">double neighbor_cutoff</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00166">Parameters.h:166</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1structure__comparison__options__t_html_ad35ecbe555e8810670621ec2bd9289cc"><div class="ttname"><a href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html#ad35ecbe555e8810670621ec2bd9289cc">eonc::Parameters::structure_comparison_options_t::remove_translation</a></div><div class="ttdeci">bool remove_translation</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00170">Parameters.h:170</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1structure__comparison__options__t_html_aed18086bc5cacd529e82af0d93aa84d7"><div class="ttname"><a href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html#aed18086bc5cacd529e82af0d93aa84d7">eonc::Parameters::structure_comparison_options_t::energy_difference</a></div><div class="ttdeci">double energy_difference</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00169">Parameters.h:169</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_db3a54907829b36871118d03417739cd.html">client</a></li><li class="navelem"><a href="ParametersSSOT_8cpp.html">ParametersSSOT.cpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

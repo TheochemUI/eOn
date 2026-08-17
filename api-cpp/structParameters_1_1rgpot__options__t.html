@@ -1,0 +1,807 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: Parameters::rgpot_options_t Struct Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('structParameters_1_1rgpot__options__t.html','','structParameters_1_1rgpot__options__t-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Parameters::rgpot_options_t Struct Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="Parameters_8h_source.html">Parameters.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a12d4a6177ab4e7fcd18692f0bcccc447" id="r_a12d4a6177ab4e7fcd18692f0bcccc447"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a12d4a6177ab4e7fcd18692f0bcccc447">backend</a> {&quot;nwchemc&quot;}</td></tr>
+<tr class="memdesc:a12d4a6177ab4e7fcd18692f0bcccc447"><td class="mdescLeft">&#160;</td><td class="mdescRight">"nwchemc", "cpmdc", "metatomic", or "xtb"  <br /></td></tr>
+<tr class="memitem:a1c4e435f42c0645edc89940c64bef0b2" id="r_a1c4e435f42c0645edc89940c64bef0b2"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a1c4e435f42c0645edc89940c64bef0b2">basis</a> {&quot;sto-3g&quot;}</td></tr>
+<tr class="memitem:aa275633cc691956239c97efdce2e505c" id="r_aa275633cc691956239c97efdce2e505c"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#aa275633cc691956239c97efdce2e505c">theory</a> {&quot;scf&quot;}</td></tr>
+<tr class="memitem:af7e2075fb22af627874fe8180c087d07" id="r_af7e2075fb22af627874fe8180c087d07"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#af7e2075fb22af627874fe8180c087d07">scf_type</a> {&quot;rhf&quot;}</td></tr>
+<tr class="memitem:a2172e0732e68a2eedafd391ae9be27f4" id="r_a2172e0732e68a2eedafd391ae9be27f4"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a2172e0732e68a2eedafd391ae9be27f4">functional</a> {&quot;BLYP&quot;}</td></tr>
+<tr class="memitem:a28b6b8060012692f5f1f8ac000208a51" id="r_a28b6b8060012692f5f1f8ac000208a51"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a28b6b8060012692f5f1f8ac000208a51">cutoff_ry</a> {70.0}</td></tr>
+<tr class="memitem:af38b1b6b6ebf40f6159c82662b2f8be8" id="r_af38b1b6b6ebf40f6159c82662b2f8be8"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#af38b1b6b6ebf40f6159c82662b2f8be8">charge</a> {0}</td></tr>
+<tr class="memitem:a7ee5c85ab0e9b1dffe1078658b1b8ca7" id="r_a7ee5c85ab0e9b1dffe1078658b1b8ca7"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a7ee5c85ab0e9b1dffe1078658b1b8ca7">multiplicity</a> {1}</td></tr>
+<tr class="memitem:a2f21028df30ac3c3a638c46dd330a5b0" id="r_a2f21028df30ac3c3a638c46dd330a5b0"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a2f21028df30ac3c3a638c46dd330a5b0">engine_path</a> {}</td></tr>
+<tr class="memitem:ad5537310553cd811bf552d15de1fc7ff" id="r_ad5537310553cd811bf552d15de1fc7ff"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#ad5537310553cd811bf552d15de1fc7ff">engine_library</a> {}</td></tr>
+<tr class="memitem:a09b70729b983fa6a6146369db2930c35" id="r_a09b70729b983fa6a6146369db2930c35"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a09b70729b983fa6a6146369db2930c35">engine_root</a> {}</td></tr>
+<tr class="memitem:a20c785fc08e0fc116d4149a38a8c6184" id="r_a20c785fc08e0fc116d4149a38a8c6184"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a20c785fc08e0fc116d4149a38a8c6184">title</a> {}</td></tr>
+<tr class="memitem:af9259869f1e2e83a57cb3816adcb3778" id="r_af9259869f1e2e83a57cb3816adcb3778"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#af9259869f1e2e83a57cb3816adcb3778">memory_mb</a> {0}</td></tr>
+<tr class="memitem:a7c07441a670312dd8cb0e292db860180" id="r_a7c07441a670312dd8cb0e292db860180"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a7c07441a670312dd8cb0e292db860180">scratch_dir</a> {}</td></tr>
+<tr class="memitem:a5959a948bc44ddecd8917c6fb75a1dc0" id="r_a5959a948bc44ddecd8917c6fb75a1dc0"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a5959a948bc44ddecd8917c6fb75a1dc0">input_block</a> {}</td></tr>
+<tr class="memitem:a0b12842984c93864fcc69f08991099c3" id="r_a0b12842984c93864fcc69f08991099c3"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a0b12842984c93864fcc69f08991099c3">model_path</a> {}</td></tr>
+<tr class="memitem:ad5e86ee87bd11d46f333b9745d3355aa" id="r_ad5e86ee87bd11d46f333b9745d3355aa"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#ad5e86ee87bd11d46f333b9745d3355aa">device</a> {&quot;cpu&quot;}</td></tr>
+<tr class="memitem:a8d25876fd483b8a341124d76df4b75b5" id="r_a8d25876fd483b8a341124d76df4b75b5"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a8d25876fd483b8a341124d76df4b75b5">length_unit</a> {&quot;angstrom&quot;}</td></tr>
+<tr class="memitem:abad76c847abe43746c28027fb562619e" id="r_abad76c847abe43746c28027fb562619e"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#abad76c847abe43746c28027fb562619e">extensions_directory</a> {}</td></tr>
+<tr class="memitem:a179292f2080fbfbf49d9ce53cb031c4f" id="r_a179292f2080fbfbf49d9ce53cb031c4f"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a179292f2080fbfbf49d9ce53cb031c4f">check_consistency</a> {false}</td></tr>
+<tr class="memitem:a3a2afc338254f81b50849ecee8d513b8" id="r_a3a2afc338254f81b50849ecee8d513b8"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a3a2afc338254f81b50849ecee8d513b8">uncertainty_threshold</a> {-1.0}</td></tr>
+<tr class="memitem:a6a1d791a35d40fd8b49381ed12122d54" id="r_a6a1d791a35d40fd8b49381ed12122d54"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a6a1d791a35d40fd8b49381ed12122d54">torch_determinism_strict</a> {false}</td></tr>
+<tr class="memitem:a1acd9a6aaf9eec5a968e38c8097cbed6" id="r_a1acd9a6aaf9eec5a968e38c8097cbed6"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a1acd9a6aaf9eec5a968e38c8097cbed6">xtb_paramset</a> {&quot;GFN2xTB&quot;}</td></tr>
+<tr class="memitem:ad0a84ab7fddfb329169f7dbec181e3fd" id="r_ad0a84ab7fddfb329169f7dbec181e3fd"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ad0a84ab7fddfb329169f7dbec181e3fd">xtb_accuracy</a> {1.0}</td></tr>
+<tr class="memitem:a8451afdf2b42fb443b157c21e8976e89" id="r_a8451afdf2b42fb443b157c21e8976e89"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a8451afdf2b42fb443b157c21e8976e89">xtb_electronic_temperature</a> {300.0}</td></tr>
+<tr class="memitem:afe1c469f7cda27dc7376bd3f0fd208a7" id="r_afe1c469f7cda27dc7376bd3f0fd208a7"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#afe1c469f7cda27dc7376bd3f0fd208a7">xtb_max_iterations</a> {250}</td></tr>
+<tr class="memitem:ae258c981c5f8d40f16d20e2014b85fc1" id="r_ae258c981c5f8d40f16d20e2014b85fc1"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ae258c981c5f8d40f16d20e2014b85fc1">xtb_charge</a> {0.0}</td></tr>
+<tr class="memitem:a4918650cfd7499758edbfe2b79334ee5" id="r_a4918650cfd7499758edbfe2b79334ee5"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a4918650cfd7499758edbfe2b79334ee5">xtb_uhf</a> {0}</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00129">129</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+</div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a12d4a6177ab4e7fcd18692f0bcccc447" name="a12d4a6177ab4e7fcd18692f0bcccc447"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12d4a6177ab4e7fcd18692f0bcccc447">&#9670;&#160;</a></span>backend</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a12d4a6177ab4e7fcd18692f0bcccc447">eonc::Parameters::rgpot_options_t::backend</a> {&quot;nwchemc&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>"nwchemc", "cpmdc", "metatomic", or "xtb" </p>
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00131">131</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  131</span>{<span class="stringliteral">&quot;nwchemc&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1c4e435f42c0645edc89940c64bef0b2" name="a1c4e435f42c0645edc89940c64bef0b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c4e435f42c0645edc89940c64bef0b2">&#9670;&#160;</a></span>basis</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a1c4e435f42c0645edc89940c64bef0b2">eonc::Parameters::rgpot_options_t::basis</a> {&quot;sto-3g&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00132">132</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  132</span>{<span class="stringliteral">&quot;sto-3g&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af38b1b6b6ebf40f6159c82662b2f8be8" name="af38b1b6b6ebf40f6159c82662b2f8be8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af38b1b6b6ebf40f6159c82662b2f8be8">&#9670;&#160;</a></span>charge</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#af38b1b6b6ebf40f6159c82662b2f8be8">eonc::Parameters::rgpot_options_t::charge</a> {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00137">137</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  137</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a179292f2080fbfbf49d9ce53cb031c4f" name="a179292f2080fbfbf49d9ce53cb031c4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a179292f2080fbfbf49d9ce53cb031c4f">&#9670;&#160;</a></span>check_consistency</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a179292f2080fbfbf49d9ce53cb031c4f">eonc::Parameters::rgpot_options_t::check_consistency</a> {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00151">151</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  151</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a28b6b8060012692f5f1f8ac000208a51" name="a28b6b8060012692f5f1f8ac000208a51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28b6b8060012692f5f1f8ac000208a51">&#9670;&#160;</a></span>cutoff_ry</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a28b6b8060012692f5f1f8ac000208a51">eonc::Parameters::rgpot_options_t::cutoff_ry</a> {70.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00136">136</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  136</span>{70.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad5e86ee87bd11d46f333b9745d3355aa" name="ad5e86ee87bd11d46f333b9745d3355aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5e86ee87bd11d46f333b9745d3355aa">&#9670;&#160;</a></span>device</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#ad5e86ee87bd11d46f333b9745d3355aa">eonc::Parameters::rgpot_options_t::device</a> {&quot;cpu&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00148">148</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  148</span>{<span class="stringliteral">&quot;cpu&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad5537310553cd811bf552d15de1fc7ff" name="ad5537310553cd811bf552d15de1fc7ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5537310553cd811bf552d15de1fc7ff">&#9670;&#160;</a></span>engine_library</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#ad5537310553cd811bf552d15de1fc7ff">eonc::Parameters::rgpot_options_t::engine_library</a> {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00140">140</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  140</span>{};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2f21028df30ac3c3a638c46dd330a5b0" name="a2f21028df30ac3c3a638c46dd330a5b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f21028df30ac3c3a638c46dd330a5b0">&#9670;&#160;</a></span>engine_path</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a2f21028df30ac3c3a638c46dd330a5b0">eonc::Parameters::rgpot_options_t::engine_path</a> {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00139">139</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  139</span>{};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a09b70729b983fa6a6146369db2930c35" name="a09b70729b983fa6a6146369db2930c35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09b70729b983fa6a6146369db2930c35">&#9670;&#160;</a></span>engine_root</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a09b70729b983fa6a6146369db2930c35">eonc::Parameters::rgpot_options_t::engine_root</a> {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00141">141</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  141</span>{};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="abad76c847abe43746c28027fb562619e" name="abad76c847abe43746c28027fb562619e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abad76c847abe43746c28027fb562619e">&#9670;&#160;</a></span>extensions_directory</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#abad76c847abe43746c28027fb562619e">eonc::Parameters::rgpot_options_t::extensions_directory</a> {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00150">150</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  150</span>{};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2172e0732e68a2eedafd391ae9be27f4" name="a2172e0732e68a2eedafd391ae9be27f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2172e0732e68a2eedafd391ae9be27f4">&#9670;&#160;</a></span>functional</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a2172e0732e68a2eedafd391ae9be27f4">eonc::Parameters::rgpot_options_t::functional</a> {&quot;BLYP&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00135">135</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  135</span>{<span class="stringliteral">&quot;BLYP&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5959a948bc44ddecd8917c6fb75a1dc0" name="a5959a948bc44ddecd8917c6fb75a1dc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5959a948bc44ddecd8917c6fb75a1dc0">&#9670;&#160;</a></span>input_block</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a5959a948bc44ddecd8917c6fb75a1dc0">eonc::Parameters::rgpot_options_t::input_block</a> {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00145">145</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  145</span>{};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8d25876fd483b8a341124d76df4b75b5" name="a8d25876fd483b8a341124d76df4b75b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d25876fd483b8a341124d76df4b75b5">&#9670;&#160;</a></span>length_unit</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a8d25876fd483b8a341124d76df4b75b5">eonc::Parameters::rgpot_options_t::length_unit</a> {&quot;angstrom&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00149">149</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  149</span>{<span class="stringliteral">&quot;angstrom&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af9259869f1e2e83a57cb3816adcb3778" name="af9259869f1e2e83a57cb3816adcb3778"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9259869f1e2e83a57cb3816adcb3778">&#9670;&#160;</a></span>memory_mb</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#af9259869f1e2e83a57cb3816adcb3778">eonc::Parameters::rgpot_options_t::memory_mb</a> {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00143">143</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  143</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0b12842984c93864fcc69f08991099c3" name="a0b12842984c93864fcc69f08991099c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b12842984c93864fcc69f08991099c3">&#9670;&#160;</a></span>model_path</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a0b12842984c93864fcc69f08991099c3">eonc::Parameters::rgpot_options_t::model_path</a> {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00147">147</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  147</span>{};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7ee5c85ab0e9b1dffe1078658b1b8ca7" name="a7ee5c85ab0e9b1dffe1078658b1b8ca7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ee5c85ab0e9b1dffe1078658b1b8ca7">&#9670;&#160;</a></span>multiplicity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a7ee5c85ab0e9b1dffe1078658b1b8ca7">eonc::Parameters::rgpot_options_t::multiplicity</a> {1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00138">138</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  138</span>{1};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af7e2075fb22af627874fe8180c087d07" name="af7e2075fb22af627874fe8180c087d07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7e2075fb22af627874fe8180c087d07">&#9670;&#160;</a></span>scf_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#af7e2075fb22af627874fe8180c087d07">eonc::Parameters::rgpot_options_t::scf_type</a> {&quot;rhf&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00134">134</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  134</span>{<span class="stringliteral">&quot;rhf&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7c07441a670312dd8cb0e292db860180" name="a7c07441a670312dd8cb0e292db860180"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c07441a670312dd8cb0e292db860180">&#9670;&#160;</a></span>scratch_dir</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a7c07441a670312dd8cb0e292db860180">eonc::Parameters::rgpot_options_t::scratch_dir</a> {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00144">144</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  144</span>{};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa275633cc691956239c97efdce2e505c" name="aa275633cc691956239c97efdce2e505c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa275633cc691956239c97efdce2e505c">&#9670;&#160;</a></span>theory</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#aa275633cc691956239c97efdce2e505c">eonc::Parameters::rgpot_options_t::theory</a> {&quot;scf&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00133">133</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  133</span>{<span class="stringliteral">&quot;scf&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a20c785fc08e0fc116d4149a38a8c6184" name="a20c785fc08e0fc116d4149a38a8c6184"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20c785fc08e0fc116d4149a38a8c6184">&#9670;&#160;</a></span>title</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a20c785fc08e0fc116d4149a38a8c6184">eonc::Parameters::rgpot_options_t::title</a> {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00142">142</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  142</span>{};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6a1d791a35d40fd8b49381ed12122d54" name="a6a1d791a35d40fd8b49381ed12122d54"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a1d791a35d40fd8b49381ed12122d54">&#9670;&#160;</a></span>torch_determinism_strict</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a6a1d791a35d40fd8b49381ed12122d54">eonc::Parameters::rgpot_options_t::torch_determinism_strict</a> {false}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00153">153</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  153</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a3a2afc338254f81b50849ecee8d513b8" name="a3a2afc338254f81b50849ecee8d513b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a2afc338254f81b50849ecee8d513b8">&#9670;&#160;</a></span>uncertainty_threshold</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a3a2afc338254f81b50849ecee8d513b8">eonc::Parameters::rgpot_options_t::uncertainty_threshold</a> {-1.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00152">152</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  152</span>{-1.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad0a84ab7fddfb329169f7dbec181e3fd" name="ad0a84ab7fddfb329169f7dbec181e3fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0a84ab7fddfb329169f7dbec181e3fd">&#9670;&#160;</a></span>xtb_accuracy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#ad0a84ab7fddfb329169f7dbec181e3fd">eonc::Parameters::rgpot_options_t::xtb_accuracy</a> {1.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00156">156</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  156</span>{1.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae258c981c5f8d40f16d20e2014b85fc1" name="ae258c981c5f8d40f16d20e2014b85fc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae258c981c5f8d40f16d20e2014b85fc1">&#9670;&#160;</a></span>xtb_charge</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#ae258c981c5f8d40f16d20e2014b85fc1">eonc::Parameters::rgpot_options_t::xtb_charge</a> {0.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00159">159</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  159</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8451afdf2b42fb443b157c21e8976e89" name="a8451afdf2b42fb443b157c21e8976e89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8451afdf2b42fb443b157c21e8976e89">&#9670;&#160;</a></span>xtb_electronic_temperature</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a8451afdf2b42fb443b157c21e8976e89">eonc::Parameters::rgpot_options_t::xtb_electronic_temperature</a> {300.0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00157">157</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  157</span>{300.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="afe1c469f7cda27dc7376bd3f0fd208a7" name="afe1c469f7cda27dc7376bd3f0fd208a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe1c469f7cda27dc7376bd3f0fd208a7">&#9670;&#160;</a></span>xtb_max_iterations</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#afe1c469f7cda27dc7376bd3f0fd208a7">eonc::Parameters::rgpot_options_t::xtb_max_iterations</a> {250}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00158">158</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  158</span>{250};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1acd9a6aaf9eec5a968e38c8097cbed6" name="a1acd9a6aaf9eec5a968e38c8097cbed6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1acd9a6aaf9eec5a968e38c8097cbed6">&#9670;&#160;</a></span>xtb_paramset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a1acd9a6aaf9eec5a968e38c8097cbed6">eonc::Parameters::rgpot_options_t::xtb_paramset</a> {&quot;GFN2xTB&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00155">155</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  155</span>{<span class="stringliteral">&quot;GFN2xTB&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a4918650cfd7499758edbfe2b79334ee5" name="a4918650cfd7499758edbfe2b79334ee5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4918650cfd7499758edbfe2b79334ee5">&#9670;&#160;</a></span>xtb_uhf</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html#a4918650cfd7499758edbfe2b79334ee5">eonc::Parameters::rgpot_options_t::xtb_uhf</a> {0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00160">160</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  160</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="Parameters_8h_source.html">Parameters.h</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="classParameters.html">Parameters</a></li><li class="navelem"><a href="structParameters_1_1rgpot__options__t.html">rgpot_options_t</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

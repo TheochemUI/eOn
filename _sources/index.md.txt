@@ -105,6 +105,13 @@ To schedule `eonclient` on a laptop or a Slurm login node, install
 [aiida-eon](https://pypi.org/project/aiida-eon/) and see
 {doc}`user_guide/aiida`.
 
+# C++ API
+
+Python bindings are documented in this book under {doc}`apidocs/index`.
+The C++ `client/` tree has a sibling [doxyYoda HTML site](https://eondocs.org/api-cpp/)
+(inline source, treeview). Locally that is `api-cpp/index.html` under
+`docs/build/html` after `pixi run -e docs install-doxyhtml`.
+
 # User guide
 
 ```{toctree}

@@ -1,0 +1,489 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/include/eon/BaseStructures.h Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('BaseStructures_8h_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">BaseStructures.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="BaseStructures_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">** This file is part of eOn.</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">**</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">** SPDX-License-Identifier: BSD-3-Clause</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">**</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">** Copyright (c) 2010--present, eOn Development Team</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">** All rights reserved.</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">**</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">** Repo:</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">** https://github.com/TheochemUI/eOn</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">*/</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;magic_enum/magic_enum_all.hpp&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;format&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;quill/Backend.h&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;quill/Frontend.h&quot;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;quill/LogMacros.h&quot;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;quill/Logger.h&quot;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &quot;quill/sinks/ConsoleSink.h&quot;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &quot;quill/sinks/FileSink.h&quot;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment">// This file contains forward declarations and enum classes</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment">// NOTE(rg):</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment">// We use magic_enum for converting &lt;-&gt; strings so the names have to match what</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment">// the user will input, though we are case-insensitive</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="comment">/* Don&#39;t guard with compiler directives anymore because that will break ABI for</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment"> * any of these */</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">   36</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  <span class="comment">// Only add to the end of this!!!</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a696b031073e74bf2cb98e5ef201d4aa3">   38</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a696b031073e74bf2cb98e5ef201d4aa3">UNKNOWN</a> = 0,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a043a87d3c77eef398c11f7ac3e13cbb9">   39</a></span>  <a class="code hl_class" href="classEMT.html">EMT</a>,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2acca9af0728aa14565a927d5f29e51b76">   40</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2acca9af0728aa14565a927d5f29e51b76">EXT_POT</a>,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a388d9e1171b3e4aeae9adc4e26ca15ae">   41</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a388d9e1171b3e4aeae9adc4e26ca15ae">LJ</a>,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a03aa008732239b9bff717d33b1e19346">   42</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a03aa008732239b9bff717d33b1e19346">LJCLUSTER</a>,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ae736d948b5e7ace5ddda0e3ff9ee9015">   43</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ae736d948b5e7ace5ddda0e3ff9ee9015">MORSE_PT</a>,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ac95c567acd100cb5b113cc9575889343">   44</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ac95c567acd100cb5b113cc9575889343">CUH2</a>,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a4781da127bb25b168c2d5361d5b64d01">   45</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a4781da127bb25b168c2d5361d5b64d01">TIP4P</a>,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2af162e316dc4ec2d550f48e0873b478f3">   46</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2af162e316dc4ec2d550f48e0873b478f3">TIP4P_PT</a>,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a11579d2499f1e564bcd427e60b74707b">   47</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a11579d2499f1e564bcd427e60b74707b">TIP4P_H</a>,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ac5a63598ebf68fe11121d4f26af831d9">   48</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ac5a63598ebf68fe11121d4f26af831d9">SPCE</a>,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ab65e908410eb266ddc3a2ebd0823d20e">   49</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ab65e908410eb266ddc3a2ebd0823d20e">EAM_AL</a>,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a3527a5a4dd8be015b035da11451acbd7">   50</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a3527a5a4dd8be015b035da11451acbd7">EDIP</a>,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ae1a90f13c4c7bb31380bbdf8a61ee73a">   51</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ae1a90f13c4c7bb31380bbdf8a61ee73a">FEHE</a>,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a8f8541c3f5b326f0a0f9165fc665b2d0">   52</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a8f8541c3f5b326f0a0f9165fc665b2d0">LENOSKY_SI</a>,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a9f2f64f595e6a58c08644a6f4721284b">   53</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a9f2f64f595e6a58c08644a6f4721284b">SW_SI</a>,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a2126e22a6d777d14d042c127ce59ba38">   54</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a2126e22a6d777d14d042c127ce59ba38">TERSOFF_SI</a>,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ae99753a8203cfe3bdda481961b33a17e">   55</a></span>  <a class="code hl_class" href="classVASP.html">VASP</a>,</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2acdbe6663305ad47936de845cc1350d57">   56</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2acdbe6663305ad47936de845cc1350d57">LAMMPS</a>,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a3b124f211648678733ce66a1b361f06c">   57</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a3b124f211648678733ce66a1b361f06c">MPI</a>,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>  <span class="comment">// Add newer entries here</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a065d784b407aa4ed171c0461a8e7cca7">   59</a></span>  <a class="code hl_class" href="classAMS.html">AMS</a>,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ad23bca783a57775346200e444f8a25ea">   60</a></span>  <a class="code hl_class" href="classAMS__IO.html">AMS_IO</a>,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2add20dd4273adca660f20d417a618e3e7">   61</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2add20dd4273adca660f20d417a618e3e7">GPR</a>,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a77af44909b5b423b7eb348c87d14112d">   62</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a77af44909b5b423b7eb348c87d14112d">CatLearn</a>,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a1664de04ffa04bc035a8ab84fa11dba4">   63</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a1664de04ffa04bc035a8ab84fa11dba4">XTB</a>,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a6ab5a34c9e555d0492a03426d63d4b69">   64</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a6ab5a34c9e555d0492a03426d63d4b69">ASE_ORCA</a>,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a0fe688b082b0929fe3f6cf195d7d371d">   65</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a0fe688b082b0929fe3f6cf195d7d371d">ASE_POT</a>,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ab9dac08e823e181040bad4edee7dfd0c">   66</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ab9dac08e823e181040bad4edee7dfd0c">ASE_NWCHEM</a>,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a2da9f88c4946c305ed6794006f56e8f3">   67</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a2da9f88c4946c305ed6794006f56e8f3">METATOMIC</a>,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a4d8812dbb1bc41c2d4af4a9967bff7a7">   68</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a4d8812dbb1bc41c2d4af4a9967bff7a7">ZBL</a>,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ae0fe01490c362129ccb544c5c3dc57f1">   69</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ae0fe01490c362129ccb544c5c3dc57f1">SocketNWChem</a>,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a483ab577e2e85e858725c5ee67d8b470">   70</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a483ab577e2e85e858725c5ee67d8b470">RGPOT</a></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>};</div>
+</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="foldopen" id="foldopen00073" data-start="{" data-end="};">
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379">   73</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379">JobType</a> {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  <span class="comment">// Only add to the end of this!!!</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a88183b946cc5f0e8c96b2e66e1c74a7e">   75</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a88183b946cc5f0e8c96b2e66e1c74a7e">Unknown</a> = 0,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a9fc45f090022ce2dfd190f63f008f36d">   76</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a9fc45f090022ce2dfd190f63f008f36d">Process_Search</a>,</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ab8dec34ded54db4ac86e3883ed47661f">   77</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ab8dec34ded54db4ac86e3883ed47661f">Saddle_Search</a>,</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aace1337f7aedb992174668251cfd946b">   78</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aace1337f7aedb992174668251cfd946b">Minimization</a>,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a2a3cd5946cfd317eb99c3d32e35e2d4c">   79</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a2a3cd5946cfd317eb99c3d32e35e2d4c">Point</a>,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379af076a029e047148cf37c119bd998cedc">   80</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379af076a029e047148cf37c119bd998cedc">Parallel_Replica</a>,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a360b447a439813c2804550b27e59a3bf">   81</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a360b447a439813c2804550b27e59a3bf">Safe_Hyperdynamics</a>,</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7217318fc4a1f9dfcc38a67a97e0ada8">   82</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7217318fc4a1f9dfcc38a67a97e0ada8">TAD</a>,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7b7087e25ad045bdcc44bcb3fde8cbd9">   83</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7b7087e25ad045bdcc44bcb3fde8cbd9">Replica_Exchange</a>,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379afd39326af66a5a13a2ea55c6d3bdb3a8">   84</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379afd39326af66a5a13a2ea55c6d3bdb3a8">Basin_Hopping</a>,</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ac05b513f4ff7ad2680f4528f5c8136b9">   85</a></span>  <a class="code hl_class" href="classeonc_1_1Hessian.html">Hessian</a>,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a8e2d35d1e552fb300a8b7b20104946b5">   86</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a8e2d35d1e552fb300a8b7b20104946b5">Finite_Difference</a>,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7ce58f798b6fb341e7f66d164a9d4c74">   87</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7ce58f798b6fb341e7f66d164a9d4c74">Nudged_Elastic_Band</a>,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a405d9a69e5139b9df0df6b66e18fc9e2">   88</a></span>  <a class="code hl_class" href="classeonc_1_1Dynamics.html">Dynamics</a>,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a6fbb561d946449c7994b2d21a153d22e">   89</a></span>  <a class="code hl_namespace" href="namespaceeonc_1_1Prefactor.html">Prefactor</a>,</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aa1b95ecf144fcfaa820cc44eb5508d29">   90</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aa1b95ecf144fcfaa820cc44eb5508d29">Global_Optimization</a>,</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a01dd0e56540fc70c33e9e7c6ee8a030a">   91</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a01dd0e56540fc70c33e9e7c6ee8a030a">Structure_Comparison</a>,</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a9de6455dd98217681c11484dd32f373b">   92</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a9de6455dd98217681c11484dd32f373b">Monte_Carlo</a>,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a0cbc6611f5540bd0809a388dc95a615b">   93</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a0cbc6611f5540bd0809a388dc95a615b">Test</a>,</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aaff099e938d23e84611548dcfd6be790">   94</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aaff099e938d23e84611548dcfd6be790">GP_Surrogate</a>,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ac293911fe4119863c48c2c41e7cf1b6e">   95</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ac293911fe4119863c48c2c41e7cf1b6e">OH_TST</a></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>};</div>
+</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="foldopen" id="foldopen00098" data-start="{" data-end="};">
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">   98</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>  <span class="comment">// Only add to the end of this!!!</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a88183b946cc5f0e8c96b2e66e1c74a7e">  100</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a88183b946cc5f0e8c96b2e66e1c74a7e">Unknown</a> = -1, <span class="comment">// an error case</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a6adf97f83acf6453d4a6a4b1070f3754">  101</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a6adf97f83acf6453d4a6a4b1070f3754">None</a> = 0,</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ad86cb697d0458a9fbfbadb6cd1e9e936">  102</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ad86cb697d0458a9fbfbadb6cd1e9e936">QM</a>,</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">  103</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">CG</a>,</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a341acbe802de0e3a8902fb8d8a3a352c">  104</a></span>  <a class="code hl_class" href="classeonc_1_1LBFGS.html">LBFGS</a>,</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ab7426fb9c3932995306fceba2874d057">  105</a></span>  <a class="code hl_class" href="classeonc_1_1FIRE.html">FIRE</a>,</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0">  106</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0">SD</a></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>};</div>
+</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a323be6616e43feab55a65202288b9459a9fc5887c030f7a3e19821ebec457e719">  109</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeonc.html#a323be6616e43feab55a65202288b9459">NEBInit</a> { <a class="code hl_enumvalue" href="namespaceeonc.html#a323be6616e43feab55a65202288b9459aaac544aacc3615aada24897a215f5046">LINEAR</a>, <a class="code hl_enumvalue" href="namespaceeonc.html#a323be6616e43feab55a65202288b9459a3e7a288b62da8504cbff0563b5ef4dbd">IDPP</a>, <a class="code hl_enumvalue" href="namespaceeonc.html#a323be6616e43feab55a65202288b9459ac27f5e52de2c6507cee2de1a383e1dfc">IDPP_COLLECTIVE</a>, <a class="code hl_enumvalue" href="namespaceeonc.html#a323be6616e43feab55a65202288b9459a29e4a53c9ac041a75f81f6c7ba523fa5">SIDPP</a>, <a class="code hl_enumvalue" href="namespaceeonc.html#a323be6616e43feab55a65202288b9459a2a7e413327431337bd7ca169281ebe5d">SIDPP_ZBL</a>, <a class="code hl_enumvalue" href="namespaceeonc.html#a323be6616e43feab55a65202288b9459a9fc5887c030f7a3e19821ebec457e719">FILE</a> };</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a9d50412b69404284d20de2af7e4206dc">  111</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459">RunStatus</a> { <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8">GOOD</a> = 0, <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a9d50412b69404284d20de2af7e4206dc">FAIL_MAX_ITERATIONS</a>, <a class="code hl_enumvalue" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459ad0a9f0540a833cc97bd3921d0de2d9b5">FAIL_POTENTIAL_FAILED</a> };</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="comment">// Dimer rotation / softest-mode estimation backend (Leng et al. JCP 2013 LOR,</span></div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="comment">// classical constrained rotation, or FD min-mode Lanczos/Davidson).</span></div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="comment">// Names match INI tokens (magic_enum, case-insensitive).</span></div>
+<div class="foldopen" id="foldopen00116" data-start="{" data-end="};">
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a424d22bb15de7b1ea51aeab514681c37">  116</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeonc.html#a424d22bb15de7b1ea51aeab514681c37">DimerRotationBackend</a> {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a424d22bb15de7b1ea51aeab514681c37a2091523979dbedcad728958414922c72">  117</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a424d22bb15de7b1ea51aeab514681c37a2091523979dbedcad728958414922c72">Classical</a> = 0,</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a424d22bb15de7b1ea51aeab514681c37a32970f54c315ab41c0582e2ed8eb4a7c">  118</a></span>  <a class="code hl_class" href="classeonc_1_1Lanczos.html">Lanczos</a>,</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a424d22bb15de7b1ea51aeab514681c37a3d7485486e07487a43f99cffe0a0b696">  119</a></span>  <a class="code hl_class" href="classeonc_1_1Davidson.html">Davidson</a>,</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a424d22bb15de7b1ea51aeab514681c37ad3335c358811cfc353257e21b1d38229">  120</a></span>  <a class="code hl_enumvalue" href="namespaceeonc.html#a424d22bb15de7b1ea51aeab514681c37ad3335c358811cfc353257e21b1d38229">LOR</a>,</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>};</div>
+</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>} <span class="comment">// namespace eonc</span></div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span><span class="comment">// Backward-compat aliases during migration</span></div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeonc.html#a424d22bb15de7b1ea51aeab514681c37">eonc::DimerRotationBackend</a>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379">eonc::JobType</a>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeonc.html#a323be6616e43feab55a65202288b9459">eonc::NEBInit</a>;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">eonc::OptType</a>;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">eonc::PotType</a>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span><span class="keyword">using </span><a class="code hl_enumeration" href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459">eonc::RunStatus</a>;</div>
+<div class="ttc" id="aclassAMS__IO_html"><div class="ttname"><a href="classAMS__IO.html">AMS_IO</a></div><div class="ttdef"><b>Definition</b> <a href="AMS__IO_8h_source.html#l00019">AMS_IO.h:19</a></div></div>
+<div class="ttc" id="aclassAMS_html"><div class="ttname"><a href="classAMS.html">AMS</a></div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00033">AMS.h:33</a></div></div>
+<div class="ttc" id="aclassEMT_html"><div class="ttname"><a href="classEMT.html">EMT</a></div><div class="ttdoc">The Effective Medium Theory (EMT) potential.</div><div class="ttdef"><b>Definition</b> <a href="EMT_8h_source.html#l00024">EMT.h:24</a></div></div>
+<div class="ttc" id="aclassVASP_html"><div class="ttname"><a href="classVASP.html">VASP</a></div><div class="ttdef"><b>Definition</b> <a href="VASP_8h_source.html#l00016">VASP.h:16</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Davidson_html"><div class="ttname"><a href="classeonc_1_1Davidson.html">eonc::Davidson</a></div><div class="ttdoc">Davidson method for the lowest Hessian curvature mode (min-mode).</div><div class="ttdef"><b>Definition</b> <a href="Davidson_8h_source.html#l00031">Davidson.h:31</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Dynamics_html"><div class="ttname"><a href="classeonc_1_1Dynamics.html">eonc::Dynamics</a></div><div class="ttdef"><b>Definition</b> <a href="Dynamics_8h_source.html#l00054">Dynamics.h:54</a></div></div>
+<div class="ttc" id="aclasseonc_1_1FIRE_html"><div class="ttname"><a href="classeonc_1_1FIRE.html">eonc::FIRE</a></div><div class="ttdef"><b>Definition</b> <a href="FIRE_8h_source.html#l00019">FIRE.h:19</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Hessian_html"><div class="ttname"><a href="classeonc_1_1Hessian.html">eonc::Hessian</a></div><div class="ttdef"><b>Definition</b> <a href="Hessian_8h_source.html#l00021">Hessian.h:21</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LBFGS_html"><div class="ttname"><a href="classeonc_1_1LBFGS.html">eonc::LBFGS</a></div><div class="ttdef"><b>Definition</b> <a href="LBFGS_8h_source.html#l00027">LBFGS.h:27</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Lanczos_html"><div class="ttname"><a href="classeonc_1_1Lanczos.html">eonc::Lanczos</a></div><div class="ttdef"><b>Definition</b> <a href="Lanczos_8h_source.html#l00026">Lanczos.h:26</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1Prefactor_html"><div class="ttname"><a href="namespaceeonc_1_1Prefactor.html">eonc::Prefactor</a></div><div class="ttdef"><b>Definition</b> <a href="Prefactor_8h_source.html#l00021">Prefactor.h:21</a></div></div>
+<div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00019">ARTnSaddleSearch.cpp:19</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">eonc::OptType</a></div><div class="ttdeci">OptType</div><div class="ttdef"><b>Definition</b> <a href="#l00098">BaseStructures.h:98</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a38f99abbc1d339c277c0669e7bc373c0">eonc::OptType::SD</a></div><div class="ttdeci">@ SD</div><div class="ttdef"><b>Definition</b> <a href="#l00106">BaseStructures.h:106</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">eonc::OptType::CG</a></div><div class="ttdeci">@ CG</div><div class="ttdef"><b>Definition</b> <a href="#l00103">BaseStructures.h:103</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56a6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a6adf97f83acf6453d4a6a4b1070f3754">eonc::OptType::None</a></div><div class="ttdeci">@ None</div><div class="ttdef"><b>Definition</b> <a href="#l00101">BaseStructures.h:101</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56ad86cb697d0458a9fbfbadb6cd1e9e936"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56ad86cb697d0458a9fbfbadb6cd1e9e936">eonc::OptType::QM</a></div><div class="ttdeci">@ QM</div><div class="ttdef"><b>Definition</b> <a href="#l00102">BaseStructures.h:102</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">eonc::PotType</a></div><div class="ttdeci">PotType</div><div class="ttdef"><b>Definition</b> <a href="#l00036">BaseStructures.h:36</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a03aa008732239b9bff717d33b1e19346"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a03aa008732239b9bff717d33b1e19346">eonc::PotType::LJCLUSTER</a></div><div class="ttdeci">@ LJCLUSTER</div><div class="ttdef"><b>Definition</b> <a href="#l00042">BaseStructures.h:42</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a0fe688b082b0929fe3f6cf195d7d371d"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a0fe688b082b0929fe3f6cf195d7d371d">eonc::PotType::ASE_POT</a></div><div class="ttdeci">@ ASE_POT</div><div class="ttdef"><b>Definition</b> <a href="#l00065">BaseStructures.h:65</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a11579d2499f1e564bcd427e60b74707b"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a11579d2499f1e564bcd427e60b74707b">eonc::PotType::TIP4P_H</a></div><div class="ttdeci">@ TIP4P_H</div><div class="ttdef"><b>Definition</b> <a href="#l00047">BaseStructures.h:47</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a1664de04ffa04bc035a8ab84fa11dba4"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a1664de04ffa04bc035a8ab84fa11dba4">eonc::PotType::XTB</a></div><div class="ttdeci">@ XTB</div><div class="ttdef"><b>Definition</b> <a href="#l00063">BaseStructures.h:63</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a2126e22a6d777d14d042c127ce59ba38"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a2126e22a6d777d14d042c127ce59ba38">eonc::PotType::TERSOFF_SI</a></div><div class="ttdeci">@ TERSOFF_SI</div><div class="ttdef"><b>Definition</b> <a href="#l00054">BaseStructures.h:54</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a2da9f88c4946c305ed6794006f56e8f3"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a2da9f88c4946c305ed6794006f56e8f3">eonc::PotType::METATOMIC</a></div><div class="ttdeci">@ METATOMIC</div><div class="ttdef"><b>Definition</b> <a href="#l00067">BaseStructures.h:67</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a3527a5a4dd8be015b035da11451acbd7"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a3527a5a4dd8be015b035da11451acbd7">eonc::PotType::EDIP</a></div><div class="ttdeci">@ EDIP</div><div class="ttdef"><b>Definition</b> <a href="#l00050">BaseStructures.h:50</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a388d9e1171b3e4aeae9adc4e26ca15ae"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a388d9e1171b3e4aeae9adc4e26ca15ae">eonc::PotType::LJ</a></div><div class="ttdeci">@ LJ</div><div class="ttdef"><b>Definition</b> <a href="#l00041">BaseStructures.h:41</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a3b124f211648678733ce66a1b361f06c"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a3b124f211648678733ce66a1b361f06c">eonc::PotType::MPI</a></div><div class="ttdeci">@ MPI</div><div class="ttdef"><b>Definition</b> <a href="#l00057">BaseStructures.h:57</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a4781da127bb25b168c2d5361d5b64d01"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a4781da127bb25b168c2d5361d5b64d01">eonc::PotType::TIP4P</a></div><div class="ttdeci">@ TIP4P</div><div class="ttdef"><b>Definition</b> <a href="#l00045">BaseStructures.h:45</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a483ab577e2e85e858725c5ee67d8b470"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a483ab577e2e85e858725c5ee67d8b470">eonc::PotType::RGPOT</a></div><div class="ttdeci">@ RGPOT</div><div class="ttdef"><b>Definition</b> <a href="#l00070">BaseStructures.h:70</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a4d8812dbb1bc41c2d4af4a9967bff7a7"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a4d8812dbb1bc41c2d4af4a9967bff7a7">eonc::PotType::ZBL</a></div><div class="ttdeci">@ ZBL</div><div class="ttdef"><b>Definition</b> <a href="#l00068">BaseStructures.h:68</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a696b031073e74bf2cb98e5ef201d4aa3"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a696b031073e74bf2cb98e5ef201d4aa3">eonc::PotType::UNKNOWN</a></div><div class="ttdeci">@ UNKNOWN</div><div class="ttdef"><b>Definition</b> <a href="#l00038">BaseStructures.h:38</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a6ab5a34c9e555d0492a03426d63d4b69"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a6ab5a34c9e555d0492a03426d63d4b69">eonc::PotType::ASE_ORCA</a></div><div class="ttdeci">@ ASE_ORCA</div><div class="ttdef"><b>Definition</b> <a href="#l00064">BaseStructures.h:64</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a77af44909b5b423b7eb348c87d14112d"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a77af44909b5b423b7eb348c87d14112d">eonc::PotType::CatLearn</a></div><div class="ttdeci">@ CatLearn</div><div class="ttdef"><b>Definition</b> <a href="#l00062">BaseStructures.h:62</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a8f8541c3f5b326f0a0f9165fc665b2d0"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a8f8541c3f5b326f0a0f9165fc665b2d0">eonc::PotType::LENOSKY_SI</a></div><div class="ttdeci">@ LENOSKY_SI</div><div class="ttdef"><b>Definition</b> <a href="#l00052">BaseStructures.h:52</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a9f2f64f595e6a58c08644a6f4721284b"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a9f2f64f595e6a58c08644a6f4721284b">eonc::PotType::SW_SI</a></div><div class="ttdeci">@ SW_SI</div><div class="ttdef"><b>Definition</b> <a href="#l00053">BaseStructures.h:53</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2ab65e908410eb266ddc3a2ebd0823d20e"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ab65e908410eb266ddc3a2ebd0823d20e">eonc::PotType::EAM_AL</a></div><div class="ttdeci">@ EAM_AL</div><div class="ttdef"><b>Definition</b> <a href="#l00049">BaseStructures.h:49</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2ab9dac08e823e181040bad4edee7dfd0c"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ab9dac08e823e181040bad4edee7dfd0c">eonc::PotType::ASE_NWCHEM</a></div><div class="ttdeci">@ ASE_NWCHEM</div><div class="ttdef"><b>Definition</b> <a href="#l00066">BaseStructures.h:66</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2ac5a63598ebf68fe11121d4f26af831d9"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ac5a63598ebf68fe11121d4f26af831d9">eonc::PotType::SPCE</a></div><div class="ttdeci">@ SPCE</div><div class="ttdef"><b>Definition</b> <a href="#l00048">BaseStructures.h:48</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2ac95c567acd100cb5b113cc9575889343"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ac95c567acd100cb5b113cc9575889343">eonc::PotType::CUH2</a></div><div class="ttdeci">@ CUH2</div><div class="ttdef"><b>Definition</b> <a href="#l00044">BaseStructures.h:44</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2acca9af0728aa14565a927d5f29e51b76"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2acca9af0728aa14565a927d5f29e51b76">eonc::PotType::EXT_POT</a></div><div class="ttdeci">@ EXT_POT</div><div class="ttdef"><b>Definition</b> <a href="#l00040">BaseStructures.h:40</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2acdbe6663305ad47936de845cc1350d57"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2acdbe6663305ad47936de845cc1350d57">eonc::PotType::LAMMPS</a></div><div class="ttdeci">@ LAMMPS</div><div class="ttdef"><b>Definition</b> <a href="#l00056">BaseStructures.h:56</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2add20dd4273adca660f20d417a618e3e7"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2add20dd4273adca660f20d417a618e3e7">eonc::PotType::GPR</a></div><div class="ttdeci">@ GPR</div><div class="ttdef"><b>Definition</b> <a href="#l00061">BaseStructures.h:61</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2ae0fe01490c362129ccb544c5c3dc57f1"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ae0fe01490c362129ccb544c5c3dc57f1">eonc::PotType::SocketNWChem</a></div><div class="ttdeci">@ SocketNWChem</div><div class="ttdef"><b>Definition</b> <a href="#l00069">BaseStructures.h:69</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2ae1a90f13c4c7bb31380bbdf8a61ee73a"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ae1a90f13c4c7bb31380bbdf8a61ee73a">eonc::PotType::FEHE</a></div><div class="ttdeci">@ FEHE</div><div class="ttdef"><b>Definition</b> <a href="#l00051">BaseStructures.h:51</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2ae736d948b5e7ace5ddda0e3ff9ee9015"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ae736d948b5e7ace5ddda0e3ff9ee9015">eonc::PotType::MORSE_PT</a></div><div class="ttdeci">@ MORSE_PT</div><div class="ttdef"><b>Definition</b> <a href="#l00043">BaseStructures.h:43</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2af162e316dc4ec2d550f48e0873b478f3"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2af162e316dc4ec2d550f48e0873b478f3">eonc::PotType::TIP4P_PT</a></div><div class="ttdeci">@ TIP4P_PT</div><div class="ttdef"><b>Definition</b> <a href="#l00046">BaseStructures.h:46</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a323be6616e43feab55a65202288b9459"><div class="ttname"><a href="namespaceeonc.html#a323be6616e43feab55a65202288b9459">eonc::NEBInit</a></div><div class="ttdeci">NEBInit</div><div class="ttdef"><b>Definition</b> <a href="#l00109">BaseStructures.h:109</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a323be6616e43feab55a65202288b9459a29e4a53c9ac041a75f81f6c7ba523fa5"><div class="ttname"><a href="namespaceeonc.html#a323be6616e43feab55a65202288b9459a29e4a53c9ac041a75f81f6c7ba523fa5">eonc::NEBInit::SIDPP</a></div><div class="ttdeci">@ SIDPP</div><div class="ttdef"><b>Definition</b> <a href="#l00109">BaseStructures.h:109</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a323be6616e43feab55a65202288b9459a2a7e413327431337bd7ca169281ebe5d"><div class="ttname"><a href="namespaceeonc.html#a323be6616e43feab55a65202288b9459a2a7e413327431337bd7ca169281ebe5d">eonc::NEBInit::SIDPP_ZBL</a></div><div class="ttdeci">@ SIDPP_ZBL</div><div class="ttdef"><b>Definition</b> <a href="#l00109">BaseStructures.h:109</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a323be6616e43feab55a65202288b9459a3e7a288b62da8504cbff0563b5ef4dbd"><div class="ttname"><a href="namespaceeonc.html#a323be6616e43feab55a65202288b9459a3e7a288b62da8504cbff0563b5ef4dbd">eonc::NEBInit::IDPP</a></div><div class="ttdeci">@ IDPP</div><div class="ttdef"><b>Definition</b> <a href="#l00109">BaseStructures.h:109</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a323be6616e43feab55a65202288b9459a9fc5887c030f7a3e19821ebec457e719"><div class="ttname"><a href="namespaceeonc.html#a323be6616e43feab55a65202288b9459a9fc5887c030f7a3e19821ebec457e719">eonc::NEBInit::FILE</a></div><div class="ttdeci">@ FILE</div><div class="ttdef"><b>Definition</b> <a href="#l00109">BaseStructures.h:109</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a323be6616e43feab55a65202288b9459aaac544aacc3615aada24897a215f5046"><div class="ttname"><a href="namespaceeonc.html#a323be6616e43feab55a65202288b9459aaac544aacc3615aada24897a215f5046">eonc::NEBInit::LINEAR</a></div><div class="ttdeci">@ LINEAR</div><div class="ttdef"><b>Definition</b> <a href="#l00109">BaseStructures.h:109</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a323be6616e43feab55a65202288b9459ac27f5e52de2c6507cee2de1a383e1dfc"><div class="ttname"><a href="namespaceeonc.html#a323be6616e43feab55a65202288b9459ac27f5e52de2c6507cee2de1a383e1dfc">eonc::NEBInit::IDPP_COLLECTIVE</a></div><div class="ttdeci">@ IDPP_COLLECTIVE</div><div class="ttdef"><b>Definition</b> <a href="#l00109">BaseStructures.h:109</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a424d22bb15de7b1ea51aeab514681c37"><div class="ttname"><a href="namespaceeonc.html#a424d22bb15de7b1ea51aeab514681c37">eonc::DimerRotationBackend</a></div><div class="ttdeci">DimerRotationBackend</div><div class="ttdef"><b>Definition</b> <a href="#l00116">BaseStructures.h:116</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a424d22bb15de7b1ea51aeab514681c37a2091523979dbedcad728958414922c72"><div class="ttname"><a href="namespaceeonc.html#a424d22bb15de7b1ea51aeab514681c37a2091523979dbedcad728958414922c72">eonc::DimerRotationBackend::Classical</a></div><div class="ttdeci">@ Classical</div><div class="ttdef"><b>Definition</b> <a href="#l00117">BaseStructures.h:117</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a424d22bb15de7b1ea51aeab514681c37ad3335c358811cfc353257e21b1d38229"><div class="ttname"><a href="namespaceeonc.html#a424d22bb15de7b1ea51aeab514681c37ad3335c358811cfc353257e21b1d38229">eonc::DimerRotationBackend::LOR</a></div><div class="ttdeci">@ LOR</div><div class="ttdef"><b>Definition</b> <a href="#l00120">BaseStructures.h:120</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a848a1af56249f0cafd872ca8b59fc459"><div class="ttname"><a href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459">eonc::RunStatus</a></div><div class="ttdeci">RunStatus</div><div class="ttdef"><b>Definition</b> <a href="#l00111">BaseStructures.h:111</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8"><div class="ttname"><a href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8">eonc::RunStatus::GOOD</a></div><div class="ttdeci">@ GOOD</div><div class="ttdef"><b>Definition</b> <a href="#l00111">BaseStructures.h:111</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a848a1af56249f0cafd872ca8b59fc459a9d50412b69404284d20de2af7e4206dc"><div class="ttname"><a href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a9d50412b69404284d20de2af7e4206dc">eonc::RunStatus::FAIL_MAX_ITERATIONS</a></div><div class="ttdeci">@ FAIL_MAX_ITERATIONS</div><div class="ttdef"><b>Definition</b> <a href="#l00111">BaseStructures.h:111</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a848a1af56249f0cafd872ca8b59fc459ad0a9f0540a833cc97bd3921d0de2d9b5"><div class="ttname"><a href="namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459ad0a9f0540a833cc97bd3921d0de2d9b5">eonc::RunStatus::FAIL_POTENTIAL_FAILED</a></div><div class="ttdeci">@ FAIL_POTENTIAL_FAILED</div><div class="ttdef"><b>Definition</b> <a href="#l00111">BaseStructures.h:111</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379">eonc::JobType</a></div><div class="ttdeci">JobType</div><div class="ttdef"><b>Definition</b> <a href="#l00073">BaseStructures.h:73</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a01dd0e56540fc70c33e9e7c6ee8a030a"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a01dd0e56540fc70c33e9e7c6ee8a030a">eonc::JobType::Structure_Comparison</a></div><div class="ttdeci">@ Structure_Comparison</div><div class="ttdef"><b>Definition</b> <a href="#l00091">BaseStructures.h:91</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a0cbc6611f5540bd0809a388dc95a615b"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a0cbc6611f5540bd0809a388dc95a615b">eonc::JobType::Test</a></div><div class="ttdeci">@ Test</div><div class="ttdef"><b>Definition</b> <a href="#l00093">BaseStructures.h:93</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a2a3cd5946cfd317eb99c3d32e35e2d4c"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a2a3cd5946cfd317eb99c3d32e35e2d4c">eonc::JobType::Point</a></div><div class="ttdeci">@ Point</div><div class="ttdef"><b>Definition</b> <a href="#l00079">BaseStructures.h:79</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a360b447a439813c2804550b27e59a3bf"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a360b447a439813c2804550b27e59a3bf">eonc::JobType::Safe_Hyperdynamics</a></div><div class="ttdeci">@ Safe_Hyperdynamics</div><div class="ttdef"><b>Definition</b> <a href="#l00081">BaseStructures.h:81</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a7217318fc4a1f9dfcc38a67a97e0ada8"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7217318fc4a1f9dfcc38a67a97e0ada8">eonc::JobType::TAD</a></div><div class="ttdeci">@ TAD</div><div class="ttdef"><b>Definition</b> <a href="#l00082">BaseStructures.h:82</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a7b7087e25ad045bdcc44bcb3fde8cbd9"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7b7087e25ad045bdcc44bcb3fde8cbd9">eonc::JobType::Replica_Exchange</a></div><div class="ttdeci">@ Replica_Exchange</div><div class="ttdef"><b>Definition</b> <a href="#l00083">BaseStructures.h:83</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a7ce58f798b6fb341e7f66d164a9d4c74"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7ce58f798b6fb341e7f66d164a9d4c74">eonc::JobType::Nudged_Elastic_Band</a></div><div class="ttdeci">@ Nudged_Elastic_Band</div><div class="ttdef"><b>Definition</b> <a href="#l00087">BaseStructures.h:87</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a88183b946cc5f0e8c96b2e66e1c74a7e"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a88183b946cc5f0e8c96b2e66e1c74a7e">eonc::JobType::Unknown</a></div><div class="ttdeci">@ Unknown</div><div class="ttdef"><b>Definition</b> <a href="#l00075">BaseStructures.h:75</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a8e2d35d1e552fb300a8b7b20104946b5"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a8e2d35d1e552fb300a8b7b20104946b5">eonc::JobType::Finite_Difference</a></div><div class="ttdeci">@ Finite_Difference</div><div class="ttdef"><b>Definition</b> <a href="#l00086">BaseStructures.h:86</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a9de6455dd98217681c11484dd32f373b"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a9de6455dd98217681c11484dd32f373b">eonc::JobType::Monte_Carlo</a></div><div class="ttdeci">@ Monte_Carlo</div><div class="ttdef"><b>Definition</b> <a href="#l00092">BaseStructures.h:92</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a9fc45f090022ce2dfd190f63f008f36d"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a9fc45f090022ce2dfd190f63f008f36d">eonc::JobType::Process_Search</a></div><div class="ttdeci">@ Process_Search</div><div class="ttdef"><b>Definition</b> <a href="#l00076">BaseStructures.h:76</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379aa1b95ecf144fcfaa820cc44eb5508d29"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aa1b95ecf144fcfaa820cc44eb5508d29">eonc::JobType::Global_Optimization</a></div><div class="ttdeci">@ Global_Optimization</div><div class="ttdef"><b>Definition</b> <a href="#l00090">BaseStructures.h:90</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379aace1337f7aedb992174668251cfd946b"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aace1337f7aedb992174668251cfd946b">eonc::JobType::Minimization</a></div><div class="ttdeci">@ Minimization</div><div class="ttdef"><b>Definition</b> <a href="#l00078">BaseStructures.h:78</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379aaff099e938d23e84611548dcfd6be790"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379aaff099e938d23e84611548dcfd6be790">eonc::JobType::GP_Surrogate</a></div><div class="ttdeci">@ GP_Surrogate</div><div class="ttdef"><b>Definition</b> <a href="#l00094">BaseStructures.h:94</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379ab8dec34ded54db4ac86e3883ed47661f"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ab8dec34ded54db4ac86e3883ed47661f">eonc::JobType::Saddle_Search</a></div><div class="ttdeci">@ Saddle_Search</div><div class="ttdef"><b>Definition</b> <a href="#l00077">BaseStructures.h:77</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379ac293911fe4119863c48c2c41e7cf1b6e"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379ac293911fe4119863c48c2c41e7cf1b6e">eonc::JobType::OH_TST</a></div><div class="ttdeci">@ OH_TST</div><div class="ttdef"><b>Definition</b> <a href="#l00095">BaseStructures.h:95</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379af076a029e047148cf37c119bd998cedc"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379af076a029e047148cf37c119bd998cedc">eonc::JobType::Parallel_Replica</a></div><div class="ttdeci">@ Parallel_Replica</div><div class="ttdef"><b>Definition</b> <a href="#l00080">BaseStructures.h:80</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379afd39326af66a5a13a2ea55c6d3bdb3a8"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379afd39326af66a5a13a2ea55c6d3bdb3a8">eonc::JobType::Basin_Hopping</a></div><div class="ttdeci">@ Basin_Hopping</div><div class="ttdef"><b>Definition</b> <a href="#l00084">BaseStructures.h:84</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="dir_2527c5cc2e6dc8ce970a4d420439d1d9.html">eon</a></li><li class="navelem"><a href="BaseStructures_8h.html">BaseStructures.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

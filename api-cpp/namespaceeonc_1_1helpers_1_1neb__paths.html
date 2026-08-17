@@ -1,0 +1,1147 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::helpers::neb_paths Namespace Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('namespaceeonc_1_1helpers_1_1neb__paths.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::helpers::neb_paths Namespace Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a78b6ee8c903f3dd4b5a60195717efa92" id="r_a78b6ee8c903f3dd4b5a60195717efa92"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a78b6ee8c903f3dd4b5a60195717efa92">createZBLPotential</a> ()</td></tr>
+<tr class="memitem:a881c5c5ee2e64aa21ddb092e55ecf42a" id="r_a881c5c5ee2e64aa21ddb092e55ecf42a"><td class="memItemLeft">std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a881c5c5ee2e64aa21ddb092e55ecf42a">linearPath</a> (const <a class="el" href="classMatter.html">Matter</a> &amp;initImg, const <a class="el" href="classMatter.html">Matter</a> &amp;finalImg, const size_t nimgs)</td></tr>
+<tr class="memitem:accae75792a0d4d17a98afd87a314120c" id="r_accae75792a0d4d17a98afd87a314120c"><td class="memItemLeft">std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#accae75792a0d4d17a98afd87a314120c">filePathInit</a> (const std::vector&lt; fs::path &gt; &amp;fsrcs, const <a class="el" href="classMatter.html">Matter</a> &amp;refImg, const size_t nimgs)</td></tr>
+<tr class="memitem:afa0f135479f27bb6864ae1aeb4de05eb" id="r_afa0f135479f27bb6864ae1aeb4de05eb"><td class="memItemLeft">std::vector&lt; fs::path &gt;&#160;</td><td class="memItemRight"><a class="el" href="#afa0f135479f27bb6864ae1aeb4de05eb">readFilePaths</a> (const std::string &amp;listFilePath)</td></tr>
+<tr class="memdesc:afa0f135479f27bb6864ae1aeb4de05eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads a file where each line contains a path to another file.  <br /></td></tr>
+<tr class="memitem:a8fb55b1197c5fe4ae02c25c722d6c7dd" id="r_a8fb55b1197c5fe4ae02c25c722d6c7dd"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a>&#160;</td><td class="memItemRight"><a class="el" href="#a8fb55b1197c5fe4ae02c25c722d6c7dd">getDistanceMatrix</a> (const <a class="el" href="classMatter.html">Matter</a> &amp;m)</td></tr>
+<tr class="memitem:ad2dc270bf83155b68f77dd426014e67d" id="r_ad2dc270bf83155b68f77dd426014e67d"><td class="memItemLeft">std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ad2dc270bf83155b68f77dd426014e67d">idppPath</a> (const <a class="el" href="classMatter.html">Matter</a> &amp;initImg, const <a class="el" href="classMatter.html">Matter</a> &amp;finalImg, const size_t nimgs, const <a class="el" href="classParameters.html">Parameters</a> &amp;params, bool use_zbl)</td></tr>
+<tr class="memitem:ae6a548e24fcbd91b263a2b1d5551c921" id="r_ae6a548e24fcbd91b263a2b1d5551c921"><td class="memItemLeft">std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ae6a548e24fcbd91b263a2b1d5551c921">idppCollectivePath</a> (const <a class="el" href="classMatter.html">Matter</a> &amp;initImg, const <a class="el" href="classMatter.html">Matter</a> &amp;finalImg, size_t nimgs, const <a class="el" href="classParameters.html">Parameters</a> &amp;params, bool use_zbl)</td></tr>
+<tr class="memitem:a2a6dea80431322a416c54ae728b401ee" id="r_a2a6dea80431322a416c54ae728b401ee"><td class="memItemLeft"><a class="el" href="classMatter.html">Matter</a>&#160;</td><td class="memItemRight"><a class="el" href="#a2a6dea80431322a416c54ae728b401ee">interpolateImage</a> (const <a class="el" href="classMatter.html">Matter</a> &amp;A, const <a class="el" href="classMatter.html">Matter</a> &amp;B, double fraction)</td></tr>
+<tr class="memitem:a236e4209cbbfbf7e6a057041ab6aa7f1" id="r_a236e4209cbbfbf7e6a057041ab6aa7f1"><td class="memItemLeft">std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a236e4209cbbfbf7e6a057041ab6aa7f1">sidppPath</a> (const <a class="el" href="classMatter.html">Matter</a> &amp;initImg, const <a class="el" href="classMatter.html">Matter</a> &amp;finalImg, size_t target_nimgs, const <a class="el" href="classParameters.html">Parameters</a> &amp;params, bool use_zbl)</td></tr>
+<tr class="memitem:a056c7b9e05eb6de75f8b18a3d257c2e1" id="r_a056c7b9e05eb6de75f8b18a3d257c2e1"><td class="memItemLeft"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>&#160;</td><td class="memItemRight"><a class="el" href="#a056c7b9e05eb6de75f8b18a3d257c2e1">cubicInterpolate</a> (const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;P0, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;T0, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;P1, const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;T1, double f)</td></tr>
+<tr class="memdesc:a056c7b9e05eb6de75f8b18a3d257c2e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolates positions using a cubic Hermite spline.  <br /></td></tr>
+<tr class="memitem:a228cf26acf7d7d5deb0f43d3d6634049" id="r_a228cf26acf7d7d5deb0f43d3d6634049"><td class="memItemLeft">std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a228cf26acf7d7d5deb0f43d3d6634049">resamplePath</a> (const std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &amp;densePath, size_t targetCount)</td></tr>
+<tr class="memitem:a275da786b69a8584999c0653c6fc9132" id="r_a275da786b69a8584999c0653c6fc9132"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a275da786b69a8584999c0653c6fc9132">resamplePathInPlace</a> (std::span&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; path)</td></tr>
+<tr class="memdesc:a275da786b69a8584999c0653c6fc9132"><td class="mdescLeft">&#160;</td><td class="mdescRight">In-place path reparameterization for NEB shared_ptr paths.  <br /></td></tr>
+</table>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a78b6ee8c903f3dd4b5a60195717efa92" name="a78b6ee8c903f3dd4b5a60195717efa92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78b6ee8c903f3dd4b5a60195717efa92">&#9670;&#160;</a></span>createZBLPotential()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt; eonc::helpers::neb_paths::createZBLPotential </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00018">18</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   18</span>                                              {</div>
+<div class="line"><span class="lineno">   19</span>  <span class="keyword">auto</span> zbl_params = <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a>{};</div>
+<div class="line"><span class="lineno">   20</span>  zbl_params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">potential_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1potential__options__t.html#a8c62d8e8c2374eff1672e72ec2bae1c8">potential</a> = <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a4d8812dbb1bc41c2d4af4a9967bff7a7">PotType::ZBL</a>;</div>
+<div class="line"><span class="lineno">   21</span>  <span class="comment">// Strong short-range repulsion</span></div>
+<div class="line"><span class="lineno">   22</span>  zbl_params.zbl_options.cut_inner = 0.5;</div>
+<div class="line"><span class="lineno">   23</span>  <span class="comment">// Cutoff sufficient to push overlapping atoms apart</span></div>
+<div class="line"><span class="lineno">   24</span>  zbl_params.zbl_options.cut_global = 3.0;</div>
+<div class="line"><span class="lineno">   25</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a>(<a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a4d8812dbb1bc41c2d4af4a9967bff7a7">PotType::ZBL</a>, zbl_params);</div>
+<div class="line"><span class="lineno">   26</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html"><div class="ttname"><a href="classeonc_1_1Parameters.html">eonc::Parameters</a></div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00028">Parameters.h:28</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a75c3a463dab97989d367d624e455606c"><div class="ttname"><a href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">eonc::Parameters::potential_options</a></div><div class="ttdeci">struct eonc::Parameters::potential_options_t potential_options</div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_ad3c8668c89bd3ffae898307b0890f1ff"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#ad3c8668c89bd3ffae898307b0890f1ff">eonc::helpers::makePotential</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; makePotential(const Parameters &amp;params)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8cpp_source.html#l00118">Potential.cpp:118</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a4d8812dbb1bc41c2d4af4a9967bff7a7"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a4d8812dbb1bc41c2d4af4a9967bff7a7">eonc::PotType::ZBL</a></div><div class="ttdeci">@ ZBL</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00068">BaseStructures.h:68</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1potential__options__t_html_a8c62d8e8c2374eff1672e72ec2bae1c8"><div class="ttname"><a href="structeonc_1_1Parameters_1_1potential__options__t.html#a8c62d8e8c2374eff1672e72ec2bae1c8">eonc::Parameters::potential_options_t::potential</a></div><div class="ttdeci">PotType potential</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00067">Parameters.h:67</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a056c7b9e05eb6de75f8b18a3d257c2e1" name="a056c7b9e05eb6de75f8b18a3d257c2e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a056c7b9e05eb6de75f8b18a3d257c2e1">&#9670;&#160;</a></span>cubicInterpolate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> eonc::helpers::neb_paths::cubicInterpolate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>P0</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>T0</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>P1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>T1</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>f</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Interpolates positions using a cubic Hermite spline. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">P0</td><td>Starting positions </td></tr>
+    <tr><td class="paramname">T0</td><td>Tangent at P0 (scaled by segment length) </td></tr>
+    <tr><td class="paramname">P1</td><td>Ending positions </td></tr>
+    <tr><td class="paramname">T1</td><td>Tangent at P1 (scaled by segment length) </td></tr>
+    <tr><td class="paramname">f</td><td>Fraction between 0 and 1 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00330">330</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  332</span>                                      {</div>
+<div class="line"><span class="lineno">  333</span>  <span class="keywordtype">double</span> f2 = f * f;</div>
+<div class="line"><span class="lineno">  334</span>  <span class="keywordtype">double</span> f3 = f2 * f;</div>
+<div class="line"><span class="lineno">  335</span> </div>
+<div class="line"><span class="lineno">  336</span>  <span class="comment">// Hermite basis functions</span></div>
+<div class="line"><span class="lineno">  337</span>  <span class="keywordtype">double</span> h00 = 2 * f3 - 3 * f2 + 1;</div>
+<div class="line"><span class="lineno">  338</span>  <span class="keywordtype">double</span> h10 = f3 - 2 * f2 + f;</div>
+<div class="line"><span class="lineno">  339</span>  <span class="keywordtype">double</span> h01 = -2 * f3 + 3 * f2;</div>
+<div class="line"><span class="lineno">  340</span>  <span class="keywordtype">double</span> h11 = f3 - f2;</div>
+<div class="line"><span class="lineno">  341</span> </div>
+<div class="line"><span class="lineno">  342</span>  <span class="keywordflow">return</span> h00 * P0 + h10 * T0 + h01 * P1 + h11 * T1;</div>
+<div class="line"><span class="lineno">  343</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="accae75792a0d4d17a98afd87a314120c" name="accae75792a0d4d17a98afd87a314120c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accae75792a0d4d17a98afd87a314120c">&#9670;&#160;</a></span>filePathInit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; eonc::helpers::neb_paths::filePathInit </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; fs::path &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>fsrcs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>refImg</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>nimgs</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00047">47</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   48</span>                                                                           {</div>
+<div class="line"><span class="lineno">   49</span>  std::vector&lt;Matter&gt; all_images_on_path;</div>
+<div class="line"><span class="lineno">   50</span>  <span class="keywordflow">if</span> (nimgs + 2 != fsrcs.size()) {</div>
+<div class="line"><span class="lineno">   51</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Error in filePathInit: Expected &quot;</span> +</div>
+<div class="line"><span class="lineno">   52</span>                             std::to_string(nimgs + 2) + <span class="stringliteral">&quot; files, but got &quot;</span> +</div>
+<div class="line"><span class="lineno">   53</span>                             std::to_string(fsrcs.size()) + <span class="stringliteral">&quot;.&quot;</span>);</div>
+<div class="line"><span class="lineno">   54</span>  }</div>
+<div class="line"><span class="lineno">   55</span>  all_images_on_path.reserve(nimgs + 2);</div>
+<div class="line"><span class="lineno">   56</span>  <span class="comment">// For all images</span></div>
+<div class="line"><span class="lineno">   57</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;filePath : fsrcs) {</div>
+<div class="line"><span class="lineno">   58</span>    <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> img(refImg);</div>
+<div class="line"><span class="lineno">   59</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a>(img.con2matter(filePath.string()))) {</div>
+<div class="line"><span class="lineno">   60</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;failed to load NEB path frame: &quot;</span> +</div>
+<div class="line"><span class="lineno">   61</span>                               filePath.string());</div>
+<div class="line"><span class="lineno">   62</span>    }</div>
+<div class="line"><span class="lineno">   63</span>    all_images_on_path.push_back(img);</div>
+<div class="line"><span class="lineno">   64</span>  }</div>
+<div class="line"><span class="lineno">   65</span>  <span class="keywordflow">return</span> all_images_on_path;</div>
+<div class="line"><span class="lineno">   66</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html"><div class="ttname"><a href="classeonc_1_1Matter.html">eonc::Matter</a></div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00092">Matter.h:92</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_af66b2723d892a4095754f9b0354b4f78"><div class="ttname"><a href="namespaceeonc_1_1io.html#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a></div><div class="ttdeci">constexpr bool io_ok(IoStatus s) noexcept</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00038">ConFileIO.h:38</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8fb55b1197c5fe4ae02c25c722d6c7dd" name="a8fb55b1197c5fe4ae02c25c722d6c7dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fb55b1197c5fe4ae02c25c722d6c7dd">&#9670;&#160;</a></span>getDistanceMatrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> eonc::helpers::neb_paths::getDistanceMatrix </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>m</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00088">88</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   88</span>                                            {</div>
+<div class="line"><span class="lineno">   89</span>  <span class="keywordtype">int</span> natoms = m.<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>();</div>
+<div class="line"><span class="lineno">   90</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> d(natoms, natoms);</div>
+<div class="line"><span class="lineno">   91</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = m.<a class="code hl_function" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>();</div>
+<div class="line"><span class="lineno">   92</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; natoms; ++i) {</div>
+<div class="line"><span class="lineno">   93</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; natoms; ++j) {</div>
+<div class="line"><span class="lineno">   94</span>      <span class="keywordflow">if</span> (i == j) {</div>
+<div class="line"><span class="lineno">   95</span>        d(i, j) = 0.0;</div>
+<div class="line"><span class="lineno">   96</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   97</span>        d(i, j) = m.<a class="code hl_function" href="classeonc_1_1Matter.html#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(pos.row(i) - pos.row(j)).norm();</div>
+<div class="line"><span class="lineno">   98</span>      }</div>
+<div class="line"><span class="lineno">   99</span>    }</div>
+<div class="line"><span class="lineno">  100</span>  }</div>
+<div class="line"><span class="lineno">  101</span>  <span class="keywordflow">return</span> d;</div>
+<div class="line"><span class="lineno">  102</span>}</div>
+<div class="ttc" id="aEigen_8h_html_a45bb4cbce093fca4dfb193d3f649da30"><div class="ttname"><a href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, eOnStorageOrder &gt; MatrixXd</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00033">Eigen.h:33</a></div></div>
+<div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a5fe171bc21bf698aa9589fc66a118b7a"><div class="ttname"><a href="classeonc_1_1Matter.html#a5fe171bc21bf698aa9589fc66a118b7a">eonc::Matter::pbc</a></div><div class="ttdeci">AtomMatrix pbc(const AtomMatrix &amp;diff) const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00163">Matter.h:163</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a6d270e335854296565eaa5ba015753b5"><div class="ttname"><a href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">eonc::Matter::numberOfAtoms</a></div><div class="ttdeci">long int numberOfAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00209">Matter.cpp:209</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_af4c79f27fe60b4dbd397064faf3f1f78"><div class="ttname"><a href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">eonc::Matter::getPositions</a></div><div class="ttdeci">const AtomMatrix &amp; getPositions() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00236">Matter.cpp:236</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae6a548e24fcbd91b263a2b1d5551c921" name="ae6a548e24fcbd91b263a2b1d5551c921"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6a548e24fcbd91b263a2b1d5551c921">&#9670;&#160;</a></span>idppCollectivePath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; eonc::helpers::neb_paths::idppCollectivePath </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>initImg</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>finalImg</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>nimgs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>use_zbl</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00162">162</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  164</span>                                                                               {</div>
+<div class="line"><span class="lineno">  165</span>  <span class="keyword">auto</span> <a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a> = <a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>();</div>
+<div class="line"><span class="lineno">  166</span>  QUILL_LOG_INFO(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>, <span class="stringliteral">&quot;Generating initial path using Collective IDPP-NEB...&quot;</span>);</div>
+<div class="line"><span class="lineno">  167</span> </div>
+<div class="line"><span class="lineno">  168</span>  std::vector&lt;Matter&gt; path = <a class="code hl_function" href="#a881c5c5ee2e64aa21ddb092e55ecf42a">linearPath</a>(initImg, finalImg, nimgs);</div>
+<div class="line"><span class="lineno">  169</span> </div>
+<div class="line"><span class="lineno">  170</span>  <span class="comment">// 1. Base Objective</span></div>
+<div class="line"><span class="lineno">  171</span>  std::shared_ptr&lt;ObjectiveFunction&gt; idpp_objf =</div>
+<div class="line"><span class="lineno">  172</span>      std::make_shared&lt;CollectiveIDPPObjectiveFunction&gt;(path, params);</div>
+<div class="line"><span class="lineno">  173</span> </div>
+<div class="line"><span class="lineno">  174</span>  <span class="comment">// 2. Optional ZBL Wrapper</span></div>
+<div class="line"><span class="lineno">  175</span>  <span class="keywordflow">if</span> (use_zbl) {</div>
+<div class="line"><span class="lineno">  176</span>    QUILL_LOG_INFO(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>, <span class="stringliteral">&quot;Enabling ZBL repulsive penalty for IDPP...&quot;</span>);</div>
+<div class="line"><span class="lineno">  177</span>    <span class="keyword">auto</span> zbl_pot = <a class="code hl_function" href="#a78b6ee8c903f3dd4b5a60195717efa92">createZBLPotential</a>();</div>
+<div class="line"><span class="lineno">  178</span>    <span class="comment">// Wrap the IDPP objective with ZBL repulsion (weight = 1.0)</span></div>
+<div class="line"><span class="lineno">  179</span>    idpp_objf = std::make_shared&lt;ZBLRepulsiveIDPPObjective&gt;(idpp_objf, zbl_pot,</div>
+<div class="line"><span class="lineno">  180</span>                                                            path, params, 1.0);</div>
+<div class="line"><span class="lineno">  181</span>  }</div>
+<div class="line"><span class="lineno">  182</span> </div>
+<div class="line"><span class="lineno">  183</span>  <span class="keyword">auto</span> optim = <a class="code hl_function" href="namespaceeonc_1_1helpers_1_1create.html#a5b0011df69b04b52916bd7150ab60fc4">eonc::helpers::create::mkOptim</a>(</div>
+<div class="line"><span class="lineno">  184</span>      idpp_objf, params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t.html#a363ee7a2ad150268bc4567c76aa225f3">initialization</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t_1_1path__initialization__t.html#a93a213d134cb0bfd59d03cbe6daae4b4">opt_method</a>, params);</div>
+<div class="line"><span class="lineno">  185</span> </div>
+<div class="line"><span class="lineno">  186</span>  <span class="keywordtype">int</span> maxSteps = params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t.html#a363ee7a2ad150268bc4567c76aa225f3">initialization</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t_1_1path__initialization__t.html#a1f26cff64e925ef6c76532f4e7721a87">max_iterations</a>;</div>
+<div class="line"><span class="lineno">  187</span>  <span class="keywordtype">int</span> currentStep = 0;</div>
+<div class="line"><span class="lineno">  188</span>  <span class="keywordtype">int</span> checkInterval = 40;</div>
+<div class="line"><span class="lineno">  189</span> </div>
+<div class="line"><span class="lineno">  190</span>  <span class="keywordflow">while</span> (currentStep &lt; maxSteps) {</div>
+<div class="line"><span class="lineno">  191</span>    optim-&gt;run(checkInterval, params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#af4fcd22b349db9419c51039f62290c33">max_move</a>);</div>
+<div class="line"><span class="lineno">  192</span>    currentStep += checkInterval;</div>
+<div class="line"><span class="lineno">  193</span> </div>
+<div class="line"><span class="lineno">  194</span>    <span class="keywordflow">if</span> (idpp_objf-&gt;isConverged()) {</div>
+<div class="line"><span class="lineno">  195</span>      QUILL_LOG_INFO(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>,</div>
+<div class="line"><span class="lineno">  196</span>                     <span class="stringliteral">&quot;IDPP-NEB converged after {} steps. Max Residual: {:.4f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  197</span>                     currentStep, idpp_objf-&gt;getConvergence());</div>
+<div class="line"><span class="lineno">  198</span>      <span class="keywordflow">return</span> path;</div>
+<div class="line"><span class="lineno">  199</span>    }</div>
+<div class="line"><span class="lineno">  200</span>  }</div>
+<div class="line"><span class="lineno">  201</span> </div>
+<div class="line"><span class="lineno">  202</span>  QUILL_LOG_WARNING(log,</div>
+<div class="line"><span class="lineno">  203</span>                    <span class="stringliteral">&quot;IDPP-NEB reached max_iterations ({}) without full &quot;</span></div>
+<div class="line"><span class="lineno">  204</span>                    <span class="stringliteral">&quot;convergence. Residual: {:.4f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  205</span>                    maxSteps, idpp_objf-&gt;getConvergence());</div>
+<div class="line"><span class="lineno">  206</span>  <span class="keywordflow">return</span> path;</div>
+<div class="line"><span class="lineno">  207</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a1c3ba2cdc8f797e5ab2d8961720fe896"><div class="ttname"><a href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">eonc::Parameters::optimizer_options</a></div><div class="ttdeci">struct eonc::Parameters::optimizer_options_t optimizer_options</div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a40bad5f66d7bb2ccfca684f8ecf850c2"><div class="ttname"><a href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">eonc::Parameters::neb_options</a></div><div class="ttdeci">struct eonc::Parameters::neb_options_t neb_options</div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_1_1create_html_a5b0011df69b04b52916bd7150ab60fc4"><div class="ttname"><a href="namespaceeonc_1_1helpers_1_1create.html#a5b0011df69b04b52916bd7150ab60fc4">eonc::helpers::create::mkOptim</a></div><div class="ttdeci">std::unique_ptr&lt; Optimizer &gt; mkOptim(std::shared_ptr&lt; ObjectiveFunction &gt; a_objf, OptType a_otype, const Parameters &amp;a_params)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8cpp_source.html#l00021">Optimizer.cpp:21</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_1_1neb__paths_html_a78b6ee8c903f3dd4b5a60195717efa92"><div class="ttname"><a href="#a78b6ee8c903f3dd4b5a60195717efa92">eonc::helpers::neb_paths::createZBLPotential</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; createZBLPotential()</div><div class="ttdef"><b>Definition</b> <a href="NEBInitialPaths_8cpp_source.html#l00018">NEBInitialPaths.cpp:18</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_1_1neb__paths_html_a881c5c5ee2e64aa21ddb092e55ecf42a"><div class="ttname"><a href="#a881c5c5ee2e64aa21ddb092e55ecf42a">eonc::helpers::neb_paths::linearPath</a></div><div class="ttdeci">std::vector&lt; Matter &gt; linearPath(const Matter &amp;initImg, const Matter &amp;finalImg, const size_t nimgs)</div><div class="ttdef"><b>Definition</b> <a href="NEBInitialPaths_8cpp_source.html#l00028">NEBInitialPaths.cpp:28</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1log_html"><div class="ttname"><a href="namespaceeonc_1_1log.html">eonc::log</a></div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00028">EonLogger.h:28</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00044">EonLogger.h:44</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1neb__options__t_1_1path__initialization__t_html_a1f26cff64e925ef6c76532f4e7721a87"><div class="ttname"><a href="structeonc_1_1Parameters_1_1neb__options__t_1_1path__initialization__t.html#a1f26cff64e925ef6c76532f4e7721a87">eonc::Parameters::neb_options_t::path_initialization_t::max_iterations</a></div><div class="ttdeci">int max_iterations</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00519">Parameters.h:519</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1neb__options__t_1_1path__initialization__t_html_a93a213d134cb0bfd59d03cbe6daae4b4"><div class="ttname"><a href="structeonc_1_1Parameters_1_1neb__options__t_1_1path__initialization__t.html#a93a213d134cb0bfd59d03cbe6daae4b4">eonc::Parameters::neb_options_t::path_initialization_t::opt_method</a></div><div class="ttdeci">OptType opt_method</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00527">Parameters.h:527</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1neb__options__t_html_a363ee7a2ad150268bc4567c76aa225f3"><div class="ttname"><a href="structeonc_1_1Parameters_1_1neb__options__t.html#a363ee7a2ad150268bc4567c76aa225f3">eonc::Parameters::neb_options_t::initialization</a></div><div class="ttdeci">struct eonc::Parameters::neb_options_t::path_initialization_t initialization</div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1optimizer__options__t_html_af4fcd22b349db9419c51039f62290c33"><div class="ttname"><a href="structeonc_1_1Parameters_1_1optimizer__options__t.html#af4fcd22b349db9419c51039f62290c33">eonc::Parameters::optimizer_options_t::max_move</a></div><div class="ttdeci">double max_move</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00224">Parameters.h:224</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad2dc270bf83155b68f77dd426014e67d" name="ad2dc270bf83155b68f77dd426014e67d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2dc270bf83155b68f77dd426014e67d">&#9670;&#160;</a></span>idppPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; eonc::helpers::neb_paths::idppPath </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>initImg</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>finalImg</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>nimgs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>use_zbl</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00104">104</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  106</span>                                           {</div>
+<div class="line"><span class="lineno">  107</span> </div>
+<div class="line"><span class="lineno">  108</span>  <span class="keyword">auto</span> <a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a> = <a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>();</div>
+<div class="line"><span class="lineno">  109</span>  QUILL_LOG_INFO(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>, <span class="stringliteral">&quot;Generating initial path using IDPP...&quot;</span>);</div>
+<div class="line"><span class="lineno">  110</span>  <span class="keywordflow">if</span> (use_zbl) {</div>
+<div class="line"><span class="lineno">  111</span>    QUILL_LOG_WARNING(</div>
+<div class="line"><span class="lineno">  112</span>        <a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>, <span class="stringliteral">&quot;ZBL Repulsion not implemented for iterative IDPP (idppPath). &quot;</span></div>
+<div class="line"><span class="lineno">  113</span>             <span class="stringliteral">&quot;Using standard IDPP.&quot;</span>);</div>
+<div class="line"><span class="lineno">  114</span>  }</div>
+<div class="line"><span class="lineno">  115</span> </div>
+<div class="line"><span class="lineno">  116</span>  <span class="comment">// Start with a linear interpolation to get initial Cartesian coordinates</span></div>
+<div class="line"><span class="lineno">  117</span>  std::vector&lt;Matter&gt; path = <a class="code hl_function" href="#a881c5c5ee2e64aa21ddb092e55ecf42a">linearPath</a>(initImg, finalImg, nimgs);</div>
+<div class="line"><span class="lineno">  118</span> </div>
+<div class="line"><span class="lineno">  119</span>  <span class="comment">// Pre-calculate endpoint distance matrices</span></div>
+<div class="line"><span class="lineno">  120</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> dInit = <a class="code hl_function" href="#a8fb55b1197c5fe4ae02c25c722d6c7dd">getDistanceMatrix</a>(initImg);</div>
+<div class="line"><span class="lineno">  121</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> dFinal = <a class="code hl_function" href="#a8fb55b1197c5fe4ae02c25c722d6c7dd">getDistanceMatrix</a>(finalImg);</div>
+<div class="line"><span class="lineno">  122</span> </div>
+<div class="line"><span class="lineno">  123</span>  <span class="comment">// Optimize intermediate images</span></div>
+<div class="line"><span class="lineno">  124</span>  <span class="comment">// Note: path[0] and path[nimgs+1] are fixed endpoints</span></div>
+<div class="line"><span class="lineno">  125</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt;= nimgs; ++i) {</div>
+<div class="line"><span class="lineno">  126</span> </div>
+<div class="line"><span class="lineno">  127</span>    <span class="comment">// Calculate the interpolation factor (Reaction Coordinate)</span></div>
+<div class="line"><span class="lineno">  128</span>    <span class="keywordtype">double</span> xi = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(i) / (nimgs + 1);</div>
+<div class="line"><span class="lineno">  129</span> </div>
+<div class="line"><span class="lineno">  130</span>    <span class="comment">// Linear interpolation of the distance matrix (The &quot;Image Dependent&quot; part)</span></div>
+<div class="line"><span class="lineno">  131</span>    <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> dTarget = (1.0 - xi) * dInit + xi * dFinal;</div>
+<div class="line"><span class="lineno">  132</span> </div>
+<div class="line"><span class="lineno">  133</span>    <span class="comment">// Create the IDPP Objective Function</span></div>
+<div class="line"><span class="lineno">  134</span>    <span class="keyword">auto</span> idpp_objf = std::make_shared&lt;IDPPObjectiveFunction&gt;(</div>
+<div class="line"><span class="lineno">  135</span>        std::make_shared&lt;Matter&gt;(path[i]), params, dTarget);</div>
+<div class="line"><span class="lineno">  136</span> </div>
+<div class="line"><span class="lineno">  137</span>    <span class="comment">// Create an Optimizer</span></div>
+<div class="line"><span class="lineno">  138</span>    <span class="comment">// Defaults to taking the same one as optimizer</span></div>
+<div class="line"><span class="lineno">  139</span>    <span class="keyword">auto</span> idpp_optim = <a class="code hl_function" href="namespaceeonc_1_1helpers_1_1create.html#a5b0011df69b04b52916bd7150ab60fc4">eonc::helpers::create::mkOptim</a>(</div>
+<div class="line"><span class="lineno">  140</span>        idpp_objf, params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t.html#ae7b08846f6e7024d864f56d52d3fa0a7">opt_method</a>, params);</div>
+<div class="line"><span class="lineno">  141</span> </div>
+<div class="line"><span class="lineno">  142</span>    <span class="comment">// Run the optimization</span></div>
+<div class="line"><span class="lineno">  143</span>    <span class="keywordtype">int</span> status =</div>
+<div class="line"><span class="lineno">  144</span>        idpp_optim-&gt;run(params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t.html#a363ee7a2ad150268bc4567c76aa225f3">initialization</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t_1_1path__initialization__t.html#a1f26cff64e925ef6c76532f4e7721a87">max_iterations</a>,</div>
+<div class="line"><span class="lineno">  145</span>                        params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t.html#a363ee7a2ad150268bc4567c76aa225f3">initialization</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t_1_1path__initialization__t.html#a3cef85f653fac108450a7d5c933f0074">max_move</a>);</div>
+<div class="line"><span class="lineno">  146</span> </div>
+<div class="line"><span class="lineno">  147</span>    <span class="comment">// Log progress</span></div>
+<div class="line"><span class="lineno">  148</span>    <span class="keywordtype">double</span> residual = idpp_objf-&gt;getConvergence();</div>
+<div class="line"><span class="lineno">  149</span>    QUILL_LOG_DEBUG(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>,</div>
+<div class="line"><span class="lineno">  150</span>                    <span class="stringliteral">&quot;IDPP Image {:2d}/{:2d} | xi: {:.2f} | Residual: {:.4e}&quot;</span>, i,</div>
+<div class="line"><span class="lineno">  151</span>                    nimgs, xi, residual);</div>
+<div class="line"><span class="lineno">  152</span> </div>
+<div class="line"><span class="lineno">  153</span>    <span class="comment">// Explicitly sync positions back to the path vector just to be safe</span></div>
+<div class="line"><span class="lineno">  154</span>    path[i].setPositions(AtomMatrix::Map(idpp_objf-&gt;getPositions().data(),</div>
+<div class="line"><span class="lineno">  155</span>                                         path[i].numberOfAtoms(), 3));</div>
+<div class="line"><span class="lineno">  156</span>  }</div>
+<div class="line"><span class="lineno">  157</span> </div>
+<div class="line"><span class="lineno">  158</span>  QUILL_LOG_INFO(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>, <span class="stringliteral">&quot;IDPP path generation complete.&quot;</span>);</div>
+<div class="line"><span class="lineno">  159</span>  <span class="keywordflow">return</span> path;</div>
+<div class="line"><span class="lineno">  160</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_1_1neb__paths_html_a8fb55b1197c5fe4ae02c25c722d6c7dd"><div class="ttname"><a href="#a8fb55b1197c5fe4ae02c25c722d6c7dd">eonc::helpers::neb_paths::getDistanceMatrix</a></div><div class="ttdeci">MatrixXd getDistanceMatrix(const Matter &amp;m)</div><div class="ttdef"><b>Definition</b> <a href="NEBInitialPaths_8cpp_source.html#l00088">NEBInitialPaths.cpp:88</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1neb__options__t_1_1path__initialization__t_html_a3cef85f653fac108450a7d5c933f0074"><div class="ttname"><a href="structeonc_1_1Parameters_1_1neb__options__t_1_1path__initialization__t.html#a3cef85f653fac108450a7d5c933f0074">eonc::Parameters::neb_options_t::path_initialization_t::max_move</a></div><div class="ttdeci">double max_move</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00521">Parameters.h:521</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1neb__options__t_html_ae7b08846f6e7024d864f56d52d3fa0a7"><div class="ttname"><a href="structeonc_1_1Parameters_1_1neb__options__t.html#ae7b08846f6e7024d864f56d52d3fa0a7">eonc::Parameters::neb_options_t::opt_method</a></div><div class="ttdeci">OptType opt_method</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00470">Parameters.h:470</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2a6dea80431322a416c54ae728b401ee" name="a2a6dea80431322a416c54ae728b401ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a6dea80431322a416c54ae728b401ee">&#9670;&#160;</a></span>interpolateImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classMatter.html">Matter</a> eonc::helpers::neb_paths::interpolateImage </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>A</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>B</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>fraction</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00210">210</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  210</span>                                                                           {</div>
+<div class="line"><span class="lineno">  211</span>  <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> newImg(A);</div>
+<div class="line"><span class="lineno">  212</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posA = A.<a class="code hl_function" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>();</div>
+<div class="line"><span class="lineno">  213</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posB = B.<a class="code hl_function" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>();</div>
+<div class="line"><span class="lineno">  214</span>  <span class="comment">// Use PBC-aware interpolation</span></div>
+<div class="line"><span class="lineno">  215</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff = A.<a class="code hl_function" href="classeonc_1_1Matter.html#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(posB - posA);</div>
+<div class="line"><span class="lineno">  216</span>  newImg.setPositions(posA + fraction * diff);</div>
+<div class="line"><span class="lineno">  217</span>  <span class="keywordflow">return</span> newImg;</div>
+<div class="line"><span class="lineno">  218</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a881c5c5ee2e64aa21ddb092e55ecf42a" name="a881c5c5ee2e64aa21ddb092e55ecf42a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a881c5c5ee2e64aa21ddb092e55ecf42a">&#9670;&#160;</a></span>linearPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; eonc::helpers::neb_paths::linearPath </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>initImg</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>finalImg</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>nimgs</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00028">28</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   29</span>                                                   {</div>
+<div class="line"><span class="lineno">   30</span>  std::vector&lt;Matter&gt; all_images_on_path(nimgs + 2, initImg);</div>
+<div class="line"><span class="lineno">   31</span>  all_images_on_path.front() = <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a>(initImg);</div>
+<div class="line"><span class="lineno">   32</span>  all_images_on_path.back() = <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a>(finalImg);</div>
+<div class="line"><span class="lineno">   33</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posInitial = all_images_on_path.front().getPositions();</div>
+<div class="line"><span class="lineno">   34</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posFinal = all_images_on_path.back().getPositions();</div>
+<div class="line"><span class="lineno">   35</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> imageSep = initImg.<a class="code hl_function" href="classeonc_1_1Matter.html#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(posFinal - posInitial) / (nimgs + 1);</div>
+<div class="line"><span class="lineno">   36</span>  <span class="comment">// Only the ones which are not the front and back</span></div>
+<div class="line"><span class="lineno">   37</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> it{std::next(all_images_on_path.begin())};</div>
+<div class="line"><span class="lineno">   38</span>       it != std::prev(all_images_on_path.end()); ++it) {</div>
+<div class="line"><span class="lineno">   39</span>    *it = <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a>(initImg);</div>
+<div class="line"><span class="lineno">   40</span>    (*it).setPositions(posInitial +</div>
+<div class="line"><span class="lineno">   41</span>                       imageSep *</div>
+<div class="line"><span class="lineno">   42</span>                           <span class="keywordtype">int</span>(std::distance(all_images_on_path.begin(), it)));</div>
+<div class="line"><span class="lineno">   43</span>  }</div>
+<div class="line"><span class="lineno">   44</span>  <span class="keywordflow">return</span> all_images_on_path;</div>
+<div class="line"><span class="lineno">   45</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="afa0f135479f27bb6864ae1aeb4de05eb" name="afa0f135479f27bb6864ae1aeb4de05eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa0f135479f27bb6864ae1aeb4de05eb">&#9670;&#160;</a></span>readFilePaths()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::filesystem::path &gt; eonc::helpers::neb_paths::readFilePaths </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>listFilePath</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reads a file where each line contains a path to another file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">listFilePath</td><td>The path to the file containing the list of file paths. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A vector of filesystem paths. Returns an empty vector if the file cannot be opened. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00068">68</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   68</span>                                                               {</div>
+<div class="line"><span class="lineno">   69</span>  std::vector&lt;fs::path&gt; paths;</div>
+<div class="line"><span class="lineno">   70</span>  std::ifstream inputFile(listFilePath);</div>
+<div class="line"><span class="lineno">   71</span> </div>
+<div class="line"><span class="lineno">   72</span>  <span class="keywordflow">if</span> (!inputFile.is_open()) {</div>
+<div class="line"><span class="lineno">   73</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Error: Could not open path list file: &quot;</span> +</div>
+<div class="line"><span class="lineno">   74</span>                             listFilePath);</div>
+<div class="line"><span class="lineno">   75</span>  }</div>
+<div class="line"><span class="lineno">   76</span> </div>
+<div class="line"><span class="lineno">   77</span>  std::string line;</div>
+<div class="line"><span class="lineno">   78</span>  <span class="keywordflow">while</span> (std::getline(inputFile, line)) {</div>
+<div class="line"><span class="lineno">   79</span>    <span class="comment">// Skip any empty lines in the input file</span></div>
+<div class="line"><span class="lineno">   80</span>    <span class="keywordflow">if</span> (!line.empty()) {</div>
+<div class="line"><span class="lineno">   81</span>      paths.emplace_back(line);</div>
+<div class="line"><span class="lineno">   82</span>    }</div>
+<div class="line"><span class="lineno">   83</span>  }</div>
+<div class="line"><span class="lineno">   84</span> </div>
+<div class="line"><span class="lineno">   85</span>  <span class="keywordflow">return</span> paths;</div>
+<div class="line"><span class="lineno">   86</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a228cf26acf7d7d5deb0f43d3d6634049" name="a228cf26acf7d7d5deb0f43d3d6634049"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a228cf26acf7d7d5deb0f43d3d6634049">&#9670;&#160;</a></span>resamplePath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; eonc::helpers::neb_paths::resamplePath </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>densePath</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>targetCount</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00345">345</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  346</span>                                                     {</div>
+<div class="line"><span class="lineno">  347</span>  <span class="keywordflow">if</span> (densePath.size() == targetCount + 2)</div>
+<div class="line"><span class="lineno">  348</span>    <span class="keywordflow">return</span> densePath;</div>
+<div class="line"><span class="lineno">  349</span> </div>
+<div class="line"><span class="lineno">  350</span>  <span class="keywordtype">size_t</span> n = densePath.size();</div>
+<div class="line"><span class="lineno">  351</span> </div>
+<div class="line"><span class="lineno">  352</span>  <span class="comment">// Calculate cumulative arc length along the path</span></div>
+<div class="line"><span class="lineno">  353</span>  std::vector&lt;double&gt; arcLength(n, 0.0);</div>
+<div class="line"><span class="lineno">  354</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; n; ++i) {</div>
+<div class="line"><span class="lineno">  355</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff = densePath[i].pbc(densePath[i].getPositions() -</div>
+<div class="line"><span class="lineno">  356</span>                                       densePath[i - 1].getPositions());</div>
+<div class="line"><span class="lineno">  357</span>    arcLength[i] = arcLength[i - 1] + diff.norm();</div>
+<div class="line"><span class="lineno">  358</span>  }</div>
+<div class="line"><span class="lineno">  359</span>  <span class="keywordtype">double</span> totalLength = arcLength.back();</div>
+<div class="line"><span class="lineno">  360</span> </div>
+<div class="line"><span class="lineno">  361</span>  <span class="comment">// Calculate tangents for cubic interpolation</span></div>
+<div class="line"><span class="lineno">  362</span>  std::vector&lt;AtomMatrix&gt; tangents(n);</div>
+<div class="line"><span class="lineno">  363</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; n; ++i) {</div>
+<div class="line"><span class="lineno">  364</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> T;</div>
+<div class="line"><span class="lineno">  365</span>    <span class="keywordflow">if</span> (i == 0) {</div>
+<div class="line"><span class="lineno">  366</span>      T = densePath[i].pbc(densePath[i + 1].getPositions() -</div>
+<div class="line"><span class="lineno">  367</span>                           densePath[i].getPositions());</div>
+<div class="line"><span class="lineno">  368</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (i == n - 1) {</div>
+<div class="line"><span class="lineno">  369</span>      T = densePath[i].pbc(densePath[i].getPositions() -</div>
+<div class="line"><span class="lineno">  370</span>                           densePath[i - 1].getPositions());</div>
+<div class="line"><span class="lineno">  371</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  372</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dNext = densePath[i].pbc(densePath[i + 1].getPositions() -</div>
+<div class="line"><span class="lineno">  373</span>                                          densePath[i].getPositions());</div>
+<div class="line"><span class="lineno">  374</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dPrev = densePath[i].pbc(densePath[i].getPositions() -</div>
+<div class="line"><span class="lineno">  375</span>                                          densePath[i - 1].getPositions());</div>
+<div class="line"><span class="lineno">  376</span>      T = 0.5 * (dNext + dPrev);</div>
+<div class="line"><span class="lineno">  377</span>    }</div>
+<div class="line"><span class="lineno">  378</span>    <span class="comment">// Scale tangent by local segment length for proper spline parameterization</span></div>
+<div class="line"><span class="lineno">  379</span>    <span class="keywordflow">if</span> (i &gt; 0 &amp;&amp; i &lt; n - 1) {</div>
+<div class="line"><span class="lineno">  380</span>      <span class="keywordtype">double</span> localScale = (arcLength[i + 1] - arcLength[i - 1]) / 2.0;</div>
+<div class="line"><span class="lineno">  381</span>      T = T.normalized() * localScale;</div>
+<div class="line"><span class="lineno">  382</span>    }</div>
+<div class="line"><span class="lineno">  383</span>    tangents[i] = T;</div>
+<div class="line"><span class="lineno">  384</span>  }</div>
+<div class="line"><span class="lineno">  385</span> </div>
+<div class="line"><span class="lineno">  386</span>  std::vector&lt;Matter&gt; resampled;</div>
+<div class="line"><span class="lineno">  387</span>  resampled.reserve(targetCount + 2);</div>
+<div class="line"><span class="lineno">  388</span>  resampled.push_back(densePath.front());</div>
+<div class="line"><span class="lineno">  389</span> </div>
+<div class="line"><span class="lineno">  390</span>  <span class="comment">// Place new images at equal arc-length intervals</span></div>
+<div class="line"><span class="lineno">  391</span>  <span class="keywordtype">double</span> segmentLength = totalLength / (targetCount + 1);</div>
+<div class="line"><span class="lineno">  392</span> </div>
+<div class="line"><span class="lineno">  393</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt;= targetCount; ++i) {</div>
+<div class="line"><span class="lineno">  394</span>    <span class="keywordtype">double</span> targetArc = i * segmentLength;</div>
+<div class="line"><span class="lineno">  395</span> </div>
+<div class="line"><span class="lineno">  396</span>    <span class="comment">// Find the segment containing this arc length</span></div>
+<div class="line"><span class="lineno">  397</span>    <span class="keywordtype">size_t</span> lowIdx = 0;</div>
+<div class="line"><span class="lineno">  398</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 1; j &lt; n; ++j) {</div>
+<div class="line"><span class="lineno">  399</span>      <span class="keywordflow">if</span> (arcLength[j] &gt;= targetArc) {</div>
+<div class="line"><span class="lineno">  400</span>        lowIdx = j - 1;</div>
+<div class="line"><span class="lineno">  401</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  402</span>      }</div>
+<div class="line"><span class="lineno">  403</span>    }</div>
+<div class="line"><span class="lineno">  404</span>    <span class="keywordtype">size_t</span> highIdx = lowIdx + 1;</div>
+<div class="line"><span class="lineno">  405</span> </div>
+<div class="line"><span class="lineno">  406</span>    <span class="comment">// Interpolation parameter within this segment</span></div>
+<div class="line"><span class="lineno">  407</span>    <span class="keywordtype">double</span> segmentArc = arcLength[highIdx] - arcLength[lowIdx];</div>
+<div class="line"><span class="lineno">  408</span>    <span class="keywordtype">double</span> f = (segmentArc &gt; 1e-10)</div>
+<div class="line"><span class="lineno">  409</span>                   ? (targetArc - arcLength[lowIdx]) / segmentArc</div>
+<div class="line"><span class="lineno">  410</span>                   : 0.0;</div>
+<div class="line"><span class="lineno">  411</span> </div>
+<div class="line"><span class="lineno">  412</span>    Matter newImg(densePath[0]);</div>
+<div class="line"><span class="lineno">  413</span>    newImg.setPositions(<a class="code hl_function" href="#a056c7b9e05eb6de75f8b18a3d257c2e1">cubicInterpolate</a>(</div>
+<div class="line"><span class="lineno">  414</span>        densePath[lowIdx].getPositions(), tangents[lowIdx],</div>
+<div class="line"><span class="lineno">  415</span>        densePath[highIdx].getPositions(), tangents[highIdx], f));</div>
+<div class="line"><span class="lineno">  416</span>    resampled.push_back(newImg);</div>
+<div class="line"><span class="lineno">  417</span>  }</div>
+<div class="line"><span class="lineno">  418</span> </div>
+<div class="line"><span class="lineno">  419</span>  resampled.push_back(densePath.back());</div>
+<div class="line"><span class="lineno">  420</span>  <span class="keywordflow">return</span> resampled;</div>
+<div class="line"><span class="lineno">  421</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_1_1neb__paths_html_a056c7b9e05eb6de75f8b18a3d257c2e1"><div class="ttname"><a href="#a056c7b9e05eb6de75f8b18a3d257c2e1">eonc::helpers::neb_paths::cubicInterpolate</a></div><div class="ttdeci">AtomMatrix cubicInterpolate(const AtomMatrix &amp;P0, const AtomMatrix &amp;T0, const AtomMatrix &amp;P1, const AtomMatrix &amp;T1, double f)</div><div class="ttdoc">Interpolates positions using a cubic Hermite spline.</div><div class="ttdef"><b>Definition</b> <a href="NEBInitialPaths_8cpp_source.html#l00330">NEBInitialPaths.cpp:330</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a275da786b69a8584999c0653c6fc9132" name="a275da786b69a8584999c0653c6fc9132"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a275da786b69a8584999c0653c6fc9132">&#9670;&#160;</a></span>resamplePathInPlace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::helpers::neb_paths::resamplePathInPlace </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt;</td>          <td class="paramname"><span class="paramname"><em>path</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>In-place path reparameterization for NEB shared_ptr paths. </p>
+<p>Redistributes interior images at equal arc-length intervals using cubic Hermite interpolation, without allocating new <a class="el" href="classeonc_1_1Matter.html">Matter</a> objects.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>The FULL path including endpoints. path[0] and path[n-1] are treated as fixed endpoints and are never modified. Interior images path[1] through path[n-2] are repositioned. Pass the entire NEB path vector, not a sub-span of intermediate images. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00423">423</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  423</span>                                                              {</div>
+<div class="line"><span class="lineno">  424</span>  <span class="keywordtype">size_t</span> n = path.size();</div>
+<div class="line"><span class="lineno">  425</span>  <span class="keywordflow">if</span> (n &lt; 3)</div>
+<div class="line"><span class="lineno">  426</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  427</span> </div>
+<div class="line"><span class="lineno">  428</span>  <span class="comment">// Calculate cumulative arc length</span></div>
+<div class="line"><span class="lineno">  429</span>  std::vector&lt;double&gt; arcLength(n, 0.0);</div>
+<div class="line"><span class="lineno">  430</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; n; ++i) {</div>
+<div class="line"><span class="lineno">  431</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff =</div>
+<div class="line"><span class="lineno">  432</span>        path[i]-&gt;pbc(path[i]-&gt;getPositions() - path[i - 1]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  433</span>    arcLength[i] = arcLength[i - 1] + diff.norm();</div>
+<div class="line"><span class="lineno">  434</span>  }</div>
+<div class="line"><span class="lineno">  435</span>  <span class="keywordtype">double</span> totalLength = arcLength.back();</div>
+<div class="line"><span class="lineno">  436</span>  <span class="keywordflow">if</span> (totalLength &lt; 1e-12)</div>
+<div class="line"><span class="lineno">  437</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  438</span> </div>
+<div class="line"><span class="lineno">  439</span>  <span class="comment">// Tangents for cubic interpolation</span></div>
+<div class="line"><span class="lineno">  440</span>  std::vector&lt;AtomMatrix&gt; tangents(n);</div>
+<div class="line"><span class="lineno">  441</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; n; ++i) {</div>
+<div class="line"><span class="lineno">  442</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> T;</div>
+<div class="line"><span class="lineno">  443</span>    <span class="keywordflow">if</span> (i == 0) {</div>
+<div class="line"><span class="lineno">  444</span>      T = path[i]-&gt;pbc(path[i + 1]-&gt;getPositions() - path[i]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  445</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (i == n - 1) {</div>
+<div class="line"><span class="lineno">  446</span>      T = path[i]-&gt;pbc(path[i]-&gt;getPositions() - path[i - 1]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  447</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  448</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dN =</div>
+<div class="line"><span class="lineno">  449</span>          path[i]-&gt;pbc(path[i + 1]-&gt;getPositions() - path[i]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  450</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dP =</div>
+<div class="line"><span class="lineno">  451</span>          path[i]-&gt;pbc(path[i]-&gt;getPositions() - path[i - 1]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  452</span>      T = 0.5 * (dN + dP);</div>
+<div class="line"><span class="lineno">  453</span>    }</div>
+<div class="line"><span class="lineno">  454</span>    <span class="keywordflow">if</span> (i &gt; 0 &amp;&amp; i &lt; n - 1) {</div>
+<div class="line"><span class="lineno">  455</span>      <span class="keywordtype">double</span> localScale = (arcLength[i + 1] - arcLength[i - 1]) / 2.0;</div>
+<div class="line"><span class="lineno">  456</span>      T = T.normalized() * localScale;</div>
+<div class="line"><span class="lineno">  457</span>    }</div>
+<div class="line"><span class="lineno">  458</span>    tangents[i] = T;</div>
+<div class="line"><span class="lineno">  459</span>  }</div>
+<div class="line"><span class="lineno">  460</span> </div>
+<div class="line"><span class="lineno">  461</span>  <span class="comment">// Store original positions for interpolation source</span></div>
+<div class="line"><span class="lineno">  462</span>  std::vector&lt;AtomMatrix&gt; origPos(n);</div>
+<div class="line"><span class="lineno">  463</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; n; ++i)</div>
+<div class="line"><span class="lineno">  464</span>    origPos[i] = path[i]-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  465</span> </div>
+<div class="line"><span class="lineno">  466</span>  <span class="comment">// Redistribute interior images at equal arc-length intervals (in-place)</span></div>
+<div class="line"><span class="lineno">  467</span>  <span class="keywordtype">size_t</span> nInterior = n - 2;</div>
+<div class="line"><span class="lineno">  468</span>  <span class="keywordtype">double</span> segLen = totalLength / (nInterior + 1);</div>
+<div class="line"><span class="lineno">  469</span> </div>
+<div class="line"><span class="lineno">  470</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt;= nInterior; ++i) {</div>
+<div class="line"><span class="lineno">  471</span>    <span class="keywordtype">double</span> targetArc = i * segLen;</div>
+<div class="line"><span class="lineno">  472</span>    <span class="keywordtype">size_t</span> lo = 0;</div>
+<div class="line"><span class="lineno">  473</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 1; j &lt; n; ++j) {</div>
+<div class="line"><span class="lineno">  474</span>      <span class="keywordflow">if</span> (arcLength[j] &gt;= targetArc) {</div>
+<div class="line"><span class="lineno">  475</span>        lo = j - 1;</div>
+<div class="line"><span class="lineno">  476</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  477</span>      }</div>
+<div class="line"><span class="lineno">  478</span>    }</div>
+<div class="line"><span class="lineno">  479</span>    <span class="keywordtype">size_t</span> hi = lo + 1;</div>
+<div class="line"><span class="lineno">  480</span>    <span class="keywordtype">double</span> sArc = arcLength[hi] - arcLength[lo];</div>
+<div class="line"><span class="lineno">  481</span>    <span class="keywordtype">double</span> f = (sArc &gt; 1e-10) ? (targetArc - arcLength[lo]) / sArc : 0.0;</div>
+<div class="line"><span class="lineno">  482</span> </div>
+<div class="line"><span class="lineno">  483</span>    path[i]-&gt;setPositions(<a class="code hl_function" href="#a056c7b9e05eb6de75f8b18a3d257c2e1">cubicInterpolate</a>(origPos[lo], tangents[lo],</div>
+<div class="line"><span class="lineno">  484</span>                                           origPos[hi], tangents[hi], f));</div>
+<div class="line"><span class="lineno">  485</span>  }</div>
+<div class="line"><span class="lineno">  486</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a236e4209cbbfbf7e6a057041ab6aa7f1" name="a236e4209cbbfbf7e6a057041ab6aa7f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a236e4209cbbfbf7e6a057041ab6aa7f1">&#9670;&#160;</a></span>sidppPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classMatter.html">Matter</a> &gt; eonc::helpers::neb_paths::sidppPath </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>initImg</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>finalImg</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>target_nimgs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>use_zbl</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00220">220</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  222</span>                                            {</div>
+<div class="line"><span class="lineno">  223</span> </div>
+<div class="line"><span class="lineno">  224</span>  <span class="keyword">auto</span> <a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a> = <a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>();</div>
+<div class="line"><span class="lineno">  225</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;init = params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t.html#a363ee7a2ad150268bc4567c76aa225f3">initialization</a>;</div>
+<div class="line"><span class="lineno">  226</span>  QUILL_LOG_INFO(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>,</div>
+<div class="line"><span class="lineno">  227</span>                 <span class="stringliteral">&quot;Generating initial path using S-IDPP{} ({} images, &quot;</span></div>
+<div class="line"><span class="lineno">  228</span>                 <span class="stringliteral">&quot;alpha={:.2f}, frontier_tol={:.4f})...&quot;</span>,</div>
+<div class="line"><span class="lineno">  229</span>                 use_zbl ? <span class="stringliteral">&quot;-ZBL&quot;</span> : <span class="stringliteral">&quot;&quot;</span>, target_nimgs, init.sidpp_alpha,</div>
+<div class="line"><span class="lineno">  230</span>                 init.sidpp_frontier_tol);</div>
+<div class="line"><span class="lineno">  231</span> </div>
+<div class="line"><span class="lineno">  232</span>  <span class="comment">// 1. Start with endpoints [Reactant, Product]</span></div>
+<div class="line"><span class="lineno">  233</span>  std::vector&lt;Matter&gt; path;</div>
+<div class="line"><span class="lineno">  234</span>  path.push_back(initImg);</div>
+<div class="line"><span class="lineno">  235</span>  path.push_back(finalImg);</div>
+<div class="line"><span class="lineno">  236</span> </div>
+<div class="line"><span class="lineno">  237</span>  std::shared_ptr&lt;Potential&gt; zbl_pot = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  238</span>  <span class="keywordflow">if</span> (use_zbl) {</div>
+<div class="line"><span class="lineno">  239</span>    zbl_pot = <a class="code hl_function" href="#a78b6ee8c903f3dd4b5a60195717efa92">createZBLPotential</a>();</div>
+<div class="line"><span class="lineno">  240</span>  }</div>
+<div class="line"><span class="lineno">  241</span> </div>
+<div class="line"><span class="lineno">  242</span>  <span class="comment">// Track frontier counts: nLeft images from reactant, nRight from product</span></div>
+<div class="line"><span class="lineno">  243</span>  <span class="keywordtype">int</span> nLeft = 0;</div>
+<div class="line"><span class="lineno">  244</span>  <span class="keywordtype">int</span> nRight = 0;</div>
+<div class="line"><span class="lineno">  245</span>  <span class="keywordtype">int</span> nIntermediate = 0;</div>
+<div class="line"><span class="lineno">  246</span>  <span class="keywordtype">bool</span> addToLeft = <span class="keyword">true</span>; <span class="comment">// Alternate L/R, starting with left</span></div>
+<div class="line"><span class="lineno">  247</span> </div>
+<div class="line"><span class="lineno">  248</span>  <span class="comment">// Helper: create IDPP objective with optional ZBL wrapping</span></div>
+<div class="line"><span class="lineno">  249</span>  <span class="keyword">auto</span> makeIDPP = [&amp;]() -&gt; std::shared_ptr&lt;ObjectiveFunction&gt; {</div>
+<div class="line"><span class="lineno">  250</span>    <span class="keyword">auto</span> objf = std::make_shared&lt;CollectiveIDPPObjectiveFunction&gt;(path, params);</div>
+<div class="line"><span class="lineno">  251</span>    <span class="keywordflow">if</span> (use_zbl &amp;&amp; zbl_pot) {</div>
+<div class="line"><span class="lineno">  252</span>      <span class="keywordflow">return</span> std::make_shared&lt;ZBLRepulsiveIDPPObjective&gt;(objf, zbl_pot, path,</div>
+<div class="line"><span class="lineno">  253</span>                                                         params, 1.0);</div>
+<div class="line"><span class="lineno">  254</span>    }</div>
+<div class="line"><span class="lineno">  255</span>    <span class="keywordflow">return</span> objf;</div>
+<div class="line"><span class="lineno">  256</span>  };</div>
+<div class="line"><span class="lineno">  257</span> </div>
+<div class="line"><span class="lineno">  258</span>  <span class="comment">// Helper: relax current path on IDPP surface</span></div>
+<div class="line"><span class="lineno">  259</span>  <span class="keyword">auto</span> relaxPath = [&amp;](<span class="keywordtype">int</span> maxSteps) -&gt; <span class="keywordtype">double</span> {</div>
+<div class="line"><span class="lineno">  260</span>    <span class="keyword">auto</span> objf = makeIDPP();</div>
+<div class="line"><span class="lineno">  261</span>    <span class="keyword">auto</span> optim = <a class="code hl_function" href="namespaceeonc_1_1helpers_1_1create.html#a5b0011df69b04b52916bd7150ab60fc4">eonc::helpers::create::mkOptim</a>(objf, init.opt_method, params);</div>
+<div class="line"><span class="lineno">  262</span>    <span class="keywordtype">int</span> step = 0;</div>
+<div class="line"><span class="lineno">  263</span>    <span class="keywordflow">while</span> (step &lt; maxSteps) {</div>
+<div class="line"><span class="lineno">  264</span>      optim-&gt;run(5, init.max_move);</div>
+<div class="line"><span class="lineno">  265</span>      step += 5;</div>
+<div class="line"><span class="lineno">  266</span>      <span class="keywordflow">if</span> (objf-&gt;isConverged())</div>
+<div class="line"><span class="lineno">  267</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  268</span>    }</div>
+<div class="line"><span class="lineno">  269</span>    <span class="keywordflow">return</span> objf-&gt;getConvergence();</div>
+<div class="line"><span class="lineno">  270</span>  };</div>
+<div class="line"><span class="lineno">  271</span> </div>
+<div class="line"><span class="lineno">  272</span>  <span class="comment">// 2. Sequential growth loop: alternate adding images from L and R</span></div>
+<div class="line"><span class="lineno">  273</span>  <span class="keywordflow">while</span> (nIntermediate &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(target_nimgs)) {</div>
+<div class="line"><span class="lineno">  274</span> </div>
+<div class="line"><span class="lineno">  275</span>    <span class="keywordflow">if</span> (addToLeft &amp;&amp; nIntermediate &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(target_nimgs)) {</div>
+<div class="line"><span class="lineno">  276</span>      <span class="comment">// Add to left (reactant) frontier</span></div>
+<div class="line"><span class="lineno">  277</span>      Matter &amp;frontier = path[nLeft];</div>
+<div class="line"><span class="lineno">  278</span>      Matter &amp;next = path[nLeft + 1];</div>
+<div class="line"><span class="lineno">  279</span>      Matter newImg = <a class="code hl_function" href="#a2a6dea80431322a416c54ae728b401ee">interpolateImage</a>(frontier, next, init.sidpp_alpha);</div>
+<div class="line"><span class="lineno">  280</span>      path.insert(path.begin() + nLeft + 1, newImg);</div>
+<div class="line"><span class="lineno">  281</span>      nLeft++;</div>
+<div class="line"><span class="lineno">  282</span>      nIntermediate++;</div>
+<div class="line"><span class="lineno">  283</span>      QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;S-IDPP: +L frontier (nL={}, nR={}, total={})&quot;</span>,</div>
+<div class="line"><span class="lineno">  284</span>                      nLeft, nRight, nIntermediate);</div>
+<div class="line"><span class="lineno">  285</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (nIntermediate &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(target_nimgs)) {</div>
+<div class="line"><span class="lineno">  286</span>      <span class="comment">// Add to right (product) frontier</span></div>
+<div class="line"><span class="lineno">  287</span>      <span class="keywordtype">int</span> rightIdx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(path.size()) - 1 - nRight;</div>
+<div class="line"><span class="lineno">  288</span>      Matter &amp;frontier = path[rightIdx];</div>
+<div class="line"><span class="lineno">  289</span>      Matter &amp;prev = path[rightIdx - 1];</div>
+<div class="line"><span class="lineno">  290</span>      Matter newImg = <a class="code hl_function" href="#a2a6dea80431322a416c54ae728b401ee">interpolateImage</a>(frontier, prev, init.sidpp_alpha);</div>
+<div class="line"><span class="lineno">  291</span>      path.insert(path.begin() + rightIdx, newImg);</div>
+<div class="line"><span class="lineno">  292</span>      nRight++;</div>
+<div class="line"><span class="lineno">  293</span>      nIntermediate++;</div>
+<div class="line"><span class="lineno">  294</span>      QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;S-IDPP: +R frontier (nL={}, nR={}, total={})&quot;</span>,</div>
+<div class="line"><span class="lineno">  295</span>                      nLeft, nRight, nIntermediate);</div>
+<div class="line"><span class="lineno">  296</span>    }</div>
+<div class="line"><span class="lineno">  297</span>    addToLeft = !addToLeft; <span class="comment">// Alternate sides</span></div>
+<div class="line"><span class="lineno">  298</span> </div>
+<div class="line"><span class="lineno">  299</span>    <span class="comment">// Optimize current path on IDPP surface</span></div>
+<div class="line"><span class="lineno">  300</span>    <span class="keywordtype">double</span> residual = relaxPath(init.nsteps);</div>
+<div class="line"><span class="lineno">  301</span> </div>
+<div class="line"><span class="lineno">  302</span>    <span class="comment">// Frontier convergence gating: if not converged, keep relaxing</span></div>
+<div class="line"><span class="lineno">  303</span>    <span class="comment">// before adding more images (up to max_iterations total)</span></div>
+<div class="line"><span class="lineno">  304</span>    <span class="keywordflow">if</span> (residual &gt; init.sidpp_frontier_tol) {</div>
+<div class="line"><span class="lineno">  305</span>      <span class="keywordtype">double</span> residual2 = relaxPath(init.max_iterations - init.nsteps);</div>
+<div class="line"><span class="lineno">  306</span>      QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;S-IDPP: Extended relaxation {:.4f} -&gt; {:.4f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  307</span>                      residual, residual2);</div>
+<div class="line"><span class="lineno">  308</span>      residual = residual2;</div>
+<div class="line"><span class="lineno">  309</span>    }</div>
+<div class="line"><span class="lineno">  310</span> </div>
+<div class="line"><span class="lineno">  311</span>    QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;S-IDPP: {} images | Residual: {:.4f}&quot;</span>, nIntermediate,</div>
+<div class="line"><span class="lineno">  312</span>                    residual);</div>
+<div class="line"><span class="lineno">  313</span>  }</div>
+<div class="line"><span class="lineno">  314</span> </div>
+<div class="line"><span class="lineno">  315</span>  <span class="comment">// 3. Reparameterize: redistribute images evenly along arc length</span></div>
+<div class="line"><span class="lineno">  316</span>  <span class="keywordflow">if</span> (init.sidpp_reparam &amp;&amp; path.size() &gt; 3) {</div>
+<div class="line"><span class="lineno">  317</span>    QUILL_LOG_INFO(log, <span class="stringliteral">&quot;S-IDPP: Reparameterizing {} images along arc length&quot;</span>,</div>
+<div class="line"><span class="lineno">  318</span>                   path.size() - 2);</div>
+<div class="line"><span class="lineno">  319</span>    path = <a class="code hl_function" href="#a228cf26acf7d7d5deb0f43d3d6634049">resamplePath</a>(path, target_nimgs);</div>
+<div class="line"><span class="lineno">  320</span>  }</div>
+<div class="line"><span class="lineno">  321</span> </div>
+<div class="line"><span class="lineno">  322</span>  <span class="comment">// 4. Final relaxation of the complete path</span></div>
+<div class="line"><span class="lineno">  323</span>  QUILL_LOG_INFO(log, <span class="stringliteral">&quot;S-IDPP: Final relaxation of full path...&quot;</span>);</div>
+<div class="line"><span class="lineno">  324</span>  <span class="keywordtype">double</span> finalResidual = relaxPath(init.max_iterations);</div>
+<div class="line"><span class="lineno">  325</span>  QUILL_LOG_INFO(log, <span class="stringliteral">&quot;S-IDPP: Final residual: {:.4f}&quot;</span>, finalResidual);</div>
+<div class="line"><span class="lineno">  326</span> </div>
+<div class="line"><span class="lineno">  327</span>  <span class="keywordflow">return</span> path;</div>
+<div class="line"><span class="lineno">  328</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_1_1neb__paths_html_a228cf26acf7d7d5deb0f43d3d6634049"><div class="ttname"><a href="#a228cf26acf7d7d5deb0f43d3d6634049">eonc::helpers::neb_paths::resamplePath</a></div><div class="ttdeci">std::vector&lt; Matter &gt; resamplePath(const std::vector&lt; Matter &gt; &amp;densePath, size_t targetCount)</div><div class="ttdef"><b>Definition</b> <a href="NEBInitialPaths_8cpp_source.html#l00345">NEBInitialPaths.cpp:345</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_1_1neb__paths_html_a2a6dea80431322a416c54ae728b401ee"><div class="ttname"><a href="#a2a6dea80431322a416c54ae728b401ee">eonc::helpers::neb_paths::interpolateImage</a></div><div class="ttdeci">Matter interpolateImage(const Matter &amp;A, const Matter &amp;B, double fraction)</div><div class="ttdef"><b>Definition</b> <a href="NEBInitialPaths_8cpp_source.html#l00210">NEBInitialPaths.cpp:210</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="namespaceeonc_1_1helpers.html">helpers</a></li><li class="navelem"><a href="namespaceeonc_1_1helpers_1_1neb__paths.html">neb_paths</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

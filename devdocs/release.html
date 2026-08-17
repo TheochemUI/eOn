@@ -39,12 +39,12 @@
       <strong>eOn</strong>
     </a>
     <div class="sy-head-nav" id="head-nav">
-      <nav class="sy-head-links"><ul>
-      <li class="link"><button class="js-menu" type="button" id="nav-trigger-1" aria-controls="nav-children-1">
+      <nav class="sy-head-links"><ul><li class="link"><a href="/api-cpp/index.html">C++ API</a></li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Ecosystem</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul id="nav-children-1" aria-labelledby="nav-trigger-1"><li><a href="https://rgpycrumbs.rgoswami.me">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="https://rgpycrumbs.rgoswami.me">
                 <span>rgpycrumbs</span>
                 <small>Python helpers for eOn workflows</small>
               </a></li><li><a href="https://chemparseplot.rgoswami.me">
@@ -994,22 +994,16 @@ written yet — fix and re-run. Hand sequence (reference commits like
 </section>
 <section id="api-doxygen-documentation-check">
 <h2>8. API / Doxygen documentation check<a class="headerlink" href="#api-doxygen-documentation-check" title="Link to this heading">¶</a></h2>
-<p>rgpot maintains <code class="docutils literal notranslate"><span class="pre">docs/source/Doxyfile_*.cfg</span></code> and integrates Doxygen output into
-the Sphinx site. <strong>eOn does not yet include an equivalent in-tree Doxygen pipeline</strong>
-for the C++ <code class="docutils literal notranslate"><span class="pre">client/</span></code> tree; Python API docs use Sphinx autodoc/autodoc2 in the
-existing <code class="docutils literal notranslate"><span class="pre">docs/</span></code> build (<code class="docutils literal notranslate"><span class="pre">ci_docs.yml</span></code> / <code class="docutils literal notranslate"><span class="pre">docs/source/devdocs/docbuild.md</span></code>).</p>
+<p>Python API docs stay on Sphinx autodoc/autodoc2. The C++ <code class="docutils literal notranslate"><span class="pre">client/</span></code> tree is
+a sibling doxyYoda HTML site at <code class="docutils literal notranslate"><span class="pre">/api-cpp/</span></code> (<code class="docutils literal notranslate"><span class="pre">docs/source/Doxyfile_doxyyoda.cfg</span></code>,
+<code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">run</span> <span class="pre">-e</span> <span class="pre">docs</span> <span class="pre">install-doxyhtml</span></code>, wired in <code class="docutils literal notranslate"><span class="pre">ci_docs.yml</span></code>).</p>
 <p><strong>Release check (current policy):</strong></p>
 <ul class="simple">
 <li><p>[ ] Sphinx docs build is green on <code class="docutils literal notranslate"><span class="pre">main</span></code> (<code class="docutils literal notranslate"><span class="pre">ci_docs.yml</span></code> or local
 <code class="docutils literal notranslate"><span class="pre">pixi</span> <span class="pre">r</span> <span class="pre">-e</span> <span class="pre">docs</span> <span class="pre">…</span></code> / project-documented doc target).</p></li>
+<li><p>[ ] <code class="docutils literal notranslate"><span class="pre">docs/build/html/api-cpp/index.html</span></code> exists after <code class="docutils literal notranslate"><span class="pre">install-doxyhtml</span></code>.</p></li>
 <li><p>[ ] Curated release notes exist under <code class="docutils literal notranslate"><span class="pre">docs/source/releases/vX.Y.Z/</span></code>.</p></li>
-<li><p>[ ] No broken “run doxygen” step is required for a cut.</p></li>
 </ul>
-<p><strong>Deferred (explicit non-goal until a dedicated docs PR):</strong> full Doxygen +
-doxyrest/breathe wiring for <code class="docutils literal notranslate"><span class="pre">client/**/*.h</span></code> analogous to rgpot. Track as
-follow-up; do not block semver cuts solely on Doxygen absence. When added,
-extend this section with the generate command and wire it into <code class="docutils literal notranslate"><span class="pre">ci_docs.yml</span></code>
-plus this checklist.</p>
 </section>
 <section id="paper-tags">
 <h2>9. Paper tags<a class="headerlink" href="#paper-tags" title="Link to this heading">¶</a></h2>

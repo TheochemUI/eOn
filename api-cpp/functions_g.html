@@ -1,0 +1,435 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: Class Members</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('functions_g.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contents">
+<div class="textblock">Here is a list of all class members with links to the classes they belong to:</div><br/>
+<div class="qindex"><a class="qindex" href="functions.html#index_a">A</a><div class="alphasepar"></div><a class="qindex" href="functions_b.html#index_b">B</a><div class="alphasepar"></div><a class="qindex" href="functions_c.html#index_c">C</a><div class="alphasepar"></div><a class="qindex" href="functions_d.html#index_d">D</a><div class="alphasepar"></div><a class="qindex" href="functions_e.html#index_e">E</a><div class="alphasepar"></div><a class="qindex" href="functions_f.html#index_f">F</a><div class="alphasepar"></div><a class="qindex" href="functions_g.html#index_g">G</a><div class="alphasepar"></div><a class="qindex" href="functions_h.html#index_h">H</a><div class="alphasepar"></div><a class="qindex" href="functions_i.html#index_i">I</a><div class="alphasepar"></div><a class="qindex" href="functions_j.html#index_j">J</a><div class="alphasepar"></div><a class="qindex" href="functions_k.html#index_k">K</a><div class="alphasepar"></div><a class="qindex" href="functions_l.html#index_l">L</a><div class="alphasepar"></div><a class="qindex" href="functions_m.html#index_m">M</a><div class="alphasepar"></div><a class="qindex" href="functions_n.html#index_n">N</a><div class="alphasepar"></div><a class="qindex" href="functions_o.html#index_o">O</a><div class="alphasepar"></div><a class="qindex" href="functions_p.html#index_p">P</a><div class="alphasepar"></div><a class="qindex" href="functions_q.html#index_q">Q</a><div class="alphasepar"></div><a class="qindex" href="functions_r.html#index_r">R</a><div class="alphasepar"></div><a class="qindex" href="functions_s.html#index_s">S</a><div class="alphasepar"></div><a class="qindex" href="functions_t.html#index_t">T</a><div class="alphasepar"></div><a class="qindex" href="functions_u.html#index_u">U</a><div class="alphasepar"></div><a class="qindex" href="functions_v.html#index_v">V</a><div class="alphasepar"></div><a class="qindex" href="functions_w.html#index_w">W</a><div class="alphasepar"></div><a class="qindex" href="functions_x.html#index_x">X</a><div class="alphasepar"></div><a class="qindex" href="functions_y.html#index_y">Y</a><div class="alphasepar"></div><a class="qindex" href="functions_z.html#index_z">Z</a><div class="alphasepar"></div><a class="qindex" href="functions__.html#index__">_</a><div class="alphasepar"></div><a class="qindex" href="functions_~.html#index_~">~</a></div>
+
+
+<h3 class="doxsection"><a id="index_g" name="index_g"></a>- g -</h3><ul>
+<li>gamma&#160;:&#160;<a class="el" href="classeonc_1_1ImprovedDimer.html#a925d645640d233ef4939e58db2992f39">eonc::ImprovedDimer</a>, <a class="el" href="classImprovedDimer.html#a925d645640d233ef4939e58db2992f39">ImprovedDimer</a></li>
+<li>gamma1&#160;:&#160;<a class="el" href="structemt__parameters.html#addc0ae6045170290d438c4fe63d5d919">emt_parameters</a></li>
+<li>gamma2&#160;:&#160;<a class="el" href="structemt__parameters.html#a591370f97eec8c476456cc82889c5171">emt_parameters</a></li>
+<li>gateway_port&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1serve__options__t.html#ac347ac296c4728fe31f5f0b0c1099588">eonc::Parameters::serve_options_t</a>, <a class="el" href="structParameters_1_1serve__options__t.html#ac347ac296c4728fe31f5f0b0c1099588">Parameters::serve_options_t</a></li>
+<li>gaussDraw()&#160;:&#160;<a class="el" href="classeonc_1_1OHTSTJob.html#a8f003987a3efad8ccd81892751a1bb86">eonc::OHTSTJob</a>, <a class="el" href="classOHTSTJob.html#a8f003987a3efad8ccd81892751a1bb86">OHTSTJob</a></li>
+<li>generate_run()&#160;:&#160;<a class="el" href="classAMS.html#a157a948291be74add4b6f4e4e5909b2b">AMS</a></li>
+<li>get()&#160;:&#160;<a class="el" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry</a>, <a class="el" href="classPotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry</a></li>
+<li>get_artn_fn()&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#a9a53007d328f7d3d089e42023c0deb2a">eonc::ARTnResource</a></li>
+<li>get_artn_step_fn()&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#a9a138750d1f270d64e495464e850b628">eonc::ARTnResource</a></li>
+<li>get_compute_all_fn()&#160;:&#160;<a class="el" href="classeonc_1_1IRAResource.html#a7bf0d8debdef2bc33f6f841b04a9fb92">eonc::IRAResource</a></li>
+<li>get_create_fn()&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#ad688f08e54f333f55e64862f2f81e879">eonc::ARTnResource</a></li>
+<li>get_cshda_pbc_fn()&#160;:&#160;<a class="el" href="classeonc_1_1IRAResource.html#ae32a7022761183b4da0e167ec55c279a">eonc::IRAResource</a></li>
+<li>get_data_&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#a4d336516ea4cde57f7292d1cb521e0c0">eonc::ARTnResource</a></li>
+<li>get_data_fn&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#a2b7060ece1a537465fc6deba833b0b6c">eonc::ARTnResource</a></li>
+<li>get_destroy_fn()&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#afa48618abc205c6061676350d367d4ac">eonc::ARTnResource</a></li>
+<li>get_ef()&#160;:&#160;<a class="el" href="classeonc_1_1Potential.html#ac00fe80dcbd4f5887da244047aaf63f5">eonc::Potential</a>, <a class="el" href="classPotential.html#ac00fe80dcbd4f5887da244047aaf63f5">Potential</a></li>
+<li>get_ef_var()&#160;:&#160;<a class="el" href="classeonc_1_1SurrogatePotential.html#af30a4cbe8b9d73ea261486ddc37805b8">eonc::SurrogatePotential</a>, <a class="el" href="classSurrogatePotential.html#af30a4cbe8b9d73ea261486ddc37805b8">SurrogatePotential</a></li>
+<li>get_element_parameters()&#160;:&#160;<a class="el" href="classEAM.html#a78eae113fb7e473ff654ac7c9b5f0da3">EAM</a></li>
+<li>get_error_&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#a09b038b0332f97d8fb25c1617dc119f2">eonc::ARTnResource</a></li>
+<li>get_error_fn&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#afb7f92c2f2f38c200ae100998ecb6ccf">eonc::ARTnResource</a></li>
+<li>get_get_data_fn()&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#ab74f2980a81b3926222bd7329001c943">eonc::ARTnResource</a></li>
+<li>get_get_error_fn()&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#af00b7fdf177758c46c8cc93872d87e92">eonc::ARTnResource</a></li>
+<li>get_get_nmax_fn()&#160;:&#160;<a class="el" href="classeonc_1_1IRAResource.html#ac3532bbecdd24b6157bbc3169b9e725d">eonc::IRAResource</a></li>
+<li>get_get_param_fn()&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#a8fcef4d20792f7c9a7c123d752771d6c">eonc::ARTnResource</a></li>
+<li>get_get_runparam_fn()&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#aaed5c09048da8d985b59f9a2f44b1c46">eonc::ARTnResource</a></li>
+<li>get_match_fn()&#160;:&#160;<a class="el" href="classeonc_1_1IRAResource.html#af0c688f3ef94e9dd12ec29deaca4c3cc">eonc::IRAResource</a></li>
+<li>get_param_&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#ad378cf0e735e912e2b99af9e1352e04e">eonc::ARTnResource</a></li>
+<li>get_param_fn&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#afdab6fdb48b9f59e7a13d1bf69e01314">eonc::ARTnResource</a></li>
+<li>get_print_caller_fn()&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#aaa42638bd3df5e4fd92a848be4596c55">eonc::ARTnResource</a></li>
+<li>get_runparam_&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#aa840e95be2aecd4bd1e601b787a3b0bc">eonc::ARTnResource</a></li>
+<li>get_runparam_fn&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#aa37ae39e14fb3851e0944cf273db62f0">eonc::ARTnResource</a></li>
+<li>get_set_param_fn()&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#a849f7d7cd3a2d7c8f8fe0f757703b1f1">eonc::ARTnResource</a></li>
+<li>get_setup_fn()&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#ae698e5e400f1dad1f176bb1380cea229">eonc::ARTnResource</a></li>
+<li>getAccelerations()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#af5577896bc79fbb6d1cc8a9410811a26">eonc::Matter</a>, <a class="el" href="classMatter.html#af5577896bc79fbb6d1cc8a9410811a26">Matter</a></li>
+<li>getAtomicNr()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#ada91063399840e5900d861c2472a8bbc">eonc::Matter</a>, <a class="el" href="classMatter.html#ada91063399840e5900d861c2472a8bbc">Matter</a></li>
+<li>getAtomicNrs()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a54255c1a9e5b9fbce7cf04dab61c49ad">eonc::Matter</a>, <a class="el" href="classMatter.html#a54255c1a9e5b9fbce7cf04dab61c49ad">Matter</a></li>
+<li>getAtomicNrsFree()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#ac74baec03c3e226e9d63814132c73d69">eonc::Matter</a>, <a class="el" href="classMatter.html#ac74baec03c3e226e9d63814132c73d69">Matter</a></li>
+<li>GetAtomicNumbers()&#160;:&#160;<a class="el" href="classAtoms.html#ab0b9c6618f6a454c07b40bc37717bd07">Atoms</a></li>
+<li>GetAtomicNumbersPtr()&#160;:&#160;<a class="el" href="classAtoms.html#a3e7dba2fbbe9185cb0cee8cef3a8e5f8">Atoms</a></li>
+<li>getAtomIndex()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#ad17ea2f3b6ea4b9d8a6f6427d16696b7">eonc::Matter</a>, <a class="el" href="classMatter.html#ad17ea2f3b6ea4b9d8a6f6427d16696b7">Matter</a></li>
+<li>GetBasis()&#160;:&#160;<a class="el" href="classSuperCell.html#a7123e525b79c1a645e9be9431e8fef95">SuperCell</a></li>
+<li>getBiasForces()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#af63f40bcd9ea9744e15216afc359412f">eonc::Matter</a>, <a class="el" href="classMatter.html#af63f40bcd9ea9744e15216afc359412f">Matter</a></li>
+<li>GetCartesianForces()&#160;:&#160;<a class="el" href="classAsapPotential.html#afcbf581ef4ea32eb559ea0bd411972f2">AsapPotential</a>, <a class="el" href="classEMT.html#ad581a81229aabf6808b3bed4e77ba1d7">EMT</a></li>
+<li>GetCartesianPositions()&#160;:&#160;<a class="el" href="classAtoms.html#a59a5a5920a8348133293a642711945b2">Atoms</a></li>
+<li>getCell()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#adc4d758cf3f8a737ddb2e985c212f986">eonc::Matter</a>, <a class="el" href="classMatter.html#adc4d758cf3f8a737ddb2e985c212f986">Matter</a></li>
+<li>GetChangeCounter()&#160;:&#160;<a class="el" href="classAtoms.html#a2773d22154be5032f0b07fa176ebb898">Atoms</a></li>
+<li>GetChi()&#160;:&#160;<a class="el" href="classEMTDefaultParameterProvider.html#adece6455bd17755c1d6589e011fe5a20">EMTDefaultParameterProvider</a>, <a class="el" href="classEMTParameterProvider.html#afcf50b5e64fe5e1b857c8914017b6af5">EMTParameterProvider</a></li>
+<li>getConvergence()&#160;:&#160;<a class="el" href="classBGSDObjectiveFunction.html#ab75f0e178460199cf854e3e3b9fe64e0">BGSDObjectiveFunction</a>, <a class="el" href="classCollectiveIDPPObjectiveFunction.html#a0d1bde2e35ef4c8f90e6a1b05c1744bf">CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a0d1bde2e35ef4c8f90e6a1b05c1744bf">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#a5da0083f895fd849c7a970af605c7ea8">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a3c6538fb4e9f395a56f17a4f093f41c3">eonc::NEBObjectiveFunction</a>, <a class="el" href="classeonc_1_1ObjectiveFunction.html#adb5aa05d56bdb3f5eca741688f4f4e2d">eonc::ObjectiveFunction</a>, <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a43c5d668894a2a81bfa76d82f3f491e3">eonc::ZBLRepulsiveIDPPObjective</a>, <a class="el" href="classIDPPObjectiveFunction.html#a5da0083f895fd849c7a970af605c7ea8">IDPPObjectiveFunction</a>, <a class="el" href="classMinModeObjectiveFunction.html#acced82cf0f99dcb458467e1052455f2d">MinModeObjectiveFunction</a>, <a class="el" href="classNEBObjectiveFunction.html#a3c6538fb4e9f395a56f17a4f093f41c3">NEBObjectiveFunction</a>, <a class="el" href="classObjectiveFunction.html#adb5aa05d56bdb3f5eca741688f4f4e2d">ObjectiveFunction</a>, <a class="el" href="classZBLRepulsiveIDPPObjective.html#a43c5d668894a2a81bfa76d82f3f491e3">ZBLRepulsiveIDPPObjective</a></li>
+<li>getConvergenceH()&#160;:&#160;<a class="el" href="classBGSDObjectiveFunction.html#aff7d363ea0c5f718ab32ce8d46571ae3">BGSDObjectiveFunction</a></li>
+<li>getConvergenceV()&#160;:&#160;<a class="el" href="classBGSDObjectiveFunction.html#af7559148840dc8bb521023dfa6d597bd">BGSDObjectiveFunction</a></li>
+<li>getCutoff()&#160;:&#160;<a class="el" href="classforcefields_1_1PotentialBase.html#a6bea63adfa83bdb6e7a5d4fdce454955">forcefields::PotentialBase</a></li>
+<li>GetCutoffDistance()&#160;:&#160;<a class="el" href="classEMTDefaultParameterProvider.html#af43d3adde06ed7b486907870e56d257b">EMTDefaultParameterProvider</a>, <a class="el" href="classEMTParameterProvider.html#a068e169af01108b1878635040c5fac83">EMTParameterProvider</a></li>
+<li>GetCutoffRadius()&#160;:&#160;<a class="el" href="classAsapPotential.html#ab5602870b4d2dd2bedbef5d21e2df5c4">AsapPotential</a>, <a class="el" href="classEMT.html#a78906ddd6632db572e10eff45efb87ae">EMT</a>, <a class="el" href="classGhostPotential.html#a4e8a147a65d44c0fcaaa60628ecea187">GhostPotential</a></li>
+<li>GetCutoffSlope()&#160;:&#160;<a class="el" href="classEMTDefaultParameterProvider.html#ae259021a29b4a75313f9907dd1c5f223">EMTDefaultParameterProvider</a>, <a class="el" href="classEMTParameterProvider.html#a46646be9d048a02d45f75f37f095b535">EMTParameterProvider</a></li>
+<li>GetData()&#160;:&#160;<a class="el" href="classAsapPotential.html#ad05ff1f1b0d23d108d367ee652150da4">AsapPotential</a>, <a class="el" href="classEMT.html#adead49a30534236077691e25406351f4">EMT</a></li>
+<li>getDistanceMatrix()&#160;:&#160;<a class="el" href="classCollectiveIDPPObjectiveFunction.html#ae5df2a6d02738383e915697266c14f5b">CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ae5df2a6d02738383e915697266c14f5b">eonc::CollectiveIDPPObjectiveFunction</a></li>
+<li>getEigenvalue()&#160;:&#160;<a class="el" href="classARTnSaddleSearch.html#a205e6a87c5c6177149b4de976f2d2b16">ARTnSaddleSearch</a>, <a class="el" href="classAtomicGPDimer.html#a91a7b4f13c84b2bb5ff0d7fbf7c06524">AtomicGPDimer</a>, <a class="el" href="classBasinHoppingSaddleSearch.html#a5b6e7c73e8f038a935a65cfaf94fdced">BasinHoppingSaddleSearch</a>, <a class="el" href="classBiasedGradientSquaredDescent.html#a4e7237eeb04e0941909addc2e91ba3f6">BiasedGradientSquaredDescent</a>, <a class="el" href="classDavidson.html#a90b68442ff19269f65fd037a3665c83b">Davidson</a>, <a class="el" href="classDimer.html#a6195287fe92bd5d7d0e8c69cfc0df097">Dimer</a>, <a class="el" href="classDynamicsSaddleSearch.html#a104f77255f06734b91d6f4b6d7d84c6d">DynamicsSaddleSearch</a>, <a class="el" href="classeonc_1_1ARTnSaddleSearch.html#a205e6a87c5c6177149b4de976f2d2b16">eonc::ARTnSaddleSearch</a>, <a class="el" href="classeonc_1_1AtomicGPDimer.html#a91a7b4f13c84b2bb5ff0d7fbf7c06524">eonc::AtomicGPDimer</a>, <a class="el" href="classeonc_1_1BasinHoppingSaddleSearch.html#a5b6e7c73e8f038a935a65cfaf94fdced">eonc::BasinHoppingSaddleSearch</a>, <a class="el" href="classeonc_1_1BiasedGradientSquaredDescent.html#a4e7237eeb04e0941909addc2e91ba3f6">eonc::BiasedGradientSquaredDescent</a>, <a class="el" href="classeonc_1_1Davidson.html#a90b68442ff19269f65fd037a3665c83b">eonc::Davidson</a>, <a class="el" href="classeonc_1_1Dimer.html#a6195287fe92bd5d7d0e8c69cfc0df097">eonc::Dimer</a>, <a class="el" href="classeonc_1_1DynamicsSaddleSearch.html#a104f77255f06734b91d6f4b6d7d84c6d">eonc::DynamicsSaddleSearch</a>, <a class="el" href="classeonc_1_1ImprovedDimer.html#a25d9236a9b8c6e424e5d9935ac1b2419">eonc::ImprovedDimer</a>, <a class="el" href="classeonc_1_1Lanczos.html#a2b4e7f157abc16c6b79c0463cdf333e4">eonc::Lanczos</a>, <a class="el" href="classeonc_1_1LORRotation.html#ac8efcb98dcf379c80a67e8442f2c6ebd">eonc::LORRotation</a>, <a class="el" href="classeonc_1_1MinModeSaddleSearch.html#a6295ea830eb92b9e8c1025df35f8c034">eonc::MinModeSaddleSearch</a>, <a class="el" href="classeonc_1_1SaddleSearchMethod.html#a70772a4163d7b2e5bae114620119f33f">eonc::SaddleSearchMethod</a>, <a class="el" href="classImprovedDimer.html#a25d9236a9b8c6e424e5d9935ac1b2419">ImprovedDimer</a>, <a class="el" href="classLanczos.html#a2b4e7f157abc16c6b79c0463cdf333e4">Lanczos</a>, <a class="el" href="classLORRotation.html#ac8efcb98dcf379c80a67e8442f2c6ebd">LORRotation</a>, <a class="el" href="classMinModeSaddleSearch.html#a6295ea830eb92b9e8c1025df35f8c034">MinModeSaddleSearch</a>, <a class="el" href="classSaddleSearchMethod.html#a70772a4163d7b2e5bae114620119f33f">SaddleSearchMethod</a></li>
+<li>getEigenvector()&#160;:&#160;<a class="el" href="classARTnSaddleSearch.html#aa97778468b89a4d7c179908c26d9d460">ARTnSaddleSearch</a>, <a class="el" href="classAtomicGPDimer.html#a863a5cd481ec46cf6283135f983e9413">AtomicGPDimer</a>, <a class="el" href="classBasinHoppingSaddleSearch.html#a4c3ab3b757df327d577cc960d6acb65d">BasinHoppingSaddleSearch</a>, <a class="el" href="classBiasedGradientSquaredDescent.html#ac405cf42645465f7f1d4d28e9fe53a99">BiasedGradientSquaredDescent</a>, <a class="el" href="classDavidson.html#a4398c436c3553e9e2ba24bbe46d2bb87">Davidson</a>, <a class="el" href="classDimer.html#a95d773ee47b1dd491d4ccf5432eaa746">Dimer</a>, <a class="el" href="classDynamicsSaddleSearch.html#a75b8e9fe1466965c1caae8a8055abfd7">DynamicsSaddleSearch</a>, <a class="el" href="classeonc_1_1ARTnSaddleSearch.html#aa97778468b89a4d7c179908c26d9d460">eonc::ARTnSaddleSearch</a>, <a class="el" href="classeonc_1_1AtomicGPDimer.html#a863a5cd481ec46cf6283135f983e9413">eonc::AtomicGPDimer</a>, <a class="el" href="classeonc_1_1BasinHoppingSaddleSearch.html#a4c3ab3b757df327d577cc960d6acb65d">eonc::BasinHoppingSaddleSearch</a>, <a class="el" href="classeonc_1_1BiasedGradientSquaredDescent.html#ac405cf42645465f7f1d4d28e9fe53a99">eonc::BiasedGradientSquaredDescent</a>, <a class="el" href="classeonc_1_1Davidson.html#a4398c436c3553e9e2ba24bbe46d2bb87">eonc::Davidson</a>, <a class="el" href="classeonc_1_1Dimer.html#a95d773ee47b1dd491d4ccf5432eaa746">eonc::Dimer</a>, <a class="el" href="classeonc_1_1DynamicsSaddleSearch.html#a75b8e9fe1466965c1caae8a8055abfd7">eonc::DynamicsSaddleSearch</a>, <a class="el" href="classeonc_1_1ImprovedDimer.html#af96c25953fc43b4200f04fe0007cf112">eonc::ImprovedDimer</a>, <a class="el" href="classeonc_1_1Lanczos.html#af80dc60a05e1bfe7ef4c20af9394e59d">eonc::Lanczos</a>, <a class="el" href="classeonc_1_1LORRotation.html#a4a8ec2f085df6e3c38263e1418177250">eonc::LORRotation</a>, <a class="el" href="classeonc_1_1MinModeSaddleSearch.html#a3f8439d4ec5af01a6b6ff3a87dd1757a">eonc::MinModeSaddleSearch</a>, <a class="el" href="classeonc_1_1SaddleSearchMethod.html#a57da87103a898ecc496bf03eddb20d1b">eonc::SaddleSearchMethod</a>, <a class="el" href="classImprovedDimer.html#af96c25953fc43b4200f04fe0007cf112">ImprovedDimer</a>, <a class="el" href="classLanczos.html#af80dc60a05e1bfe7ef4c20af9394e59d">Lanczos</a>, <a class="el" href="classLORRotation.html#a4a8ec2f085df6e3c38263e1418177250">LORRotation</a>, <a class="el" href="classMinModeSaddleSearch.html#a3f8439d4ec5af01a6b6ff3a87dd1757a">MinModeSaddleSearch</a>, <a class="el" href="classSaddleSearchMethod.html#a57da87103a898ecc496bf03eddb20d1b">SaddleSearchMethod</a></li>
+<li>getElements()&#160;:&#160;<a class="el" href="classBasinHoppingJob.html#ad7bba332ce1f4af501a03b1d5124d352">BasinHoppingJob</a>, <a class="el" href="classeonc_1_1BasinHoppingJob.html#ad7bba332ce1f4af501a03b1d5124d352">eonc::BasinHoppingJob</a></li>
+<li>getEnergy()&#160;:&#160;<a class="el" href="classBGSDObjectiveFunction.html#a30afca03ae4469bbe20c17138684e99c">BGSDObjectiveFunction</a>, <a class="el" href="classCollectiveIDPPObjectiveFunction.html#af41aeccb67babc20d5b59683cb3cedd3">CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#af41aeccb67babc20d5b59683cb3cedd3">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#ace53feb4396c0274de88abe943f37315">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a4c10ff48dedb06d2aa7929b6c56c8f4f">eonc::NEBObjectiveFunction</a>, <a class="el" href="classeonc_1_1ObjectiveFunction.html#ac33d8c01a468c94e97e46add563a21c2">eonc::ObjectiveFunction</a>, <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a260d15f235d06ae312d14edebedad6c7">eonc::ZBLRepulsiveIDPPObjective</a>, <a class="el" href="classIDPPObjectiveFunction.html#ace53feb4396c0274de88abe943f37315">IDPPObjectiveFunction</a>, <a class="el" href="classMinModeObjectiveFunction.html#a9177def85e4054c262b6690a599385dd">MinModeObjectiveFunction</a>, <a class="el" href="classNEBObjectiveFunction.html#a4c10ff48dedb06d2aa7929b6c56c8f4f">NEBObjectiveFunction</a>, <a class="el" href="classObjectiveFunction.html#ac33d8c01a468c94e97e46add563a21c2">ObjectiveFunction</a>, <a class="el" href="classZBLRepulsiveIDPPObjective.html#a260d15f235d06ae312d14edebedad6c7">ZBLRepulsiveIDPPObjective</a></li>
+<li>getEnergyDiff()&#160;:&#160;<a class="el" href="classeonc_1_1TestJob.html#a4570c1d045cf3abd38b23e291900d0aa">eonc::TestJob</a>, <a class="el" href="classTestJob.html#a4570c1d045cf3abd38b23e291900d0aa">TestJob</a></li>
+<li>getEnergyVariance()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a60e8d3e7887b5deda232958abf1e8004">eonc::Matter</a>, <a class="el" href="classMatter.html#a60e8d3e7887b5deda232958abf1e8004">Matter</a></li>
+<li>getFixed()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#afe2636574f8f27addf59661ecc77f910">eonc::Matter</a>, <a class="el" href="classMatter.html#afe2636574f8f27addf59661ecc77f910">Matter</a></li>
+<li>getFixedMask()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#ab28f935aaa7c2d05e5a7004895f0f2c5">eonc::Matter</a>, <a class="el" href="classMatter.html#ab28f935aaa7c2d05e5a7004895f0f2c5">Matter</a></li>
+<li>getForceCalls()&#160;:&#160;<a class="el" href="classARTnSaddleSearch.html#ab19f93bd7f43e18f1cab48ac3eadcf18">ARTnSaddleSearch</a>, <a class="el" href="classeonc_1_1ARTnSaddleSearch.html#ab19f93bd7f43e18f1cab48ac3eadcf18">eonc::ARTnSaddleSearch</a>, <a class="el" href="classeonc_1_1Matter.html#a3546d0851270d2c9c2f7d6784970628a">eonc::Matter</a>, <a class="el" href="classeonc_1_1MinModeSaddleSearch.html#af9abcc57d62832fe9ec0097339a23681">eonc::MinModeSaddleSearch</a>, <a class="el" href="classeonc_1_1SaddleSearchMethod.html#a2b7a71f25cd73a7177554610dc9f2abe">eonc::SaddleSearchMethod</a>, <a class="el" href="classMatter.html#a3546d0851270d2c9c2f7d6784970628a">Matter</a>, <a class="el" href="classMinModeSaddleSearch.html#af9abcc57d62832fe9ec0097339a23681">MinModeSaddleSearch</a>, <a class="el" href="classSaddleSearchMethod.html#a2b7a71f25cd73a7177554610dc9f2abe">SaddleSearchMethod</a></li>
+<li>getForceDiff()&#160;:&#160;<a class="el" href="classeonc_1_1TestJob.html#a63a585d577c820bb5e4d26016bc3b0b7">eonc::TestJob</a>, <a class="el" href="classTestJob.html#a63a585d577c820bb5e4d26016bc3b0b7">TestJob</a></li>
+<li>getForces()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a48cee072b3bab26b5e045d02fbd83860">eonc::Matter</a>, <a class="el" href="classMatter.html#a48cee072b3bab26b5e045d02fbd83860">Matter</a></li>
+<li>getForcesFree()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#ae72c60ebf1da59f6877eb7238f412f9a">eonc::Matter</a>, <a class="el" href="classMatter.html#ae72c60ebf1da59f6877eb7238f412f9a">Matter</a></li>
+<li>getForcesFreeV()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#ab4bf1850e22f0cf4bf605df8a193642d">eonc::Matter</a>, <a class="el" href="classMatter.html#ab4bf1850e22f0cf4bf605df8a193642d">Matter</a></li>
+<li>getForcesRaw()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a8fd2866a1d614a4d19e3c6052fc41dee">eonc::Matter</a>, <a class="el" href="classMatter.html#a8fd2866a1d614a4d19e3c6052fc41dee">Matter</a></li>
+<li>getForcesV()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a5fe24e7e536637c308586a6bcba03e4e">eonc::Matter</a>, <a class="el" href="classMatter.html#a5fe24e7e536637c308586a6bcba03e4e">Matter</a></li>
+<li>getFree()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a42c2c5ca606659d564e05f09ba452601">eonc::Matter</a>, <a class="el" href="classMatter.html#a42c2c5ca606659d564e05f09ba452601">Matter</a></li>
+<li>getFreeV()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a109c73418bd3c7f9642acb67081db14d">eonc::Matter</a>, <a class="el" href="classMatter.html#a109c73418bd3c7f9642acb67081db14d">Matter</a></li>
+<li>getFreqs()&#160;:&#160;<a class="el" href="classeonc_1_1Hessian.html#a9c0badba5de0b9529fe16fdadfedac5f">eonc::Hessian</a>, <a class="el" href="classHessian.html#a9c0badba5de0b9529fe16fdadfedac5f">Hessian</a></li>
+<li>GetGhostPotential()&#160;:&#160;<a class="el" href="classGhostAtoms.html#a6a830b61515140d811c1aed126aa7b91">GhostAtoms</a></li>
+<li>getGradient()&#160;:&#160;<a class="el" href="classBGSDObjectiveFunction.html#ad21cb446c1c52effef1f407af7d0f641">BGSDObjectiveFunction</a>, <a class="el" href="classCollectiveIDPPObjectiveFunction.html#afc82432c0649dc23c15ad5c565fb5314">CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#afc82432c0649dc23c15ad5c565fb5314">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#abe8e4e80bbdd4d3cd903eaee50419a44">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a01941b334921107d573ae0f8f5ad7e1f">eonc::NEBObjectiveFunction</a>, <a class="el" href="classeonc_1_1ObjectiveFunction.html#a2cde804855ed7d58658f912636254352">eonc::ObjectiveFunction</a>, <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ad74a5737ea8d57236b8b5e0ac4221ebd">eonc::ZBLRepulsiveIDPPObjective</a>, <a class="el" href="classIDPPObjectiveFunction.html#abe8e4e80bbdd4d3cd903eaee50419a44">IDPPObjectiveFunction</a>, <a class="el" href="classMinModeObjectiveFunction.html#abdc6a96910257eb987081eb836c067f1">MinModeObjectiveFunction</a>, <a class="el" href="classNEBObjectiveFunction.html#a01941b334921107d573ae0f8f5ad7e1f">NEBObjectiveFunction</a>, <a class="el" href="classObjectiveFunction.html#a2cde804855ed7d58658f912636254352">ObjectiveFunction</a>, <a class="el" href="classZBLRepulsiveIDPPObjective.html#ad74a5737ea8d57236b8b5e0ac4221ebd">ZBLRepulsiveIDPPObjective</a></li>
+<li>getGradientnorm()&#160;:&#160;<a class="el" href="classBGSDObjectiveFunction.html#a9262a42155cb90b3cc75afb1f5ece9ff">BGSDObjectiveFunction</a></li>
+<li>getHeaderCon()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#ad0c4ab075cb363bd641e015609c54079">eonc::Matter</a>, <a class="el" href="classMatter.html#ad0c4ab075cb363bd641e015609c54079">Matter</a></li>
+<li>getHessian()&#160;:&#160;<a class="el" href="classeonc_1_1Hessian.html#a969b617b7e8557902055dd200efbc326">eonc::Hessian</a>, <a class="el" href="classHessian.html#a969b617b7e8557902055dd200efbc326">Hessian</a></li>
+<li>getIDPPForces()&#160;:&#160;<a class="el" href="classCollectiveIDPPObjectiveFunction.html#a7fbf4034efd8b6939da647effee39c36">CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a7fbf4034efd8b6939da647effee39c36">eonc::CollectiveIDPPObjectiveFunction</a></li>
+<li>GetImage()&#160;:&#160;<a class="el" href="classNeighborList.html#a7c54811ba5f589a1e9f299fac3245ead">NeighborList</a></li>
+<li>getIterationCount()&#160;:&#160;<a class="el" href="classARTnSaddleSearch.html#af77451859061c286ed91220d3f675b3c">ARTnSaddleSearch</a>, <a class="el" href="classeonc_1_1ARTnSaddleSearch.html#af77451859061c286ed91220d3f675b3c">eonc::ARTnSaddleSearch</a>, <a class="el" href="classeonc_1_1MinModeSaddleSearch.html#abec306e58d3fd1d4d1bb710ab5d6cf9f">eonc::MinModeSaddleSearch</a>, <a class="el" href="classeonc_1_1SaddleSearchMethod.html#ac41f61671cbddd6179da9792d5129fa3">eonc::SaddleSearchMethod</a>, <a class="el" href="classMinModeSaddleSearch.html#abec306e58d3fd1d4d1bb710ab5d6cf9f">MinModeSaddleSearch</a>, <a class="el" href="classSaddleSearchMethod.html#ac41f61671cbddd6179da9792d5129fa3">SaddleSearchMethod</a></li>
+<li>getKineticEnergy()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#ae9aecd3182f017d726f7fdf40200da3e">eonc::Matter</a>, <a class="el" href="classMatter.html#ae9aecd3182f017d726f7fdf40200da3e">Matter</a></li>
+<li>GetLatticeConstant()&#160;:&#160;<a class="el" href="classAsapPotential.html#aeb5631b291c450ba4344a55f87ee5bdf">AsapPotential</a>, <a class="el" href="classEMT.html#a4f021561ecc75d0fc844f4d38f0789db">EMT</a>, <a class="el" href="classGhostPotential.html#a161416927cdc62a4576c1370d3288ac4">GhostPotential</a></li>
+<li>GetLengthScale()&#160;:&#160;<a class="el" href="classEMTDefaultParameterProvider.html#ac38aca1c2f229b0c8fd285ed46357749">EMTDefaultParameterProvider</a>, <a class="el" href="classEMTParameterProvider.html#a5e3867b53f7f99f23d5123fc294f7477">EMTParameterProvider</a></li>
+<li>GetList()&#160;:&#160;<a class="el" href="classNeighborList.html#ad069775accaccedb8fe2ce7cd31e8504">NeighborList</a></li>
+<li>GetListCutoffDistance()&#160;:&#160;<a class="el" href="classEMTDefaultParameterProvider.html#af68bb0265c506e6e68b1b1b4ec6a6b77">EMTDefaultParameterProvider</a>, <a class="el" href="classEMTParameterProvider.html#ad468ad79bac8dc4f9baedcef8d3c2b9c">EMTParameterProvider</a></li>
+<li>GetListOfElements()&#160;:&#160;<a class="el" href="classAtoms.html#af13bbdf9c3816573e85a84807040b40e">Atoms</a></li>
+<li>getMass()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#aec83c6643272c49c4f0de7126ec50386">eonc::Matter</a>, <a class="el" href="classMatter.html#aec83c6643272c49c4f0de7126ec50386">Matter</a></li>
+<li>getMasses()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a713f47f28b5dd6b0eafe906cae0e3317">eonc::Matter</a>, <a class="el" href="classMatter.html#a713f47f28b5dd6b0eafe906cae0e3317">Matter</a></li>
+<li>getMechanicalEnergy()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#ac82dceb96ac4e838d7264f8a5a369ac4">eonc::Matter</a>, <a class="el" href="classMatter.html#ac82dceb96ac4e838d7264f8a5a369ac4">Matter</a></li>
+<li>GetMessage()&#160;:&#160;<a class="el" href="classException.html#a07ddcd4f080fea40c12e115244aaba78">Exception</a></li>
+<li>GetName()&#160;:&#160;<a class="el" href="classEMTRasmussenParameterProvider.html#a1ba96fb0916f39c466cb4629e148ded1">EMTRasmussenParameterProvider</a></li>
+<li>getName()&#160;:&#160;<a class="el" href="classforcefields_1_1Ccl.html#a61b4876e60e49b0d665e0fd8fed3ade6">forcefields::Ccl</a>, <a class="el" href="classforcefields_1_1SpceCcl.html#a988c8b475180b2e4edece397eb8af391">forcefields::SpceCcl</a>, <a class="el" href="classforcefields_1_1Tip4p.html#a10ae9a4406a9826ba0ec28dc006a9b58">forcefields::Tip4p</a>, <a class="el" href="classforcefields_1_1ZhuPhilpott.html#adfaff65c0ab7ebf28b9da66c7c66fdc8">forcefields::ZhuPhilpott&lt; P &gt;</a></li>
+<li>GetNeighborList()&#160;:&#160;<a class="el" href="classEMT.html#a97ffab1cf99a06d645697b9cbd322788">EMT</a></li>
+<li>GetNeighbors()&#160;:&#160;<a class="el" href="classCellList.html#a5f6601823a131fdaf572eda6aa52b94c">CellList</a>, <a class="el" href="classNeighborList.html#ad68ec1ece9f8a887c9b2839e2850cf4a">NeighborList</a></li>
+<li>GetNewParameters()&#160;:&#160;<a class="el" href="classEMTDefaultParameterProvider.html#a353658f062ac0f6d5daff1f6a4dae926">EMTDefaultParameterProvider</a>, <a class="el" href="classEMTRasmussenParameterProvider.html#a10889ee92d5df98ef8d46a329ad7916f">EMTRasmussenParameterProvider</a></li>
+<li>GetNumberOfAtoms()&#160;:&#160;<a class="el" href="classAsapPotential.html#a61edea066684292304cd7c7db2c29526">AsapPotential</a>, <a class="el" href="classAtoms.html#a8f27e2814b8e439c193dc4c29789cd92">Atoms</a>, <a class="el" href="classEMT.html#aeb188d9b3ced4f560461ab36e79ee8f9">EMT</a>, <a class="el" href="classNeighborList.html#a8d0c8001b285b43dbe3bbbbac3b2b861">NeighborList</a></li>
+<li>GetNumberOfElements()&#160;:&#160;<a class="el" href="classEMTDefaultParameterProvider.html#a3073f96df8be1250ec1d0fd7575c4ada">EMTDefaultParameterProvider</a>, <a class="el" href="classEMTParameterProvider.html#ae59c4a141823d0bf27e81e09d30a3327">EMTParameterProvider</a></li>
+<li>GetNumberOfGhosts()&#160;:&#160;<a class="el" href="classGhostAtoms.html#afab24a391eaf23a1b664e67a76eda0d2">GhostAtoms</a></li>
+<li>GetNumberOfImages()&#160;:&#160;<a class="el" href="classAtoms.html#a09af7c5c1af57d821413bc5f7bc95da7">Atoms</a></li>
+<li>GetNumberOfRealAtoms()&#160;:&#160;<a class="el" href="classAtoms.html#a41b258c4da4a9567f4067825f6cbf517">Atoms</a></li>
+<li>GetParameters()&#160;:&#160;<a class="el" href="classEMTDefaultParameterProvider.html#a848008617420e7725f4cef2a0eb2ed12">EMTDefaultParameterProvider</a>, <a class="el" href="classEMTParameterProvider.html#a0cc554101617b3312ba07cdb789cd342">EMTParameterProvider</a></li>
+<li>getPbcConvention()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a71cdf5fcafff1dca4137d50fcd39a0ac">eonc::Matter</a>, <a class="el" href="classMatter.html#a71cdf5fcafff1dca4137d50fcd39a0ac">Matter</a></li>
+<li>getPeriodic()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a42dc44f980e80210ff324a97ae554717">eonc::Matter</a>, <a class="el" href="classMatter.html#a42dc44f980e80210ff324a97ae554717">Matter</a></li>
+<li>getPosition()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a7f6c4f1bb73440455e412ed3824dafce">eonc::Matter</a>, <a class="el" href="classMatter.html#a7f6c4f1bb73440455e412ed3824dafce">Matter</a></li>
+<li>getPositions()&#160;:&#160;<a class="el" href="classBGSDObjectiveFunction.html#a2bd5f424b9c4487a696bdd5e17a0ecdd">BGSDObjectiveFunction</a>, <a class="el" href="classCollectiveIDPPObjectiveFunction.html#ad7ce828dd4a5e7d148638c537720d071">CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad7ce828dd4a5e7d148638c537720d071">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1IDPPObjectiveFunction.html#ab769bf2e33f5735eb5cc36c9708f23ca">eonc::IDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">eonc::Matter</a>, <a class="el" href="classeonc_1_1NEBObjectiveFunction.html#a03dab0f040cd499a6a3ef38e82b668e9">eonc::NEBObjectiveFunction</a>, <a class="el" href="classeonc_1_1ObjectiveFunction.html#aa06776d23dd7b6ffa23db1555d657261">eonc::ObjectiveFunction</a>, <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ade4690f7ad170f9285ccee04fe5b9924">eonc::ZBLRepulsiveIDPPObjective</a>, <a class="el" href="classIDPPObjectiveFunction.html#ab769bf2e33f5735eb5cc36c9708f23ca">IDPPObjectiveFunction</a>, <a class="el" href="classMatter.html#af4c79f27fe60b4dbd397064faf3f1f78">Matter</a>, <a class="el" href="classMinModeObjectiveFunction.html#a48956dda4b2c0cd441b5c82c966ebd5c">MinModeObjectiveFunction</a>, <a class="el" href="classNEBObjectiveFunction.html#a03dab0f040cd499a6a3ef38e82b668e9">NEBObjectiveFunction</a>, <a class="el" href="classObjectiveFunction.html#aa06776d23dd7b6ffa23db1555d657261">ObjectiveFunction</a>, <a class="el" href="classZBLRepulsiveIDPPObjective.html#ade4690f7ad170f9285ccee04fe5b9924">ZBLRepulsiveIDPPObjective</a></li>
+<li>getPositionsCopy()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a61f92d3857a9c627aa1085b6ee912858">eonc::Matter</a>, <a class="el" href="classMatter.html#a61f92d3857a9c627aa1085b6ee912858">Matter</a></li>
+<li>getPositionsFree()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a73fde5b1c2df94e368e2f785101ebfc1">eonc::Matter</a>, <a class="el" href="classMatter.html#a73fde5b1c2df94e368e2f785101ebfc1">Matter</a></li>
+<li>getPositionsFreeV()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#abce266d8f707e6d7a688695c0c7c490e">eonc::Matter</a>, <a class="el" href="classMatter.html#abce266d8f707e6d7a688695c0c7c490e">Matter</a></li>
+<li>GetPositionsPtr()&#160;:&#160;<a class="el" href="classAtoms.html#a2f59dd531a731e2dd71b4ff650e7ac75">Atoms</a></li>
+<li>getPositionsV()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a2d7d554a3a95b50358d1701cd78852b8">eonc::Matter</a>, <a class="el" href="classMatter.html#a2d7d554a3a95b50358d1701cd78852b8">Matter</a></li>
+<li>GetPotential()&#160;:&#160;<a class="el" href="classAtoms.html#a4fbac9c95a2f2864a8a2cca7d8395f5a">Atoms</a></li>
+<li>getPotential()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a78ada888b42ce36915927e24c8ec4568">eonc::Matter</a>, <a class="el" href="classMatter.html#a78ada888b42ce36915927e24c8ec4568">Matter</a></li>
+<li>getPotentialCalls()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#aeedc6e532d1dc4497825ba229abb49f6">eonc::Matter</a>, <a class="el" href="classMatter.html#aeedc6e532d1dc4497825ba229abb49f6">Matter</a></li>
+<li>GetPotentialEnergies()&#160;:&#160;<a class="el" href="classAsapPotential.html#a78f7e578dbbe72d3aa4206f8223f77dd">AsapPotential</a>, <a class="el" href="classEMT.html#aac4c597a04609d21b0acc088f9c108a2">EMT</a></li>
+<li>GetPotentialEnergy()&#160;:&#160;<a class="el" href="classAsapPotential.html#ad54c4d3024c8868a5f6a3c39c00c3bac">AsapPotential</a>, <a class="el" href="classEMT.html#adcf55fb767418aef28b24612c204f964">EMT</a></li>
+<li>getPotentialEnergy()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a0f627d29055314e02df9c51bdc05e53f">eonc::Matter</a>, <a class="el" href="classMatter.html#a0f627d29055314e02df9c51bdc05e53f">Matter</a></li>
+<li>GetSigma1()&#160;:&#160;<a class="el" href="classEMT.html#ad7f9248a914e4339d41cda2a1786bbd7">EMT</a></li>
+<li>GetSigma2()&#160;:&#160;<a class="el" href="classEMT.html#aaf539c0723e0c0313103ffd45bd629ad">EMT</a></li>
+<li>getStatus()&#160;:&#160;<a class="el" href="classARTnSaddleSearch.html#ae78593c43ac10a6fcfa5529bc8e91f43">ARTnSaddleSearch</a>, <a class="el" href="classBasinHoppingSaddleSearch.html#a2510a0ec457ca0b70858646495a312b7">BasinHoppingSaddleSearch</a>, <a class="el" href="classBiasedGradientSquaredDescent.html#af904f952201abf0cdebf34f71c240054">BiasedGradientSquaredDescent</a>, <a class="el" href="classDynamicsSaddleSearch.html#abd2364709845b7e460a8fcecf2c1a021">DynamicsSaddleSearch</a>, <a class="el" href="classeonc_1_1ARTnSaddleSearch.html#ae78593c43ac10a6fcfa5529bc8e91f43">eonc::ARTnSaddleSearch</a>, <a class="el" href="classeonc_1_1BasinHoppingSaddleSearch.html#a2510a0ec457ca0b70858646495a312b7">eonc::BasinHoppingSaddleSearch</a>, <a class="el" href="classeonc_1_1BiasedGradientSquaredDescent.html#af904f952201abf0cdebf34f71c240054">eonc::BiasedGradientSquaredDescent</a>, <a class="el" href="classeonc_1_1DynamicsSaddleSearch.html#abd2364709845b7e460a8fcecf2c1a021">eonc::DynamicsSaddleSearch</a>, <a class="el" href="classeonc_1_1MinModeSaddleSearch.html#a77a50d6acce37c4cc2783783f624e14a">eonc::MinModeSaddleSearch</a>, <a class="el" href="classeonc_1_1NudgedElasticBand.html#aafc11fe9cdfe747dbf92c93a959bf6f2">eonc::NudgedElasticBand</a>, <a class="el" href="classeonc_1_1SaddleSearchMethod.html#ac5c08d607ef39d4b7e081a37cbb2be97">eonc::SaddleSearchMethod</a>, <a class="el" href="classMinModeSaddleSearch.html#a77a50d6acce37c4cc2783783f624e14a">MinModeSaddleSearch</a>, <a class="el" href="classNudgedElasticBand.html#aafc11fe9cdfe747dbf92c93a959bf6f2">NudgedElasticBand</a>, <a class="el" href="classSaddleSearchMethod.html#ac5c08d607ef39d4b7e081a37cbb2be97">SaddleSearchMethod</a></li>
+<li>getStep()&#160;:&#160;<a class="el" href="classConjugateGradients.html#aa6214e378d939d58e4bb00b924fbec83">ConjugateGradients</a>, <a class="el" href="classeonc_1_1ConjugateGradients.html#aa6214e378d939d58e4bb00b924fbec83">eonc::ConjugateGradients</a>, <a class="el" href="classeonc_1_1LBFGS.html#a592e5355b2331d762770b99193b72e2f">eonc::LBFGS</a>, <a class="el" href="classeonc_1_1SteepestDescent.html#a03de35a02b5935f20025b89356311c06">eonc::SteepestDescent</a>, <a class="el" href="classLBFGS.html#a592e5355b2331d762770b99193b72e2f">LBFGS</a>, <a class="el" href="classSteepestDescent.html#a03de35a02b5935f20025b89356311c06">SteepestDescent</a></li>
+<li>GetStress()&#160;:&#160;<a class="el" href="classAsapPotential.html#afc6f053d5e6753be32a2aebc1bdb19d6">AsapPotential</a>, <a class="el" href="classEMT.html#a477a252615c3eb1cd99e385baf2c7ff8">EMT</a></li>
+<li>GetStresses()&#160;:&#160;<a class="el" href="classAsapPotential.html#af0cc38a6e1f7ce872a206809e33cf634">AsapPotential</a>, <a class="el" href="classEMT.html#aaab2d0a52a2ef43cb9cc5bd767bd73e2">EMT</a></li>
+<li>GetSuperCell()&#160;:&#160;<a class="el" href="classAtoms.html#a43bedf6781873746d21d3f4e1b88defa">Atoms</a></li>
+<li>getSwitchingWidth()&#160;:&#160;<a class="el" href="classforcefields_1_1PotentialBase.html#abbc99205a45a285c85ff5b58657265f4">forcefields::PotentialBase</a></li>
+<li>getType()&#160;:&#160;<a class="el" href="classeonc_1_1Job.html#a6a8f2fa4c5209bee4d243fec7b9db59e">eonc::Job</a>, <a class="el" href="classeonc_1_1Potential.html#a4f0274548044ab1f714e4801352c4547">eonc::Potential</a>, <a class="el" href="classJob.html#a6a8f2fa4c5209bee4d243fec7b9db59e">Job</a>, <a class="el" href="classPotential.html#a4f0274548044ab1f714e4801352c4547">Potential</a></li>
+<li>GetUnitCell()&#160;:&#160;<a class="el" href="classAtoms.html#a55fea530f92978447476cc768e33c672">Atoms</a></li>
+<li>GetUnwrappedPositions()&#160;:&#160;<a class="el" href="classAtoms.html#ae25125f950c16da3ddd3d0d8b3111db8">Atoms</a></li>
+<li>getVelocities()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#adefda147883ed7bea47974811355f481">eonc::Matter</a>, <a class="el" href="classMatter.html#adefda147883ed7bea47974811355f481">Matter</a></li>
+<li>GetVolume()&#160;:&#160;<a class="el" href="classSuperCell.html#a7670c6a88e62fc1faf9b9e321004af99">SuperCell</a></li>
+<li>getWriteConForces()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a108221cb91ea3df82614be0db79f86c9">eonc::Matter</a>, <a class="el" href="classMatter.html#a108221cb91ea3df82614be0db79f86c9">Matter</a></li>
+<li>GFNMethod&#160;:&#160;<a class="el" href="classXTBPot.html#a202ab44bad464d4739df0b3360507a47">XTBPot</a></li>
+<li>GhostAtoms()&#160;:&#160;<a class="el" href="classGhostAtoms.html#a4209188534f4d8ffd202a098ff7dac24">GhostAtoms</a></li>
+<li>ghostatoms&#160;:&#160;<a class="el" href="classEMT.html#a92e6e5451149334a04a89f9efdda4ac8">EMT</a></li>
+<li>GhostPotential()&#160;:&#160;<a class="el" href="classGhostPotential.html#a51e47a1c8f9dc5b81b1ef088320dc270">GhostPotential</a></li>
+<li>ghostPotential&#160;:&#160;<a class="el" href="classGhostAtoms.html#aba08fd3d36effac3cb1d0b50e5438045">GhostAtoms</a></li>
+<li>gle_a_file&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1oh__tst__options__t.html#ad80eb3a07f01d30610dbd317a61f9f00">eonc::Parameters::oh_tst_options_t</a>, <a class="el" href="structParameters_1_1oh__tst__options__t.html#ad80eb3a07f01d30610dbd317a61f9f00">Parameters::oh_tst_options_t</a></li>
+<li>GleThermostat()&#160;:&#160;<a class="el" href="classeonc_1_1GleThermostat.html#acabef7555303fac51df7f96618788712">eonc::GleThermostat</a>, <a class="el" href="classGleThermostat.html#acabef7555303fac51df7f96618788712">GleThermostat</a></li>
+<li>global_optimization_options&#160;:&#160;<a class="el" href="classeonc_1_1Parameters.html#a3e457fe4aabfd5741115d34cf37cada2">eonc::Parameters</a>, <a class="el" href="classParameters.html#a3e457fe4aabfd5741115d34cf37cada2">Parameters</a></li>
+<li>GlobalOptimization()&#160;:&#160;<a class="el" href="classeonc_1_1GlobalOptimization.html#aae7bb18f58de11907819bec6e9b0c346">eonc::GlobalOptimization</a>, <a class="el" href="classGlobalOptimization.html#aae7bb18f58de11907819bec6e9b0c346">GlobalOptimization</a></li>
+<li>GlobalOptimizationJob()&#160;:&#160;<a class="el" href="classeonc_1_1GlobalOptimizationJob.html#a52e1d25b3206402ab6dad5cb09ff4090">eonc::GlobalOptimizationJob</a>, <a class="el" href="classGlobalOptimizationJob.html#a52e1d25b3206402ab6dad5cb09ff4090">GlobalOptimizationJob</a></li>
+<li>gp_surrogate_options&#160;:&#160;<a class="el" href="classeonc_1_1Parameters.html#a3bdb061b6f9e346b5382adac5e54f927">eonc::Parameters</a>, <a class="el" href="classParameters.html#a3bdb061b6f9e346b5382adac5e54f927">Parameters</a></li>
+<li>gpr_dimer_options&#160;:&#160;<a class="el" href="classeonc_1_1Parameters.html#a53b08dd3abac212d0c5427555925bdc3">eonc::Parameters</a>, <a class="el" href="classParameters.html#a53b08dd3abac212d0c5427555925bdc3">Parameters</a></li>
+<li>gpr_model&#160;:&#160;<a class="el" href="classGPRPotential.html#adc6806d7f58eda6383f890816fb6b627">GPRPotential</a></li>
+<li>gpr_params&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1gpr__dimer__options__t.html#a14024ec5e88499ec9e70d5a452237439">eonc::Parameters::gpr_dimer_options_t</a>, <a class="el" href="structParameters_1_1gpr__dimer__options__t.html#a14024ec5e88499ec9e70d5a452237439">Parameters::gpr_dimer_options_t</a></li>
+<li>GPRPotential()&#160;:&#160;<a class="el" href="classGPRPotential.html#a7e192dcb7f30d97ce43d8e823a2cab92">GPRPotential</a></li>
+<li>GPSurrogateJob()&#160;:&#160;<a class="el" href="classeonc_1_1GPSurrogateJob.html#aa39a3b189a4943072dc326038ed46310">eonc::GPSurrogateJob</a>, <a class="el" href="classGPSurrogateJob.html#aa39a3b189a4943072dc326038ed46310">GPSurrogateJob</a></li>
+<li>grad2energy_convergence&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1bgsd__options__t.html#a254ea3bc74bd599fa94f1bd2fca57547">eonc::Parameters::bgsd_options_t</a>, <a class="el" href="structParameters_1_1bgsd__options__t.html#a254ea3bc74bd599fa94f1bd2fca57547">Parameters::bgsd_options_t</a></li>
+<li>grad2force_convergence&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1bgsd__options__t.html#ae85a575cd4e32c039777e3c1e3090c1a">eonc::Parameters::bgsd_options_t</a>, <a class="el" href="structParameters_1_1bgsd__options__t.html#ae85a575cd4e32c039777e3c1e3090c1a">Parameters::bgsd_options_t</a></li>
+<li>grad_file&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1gpr__dimer__options__t_1_1debug__params__t.html#a425b446755d73636222abf4641ac819a">eonc::Parameters::gpr_dimer_options_t::debug_params_t</a>, <a class="el" href="structParameters_1_1gpr__dimer__options__t_1_1debug__params__t.html#a425b446755d73636222abf4641ac819a">Parameters::gpr_dimer_options_t::debug_params_t</a></li>
+<li>gradient_finite_difference&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1bgsd__options__t.html#ab001430b07a2e311b559888db0fc9a6a">eonc::Parameters::bgsd_options_t</a>, <a class="el" href="structParameters_1_1bgsd__options__t.html#ab001430b07a2e311b559888db0fc9a6a">Parameters::bgsd_options_t</a></li>
+<li>gradients&#160;:&#160;<a class="el" href="classeonc_1_1ImprovedDimer.html#a89b8ad5f49419d61029016bdb57aa887">eonc::ImprovedDimer</a>, <a class="el" href="classImprovedDimer.html#a89b8ad5f49419d61029016bdb57aa887">ImprovedDimer</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

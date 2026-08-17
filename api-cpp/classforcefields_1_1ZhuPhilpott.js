@@ -1,0 +1,26 @@
+var classforcefields_1_1ZhuPhilpott =
+[
+    [ "ZhuPhilpott", "classforcefields_1_1ZhuPhilpott.html#a947676dc46b7e74902fcc9cf32805180", null ],
+    [ "ZhuPhilpott", "classforcefields_1_1ZhuPhilpott.html#af0907a81d3b411cee3887c5bb5275d13", null ],
+    [ "ZhuPhilpott", "classforcefields_1_1ZhuPhilpott.html#ac6f23f1d8ae707d929dace3cd2112042", null ],
+    [ "~ZhuPhilpott", "classforcefields_1_1ZhuPhilpott.html#a69f33657fa3a0acf102083fe987ffb0a", null ],
+    [ "anisotropic", "classforcefields_1_1ZhuPhilpott.html#a6203a3b0e30e4dc0f94333bbe8dc86e6", null ],
+    [ "computeHH_O_", "classforcefields_1_1ZhuPhilpott.html#a0b0530470d050adb277057a5612bd75a", null ],
+    [ "computeHH_O_Pt_", "classforcefields_1_1ZhuPhilpott.html#af984e69abeb0318cd3ae8e42dcd47653", null ],
+    [ "computeTemplate", "classforcefields_1_1ZhuPhilpott.html#aecff987bbb62f8a54575aa087c42bb41", null ],
+    [ "computeTemplate", "classforcefields_1_1ZhuPhilpott.html#a9616a012d376bdd879efa6b6f1e888d8", null ],
+    [ "coulombFull", "classforcefields_1_1ZhuPhilpott.html#a289efd0c869ca0d893d457f0e8d8d3b8", null ],
+    [ "coulombWithCutoff", "classforcefields_1_1ZhuPhilpott.html#ab80a640e86f80cb763f430c93e1a78d7", null ],
+    [ "getName", "classforcefields_1_1ZhuPhilpott.html#adfaff65c0ab7ebf28b9da66c7c66fdc8", null ],
+    [ "interactionPtH", "classforcefields_1_1ZhuPhilpott.html#ad8ae28bdb42c36b6abf95719284f8160", null ],
+    [ "interactionPtO", "classforcefields_1_1ZhuPhilpott.html#ae9987df1ca6f6ac99bb053c2e66bd78f", null ],
+    [ "interactWithCorePt", "classforcefields_1_1ZhuPhilpott.html#a36f33a1abbf183369f18f3ec8dcf4bab", null ],
+    [ "interactWithImage", "classforcefields_1_1ZhuPhilpott.html#a9d72b0058cf2b496449fb1bc3a727ac2", null ],
+    [ "isotropic10", "classforcefields_1_1ZhuPhilpott.html#ad4a6475f72ba0b97e8faa90c6138757a", null ],
+    [ "nPlatinum", "classforcefields_1_1ZhuPhilpott.html#a2d06fa5d6ace40c5bd281af4913efa98", null ],
+    [ "operator=", "classforcefields_1_1ZhuPhilpott.html#a1090a50cbfc2135f203438108d95808f", null ],
+    [ "setPlatinum", "classforcefields_1_1ZhuPhilpott.html#aa3f9554a8b6fb5d31d0a7e3c8938795f", null ],
+    [ "forces_", "classforcefields_1_1ZhuPhilpott.html#af9ac3a8162cbfab2a1f9d5b030f9535d", null ],
+    [ "nPlatinum_", "classforcefields_1_1ZhuPhilpott.html#a417bc749b1e18dda5a7041ca2f25ea00", null ],
+    [ "positions_", "classforcefields_1_1ZhuPhilpott.html#a02bbcaf82efe32e35eeb91617bdb507e", null ]
+];

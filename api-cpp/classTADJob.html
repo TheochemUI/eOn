@@ -1,0 +1,814 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: TADJob Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classTADJob.html','','classTADJob-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">TADJob Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="TADJob_8h_source.html">TADJob.h</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for TADJob:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+ <div class="center">
+  <img src="classTADJob.png" usemap="#TADJob_map" alt=""/>
+  <map id="TADJob_map" name="TADJob_map">
+<area href="classeonc_1_1ReplicaDynamicsJob.html" title="Base class for replica dynamics jobs (TAD, SafeHyper)." alt="eonc::ReplicaDynamicsJob" shape="rect" coords="0,56,164,80"/>
+<area href="classeonc_1_1Job.html" title="Declaration of job class." alt="eonc::Job" shape="rect" coords="0,0,164,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a890cbbe56766fda687f684a3d7353291" id="r_a890cbbe56766fda687f684a3d7353291"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a890cbbe56766fda687f684a3d7353291">~TADJob</a> ()=default</td></tr>
+<tr class="inherit_header pub_methods_classeonc_1_1ReplicaDynamicsJob"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1ReplicaDynamicsJob')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1ReplicaDynamicsJob.html">eonc::ReplicaDynamicsJob</a></td></tr>
+<tr class="memitem:a7073c559c4b5f35c61dfc4747cd16f24 inherit pub_methods_classeonc_1_1ReplicaDynamicsJob" id="r_a7073c559c4b5f35c61dfc4747cd16f24"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#a7073c559c4b5f35c61dfc4747cd16f24">~ReplicaDynamicsJob</a> () override=default</td></tr>
+<tr class="memitem:abdb9a2e8cd25f0b05bda10d12bf7c7a0 inherit pub_methods_classeonc_1_1ReplicaDynamicsJob" id="r_abdb9a2e8cd25f0b05bda10d12bf7c7a0"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#abdb9a2e8cd25f0b05bda10d12bf7c7a0">run</a> () override</td></tr>
+<tr class="memdesc:abdb9a2e8cd25f0b05bda10d12bf7c7a0 inherit pub_methods_classeonc_1_1ReplicaDynamicsJob"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual run; used solely for dynamic dispatch.  <br /></td></tr>
+<tr class="memitem:a68068204564da82ca657e3516db16cc9 inherit pub_methods_classeonc_1_1ReplicaDynamicsJob" id="r_a68068204564da82ca657e3516db16cc9"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#a68068204564da82ca657e3516db16cc9">runFromMatter</a> (std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; initial)</td></tr>
+<tr class="memdesc:a68068204564da82ca657e3516db16cc9 inherit pub_methods_classeonc_1_1ReplicaDynamicsJob"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matter-first entry: seed geometry, skip con2matter load.  <br /></td></tr>
+<tr class="memitem:a4e0abe180a33539a0e8d264775f34a42 inherit pub_methods_classeonc_1_1ReplicaDynamicsJob" id="r_a4e0abe180a33539a0e8d264775f34a42"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#a4e0abe180a33539a0e8d264775f34a42">Job</a> (std::unique_ptr&lt; <a class="el" href="classParameters.html">Parameters</a> &gt; parameters)</td></tr>
+<tr class="memitem:a7a1103c1eb84772e3bf681e5e53104a6 inherit pub_methods_classeonc_1_1ReplicaDynamicsJob" id="r_a7a1103c1eb84772e3bf681e5e53104a6"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#a7a1103c1eb84772e3bf681e5e53104a6">Job</a> (std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt; potPassed, const <a class="el" href="classParameters.html">Parameters</a> &amp;parameters)</td></tr>
+<tr class="inherit_header pub_methods_classeonc_1_1Job"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1Job')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1Job.html">eonc::Job</a></td></tr>
+<tr class="memitem:a4e0abe180a33539a0e8d264775f34a42 inherit pub_methods_classeonc_1_1Job" id="r_a4e0abe180a33539a0e8d264775f34a42"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a4e0abe180a33539a0e8d264775f34a42">Job</a> (std::unique_ptr&lt; <a class="el" href="classParameters.html">Parameters</a> &gt; parameters)</td></tr>
+<tr class="memitem:a7a1103c1eb84772e3bf681e5e53104a6 inherit pub_methods_classeonc_1_1Job" id="r_a7a1103c1eb84772e3bf681e5e53104a6"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a7a1103c1eb84772e3bf681e5e53104a6">Job</a> (std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt; potPassed, const <a class="el" href="classParameters.html">Parameters</a> &amp;parameters)</td></tr>
+<tr class="memitem:a4ba6ee96636fdbc95059c67a10900ea7 inherit pub_methods_classeonc_1_1Job" id="r_a4ba6ee96636fdbc95059c67a10900ea7"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a4ba6ee96636fdbc95059c67a10900ea7">~Job</a> ()=default</td></tr>
+<tr class="memitem:a6a8f2fa4c5209bee4d243fec7b9db59e inherit pub_methods_classeonc_1_1Job" id="r_a6a8f2fa4c5209bee4d243fec7b9db59e"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379">JobType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a6a8f2fa4c5209bee4d243fec7b9db59e">getType</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:ab0f11e32f4537d1a80d8d09c8a60daa0" id="r_ab0f11e32f4537d1a80d8d09c8a60daa0"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ab0f11e32f4537d1a80d8d09c8a60daa0">dynamics</a> () override</td></tr>
+<tr class="memdesc:ab0f11e32f4537d1a80d8d09c8a60daa0"><td class="mdescLeft">&#160;</td><td class="mdescRight">The accelerated dynamics loop. Returns status (1 = transition, 0 = none).  <br /></td></tr>
+<tr class="memitem:a7ff469450de8aadd0d1027cb068caee4" id="r_a7ff469450de8aadd0d1027cb068caee4"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a7ff469450de8aadd0d1027cb068caee4">initExtra</a> () override</td></tr>
+<tr class="memdesc:a7ff469450de8aadd0d1027cb068caee4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create any extra matter objects needed by the subclass.  <br /></td></tr>
+<tr class="memitem:ab36059e9bb7cb3a8fb47fead051236c7" id="r_ab36059e9bb7cb3a8fb47fead051236c7"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ab36059e9bb7cb3a8fb47fead051236c7">reportResults</a> () override</td></tr>
+<tr class="memdesc:ab36059e9bb7cb3a8fb47fead051236c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Post-dynamics logging (override for job-specific messages).  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a0b882f955190d38f3190c38172f08fad" id="r_a0b882f955190d38f3190c38172f08fad"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a0b882f955190d38f3190c38172f08fad">crossing</a></td></tr>
+<tr class="memitem:a2ede3fe6cd77936c330d519885bc8171" id="r_a2ede3fe6cd77936c330d519885bc8171"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a2ede3fe6cd77936c330d519885bc8171">barrier</a> {0.0}</td></tr>
+<tr class="memitem:abebb672f3390f3d0faaacf236321d956" id="r_abebb672f3390f3d0faaacf236321d956"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#abebb672f3390f3d0faaacf236321d956">timeBuffer</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_methods_classeonc_1_1ReplicaDynamicsJob"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classeonc_1_1ReplicaDynamicsJob')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classeonc_1_1ReplicaDynamicsJob.html">eonc::ReplicaDynamicsJob</a></td></tr>
+<tr class="memitem:adf4d16eee9d6cca1d067ee192255052f inherit pro_methods_classeonc_1_1ReplicaDynamicsJob" id="r_adf4d16eee9d6cca1d067ee192255052f"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#adf4d16eee9d6cca1d067ee192255052f">checkState</a> (<a class="el" href="classMatter.html">Matter</a> *current, <a class="el" href="classMatter.html">Matter</a> *reactant)</td></tr>
+<tr class="memdesc:adf4d16eee9d6cca1d067ee192255052f inherit pro_methods_classeonc_1_1ReplicaDynamicsJob"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimize a copy of current and compare to reactant.  <br /></td></tr>
+<tr class="memitem:a6dd72749e6c6759ecf52adb61a1b94ac inherit pro_methods_classeonc_1_1ReplicaDynamicsJob" id="r_a6dd72749e6c6759ecf52adb61a1b94ac"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#a6dd72749e6c6759ecf52adb61a1b94ac">refine</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;buff, <a class="el" href="classMatter.html">Matter</a> *reactant)</td></tr>
+<tr class="memdesc:a6dd72749e6c6759ecf52adb61a1b94ac inherit pro_methods_classeonc_1_1ReplicaDynamicsJob"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binary search for the transition frame in a snapshot buffer.  <br /></td></tr>
+<tr class="memitem:a0fb91c1192f280ab76e1bb920fd0db26 inherit pro_methods_classeonc_1_1ReplicaDynamicsJob" id="r_a0fb91c1192f280ab76e1bb920fd0db26"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#a0fb91c1192f280ab76e1bb920fd0db26">dephase</a> ()</td></tr>
+<tr class="memdesc:a0fb91c1192f280ab76e1bb920fd0db26 inherit pro_methods_classeonc_1_1ReplicaDynamicsJob"><td class="mdescLeft">&#160;</td><td class="mdescRight">Dephase the trajectory to ensure thermal independence.  <br /></td></tr>
+<tr class="memitem:aca4913968bd32c1f015cf63a46630362 inherit pro_methods_classeonc_1_1ReplicaDynamicsJob" id="r_aca4913968bd32c1f015cf63a46630362"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#aca4913968bd32c1f015cf63a46630362">saveData</a> (int status)</td></tr>
+<tr class="memdesc:aca4913968bd32c1f015cf63a46630362 inherit pro_methods_classeonc_1_1ReplicaDynamicsJob"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write results.dat and structure con files.  <br /></td></tr>
+<tr class="inherit_header pro_attribs_classeonc_1_1ReplicaDynamicsJob"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1ReplicaDynamicsJob')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1ReplicaDynamicsJob.html">eonc::ReplicaDynamicsJob</a></td></tr>
+<tr class="memitem:ad28e07cc8fd9774bc0a1bfe9f6a999a9 inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_ad28e07cc8fd9774bc0a1bfe9f6a999a9"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a></td></tr>
+<tr class="memitem:ab9e7b458ec30552def19abe4868a8009 inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_ab9e7b458ec30552def19abe4868a8009"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#ab9e7b458ec30552def19abe4868a8009">reactant</a></td></tr>
+<tr class="memitem:a3ad5c43bac2ea834829bcfd0a9eecc46 inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_a3ad5c43bac2ea834829bcfd0a9eecc46"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#a3ad5c43bac2ea834829bcfd0a9eecc46">saddle</a></td></tr>
+<tr class="memitem:a5e30efb7baa6f5088bb7ef8bede8af87 inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_a5e30efb7baa6f5088bb7ef8bede8af87"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#a5e30efb7baa6f5088bb7ef8bede8af87">product</a></td></tr>
+<tr class="memitem:aaac1969265dba975eb457b7b205e3dbb inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_aaac1969265dba975eb457b7b205e3dbb"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#aaac1969265dba975eb457b7b205e3dbb">finalState</a></td></tr>
+<tr class="memitem:aee672e5d5baac404181abba95d977407 inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_aee672e5d5baac404181abba95d977407"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#aee672e5d5baac404181abba95d977407">finalStateTmp</a></td></tr>
+<tr class="memitem:a9bae8b26cd84bff8001e38ac1db62d4f inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_a9bae8b26cd84bff8001e38ac1db62d4f"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#a9bae8b26cd84bff8001e38ac1db62d4f">metaStateFlag</a> {false}</td></tr>
+<tr class="memitem:ab600919c7533448be029b39a10770ecb inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_ab600919c7533448be029b39a10770ecb"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a> {false}</td></tr>
+<tr class="memitem:a5ae0b01e5231f3657b4e07fff71c0b1a inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_a5ae0b01e5231f3657b4e07fff71c0b1a"><td class="memItemLeft">size_t&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#a5ae0b01e5231f3657b4e07fff71c0b1a">minimizeFCalls</a> {0}</td></tr>
+<tr class="memitem:a5dc5c5ff4c72034ae9d8384e27ef144b inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_a5dc5c5ff4c72034ae9d8384e27ef144b"><td class="memItemLeft">size_t&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#a5dc5c5ff4c72034ae9d8384e27ef144b">mdFCalls</a> {0}</td></tr>
+<tr class="memitem:abfa6502e05b2d80b0850495314ac0b84 inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_abfa6502e05b2d80b0850495314ac0b84"><td class="memItemLeft">size_t&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#abfa6502e05b2d80b0850495314ac0b84">dephaseFCalls</a> {0}</td></tr>
+<tr class="memitem:af15c54fa5be83dc980bf8b68be03eac3 inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_af15c54fa5be83dc980bf8b68be03eac3"><td class="memItemLeft">size_t&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#af15c54fa5be83dc980bf8b68be03eac3">refineFCalls</a> {0}</td></tr>
+<tr class="memitem:ab9dd7546edfcb4b63aa54a48e1846a95 inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_ab9dd7546edfcb4b63aa54a48e1846a95"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#ab9dd7546edfcb4b63aa54a48e1846a95">transitionStep</a> {0}</td></tr>
+<tr class="memitem:aeee8ccd5638f47488c72768c6a79ee06 inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_aeee8ccd5638f47488c72768c6a79ee06"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#aeee8ccd5638f47488c72768c6a79ee06">time</a> {0.0}</td></tr>
+<tr class="memitem:a16ca616aa1cb47bfa738eb586b5d0dfa inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_a16ca616aa1cb47bfa738eb586b5d0dfa"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#a16ca616aa1cb47bfa738eb586b5d0dfa">minCorrectedTime</a> {1.0e200}</td></tr>
+<tr class="memitem:adc040d743f78eb79a993fcc9328fbdb0 inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_adc040d743f78eb79a993fcc9328fbdb0"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a> {0.0}</td></tr>
+<tr class="memitem:a168d1889140b473e2d0f71788f207b84 inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_a168d1889140b473e2d0f71788f207b84"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#a168d1889140b473e2d0f71788f207b84">returnFiles</a></td></tr>
+<tr class="memitem:a8c213f822f1af2a3a3f84d8eb94222dd inherit pro_attribs_classeonc_1_1ReplicaDynamicsJob" id="r_a8c213f822f1af2a3a3f84d8eb94222dd"><td class="memItemLeft"><a class="el" href="structeonc_1_1log_1_1Scoped.html">eonc::log::Scoped</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a></td></tr>
+<tr class="inherit_header pro_attribs_classeonc_1_1Job"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1Job')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1Job.html">eonc::Job</a></td></tr>
+<tr class="memitem:a90e97e92096c7c2ea7dec3d9c49f485f inherit pro_attribs_classeonc_1_1Job" id="r_a90e97e92096c7c2ea7dec3d9c49f485f"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379">JobType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a90e97e92096c7c2ea7dec3d9c49f485f">jtype</a></td></tr>
+<tr class="memitem:a9f0bfab75a98f383ba58f1c592fd2500 inherit pro_attribs_classeonc_1_1Job" id="r_a9f0bfab75a98f383ba58f1c592fd2500"><td class="memItemLeft"><a class="el" href="classParameters.html">Parameters</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a></td></tr>
+<tr class="memitem:a948da0de6ec2575bd6ac975fedaad0c9 inherit pro_attribs_classeonc_1_1Job" id="r_a948da0de6ec2575bd6ac975fedaad0c9"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classPotential.html">Potential</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="TADJob_8h_source.html#l00017">17</a> of file <a class="el" href="TADJob_8h_source.html">TADJob.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a890cbbe56766fda687f684a3d7353291" name="a890cbbe56766fda687f684a3d7353291"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a890cbbe56766fda687f684a3d7353291">&#9670;&#160;</a></span>~TADJob()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeonc_1_1TADJob.html#a890cbbe56766fda687f684a3d7353291">eonc::TADJob::~TADJob</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="ab0f11e32f4537d1a80d8d09c8a60daa0" name="ab0f11e32f4537d1a80d8d09c8a60daa0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0f11e32f4537d1a80d8d09c8a60daa0">&#9670;&#160;</a></span>dynamics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classeonc_1_1TADJob.html#ab0f11e32f4537d1a80d8d09c8a60daa0">TADJob::dynamics</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel private">private</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The accelerated dynamics loop. Returns status (1 = transition, 0 = none). </p>
+
+<p>Implements <a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#a95c2d14f96aae1a8d23e3aa9589e5598">eonc::ReplicaDynamicsJob</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="TADJob_8cpp_source.html#l00041">41</a> of file <a class="el" href="TADJob_8cpp_source.html">TADJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   41</span>                     {</div>
+<div class="line"><span class="lineno">   42</span>  <span class="keywordtype">bool</span> transitionFlag = <span class="keyword">false</span>, recordFlag = <span class="keyword">true</span>, stopFlag = <span class="keyword">false</span>,</div>
+<div class="line"><span class="lineno">   43</span>       firstTransitFlag = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   44</span>  <span class="keywordtype">long</span> nFreeCoord = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab9e7b458ec30552def19abe4868a8009">reactant</a>-&gt;numberOfFreeAtoms() * 3;</div>
+<div class="line"><span class="lineno">   45</span>  <span class="keywordtype">long</span> mdBufferLength;</div>
+<div class="line"><span class="lineno">   46</span>  <span class="keywordtype">long</span> step = 0, refineStep, newStateStep = 0;</div>
+<div class="line"><span class="lineno">   47</span>  <span class="keywordtype">long</span> nCheck = 0, nRecord = 0, nState = 0;</div>
+<div class="line"><span class="lineno">   48</span>  <span class="keywordtype">long</span> StateCheckInterval, RecordInterval;</div>
+<div class="line"><span class="lineno">   49</span>  <span class="keywordtype">double</span> kinE, kinT, avgT, varT;</div>
+<div class="line"><span class="lineno">   50</span>  <span class="keywordtype">double</span> kB = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.kB;</div>
+<div class="line"><span class="lineno">   51</span>  <span class="keywordtype">double</span> correctedTime = 0.0;</div>
+<div class="line"><span class="lineno">   52</span>  <span class="keywordtype">double</span> stopTime = 0.0, sumSimulatedTime = 0.0;</div>
+<div class="line"><span class="lineno">   53</span>  <span class="keywordtype">double</span> Temp = 0.0, sumT = 0.0, sumT2 = 0.0;</div>
+<div class="line"><span class="lineno">   54</span>  <span class="keywordtype">double</span> correctionFactor = 1.0;</div>
+<div class="line"><span class="lineno">   55</span>  <span class="keywordtype">double</span> transitionTime_current = 0.0, transitionTime_previous = 0.0;</div>
+<div class="line"><span class="lineno">   56</span>  <span class="keywordtype">double</span> delta, minmu, factor, highT, lowT;</div>
+<div class="line"><span class="lineno">   57</span> </div>
+<div class="line"><span class="lineno">   58</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> velocity;</div>
+<div class="line"><span class="lineno">   59</span> </div>
+<div class="line"><span class="lineno">   60</span>  <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a16ca616aa1cb47bfa738eb586b5d0dfa">minCorrectedTime</a> = 1.0e200;</div>
+<div class="line"><span class="lineno">   61</span>  lowT = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.tad_options.low_temperature;</div>
+<div class="line"><span class="lineno">   62</span>  highT = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options.temperature;</div>
+<div class="line"><span class="lineno">   63</span>  delta = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.tad_options.confidence;</div>
+<div class="line"><span class="lineno">   64</span>  minmu = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.tad_options.min_prefactor;</div>
+<div class="line"><span class="lineno">   65</span>  factor = std::log(1.0 / delta) / minmu;</div>
+<div class="line"><span class="lineno">   66</span>  StateCheckInterval =</div>
+<div class="line"><span class="lineno">   67</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options.state_check_interval /</div>
+<div class="line"><span class="lineno">   68</span>                        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.time_step);</div>
+<div class="line"><span class="lineno">   69</span>  RecordInterval =</div>
+<div class="line"><span class="lineno">   70</span>      <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options.record_interval /</div>
+<div class="line"><span class="lineno">   71</span>                        <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.time_step);</div>
+<div class="line"><span class="lineno">   72</span>  Temp = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options.temperature;</div>
+<div class="line"><span class="lineno">   73</span>  <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a> = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a9bae8b26cd84bff8001e38ac1db62d4f">metaStateFlag</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   74</span> </div>
+<div class="line"><span class="lineno">   75</span>  mdBufferLength = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(StateCheckInterval / RecordInterval);</div>
+<div class="line"><span class="lineno">   76</span>  std::vector&lt;std::shared_ptr&lt;Matter&gt;&gt; mdBuffer(mdBufferLength);</div>
+<div class="line"><span class="lineno">   77</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; mdBufferLength; i++) {</div>
+<div class="line"><span class="lineno">   78</span>    mdBuffer[i] = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   79</span>  }</div>
+<div class="line"><span class="lineno">   80</span>  <a class="code hl_variable" href="#abebb672f3390f3d0faaacf236321d956">timeBuffer</a>.resize(mdBufferLength);</div>
+<div class="line"><span class="lineno">   81</span> </div>
+<div class="line"><span class="lineno">   82</span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a405d9a69e5139b9df0df6b66e18fc9e2">Dynamics</a> <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7217318fc4a1f9dfcc38a67a97e0ada8">TAD</a>(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>.get(), <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   83</span>  <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7217318fc4a1f9dfcc38a67a97e0ada8">TAD</a>.setThermalVelocity();</div>
+<div class="line"><span class="lineno">   84</span> </div>
+<div class="line"><span class="lineno">   85</span>  {</div>
+<div class="line"><span class="lineno">   86</span>    eonc::ForceCallTimer timer(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#abfa6502e05b2d80b0850495314ac0b84">dephaseFCalls</a>);</div>
+<div class="line"><span class="lineno">   87</span>    <a class="code hl_function" href="classeonc_1_1ReplicaDynamicsJob.html#a0fb91c1192f280ab76e1bb920fd0db26">dephase</a>();</div>
+<div class="line"><span class="lineno">   88</span>  }</div>
+<div class="line"><span class="lineno">   89</span> </div>
+<div class="line"><span class="lineno">   90</span>  QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">   91</span>      <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>,</div>
+<div class="line"><span class="lineno">   92</span>      <span class="stringliteral">&quot;Starting MD run\nTemperature: {:.2f} Kelvin&quot;</span></div>
+<div class="line"><span class="lineno">   93</span>      <span class="stringliteral">&quot;Total Simulation Time: {:.2f} fs\nTime Step: {:.2f} fs\nTotal Steps: &quot;</span></div>
+<div class="line"><span class="lineno">   94</span>      <span class="stringliteral">&quot;{}\n&quot;</span>,</div>
+<div class="line"><span class="lineno">   95</span>      Temp,</div>
+<div class="line"><span class="lineno">   96</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.steps * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.time_step *</div>
+<div class="line"><span class="lineno">   97</span>          <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit,</div>
+<div class="line"><span class="lineno">   98</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.time_step * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit,</div>
+<div class="line"><span class="lineno">   99</span>      <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.steps);</div>
+<div class="line"><span class="lineno">  100</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;MD buffer length: {}&quot;</span>, mdBufferLength);</div>
+<div class="line"><span class="lineno">  101</span> </div>
+<div class="line"><span class="lineno">  102</span>  <span class="keywordtype">long</span> tenthSteps = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.steps / 10;</div>
+<div class="line"><span class="lineno">  103</span>  <span class="keywordflow">if</span> (tenthSteps == 0) {</div>
+<div class="line"><span class="lineno">  104</span>    tenthSteps = <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.steps;</div>
+<div class="line"><span class="lineno">  105</span>  }</div>
+<div class="line"><span class="lineno">  106</span> </div>
+<div class="line"><span class="lineno">  107</span>  <span class="keywordflow">while</span> (!stopFlag) {</div>
+<div class="line"><span class="lineno">  108</span>    kinE = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>-&gt;getKineticEnergy();</div>
+<div class="line"><span class="lineno">  109</span>    kinT = (2.0 * kinE / nFreeCoord / kB);</div>
+<div class="line"><span class="lineno">  110</span>    sumT += kinT;</div>
+<div class="line"><span class="lineno">  111</span>    sumT2 += kinT * kinT;</div>
+<div class="line"><span class="lineno">  112</span>    QUILL_LOG_TRACE_L1(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;steps = {:10d} temp = {:10.5f} &quot;</span>, step, kinT);</div>
+<div class="line"><span class="lineno">  113</span> </div>
+<div class="line"><span class="lineno">  114</span>    <a class="code hl_enumvalue" href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7217318fc4a1f9dfcc38a67a97e0ada8">TAD</a>.oneStep();</div>
+<div class="line"><span class="lineno">  115</span>    <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a5dc5c5ff4c72034ae9d8384e27ef144b">mdFCalls</a>++;</div>
+<div class="line"><span class="lineno">  116</span> </div>
+<div class="line"><span class="lineno">  117</span>    <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aeee8ccd5638f47488c72768c6a79ee06">time</a> += <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.time_step;</div>
+<div class="line"><span class="lineno">  118</span>    nCheck++;</div>
+<div class="line"><span class="lineno">  119</span>    step++;</div>
+<div class="line"><span class="lineno">  120</span>    QUILL_LOG_TRACE_L1(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;step = {:4d}, time= {:10.4f}&quot;</span>, step, <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aeee8ccd5638f47488c72768c6a79ee06">time</a>);</div>
+<div class="line"><span class="lineno">  121</span> </div>
+<div class="line"><span class="lineno">  122</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.parallel_replica_options.refine_transition &amp;&amp; recordFlag &amp;&amp;</div>
+<div class="line"><span class="lineno">  123</span>        !<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a>) {</div>
+<div class="line"><span class="lineno">  124</span>      <span class="keywordflow">if</span> (nCheck % RecordInterval == 0) {</div>
+<div class="line"><span class="lineno">  125</span>        *mdBuffer[nRecord] = *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>;</div>
+<div class="line"><span class="lineno">  126</span>        <a class="code hl_variable" href="#abebb672f3390f3d0faaacf236321d956">timeBuffer</a>[nRecord] = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aeee8ccd5638f47488c72768c6a79ee06">time</a>;</div>
+<div class="line"><span class="lineno">  127</span>        nRecord++;</div>
+<div class="line"><span class="lineno">  128</span>      }</div>
+<div class="line"><span class="lineno">  129</span>    }</div>
+<div class="line"><span class="lineno">  130</span> </div>
+<div class="line"><span class="lineno">  131</span>    <span class="keywordflow">if</span> ((nCheck == StateCheckInterval) &amp;&amp; !<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a>) {</div>
+<div class="line"><span class="lineno">  132</span>      nCheck = 0;</div>
+<div class="line"><span class="lineno">  133</span>      nRecord = 0;</div>
+<div class="line"><span class="lineno">  134</span>      {</div>
+<div class="line"><span class="lineno">  135</span>        eonc::ForceCallTimer timer(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a5ae0b01e5231f3657b4e07fff71c0b1a">minimizeFCalls</a>);</div>
+<div class="line"><span class="lineno">  136</span>        transitionFlag = <a class="code hl_function" href="classeonc_1_1ReplicaDynamicsJob.html#adf4d16eee9d6cca1d067ee192255052f">checkState</a>(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>.get(), <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab9e7b458ec30552def19abe4868a8009">reactant</a>.get());</div>
+<div class="line"><span class="lineno">  137</span>      }</div>
+<div class="line"><span class="lineno">  138</span>      <span class="keywordflow">if</span> (transitionFlag) {</div>
+<div class="line"><span class="lineno">  139</span>        nState++;</div>
+<div class="line"><span class="lineno">  140</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;New State {}: &quot;</span>, nState);</div>
+<div class="line"><span class="lineno">  141</span>        *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aee672e5d5baac404181abba95d977407">finalStateTmp</a> = *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>;</div>
+<div class="line"><span class="lineno">  142</span>        <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a> = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aeee8ccd5638f47488c72768c6a79ee06">time</a>;</div>
+<div class="line"><span class="lineno">  143</span>        newStateStep = step;</div>
+<div class="line"><span class="lineno">  144</span>        <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab9dd7546edfcb4b63aa54a48e1846a95">transitionStep</a> = newStateStep;</div>
+<div class="line"><span class="lineno">  145</span>        firstTransitFlag = 1;</div>
+<div class="line"><span class="lineno">  146</span>      }</div>
+<div class="line"><span class="lineno">  147</span>    }</div>
+<div class="line"><span class="lineno">  148</span> </div>
+<div class="line"><span class="lineno">  149</span>    <span class="keywordflow">if</span> (transitionFlag) {</div>
+<div class="line"><span class="lineno">  150</span>      QUILL_LOG_TRACE_L1(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;Refining transition time.&quot;</span>);</div>
+<div class="line"><span class="lineno">  151</span>      {</div>
+<div class="line"><span class="lineno">  152</span>        eonc::ForceCallTimer timer(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#af15c54fa5be83dc980bf8b68be03eac3">refineFCalls</a>);</div>
+<div class="line"><span class="lineno">  153</span>        refineStep = <a class="code hl_function" href="classeonc_1_1ReplicaDynamicsJob.html#a6dd72749e6c6759ecf52adb61a1b94ac">refine</a>(mdBuffer, <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab9e7b458ec30552def19abe4868a8009">reactant</a>.get());</div>
+<div class="line"><span class="lineno">  154</span>      }</div>
+<div class="line"><span class="lineno">  155</span> </div>
+<div class="line"><span class="lineno">  156</span>      <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab9dd7546edfcb4b63aa54a48e1846a95">transitionStep</a> =</div>
+<div class="line"><span class="lineno">  157</span>          newStateStep - StateCheckInterval + refineStep * RecordInterval;</div>
+<div class="line"><span class="lineno">  158</span>      transitionTime_current = <a class="code hl_variable" href="#abebb672f3390f3d0faaacf236321d956">timeBuffer</a>[refineStep];</div>
+<div class="line"><span class="lineno">  159</span>      *<a class="code hl_variable" href="#a0b882f955190d38f3190c38172f08fad">crossing</a> = *mdBuffer[refineStep];</div>
+<div class="line"><span class="lineno">  160</span>      <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a> = transitionTime_current - transitionTime_previous;</div>
+<div class="line"><span class="lineno">  161</span>      transitionTime_previous = transitionTime_current;</div>
+<div class="line"><span class="lineno">  162</span>      <a class="code hl_variable" href="#a2ede3fe6cd77936c330d519885bc8171">barrier</a> = <a class="code hl_variable" href="#a0b882f955190d38f3190c38172f08fad">crossing</a>-&gt;getPotentialEnergy() - <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab9e7b458ec30552def19abe4868a8009">reactant</a>-&gt;getPotentialEnergy();</div>
+<div class="line"><span class="lineno">  163</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;barrier= {:.3f}&quot;</span>, <a class="code hl_variable" href="#a2ede3fe6cd77936c330d519885bc8171">barrier</a>);</div>
+<div class="line"><span class="lineno">  164</span>      correctionFactor = std::exp(<a class="code hl_variable" href="#a2ede3fe6cd77936c330d519885bc8171">barrier</a> / kB * (1.0 / lowT - 1.0 / highT));</div>
+<div class="line"><span class="lineno">  165</span>      correctedTime = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a> * correctionFactor;</div>
+<div class="line"><span class="lineno">  166</span>      sumSimulatedTime += <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a>;</div>
+<div class="line"><span class="lineno">  167</span> </div>
+<div class="line"><span class="lineno">  168</span>      *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a> = *mdBuffer[refineStep - 1];</div>
+<div class="line"><span class="lineno">  169</span>      velocity = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>-&gt;getVelocities();</div>
+<div class="line"><span class="lineno">  170</span>      velocity = velocity * (-1);</div>
+<div class="line"><span class="lineno">  171</span>      <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>-&gt;setVelocities(velocity);</div>
+<div class="line"><span class="lineno">  172</span> </div>
+<div class="line"><span class="lineno">  173</span>      <span class="keywordflow">if</span> (correctedTime &lt; <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a16ca616aa1cb47bfa738eb586b5d0dfa">minCorrectedTime</a>) {</div>
+<div class="line"><span class="lineno">  174</span>        <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a16ca616aa1cb47bfa738eb586b5d0dfa">minCorrectedTime</a> = correctedTime;</div>
+<div class="line"><span class="lineno">  175</span>        *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a3ad5c43bac2ea834829bcfd0a9eecc46">saddle</a> = *<a class="code hl_variable" href="#a0b882f955190d38f3190c38172f08fad">crossing</a>;</div>
+<div class="line"><span class="lineno">  176</span>        *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aaac1969265dba975eb457b7b205e3dbb">finalState</a> = *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aee672e5d5baac404181abba95d977407">finalStateTmp</a>;</div>
+<div class="line"><span class="lineno">  177</span>      }</div>
+<div class="line"><span class="lineno">  178</span>      stopTime = factor * std::pow(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a16ca616aa1cb47bfa738eb586b5d0dfa">minCorrectedTime</a> / factor, lowT / highT);</div>
+<div class="line"><span class="lineno">  179</span>      QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">  180</span>          <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>,</div>
+<div class="line"><span class="lineno">  181</span>          <span class="stringliteral">&quot;tranisitonTime= {:.3e} s, Barrier= {:.3f} eV, correctedTime= {:.3e} &quot;</span></div>
+<div class="line"><span class="lineno">  182</span>          <span class="stringliteral">&quot;s, &quot;</span></div>
+<div class="line"><span class="lineno">  183</span>          <span class="stringliteral">&quot;SimulatedTime= {:.3e} s, minCorTime= {:.3e} s, stopTime= {:.3e} s&quot;</span>,</div>
+<div class="line"><span class="lineno">  184</span>          <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">transitionTime</a> * 1e-15 * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit, <a class="code hl_variable" href="#a2ede3fe6cd77936c330d519885bc8171">barrier</a>,</div>
+<div class="line"><span class="lineno">  185</span>          correctedTime * 1e-15 * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit,</div>
+<div class="line"><span class="lineno">  186</span>          sumSimulatedTime * 1e-15 * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit,</div>
+<div class="line"><span class="lineno">  187</span>          <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a16ca616aa1cb47bfa738eb586b5d0dfa">minCorrectedTime</a> * 1.0e-15 * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit,</div>
+<div class="line"><span class="lineno">  188</span>          stopTime * 1.0e-15 * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit);</div>
+<div class="line"><span class="lineno">  189</span> </div>
+<div class="line"><span class="lineno">  190</span>      transitionFlag = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  191</span>    }</div>
+<div class="line"><span class="lineno">  192</span> </div>
+<div class="line"><span class="lineno">  193</span>    <span class="keywordflow">if</span> (firstTransitFlag &amp;&amp; sumSimulatedTime &gt;= stopTime) {</div>
+<div class="line"><span class="lineno">  194</span>      stopFlag = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  195</span>      <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  196</span>    }</div>
+<div class="line"><span class="lineno">  197</span> </div>
+<div class="line"><span class="lineno">  198</span>    <span class="keywordflow">if</span> ((step % tenthSteps == 0) || (step == <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.steps)) {</div>
+<div class="line"><span class="lineno">  199</span>      <span class="keywordtype">double</span> maxAtomDistance = <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">current</a>-&gt;perAtomNorm(*<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab9e7b458ec30552def19abe4868a8009">reactant</a>);</div>
+<div class="line"><span class="lineno">  200</span>      QUILL_LOG_DEBUG(</div>
+<div class="line"><span class="lineno">  201</span>          <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;progress: {:.0f}%, max displacement: {:.3f}, step {}/{}&quot;</span>,</div>
+<div class="line"><span class="lineno">  202</span>          <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(100.0 * step) / <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.steps,</div>
+<div class="line"><span class="lineno">  203</span>          maxAtomDistance, step, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.steps);</div>
+<div class="line"><span class="lineno">  204</span>    }</div>
+<div class="line"><span class="lineno">  205</span> </div>
+<div class="line"><span class="lineno">  206</span>    <span class="keywordflow">if</span> (step == <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.steps) {</div>
+<div class="line"><span class="lineno">  207</span>      stopFlag = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  208</span>      <span class="keywordflow">if</span> (firstTransitFlag) {</div>
+<div class="line"><span class="lineno">  209</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;Detected one transition&quot;</span>);</div>
+<div class="line"><span class="lineno">  210</span>      } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  211</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;Failed to detect any transition&quot;</span>);</div>
+<div class="line"><span class="lineno">  212</span>      }</div>
+<div class="line"><span class="lineno">  213</span>    }</div>
+<div class="line"><span class="lineno">  214</span>  }</div>
+<div class="line"><span class="lineno">  215</span> </div>
+<div class="line"><span class="lineno">  216</span>  avgT = sumT / step;</div>
+<div class="line"><span class="lineno">  217</span>  varT = sumT2 / step - avgT * avgT;</div>
+<div class="line"><span class="lineno">  218</span> </div>
+<div class="line"><span class="lineno">  219</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>,</div>
+<div class="line"><span class="lineno">  220</span>                  <span class="stringliteral">&quot;Temperature : Average = {} ; Stddev = {} ; Factor = {}; &quot;</span></div>
+<div class="line"><span class="lineno">  221</span>                  <span class="stringliteral">&quot;Average_Boost = {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  222</span>                  avgT, std::sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,</div>
+<div class="line"><span class="lineno">  223</span>                  <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a16ca616aa1cb47bfa738eb586b5d0dfa">minCorrectedTime</a> / step / <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.time_step);</div>
+<div class="line"><span class="lineno">  224</span>  <span class="keywordflow">if</span> (std::isfinite(avgT) == 0) {</div>
+<div class="line"><span class="lineno">  225</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;Infinite average temperature, something went wrong!&quot;</span>);</div>
+<div class="line"><span class="lineno">  226</span>    <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  227</span>  }</div>
+<div class="line"><span class="lineno">  228</span> </div>
+<div class="line"><span class="lineno">  229</span>  *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a5e30efb7baa6f5088bb7ef8bede8af87">product</a> = *<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aaac1969265dba975eb457b7b205e3dbb">finalState</a>;</div>
+<div class="line"><span class="lineno">  230</span> </div>
+<div class="line"><span class="lineno">  231</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a>) {</div>
+<div class="line"><span class="lineno">  232</span>    <span class="keywordflow">return</span> 1;</div>
+<div class="line"><span class="lineno">  233</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  234</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">  235</span>  }</div>
+<div class="line"><span class="lineno">  236</span>}</div>
+<div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
+<div class="ttc" id="aclassTADJob_html_a0b882f955190d38f3190c38172f08fad"><div class="ttname"><a href="#a0b882f955190d38f3190c38172f08fad">TADJob::crossing</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; crossing</div><div class="ttdef"><b>Definition</b> <a href="TADJob_8h_source.html#l00027">TADJob.h:27</a></div></div>
+<div class="ttc" id="aclassTADJob_html_a2ede3fe6cd77936c330d519885bc8171"><div class="ttname"><a href="#a2ede3fe6cd77936c330d519885bc8171">TADJob::barrier</a></div><div class="ttdeci">double barrier</div><div class="ttdef"><b>Definition</b> <a href="TADJob_8h_source.html#l00028">TADJob.h:28</a></div></div>
+<div class="ttc" id="aclassTADJob_html_abebb672f3390f3d0faaacf236321d956"><div class="ttname"><a href="#abebb672f3390f3d0faaacf236321d956">TADJob::timeBuffer</a></div><div class="ttdeci">std::vector&lt; double &gt; timeBuffer</div><div class="ttdef"><b>Definition</b> <a href="TADJob_8h_source.html#l00029">TADJob.h:29</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a948da0de6ec2575bd6ac975fedaad0c9"><div class="ttname"><a href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">eonc::Job::pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; pot</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00055">Job.h:55</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Job_html_a9f0bfab75a98f383ba58f1c592fd2500"><div class="ttname"><a href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">eonc::Job::params</a></div><div class="ttdeci">Parameters params</div><div class="ttdef"><b>Definition</b> <a href="Job_8h_source.html#l00054">Job.h:54</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_a0fb91c1192f280ab76e1bb920fd0db26"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#a0fb91c1192f280ab76e1bb920fd0db26">eonc::ReplicaDynamicsJob::dephase</a></div><div class="ttdeci">void dephase()</div><div class="ttdoc">Dephase the trajectory to ensure thermal independence.</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8cpp_source.html#l00093">ReplicaDynamicsJob.cpp:93</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_a16ca616aa1cb47bfa738eb586b5d0dfa"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#a16ca616aa1cb47bfa738eb586b5d0dfa">eonc::ReplicaDynamicsJob::minCorrectedTime</a></div><div class="ttdeci">double minCorrectedTime</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00060">ReplicaDynamicsJob.h:60</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_a3ad5c43bac2ea834829bcfd0a9eecc46"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#a3ad5c43bac2ea834829bcfd0a9eecc46">eonc::ReplicaDynamicsJob::saddle</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; saddle</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00042">ReplicaDynamicsJob.h:42</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_a5ae0b01e5231f3657b4e07fff71c0b1a"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#a5ae0b01e5231f3657b4e07fff71c0b1a">eonc::ReplicaDynamicsJob::minimizeFCalls</a></div><div class="ttdeci">size_t minimizeFCalls</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00052">ReplicaDynamicsJob.h:52</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_a5dc5c5ff4c72034ae9d8384e27ef144b"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#a5dc5c5ff4c72034ae9d8384e27ef144b">eonc::ReplicaDynamicsJob::mdFCalls</a></div><div class="ttdeci">size_t mdFCalls</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00053">ReplicaDynamicsJob.h:53</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_a5e30efb7baa6f5088bb7ef8bede8af87"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#a5e30efb7baa6f5088bb7ef8bede8af87">eonc::ReplicaDynamicsJob::product</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; product</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00043">ReplicaDynamicsJob.h:43</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_a6dd72749e6c6759ecf52adb61a1b94ac"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#a6dd72749e6c6759ecf52adb61a1b94ac">eonc::ReplicaDynamicsJob::refine</a></div><div class="ttdeci">long refine(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;buff, Matter *reactant)</div><div class="ttdoc">Binary search for the transition frame in a snapshot buffer.</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8cpp_source.html#l00074">ReplicaDynamicsJob.cpp:74</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_a8c213f822f1af2a3a3f84d8eb94222dd"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">eonc::ReplicaDynamicsJob::log</a></div><div class="ttdeci">eonc::log::Scoped log</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00064">ReplicaDynamicsJob.h:64</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_a9bae8b26cd84bff8001e38ac1db62d4f"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#a9bae8b26cd84bff8001e38ac1db62d4f">eonc::ReplicaDynamicsJob::metaStateFlag</a></div><div class="ttdeci">bool metaStateFlag</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00048">ReplicaDynamicsJob.h:48</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_aaac1969265dba975eb457b7b205e3dbb"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#aaac1969265dba975eb457b7b205e3dbb">eonc::ReplicaDynamicsJob::finalState</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; finalState</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00044">ReplicaDynamicsJob.h:44</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_ab600919c7533448be029b39a10770ecb"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">eonc::ReplicaDynamicsJob::newStateFlag</a></div><div class="ttdeci">bool newStateFlag</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00049">ReplicaDynamicsJob.h:49</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_ab9dd7546edfcb4b63aa54a48e1846a95"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#ab9dd7546edfcb4b63aa54a48e1846a95">eonc::ReplicaDynamicsJob::transitionStep</a></div><div class="ttdeci">long transitionStep</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00058">ReplicaDynamicsJob.h:58</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_ab9e7b458ec30552def19abe4868a8009"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#ab9e7b458ec30552def19abe4868a8009">eonc::ReplicaDynamicsJob::reactant</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; reactant</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00041">ReplicaDynamicsJob.h:41</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_abfa6502e05b2d80b0850495314ac0b84"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#abfa6502e05b2d80b0850495314ac0b84">eonc::ReplicaDynamicsJob::dephaseFCalls</a></div><div class="ttdeci">size_t dephaseFCalls</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00054">ReplicaDynamicsJob.h:54</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_ad28e07cc8fd9774bc0a1bfe9f6a999a9"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#ad28e07cc8fd9774bc0a1bfe9f6a999a9">eonc::ReplicaDynamicsJob::current</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; current</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00040">ReplicaDynamicsJob.h:40</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_adc040d743f78eb79a993fcc9328fbdb0"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#adc040d743f78eb79a993fcc9328fbdb0">eonc::ReplicaDynamicsJob::transitionTime</a></div><div class="ttdeci">double transitionTime</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00061">ReplicaDynamicsJob.h:61</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_adf4d16eee9d6cca1d067ee192255052f"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#adf4d16eee9d6cca1d067ee192255052f">eonc::ReplicaDynamicsJob::checkState</a></div><div class="ttdeci">bool checkState(Matter *current, Matter *reactant)</div><div class="ttdoc">Minimize a copy of current and compare to reactant.</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8cpp_source.html#l00067">ReplicaDynamicsJob.cpp:67</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_aee672e5d5baac404181abba95d977407"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#aee672e5d5baac404181abba95d977407">eonc::ReplicaDynamicsJob::finalStateTmp</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; finalStateTmp</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00045">ReplicaDynamicsJob.h:45</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_aeee8ccd5638f47488c72768c6a79ee06"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#aeee8ccd5638f47488c72768c6a79ee06">eonc::ReplicaDynamicsJob::time</a></div><div class="ttdeci">double time</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00059">ReplicaDynamicsJob.h:59</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ReplicaDynamicsJob_html_af15c54fa5be83dc980bf8b68be03eac3"><div class="ttname"><a href="classeonc_1_1ReplicaDynamicsJob.html#af15c54fa5be83dc980bf8b68be03eac3">eonc::ReplicaDynamicsJob::refineFCalls</a></div><div class="ttdeci">size_t refineFCalls</div><div class="ttdef"><b>Definition</b> <a href="ReplicaDynamicsJob_8h_source.html#l00055">ReplicaDynamicsJob.h:55</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a405d9a69e5139b9df0df6b66e18fc9e2"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a405d9a69e5139b9df0df6b66e18fc9e2">eonc::JobType::Dynamics</a></div><div class="ttdeci">@ Dynamics</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00088">BaseStructures.h:88</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_adebcdc96c8ae2e669e84843e070fc379a7217318fc4a1f9dfcc38a67a97e0ada8"><div class="ttname"><a href="namespaceeonc.html#adebcdc96c8ae2e669e84843e070fc379a7217318fc4a1f9dfcc38a67a97e0ada8">eonc::JobType::TAD</a></div><div class="ttdeci">@ TAD</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00082">BaseStructures.h:82</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7ff469450de8aadd0d1027cb068caee4" name="a7ff469450de8aadd0d1027cb068caee4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ff469450de8aadd0d1027cb068caee4">&#9670;&#160;</a></span>initExtra()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classeonc_1_1TADJob.html#a7ff469450de8aadd0d1027cb068caee4">TADJob::initExtra</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel private">private</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create any extra matter objects needed by the subclass. </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#aaba6e422d5a9601bd9912e1efad0a4d9">eonc::ReplicaDynamicsJob</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="TADJob_8cpp_source.html#l00018">18</a> of file <a class="el" href="TADJob_8cpp_source.html">TADJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   18</span>                       {</div>
+<div class="line"><span class="lineno">   19</span>  <a class="code hl_variable" href="#a0b882f955190d38f3190c38172f08fad">crossing</a> = std::make_shared&lt;Matter&gt;(<a class="code hl_variable" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">pot</a>, <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>);</div>
+<div class="line"><span class="lineno">   20</span> </div>
+<div class="line"><span class="lineno">   21</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;Temperature Accelerated Dynamics, running&quot;</span>);</div>
+<div class="line"><span class="lineno">   22</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>,</div>
+<div class="line"><span class="lineno">   23</span>                  <span class="stringliteral">&quot;High temperature MD simulation running at {:.2f} K to &quot;</span></div>
+<div class="line"><span class="lineno">   24</span>                  <span class="stringliteral">&quot;simulate dynamics at {:.2f} K&quot;</span>,</div>
+<div class="line"><span class="lineno">   25</span>                  <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.main_options.temperature,</div>
+<div class="line"><span class="lineno">   26</span>                  <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.tad_options.low_temperature);</div>
+<div class="line"><span class="lineno">   27</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab36059e9bb7cb3a8fb47fead051236c7" name="ab36059e9bb7cb3a8fb47fead051236c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab36059e9bb7cb3a8fb47fead051236c7">&#9670;&#160;</a></span>reportResults()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classeonc_1_1TADJob.html#ab36059e9bb7cb3a8fb47fead051236c7">TADJob::reportResults</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel private">private</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Post-dynamics logging (override for job-specific messages). </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#aac8dd1f23721bb14881fae297bb27a8f">eonc::ReplicaDynamicsJob</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="TADJob_8cpp_source.html#l00029">29</a> of file <a class="el" href="TADJob_8cpp_source.html">TADJob.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   29</span>                           {</div>
+<div class="line"><span class="lineno">   30</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#ab600919c7533448be029b39a10770ecb">newStateFlag</a>) {</div>
+<div class="line"><span class="lineno">   31</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>, <span class="stringliteral">&quot;Transition time: {:.2e} s&quot;</span>,</div>
+<div class="line"><span class="lineno">   32</span>                    <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a16ca616aa1cb47bfa738eb586b5d0dfa">minCorrectedTime</a> * 1.0e-15 * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit);</div>
+<div class="line"><span class="lineno">   33</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   34</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#a8c213f822f1af2a3a3f84d8eb94222dd">log</a>,</div>
+<div class="line"><span class="lineno">   35</span>                    <span class="stringliteral">&quot;No new state was found in {} dynamics steps ({:.3e} s)&quot;</span>,</div>
+<div class="line"><span class="lineno">   36</span>                    <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.dynamics_options.steps,</div>
+<div class="line"><span class="lineno">   37</span>                    <a class="code hl_variable" href="classeonc_1_1ReplicaDynamicsJob.html#aeee8ccd5638f47488c72768c6a79ee06">time</a> * 1.0e-15 * <a class="code hl_variable" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">params</a>.constants.timeUnit);</div>
+<div class="line"><span class="lineno">   38</span>  }</div>
+<div class="line"><span class="lineno">   39</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a2ede3fe6cd77936c330d519885bc8171" name="a2ede3fe6cd77936c330d519885bc8171"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ede3fe6cd77936c330d519885bc8171">&#9670;&#160;</a></span>barrier</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classeonc_1_1TADJob.html#a2ede3fe6cd77936c330d519885bc8171">eonc::TADJob::barrier</a> {0.0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="TADJob_8h_source.html#l00028">28</a> of file <a class="el" href="TADJob_8h_source.html">TADJob.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   28</span>{0.0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0b882f955190d38f3190c38172f08fad" name="a0b882f955190d38f3190c38172f08fad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b882f955190d38f3190c38172f08fad">&#9670;&#160;</a></span>crossing</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classMatter.html">Matter</a>&gt; <a class="el" href="classeonc_1_1TADJob.html#a0b882f955190d38f3190c38172f08fad">eonc::TADJob::crossing</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="TADJob_8h_source.html#l00027">27</a> of file <a class="el" href="TADJob_8h_source.html">TADJob.h</a>.</p>
+
+</div>
+</div>
+<a id="abebb672f3390f3d0faaacf236321d956" name="abebb672f3390f3d0faaacf236321d956"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abebb672f3390f3d0faaacf236321d956">&#9670;&#160;</a></span>timeBuffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; <a class="el" href="classeonc_1_1TADJob.html#abebb672f3390f3d0faaacf236321d956">eonc::TADJob::timeBuffer</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="TADJob_8h_source.html#l00029">29</a> of file <a class="el" href="TADJob_8h_source.html">TADJob.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="TADJob_8h_source.html">TADJob.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/<a class="el" href="TADJob_8cpp_source.html">TADJob.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="classTADJob.html">TADJob</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

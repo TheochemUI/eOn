@@ -1,0 +1,422 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/include/eon/libs/ARTn/ARTnResource.h Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('ARTnResource_8h_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">ARTnResource.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ARTnResource_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment"> * This file is part of eOn.</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment"> * SPDX-License-Identifier: BSD-3-Clause</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment"> * Copyright (c) 2010--present, eOn Development Team</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment"> * All rights reserved.</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment"> * Repo:</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment"> * https://github.com/TheochemUI/eOn</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &quot;<a class="code" href="DynLib_8h.html">eon/DynLib.h</a>&quot;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html">   34</a></span><span class="keyword">class </span><a class="code hl_function" href="classeonc_1_1ARTnResource.html#a62445671146915b5a9932c489c173683">ARTnResource</a> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  <span class="comment">// ARTn C API function pointer types (from artn.h)</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a9387cf4526d81dc0dae95f967635d942">   37</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a9387cf4526d81dc0dae95f967635d942">artn_create_fn</a> = int (*)();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a58836e6aad681dd66b71494bf40fb7e3">   38</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a58836e6aad681dd66b71494bf40fb7e3">setup_artn_fn</a> = void (*)(<span class="keyword">const</span> <span class="keywordtype">int</span> nat, <span class="keywordtype">bool</span> *cerr);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a6094090131140d24c996761f61685b02">   39</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a6094090131140d24c996761f61685b02">artn_fn</a> = void (*)(<span class="keyword">const</span> <span class="keywordtype">int</span> nat, <span class="keyword">const</span> <span class="keywordtype">double</span> *etot, <span class="keyword">const</span> <span class="keywordtype">double</span> *f,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                           <span class="keywordtype">int</span> <span class="keyword">const</span> *ityp, <span class="keywordtype">double</span> *<span class="keyword">const</span> tau, <span class="keyword">const</span> <span class="keywordtype">int</span> *order,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                           <span class="keyword">const</span> <span class="keywordtype">double</span> *lat, <span class="keyword">const</span> <span class="keywordtype">int</span> *if_pos, <span class="keywordtype">int</span> *disp_code,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                           <span class="keywordtype">double</span> *disp_vec, <span class="keywordtype">bool</span> *lconv);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a2c4044dd4ac4c1d72887220909593cb4">   43</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a2c4044dd4ac4c1d72887220909593cb4">artn_destroy_fn</a> = void (*)();</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a62fa949465328ec78d9fb812589f7755">   44</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a62fa949465328ec78d9fb812589f7755">set_param_fn</a> = int (*)(<span class="keyword">const</span> <span class="keywordtype">char</span> *<span class="keyword">const</span> name, <span class="keyword">const</span> <span class="keywordtype">int</span> crank,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                               <span class="keyword">const</span> <span class="keywordtype">int</span> *csize, <span class="keyword">const</span> <span class="keywordtype">void</span> *cval);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#afdab6fdb48b9f59e7a13d1bf69e01314">   46</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#afdab6fdb48b9f59e7a13d1bf69e01314">get_param_fn</a> = int (*)(<span class="keyword">const</span> <span class="keywordtype">char</span> *name, <span class="keywordtype">void</span> *cval);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#aa37ae39e14fb3851e0944cf273db62f0">   47</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#aa37ae39e14fb3851e0944cf273db62f0">get_runparam_fn</a> = int (*)(<span class="keyword">const</span> <span class="keywordtype">char</span> *name, <span class="keywordtype">void</span> *cval);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a2b7060ece1a537465fc6deba833b0b6c">   48</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a2b7060ece1a537465fc6deba833b0b6c">get_data_fn</a> = int (*)(<span class="keyword">const</span> <span class="keywordtype">char</span> *name, <span class="keywordtype">void</span> **cval);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a60cbaccf228793f5ebaf1c66649a835e">   49</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a60cbaccf228793f5ebaf1c66649a835e">print_caller_fn</a> = void (*)();</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a3c5d818469608986d1889b6412d05612">   50</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a3c5d818469608986d1889b6412d05612">artn_step_fn</a> = void (*)(<span class="keyword">const</span> <span class="keywordtype">int</span> nat, <span class="keyword">const</span> <span class="keywordtype">double</span> etot,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                                <span class="keywordtype">double</span> *<span class="keyword">const</span> force, <span class="keywordtype">int</span> <span class="keyword">const</span> *ityp,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                                <span class="keywordtype">double</span> *<span class="keyword">const</span> pos, <span class="keyword">const</span> <span class="keywordtype">double</span> *box,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                                <span class="keyword">const</span> <span class="keywordtype">int</span> *if_pos, <span class="keywordtype">double</span> *displ_vec,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                                <span class="keywordtype">bool</span> *lconv);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#afb7f92c2f2f38c200ae100998ecb6ccf">   60</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#afb7f92c2f2f38c200ae100998ecb6ccf">get_error_fn</a> = int (*)(<span class="keywordtype">void</span> **cmsg);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#aff81180e8c245d659489d93364ee2889">   63</a></span>  <span class="keyword">static</span> <a class="code hl_function" href="classeonc_1_1ARTnResource.html#a62445671146915b5a9932c489c173683">ARTnResource</a> &amp;<a class="code hl_function" href="classeonc_1_1ARTnResource.html#aff81180e8c245d659489d93364ee2889">instance</a>();</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a601773df557a089b2cfd6309d4ebb9b3">   66</a></span>  std::mutex <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#a601773df557a089b2cfd6309d4ebb9b3">library_mutex</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a2b728ef808b3d4a39ac17f3d83a900d7">   69</a></span>  [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeonc_1_1ARTnResource.html#a2b728ef808b3d4a39ac17f3d83a900d7">is_loaded</a>() const noexcept { <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#aeac2a49ba8218609676513f00648e460">m_loaded</a>; }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a2e5b58fc292fd7298bb8519982375cdb">   72</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1ARTnResource.html#a2e5b58fc292fd7298bb8519982375cdb">require_loaded</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  <span class="comment">// Function pointer accessors</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#ad688f08e54f333f55e64862f2f81e879">   75</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a9387cf4526d81dc0dae95f967635d942">artn_create_fn</a> <a class="code hl_function" href="classeonc_1_1ARTnResource.html#ad688f08e54f333f55e64862f2f81e879">get_create_fn</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#a80a88865762b7c6048bb0760cdb35264">artn_create_</a>; }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#ae698e5e400f1dad1f176bb1380cea229">   76</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a58836e6aad681dd66b71494bf40fb7e3">setup_artn_fn</a> <a class="code hl_function" href="classeonc_1_1ARTnResource.html#ae698e5e400f1dad1f176bb1380cea229">get_setup_fn</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#aecef326ca518fcc4c35038205c8e4af7">setup_artn_</a>; }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a9a53007d328f7d3d089e42023c0deb2a">   77</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a6094090131140d24c996761f61685b02">artn_fn</a> <a class="code hl_function" href="classeonc_1_1ARTnResource.html#a9a53007d328f7d3d089e42023c0deb2a">get_artn_fn</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#a5eb215597384ba905438d44ca4ebd321">artn_</a>; }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#afa48618abc205c6061676350d367d4ac">   78</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a2c4044dd4ac4c1d72887220909593cb4">artn_destroy_fn</a> <a class="code hl_function" href="classeonc_1_1ARTnResource.html#afa48618abc205c6061676350d367d4ac">get_destroy_fn</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#ab5bc442e0202c9c5800f2e841ebba00b">artn_destroy_</a>; }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a849f7d7cd3a2d7c8f8fe0f757703b1f1">   79</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a62fa949465328ec78d9fb812589f7755">set_param_fn</a> <a class="code hl_function" href="classeonc_1_1ARTnResource.html#a849f7d7cd3a2d7c8f8fe0f757703b1f1">get_set_param_fn</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#a83ff8a3abb983233d7a8344c0897123e">set_param_</a>; }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a8fcef4d20792f7c9a7c123d752771d6c">   80</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#afdab6fdb48b9f59e7a13d1bf69e01314">get_param_fn</a> <a class="code hl_function" href="classeonc_1_1ARTnResource.html#a8fcef4d20792f7c9a7c123d752771d6c">get_get_param_fn</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#ad378cf0e735e912e2b99af9e1352e04e">get_param_</a>; }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#aaed5c09048da8d985b59f9a2f44b1c46">   81</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#aa37ae39e14fb3851e0944cf273db62f0">get_runparam_fn</a> <a class="code hl_function" href="classeonc_1_1ARTnResource.html#aaed5c09048da8d985b59f9a2f44b1c46">get_get_runparam_fn</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#aa840e95be2aecd4bd1e601b787a3b0bc">get_runparam_</a>; }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#ab74f2980a81b3926222bd7329001c943">   82</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a2b7060ece1a537465fc6deba833b0b6c">get_data_fn</a> <a class="code hl_function" href="classeonc_1_1ARTnResource.html#ab74f2980a81b3926222bd7329001c943">get_get_data_fn</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#a4d336516ea4cde57f7292d1cb521e0c0">get_data_</a>; }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#aaa42638bd3df5e4fd92a848be4596c55">   83</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a60cbaccf228793f5ebaf1c66649a835e">print_caller_fn</a> <a class="code hl_function" href="classeonc_1_1ARTnResource.html#aaa42638bd3df5e4fd92a848be4596c55">get_print_caller_fn</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#a21b91925c04a0e597e70921a928a34ea">print_caller_</a>; }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a9a138750d1f270d64e495464e850b628">   84</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a3c5d818469608986d1889b6412d05612">artn_step_fn</a> <a class="code hl_function" href="classeonc_1_1ARTnResource.html#a9a138750d1f270d64e495464e850b628">get_artn_step_fn</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#a8972ad3f14975ea9ff627eb61f62d6af">artn_step_</a>; }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#af00b7fdf177758c46c8cc93872d87e92">   87</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#afb7f92c2f2f38c200ae100998ecb6ccf">get_error_fn</a> <a class="code hl_function" href="classeonc_1_1ARTnResource.html#af00b7fdf177758c46c8cc93872d87e92">get_get_error_fn</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#a09b038b0332f97d8fb25c1617dc119f2">get_error_</a>; }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a62445671146915b5a9932c489c173683">   90</a></span>  <a class="code hl_function" href="classeonc_1_1ARTnResource.html#a62445671146915b5a9932c489c173683">ARTnResource</a>(<span class="keyword">const</span> <a class="code hl_function" href="classeonc_1_1ARTnResource.html#a62445671146915b5a9932c489c173683">ARTnResource</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a650ce85ab9b05c656e3a45e6441eeaf9">   91</a></span>  <a class="code hl_function" href="classeonc_1_1ARTnResource.html#a62445671146915b5a9932c489c173683">ARTnResource</a> &amp;<a class="code hl_function" href="classeonc_1_1ARTnResource.html#a650ce85ab9b05c656e3a45e6441eeaf9">operator=</a>(<span class="keyword">const</span> <a class="code hl_function" href="classeonc_1_1ARTnResource.html#a62445671146915b5a9932c489c173683">ARTnResource</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#ac7d65e35c0fefc67098ea74b8d9de3e5">   94</a></span>  <a class="code hl_function" href="classeonc_1_1ARTnResource.html#ac7d65e35c0fefc67098ea74b8d9de3e5">ARTnResource</a>();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a756f604b0320c8d8165e8965bd76270d">   95</a></span>  <a class="code hl_function" href="classeonc_1_1ARTnResource.html#a756f604b0320c8d8165e8965bd76270d">~ARTnResource</a>();</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#aeac2a49ba8218609676513f00648e460">   97</a></span>  <span class="keywordtype">bool</span> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#aeac2a49ba8218609676513f00648e460">m_loaded</a>{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a5743236d036edc0d1fda05f358d0d9ac">   98</a></span>  <a class="code hl_typedef" href="namespaceeonc_1_1dynlib.html#a77fed09f5c75a2dc000c73773884df69">dynlib::Handle</a> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#a5743236d036edc0d1fda05f358d0d9ac">m_handle</a>{};</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>  <span class="comment">// Loaded function pointers (null if library not found)</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a80a88865762b7c6048bb0760cdb35264">  101</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a9387cf4526d81dc0dae95f967635d942">artn_create_fn</a> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#a80a88865762b7c6048bb0760cdb35264">artn_create_</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#aecef326ca518fcc4c35038205c8e4af7">  102</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a58836e6aad681dd66b71494bf40fb7e3">setup_artn_fn</a> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#aecef326ca518fcc4c35038205c8e4af7">setup_artn_</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a5eb215597384ba905438d44ca4ebd321">  103</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a6094090131140d24c996761f61685b02">artn_fn</a> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#a5eb215597384ba905438d44ca4ebd321">artn_</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#ab5bc442e0202c9c5800f2e841ebba00b">  104</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a2c4044dd4ac4c1d72887220909593cb4">artn_destroy_fn</a> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#ab5bc442e0202c9c5800f2e841ebba00b">artn_destroy_</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a83ff8a3abb983233d7a8344c0897123e">  105</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a62fa949465328ec78d9fb812589f7755">set_param_fn</a> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#a83ff8a3abb983233d7a8344c0897123e">set_param_</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#ad378cf0e735e912e2b99af9e1352e04e">  106</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#afdab6fdb48b9f59e7a13d1bf69e01314">get_param_fn</a> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#ad378cf0e735e912e2b99af9e1352e04e">get_param_</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#aa840e95be2aecd4bd1e601b787a3b0bc">  107</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#aa37ae39e14fb3851e0944cf273db62f0">get_runparam_fn</a> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#aa840e95be2aecd4bd1e601b787a3b0bc">get_runparam_</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a4d336516ea4cde57f7292d1cb521e0c0">  108</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a2b7060ece1a537465fc6deba833b0b6c">get_data_fn</a> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#a4d336516ea4cde57f7292d1cb521e0c0">get_data_</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a21b91925c04a0e597e70921a928a34ea">  109</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a60cbaccf228793f5ebaf1c66649a835e">print_caller_fn</a> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#a21b91925c04a0e597e70921a928a34ea">print_caller_</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a8972ad3f14975ea9ff627eb61f62d6af">  110</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#a3c5d818469608986d1889b6412d05612">artn_step_fn</a> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#a8972ad3f14975ea9ff627eb61f62d6af">artn_step_</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#a09b038b0332f97d8fb25c1617dc119f2">  111</a></span>  <a class="code hl_typedef" href="classeonc_1_1ARTnResource.html#afb7f92c2f2f38c200ae100998ecb6ccf">get_error_fn</a> <a class="code hl_variable" href="classeonc_1_1ARTnResource.html#a09b038b0332f97d8fb25c1617dc119f2">get_error_</a>{<span class="keyword">nullptr</span>};</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span></div>
+<div class="foldopen" id="foldopen00114" data-start="{" data-end="}">
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnResource.html#ab4183b72c9b0d5e3c45af4eb136c8e62">  114</a></span>  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Fn&gt; Fn <a class="code hl_function" href="classeonc_1_1ARTnResource.html#ab4183b72c9b0d5e3c45af4eb136c8e62">load_sym</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *name)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>Fn<span class="keyword">&gt;</span>(<a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a37bed29f19bcf42ee7abe5dff7bb1820">dynlib::sym</a>(<a class="code hl_variable" href="classeonc_1_1ARTnResource.html#a5743236d036edc0d1fda05f358d0d9ac">m_handle</a>, name));</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>  }</div>
+</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>};</div>
+</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="namespaceeonc.html#a16a3a8eaca16e227234b28940c82ed85">  120</a></span><span class="keyword">inline</span> <a class="code hl_class" href="classeonc_1_1ARTnResource.html">ARTnResource</a> &amp;<a class="code hl_function" href="namespaceeonc.html#a16a3a8eaca16e227234b28940c82ed85">get_artn_resource</a>() { <span class="keywordflow">return</span> <a class="code hl_function" href="classeonc_1_1ARTnResource.html#aff81180e8c245d659489d93364ee2889">ARTnResource::instance</a>(); }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>} <span class="comment">// namespace eonc</span></div>
+<div class="ttc" id="aDynLib_8h_html"><div class="ttname"><a href="DynLib_8h.html">DynLib.h</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html"><div class="ttname"><a href="classeonc_1_1ARTnResource.html">eonc::ARTnResource</a></div><div class="ttdef"><b>Definition</b> <a href="#l00034">ARTnResource.h:34</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a09b038b0332f97d8fb25c1617dc119f2"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a09b038b0332f97d8fb25c1617dc119f2">eonc::ARTnResource::get_error_</a></div><div class="ttdeci">get_error_fn get_error_</div><div class="ttdef"><b>Definition</b> <a href="#l00111">ARTnResource.h:111</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a21b91925c04a0e597e70921a928a34ea"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a21b91925c04a0e597e70921a928a34ea">eonc::ARTnResource::print_caller_</a></div><div class="ttdeci">print_caller_fn print_caller_</div><div class="ttdef"><b>Definition</b> <a href="#l00109">ARTnResource.h:109</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a2b7060ece1a537465fc6deba833b0b6c"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a2b7060ece1a537465fc6deba833b0b6c">eonc::ARTnResource::get_data_fn</a></div><div class="ttdeci">int(*)(const char *name, void **cval) get_data_fn</div><div class="ttdef"><b>Definition</b> <a href="#l00048">ARTnResource.h:48</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a2b728ef808b3d4a39ac17f3d83a900d7"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a2b728ef808b3d4a39ac17f3d83a900d7">eonc::ARTnResource::is_loaded</a></div><div class="ttdeci">bool is_loaded() const noexcept</div><div class="ttdoc">True if libartn was successfully loaded.</div><div class="ttdef"><b>Definition</b> <a href="#l00069">ARTnResource.h:69</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a2c4044dd4ac4c1d72887220909593cb4"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a2c4044dd4ac4c1d72887220909593cb4">eonc::ARTnResource::artn_destroy_fn</a></div><div class="ttdeci">void(*)() artn_destroy_fn</div><div class="ttdef"><b>Definition</b> <a href="#l00043">ARTnResource.h:43</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a2e5b58fc292fd7298bb8519982375cdb"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a2e5b58fc292fd7298bb8519982375cdb">eonc::ARTnResource::require_loaded</a></div><div class="ttdeci">void require_loaded() const</div><div class="ttdoc">Throws std::runtime_error if libartn is not available.</div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a3c5d818469608986d1889b6412d05612"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a3c5d818469608986d1889b6412d05612">eonc::ARTnResource::artn_step_fn</a></div><div class="ttdeci">void(*)(const int nat, const double etot, double *const force, int const *ityp, double *const pos, const double *box, const int *if_pos, double *displ_vec, bool *lconv) artn_step_fn</div><div class="ttdef"><b>Definition</b> <a href="#l00050">ARTnResource.h:50</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a4d336516ea4cde57f7292d1cb521e0c0"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a4d336516ea4cde57f7292d1cb521e0c0">eonc::ARTnResource::get_data_</a></div><div class="ttdeci">get_data_fn get_data_</div><div class="ttdef"><b>Definition</b> <a href="#l00108">ARTnResource.h:108</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a5743236d036edc0d1fda05f358d0d9ac"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a5743236d036edc0d1fda05f358d0d9ac">eonc::ARTnResource::m_handle</a></div><div class="ttdeci">dynlib::Handle m_handle</div><div class="ttdef"><b>Definition</b> <a href="#l00098">ARTnResource.h:98</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a58836e6aad681dd66b71494bf40fb7e3"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a58836e6aad681dd66b71494bf40fb7e3">eonc::ARTnResource::setup_artn_fn</a></div><div class="ttdeci">void(*)(const int nat, bool *cerr) setup_artn_fn</div><div class="ttdef"><b>Definition</b> <a href="#l00038">ARTnResource.h:38</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a5eb215597384ba905438d44ca4ebd321"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a5eb215597384ba905438d44ca4ebd321">eonc::ARTnResource::artn_</a></div><div class="ttdeci">artn_fn artn_</div><div class="ttdef"><b>Definition</b> <a href="#l00103">ARTnResource.h:103</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a601773df557a089b2cfd6309d4ebb9b3"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a601773df557a089b2cfd6309d4ebb9b3">eonc::ARTnResource::library_mutex</a></div><div class="ttdeci">std::mutex library_mutex</div><div class="ttdoc">Global mutex to ensure only one thread accesses ARTn library at a time.</div><div class="ttdef"><b>Definition</b> <a href="#l00066">ARTnResource.h:66</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a6094090131140d24c996761f61685b02"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a6094090131140d24c996761f61685b02">eonc::ARTnResource::artn_fn</a></div><div class="ttdeci">void(*)(const int nat, const double *etot, const double *f, int const *ityp, double *const tau, const int *order, const double *lat, const int *if_pos, int *disp_code, double *disp_vec, bool *lconv) artn_fn</div><div class="ttdef"><b>Definition</b> <a href="#l00039">ARTnResource.h:39</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a60cbaccf228793f5ebaf1c66649a835e"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a60cbaccf228793f5ebaf1c66649a835e">eonc::ARTnResource::print_caller_fn</a></div><div class="ttdeci">void(*)() print_caller_fn</div><div class="ttdef"><b>Definition</b> <a href="#l00049">ARTnResource.h:49</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a62445671146915b5a9932c489c173683"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a62445671146915b5a9932c489c173683">eonc::ARTnResource::ARTnResource</a></div><div class="ttdeci">ARTnResource(const ARTnResource &amp;)=delete</div><div class="ttdoc">Non-copyable, non-movable.</div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a62fa949465328ec78d9fb812589f7755"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a62fa949465328ec78d9fb812589f7755">eonc::ARTnResource::set_param_fn</a></div><div class="ttdeci">int(*)(const char *const name, const int crank, const int *csize, const void *cval) set_param_fn</div><div class="ttdef"><b>Definition</b> <a href="#l00044">ARTnResource.h:44</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a650ce85ab9b05c656e3a45e6441eeaf9"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a650ce85ab9b05c656e3a45e6441eeaf9">eonc::ARTnResource::operator=</a></div><div class="ttdeci">ARTnResource &amp; operator=(const ARTnResource &amp;)=delete</div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a756f604b0320c8d8165e8965bd76270d"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a756f604b0320c8d8165e8965bd76270d">eonc::ARTnResource::~ARTnResource</a></div><div class="ttdeci">~ARTnResource()</div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a80a88865762b7c6048bb0760cdb35264"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a80a88865762b7c6048bb0760cdb35264">eonc::ARTnResource::artn_create_</a></div><div class="ttdeci">artn_create_fn artn_create_</div><div class="ttdef"><b>Definition</b> <a href="#l00101">ARTnResource.h:101</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a83ff8a3abb983233d7a8344c0897123e"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a83ff8a3abb983233d7a8344c0897123e">eonc::ARTnResource::set_param_</a></div><div class="ttdeci">set_param_fn set_param_</div><div class="ttdef"><b>Definition</b> <a href="#l00105">ARTnResource.h:105</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a849f7d7cd3a2d7c8f8fe0f757703b1f1"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a849f7d7cd3a2d7c8f8fe0f757703b1f1">eonc::ARTnResource::get_set_param_fn</a></div><div class="ttdeci">set_param_fn get_set_param_fn() const</div><div class="ttdef"><b>Definition</b> <a href="#l00079">ARTnResource.h:79</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a8972ad3f14975ea9ff627eb61f62d6af"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a8972ad3f14975ea9ff627eb61f62d6af">eonc::ARTnResource::artn_step_</a></div><div class="ttdeci">artn_step_fn artn_step_</div><div class="ttdef"><b>Definition</b> <a href="#l00110">ARTnResource.h:110</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a8fcef4d20792f7c9a7c123d752771d6c"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a8fcef4d20792f7c9a7c123d752771d6c">eonc::ARTnResource::get_get_param_fn</a></div><div class="ttdeci">get_param_fn get_get_param_fn() const</div><div class="ttdef"><b>Definition</b> <a href="#l00080">ARTnResource.h:80</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a9387cf4526d81dc0dae95f967635d942"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a9387cf4526d81dc0dae95f967635d942">eonc::ARTnResource::artn_create_fn</a></div><div class="ttdeci">int(*)() artn_create_fn</div><div class="ttdef"><b>Definition</b> <a href="#l00037">ARTnResource.h:37</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a9a138750d1f270d64e495464e850b628"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a9a138750d1f270d64e495464e850b628">eonc::ARTnResource::get_artn_step_fn</a></div><div class="ttdeci">artn_step_fn get_artn_step_fn() const</div><div class="ttdef"><b>Definition</b> <a href="#l00084">ARTnResource.h:84</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_a9a53007d328f7d3d089e42023c0deb2a"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#a9a53007d328f7d3d089e42023c0deb2a">eonc::ARTnResource::get_artn_fn</a></div><div class="ttdeci">artn_fn get_artn_fn() const</div><div class="ttdef"><b>Definition</b> <a href="#l00077">ARTnResource.h:77</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_aa37ae39e14fb3851e0944cf273db62f0"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#aa37ae39e14fb3851e0944cf273db62f0">eonc::ARTnResource::get_runparam_fn</a></div><div class="ttdeci">int(*)(const char *name, void *cval) get_runparam_fn</div><div class="ttdef"><b>Definition</b> <a href="#l00047">ARTnResource.h:47</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_aa840e95be2aecd4bd1e601b787a3b0bc"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#aa840e95be2aecd4bd1e601b787a3b0bc">eonc::ARTnResource::get_runparam_</a></div><div class="ttdeci">get_runparam_fn get_runparam_</div><div class="ttdef"><b>Definition</b> <a href="#l00107">ARTnResource.h:107</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_aaa42638bd3df5e4fd92a848be4596c55"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#aaa42638bd3df5e4fd92a848be4596c55">eonc::ARTnResource::get_print_caller_fn</a></div><div class="ttdeci">print_caller_fn get_print_caller_fn() const</div><div class="ttdef"><b>Definition</b> <a href="#l00083">ARTnResource.h:83</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_aaed5c09048da8d985b59f9a2f44b1c46"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#aaed5c09048da8d985b59f9a2f44b1c46">eonc::ARTnResource::get_get_runparam_fn</a></div><div class="ttdeci">get_runparam_fn get_get_runparam_fn() const</div><div class="ttdef"><b>Definition</b> <a href="#l00081">ARTnResource.h:81</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_ab4183b72c9b0d5e3c45af4eb136c8e62"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#ab4183b72c9b0d5e3c45af4eb136c8e62">eonc::ARTnResource::load_sym</a></div><div class="ttdeci">Fn load_sym(const char *name) const</div><div class="ttdoc">Try to load a symbol; returns nullptr on failure.</div><div class="ttdef"><b>Definition</b> <a href="#l00114">ARTnResource.h:114</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_ab5bc442e0202c9c5800f2e841ebba00b"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#ab5bc442e0202c9c5800f2e841ebba00b">eonc::ARTnResource::artn_destroy_</a></div><div class="ttdeci">artn_destroy_fn artn_destroy_</div><div class="ttdef"><b>Definition</b> <a href="#l00104">ARTnResource.h:104</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_ab74f2980a81b3926222bd7329001c943"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#ab74f2980a81b3926222bd7329001c943">eonc::ARTnResource::get_get_data_fn</a></div><div class="ttdeci">get_data_fn get_get_data_fn() const</div><div class="ttdef"><b>Definition</b> <a href="#l00082">ARTnResource.h:82</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_ac7d65e35c0fefc67098ea74b8d9de3e5"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#ac7d65e35c0fefc67098ea74b8d9de3e5">eonc::ARTnResource::ARTnResource</a></div><div class="ttdeci">ARTnResource()</div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_ad378cf0e735e912e2b99af9e1352e04e"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#ad378cf0e735e912e2b99af9e1352e04e">eonc::ARTnResource::get_param_</a></div><div class="ttdeci">get_param_fn get_param_</div><div class="ttdef"><b>Definition</b> <a href="#l00106">ARTnResource.h:106</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_ad688f08e54f333f55e64862f2f81e879"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#ad688f08e54f333f55e64862f2f81e879">eonc::ARTnResource::get_create_fn</a></div><div class="ttdeci">artn_create_fn get_create_fn() const</div><div class="ttdef"><b>Definition</b> <a href="#l00075">ARTnResource.h:75</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_ae698e5e400f1dad1f176bb1380cea229"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#ae698e5e400f1dad1f176bb1380cea229">eonc::ARTnResource::get_setup_fn</a></div><div class="ttdeci">setup_artn_fn get_setup_fn() const</div><div class="ttdef"><b>Definition</b> <a href="#l00076">ARTnResource.h:76</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_aeac2a49ba8218609676513f00648e460"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#aeac2a49ba8218609676513f00648e460">eonc::ARTnResource::m_loaded</a></div><div class="ttdeci">bool m_loaded</div><div class="ttdef"><b>Definition</b> <a href="#l00097">ARTnResource.h:97</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_aecef326ca518fcc4c35038205c8e4af7"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#aecef326ca518fcc4c35038205c8e4af7">eonc::ARTnResource::setup_artn_</a></div><div class="ttdeci">setup_artn_fn setup_artn_</div><div class="ttdef"><b>Definition</b> <a href="#l00102">ARTnResource.h:102</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_af00b7fdf177758c46c8cc93872d87e92"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#af00b7fdf177758c46c8cc93872d87e92">eonc::ARTnResource::get_get_error_fn</a></div><div class="ttdeci">get_error_fn get_get_error_fn() const</div><div class="ttdoc">May be null on older pARTn builds that predate the C get_error wrapper; callers must null-check befor...</div><div class="ttdef"><b>Definition</b> <a href="#l00087">ARTnResource.h:87</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_afa48618abc205c6061676350d367d4ac"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#afa48618abc205c6061676350d367d4ac">eonc::ARTnResource::get_destroy_fn</a></div><div class="ttdeci">artn_destroy_fn get_destroy_fn() const</div><div class="ttdef"><b>Definition</b> <a href="#l00078">ARTnResource.h:78</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_afb7f92c2f2f38c200ae100998ecb6ccf"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#afb7f92c2f2f38c200ae100998ecb6ccf">eonc::ARTnResource::get_error_fn</a></div><div class="ttdeci">int(*)(void **cmsg) get_error_fn</div><div class="ttdoc">Retrieve pARTn error code + c_malloc&#39;d message pointer.</div><div class="ttdef"><b>Definition</b> <a href="#l00060">ARTnResource.h:60</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_afdab6fdb48b9f59e7a13d1bf69e01314"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#afdab6fdb48b9f59e7a13d1bf69e01314">eonc::ARTnResource::get_param_fn</a></div><div class="ttdeci">int(*)(const char *name, void *cval) get_param_fn</div><div class="ttdef"><b>Definition</b> <a href="#l00046">ARTnResource.h:46</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnResource_html_aff81180e8c245d659489d93364ee2889"><div class="ttname"><a href="classeonc_1_1ARTnResource.html#aff81180e8c245d659489d93364ee2889">eonc::ARTnResource::instance</a></div><div class="ttdeci">static ARTnResource &amp; instance()</div><div class="ttdoc">Singleton accessor (Meyer&#39;s pattern).</div></div>
+<div class="ttc" id="anamespaceeonc_1_1dynlib_html_a37bed29f19bcf42ee7abe5dff7bb1820"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a37bed29f19bcf42ee7abe5dff7bb1820">eonc::dynlib::sym</a></div><div class="ttdeci">void * sym(Handle h, const char *name) noexcept</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00075">DynLib.h:75</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1dynlib_html_a77fed09f5c75a2dc000c73773884df69"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a77fed09f5c75a2dc000c73773884df69">eonc::dynlib::Handle</a></div><div class="ttdeci">void * Handle</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00060">DynLib.h:60</a></div></div>
+<div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00019">ARTnSaddleSearch.cpp:19</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a16a3a8eaca16e227234b28940c82ed85"><div class="ttname"><a href="namespaceeonc.html#a16a3a8eaca16e227234b28940c82ed85">eonc::get_artn_resource</a></div><div class="ttdeci">ARTnResource &amp; get_artn_resource()</div><div class="ttdoc">Global access to thread-safe ARTn resource.</div><div class="ttdef"><b>Definition</b> <a href="#l00120">ARTnResource.h:120</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="dir_2527c5cc2e6dc8ce970a4d420439d1d9.html">eon</a></li><li class="navelem"><a href="dir_ba81d6ef0a17701214eba92b83cf7613.html">libs</a></li><li class="navelem"><a href="dir_faa890afaf9442e3f608c10d273067f1.html">ARTn</a></li><li class="navelem"><a href="ARTnResource_8h.html">ARTnResource.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

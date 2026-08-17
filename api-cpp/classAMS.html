@@ -1,0 +1,1916 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: AMS Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classAMS.html','','classAMS-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">AMS Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="AMS_8h_source.html">AMS.h</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for AMS:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+ <div class="center">
+  <img src="classAMS.png" usemap="#AMS_map" alt=""/>
+  <map id="AMS_map" name="AMS_map">
+<area href="classeonc_1_1Potential.html" alt="eonc::Potential" shape="rect" coords="0,0,94,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:abab5b020ab2b66e0c31cc53b065f1217" id="r_abab5b020ab2b66e0c31cc53b065f1217"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#abab5b020ab2b66e0c31cc53b065f1217">AMS</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:abcb8bcb21464ed77da1ce978bc4d8243" id="r_abcb8bcb21464ed77da1ce978bc4d8243"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#abcb8bcb21464ed77da1ce978bc4d8243">~AMS</a> ()</td></tr>
+<tr class="memitem:a829054909bdffc90c70d5dda282ea220" id="r_a829054909bdffc90c70d5dda282ea220"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a829054909bdffc90c70d5dda282ea220">initialize</a> ()</td></tr>
+<tr class="memitem:a2ccc750efd099a39dcb929a6e1a0c3cf" id="r_a2ccc750efd099a39dcb929a6e1a0c3cf"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2ccc750efd099a39dcb929a6e1a0c3cf">cleanMemory</a> (void)</td></tr>
+<tr class="memitem:ad04b4329073d29965c46346bfa879e99" id="r_ad04b4329073d29965c46346bfa879e99"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ad04b4329073d29965c46346bfa879e99">force</a> (long N, const double *R, const int *atomicNrs, double *F, double *U, double *variance, const double *box)</td></tr>
+<tr class="inherit_header pub_methods_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
+<tr class="memitem:af81acd9a6775ff13fab861a51fb9ba95 inherit pub_methods_classeonc_1_1Potential" id="r_af81acd9a6775ff13fab861a51fb9ba95"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype)</td></tr>
+<tr class="memitem:a2aaa7956f073f9db72277909e51c40c9 inherit pub_methods_classeonc_1_1Potential" id="r_a2aaa7956f073f9db72277909e51c40c9"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2aaa7956f073f9db72277909e51c40c9">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype, const <a class="el" href="classParameters.html">Parameters</a> &amp;)</td></tr>
+<tr class="memitem:ac908414bc07e7c33019e01abb4a7d9ee inherit pub_methods_classeonc_1_1Potential" id="r_ac908414bc07e7c33019e01abb4a7d9ee"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac908414bc07e7c33019e01abb4a7d9ee">Potential</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memitem:a57af1d92eeff9618f873a0241e390de2 inherit pub_methods_classeonc_1_1Potential" id="r_a57af1d92eeff9618f873a0241e390de2"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a57af1d92eeff9618f873a0241e390de2">~Potential</a> ()</td></tr>
+<tr class="memitem:ac00fe80dcbd4f5887da244047aaf63f5 inherit pub_methods_classeonc_1_1Potential" id="r_ac00fe80dcbd4f5887da244047aaf63f5"><td class="memItemLeft">std::tuple&lt; double, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac00fe80dcbd4f5887da244047aaf63f5">get_ef</a> (const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;pos, const VectorXi &amp;atmnrs, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;box)</td></tr>
+<tr class="memitem:a4f0274548044ab1f714e4801352c4547 inherit pub_methods_classeonc_1_1Potential" id="r_a4f0274548044ab1f714e4801352c4547"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a4f0274548044ab1f714e4801352c4547">getType</a> () const</td></tr>
+<tr class="memitem:a85b0a3456f6528d8c464ab4b5774878e inherit pub_methods_classeonc_1_1Potential" id="r_a85b0a3456f6528d8c464ab4b5774878e"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a85b0a3456f6528d8c464ab4b5774878e">isSurrogate</a> () const noexcept</td></tr>
+<tr class="memdesc:a85b0a3456f6528d8c464ab4b5774878e inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this is a surrogate (GP) potential.  <br /></td></tr>
+<tr class="memitem:ac4c9e9deaa0e73fa27ff97b6d6acad98 inherit pub_methods_classeonc_1_1Potential" id="r_ac4c9e9deaa0e73fa27ff97b6d6acad98"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac4c9e9deaa0e73fa27ff97b6d6acad98">requiresIsolatedMoleculeLayout</a> () const noexcept</td></tr>
+<tr class="memdesc:ac4c9e9deaa0e73fa27ff97b6d6acad98 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">True for molecular QM / non-PBC backends (NWChem socket, <a class="el" href="classASE.html">ASE</a> ORCA/NWChem, …).  <br /></td></tr>
+<tr class="memitem:af6c385eb52d3764246416ea389c84131 inherit pub_methods_classeonc_1_1Potential" id="r_af6c385eb52d3764246416ea389c84131"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#af6c385eb52d3764246416ea389c84131">isThreadSafe</a> () const noexcept</td></tr>
+<tr class="memdesc:af6c385eb52d3764246416ea389c84131 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this potential's <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a> can be called from multiple threads on the SAME instance.  <br /></td></tr>
+<tr class="memitem:a8065b9661fcb0b025d397928243c987c inherit pub_methods_classeonc_1_1Potential" id="r_a8065b9661fcb0b025d397928243c987c"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a8065b9661fcb0b025d397928243c987c">isSharedInstanceThreadSafe</a> () const noexcept</td></tr>
+<tr class="memdesc:a8065b9661fcb0b025d397928243c987c inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conservative gate for sharing one <a class="el" href="classeonc_1_1Potential.html">Potential</a> instance across threads.  <br /></td></tr>
+<tr class="memitem:a8b83745c9898990f848daafa4c351c2f inherit pub_methods_classeonc_1_1Potential" id="r_a8b83745c9898990f848daafa4c351c2f"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a8b83745c9898990f848daafa4c351c2f">needsPerImageInstance</a> () const noexcept</td></tr>
+<tr class="memdesc:a8b83745c9898990f848daafa4c351c2f inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether NEB should create separate <a class="el" href="classeonc_1_1Potential.html">Potential</a> instances per image for true parallel force evaluation.  <br /></td></tr>
+<tr class="memitem:a2d8781e3cbea888f88b7523c5d00bc43 inherit pub_methods_classeonc_1_1Potential" id="r_a2d8781e3cbea888f88b7523c5d00bc43"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2d8781e3cbea888f88b7523c5d00bc43">supportsBatchEvaluation</a> () const noexcept</td></tr>
+<tr class="memdesc:a2d8781e3cbea888f88b7523c5d00bc43 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this potential supports batched evaluation of N systems in a single call.  <br /></td></tr>
+<tr class="memitem:aa66e1416134ff55639a6d20a34e3c1c1 inherit pub_methods_classeonc_1_1Potential" id="r_aa66e1416134ff55639a6d20a34e3c1c1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1">forceBatch</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</td></tr>
+<tr class="memdesc:aa66e1416134ff55639a6d20a34e3c1c1 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate forces for N systems in a single call.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:aa4884a86a81a985c0685d6ae17a2640e" id="r_aa4884a86a81a985c0685d6ae17a2640e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aa4884a86a81a985c0685d6ae17a2640e">passToSystem</a> (long N, const double *R, const int *atomicNrs, const double *box)</td></tr>
+<tr class="memdesc:aa4884a86a81a985c0685d6ae17a2640e"><td class="mdescLeft">&#160;</td><td class="mdescRight">&lt; Creates a script to run <a class="el" href="classAMS.html">AMS</a>  <br /></td></tr>
+<tr class="memitem:a86b99e892d387be971a31b903deba09a" id="r_a86b99e892d387be971a31b903deba09a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a86b99e892d387be971a31b903deba09a">smallSys</a> (long N, const double *R, const int *atomicNrs, const double *box)</td></tr>
+<tr class="memdesc:a86b99e892d387be971a31b903deba09a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flush, close and make the run script executable.  <br /></td></tr>
+<tr class="memitem:abf77ef72c961487fb9b180a315d66dba" id="r_abf77ef72c961487fb9b180a315d66dba"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#abf77ef72c961487fb9b180a315d66dba">finishRunScript</a> (std::ofstream &amp;out)</td></tr>
+<tr class="memdesc:abf77ef72c961487fb9b180a315d66dba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy 3N gradient components into the caller's force array.  <br /></td></tr>
+<tr class="memitem:a1160422accfa47530b969cac76e1dcb6" id="r_a1160422accfa47530b969cac76e1dcb6"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1160422accfa47530b969cac76e1dcb6">copyForces</a> (long N, const std::vector&lt; double &gt; &amp;frc, double *F)</td></tr>
+<tr class="memitem:a1ca9d6ce2dfd4d86ef3ddba89840557a" id="r_a1ca9d6ce2dfd4d86ef3ddba89840557a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a1ca9d6ce2dfd4d86ef3ddba89840557a">switchjob</a> ()</td></tr>
+<tr class="memitem:a81bcb554e8dcf80d8fc3308380900c52" id="r_a81bcb554e8dcf80d8fc3308380900c52"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a81bcb554e8dcf80d8fc3308380900c52">write_restart</a> ()</td></tr>
+<tr class="memitem:a157a948291be74add4b6f4e4e5909b2b" id="r_a157a948291be74add4b6f4e4e5909b2b"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a157a948291be74add4b6f4e4e5909b2b">generate_run</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a9c71c9a5638ed8732e65923c4397493a" id="r_a9c71c9a5638ed8732e65923c4397493a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a9c71c9a5638ed8732e65923c4397493a">runAMS</a> ()</td></tr>
+<tr class="memitem:aa4df01b0b3d59e85843515163ac8b03a" id="r_aa4df01b0b3d59e85843515163ac8b03a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aa4df01b0b3d59e85843515163ac8b03a">updateCoord</a> (long N, const double *R)</td></tr>
+<tr class="memitem:ad3df5ef07d93e7173293e8d7ea94b6c7" id="r_ad3df5ef07d93e7173293e8d7ea94b6c7"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ad3df5ef07d93e7173293e8d7ea94b6c7">extract_rkf</a> (long N, std::string key)</td></tr>
+<tr class="memitem:aec47ef60f542435947be9b8c22f1dd65" id="r_aec47ef60f542435947be9b8c22f1dd65"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#aec47ef60f542435947be9b8c22f1dd65">extract_scalar_rkf</a> (std::string key)</td></tr>
+<tr class="memitem:a556913a6af32e52a5c3ee5e746ac59d2" id="r_a556913a6af32e52a5c3ee5e746ac59d2"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a556913a6af32e52a5c3ee5e746ac59d2">extract_cartesian_rkf</a> (std::string key)</td></tr>
+<tr class="memitem:a7d3e6944edba27dfb4d97728147ecc19" id="r_a7d3e6944edba27dfb4d97728147ecc19"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a7d3e6944edba27dfb4d97728147ecc19">validate_order</a> ()</td></tr>
+<tr class="memitem:a2511d41706d8a67178d01049fbc3c459" id="r_a2511d41706d8a67178d01049fbc3c459"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a2511d41706d8a67178d01049fbc3c459">readFile</a> (std::filesystem::path path)</td></tr>
+<tr class="memitem:aae847168dab438f3f09cfa5893db0733" id="r_aae847168dab438f3f09cfa5893db0733"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aae847168dab438f3f09cfa5893db0733">recieveFromSystem</a> (long N, double *F, double *U)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a31b0ec463048578feebbd99e3ed9b5fa" id="r_a31b0ec463048578feebbd99e3ed9b5fa"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a31b0ec463048578feebbd99e3ed9b5fa">engine</a></td></tr>
+<tr class="memitem:a13285bf033f83fe66ce0f94e2260b832" id="r_a13285bf033f83fe66ce0f94e2260b832"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a13285bf033f83fe66ce0f94e2260b832">forcefield</a></td></tr>
+<tr class="memitem:acdeaaf3a1a5667a38c9f52020061358e" id="r_acdeaaf3a1a5667a38c9f52020061358e"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#acdeaaf3a1a5667a38c9f52020061358e">model</a></td></tr>
+<tr class="memitem:a893a99daf674a4093e2f9042f09354ed" id="r_a893a99daf674a4093e2f9042f09354ed"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a893a99daf674a4093e2f9042f09354ed">xc</a></td></tr>
+<tr class="memitem:ad1365e693518c36e72070c68753d41ed" id="r_ad1365e693518c36e72070c68753d41ed"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#ad1365e693518c36e72070c68753d41ed">resources</a></td></tr>
+<tr class="memitem:aa6a7e72e9bef2925d8864329b37a1ae3" id="r_aa6a7e72e9bef2925d8864329b37a1ae3"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#aa6a7e72e9bef2925d8864329b37a1ae3">basis</a></td></tr>
+<tr class="memitem:a19af403714c209d9bafb5e501ec340fd" id="r_a19af403714c209d9bafb5e501ec340fd"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a19af403714c209d9bafb5e501ec340fd">engine_setup</a></td></tr>
+<tr class="memitem:a9a7ed6d303fabda2ed3bfb8403e1d686" id="r_a9a7ed6d303fabda2ed3bfb8403e1d686"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a9a7ed6d303fabda2ed3bfb8403e1d686">engine_lower</a></td></tr>
+<tr class="memitem:a851e88c572f452fc2f6abf54fdebab02" id="r_a851e88c572f452fc2f6abf54fdebab02"><td class="memItemLeft">boost::process::native_environment&#160;</td><td class="memItemRight"><a class="el" href="#a851e88c572f452fc2f6abf54fdebab02">nativenv</a></td></tr>
+<tr class="memitem:abefc9c4e814d7680851494c27005e012" id="r_abefc9c4e814d7680851494c27005e012"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#abefc9c4e814d7680851494c27005e012">amsevals</a> {0}</td></tr>
+<tr class="memitem:a5d9f3a5998a266b886059977067fe758" id="r_a5d9f3a5998a266b886059977067fe758"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a5d9f3a5998a266b886059977067fe758">first_run</a></td></tr>
+<tr class="memitem:a5cc4afa0007d0561b396f42201352267" id="r_a5cc4afa0007d0561b396f42201352267"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a5cc4afa0007d0561b396f42201352267">can_restart</a></td></tr>
+<tr class="memitem:a69987cc14414caeed1ec1b5ca22aae8e" id="r_a69987cc14414caeed1ec1b5ca22aae8e"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a69987cc14414caeed1ec1b5ca22aae8e">cjob</a></td></tr>
+<tr class="memitem:a0072736a8f916c6ba2533255eea32d82" id="r_a0072736a8f916c6ba2533255eea32d82"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a0072736a8f916c6ba2533255eea32d82">pjob</a></td></tr>
+<tr class="memitem:a2b7d2bc8a93eac715dbd5e033dd2aaaa" id="r_a2b7d2bc8a93eac715dbd5e033dd2aaaa"><td class="memItemLeft">std::ofstream&#160;</td><td class="memItemRight"><a class="el" href="#a2b7d2bc8a93eac715dbd5e033dd2aaaa">restartFrom</a></td></tr>
+<tr class="memitem:adf438471f8dd557f731e529c5623fc16" id="r_adf438471f8dd557f731e529c5623fc16"><td class="memItemLeft">const double&#160;</td><td class="memItemRight"><a class="el" href="#adf438471f8dd557f731e529c5623fc16">forceConversion</a></td></tr>
+<tr class="memitem:a2253f3d787448fd13412b6167c984f8b" id="r_a2253f3d787448fd13412b6167c984f8b"><td class="memItemLeft">const double&#160;</td><td class="memItemRight"><a class="el" href="#a2253f3d787448fd13412b6167c984f8b">energyConversion</a> = 27.2114</td></tr>
+<tr class="memitem:a12196959b691d89b2eb01938069d7475" id="r_a12196959b691d89b2eb01938069d7475"><td class="memItemLeft">const double&#160;</td><td class="memItemRight"><a class="el" href="#a12196959b691d89b2eb01938069d7475">lengthConversion</a> = 1.88973</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_attribs_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
+<tr class="memitem:a2ae7cca425e3d69d2825c58d1c7704eb inherit pub_attribs_classeonc_1_1Potential" id="r_a2ae7cca425e3d69d2825c58d1c7704eb"><td class="memItemLeft">std::atomic&lt; size_t &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a></td></tr>
+<tr class="inherit_header pro_attribs_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
+<tr class="memitem:ac102f249b890f52d06d96feff8f2047a inherit pro_attribs_classeonc_1_1Potential" id="r_ac102f249b890f52d06d96feff8f2047a"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00033">33</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="abab5b020ab2b66e0c31cc53b065f1217" name="abab5b020ab2b66e0c31cc53b065f1217"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abab5b020ab2b66e0c31cc53b065f1217">&#9670;&#160;</a></span>AMS()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMS::AMS </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8cpp_source.html#l00024">24</a> of file <a class="el" href="AMS_8cpp_source.html">AMS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   25</span>    : <a class="code hl_function" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a>(<a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a065d784b407aa4ed171c0461a8e7cca7">PotType::AMS</a>, p) {</div>
+<div class="line"><span class="lineno">   26</span>  <span class="comment">// Get the values from the configuration</span></div>
+<div class="line"><span class="lineno">   27</span>  <span class="comment">// All the parameter values convert to lowercase in generate_run</span></div>
+<div class="line"><span class="lineno">   28</span>  this-&gt;<a class="code hl_variable" href="#a31b0ec463048578feebbd99e3ed9b5fa">engine</a> = p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#a49050d48cfa8a5f2b9e9ec08b053b37b">engine</a>;</div>
+<div class="line"><span class="lineno">   29</span>  this-&gt;<a class="code hl_variable" href="#a13285bf033f83fe66ce0f94e2260b832">forcefield</a> = p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#a22d296a4bb115df82f4afa2fa5d0f4b5">forcefield</a>;</div>
+<div class="line"><span class="lineno">   30</span>  this-&gt;<a class="code hl_variable" href="#acdeaaf3a1a5667a38c9f52020061358e">model</a> = p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#af8778ae4d248db848c999a17176b0a68">model</a>;</div>
+<div class="line"><span class="lineno">   31</span>  this-&gt;<a class="code hl_variable" href="#a893a99daf674a4093e2f9042f09354ed">xc</a> = p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#aaf2857bb55722cda08e85c7bee06cab7">xc</a>;</div>
+<div class="line"><span class="lineno">   32</span>  this-&gt;<a class="code hl_variable" href="#ad1365e693518c36e72070c68753d41ed">resources</a> = p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#a20772ec271f5d926fdb07be6479682b7">resources</a>;</div>
+<div class="line"><span class="lineno">   33</span>  this-&gt;<a class="code hl_variable" href="#aa6a7e72e9bef2925d8864329b37a1ae3">basis</a> = p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#a624091b1bc940b1b01657f5784decbec">basis</a>;</div>
+<div class="line"><span class="lineno">   34</span>  this-&gt;<a class="code hl_variable" href="#a19af403714c209d9bafb5e501ec340fd">engine_setup</a> = <a class="code hl_function" href="#a157a948291be74add4b6f4e4e5909b2b">generate_run</a>(p);</div>
+<div class="line"><span class="lineno">   35</span>  <span class="comment">// Environment</span></div>
+<div class="line"><span class="lineno">   36</span>  <span class="comment">// TODO: Add more checks for how this can be set</span></div>
+<div class="line"><span class="lineno">   37</span>  <span class="keywordflow">if</span> (p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#a7eb6ad2b45e5b341db2f958d0f382dda">env</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#ab2c7d795e7456b926a2e8cdd34520099">amshome</a>.empty() &amp;&amp;</div>
+<div class="line"><span class="lineno">   38</span>      p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#a7eb6ad2b45e5b341db2f958d0f382dda">env</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#aa25d4758ec1b6d8af30d6bf008d964aa">scm_tmpdir</a>.empty() &amp;&amp;</div>
+<div class="line"><span class="lineno">   39</span>      p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#a7eb6ad2b45e5b341db2f958d0f382dda">env</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#a372cc0a393645f7cfde3c7cf63b75f82">scmlicense</a>.empty() &amp;&amp;</div>
+<div class="line"><span class="lineno">   40</span>      p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#a7eb6ad2b45e5b341db2f958d0f382dda">env</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#a709a5853183585472af1467ab6c183a1">scm_pythondir</a>.empty() &amp;&amp;</div>
+<div class="line"><span class="lineno">   41</span>      p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#a7eb6ad2b45e5b341db2f958d0f382dda">env</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#a2590f7294558b16cf5040f3947b599eb">amsbin</a>.empty() &amp;&amp;</div>
+<div class="line"><span class="lineno">   42</span>      p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#a7eb6ad2b45e5b341db2f958d0f382dda">env</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#a42eb92a96eaab2a0535122a1e710c98d">amsresources</a>.empty()) {</div>
+<div class="line"><span class="lineno">   43</span>    <a class="code hl_variable" href="#a851e88c572f452fc2f6abf54fdebab02">nativenv</a> = boost::this_process::environment();</div>
+<div class="line"><span class="lineno">   44</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   45</span>    <a class="code hl_variable" href="#a851e88c572f452fc2f6abf54fdebab02">nativenv</a> = boost::this_process::environment();</div>
+<div class="line"><span class="lineno">   46</span>    <span class="comment">// Some of these can derive from the others</span></div>
+<div class="line"><span class="lineno">   47</span>    <a class="code hl_variable" href="#a851e88c572f452fc2f6abf54fdebab02">nativenv</a>[<span class="stringliteral">&quot;AMSHOME&quot;</span>] = p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#a7eb6ad2b45e5b341db2f958d0f382dda">env</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#ab2c7d795e7456b926a2e8cdd34520099">amshome</a>;</div>
+<div class="line"><span class="lineno">   48</span>    <a class="code hl_variable" href="#a851e88c572f452fc2f6abf54fdebab02">nativenv</a>[<span class="stringliteral">&quot;SCM_TMPDIR&quot;</span>] = p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#a7eb6ad2b45e5b341db2f958d0f382dda">env</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#aa25d4758ec1b6d8af30d6bf008d964aa">scm_tmpdir</a>;</div>
+<div class="line"><span class="lineno">   49</span>    <a class="code hl_variable" href="#a851e88c572f452fc2f6abf54fdebab02">nativenv</a>[<span class="stringliteral">&quot;SCMLICENSE&quot;</span>] = p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#a7eb6ad2b45e5b341db2f958d0f382dda">env</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#a372cc0a393645f7cfde3c7cf63b75f82">scmlicense</a>;</div>
+<div class="line"><span class="lineno">   50</span>    <a class="code hl_variable" href="#a851e88c572f452fc2f6abf54fdebab02">nativenv</a>[<span class="stringliteral">&quot;SCM_PYTHONDIR&quot;</span>] = p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#a7eb6ad2b45e5b341db2f958d0f382dda">env</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#a709a5853183585472af1467ab6c183a1">scm_pythondir</a>;</div>
+<div class="line"><span class="lineno">   51</span>    <a class="code hl_variable" href="#a851e88c572f452fc2f6abf54fdebab02">nativenv</a>[<span class="stringliteral">&quot;AMSBIN&quot;</span>] = p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#a7eb6ad2b45e5b341db2f958d0f382dda">env</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#a2590f7294558b16cf5040f3947b599eb">amsbin</a>;</div>
+<div class="line"><span class="lineno">   52</span>    <a class="code hl_variable" href="#a851e88c572f452fc2f6abf54fdebab02">nativenv</a>[<span class="stringliteral">&quot;AMSRESOURCES&quot;</span>] = p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#a7eb6ad2b45e5b341db2f958d0f382dda">env</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#a42eb92a96eaab2a0535122a1e710c98d">amsresources</a>;</div>
+<div class="line"><span class="lineno">   53</span>    <a class="code hl_variable" href="#a851e88c572f452fc2f6abf54fdebab02">nativenv</a>[<span class="stringliteral">&quot;PATH&quot;</span>] += p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t.html#a7eb6ad2b45e5b341db2f958d0f382dda">env</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#a2590f7294558b16cf5040f3947b599eb">amsbin</a>;</div>
+<div class="line"><span class="lineno">   54</span>  }</div>
+<div class="line"><span class="lineno">   55</span>  <span class="comment">// Do not pass &quot;&quot; in the config files</span></div>
+<div class="line"><span class="lineno">   56</span>  <span class="comment">// std::cout&lt;&lt;nativenv[&quot;PATH&quot;].to_string()&lt;&lt;std::endl;</span></div>
+<div class="line"><span class="lineno">   57</span>  <a class="code hl_variable" href="#abefc9c4e814d7680851494c27005e012">amsevals</a> = 0;</div>
+<div class="line"><span class="lineno">   58</span>  <span class="comment">// TODO: Optimize and reuse existing files Currently each Matter will</span></div>
+<div class="line"><span class="lineno">   59</span>  <span class="comment">// recreate the folders It should instead figure out if results exist and</span></div>
+<div class="line"><span class="lineno">   60</span>  <span class="comment">// use them</span></div>
+<div class="line"><span class="lineno">   61</span>  this-&gt;<a class="code hl_variable" href="#a5d9f3a5998a266b886059977067fe758">first_run</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   62</span>  <span class="comment">// Determine if the engine supports restarts</span></div>
+<div class="line"><span class="lineno">   63</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a31b0ec463048578feebbd99e3ed9b5fa">engine</a> == <span class="stringliteral">&quot;MOPAC&quot;</span>) {</div>
+<div class="line"><span class="lineno">   64</span>    this-&gt;<a class="code hl_variable" href="#a5cc4afa0007d0561b396f42201352267">can_restart</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   65</span>    this-&gt;<a class="code hl_variable" href="#a69987cc14414caeed1ec1b5ca22aae8e">cjob</a> = <span class="stringliteral">&quot;amsResults&quot;</span>;</div>
+<div class="line"><span class="lineno">   66</span>    this-&gt;<a class="code hl_variable" href="#a0072736a8f916c6ba2533255eea32d82">pjob</a> = <span class="stringliteral">&quot;amsResults&quot;</span>;</div>
+<div class="line"><span class="lineno">   67</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   68</span>    this-&gt;<a class="code hl_variable" href="#a5cc4afa0007d0561b396f42201352267">can_restart</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   69</span>    this-&gt;<a class="code hl_variable" href="#a69987cc14414caeed1ec1b5ca22aae8e">cjob</a> = <span class="stringliteral">&quot;firstRun&quot;</span>;</div>
+<div class="line"><span class="lineno">   70</span>    this-&gt;<a class="code hl_variable" href="#a0072736a8f916c6ba2533255eea32d82">pjob</a> = <span class="stringliteral">&quot;secondRun&quot;</span>;</div>
+<div class="line"><span class="lineno">   71</span>  }</div>
+<div class="line"><span class="lineno">   72</span>  <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   73</span>}</div>
+<div class="ttc" id="aclassAMS_html_a0072736a8f916c6ba2533255eea32d82"><div class="ttname"><a href="#a0072736a8f916c6ba2533255eea32d82">AMS::pjob</a></div><div class="ttdeci">std::string pjob</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00065">AMS.h:65</a></div></div>
+<div class="ttc" id="aclassAMS_html_a13285bf033f83fe66ce0f94e2260b832"><div class="ttname"><a href="#a13285bf033f83fe66ce0f94e2260b832">AMS::forcefield</a></div><div class="ttdeci">std::string forcefield</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00057">AMS.h:57</a></div></div>
+<div class="ttc" id="aclassAMS_html_a157a948291be74add4b6f4e4e5909b2b"><div class="ttname"><a href="#a157a948291be74add4b6f4e4e5909b2b">AMS::generate_run</a></div><div class="ttdeci">std::string generate_run(const Parameters &amp;p)</div><div class="ttdef"><b>Definition</b> <a href="AMS_8cpp_source.html#l00511">AMS.cpp:511</a></div></div>
+<div class="ttc" id="aclassAMS_html_a19af403714c209d9bafb5e501ec340fd"><div class="ttname"><a href="#a19af403714c209d9bafb5e501ec340fd">AMS::engine_setup</a></div><div class="ttdeci">std::string engine_setup</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00058">AMS.h:58</a></div></div>
+<div class="ttc" id="aclassAMS_html_a31b0ec463048578feebbd99e3ed9b5fa"><div class="ttname"><a href="#a31b0ec463048578feebbd99e3ed9b5fa">AMS::engine</a></div><div class="ttdeci">std::string engine</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00057">AMS.h:57</a></div></div>
+<div class="ttc" id="aclassAMS_html_a5cc4afa0007d0561b396f42201352267"><div class="ttname"><a href="#a5cc4afa0007d0561b396f42201352267">AMS::can_restart</a></div><div class="ttdeci">bool can_restart</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00064">AMS.h:64</a></div></div>
+<div class="ttc" id="aclassAMS_html_a5d9f3a5998a266b886059977067fe758"><div class="ttname"><a href="#a5d9f3a5998a266b886059977067fe758">AMS::first_run</a></div><div class="ttdeci">bool first_run</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00064">AMS.h:64</a></div></div>
+<div class="ttc" id="aclassAMS_html_a69987cc14414caeed1ec1b5ca22aae8e"><div class="ttname"><a href="#a69987cc14414caeed1ec1b5ca22aae8e">AMS::cjob</a></div><div class="ttdeci">std::string cjob</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00065">AMS.h:65</a></div></div>
+<div class="ttc" id="aclassAMS_html_a851e88c572f452fc2f6abf54fdebab02"><div class="ttname"><a href="#a851e88c572f452fc2f6abf54fdebab02">AMS::nativenv</a></div><div class="ttdeci">boost::process::native_environment nativenv</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00062">AMS.h:62</a></div></div>
+<div class="ttc" id="aclassAMS_html_a893a99daf674a4093e2f9042f09354ed"><div class="ttname"><a href="#a893a99daf674a4093e2f9042f09354ed">AMS::xc</a></div><div class="ttdeci">std::string xc</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00057">AMS.h:57</a></div></div>
+<div class="ttc" id="aclassAMS_html_aa6a7e72e9bef2925d8864329b37a1ae3"><div class="ttname"><a href="#aa6a7e72e9bef2925d8864329b37a1ae3">AMS::basis</a></div><div class="ttdeci">std::string basis</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00057">AMS.h:57</a></div></div>
+<div class="ttc" id="aclassAMS_html_abefc9c4e814d7680851494c27005e012"><div class="ttname"><a href="#abefc9c4e814d7680851494c27005e012">AMS::amsevals</a></div><div class="ttdeci">int amsevals</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00063">AMS.h:63</a></div></div>
+<div class="ttc" id="aclassAMS_html_acdeaaf3a1a5667a38c9f52020061358e"><div class="ttname"><a href="#acdeaaf3a1a5667a38c9f52020061358e">AMS::model</a></div><div class="ttdeci">std::string model</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00057">AMS.h:57</a></div></div>
+<div class="ttc" id="aclassAMS_html_ad1365e693518c36e72070c68753d41ed"><div class="ttname"><a href="#ad1365e693518c36e72070c68753d41ed">AMS::resources</a></div><div class="ttdeci">std::string resources</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00057">AMS.h:57</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a97d1f3495ac0c1c3d6eec2465201a588"><div class="ttname"><a href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">eonc::Parameters::ams_options</a></div><div class="ttdeci">struct eonc::Parameters::ams_options_t ams_options</div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_af81acd9a6775ff13fab861a51fb9ba95"><div class="ttname"><a href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">eonc::Potential::Potential</a></div><div class="ttdeci">Potential(PotType a_ptype)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00035">Potential.h:35</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a065d784b407aa4ed171c0461a8e7cca7"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a065d784b407aa4ed171c0461a8e7cca7">eonc::PotType::AMS</a></div><div class="ttdeci">@ AMS</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00059">BaseStructures.h:59</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1ams__options__t_1_1env__t_html_a2590f7294558b16cf5040f3947b599eb"><div class="ttname"><a href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#a2590f7294558b16cf5040f3947b599eb">eonc::Parameters::ams_options_t::env_t::amsbin</a></div><div class="ttdeci">std::string amsbin</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00095">Parameters.h:95</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1ams__options__t_1_1env__t_html_a372cc0a393645f7cfde3c7cf63b75f82"><div class="ttname"><a href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#a372cc0a393645f7cfde3c7cf63b75f82">eonc::Parameters::ams_options_t::env_t::scmlicense</a></div><div class="ttdeci">std::string scmlicense</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00093">Parameters.h:93</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1ams__options__t_1_1env__t_html_a42eb92a96eaab2a0535122a1e710c98d"><div class="ttname"><a href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#a42eb92a96eaab2a0535122a1e710c98d">eonc::Parameters::ams_options_t::env_t::amsresources</a></div><div class="ttdeci">std::string amsresources</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00096">Parameters.h:96</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1ams__options__t_1_1env__t_html_a709a5853183585472af1467ab6c183a1"><div class="ttname"><a href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#a709a5853183585472af1467ab6c183a1">eonc::Parameters::ams_options_t::env_t::scm_pythondir</a></div><div class="ttdeci">std::string scm_pythondir</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00094">Parameters.h:94</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1ams__options__t_1_1env__t_html_aa25d4758ec1b6d8af30d6bf008d964aa"><div class="ttname"><a href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#aa25d4758ec1b6d8af30d6bf008d964aa">eonc::Parameters::ams_options_t::env_t::scm_tmpdir</a></div><div class="ttdeci">std::string scm_tmpdir</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00092">Parameters.h:92</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1ams__options__t_1_1env__t_html_ab2c7d795e7456b926a2e8cdd34520099"><div class="ttname"><a href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html#ab2c7d795e7456b926a2e8cdd34520099">eonc::Parameters::ams_options_t::env_t::amshome</a></div><div class="ttdeci">std::string amshome</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00091">Parameters.h:91</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1ams__options__t_html_a20772ec271f5d926fdb07be6479682b7"><div class="ttname"><a href="structeonc_1_1Parameters_1_1ams__options__t.html#a20772ec271f5d926fdb07be6479682b7">eonc::Parameters::ams_options_t::resources</a></div><div class="ttdeci">std::string resources</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00087">Parameters.h:87</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1ams__options__t_html_a22d296a4bb115df82f4afa2fa5d0f4b5"><div class="ttname"><a href="structeonc_1_1Parameters_1_1ams__options__t.html#a22d296a4bb115df82f4afa2fa5d0f4b5">eonc::Parameters::ams_options_t::forcefield</a></div><div class="ttdeci">std::string forcefield</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00085">Parameters.h:85</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1ams__options__t_html_a49050d48cfa8a5f2b9e9ec08b053b37b"><div class="ttname"><a href="structeonc_1_1Parameters_1_1ams__options__t.html#a49050d48cfa8a5f2b9e9ec08b053b37b">eonc::Parameters::ams_options_t::engine</a></div><div class="ttdeci">std::string engine</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00084">Parameters.h:84</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1ams__options__t_html_a624091b1bc940b1b01657f5784decbec"><div class="ttname"><a href="structeonc_1_1Parameters_1_1ams__options__t.html#a624091b1bc940b1b01657f5784decbec">eonc::Parameters::ams_options_t::basis</a></div><div class="ttdeci">std::string basis</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00089">Parameters.h:89</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1ams__options__t_html_a7eb6ad2b45e5b341db2f958d0f382dda"><div class="ttname"><a href="structeonc_1_1Parameters_1_1ams__options__t.html#a7eb6ad2b45e5b341db2f958d0f382dda">eonc::Parameters::ams_options_t::env</a></div><div class="ttdeci">struct eonc::Parameters::ams_options_t::env_t env</div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1ams__options__t_html_aaf2857bb55722cda08e85c7bee06cab7"><div class="ttname"><a href="structeonc_1_1Parameters_1_1ams__options__t.html#aaf2857bb55722cda08e85c7bee06cab7">eonc::Parameters::ams_options_t::xc</a></div><div class="ttdeci">std::string xc</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00088">Parameters.h:88</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1ams__options__t_html_af8778ae4d248db848c999a17176b0a68"><div class="ttname"><a href="structeonc_1_1Parameters_1_1ams__options__t.html#af8778ae4d248db848c999a17176b0a68">eonc::Parameters::ams_options_t::model</a></div><div class="ttdeci">std::string model</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00086">Parameters.h:86</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="abcb8bcb21464ed77da1ce978bc4d8243" name="abcb8bcb21464ed77da1ce978bc4d8243"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcb8bcb21464ed77da1ce978bc4d8243">&#9670;&#160;</a></span>~AMS()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">AMS::~AMS </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8cpp_source.html#l00077">77</a> of file <a class="el" href="AMS_8cpp_source.html">AMS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   77</span>{ <a class="code hl_function" href="#a2ccc750efd099a39dcb929a6e1a0c3cf">cleanMemory</a>(); }</div>
+<div class="ttc" id="aclassAMS_html_a2ccc750efd099a39dcb929a6e1a0c3cf"><div class="ttname"><a href="#a2ccc750efd099a39dcb929a6e1a0c3cf">AMS::cleanMemory</a></div><div class="ttdeci">void cleanMemory(void)</div><div class="ttdef"><b>Definition</b> <a href="AMS_8cpp_source.html#l00075">AMS.cpp:75</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a2ccc750efd099a39dcb929a6e1a0c3cf" name="a2ccc750efd099a39dcb929a6e1a0c3cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ccc750efd099a39dcb929a6e1a0c3cf">&#9670;&#160;</a></span>cleanMemory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AMS::cleanMemory </td>
+          <td>(</td>
+          <td class="paramtype">void</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8cpp_source.html#l00075">75</a> of file <a class="el" href="AMS_8cpp_source.html">AMS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   75</span>{ <span class="keywordflow">return</span>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1160422accfa47530b969cac76e1dcb6" name="a1160422accfa47530b969cac76e1dcb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1160422accfa47530b969cac76e1dcb6">&#9670;&#160;</a></span>copyForces()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AMS::copyForces </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>N</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>frc</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>F</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8cpp_source.html#l00376">376</a> of file <a class="el" href="AMS_8cpp_source.html">AMS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  380</span>                    {</div>
+<div class="line"><span class="lineno">  381</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Could not write the restart block to &quot;</span></div>
+<div class="line"><span class="lineno">  382</span>                             <span class="stringliteral">&quot;myrestart.in&quot;</span>);</div>
+<div class="line"><span class="lineno">  383</span>  }</div>
+<div class="line"><span class="lineno">  384</span>  <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  385</span>}</div>
+<div class="line"><span class="lineno">  386</span> </div>
+<div class="line"><span class="lineno">  387</span><span class="keywordtype">void</span> <a class="code hl_function" href="#a1160422accfa47530b969cac76e1dcb6">AMS::copyForces</a>(<span class="keywordtype">long</span> N, <span class="keyword">const</span> std::vector&lt;double&gt; &amp;frc, <span class="keywordtype">double</span> *F) {</div>
+<div class="ttc" id="aclassAMS_html_a1160422accfa47530b969cac76e1dcb6"><div class="ttname"><a href="#a1160422accfa47530b969cac76e1dcb6">AMS::copyForces</a></div><div class="ttdeci">void copyForces(long N, const std::vector&lt; double &gt; &amp;frc, double *F)</div><div class="ttdef"><b>Definition</b> <a href="AMS_8cpp_source.html#l00376">AMS.cpp:376</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a556913a6af32e52a5c3ee5e746ac59d2" name="a556913a6af32e52a5c3ee5e746ac59d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a556913a6af32e52a5c3ee5e746ac59d2">&#9670;&#160;</a></span>extract_cartesian_rkf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; double &gt; AMS::extract_cartesian_rkf </td>
+          <td>(</td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>key</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8cpp_source.html#l00211">211</a> of file <a class="el" href="AMS_8cpp_source.html">AMS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  211</span>                                                          {</div>
+<div class="line"><span class="lineno">  212</span>  std::string execString;</div>
+<div class="line"><span class="lineno">  213</span>  std::vector&lt;std::string&gt; execDat, innerDat;</div>
+<div class="line"><span class="lineno">  214</span>  boost::asio::io_context rkf;</div>
+<div class="line"><span class="lineno">  215</span>  std::future&lt;std::string&gt; rkf_out_future, rkf_err_future;</div>
+<div class="line"><span class="lineno">  216</span>  std::string rkfout, rkferr;</div>
+<div class="line"><span class="lineno">  217</span>  <span class="keywordtype">double</span> felem, x;</div>
+<div class="line"><span class="lineno">  218</span>  std::vector&lt;double&gt; extracted;</div>
+<div class="line"><span class="lineno">  219</span>  execString = std::format(<span class="stringliteral">&quot;dmpkf {}.results/{}.rkf AMSResults%{}&quot;</span>, this-&gt;<a class="code hl_variable" href="#a69987cc14414caeed1ec1b5ca22aae8e">cjob</a>,</div>
+<div class="line"><span class="lineno">  220</span>                           this-&gt;<a class="code hl_variable" href="#a9a7ed6d303fabda2ed3bfb8403e1d686">engine_lower</a>, key);</div>
+<div class="line"><span class="lineno">  221</span>  <span class="comment">// std::cout &lt;&lt; execString &lt;&lt; &quot;\n&quot;;</span></div>
+<div class="line"><span class="lineno">  222</span> </div>
+<div class="line"><span class="lineno">  223</span>  <span class="comment">// Extract</span></div>
+<div class="line"><span class="lineno">  224</span>  bp::child c(execString, <a class="code hl_variable" href="#a851e88c572f452fc2f6abf54fdebab02">nativenv</a>,         <span class="comment">// execute with the environment</span></div>
+<div class="line"><span class="lineno">  225</span>              bp::std_in.<a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">close</a>(),           <span class="comment">// no input</span></div>
+<div class="line"><span class="lineno">  226</span>              bp::std_out &gt; rkf_out_future, <span class="comment">// STDOUT</span></div>
+<div class="line"><span class="lineno">  227</span>              bp::std_err &gt; rkf_err_future, <span class="comment">// STDERR</span></div>
+<div class="line"><span class="lineno">  228</span>              rkf);</div>
+<div class="line"><span class="lineno">  229</span> </div>
+<div class="line"><span class="lineno">  230</span>  rkf.run(); <span class="comment">// this blocks until the end of the command</span></div>
+<div class="line"><span class="lineno">  231</span>  <span class="comment">// Populate the strings</span></div>
+<div class="line"><span class="lineno">  232</span>  rkfout = rkf_out_future.get();</div>
+<div class="line"><span class="lineno">  233</span>  rkferr = rkf_err_future.get();</div>
+<div class="line"><span class="lineno">  234</span> </div>
+<div class="line"><span class="lineno">  235</span>  <span class="keywordflow">if</span> (rkferr.find(<span class="stringliteral">&quot;ERROR&quot;</span>) != std::string::npos) {</div>
+<div class="line"><span class="lineno">  236</span>    <span class="keywordflow">throw</span> std::runtime_error(std::format(</div>
+<div class="line"><span class="lineno">  237</span>        <span class="stringliteral">&quot;\n AMS error while extracting {}, got:\n {}&quot;</span>, key, rkferr));</div>
+<div class="line"><span class="lineno">  238</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  239</span>    <span class="comment">// std::cout &lt;&lt; &quot;Extracting &quot; &lt;&lt; key &lt;&lt; std::endl;</span></div>
+<div class="line"><span class="lineno">  240</span>  }</div>
+<div class="line"><span class="lineno">  241</span> </div>
+<div class="line"><span class="lineno">  242</span>  execDat = absl::StrSplit(rkfout, <span class="charliteral">&#39;\n&#39;</span>);</div>
+<div class="line"><span class="lineno">  243</span>  <span class="comment">// Assume gradients or some other x y z property</span></div>
+<div class="line"><span class="lineno">  244</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 3; i &lt; execDat.size(); i++) {</div>
+<div class="line"><span class="lineno">  245</span>    <span class="comment">// There exist one per atom, the number of which equals N</span></div>
+<div class="line"><span class="lineno">  246</span>    <span class="comment">// The first three lines hold the header files as before</span></div>
+<div class="line"><span class="lineno">  247</span>    std::vector&lt;std::string&gt; strrow = absl::StrSplit(execDat[i], <span class="charliteral">&#39; &#39;</span>);</div>
+<div class="line"><span class="lineno">  248</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> elem : strrow) {</div>
+<div class="line"><span class="lineno">  249</span>      <span class="comment">// This loop uses an auto variable since some of the elements of strrow</span></div>
+<div class="line"><span class="lineno">  250</span>      <span class="comment">// often evaluate to &#39; &#39;</span></div>
+<div class="line"><span class="lineno">  251</span>      <span class="comment">// TODO: Optimize, perhaps with a regex</span></div>
+<div class="line"><span class="lineno">  252</span>      <span class="comment">// [0] = &quot;&quot;</span></div>
+<div class="line"><span class="lineno">  253</span>      <span class="comment">// [1] = &quot;&quot;</span></div>
+<div class="line"><span class="lineno">  254</span>      <span class="comment">// [2] = &quot;&quot;</span></div>
+<div class="line"><span class="lineno">  255</span>      <span class="comment">// [3] = &quot;0.798885933949825835E-004&quot;</span></div>
+<div class="line"><span class="lineno">  256</span>      <span class="comment">// [4] = &quot;&quot;</span></div>
+<div class="line"><span class="lineno">  257</span>      <span class="comment">// [5] = &quot;-0.755400038198822616E-004&quot;</span></div>
+<div class="line"><span class="lineno">  258</span>      <span class="comment">// [6] = &quot;&quot;</span></div>
+<div class="line"><span class="lineno">  259</span>      <span class="comment">// [7] = &quot;&quot;</span></div>
+<div class="line"><span class="lineno">  260</span>      <span class="comment">// [8] = &quot;0.457005740252359742E-004&quot;</span></div>
+<div class="line"><span class="lineno">  261</span>      <span class="keywordflow">if</span> (!elem.empty() &amp;&amp; absl::SimpleAtod(elem, &amp;x)) {</div>
+<div class="line"><span class="lineno">  262</span>        felem = x * this-&gt;<a class="code hl_variable" href="#adf438471f8dd557f731e529c5623fc16">forceConversion</a>;</div>
+<div class="line"><span class="lineno">  263</span>        <span class="comment">// std::cout &lt;&lt; std::format(</span></div>
+<div class="line"><span class="lineno">  264</span>        <span class="comment">//     &quot;\n Gradient element={:.4f} Hartree/Bohr from AMS\n Force &quot;</span></div>
+<div class="line"><span class="lineno">  265</span>        <span class="comment">//     &quot;element={:.4f} eV/Angstrom\n&quot;, x, felem);</span></div>
+<div class="line"><span class="lineno">  266</span>        extracted.emplace_back(felem);</div>
+<div class="line"><span class="lineno">  267</span>      }</div>
+<div class="line"><span class="lineno">  268</span>    }</div>
+<div class="line"><span class="lineno">  269</span>  }</div>
+<div class="line"><span class="lineno">  270</span>  <span class="comment">// // Debug</span></div>
+<div class="line"><span class="lineno">  271</span>  <span class="comment">// int counter = 0;</span></div>
+<div class="line"><span class="lineno">  272</span>  <span class="comment">// for (int a = 0; a &lt; N * 3; a++) {</span></div>
+<div class="line"><span class="lineno">  273</span>  <span class="comment">//   std::cout &lt;&lt; std::format(&quot;{:.25e} &quot;, forces[a]);</span></div>
+<div class="line"><span class="lineno">  274</span>  <span class="comment">//   counter++;</span></div>
+<div class="line"><span class="lineno">  275</span>  <span class="comment">//   if (counter % 3 == 0) {</span></div>
+<div class="line"><span class="lineno">  276</span>  <span class="comment">//     std::cout &lt;&lt; std::endl;</span></div>
+<div class="line"><span class="lineno">  277</span>  <span class="comment">//   }</span></div>
+<div class="line"><span class="lineno">  278</span>  <span class="comment">// }</span></div>
+<div class="line"><span class="lineno">  279</span>  <span class="keywordflow">return</span> extracted;</div>
+<div class="line"><span class="lineno">  280</span>}</div>
+<div class="ttc" id="aclassAMS_html_a9a7ed6d303fabda2ed3bfb8403e1d686"><div class="ttname"><a href="#a9a7ed6d303fabda2ed3bfb8403e1d686">AMS::engine_lower</a></div><div class="ttdeci">std::string engine_lower</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00058">AMS.h:58</a></div></div>
+<div class="ttc" id="aclassAMS_html_adf438471f8dd557f731e529c5623fc16"><div class="ttname"><a href="#adf438471f8dd557f731e529c5623fc16">AMS::forceConversion</a></div><div class="ttdeci">const double forceConversion</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00067">AMS.h:67</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1dynlib_html_aaaf1d7f945f57fb1f9303e58ae88d832"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">eonc::dynlib::close</a></div><div class="ttdeci">void close(Handle h) noexcept</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00077">DynLib.h:77</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad3df5ef07d93e7173293e8d7ea94b6c7" name="ad3df5ef07d93e7173293e8d7ea94b6c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3df5ef07d93e7173293e8d7ea94b6c7">&#9670;&#160;</a></span>extract_rkf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AMS::extract_rkf </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>N</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>key</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aec47ef60f542435947be9b8c22f1dd65" name="aec47ef60f542435947be9b8c22f1dd65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec47ef60f542435947be9b8c22f1dd65">&#9670;&#160;</a></span>extract_scalar_rkf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double AMS::extract_scalar_rkf </td>
+          <td>(</td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>key</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8cpp_source.html#l00152">152</a> of file <a class="el" href="AMS_8cpp_source.html">AMS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  152</span>                                            {</div>
+<div class="line"><span class="lineno">  153</span>  <span class="comment">// The logic here handles the extraction asynchronously, as we lack</span></div>
+<div class="line"><span class="lineno">  154</span>  <span class="comment">// interest in processing this output line by line, and would prefer to</span></div>
+<div class="line"><span class="lineno">  155</span>  <span class="comment">// have it all in one place</span></div>
+<div class="line"><span class="lineno">  156</span>  std::string execString;</div>
+<div class="line"><span class="lineno">  157</span>  std::vector&lt;std::string&gt; execDat;</div>
+<div class="line"><span class="lineno">  158</span>  boost::asio::io_context rkf;</div>
+<div class="line"><span class="lineno">  159</span>  std::future&lt;std::string&gt; rkf_out_future, rkf_err_future;</div>
+<div class="line"><span class="lineno">  160</span>  std::string rkfout, rkferr;</div>
+<div class="line"><span class="lineno">  161</span>  <span class="keywordtype">double</span> xval, x;</div>
+<div class="line"><span class="lineno">  162</span>  std::vector&lt;double&gt; extracted;</div>
+<div class="line"><span class="lineno">  163</span>  execString = std::format(<span class="stringliteral">&quot;dmpkf {}.results/{}.rkf AMSResults%{}&quot;</span>, this-&gt;<a class="code hl_variable" href="#a69987cc14414caeed1ec1b5ca22aae8e">cjob</a>,</div>
+<div class="line"><span class="lineno">  164</span>                           this-&gt;<a class="code hl_variable" href="#a9a7ed6d303fabda2ed3bfb8403e1d686">engine_lower</a>, key);</div>
+<div class="line"><span class="lineno">  165</span>  <span class="comment">// std::cout &lt;&lt; execString &lt;&lt; &quot;\n&quot;;</span></div>
+<div class="line"><span class="lineno">  166</span>  <span class="comment">// Extract</span></div>
+<div class="line"><span class="lineno">  167</span>  bp::child c(execString, <a class="code hl_variable" href="#a851e88c572f452fc2f6abf54fdebab02">nativenv</a>,         <span class="comment">// execute with the environment</span></div>
+<div class="line"><span class="lineno">  168</span>              bp::std_in.<a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">close</a>(),           <span class="comment">// no input</span></div>
+<div class="line"><span class="lineno">  169</span>              bp::std_out &gt; rkf_out_future, <span class="comment">// STDOUT</span></div>
+<div class="line"><span class="lineno">  170</span>              bp::std_err &gt; rkf_err_future, <span class="comment">// STDERR</span></div>
+<div class="line"><span class="lineno">  171</span>              rkf);</div>
+<div class="line"><span class="lineno">  172</span> </div>
+<div class="line"><span class="lineno">  173</span>  rkf.run(); <span class="comment">// this blocks until the end of the command</span></div>
+<div class="line"><span class="lineno">  174</span>  <span class="comment">// Populate the strings</span></div>
+<div class="line"><span class="lineno">  175</span>  rkfout = rkf_out_future.get();</div>
+<div class="line"><span class="lineno">  176</span>  rkferr = rkf_err_future.get();</div>
+<div class="line"><span class="lineno">  177</span>  <span class="keywordflow">if</span> (rkferr.find(<span class="stringliteral">&quot;ERROR&quot;</span>) != std::string::npos) {</div>
+<div class="line"><span class="lineno">  178</span>    <span class="keywordflow">throw</span> std::runtime_error(std::format(</div>
+<div class="line"><span class="lineno">  179</span>        <span class="stringliteral">&quot;\n AMS error while extracting {}, got:\n {}&quot;</span>, key, rkferr));</div>
+<div class="line"><span class="lineno">  180</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  181</span>    <span class="comment">// std::cout &lt;&lt; &quot;Extracting &quot; &lt;&lt; key &lt;&lt; std::endl;</span></div>
+<div class="line"><span class="lineno">  182</span>  }</div>
+<div class="line"><span class="lineno">  183</span> </div>
+<div class="line"><span class="lineno">  184</span>  execDat = absl::StrSplit(rkfout, <span class="charliteral">&#39;\n&#39;</span>);</div>
+<div class="line"><span class="lineno">  185</span>  <span class="comment">// Is energy or some other scalar property</span></div>
+<div class="line"><span class="lineno">  186</span>  <span class="comment">// First 3 lines hold the headers</span></div>
+<div class="line"><span class="lineno">  187</span>  <span class="comment">// [0] = &quot;AMSResults                       &quot;</span></div>
+<div class="line"><span class="lineno">  188</span>  <span class="comment">// [1] = &quot;Energy                           &quot;</span></div>
+<div class="line"><span class="lineno">  189</span>  <span class="comment">// [2] = &quot;         1         1         2&quot;</span></div>
+<div class="line"><span class="lineno">  190</span>  <span class="comment">// [3] = &quot;   0.135012547958282714E+000&quot;</span></div>
+<div class="line"><span class="lineno">  191</span>  <span class="comment">// [4] = &quot;&quot;</span></div>
+<div class="line"><span class="lineno">  192</span>  <span class="keywordflow">if</span> (execDat.size() &lt; 4) {</div>
+<div class="line"><span class="lineno">  193</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  194</span>        std::format(<span class="stringliteral">&quot;\n AMS returned {} lines for {}, too few to hold a value&quot;</span>,</div>
+<div class="line"><span class="lineno">  195</span>                    execDat.size(), key));</div>
+<div class="line"><span class="lineno">  196</span>  }</div>
+<div class="line"><span class="lineno">  197</span>  <span class="keywordflow">if</span> (absl::SimpleAtod(execDat[3], &amp;x)) {</div>
+<div class="line"><span class="lineno">  198</span>    xval = x * this-&gt;<a class="code hl_variable" href="#a2253f3d787448fd13412b6167c984f8b">energyConversion</a>;</div>
+<div class="line"><span class="lineno">  199</span>    <span class="comment">// std::cout &lt;&lt; std::format(</span></div>
+<div class="line"><span class="lineno">  200</span>    <span class="comment">//     &quot;\n Got {:.4f} Hartree from AMS and converted to {:.4f} eV\n&quot;, x,</span></div>
+<div class="line"><span class="lineno">  201</span>    <span class="comment">//     xval);</span></div>
+<div class="line"><span class="lineno">  202</span>    <span class="keywordflow">return</span> xval;</div>
+<div class="line"><span class="lineno">  203</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  204</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  205</span>        std::format(<span class="stringliteral">&quot;\n Expected {}, got {} instead&quot;</span>, key, execDat[3]));</div>
+<div class="line"><span class="lineno">  206</span>  }</div>
+<div class="line"><span class="lineno">  207</span>  <span class="comment">// Never reach here</span></div>
+<div class="line"><span class="lineno">  208</span>  <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Generic AMS dmpkf scalar error \n&quot;</span>);</div>
+<div class="line"><span class="lineno">  209</span>}</div>
+<div class="ttc" id="aclassAMS_html_a2253f3d787448fd13412b6167c984f8b"><div class="ttname"><a href="#a2253f3d787448fd13412b6167c984f8b">AMS::energyConversion</a></div><div class="ttdeci">const double energyConversion</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00070">AMS.h:70</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="abf77ef72c961487fb9b180a315d66dba" name="abf77ef72c961487fb9b180a315d66dba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf77ef72c961487fb9b180a315d66dba">&#9670;&#160;</a></span>finishRunScript()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AMS::finishRunScript </td>
+          <td>(</td>
+          <td class="paramtype">std::ofstream &amp;</td>          <td class="paramname"><span class="paramname"><em>out</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Copy 3N gradient components into the caller's force array. </p>
+
+<p class="definition">Definition at line <a class="el" href="AMS_8cpp_source.html#l00499">499</a> of file <a class="el" href="AMS_8cpp_source.html">AMS.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ad04b4329073d29965c46346bfa879e99" name="ad04b4329073d29965c46346bfa879e99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad04b4329073d29965c46346bfa879e99">&#9670;&#160;</a></span>force()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AMS::force </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>N</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>R</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em>atomicNrs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>F</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>U</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>variance</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>box</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="AMS_8cpp_source.html#l00389">389</a> of file <a class="el" href="AMS_8cpp_source.html">AMS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  390</span>                                                  {</div>
+<div class="line"><span class="lineno">  391</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  392</span>        std::format(<span class="stringliteral">&quot;\n AMS returned {} gradient components, expected {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  393</span>                    frc.size(), 3 * N));</div>
+<div class="line"><span class="lineno">  394</span>  }</div>
+<div class="line"><span class="lineno">  395</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; 3 * N; i++) {</div>
+<div class="line"><span class="lineno">  396</span>    F[i] = frc[i];</div>
+<div class="line"><span class="lineno">  397</span>  }</div>
+<div class="line"><span class="lineno">  398</span>}</div>
+<div class="line"><span class="lineno">  399</span> </div>
+<div class="line"><span class="lineno">  400</span><span class="keywordtype">void</span> <a class="code hl_function" href="#ad04b4329073d29965c46346bfa879e99">AMS::force</a>(<span class="keywordtype">long</span> N, <span class="keyword">const</span> <span class="keywordtype">double</span> *R, <span class="keyword">const</span> <span class="keywordtype">int</span> *atomicNrs, <span class="keywordtype">double</span> *F,</div>
+<div class="line"><span class="lineno">  401</span>                <span class="keywordtype">double</span> *U, <span class="keywordtype">double</span> *variance, <span class="keyword">const</span> <span class="keywordtype">double</span> *box) {</div>
+<div class="line"><span class="lineno">  402</span>  variance = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  403</span>  <span class="keywordflow">if</span> (not <a class="code hl_variable" href="#a5cc4afa0007d0561b396f42201352267">can_restart</a> or <a class="code hl_variable" href="#a5d9f3a5998a266b886059977067fe758">first_run</a>) {</div>
+<div class="line"><span class="lineno">  404</span>    <span class="comment">// std::cout &lt;&lt; std::format(&quot;\nCAN_RESTART:{}  FIRST_RUN:{}\n&quot;, can_restart,</span></div>
+<div class="line"><span class="lineno">  405</span>    <span class="comment">// first_run); This holds true for all engines with no restart Also if an</span></div>
+<div class="line"><span class="lineno">  406</span>    <span class="comment">// engine supports being restarted, the first run needs this</span></div>
+<div class="line"><span class="lineno">  407</span>    <a class="code hl_function" href="#aa4884a86a81a985c0685d6ae17a2640e">passToSystem</a>(N, R, atomicNrs, box);</div>
+<div class="line"><span class="lineno">  408</span>    <a class="code hl_function" href="#a9c71c9a5638ed8732e65923c4397493a">runAMS</a>();</div>
+<div class="line"><span class="lineno">  409</span>    <a class="code hl_function" href="#a1160422accfa47530b969cac76e1dcb6">copyForces</a>(N, <a class="code hl_function" href="#a556913a6af32e52a5c3ee5e746ac59d2">extract_cartesian_rkf</a>(<span class="stringliteral">&quot;Gradients&quot;</span>), F);</div>
+<div class="line"><span class="lineno">  410</span>    *U = <a class="code hl_function" href="#aec47ef60f542435947be9b8c22f1dd65">extract_scalar_rkf</a>(<span class="stringliteral">&quot;Energy&quot;</span>);</div>
+<div class="line"><span class="lineno">  411</span>    <span class="comment">// Update, will still not matter for those without restarts</span></div>
+<div class="line"><span class="lineno">  412</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a5cc4afa0007d0561b396f42201352267">can_restart</a>) {</div>
+<div class="line"><span class="lineno">  413</span>      <a class="code hl_variable" href="#a5d9f3a5998a266b886059977067fe758">first_run</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  414</span>      <span class="comment">// We need the &quot;previous job&quot; to pre-populate</span></div>
+<div class="line"><span class="lineno">  415</span>      <span class="comment">// clang-format off</span></div>
+<div class="line"><span class="lineno">  416</span>      <span class="comment">// std::cout&lt;&lt;std::format(&quot;\nMoving {} to {} before switching during the first job\n&quot;, cjob, pjob);</span></div>
+<div class="line"><span class="lineno">  417</span>      <span class="keyword">const</span> <span class="keyword">auto</span> copyOptions = std::filesystem::copy_options::overwrite_existing</div>
+<div class="line"><span class="lineno">  418</span>                             | std::filesystem::copy_options::recursive</div>
+<div class="line"><span class="lineno">  419</span>                             ;</div>
+<div class="line"><span class="lineno">  420</span>      <span class="comment">// clang-format on</span></div>
+<div class="line"><span class="lineno">  421</span>      std::filesystem::copy(std::format(<span class="stringliteral">&quot;./{}.results/&quot;</span>, <a class="code hl_variable" href="#a69987cc14414caeed1ec1b5ca22aae8e">cjob</a>),</div>
+<div class="line"><span class="lineno">  422</span>                            std::format(<span class="stringliteral">&quot;./{}.results/&quot;</span>, <a class="code hl_variable" href="#a0072736a8f916c6ba2533255eea32d82">pjob</a>), copyOptions);</div>
+<div class="line"><span class="lineno">  423</span>    }</div>
+<div class="line"><span class="lineno">  424</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  425</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  426</span>    <span class="comment">// std::cout &lt;&lt; std::format(&quot;\nCAN_RESTART:{}  FIRST_RUN:{}\n&quot;, can_restart,</span></div>
+<div class="line"><span class="lineno">  427</span>    <span class="comment">// first_run);</span></div>
+<div class="line"><span class="lineno">  428</span>    <a class="code hl_function" href="#a86b99e892d387be971a31b903deba09a">smallSys</a>(N, R, atomicNrs, box); <span class="comment">// writes run_AMS.sh</span></div>
+<div class="ttc" id="aclassAMS_html_a556913a6af32e52a5c3ee5e746ac59d2"><div class="ttname"><a href="#a556913a6af32e52a5c3ee5e746ac59d2">AMS::extract_cartesian_rkf</a></div><div class="ttdeci">std::vector&lt; double &gt; extract_cartesian_rkf(std::string key)</div><div class="ttdef"><b>Definition</b> <a href="AMS_8cpp_source.html#l00211">AMS.cpp:211</a></div></div>
+<div class="ttc" id="aclassAMS_html_a86b99e892d387be971a31b903deba09a"><div class="ttname"><a href="#a86b99e892d387be971a31b903deba09a">AMS::smallSys</a></div><div class="ttdeci">void smallSys(long N, const double *R, const int *atomicNrs, const double *box)</div><div class="ttdoc">Flush, close and make the run script executable.</div><div class="ttdef"><b>Definition</b> <a href="AMS_8cpp_source.html#l00474">AMS.cpp:474</a></div></div>
+<div class="ttc" id="aclassAMS_html_a9c71c9a5638ed8732e65923c4397493a"><div class="ttname"><a href="#a9c71c9a5638ed8732e65923c4397493a">AMS::runAMS</a></div><div class="ttdeci">void runAMS()</div><div class="ttdef"><b>Definition</b> <a href="AMS_8cpp_source.html#l00122">AMS.cpp:122</a></div></div>
+<div class="ttc" id="aclassAMS_html_aa4884a86a81a985c0685d6ae17a2640e"><div class="ttname"><a href="#aa4884a86a81a985c0685d6ae17a2640e">AMS::passToSystem</a></div><div class="ttdeci">void passToSystem(long N, const double *R, const int *atomicNrs, const double *box)</div><div class="ttdoc">&lt; Creates a script to run AMS</div><div class="ttdef"><b>Definition</b> <a href="AMS_8cpp_source.html#l00430">AMS.cpp:430</a></div></div>
+<div class="ttc" id="aclassAMS_html_ad04b4329073d29965c46346bfa879e99"><div class="ttname"><a href="#ad04b4329073d29965c46346bfa879e99">AMS::force</a></div><div class="ttdeci">void force(long N, const double *R, const int *atomicNrs, double *F, double *U, double *variance, const double *box)</div><div class="ttdef"><b>Definition</b> <a href="AMS_8cpp_source.html#l00389">AMS.cpp:389</a></div></div>
+<div class="ttc" id="aclassAMS_html_aec47ef60f542435947be9b8c22f1dd65"><div class="ttname"><a href="#aec47ef60f542435947be9b8c22f1dd65">AMS::extract_scalar_rkf</a></div><div class="ttdeci">double extract_scalar_rkf(std::string key)</div><div class="ttdef"><b>Definition</b> <a href="AMS_8cpp_source.html#l00152">AMS.cpp:152</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a157a948291be74add4b6f4e4e5909b2b" name="a157a948291be74add4b6f4e4e5909b2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a157a948291be74add4b6f4e4e5909b2b">&#9670;&#160;</a></span>generate_run()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string AMS::generate_run </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8cpp_source.html#l00511">511</a> of file <a class="el" href="AMS_8cpp_source.html">AMS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  512</span>            {</div>
+<div class="line"><span class="lineno">  513</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  514</span>        std::format(<span class="stringliteral">&quot;Could not write the AMS input to {}&quot;</span>, kRunScript));</div>
+<div class="line"><span class="lineno">  515</span>  }</div>
+<div class="line"><span class="lineno">  516</span>  <span class="keywordflow">if</span> (chmod(kRunScript, S_IRWXU) != 0) {</div>
+<div class="line"><span class="lineno">  517</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  518</span>        std::format(<span class="stringliteral">&quot;Could not make {} executable&quot;</span>, kRunScript));</div>
+<div class="line"><span class="lineno">  519</span>  }</div>
+<div class="line"><span class="lineno">  520</span>}</div>
+<div class="line"><span class="lineno">  521</span> </div>
+<div class="line"><span class="lineno">  522</span>std::string <a class="code hl_function" href="#a157a948291be74add4b6f4e4e5909b2b">AMS::generate_run</a>(<span class="keyword">const</span> Parameters &amp;p) {</div>
+<div class="line"><span class="lineno">  523</span>  std::string engine_block; <span class="comment">// Shadows the class variable</span></div>
+<div class="line"><span class="lineno">  524</span>  <span class="comment">// TODO: Use args everywhere, cleaner logic</span></div>
+<div class="line"><span class="lineno">  525</span>  <span class="comment">// Ensure capitals and existence</span></div>
+<div class="line"><span class="lineno">  526</span>  <a class="code hl_variable" href="#a31b0ec463048578feebbd99e3ed9b5fa">engine</a>.empty()</div>
+<div class="line"><span class="lineno">  527</span>      ? <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;AMS Engine is required \n&quot;</span>)</div>
+<div class="line"><span class="lineno">  528</span>      : std::transform(<a class="code hl_variable" href="#a31b0ec463048578feebbd99e3ed9b5fa">engine</a>.begin(), <a class="code hl_variable" href="#a31b0ec463048578feebbd99e3ed9b5fa">engine</a>.end(), <a class="code hl_variable" href="#a31b0ec463048578feebbd99e3ed9b5fa">engine</a>.begin(), ::toupper);</div>
+<div class="line"><span class="lineno">  529</span>  <span class="comment">// engine functions uniquely, it serves as a filename, so we store</span></div>
+<div class="line"><span class="lineno">  530</span>  <span class="comment">// engine_lower as a lowercase version too</span></div>
+<div class="line"><span class="lineno">  531</span>  <a class="code hl_variable" href="#a9a7ed6d303fabda2ed3bfb8403e1d686">engine_lower</a> = <a class="code hl_variable" href="#a31b0ec463048578feebbd99e3ed9b5fa">engine</a>;</div>
+<div class="line"><span class="lineno">  532</span>  std::transform(<a class="code hl_variable" href="#a31b0ec463048578feebbd99e3ed9b5fa">engine</a>.begin(), <a class="code hl_variable" href="#a31b0ec463048578feebbd99e3ed9b5fa">engine</a>.end(), <a class="code hl_variable" href="#a9a7ed6d303fabda2ed3bfb8403e1d686">engine_lower</a>.begin(), ::tolower);</div>
+<div class="line"><span class="lineno">  533</span>  <span class="comment">// Prepare the block</span></div>
+<div class="line"><span class="lineno">  534</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a31b0ec463048578feebbd99e3ed9b5fa">engine</a> == <span class="stringliteral">&quot;MOPAC&quot;</span>) {</div>
+<div class="line"><span class="lineno">  535</span>    <a class="code hl_variable" href="#acdeaaf3a1a5667a38c9f52020061358e">model</a>.empty()</div>
+<div class="line"><span class="lineno">  536</span>        ? <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;MOPAC needs a model\n&quot;</span>)</div>
+<div class="line"><span class="lineno">  537</span>        : std::transform(<a class="code hl_variable" href="#acdeaaf3a1a5667a38c9f52020061358e">model</a>.begin(), <a class="code hl_variable" href="#acdeaaf3a1a5667a38c9f52020061358e">model</a>.end(), <a class="code hl_variable" href="#acdeaaf3a1a5667a38c9f52020061358e">model</a>.begin(), ::toupper);</div>
+<div class="line"><span class="lineno">  538</span>    std::string engine_formatter = R<span class="stringliteral">&quot;(</span></div>
+<div class="line"><span class="lineno">  539</span><span class="stringliteral"> Engine {}</span></div>
+<div class="line"><span class="lineno">  540</span><span class="stringliteral">  Model {}</span></div>
+<div class="line"><span class="lineno">  541</span><span class="stringliteral"> EndEngine</span></div>
+<div class="line"><span class="lineno">  542</span><span class="stringliteral">)&quot;;</span></div>
+<div class="line"><span class="lineno">  543</span><span class="stringliteral">    engine_block = std::format(engine_formatter, <a class="code hl_variable" href="#a31b0ec463048578feebbd99e3ed9b5fa">engine</a>, <a class="code hl_variable" href="#acdeaaf3a1a5667a38c9f52020061358e">model</a>);</span></div>
+<div class="line"><span class="lineno">  544</span><span class="stringliteral">    </span><span class="keywordflow">return</span> engine_block;</div>
+<div class="line"><span class="lineno">  545</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a31b0ec463048578feebbd99e3ed9b5fa">engine</a> == <span class="stringliteral">&quot;ADF&quot;</span> || <a class="code hl_variable" href="#a31b0ec463048578feebbd99e3ed9b5fa">engine</a> == <span class="stringliteral">&quot;BAND&quot;</span>) {</div>
+<div class="line"><span class="lineno">  546</span>    <a class="code hl_variable" href="#aa6a7e72e9bef2925d8864329b37a1ae3">basis</a>.empty()</div>
+<div class="line"><span class="lineno">  547</span>        ? <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;ADF/BAND need a basis\n&quot;</span>)</div>
+<div class="line"><span class="lineno">  548</span>        : std::transform(<a class="code hl_variable" href="#aa6a7e72e9bef2925d8864329b37a1ae3">basis</a>.begin(), <a class="code hl_variable" href="#aa6a7e72e9bef2925d8864329b37a1ae3">basis</a>.end(), <a class="code hl_variable" href="#aa6a7e72e9bef2925d8864329b37a1ae3">basis</a>.begin(), ::toupper);</div>
+<div class="line"><span class="lineno">  549</span>    <a class="code hl_variable" href="#a893a99daf674a4093e2f9042f09354ed">xc</a>.empty() ? <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;ADF/BAND need a functional\n&quot;</span>)</div>
+<div class="line"><span class="lineno">  550</span>               : std::transform(<a class="code hl_variable" href="#a893a99daf674a4093e2f9042f09354ed">xc</a>.begin(), <a class="code hl_variable" href="#a893a99daf674a4093e2f9042f09354ed">xc</a>.end(), <a class="code hl_variable" href="#a893a99daf674a4093e2f9042f09354ed">xc</a>.begin(), ::toupper);</div>
+<div class="line"><span class="lineno">  551</span>    std::string engine_formatter = R<span class="stringliteral">&quot;(</span></div>
+<div class="line"><span class="lineno">  552</span><span class="stringliteral">   Engine {}</span></div>
+<div class="line"><span class="lineno">  553</span><span class="stringliteral">     Basis</span></div>
+<div class="line"><span class="lineno">  554</span><span class="stringliteral">       Type {}</span></div>
+<div class="line"><span class="lineno">  555</span><span class="stringliteral">     End</span></div>
+<div class="line"><span class="lineno">  556</span><span class="stringliteral"></span> </div>
+<div class="line"><span class="lineno">  557</span><span class="stringliteral">     XC</span></div>
+<div class="line"><span class="lineno">  558</span><span class="stringliteral">       {}</span></div>
+<div class="line"><span class="lineno">  559</span><span class="stringliteral">     End</span></div>
+<div class="line"><span class="lineno">  560</span><span class="stringliteral">   EndEngine</span></div>
+<div class="line"><span class="lineno">  561</span><span class="stringliteral">  )&quot;;</span></div>
+<div class="line"><span class="lineno">  562</span><span class="stringliteral">    engine_block = std::format(engine_formatter, <a class="code hl_variable" href="#a31b0ec463048578feebbd99e3ed9b5fa">engine</a>, <a class="code hl_variable" href="#aa6a7e72e9bef2925d8864329b37a1ae3">basis</a>, <a class="code hl_variable" href="#a893a99daf674a4093e2f9042f09354ed">xc</a>);</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a829054909bdffc90c70d5dda282ea220" name="a829054909bdffc90c70d5dda282ea220"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a829054909bdffc90c70d5dda282ea220">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AMS::initialize </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00038">38</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   38</span>{};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa4884a86a81a985c0685d6ae17a2640e" name="aa4884a86a81a985c0685d6ae17a2640e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4884a86a81a985c0685d6ae17a2640e">&#9670;&#160;</a></span>passToSystem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AMS::passToSystem </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>N</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>R</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em>atomicNrs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>box</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>&lt; Creates a script to run <a class="el" href="classAMS.html">AMS</a> </p>
+
+<p class="definition">Definition at line <a class="el" href="AMS_8cpp_source.html#l00430">430</a> of file <a class="el" href="AMS_8cpp_source.html">AMS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  444</span>{</div>
+<div class="line"><span class="lineno">  445</span>  std::ofstream out(kRunScript, std::ios::trunc);</div>
+<div class="line"><span class="lineno">  446</span>  <span class="keywordflow">if</span> (!out) {</div>
+<div class="line"><span class="lineno">  447</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  448</span>        std::format(<span class="stringliteral">&quot;Could not open {} for writing&quot;</span>, kRunScript));</div>
+<div class="line"><span class="lineno">  449</span>  }</div>
+<div class="line"><span class="lineno">  450</span> </div>
+<div class="line"><span class="lineno">  451</span>  out &lt;&lt; <span class="stringliteral">&quot;#!/bin/sh\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  452</span>  out &lt;&lt; std::format(<span class="stringliteral">&quot;export AMS_JOBNAME={}\n&quot;</span>, <a class="code hl_variable" href="#a69987cc14414caeed1ec1b5ca22aae8e">cjob</a>);</div>
+<div class="line"><span class="lineno">  453</span>  out &lt;&lt; <span class="stringliteral">&quot;$AMSBIN/ams --delete-old-results &lt;&lt;eor\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  454</span>  out &lt;&lt; <span class="stringliteral">&quot;Task SinglePoint\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  455</span>  out &lt;&lt; <span class="stringliteral">&quot;System\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  456</span>  out &lt;&lt; <span class="stringliteral">&quot; Atoms\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  457</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; i++) {</div>
+<div class="line"><span class="lineno">  458</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;  {}\t{:.19f}\t{:.19f}\t{:.19f}\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  459</span>                       atomicNumber2symbol(atomicNrs[i]), R[i * 3 + 0],</div>
+<div class="line"><span class="lineno">  460</span>                       R[i * 3 + 1], R[i * 3 + 2]);</div>
+<div class="line"><span class="lineno">  461</span>  }</div>
+<div class="line"><span class="lineno">  462</span>  out &lt;&lt; <span class="stringliteral">&quot; End\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  463</span>  <span class="keywordflow">if</span> (not <a class="code hl_variable" href="#acdeaaf3a1a5667a38c9f52020061358e">model</a>.empty() || not <a class="code hl_variable" href="#a13285bf033f83fe66ce0f94e2260b832">forcefield</a>.empty()) {</div>
+<div class="line"><span class="lineno">  464</span>    out &lt;&lt; <span class="stringliteral">&quot; Lattice\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  465</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 3; i++) {</div>
+<div class="line"><span class="lineno">  466</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot;  {:.19f}\t{:.19f}\t{:.19f}\n&quot;</span>, box[i * 3 + 0],</div>
+<div class="line"><span class="lineno">  467</span>                         box[i * 3 + 1], box[i * 3 + 2]);</div>
+<div class="line"><span class="lineno">  468</span>    }</div>
+<div class="line"><span class="lineno">  469</span>    out &lt;&lt; <span class="stringliteral">&quot; End\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  470</span>  }</div>
+<div class="line"><span class="lineno">  471</span>  out &lt;&lt; <span class="stringliteral">&quot;End\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  472</span>  out &lt;&lt; <a class="code hl_variable" href="#a19af403714c209d9bafb5e501ec340fd">engine_setup</a>;</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2511d41706d8a67178d01049fbc3c459" name="a2511d41706d8a67178d01049fbc3c459"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2511d41706d8a67178d01049fbc3c459">&#9670;&#160;</a></span>readFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string AMS::readFile </td>
+          <td>(</td>
+          <td class="paramtype">std::filesystem::path</td>          <td class="paramname"><span class="paramname"><em>path</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aae847168dab438f3f09cfa5893db0733" name="aae847168dab438f3f09cfa5893db0733"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae847168dab438f3f09cfa5893db0733">&#9670;&#160;</a></span>recieveFromSystem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AMS::recieveFromSystem </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>N</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>F</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>U</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9c71c9a5638ed8732e65923c4397493a" name="a9c71c9a5638ed8732e65923c4397493a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c71c9a5638ed8732e65923c4397493a">&#9670;&#160;</a></span>runAMS()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AMS::runAMS </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8cpp_source.html#l00122">122</a> of file <a class="el" href="AMS_8cpp_source.html">AMS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  122</span>                 {</div>
+<div class="line"><span class="lineno">  123</span>  boost::asio::io_context amsRun;</div>
+<div class="line"><span class="lineno">  124</span>  std::future&lt;std::string&gt; run_out_future, run_err_future;</div>
+<div class="line"><span class="lineno">  125</span>  std::string runout, runerr;</div>
+<div class="line"><span class="lineno">  126</span>  <span class="keywordflow">if</span> (chmod(kRunScript, S_IRWXU) != 0) {</div>
+<div class="line"><span class="lineno">  127</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  128</span>        std::format(<span class="stringliteral">&quot;Could not make {} executable&quot;</span>, kRunScript));</div>
+<div class="line"><span class="lineno">  129</span>  }</div>
+<div class="line"><span class="lineno">  130</span>  <a class="code hl_variable" href="#a851e88c572f452fc2f6abf54fdebab02">nativenv</a>[<span class="stringliteral">&quot;AMS_JOBNAME&quot;</span>] = <a class="code hl_variable" href="#a69987cc14414caeed1ec1b5ca22aae8e">cjob</a>;</div>
+<div class="line"><span class="lineno">  131</span>  <span class="comment">// assert(validate_order() == true);         // TODO: Debug only</span></div>
+<div class="line"><span class="lineno">  132</span>  bp::child c(std::string(kRunScript),</div>
+<div class="line"><span class="lineno">  133</span>              <a class="code hl_variable" href="#a851e88c572f452fc2f6abf54fdebab02">nativenv</a>,                     <span class="comment">// set the input</span></div>
+<div class="line"><span class="lineno">  134</span>              bp::std_in.<a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">close</a>(),           <span class="comment">// no input</span></div>
+<div class="line"><span class="lineno">  135</span>              bp::std_out &gt; run_out_future, <span class="comment">// STDOUT</span></div>
+<div class="line"><span class="lineno">  136</span>              bp::std_err &gt; run_err_future, <span class="comment">// STDERR</span></div>
+<div class="line"><span class="lineno">  137</span>              amsRun);</div>
+<div class="line"><span class="lineno">  138</span>  amsRun.run();</div>
+<div class="line"><span class="lineno">  139</span>  runout = run_out_future.get();</div>
+<div class="line"><span class="lineno">  140</span>  runerr = run_err_future.get();</div>
+<div class="line"><span class="lineno">  141</span>  <span class="keywordflow">if</span> (runerr.find(<span class="stringliteral">&quot;ERROR&quot;</span>) != std::string::npos) {</div>
+<div class="line"><span class="lineno">  142</span>    bp::spawn(<span class="stringliteral">&quot;cat myrestart.in&quot;</span>);</div>
+<div class="line"><span class="lineno">  143</span>    bp::spawn(<span class="stringliteral">&quot;cat run_AMS.sh&quot;</span>);</div>
+<div class="line"><span class="lineno">  144</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;\n AMS error while running&quot;</span>);</div>
+<div class="line"><span class="lineno">  145</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  146</span>    this-&gt;<a class="code hl_variable" href="#abefc9c4e814d7680851494c27005e012">amsevals</a> = <a class="code hl_variable" href="#abefc9c4e814d7680851494c27005e012">amsevals</a> + 1;</div>
+<div class="line"><span class="lineno">  147</span>    <span class="comment">// std::cout &lt;&lt; &quot;Run completed normally&quot; &lt;&lt; std::endl;</span></div>
+<div class="line"><span class="lineno">  148</span>    <span class="comment">// std::cerr &lt;&lt; &quot;NORMAL TERMINATION\n&quot;;</span></div>
+<div class="line"><span class="lineno">  149</span>  }</div>
+<div class="line"><span class="lineno">  150</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a86b99e892d387be971a31b903deba09a" name="a86b99e892d387be971a31b903deba09a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86b99e892d387be971a31b903deba09a">&#9670;&#160;</a></span>smallSys()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AMS::smallSys </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>N</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>R</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em>atomicNrs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>box</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Flush, close and make the run script executable. </p>
+
+<p class="definition">Definition at line <a class="el" href="AMS_8cpp_source.html#l00474">474</a> of file <a class="el" href="AMS_8cpp_source.html">AMS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  476</span>                                     {</div>
+<div class="line"><span class="lineno">  477</span>    out &lt;&lt; <span class="stringliteral">&quot;@include myrestart.in\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  478</span>  }</div>
+<div class="line"><span class="lineno">  479</span>  out &lt;&lt; <span class="stringliteral">&quot;eor&quot;</span>;</div>
+<div class="line"><span class="lineno">  480</span> </div>
+<div class="line"><span class="lineno">  481</span>  <a class="code hl_function" href="#abf77ef72c961487fb9b180a315d66dba">finishRunScript</a>(out);</div>
+<div class="line"><span class="lineno">  482</span>  <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  483</span>}</div>
+<div class="line"><span class="lineno">  484</span> </div>
+<div class="line"><span class="lineno">  485</span><span class="keywordtype">void</span> <a class="code hl_function" href="#a86b99e892d387be971a31b903deba09a">AMS::smallSys</a>(<span class="keywordtype">long</span> N, <span class="keyword">const</span> <span class="keywordtype">double</span> *R, <span class="keyword">const</span> <span class="keywordtype">int</span> *atomicNrs,</div>
+<div class="line"><span class="lineno">  486</span>                   <span class="keyword">const</span> <span class="keywordtype">double</span> *box)</div>
+<div class="line"><span class="lineno">  487</span><span class="comment">// Creating the truncated input file that the AMS driver reads</span></div>
+<div class="line"><span class="lineno">  488</span>{</div>
+<div class="line"><span class="lineno">  489</span>  std::ofstream out(kRunScript, std::ios::trunc);</div>
+<div class="line"><span class="lineno">  490</span>  <span class="keywordflow">if</span> (!out) {</div>
+<div class="line"><span class="lineno">  491</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  492</span>        std::format(<span class="stringliteral">&quot;Could not open {} for writing&quot;</span>, kRunScript));</div>
+<div class="line"><span class="lineno">  493</span>  }</div>
+<div class="line"><span class="lineno">  494</span> </div>
+<div class="line"><span class="lineno">  495</span>  out &lt;&lt; <span class="stringliteral">&quot;#!/bin/sh\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  496</span>  out &lt;&lt; std::format(<span class="stringliteral">&quot;export AMS_JOBNAME={}\n&quot;</span>, <a class="code hl_variable" href="#a69987cc14414caeed1ec1b5ca22aae8e">cjob</a>);</div>
+<div class="line"><span class="lineno">  497</span>  out &lt;&lt; <span class="stringliteral">&quot;$AMSBIN/ams --delete-old-results &lt;&lt;eor\n&quot;</span>;</div>
+<div class="ttc" id="aclassAMS_html_abf77ef72c961487fb9b180a315d66dba"><div class="ttname"><a href="#abf77ef72c961487fb9b180a315d66dba">AMS::finishRunScript</a></div><div class="ttdeci">void finishRunScript(std::ofstream &amp;out)</div><div class="ttdoc">Copy 3N gradient components into the caller&#39;s force array.</div><div class="ttdef"><b>Definition</b> <a href="AMS_8cpp_source.html#l00499">AMS.cpp:499</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1ca9d6ce2dfd4d86ef3ddba89840557a" name="a1ca9d6ce2dfd4d86ef3ddba89840557a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ca9d6ce2dfd4d86ef3ddba89840557a">&#9670;&#160;</a></span>switchjob()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AMS::switchjob </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8cpp_source.html#l00344">344</a> of file <a class="el" href="AMS_8cpp_source.html">AMS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  344</span>                    {</div>
+<div class="line"><span class="lineno">  345</span>  std::string tmp;</div>
+<div class="line"><span class="lineno">  346</span>  <span class="comment">// std::cout &lt;&lt; std::format(&quot;\nEntered Switch:\nCurrent:{}, Previous:{}\n&quot;,</span></div>
+<div class="line"><span class="lineno">  347</span>  <span class="comment">// cjob, pjob);</span></div>
+<div class="line"><span class="lineno">  348</span>  tmp = this-&gt;<a class="code hl_variable" href="#a69987cc14414caeed1ec1b5ca22aae8e">cjob</a>;</div>
+<div class="line"><span class="lineno">  349</span>  this-&gt;<a class="code hl_variable" href="#a69987cc14414caeed1ec1b5ca22aae8e">cjob</a> = this-&gt;<a class="code hl_variable" href="#a0072736a8f916c6ba2533255eea32d82">pjob</a>;</div>
+<div class="line"><span class="lineno">  350</span>  this-&gt;<a class="code hl_variable" href="#a0072736a8f916c6ba2533255eea32d82">pjob</a> = tmp;</div>
+<div class="line"><span class="lineno">  351</span>  <span class="comment">// std::cout &lt;&lt; std::format(&quot;\nSwitched\n Current:{}, Previous:{}\n&quot;, cjob,</span></div>
+<div class="line"><span class="lineno">  352</span>  <span class="comment">// pjob);</span></div>
+<div class="line"><span class="lineno">  353</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa4df01b0b3d59e85843515163ac8b03a" name="aa4df01b0b3d59e85843515163ac8b03a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4df01b0b3d59e85843515163ac8b03a">&#9670;&#160;</a></span>updateCoord()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AMS::updateCoord </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>N</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>R</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8cpp_source.html#l00282">282</a> of file <a class="el" href="AMS_8cpp_source.html">AMS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  282</span>                                             {</div>
+<div class="line"><span class="lineno">  283</span>  <span class="comment">// The logic used here requires us to update the PREVIOUS job, since that</span></div>
+<div class="line"><span class="lineno">  284</span>  <span class="comment">// functions as the one from which the calculation restarts</span></div>
+<div class="line"><span class="lineno">  285</span>  <span class="comment">// Only the third line presents vague complexity</span></div>
+<div class="line"><span class="lineno">  286</span>  <span class="comment">// https://www.scm.com/doc/Scripting/Commandline_Tools/KF_command_line_utilities.html</span></div>
+<div class="line"><span class="lineno">  287</span>  std::ofstream updCoord;</div>
+<div class="line"><span class="lineno">  288</span>  std::string execString, coordDump, newCoord;</div>
+<div class="line"><span class="lineno">  289</span>  std::vector&lt;std::string&gt; execDat;</div>
+<div class="line"><span class="lineno">  290</span>  boost::asio::io_context coordio;</div>
+<div class="line"><span class="lineno">  291</span>  std::future&lt;std::string&gt; err, rdump;</div>
+<div class="line"><span class="lineno">  292</span>  std::vector&lt;double&gt; gradients;</div>
+<div class="line"><span class="lineno">  293</span>  <span class="comment">// Prep new run</span></div>
+<div class="line"><span class="lineno">  294</span>  <span class="comment">// Get the previous run&#39;s coordinates</span></div>
+<div class="line"><span class="lineno">  295</span>  execString = std::format(<span class="stringliteral">&quot;dmpkf {}.results/ams.rkf Molecule%Coords&quot;</span>, <a class="code hl_variable" href="#a0072736a8f916c6ba2533255eea32d82">pjob</a>);</div>
+<div class="line"><span class="lineno">  296</span>  <span class="comment">// std::cout &lt;&lt; execString &lt;&lt; &quot;\n&quot;;</span></div>
+<div class="line"><span class="lineno">  297</span>  <span class="comment">// Store Coordinates</span></div>
+<div class="line"><span class="lineno">  298</span>  <span class="comment">// TODO: Simplify this, we only need the first few lines</span></div>
+<div class="line"><span class="lineno">  299</span>  bp::child cprog(execString, <a class="code hl_variable" href="#a851e88c572f452fc2f6abf54fdebab02">nativenv</a>, bp::std_in.<a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">close</a>(), bp::std_out &gt; rdump,</div>
+<div class="line"><span class="lineno">  300</span>                  bp::std_err &gt; err, coordio);</div>
+<div class="line"><span class="lineno">  301</span>  coordio.run();</div>
+<div class="line"><span class="lineno">  302</span>  execDat = absl::StrSplit(rdump.get(), <span class="charliteral">&#39;\n&#39;</span>);</div>
+<div class="line"><span class="lineno">  303</span>  <span class="comment">// Get the first three lines</span></div>
+<div class="line"><span class="lineno">  304</span>  <span class="keywordtype">int</span> counter = 0;</div>
+<div class="line"><span class="lineno">  305</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> j : execDat) {</div>
+<div class="line"><span class="lineno">  306</span>    <span class="keywordflow">if</span> (counter &gt;= 3) {</div>
+<div class="line"><span class="lineno">  307</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  308</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  309</span>      absl::StrAppend(&amp;newCoord, j, <span class="stringliteral">&quot;\n&quot;</span>);</div>
+<div class="line"><span class="lineno">  310</span>    }</div>
+<div class="line"><span class="lineno">  311</span>    counter++;</div>
+<div class="line"><span class="lineno">  312</span>  }</div>
+<div class="line"><span class="lineno">  313</span>  <span class="comment">// Put the rest of the coordinates</span></div>
+<div class="line"><span class="lineno">  314</span>  counter = 0;</div>
+<div class="line"><span class="lineno">  315</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> a = 0; a &lt; N * 3; a++) {</div>
+<div class="line"><span class="lineno">  316</span>    absl::StrAppend(&amp;newCoord, (R[a] * <a class="code hl_variable" href="#a12196959b691d89b2eb01938069d7475">lengthConversion</a>), <span class="stringliteral">&quot;  &quot;</span>);</div>
+<div class="line"><span class="lineno">  317</span>    counter++;</div>
+<div class="line"><span class="lineno">  318</span>    <span class="keywordflow">if</span> (counter % 3 == 0) {</div>
+<div class="line"><span class="lineno">  319</span>      absl::StrAppend(&amp;newCoord, <span class="stringliteral">&quot;\n&quot;</span>);</div>
+<div class="line"><span class="lineno">  320</span>    }</div>
+<div class="line"><span class="lineno">  321</span>  }</div>
+<div class="line"><span class="lineno">  322</span>  coordDump = <span class="stringliteral">&quot;#!/bin/sh\n udmpkf &quot;</span>;</div>
+<div class="line"><span class="lineno">  323</span>  absl::StrAppend(&amp;coordDump, <a class="code hl_variable" href="#a0072736a8f916c6ba2533255eea32d82">pjob</a>, <span class="stringliteral">&quot;.results/ams.rkf &lt;&lt;EOF\n&quot;</span>, newCoord,</div>
+<div class="line"><span class="lineno">  324</span>                  <span class="stringliteral">&quot;EOF&quot;</span>);</div>
+<div class="line"><span class="lineno">  325</span>  <span class="comment">// std::cout &lt;&lt; coordDump;</span></div>
+<div class="line"><span class="lineno">  326</span>  updCoord.open(<span class="stringliteral">&quot;updCoord.sh&quot;</span>, std::ios::trunc);</div>
+<div class="line"><span class="lineno">  327</span>  <span class="keywordflow">if</span> (!updCoord) {</div>
+<div class="line"><span class="lineno">  328</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Could not open updCoord.sh for writing&quot;</span>);</div>
+<div class="line"><span class="lineno">  329</span>  }</div>
+<div class="line"><span class="lineno">  330</span>  updCoord &lt;&lt; coordDump;</div>
+<div class="line"><span class="lineno">  331</span>  updCoord.close();</div>
+<div class="line"><span class="lineno">  332</span>  <span class="keywordflow">if</span> (!updCoord) {</div>
+<div class="line"><span class="lineno">  333</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Could not write the coordinates to updCoord.sh&quot;</span>);</div>
+<div class="line"><span class="lineno">  334</span>  }</div>
+<div class="line"><span class="lineno">  335</span>  <span class="comment">// bp::spawn(&quot;chmod +x updCoord.sh&quot;);</span></div>
+<div class="line"><span class="lineno">  336</span>  <span class="keywordflow">if</span> (chmod(<span class="stringliteral">&quot;updCoord.sh&quot;</span>, S_IRWXU) != 0) {</div>
+<div class="line"><span class="lineno">  337</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Could not make updCoord.sh executable&quot;</span>);</div>
+<div class="line"><span class="lineno">  338</span>  }</div>
+<div class="line"><span class="lineno">  339</span>  bp::child cuprog(<span class="stringliteral">&quot;updCoord.sh&quot;</span>, <a class="code hl_variable" href="#a851e88c572f452fc2f6abf54fdebab02">nativenv</a>, bp::std_err &gt; bp::null);</div>
+<div class="line"><span class="lineno">  340</span>  cuprog.wait();</div>
+<div class="line"><span class="lineno">  341</span>  <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  342</span>}</div>
+<div class="ttc" id="aclassAMS_html_a12196959b691d89b2eb01938069d7475"><div class="ttname"><a href="#a12196959b691d89b2eb01938069d7475">AMS::lengthConversion</a></div><div class="ttdeci">const double lengthConversion</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00071">AMS.h:71</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7d3e6944edba27dfb4d97728147ecc19" name="a7d3e6944edba27dfb4d97728147ecc19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d3e6944edba27dfb4d97728147ecc19">&#9670;&#160;</a></span>validate_order()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool AMS::validate_order </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a81bcb554e8dcf80d8fc3308380900c52" name="a81bcb554e8dcf80d8fc3308380900c52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81bcb554e8dcf80d8fc3308380900c52">&#9670;&#160;</a></span>write_restart()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AMS::write_restart </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8cpp_source.html#l00355">355</a> of file <a class="el" href="AMS_8cpp_source.html">AMS.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  355</span>                        {</div>
+<div class="line"><span class="lineno">  356</span>  std::string restart_formatter;</div>
+<div class="line"><span class="lineno">  357</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a5cc4afa0007d0561b396f42201352267">can_restart</a>) {</div>
+<div class="line"><span class="lineno">  358</span>    restart_formatter = R<span class="stringliteral">&quot;(</span></div>
+<div class="line"><span class="lineno">  359</span><span class="stringliteral">   EngineRestart {0}.results/{1}.rkf</span></div>
+<div class="line"><span class="lineno">  360</span><span class="stringliteral">   LoadSystem</span></div>
+<div class="line"><span class="lineno">  361</span><span class="stringliteral">    File {0}.results/ams.rkf</span></div>
+<div class="line"><span class="lineno">  362</span><span class="stringliteral">    Section Molecule</span></div>
+<div class="line"><span class="lineno">  363</span><span class="stringliteral">   End</span></div>
+<div class="line"><span class="lineno">  364</span><span class="stringliteral">  )&quot;;</span></div>
+<div class="line"><span class="lineno">  365</span><span class="stringliteral">  } </span><span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  366</span>    restart_formatter = R<span class="stringliteral">&quot;(</span></div>
+<div class="line"><span class="lineno">  367</span><span class="stringliteral">   LoadSystem</span></div>
+<div class="line"><span class="lineno">  368</span><span class="stringliteral">    File {0}.results/ams.rkf</span></div>
+<div class="line"><span class="lineno">  369</span><span class="stringliteral">    Section Molecule</span></div>
+<div class="line"><span class="lineno">  370</span><span class="stringliteral">   End</span></div>
+<div class="line"><span class="lineno">  371</span><span class="stringliteral">  )&quot;;</span></div>
+<div class="line"><span class="lineno">  372</span><span class="stringliteral">  }</span></div>
+<div class="line"><span class="lineno">  373</span><span class="stringliteral">  std::string restart_data = std::format(restart_formatter, <a class="code hl_variable" href="#a0072736a8f916c6ba2533255eea32d82">pjob</a>, <a class="code hl_variable" href="#a9a7ed6d303fabda2ed3bfb8403e1d686">engine_lower</a>);</span></div>
+<div class="line"><span class="lineno">  374</span><span class="stringliteral">  <a class="code hl_variable" href="#a2b7d2bc8a93eac715dbd5e033dd2aaaa">restartFrom</a>.open(</span><span class="stringliteral">&quot;myrestart.in&quot;</span>, std::ios::trunc);</div>
+<div class="ttc" id="aclassAMS_html_a2b7d2bc8a93eac715dbd5e033dd2aaaa"><div class="ttname"><a href="#a2b7d2bc8a93eac715dbd5e033dd2aaaa">AMS::restartFrom</a></div><div class="ttdeci">std::ofstream restartFrom</div><div class="ttdef"><b>Definition</b> <a href="AMS_8h_source.html#l00066">AMS.h:66</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="abefc9c4e814d7680851494c27005e012" name="abefc9c4e814d7680851494c27005e012"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abefc9c4e814d7680851494c27005e012">&#9670;&#160;</a></span>amsevals</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int AMS::amsevals {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00063">63</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   63</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa6a7e72e9bef2925d8864329b37a1ae3" name="aa6a7e72e9bef2925d8864329b37a1ae3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6a7e72e9bef2925d8864329b37a1ae3">&#9670;&#160;</a></span>basis</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string AMS::basis</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00057">57</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+
+</div>
+</div>
+<a id="a5cc4afa0007d0561b396f42201352267" name="a5cc4afa0007d0561b396f42201352267"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cc4afa0007d0561b396f42201352267">&#9670;&#160;</a></span>can_restart</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool AMS::can_restart</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00064">64</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+
+</div>
+</div>
+<a id="a69987cc14414caeed1ec1b5ca22aae8e" name="a69987cc14414caeed1ec1b5ca22aae8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69987cc14414caeed1ec1b5ca22aae8e">&#9670;&#160;</a></span>cjob</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string AMS::cjob</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00065">65</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+
+</div>
+</div>
+<a id="a2253f3d787448fd13412b6167c984f8b" name="a2253f3d787448fd13412b6167c984f8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2253f3d787448fd13412b6167c984f8b">&#9670;&#160;</a></span>energyConversion</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double AMS::energyConversion = 27.2114</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00070">70</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+
+</div>
+</div>
+<a id="a31b0ec463048578feebbd99e3ed9b5fa" name="a31b0ec463048578feebbd99e3ed9b5fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31b0ec463048578feebbd99e3ed9b5fa">&#9670;&#160;</a></span>engine</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string AMS::engine</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00057">57</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+
+</div>
+</div>
+<a id="a9a7ed6d303fabda2ed3bfb8403e1d686" name="a9a7ed6d303fabda2ed3bfb8403e1d686"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a7ed6d303fabda2ed3bfb8403e1d686">&#9670;&#160;</a></span>engine_lower</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string AMS::engine_lower</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00058">58</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+
+</div>
+</div>
+<a id="a19af403714c209d9bafb5e501ec340fd" name="a19af403714c209d9bafb5e501ec340fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19af403714c209d9bafb5e501ec340fd">&#9670;&#160;</a></span>engine_setup</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string AMS::engine_setup</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00058">58</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+
+</div>
+</div>
+<a id="a5d9f3a5998a266b886059977067fe758" name="a5d9f3a5998a266b886059977067fe758"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d9f3a5998a266b886059977067fe758">&#9670;&#160;</a></span>first_run</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool AMS::first_run</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00064">64</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+
+</div>
+</div>
+<a id="adf438471f8dd557f731e529c5623fc16" name="adf438471f8dd557f731e529c5623fc16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf438471f8dd557f731e529c5623fc16">&#9670;&#160;</a></span>forceConversion</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double AMS::forceConversion</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">                         =</div>
+<div class="line">-51.4220862</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00067">67</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+
+</div>
+</div>
+<a id="a13285bf033f83fe66ce0f94e2260b832" name="a13285bf033f83fe66ce0f94e2260b832"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13285bf033f83fe66ce0f94e2260b832">&#9670;&#160;</a></span>forcefield</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string AMS::forcefield</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00057">57</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+
+</div>
+</div>
+<a id="a12196959b691d89b2eb01938069d7475" name="a12196959b691d89b2eb01938069d7475"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12196959b691d89b2eb01938069d7475">&#9670;&#160;</a></span>lengthConversion</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double AMS::lengthConversion = 1.88973</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00071">71</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+
+</div>
+</div>
+<a id="acdeaaf3a1a5667a38c9f52020061358e" name="acdeaaf3a1a5667a38c9f52020061358e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdeaaf3a1a5667a38c9f52020061358e">&#9670;&#160;</a></span>model</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string AMS::model</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00057">57</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+
+</div>
+</div>
+<a id="a851e88c572f452fc2f6abf54fdebab02" name="a851e88c572f452fc2f6abf54fdebab02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a851e88c572f452fc2f6abf54fdebab02">&#9670;&#160;</a></span>nativenv</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">boost::process::native_environment AMS::nativenv</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00062">62</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+
+</div>
+</div>
+<a id="a0072736a8f916c6ba2533255eea32d82" name="a0072736a8f916c6ba2533255eea32d82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0072736a8f916c6ba2533255eea32d82">&#9670;&#160;</a></span>pjob</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string AMS::pjob</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00065">65</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+
+</div>
+</div>
+<a id="ad1365e693518c36e72070c68753d41ed" name="ad1365e693518c36e72070c68753d41ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1365e693518c36e72070c68753d41ed">&#9670;&#160;</a></span>resources</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string AMS::resources</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00057">57</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+
+</div>
+</div>
+<a id="a2b7d2bc8a93eac715dbd5e033dd2aaaa" name="a2b7d2bc8a93eac715dbd5e033dd2aaaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b7d2bc8a93eac715dbd5e033dd2aaaa">&#9670;&#160;</a></span>restartFrom</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ofstream AMS::restartFrom</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00066">66</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+
+</div>
+</div>
+<a id="a893a99daf674a4093e2f9042f09354ed" name="a893a99daf674a4093e2f9042f09354ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a893a99daf674a4093e2f9042f09354ed">&#9670;&#160;</a></span>xc</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string AMS::xc</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AMS_8h_source.html#l00057">57</a> of file <a class="el" href="AMS_8h_source.html">AMS.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/potentials/AMS/<a class="el" href="AMS_8h_source.html">AMS.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/potentials/AMS/<a class="el" href="AMS_8cpp_source.html">AMS.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="classAMS.html">AMS</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

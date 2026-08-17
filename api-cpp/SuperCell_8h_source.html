@@ -1,0 +1,340 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/include/eon/potentials/EMT/Asap/SuperCell.h Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('SuperCell_8h_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">SuperCell.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SuperCell_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// Emacs, this is -*- C++ -*-</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#ifndef _SUPERCELL_H</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#define _SUPERCELL_H</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Vec_8h.html">Vec.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">class </span><a class="code hl_class" href="classAtoms.html">Atoms</a>;</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// vectors: supercell basis vectors</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">// inverse: vectors[i] * inverse[j] = ((i = j) ? 1 : 0)</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">// heights: heights of cell</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span></div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classSuperCell.html">   20</a></span><span class="keyword">class </span><a class="code hl_function" href="classSuperCell.html#ab0ef5f42969cf74b2deb2e5955bd0347">SuperCell</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classSuperCell.html#ab0ef5f42969cf74b2deb2e5955bd0347">   23</a></span>  <a class="code hl_function" href="classSuperCell.html#ab0ef5f42969cf74b2deb2e5955bd0347">SuperCell</a>(<span class="keyword">const</span> <a class="code hl_class" href="classVec.html">Vec</a> v[3], <span class="keyword">const</span> <span class="keywordtype">bool</span> p[3]);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classSuperCell.html#affe2302533e36eaafb1d1409cfbde8d6">   26</a></span>  <a class="code hl_function" href="classSuperCell.html#affe2302533e36eaafb1d1409cfbde8d6">SuperCell</a>(<span class="keyword">const</span> <a class="code hl_function" href="classSuperCell.html#ab0ef5f42969cf74b2deb2e5955bd0347">SuperCell</a> *original);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classSuperCell.html#a4fe2eaed02cbcdc085c7e284f401822f">   29</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classSuperCell.html#a4fe2eaed02cbcdc085c7e284f401822f">SetAtoms</a>(<a class="code hl_class" href="classAtoms.html">Atoms</a> *a);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classSuperCell.html#a2bb2250269179109e468d8525d6a331b">   32</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classSuperCell.html#a2bb2250269179109e468d8525d6a331b">TransformToScaledSpace</a>(<a class="code hl_class" href="classVec.html">Vec</a> *positions, <span class="keywordtype">int</span> nAtoms) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classSuperCell.html#a48d9131fabb02b140869e850a258c586">   35</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classSuperCell.html#a48d9131fabb02b140869e850a258c586">TransformToRealSpace</a>(<a class="code hl_class" href="classVec.html">Vec</a> *positions, <span class="keywordtype">int</span> nAtoms) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classSuperCell.html#a32a151f35cd7018194a864bb9043c8a2">   42</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classSuperCell.html#a32a151f35cd7018194a864bb9043c8a2">ClosestLatticeSiteIndices</a>(<span class="keywordtype">int</span> intVector[3], <a class="code hl_class" href="classVec.html">Vec</a> &amp;diff) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classSuperCell.html#a7670c6a88e62fc1faf9b9e321004af99">   45</a></span>  <span class="keywordtype">double</span> <a class="code hl_function" href="classSuperCell.html#a7670c6a88e62fc1faf9b9e321004af99">GetVolume</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classSuperCell.html#a5c441b1a4cbd6b116c78e382821ef285">   49</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classSuperCell.html#a5c441b1a4cbd6b116c78e382821ef285">SetBasis</a>(<span class="keyword">const</span> <a class="code hl_class" href="classVec.html">Vec</a> v[3]);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classSuperCell.html#a7123e525b79c1a645e9be9431e8fef95">   52</a></span>  <a class="code hl_class" href="classVec.html">Vec</a> <a class="code hl_function" href="classSuperCell.html#a7123e525b79c1a645e9be9431e8fef95">GetBasis</a>(<span class="keywordtype">int</span> a) { <span class="keywordflow">return</span> <a class="code hl_variable" href="classSuperCell.html#affa5638859c2084f5a450d36af59e3d0">vectors</a>[a]; }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classSuperCell.html#a0b138a7d8c44c535219b186b10135ee8">   59</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classSuperCell.html#a0b138a7d8c44c535219b186b10135ee8">SetPeriodic</a>(<span class="keyword">const</span> <span class="keywordtype">bool</span> newperiodic[3]);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classSuperCell.html#a0d6bf20f355df1aa29ecb8e6ea537b32">   62</a></span>  <span class="keywordtype">bool</span> <a class="code hl_variable" href="classSuperCell.html#a0d6bf20f355df1aa29ecb8e6ea537b32">periodic</a>[3];  </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classSuperCell.html#affa5638859c2084f5a450d36af59e3d0">   63</a></span>  <a class="code hl_class" href="classVec.html">Vec</a> <a class="code hl_variable" href="classSuperCell.html#affa5638859c2084f5a450d36af59e3d0">vectors</a>[3];    </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classSuperCell.html#a77573e78c599ebb8f891ae6f9d85ff6f">   64</a></span>  <a class="code hl_class" href="classVec.html">Vec</a> <a class="code hl_variable" href="classSuperCell.html#a77573e78c599ebb8f891ae6f9d85ff6f">inverse</a>[3];    </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classSuperCell.html#ab4c7d986c2e94dde9f0d58720304d2a1">   65</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="classSuperCell.html#ab4c7d986c2e94dde9f0d58720304d2a1">heights</a>[3]; </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classSuperCell.html#af0dc9eb3a0b6f5f0a49f47d850a92305">   66</a></span>  <a class="code hl_class" href="classVec.html">Vec</a> <a class="code hl_variable" href="classSuperCell.html#af0dc9eb3a0b6f5f0a49f47d850a92305">translations</a>[27];</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classSuperCell.html#a6d5710294ed872d3db4ebead79d43e45">   69</a></span>  <a class="code hl_class" href="classAtoms.html">Atoms</a> *<a class="code hl_variable" href="classSuperCell.html#a6d5710294ed872d3db4ebead79d43e45">atoms</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>};</div>
+</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="preprocessor">#endif </span><span class="comment">// _SUPERCELL_H</span></div>
+<div class="ttc" id="aVec_8h_html"><div class="ttname"><a href="Vec_8h.html">Vec.h</a></div></div>
+<div class="ttc" id="aclassAtoms_html"><div class="ttname"><a href="classAtoms.html">Atoms</a></div><div class="ttdoc">The main list of atoms class.</div><div class="ttdef"><b>Definition</b> <a href="Atoms_8h_source.html#l00036">Atoms.h:36</a></div></div>
+<div class="ttc" id="aclassSuperCell_html_a0b138a7d8c44c535219b186b10135ee8"><div class="ttname"><a href="classSuperCell.html#a0b138a7d8c44c535219b186b10135ee8">SuperCell::SetPeriodic</a></div><div class="ttdeci">void SetPeriodic(const bool newperiodic[3])</div><div class="ttdoc">Set the periodicity. USE WITH CAUTION!</div></div>
+<div class="ttc" id="aclassSuperCell_html_a0d6bf20f355df1aa29ecb8e6ea537b32"><div class="ttname"><a href="classSuperCell.html#a0d6bf20f355df1aa29ecb8e6ea537b32">SuperCell::periodic</a></div><div class="ttdeci">bool periodic[3]</div><div class="ttdoc">Periodic boundary conditions along the 3 axes?</div><div class="ttdef"><b>Definition</b> <a href="#l00062">SuperCell.h:62</a></div></div>
+<div class="ttc" id="aclassSuperCell_html_a2bb2250269179109e468d8525d6a331b"><div class="ttname"><a href="classSuperCell.html#a2bb2250269179109e468d8525d6a331b">SuperCell::TransformToScaledSpace</a></div><div class="ttdeci">void TransformToScaledSpace(Vec *positions, int nAtoms) const</div><div class="ttdoc">In-place transformation of positions from real to scaled space.</div></div>
+<div class="ttc" id="aclassSuperCell_html_a32a151f35cd7018194a864bb9043c8a2"><div class="ttname"><a href="classSuperCell.html#a32a151f35cd7018194a864bb9043c8a2">SuperCell::ClosestLatticeSiteIndices</a></div><div class="ttdeci">void ClosestLatticeSiteIndices(int intVector[3], Vec &amp;diff) const</div><div class="ttdoc">Quasicontinuum only: convert position to closest lattice site.</div></div>
+<div class="ttc" id="aclassSuperCell_html_a48d9131fabb02b140869e850a258c586"><div class="ttname"><a href="classSuperCell.html#a48d9131fabb02b140869e850a258c586">SuperCell::TransformToRealSpace</a></div><div class="ttdeci">void TransformToRealSpace(Vec *positions, int nAtoms) const</div><div class="ttdoc">In-place transformation of positions from scaled to real space.</div></div>
+<div class="ttc" id="aclassSuperCell_html_a4fe2eaed02cbcdc085c7e284f401822f"><div class="ttname"><a href="classSuperCell.html#a4fe2eaed02cbcdc085c7e284f401822f">SuperCell::SetAtoms</a></div><div class="ttdeci">void SetAtoms(Atoms *a)</div><div class="ttdoc">Set the atoms associated with the supercell.</div></div>
+<div class="ttc" id="aclassSuperCell_html_a5c441b1a4cbd6b116c78e382821ef285"><div class="ttname"><a href="classSuperCell.html#a5c441b1a4cbd6b116c78e382821ef285">SuperCell::SetBasis</a></div><div class="ttdeci">void SetBasis(const Vec v[3])</div><div class="ttdoc">Change the basis.</div></div>
+<div class="ttc" id="aclassSuperCell_html_a6d5710294ed872d3db4ebead79d43e45"><div class="ttname"><a href="classSuperCell.html#a6d5710294ed872d3db4ebead79d43e45">SuperCell::atoms</a></div><div class="ttdeci">Atoms * atoms</div><div class="ttdoc">A pointer to the atoms associated with this supercell, if any.</div><div class="ttdef"><b>Definition</b> <a href="#l00069">SuperCell.h:69</a></div></div>
+<div class="ttc" id="aclassSuperCell_html_a7123e525b79c1a645e9be9431e8fef95"><div class="ttname"><a href="classSuperCell.html#a7123e525b79c1a645e9be9431e8fef95">SuperCell::GetBasis</a></div><div class="ttdeci">Vec GetBasis(int a)</div><div class="ttdoc">Get the basis vectors.</div><div class="ttdef"><b>Definition</b> <a href="#l00052">SuperCell.h:52</a></div></div>
+<div class="ttc" id="aclassSuperCell_html_a7670c6a88e62fc1faf9b9e321004af99"><div class="ttname"><a href="classSuperCell.html#a7670c6a88e62fc1faf9b9e321004af99">SuperCell::GetVolume</a></div><div class="ttdeci">double GetVolume() const</div><div class="ttdoc">Get the volume of the supercell.</div></div>
+<div class="ttc" id="aclassSuperCell_html_a77573e78c599ebb8f891ae6f9d85ff6f"><div class="ttname"><a href="classSuperCell.html#a77573e78c599ebb8f891ae6f9d85ff6f">SuperCell::inverse</a></div><div class="ttdeci">Vec inverse[3]</div><div class="ttdoc">The inverse of the vectors matrix.</div><div class="ttdef"><b>Definition</b> <a href="#l00064">SuperCell.h:64</a></div></div>
+<div class="ttc" id="aclassSuperCell_html_ab0ef5f42969cf74b2deb2e5955bd0347"><div class="ttname"><a href="classSuperCell.html#ab0ef5f42969cf74b2deb2e5955bd0347">SuperCell::SuperCell</a></div><div class="ttdeci">SuperCell(const Vec v[3], const bool p[3])</div><div class="ttdoc">Create a new supercell with basis vectors Vec and periodicity p.</div></div>
+<div class="ttc" id="aclassSuperCell_html_ab4c7d986c2e94dde9f0d58720304d2a1"><div class="ttname"><a href="classSuperCell.html#ab4c7d986c2e94dde9f0d58720304d2a1">SuperCell::heights</a></div><div class="ttdeci">double heights[3]</div><div class="ttdoc">The heights of the supercell.</div><div class="ttdef"><b>Definition</b> <a href="#l00065">SuperCell.h:65</a></div></div>
+<div class="ttc" id="aclassSuperCell_html_af0dc9eb3a0b6f5f0a49f47d850a92305"><div class="ttname"><a href="classSuperCell.html#af0dc9eb3a0b6f5f0a49f47d850a92305">SuperCell::translations</a></div><div class="ttdeci">Vec translations[27]</div><div class="ttdoc">The 27 possible translations due to the periodic boundaries.</div><div class="ttdef"><b>Definition</b> <a href="#l00066">SuperCell.h:66</a></div></div>
+<div class="ttc" id="aclassSuperCell_html_affa5638859c2084f5a450d36af59e3d0"><div class="ttname"><a href="classSuperCell.html#affa5638859c2084f5a450d36af59e3d0">SuperCell::vectors</a></div><div class="ttdeci">Vec vectors[3]</div><div class="ttdoc">The basis vectors.</div><div class="ttdef"><b>Definition</b> <a href="#l00063">SuperCell.h:63</a></div></div>
+<div class="ttc" id="aclassSuperCell_html_affe2302533e36eaafb1d1409cfbde8d6"><div class="ttname"><a href="classSuperCell.html#affe2302533e36eaafb1d1409cfbde8d6">SuperCell::SuperCell</a></div><div class="ttdeci">SuperCell(const SuperCell *original)</div><div class="ttdoc">Copy constructor.</div></div>
+<div class="ttc" id="aclassVec_html"><div class="ttname"><a href="classVec.html">Vec</a></div><div class="ttdoc">A 3-vector useful for postions etc.</div><div class="ttdef"><b>Definition</b> <a href="Vec_8h_source.html#l00018">Vec.h:18</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="dir_2527c5cc2e6dc8ce970a4d420439d1d9.html">eon</a></li><li class="navelem"><a href="dir_858247b18a1611539d1f444885056636.html">potentials</a></li><li class="navelem"><a href="dir_c4f24ddb43260f54c676a167ee997112.html">EMT</a></li><li class="navelem"><a href="dir_a24b55182b44800073fdaa243f5c19fa.html">Asap</a></li><li class="navelem"><a href="SuperCell_8h.html">SuperCell.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

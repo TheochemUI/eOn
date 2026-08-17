@@ -1,0 +1,374 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: Class Members</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('functions_p.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contents">
+<div class="textblock">Here is a list of all class members with links to the classes they belong to:</div><br/>
+<div class="qindex"><a class="qindex" href="functions.html#index_a">A</a><div class="alphasepar"></div><a class="qindex" href="functions_b.html#index_b">B</a><div class="alphasepar"></div><a class="qindex" href="functions_c.html#index_c">C</a><div class="alphasepar"></div><a class="qindex" href="functions_d.html#index_d">D</a><div class="alphasepar"></div><a class="qindex" href="functions_e.html#index_e">E</a><div class="alphasepar"></div><a class="qindex" href="functions_f.html#index_f">F</a><div class="alphasepar"></div><a class="qindex" href="functions_g.html#index_g">G</a><div class="alphasepar"></div><a class="qindex" href="functions_h.html#index_h">H</a><div class="alphasepar"></div><a class="qindex" href="functions_i.html#index_i">I</a><div class="alphasepar"></div><a class="qindex" href="functions_j.html#index_j">J</a><div class="alphasepar"></div><a class="qindex" href="functions_k.html#index_k">K</a><div class="alphasepar"></div><a class="qindex" href="functions_l.html#index_l">L</a><div class="alphasepar"></div><a class="qindex" href="functions_m.html#index_m">M</a><div class="alphasepar"></div><a class="qindex" href="functions_n.html#index_n">N</a><div class="alphasepar"></div><a class="qindex" href="functions_o.html#index_o">O</a><div class="alphasepar"></div><a class="qindex" href="functions_p.html#index_p">P</a><div class="alphasepar"></div><a class="qindex" href="functions_q.html#index_q">Q</a><div class="alphasepar"></div><a class="qindex" href="functions_r.html#index_r">R</a><div class="alphasepar"></div><a class="qindex" href="functions_s.html#index_s">S</a><div class="alphasepar"></div><a class="qindex" href="functions_t.html#index_t">T</a><div class="alphasepar"></div><a class="qindex" href="functions_u.html#index_u">U</a><div class="alphasepar"></div><a class="qindex" href="functions_v.html#index_v">V</a><div class="alphasepar"></div><a class="qindex" href="functions_w.html#index_w">W</a><div class="alphasepar"></div><a class="qindex" href="functions_x.html#index_x">X</a><div class="alphasepar"></div><a class="qindex" href="functions_y.html#index_y">Y</a><div class="alphasepar"></div><a class="qindex" href="functions_z.html#index_z">Z</a><div class="alphasepar"></div><a class="qindex" href="functions__.html#index__">_</a><div class="alphasepar"></div><a class="qindex" href="functions_~.html#index_~">~</a></div>
+
+
+<h3 class="doxsection"><a id="index_p" name="index_p"></a>- p -</h3><ul>
+<li>p&#160;:&#160;<a class="el" href="classAtomicGPDimer.html#a6bf96d87488cf0f75bf0472f7983a606">AtomicGPDimer</a>, <a class="el" href="classeonc_1_1AtomicGPDimer.html#a6bf96d87488cf0f75bf0472f7983a606">eonc::AtomicGPDimer</a></li>
+<li>parallel&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1catlearn__options__t.html#a74e966841fecb408a36804e7eb9ae683">eonc::Parameters::catlearn_options_t</a>, <a class="el" href="structeonc_1_1Parameters_1_1main__options__t.html#a511691b8d4f5ae32aa237367a5ca2ff0">eonc::Parameters::main_options_t</a>, <a class="el" href="structParameters_1_1catlearn__options__t.html#a74e966841fecb408a36804e7eb9ae683">Parameters::catlearn_options_t</a>, <a class="el" href="structParameters_1_1main__options__t.html#a511691b8d4f5ae32aa237367a5ca2ff0">Parameters::main_options_t</a></li>
+<li>parallel_replica_options&#160;:&#160;<a class="el" href="classeonc_1_1Parameters.html#afe28b4f82f8a9ccc549c7bf6bcfd49cd">eonc::Parameters</a>, <a class="el" href="classParameters.html#afe28b4f82f8a9ccc549c7bf6bcfd49cd">Parameters</a></li>
+<li>Parameters()&#160;:&#160;<a class="el" href="classeonc_1_1Parameters.html#af4d94ee360ac0157d9065f78797fe9a1">eonc::Parameters</a>, <a class="el" href="classParameters.html#af4d94ee360ac0157d9065f78797fe9a1">Parameters</a></li>
+<li>parameters&#160;:&#160;<a class="el" href="classBondBoost.html#a05e46883edd1df843538c0215873b9e1">BondBoost</a>, <a class="el" href="classEMT.html#ab5bab3ab8fc6bd3ceba3ef25f4fad44c">EMT</a>, <a class="el" href="classeonc_1_1BondBoost.html#a05e46883edd1df843538c0215873b9e1">eonc::BondBoost</a>, <a class="el" href="classeonc_1_1GlobalOptimization.html#a9a05761ed173f20cbc746e6f67fbca9a">eonc::GlobalOptimization</a>, <a class="el" href="classeonc_1_1Hessian.html#aa73caf8e6ff50efc9c4539307a4e9870">eonc::Hessian</a>, <a class="el" href="classeonc_1_1Matter.html#a5821bbfdfc09d67cf89f039a84a2f8e6">eonc::Matter</a>, <a class="el" href="classGlobalOptimization.html#a9a05761ed173f20cbc746e6f67fbca9a">GlobalOptimization</a>, <a class="el" href="classHessian.html#aa73caf8e6ff50efc9c4539307a4e9870">Hessian</a>, <a class="el" href="classMatter.html#a5821bbfdfc09d67cf89f039a84a2f8e6">Matter</a></li>
+<li>params&#160;:&#160;<a class="el" href="classEMTDefaultParameterProvider.html#ae3d88e6aab6f8e47f2d83a860573c615">EMTDefaultParameterProvider</a>, <a class="el" href="classeonc_1_1Job.html#a9f0bfab75a98f383ba58f1c592fd2500">eonc::Job</a>, <a class="el" href="classeonc_1_1LowestEigenmode.html#a372b0c7160716051cd847072498d8322">eonc::LowestEigenmode</a>, <a class="el" href="classeonc_1_1MonteCarlo.html#ad2ab58a87807b29bbfd38f03098928ed">eonc::MonteCarlo</a>, <a class="el" href="classeonc_1_1NudgedElasticBand.html#a6c63f8fb0f3646d55dd546dc20a3abb7">eonc::NudgedElasticBand</a>, <a class="el" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">eonc::ObjectiveFunction</a>, <a class="el" href="classeonc_1_1SaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">eonc::SaddleSearchMethod</a>, <a class="el" href="classJob.html#a9f0bfab75a98f383ba58f1c592fd2500">Job</a>, <a class="el" href="classLowestEigenmode.html#a372b0c7160716051cd847072498d8322">LowestEigenmode</a>, <a class="el" href="classMonteCarlo.html#ad2ab58a87807b29bbfd38f03098928ed">MonteCarlo</a>, <a class="el" href="classNudgedElasticBand.html#a6c63f8fb0f3646d55dd546dc20a3abb7">NudgedElasticBand</a>, <a class="el" href="classObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">ObjectiveFunction</a>, <a class="el" href="classSaddleSearchMethod.html#ad351caa18edcf52bb3a7530059ee2311">SaddleSearchMethod</a></li>
+<li>paramset&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1xtb__options__t.html#a6a08afdfc65e6712b5c19a179b65a391">eonc::Parameters::xtb_options_t</a>, <a class="el" href="structParameters_1_1xtb__options__t.html#a6a08afdfc65e6712b5c19a179b65a391">Parameters::xtb_options_t</a></li>
+<li>passToSystem()&#160;:&#160;<a class="el" href="classAMS.html#aa4884a86a81a985c0685d6ae17a2640e">AMS</a>, <a class="el" href="classAMS__IO.html#af7967f0ebb6ef89592fe424a1b2a530b">AMS_IO</a>, <a class="el" href="classExtPot.html#af017f45bc31544e8540c6f0c6bbfcc68">ExtPot</a></li>
+<li>path&#160;:&#160;<a class="el" href="classCollectiveIDPPObjectiveFunction.html#ac40fc648c4d4475cbcd821d4768e1386">CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ac40fc648c4d4475cbcd821d4768e1386">eonc::CollectiveIDPPObjectiveFunction</a>, <a class="el" href="classeonc_1_1NudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">eonc::NudgedElasticBand</a>, <a class="el" href="structeonc_1_1Parameters_1_1ase__nwchem__options__t.html#a7636224ad8fc619c01ddb7ecf33efcf5">eonc::Parameters::ase_nwchem_options_t</a>, <a class="el" href="structeonc_1_1Parameters_1_1ase__orca__options__t.html#a813d7868e3454b0951513fc3987f0d51">eonc::Parameters::ase_orca_options_t</a>, <a class="el" href="structeonc_1_1Parameters_1_1catlearn__options__t.html#a5ff5e2e355a8b8481292a51d80c91a7e">eonc::Parameters::catlearn_options_t</a>, <a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a40d42449b50066efce8d0e28a4cb5f3f">eonc::ZBLRepulsiveIDPPObjective</a>, <a class="el" href="classNudgedElasticBand.html#a439335bce7cd4472ee77291be8e0dafa">NudgedElasticBand</a>, <a class="el" href="structParameters_1_1ase__nwchem__options__t.html#a7636224ad8fc619c01ddb7ecf33efcf5">Parameters::ase_nwchem_options_t</a>, <a class="el" href="structParameters_1_1ase__orca__options__t.html#a813d7868e3454b0951513fc3987f0d51">Parameters::ase_orca_options_t</a>, <a class="el" href="structParameters_1_1catlearn__options__t.html#a5ff5e2e355a8b8481292a51d80c91a7e">Parameters::catlearn_options_t</a>, <a class="el" href="classZBLRepulsiveIDPPObjective.html#a40d42449b50066efce8d0e28a4cb5f3f">ZBLRepulsiveIDPPObjective</a></li>
+<li>pathFrames()&#160;:&#160;<a class="el" href="classeonc_1_1NudgedElasticBand.html#a233025753dfd3a0698cc6e04c9ac0edd">eonc::NudgedElasticBand</a>, <a class="el" href="classNudgedElasticBand.html#a233025753dfd3a0698cc6e04c9ac0edd">NudgedElasticBand</a></li>
+<li>pbc()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a5fe171bc21bf698aa9589fc66a118b7a">eonc::Matter</a>, <a class="el" href="classMatter.html#a5fe171bc21bf698aa9589fc66a118b7a">Matter</a></li>
+<li>pbcConvention&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a2365242b8fa8d2e3eef8b4047d531938">eonc::Matter</a>, <a class="el" href="classMatter.html#a2365242b8fa8d2e3eef8b4047d531938">Matter</a></li>
+<li>pbcV()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a7baa0454463e9fa9ff93ff8da9288798">eonc::Matter</a>, <a class="el" href="classMatter.html#a7baa0454463e9fa9ff93ff8da9288798">Matter</a></li>
+<li>pdistance()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#af7c5e008d3d3bcc8591482e43c34d2f2">eonc::Matter</a>, <a class="el" href="classMatter.html#af7c5e008d3d3bcc8591482e43c34d2f2">Matter</a></li>
+<li>perAtomNorm()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#ae6b71cd2e17f5a1979a4b7d8632a44fe">eonc::Matter</a>, <a class="el" href="classMatter.html#ae6b71cd2e17f5a1979a4b7d8632a44fe">Matter</a></li>
+<li>perImagePotentials_&#160;:&#160;<a class="el" href="classeonc_1_1NudgedElasticBand.html#a51688a76270f98b6e59053880a48e5c1">eonc::NudgedElasticBand</a>, <a class="el" href="classNudgedElasticBand.html#a51688a76270f98b6e59053880a48e5c1">NudgedElasticBand</a></li>
+<li>periodic&#160;:&#160;<a class="el" href="classCellList.html#a1d468033adbd249a0b7d53839f116ffd">CellList</a>, <a class="el" href="structeonc_1_1VesinNeighbors_1_1Options.html#ab107b051411c6fe97166988946e14ffb">eonc::VesinNeighbors::Options</a>, <a class="el" href="classSuperCell.html#a0d6bf20f355df1aa29ecb8e6ea537b32">SuperCell</a></li>
+<li>periodicity&#160;:&#160;<a class="el" href="classEffectiveMediumTheory.html#a60600b1858c18758c191e6f74ea09511">EffectiveMediumTheory</a></li>
+<li>periods_&#160;:&#160;<a class="el" href="classforcefields_1_1PotentialBase.html#a91206cd71c4c2b41735ca990c7c44441">forcefields::PotentialBase</a></li>
+<li>permutation&#160;:&#160;<a class="el" href="structeonc_1_1IRACompare_1_1MatchResult.html#aad2d79ac681e4d9e78ae20f05fdb61b6">eonc::IRACompare::MatchResult</a>, <a class="el" href="structIRACompare_1_1MatchResult.html#aad2d79ac681e4d9e78ae20f05fdb61b6">IRACompare::MatchResult</a></li>
+<li>perp_force_ratio&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1saddle__search__options__t.html#a369ff8f00268473002902329415d5c0b">eonc::Parameters::saddle_search_options_t</a>, <a class="el" href="structParameters_1_1saddle__search__options__t.html#a369ff8f00268473002902329415d5c0b">Parameters::saddle_search_options_t</a></li>
+<li>phva_atoms&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1davidson__options__t.html#a84893ff8f1a195b033518f0c32615a58">eonc::Parameters::davidson_options_t</a>, <a class="el" href="structeonc_1_1Parameters_1_1hessian__options__t.html#a66cb487395048fb08af8225eeee299bf">eonc::Parameters::hessian_options_t</a>, <a class="el" href="structeonc_1_1Parameters_1_1lanczos__options__t.html#a7c444bdb6de1815470f4d465974e31c0">eonc::Parameters::lanczos_options_t</a>, <a class="el" href="structParameters_1_1davidson__options__t.html#a84893ff8f1a195b033518f0c32615a58">Parameters::davidson_options_t</a>, <a class="el" href="structParameters_1_1hessian__options__t.html#a66cb487395048fb08af8225eeee299bf">Parameters::hessian_options_t</a>, <a class="el" href="structParameters_1_1lanczos__options__t.html#a7c444bdb6de1815470f4d465974e31c0">Parameters::lanczos_options_t</a></li>
+<li>pjob&#160;:&#160;<a class="el" href="classAMS.html#a0072736a8f916c6ba2533255eea32d82">AMS</a></li>
+<li>plane_mass&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1oh__tst__options__t.html#aeb8cd5b4e24c848edb55c45ff13dd4bc">eonc::Parameters::oh_tst_options_t</a>, <a class="el" href="structParameters_1_1oh__tst__options__t.html#aeb8cd5b4e24c848edb55c45ff13dd4bc">Parameters::oh_tst_options_t</a></li>
+<li>plane_time_step&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1oh__tst__options__t.html#a37129a125ecd52ca2025fc407e8e50dd">eonc::Parameters::oh_tst_options_t</a>, <a class="el" href="structParameters_1_1oh__tst__options__t.html#a37129a125ecd52ca2025fc407e8e50dd">Parameters::oh_tst_options_t</a></li>
+<li>PluginLoader()&#160;:&#160;<a class="el" href="classeonc_1_1PluginLoader.html#aaad69ae4eb4ee99ddc995e04d924d839">eonc::PluginLoader</a></li>
+<li>pmf_scan&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1oh__tst__options__t.html#a8935f843e4b052cb87bdd88d1c420140">eonc::Parameters::oh_tst_options_t</a>, <a class="el" href="structParameters_1_1oh__tst__options__t.html#a8935f843e4b052cb87bdd88d1c420140">Parameters::oh_tst_options_t</a></li>
+<li>pointGroup&#160;:&#160;<a class="el" href="structeonc_1_1IRACompare_1_1SymmetryResult.html#a09dba5e799adebed325845e7d29e043d">eonc::IRACompare::SymmetryResult</a>, <a class="el" href="structIRACompare_1_1SymmetryResult.html#a09dba5e799adebed325845e7d29e043d">IRACompare::SymmetryResult</a></li>
+<li>PointJob()&#160;:&#160;<a class="el" href="classeonc_1_1PointJob.html#a3654d593cc814bfd384ea53f8baade2b">eonc::PointJob</a>, <a class="el" href="classPointJob.html#a3654d593cc814bfd384ea53f8baade2b">PointJob</a></li>
+<li>polarisationEnergy_&#160;:&#160;<a class="el" href="classforcefields_1_1SpceCcl.html#adaa0e9b891b15a51a0ca6dc3d5a8e4f6">forcefields::SpceCcl</a></li>
+<li>poll_period&#160;:&#160;<a class="el" href="classMPIPot.html#abb7180544f754b73200caa4ae2113433">MPIPot</a></li>
+<li>port&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1serve__options__t.html#aea216832d3bc54c0baa7cfb635e3854f">eonc::Parameters::serve_options_t</a>, <a class="el" href="structeonc_1_1Parameters_1_1socket__nwchem__options__t.html#a699385db963c8d3a033a8bff45f74042">eonc::Parameters::socket_nwchem_options_t</a>, <a class="el" href="structeonc_1_1ServeEndpoint.html#a955e4c2fcc853eae9ae76a6892953c0a">eonc::ServeEndpoint</a>, <a class="el" href="structParameters_1_1serve__options__t.html#aea216832d3bc54c0baa7cfb635e3854f">Parameters::serve_options_t</a>, <a class="el" href="structParameters_1_1socket__nwchem__options__t.html#a699385db963c8d3a033a8bff45f74042">Parameters::socket_nwchem_options_t</a>, <a class="el" href="structServeEndpoint.html#a955e4c2fcc853eae9ae76a6892953c0a">ServeEndpoint</a>, <a class="el" href="classSocketNWChemPot.html#a34a3aac8f7efda2afbaeb53e2a065d5d">SocketNWChemPot</a></li>
+<li>pos&#160;:&#160;<a class="el" href="structeonc_1_1OHTSTJob_1_1PlaneAverages.html#ae177ec153c024ccf6df60632f4c661fd">eonc::OHTSTJob::PlaneAverages</a>, <a class="el" href="classeonc_1_1ReplicaExchangeJob.html#ab221a9e3f00bc49cb51c429780a74940">eonc::ReplicaExchangeJob</a>, <a class="el" href="structOHTSTJob_1_1PlaneAverages.html#ae177ec153c024ccf6df60632f4c661fd">OHTSTJob::PlaneAverages</a>, <a class="el" href="classReplicaExchangeJob.html#ab221a9e3f00bc49cb51c429780a74940">ReplicaExchangeJob</a></li>
+<li>pos_file&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1gpr__dimer__options__t_1_1debug__params__t.html#a67e61d7c44ee1f0985cd2ce060e40ed0">eonc::Parameters::gpr_dimer_options_t::debug_params_t</a>, <a class="el" href="structParameters_1_1gpr__dimer__options__t_1_1debug__params__t.html#a67e61d7c44ee1f0985cd2ce060e40ed0">Parameters::gpr_dimer_options_t::debug_params_t</a></li>
+<li>pos_translations&#160;:&#160;<a class="el" href="classAtoms.html#aa06770305a3bad62a0a4d2a31ae0476e">Atoms</a></li>
+<li>position_&#160;:&#160;<a class="el" href="structforcefields_1_1PotentialBase_1_1ChargeGroup.html#a8e0034b5d2dd30cea1c9e41b2e34c4a7">forcefields::PotentialBase::ChargeGroup&lt; N, R, F &gt;</a></li>
+<li>positions&#160;:&#160;<a class="el" href="classAtoms.html#aaa3eebdc720490ab24af9890e6f2043d">Atoms</a>, <a class="el" href="classCellList.html#a059bc0ef1ccdc23705de857209182744">CellList</a>, <a class="el" href="classeonc_1_1ImprovedDimer.html#a62503c88552beba43c3a456e8b5565ac">eonc::ImprovedDimer</a>, <a class="el" href="classeonc_1_1Matter.html#af8290bf4afd79fd95fbd50e79d265eb0">eonc::Matter</a>, <a class="el" href="structeonc_1_1neb_1_1ExtremaResult.html#a8db5cd9d5ca14aa60c2021288e66d1c9">eonc::neb::ExtremaResult</a>, <a class="el" href="classImprovedDimer.html#a62503c88552beba43c3a456e8b5565ac">ImprovedDimer</a>, <a class="el" href="classMatter.html#af8290bf4afd79fd95fbd50e79d265eb0">Matter</a>, <a class="el" href="classNeighborList.html#a90006abbebab836e1ca03e85d55c9e4a">NeighborList</a></li>
+<li>positions_&#160;:&#160;<a class="el" href="classforcefields_1_1ZhuPhilpott.html#a02bbcaf82efe32e35eeb91617bdb507e">forcefields::ZhuPhilpott&lt; P &gt;</a></li>
+<li>pot&#160;:&#160;<a class="el" href="classeonc_1_1Job.html#a948da0de6ec2575bd6ac975fedaad0c9">eonc::Job</a>, <a class="el" href="classeonc_1_1LowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">eonc::LowestEigenmode</a>, <a class="el" href="classeonc_1_1NudgedElasticBand.html#aaecefdd86316ce81857e1d9c45e637cc">eonc::NudgedElasticBand</a>, <a class="el" href="classeonc_1_1SaddleSearchMethod.html#a3c005d31acbafdaa38c96a953c2b3d06">eonc::SaddleSearchMethod</a>, <a class="el" href="classJob.html#a948da0de6ec2575bd6ac975fedaad0c9">Job</a>, <a class="el" href="classLowestEigenmode.html#a37333ab6591b41d3d0e0a5e5f0481300">LowestEigenmode</a>, <a class="el" href="classNudgedElasticBand.html#aaecefdd86316ce81857e1d9c45e637cc">NudgedElasticBand</a>, <a class="el" href="classSaddleSearchMethod.html#a3c005d31acbafdaa38c96a953c2b3d06">SaddleSearchMethod</a></li>
+<li>pot_&#160;:&#160;<a class="el" href="classRgpotAdapter.html#ac358cd271cfe5c2e2dfe3a06f8c15891">RgpotAdapter&lt; RPot &gt;</a></li>
+<li>Potential()&#160;:&#160;<a class="el" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">eonc::Potential</a>, <a class="el" href="classPotential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a></li>
+<li>potential&#160;:&#160;<a class="el" href="classAtoms.html#ae5251c7774ea40f06a117cb2deccb482">Atoms</a>, <a class="el" href="classeonc_1_1Matter.html#a606ed724f40629b85d76d449226bc10b">eonc::Matter</a>, <a class="el" href="structeonc_1_1Parameters_1_1gp__surrogate__options__t.html#a9be8856f69b5c616a8fbf973f463abee">eonc::Parameters::gp_surrogate_options_t</a>, <a class="el" href="structeonc_1_1Parameters_1_1potential__options__t.html#a8c62d8e8c2374eff1672e72ec2bae1c8">eonc::Parameters::potential_options_t</a>, <a class="el" href="structeonc_1_1ServeEndpoint.html#a21fbca84657edd560b9c2d1946642a53">eonc::ServeEndpoint</a>, <a class="el" href="classGhostPotential.html#a08b3c9f15893569610daa92156c4e820">GhostPotential</a>, <a class="el" href="classMatter.html#a606ed724f40629b85d76d449226bc10b">Matter</a>, <a class="el" href="structParameters_1_1gp__surrogate__options__t.html#a9be8856f69b5c616a8fbf973f463abee">Parameters::gp_surrogate_options_t</a>, <a class="el" href="structParameters_1_1potential__options__t.html#a8c62d8e8c2374eff1672e72ec2bae1c8">Parameters::potential_options_t</a>, <a class="el" href="structServeEndpoint.html#a21fbca84657edd560b9c2d1946642a53">ServeEndpoint</a></li>
+<li>POTENTIAL_EMT_RASMUSSEN&#160;:&#160;<a class="el" href="structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a23821c1223b7ca75bcce49dd4661ffc1">eonc::params_ssot::GeneratedDefaults</a></li>
+<li>POTENTIAL_EXT_POT_PATH&#160;:&#160;<a class="el" href="structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a0697e3dd6d24b3062b5ad408123537d0">eonc::params_ssot::GeneratedDefaults</a></li>
+<li>POTENTIAL_LAMMPS_LOGGING&#160;:&#160;<a class="el" href="structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a4b8f29b78178e23200d44a32f8754908">eonc::params_ssot::GeneratedDefaults</a></li>
+<li>POTENTIAL_LAMMPS_THREADS&#160;:&#160;<a class="el" href="structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a529d78d1b87d643d28d34d1305c70697">eonc::params_ssot::GeneratedDefaults</a></li>
+<li>POTENTIAL_LOG_POTENTIAL&#160;:&#160;<a class="el" href="structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a15b2a33604fe6e05f53f1af08de2a6d9">eonc::params_ssot::GeneratedDefaults</a></li>
+<li>POTENTIAL_MPI_POLL_PERIOD&#160;:&#160;<a class="el" href="structeonc_1_1params__ssot_1_1GeneratedDefaults.html#aad9c220aa45148604a5f07604a671e8d">eonc::params_ssot::GeneratedDefaults</a></li>
+<li>potential_options&#160;:&#160;<a class="el" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">eonc::Parameters</a>, <a class="el" href="classParameters.html#a75c3a463dab97989d367d624e455606c">Parameters</a></li>
+<li>POTENTIAL_POTENTIAL&#160;:&#160;<a class="el" href="structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a5f1a37c19385fb8acab63f605e26659c">eonc::params_ssot::GeneratedDefaults</a></li>
+<li>POTENTIAL_POTENTIALS_PATH&#160;:&#160;<a class="el" href="structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a116871e5f1794e7af7ee6b19d64b45b2">eonc::params_ssot::GeneratedDefaults</a></li>
+<li>potential_type&#160;:&#160;<a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html#a87789b3542a892ecd42f8053f8f6e0b2">eonc::io::ConFrameMetadata</a></li>
+<li>PotentialBase()&#160;:&#160;<a class="el" href="classforcefields_1_1PotentialBase.html#a0c0bbe743a98331b6e928c0065fd294d">forcefields::PotentialBase</a></li>
+<li>potentialEnergy&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a006dfbc2f8e6976a0a3fe529b7fe6c05">eonc::Matter</a>, <a class="el" href="classMatter.html#a006dfbc2f8e6976a0a3fe529b7fe6c05">Matter</a></li>
+<li>potentialenergy&#160;:&#160;<a class="el" href="classEMT.html#a6625da9a21c7ddaa0078d4de193f0159">EMT</a></li>
+<li>potentialRank&#160;:&#160;<a class="el" href="classMPIPot.html#ac7532d42915918bf4b3244f28089d82f">MPIPot</a></li>
+<li>potentialsPath&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1potential__options__t.html#a71f370d93e841300288cb0122f182172">eonc::Parameters::potential_options_t</a>, <a class="el" href="structParameters_1_1potential__options__t.html#a71f370d93e841300288cb0122f182172">Parameters::potential_options_t</a></li>
+<li>prefactor_options&#160;:&#160;<a class="el" href="classeonc_1_1Parameters.html#ac978c51f86f70ee43b14ee7d7ae8c9ed">eonc::Parameters</a>, <a class="el" href="classParameters.html#ac978c51f86f70ee43b14ee7d7ae8c9ed">Parameters</a></li>
+<li>PREFACTOR_PRODUCT&#160;:&#160;<a class="el" href="classeonc_1_1PrefactorJob.html#ac5d779b41489b51d9df36d3df2815ce5">eonc::PrefactorJob</a>, <a class="el" href="classPrefactorJob.html#ac5d779b41489b51d9df36d3df2815ce5">PrefactorJob</a></li>
+<li>PREFACTOR_REACTANT&#160;:&#160;<a class="el" href="classeonc_1_1PrefactorJob.html#ab096e1f15d7f8da6253c5fb46dc59278">eonc::PrefactorJob</a>, <a class="el" href="classPrefactorJob.html#ab096e1f15d7f8da6253c5fb46dc59278">PrefactorJob</a></li>
+<li>PREFACTOR_SADDLE&#160;:&#160;<a class="el" href="classeonc_1_1PrefactorJob.html#ae1b656ded15d722a73fa1bbf4d43e0d9">eonc::PrefactorJob</a>, <a class="el" href="classPrefactorJob.html#ae1b656ded15d722a73fa1bbf4d43e0d9">PrefactorJob</a></li>
+<li>PrefactorJob()&#160;:&#160;<a class="el" href="classeonc_1_1PrefactorJob.html#aba90e93c8843f8cdc9a635f956e5c5e6">eonc::PrefactorJob</a>, <a class="el" href="classPrefactorJob.html#aba90e93c8843f8cdc9a635f956e5c5e6">PrefactorJob</a></li>
+<li>prefactorsValues&#160;:&#160;<a class="el" href="classeonc_1_1ProcessSearchJob.html#a743f6fbc7d3de20641c1f5ae59df95e4">eonc::ProcessSearchJob</a>, <a class="el" href="classProcessSearchJob.html#a743f6fbc7d3de20641c1f5ae59df95e4">ProcessSearchJob</a></li>
+<li>prepareExchangeDir()&#160;:&#160;<a class="el" href="classExtPot.html#a138944541276a68ec597d956c4c06282">ExtPot</a></li>
+<li>previousClimbingImage_&#160;:&#160;<a class="el" href="classeonc_1_1neb_1_1OCINEBController.html#a70d143248c1beaac2ee6c1460eef8cb5">eonc::neb::OCINEBController</a></li>
+<li>print_caller_&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#a21b91925c04a0e597e70921a928a34ea">eonc::ARTnResource</a></li>
+<li>print_caller_fn&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#a60cbaccf228793f5ebaf1c66649a835e">eonc::ARTnResource</a></li>
+<li>printEndState()&#160;:&#160;<a class="el" href="classeonc_1_1NudgedElasticBandJob.html#ab2ec51ea2ca188c6047095bdcaa1bf14">eonc::NudgedElasticBandJob</a>, <a class="el" href="classeonc_1_1ProcessSearchJob.html#afc153847c22ac6d4ed251b7547c07146">eonc::ProcessSearchJob</a>, <a class="el" href="classeonc_1_1SaddleSearchJob.html#aae7c74c411c0c73d0add8ed26a0e06e8">eonc::SaddleSearchJob</a>, <a class="el" href="classNudgedElasticBandJob.html#ab2ec51ea2ca188c6047095bdcaa1bf14">NudgedElasticBandJob</a>, <a class="el" href="classProcessSearchJob.html#afc153847c22ac6d4ed251b7547c07146">ProcessSearchJob</a>, <a class="el" href="classSaddleSearchJob.html#aae7c74c411c0c73d0add8ed26a0e06e8">SaddleSearchJob</a></li>
+<li>printImageData()&#160;:&#160;<a class="el" href="classeonc_1_1NudgedElasticBand.html#a122076e361c9b8ce7cdd21a34b519339">eonc::NudgedElasticBand</a>, <a class="el" href="classNudgedElasticBand.html#a122076e361c9b8ce7cdd21a34b519339">NudgedElasticBand</a></li>
+<li>PrintParameters()&#160;:&#160;<a class="el" href="classEMT.html#acf792495f18b2c5fdde90b8dd1f380d4">EMT</a></li>
+<li>prior&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1catlearn__options__t.html#a1c40b354bb19e4c6e36baa9848f532c4">eonc::Parameters::catlearn_options_t</a>, <a class="el" href="structParameters_1_1catlearn__options__t.html#a1c40b354bb19e4c6e36baa9848f532c4">Parameters::catlearn_options_t</a></li>
+<li>prior_mu&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1gpr__dimer__options__t_1_1gpr__params__t.html#a00388ebd2fddec464ea9b5dabaa8ce2b">eonc::Parameters::gpr_dimer_options_t::gpr_params_t</a>, <a class="el" href="structParameters_1_1gpr__dimer__options__t_1_1gpr__params__t.html#a00388ebd2fddec464ea9b5dabaa8ce2b">Parameters::gpr_dimer_options_t::gpr_params_t</a></li>
+<li>prior_nu&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1gpr__dimer__options__t_1_1gpr__params__t.html#a6f47b2cf020acf78a96c40a74e16ea7c">eonc::Parameters::gpr_dimer_options_t::gpr_params_t</a>, <a class="el" href="structParameters_1_1gpr__dimer__options__t_1_1gpr__params__t.html#a6f47b2cf020acf78a96c40a74e16ea7c">Parameters::gpr_dimer_options_t::gpr_params_t</a></li>
+<li>prior_sigma2&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1gpr__dimer__options__t_1_1gpr__params__t.html#a338b600a58139fbe50cb51572f90777f">eonc::Parameters::gpr_dimer_options_t::gpr_params_t</a>, <a class="el" href="structParameters_1_1gpr__dimer__options__t_1_1gpr__params__t.html#a338b600a58139fbe50cb51572f90777f">Parameters::gpr_dimer_options_t::gpr_params_t</a></li>
+<li>problem_setup&#160;:&#160;<a class="el" href="classAtomicGPDimer.html#aff47a44ab29818032c80b7ab1424a2d7">AtomicGPDimer</a>, <a class="el" href="classeonc_1_1AtomicGPDimer.html#aff47a44ab29818032c80b7ab1424a2d7">eonc::AtomicGPDimer</a></li>
+<li>PROCESS_SEARCH_MINIMIZATION_OFFSET&#160;:&#160;<a class="el" href="structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a026f576c093ce4659ebdcfa0493af04f">eonc::params_ssot::GeneratedDefaults</a></li>
+<li>PROCESS_SEARCH_MINIMIZE_FIRST&#160;:&#160;<a class="el" href="structeonc_1_1params__ssot_1_1GeneratedDefaults.html#a9f947a05746694838c3cca91a6da82a6">eonc::params_ssot::GeneratedDefaults</a></li>
+<li>process_search_options&#160;:&#160;<a class="el" href="classeonc_1_1Parameters.html#addc8c0b6222f19ae6a0242cee89a9788">eonc::Parameters</a>, <a class="el" href="classParameters.html#addc8c0b6222f19ae6a0242cee89a9788">Parameters</a></li>
+<li>ProcessSearchJob()&#160;:&#160;<a class="el" href="classeonc_1_1ProcessSearchJob.html#a40f442b3627eb13b7cd2ac43a8845219">eonc::ProcessSearchJob</a>, <a class="el" href="classProcessSearchJob.html#a40f442b3627eb13b7cd2ac43a8845219">ProcessSearchJob</a></li>
+<li>product&#160;:&#160;<a class="el" href="classBasinHoppingSaddleSearch.html#a03dad16c576f5e2a58616971930c6f7d">BasinHoppingSaddleSearch</a>, <a class="el" href="classDynamicsSaddleSearch.html#aed526b329d377b2ff94c1add3b02a89d">DynamicsSaddleSearch</a>, <a class="el" href="classeonc_1_1BasinHoppingSaddleSearch.html#a03dad16c576f5e2a58616971930c6f7d">eonc::BasinHoppingSaddleSearch</a>, <a class="el" href="classeonc_1_1DynamicsSaddleSearch.html#aed526b329d377b2ff94c1add3b02a89d">eonc::DynamicsSaddleSearch</a>, <a class="el" href="classeonc_1_1ReplicaDynamicsJob.html#a5e30efb7baa6f5088bb7ef8bede8af87">eonc::ReplicaDynamicsJob</a>, <a class="el" href="classReplicaDynamicsJob.html#a5e30efb7baa6f5088bb7ef8bede8af87">ReplicaDynamicsJob</a></li>
+<li>product_filename&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1oh__tst__options__t.html#ae88c8952e844d249b2ea3180637ba190">eonc::Parameters::oh_tst_options_t</a>, <a class="el" href="structParameters_1_1oh__tst__options__t.html#ae88c8952e844d249b2ea3180637ba190">Parameters::oh_tst_options_t</a></li>
+<li>project()&#160;:&#160;<a class="el" href="structeonc_1_1neb_1_1DNEB__Projection.html#a43d4ee0213cf4529722fdf5f18b477db">eonc::neb::DNEB_Projection</a>, <a class="el" href="structeonc_1_1neb_1_1NEB__Projection.html#a0e068831c406d43b355e36d61438ede3">eonc::neb::NEB_Projection</a>, <a class="el" href="structeonc_1_1neb_1_1PlainEB.html#a8a4ed835993f5b5cad5aa448ad676116">eonc::neb::PlainEB</a></li>
+<li>projectedForce&#160;:&#160;<a class="el" href="classeonc_1_1NudgedElasticBand.html#a993690c7a8194ab389bf601a63e8317a">eonc::NudgedElasticBand</a>, <a class="el" href="classNudgedElasticBand.html#a993690c7a8194ab389bf601a63e8317a">NudgedElasticBand</a></li>
+<li>projectionStrat_&#160;:&#160;<a class="el" href="classeonc_1_1NudgedElasticBand.html#ab32b99f131d250dc9c1c7a860680799f">eonc::NudgedElasticBand</a>, <a class="el" href="classNudgedElasticBand.html#ab32b99f131d250dc9c1c7a860680799f">NudgedElasticBand</a></li>
+<li>provider&#160;:&#160;<a class="el" href="classEMT.html#a4ac555bbd93edce56043227090dc6099">EMT</a></li>
+<li>prr&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1hyperdynamics__options__t.html#a6b4da5fbc42f469f3fc649a7c5095aba">eonc::Parameters::hyperdynamics_options_t</a>, <a class="el" href="structParameters_1_1hyperdynamics__options__t.html#a6b4da5fbc42f469f3fc649a7c5095aba">Parameters::hyperdynamics_options_t</a></li>
+<li>prune_params&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1gpr__dimer__options__t.html#ac6c9b8c6c3f99aabb404989b91b8c4e5">eonc::Parameters::gpr_dimer_options_t</a>, <a class="el" href="structParameters_1_1gpr__dimer__options__t.html#ac6c9b8c6c3f99aabb404989b91b8c4e5">Parameters::gpr_dimer_options_t</a></li>
+<li>ptr()&#160;:&#160;<a class="el" href="structeonc_1_1log_1_1FileScoped.html#a6c37d8682def9c35d6b96440ce8c37e6">eonc::log::FileScoped</a>, <a class="el" href="structeonc_1_1log_1_1Scoped.html#a3e075e0bd812149bf139723cf716b513">eonc::log::Scoped</a></li>
+<li>ptype&#160;:&#160;<a class="el" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">eonc::Potential</a>, <a class="el" href="classPotential.html#ac102f249b890f52d06d96feff8f2047a">Potential</a></li>
+<li>push_apart_distance&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1basin__hopping__options__t.html#a0f3218bb5e648feaa12815eae43d239e">eonc::Parameters::basin_hopping_options_t</a>, <a class="el" href="structParameters_1_1basin__hopping__options__t.html#a0f3218bb5e648feaa12815eae43d239e">Parameters::basin_hopping_options_t</a></li>
+<li>push_step_size&#160;:&#160;<a class="el" href="structeonc_1_1Parameters_1_1artn__options__t.html#a91497c62d1fa9b08b3d77ae3660cd116">eonc::Parameters::artn_options_t</a>, <a class="el" href="structParameters_1_1artn__options__t.html#a91497c62d1fa9b08b3d77ae3660cd116">Parameters::artn_options_t</a></li>
+<li>py_module&#160;:&#160;<a class="el" href="classASE.html#a81491b7344885e1fd6317112ff95ac5c">ASE</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

@@ -1,0 +1,1294 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: BondBoost Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classBondBoost.html','','classBondBoost-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">BondBoost Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Functionality relying on the conjugate gradients algorithm.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a33aed5184cbd60289879f51aa9e635e4" id="r_a33aed5184cbd60289879f51aa9e635e4"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a33aed5184cbd60289879f51aa9e635e4">BondBoost</a> (<a class="el" href="classMatter.html">Matter</a> *matt, const <a class="el" href="classParameters.html">Parameters</a> &amp;params)</td></tr>
+<tr class="memdesc:a33aed5184cbd60289879f51aa9e635e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor to be used when a structure is minimized.  <br /></td></tr>
+<tr class="memitem:af7e2b3a49a4590e2672fdb56cbe59992" id="r_af7e2b3a49a4590e2672fdb56cbe59992"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#af7e2b3a49a4590e2672fdb56cbe59992">~BondBoost</a> ()</td></tr>
+<tr class="memdesc:af7e2b3a49a4590e2672fdb56cbe59992"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor.  <br /></td></tr>
+<tr class="memitem:a65bbb5ab72400de2c74953089ca4a819" id="r_a65bbb5ab72400de2c74953089ca4a819"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a65bbb5ab72400de2c74953089ca4a819">initialize</a> ()</td></tr>
+<tr class="memitem:a6ef1c737696d60fc6ab6180b861e1c67" id="r_a6ef1c737696d60fc6ab6180b861e1c67"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a6ef1c737696d60fc6ab6180b861e1c67">advance</a> ()</td></tr>
+<tr class="memdesc:a6ef1c737696d60fc6ab6180b861e1c67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance the equilibration / boost schedule by one MD step.  <br /></td></tr>
+<tr class="memitem:a427e1380e230adba29b76ccf53a3e11f" id="r_a427e1380e230adba29b76ccf53a3e11f"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a427e1380e230adba29b76ccf53a3e11f">boost</a> ()</td></tr>
+<tr class="memdesc:a427e1380e230adba29b76ccf53a3e11f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate the current bias potential and write bias forces.  <br /></td></tr>
+<tr class="memitem:a4b16985b1f3c0ffdceecf2efcccb5216" id="r_a4b16985b1f3c0ffdceecf2efcccb5216"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a4b16985b1f3c0ffdceecf2efcccb5216">scheduleStep</a> () const</td></tr>
+<tr class="memdesc:a4b16985b1f3c0ffdceecf2efcccb5216"><td class="mdescLeft">&#160;</td><td class="mdescRight">Equilibration counter (starts at 1). Used to test the per-step schedule.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:add65ad9cb580877459338e1dca39dff9" id="r_add65ad9cb580877459338e1dca39dff9"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#add65ad9cb580877459338e1dca39dff9">rmdSteps</a> () const</td></tr>
+<tr class="memitem:a88224c60548053328642aebb382e0b06" id="r_a88224c60548053328642aebb382e0b06"><td class="memItemLeft">Matrix&lt; double, Eigen::Dynamic, 1 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a88224c60548053328642aebb382e0b06">Rmdsteps</a> ()</td></tr>
+<tr class="memdesc:a88224c60548053328642aebb382e0b06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Measure all tagged-atom bond lengths for the equilibration phase.  <br /></td></tr>
+<tr class="memitem:a0f77561c1d0e53fb418e515b8f356dc4" id="r_a0f77561c1d0e53fb418e515b8f356dc4"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a0f77561c1d0e53fb418e515b8f356dc4">BondSelect</a> ()</td></tr>
+<tr class="memdesc:a0f77561c1d0e53fb418e515b8f356dc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select bonds within cutoff distance for boosting.  <br /></td></tr>
+<tr class="memitem:a3ee796e971caea2b5c7cc0c656d539b3" id="r_a3ee796e971caea2b5c7cc0c656d539b3"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a3ee796e971caea2b5c7cc0c656d539b3">Booststeps</a> ()</td></tr>
+<tr class="memdesc:a3ee796e971caea2b5c7cc0c656d539b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute bias potential and forces for bond-boost hyperdynamics.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a2d90302970d895c0c91322cd43192025" id="r_a2d90302970d895c0c91322cd43192025"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a2d90302970d895c0c91322cd43192025">nAtoms</a> {0}</td></tr>
+<tr class="memdesc:a2d90302970d895c0c91322cd43192025"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of free coordinates.  <br /></td></tr>
+<tr class="memitem:a2a239f5f79e51f422d09c2b0c5ce30ee" id="r_a2a239f5f79e51f422d09c2b0c5ce30ee"><td class="memItemLeft"><a class="el" href="classMatter.html">Matter</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a2a239f5f79e51f422d09c2b0c5ce30ee">matter</a></td></tr>
+<tr class="memdesc:a2a239f5f79e51f422d09c2b0c5ce30ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to atom object <b>outside</b> the scope of the class.  <br /></td></tr>
+<tr class="memitem:a05e46883edd1df843538c0215873b9e1" id="r_a05e46883edd1df843538c0215873b9e1"><td class="memItemLeft">const <a class="el" href="classParameters.html">Parameters</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a05e46883edd1df843538c0215873b9e1">parameters</a></td></tr>
+<tr class="memdesc:a05e46883edd1df843538c0215873b9e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to a structure outside the scope of the class containing runtime parameters.  <br /></td></tr>
+<tr class="memitem:ae080a948d07ad5eb2c1a4ce7388824fe" id="r_ae080a948d07ad5eb2c1a4ce7388824fe"><td class="memItemLeft">std::vector&lt; long &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ae080a948d07ad5eb2c1a4ce7388824fe">BAList</a></td></tr>
+<tr class="memitem:af8c0e7c241bf021d3bb517f957c4aa67" id="r_af8c0e7c241bf021d3bb517f957c4aa67"><td class="memItemLeft">std::vector&lt; long &gt;&#160;</td><td class="memItemRight"><a class="el" href="#af8c0e7c241bf021d3bb517f957c4aa67">RAList</a></td></tr>
+<tr class="memitem:ad449262b978dbed1543d77d8fc0dc824" id="r_ad449262b978dbed1543d77d8fc0dc824"><td class="memItemLeft">std::vector&lt; long &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ad449262b978dbed1543d77d8fc0dc824">TABAList</a></td></tr>
+<tr class="memitem:a8cd54613c0824d26fcc063add59c93f6" id="r_a8cd54613c0824d26fcc063add59c93f6"><td class="memItemLeft">std::vector&lt; long &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a8cd54613c0824d26fcc063add59c93f6">BBAList</a></td></tr>
+<tr class="memitem:aa758204262ec0ff36e84a8cc43ee5103" id="r_aa758204262ec0ff36e84a8cc43ee5103"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aa758204262ec0ff36e84a8cc43ee5103">Epsr_Q</a></td></tr>
+<tr class="memitem:a944cda2bbab6f479a97bc34fb3e59d22" id="r_a944cda2bbab6f479a97bc34fb3e59d22"><td class="memItemLeft">Matrix&lt; double, Eigen::Dynamic, 1 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a944cda2bbab6f479a97bc34fb3e59d22">TABLList</a></td></tr>
+<tr class="memitem:a3bb1a2472a74f9eec0cea37e24fb1f9f" id="r_a3bb1a2472a74f9eec0cea37e24fb1f9f"><td class="memItemLeft">Matrix&lt; double, Eigen::Dynamic, 1 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a3bb1a2472a74f9eec0cea37e24fb1f9f">EBBLList</a></td></tr>
+<tr class="memitem:aeb94d3e1f526be4243bb9d2d379fd10f" id="r_aeb94d3e1f526be4243bb9d2d379fd10f"><td class="memItemLeft">Matrix&lt; double, Eigen::Dynamic, 1 &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aeb94d3e1f526be4243bb9d2d379fd10f">CBBLList</a></td></tr>
+<tr class="memitem:a2dcd7e4c2049bc32e20e49c66e022b02" id="r_a2dcd7e4c2049bc32e20e49c66e022b02"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a2dcd7e4c2049bc32e20e49c66e022b02">nBAs</a> {0}</td></tr>
+<tr class="memitem:ab67c0fd4cf98728a33595464b581dd84" id="r_ab67c0fd4cf98728a33595464b581dd84"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#ab67c0fd4cf98728a33595464b581dd84">nRAs</a> {0}</td></tr>
+<tr class="memitem:a2f79fd4d5444b040db6637c12301be9f" id="r_a2f79fd4d5444b040db6637c12301be9f"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a2f79fd4d5444b040db6637c12301be9f">nTABs</a> {0}</td></tr>
+<tr class="memitem:a18060bf9aa342e43667c55a4ceb11fdd" id="r_a18060bf9aa342e43667c55a4ceb11fdd"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a18060bf9aa342e43667c55a4ceb11fdd">nReg</a> {0}</td></tr>
+<tr class="memitem:a1caa81602a15351ba6e32ce953e33003" id="r_a1caa81602a15351ba6e32ce953e33003"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#a1caa81602a15351ba6e32ce953e33003">nBBs</a> {0}</td></tr>
+<tr class="memitem:a7c25d9c0475d2d137b0bbbe2397af69a" id="r_a7c25d9c0475d2d137b0bbbe2397af69a"><td class="memItemLeft"><a class="el" href="structeonc_1_1log_1_1Scoped.html">eonc::log::Scoped</a>&#160;</td><td class="memItemRight"><a class="el" href="#a7c25d9c0475d2d137b0bbbe2397af69a">log</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Functionality relying on the conjugate gradients algorithm. </p>
+<p>The object is capable of minimizing an <a class="el" href="classMatter.html">Matter</a> object or modified forces being passed in. </p>
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00025">25</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a33aed5184cbd60289879f51aa9e635e4" name="a33aed5184cbd60289879f51aa9e635e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33aed5184cbd60289879f51aa9e635e4">&#9670;&#160;</a></span>BondBoost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeonc_1_1BondBoost.html#a33aed5184cbd60289879f51aa9e635e4">BondBoost::BondBoost</a> </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> *</td>          <td class="paramname"><span class="paramname"><em>matt</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>params</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor to be used when a structure is minimized. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">*matter</td><td>Pointer to the <a class="el" href="classMatter.html">Matter</a> object to be relaxed. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">parameters</td><td>Reference to the Parameter object containing the runtime parameters. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8cpp_source.html#l00025">25</a> of file <a class="el" href="BondBoost_8cpp_source.html">BondBoost.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   26</span>    : <a class="code hl_variable" href="#a2a239f5f79e51f422d09c2b0c5ce30ee">matter</a>{matt},</div>
+<div class="line"><span class="lineno">   27</span>      <a class="code hl_variable" href="#a05e46883edd1df843538c0215873b9e1">parameters</a>{params} {</div>
+<div class="line"><span class="lineno">   28</span>  <a class="code hl_variable" href="#a2d90302970d895c0c91322cd43192025">nAtoms</a> = <a class="code hl_variable" href="#a2a239f5f79e51f422d09c2b0c5ce30ee">matter</a>-&gt;numberOfAtoms();</div>
+<div class="line"><span class="lineno">   29</span>}</div>
+<div class="ttc" id="aclassBondBoost_html_a05e46883edd1df843538c0215873b9e1"><div class="ttname"><a href="#a05e46883edd1df843538c0215873b9e1">BondBoost::parameters</a></div><div class="ttdeci">const Parameters &amp; parameters</div><div class="ttdoc">Reference to a structure outside the scope of the class containing runtime parameters.</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00053">BondBoost.h:53</a></div></div>
+<div class="ttc" id="aclassBondBoost_html_a2a239f5f79e51f422d09c2b0c5ce30ee"><div class="ttname"><a href="#a2a239f5f79e51f422d09c2b0c5ce30ee">BondBoost::matter</a></div><div class="ttdeci">Matter * matter</div><div class="ttdoc">Pointer to atom object outside the scope of the class.</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00051">BondBoost.h:51</a></div></div>
+<div class="ttc" id="aclassBondBoost_html_a2d90302970d895c0c91322cd43192025"><div class="ttname"><a href="#a2d90302970d895c0c91322cd43192025">BondBoost::nAtoms</a></div><div class="ttdeci">long nAtoms</div><div class="ttdoc">Number of free coordinates.</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00050">BondBoost.h:50</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af7e2b3a49a4590e2672fdb56cbe59992" name="af7e2b3a49a4590e2672fdb56cbe59992"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7e2b3a49a4590e2672fdb56cbe59992">&#9670;&#160;</a></span>~BondBoost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeonc_1_1BondBoost.html#af7e2b3a49a4590e2672fdb56cbe59992">BondBoost::~BondBoost</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destructor. </p>
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a6ef1c737696d60fc6ab6180b861e1c67" name="a6ef1c737696d60fc6ab6180b861e1c67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ef1c737696d60fc6ab6180b861e1c67">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classeonc_1_1BondBoost.html#a6ef1c737696d60fc6ab6180b861e1c67">BondBoost::advance</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance the equilibration / boost schedule by one MD step. </p>
+<p>Call once per physical step. <a class="el" href="classeonc_1_1BondBoost.html#a427e1380e230adba29b76ccf53a3e11f" title="Evaluate the current bias potential and write bias forces.">boost()</a> does not move the schedule. </p>
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8cpp_source.html#l00092">92</a> of file <a class="el" href="BondBoost_8cpp_source.html">BondBoost.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   92</span>                        {</div>
+<div class="line"><span class="lineno">   93</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> RMDS = <a class="code hl_function" href="classeonc_1_1BondBoost.html#add65ad9cb580877459338e1dca39dff9">rmdSteps</a>();</div>
+<div class="line"><span class="lineno">   94</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a18060bf9aa342e43667c55a4ceb11fdd">nReg</a> &lt;= RMDS) {</div>
+<div class="line"><span class="lineno">   95</span>    <span class="comment">// Equilibration: sample bond lengths once per MD step.</span></div>
+<div class="line"><span class="lineno">   96</span>    Matrix&lt;double, Eigen::Dynamic, 1&gt; TABL_tmp = <a class="code hl_function" href="classeonc_1_1BondBoost.html#a88224c60548053328642aebb382e0b06">Rmdsteps</a>();</div>
+<div class="line"><span class="lineno">   97</span>    <a class="code hl_variable" href="#a944cda2bbab6f479a97bc34fb3e59d22">TABLList</a> = <a class="code hl_variable" href="#a944cda2bbab6f479a97bc34fb3e59d22">TABLList</a> + (1.0 / RMDS) * TABL_tmp;</div>
+<div class="line"><span class="lineno">   98</span>    <a class="code hl_variable" href="#a18060bf9aa342e43667c55a4ceb11fdd">nReg</a>++;</div>
+<div class="line"><span class="lineno">   99</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a18060bf9aa342e43667c55a4ceb11fdd">nReg</a> == RMDS + 1) {</div>
+<div class="line"><span class="lineno">  100</span>      <a class="code hl_variable" href="#a1caa81602a15351ba6e32ce953e33003">nBBs</a> = <a class="code hl_function" href="classeonc_1_1BondBoost.html#a0f77561c1d0e53fb418e515b8f356dc4">BondSelect</a>();</div>
+<div class="line"><span class="lineno">  101</span>    }</div>
+<div class="line"><span class="lineno">  102</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  103</span>  }</div>
+<div class="line"><span class="lineno">  104</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a18060bf9aa342e43667c55a4ceb11fdd">nReg</a> == RMDS + 1) {</div>
+<div class="line"><span class="lineno">  105</span>    <a class="code hl_variable" href="#a1caa81602a15351ba6e32ce953e33003">nBBs</a> = <a class="code hl_function" href="classeonc_1_1BondBoost.html#a0f77561c1d0e53fb418e515b8f356dc4">BondSelect</a>();</div>
+<div class="line"><span class="lineno">  106</span>  }</div>
+<div class="line"><span class="lineno">  107</span>  <a class="code hl_variable" href="#a18060bf9aa342e43667c55a4ceb11fdd">nReg</a>++;</div>
+<div class="line"><span class="lineno">  108</span>}</div>
+<div class="ttc" id="aclassBondBoost_html_a18060bf9aa342e43667c55a4ceb11fdd"><div class="ttname"><a href="#a18060bf9aa342e43667c55a4ceb11fdd">BondBoost::nReg</a></div><div class="ttdeci">long nReg</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00067">BondBoost.h:67</a></div></div>
+<div class="ttc" id="aclassBondBoost_html_a1caa81602a15351ba6e32ce953e33003"><div class="ttname"><a href="#a1caa81602a15351ba6e32ce953e33003">BondBoost::nBBs</a></div><div class="ttdeci">long nBBs</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00068">BondBoost.h:68</a></div></div>
+<div class="ttc" id="aclassBondBoost_html_a944cda2bbab6f479a97bc34fb3e59d22"><div class="ttname"><a href="#a944cda2bbab6f479a97bc34fb3e59d22">BondBoost::TABLList</a></div><div class="ttdeci">Matrix&lt; double, Eigen::Dynamic, 1 &gt; TABLList</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00061">BondBoost.h:61</a></div></div>
+<div class="ttc" id="aclasseonc_1_1BondBoost_html_a0f77561c1d0e53fb418e515b8f356dc4"><div class="ttname"><a href="classeonc_1_1BondBoost.html#a0f77561c1d0e53fb418e515b8f356dc4">eonc::BondBoost::BondSelect</a></div><div class="ttdeci">long BondSelect()</div><div class="ttdoc">Select bonds within cutoff distance for boosting.</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8cpp_source.html#l00240">BondBoost.cpp:240</a></div></div>
+<div class="ttc" id="aclasseonc_1_1BondBoost_html_a88224c60548053328642aebb382e0b06"><div class="ttname"><a href="classeonc_1_1BondBoost.html#a88224c60548053328642aebb382e0b06">eonc::BondBoost::Rmdsteps</a></div><div class="ttdeci">Matrix&lt; double, Eigen::Dynamic, 1 &gt; Rmdsteps()</div><div class="ttdoc">Measure all tagged-atom bond lengths for the equilibration phase.</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8cpp_source.html#l00209">BondBoost.cpp:209</a></div></div>
+<div class="ttc" id="aclasseonc_1_1BondBoost_html_add65ad9cb580877459338e1dca39dff9"><div class="ttname"><a href="classeonc_1_1BondBoost.html#add65ad9cb580877459338e1dca39dff9">eonc::BondBoost::rmdSteps</a></div><div class="ttdeci">long rmdSteps() const</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8cpp_source.html#l00087">BondBoost.cpp:87</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0f77561c1d0e53fb418e515b8f356dc4" name="a0f77561c1d0e53fb418e515b8f356dc4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f77561c1d0e53fb418e515b8f356dc4">&#9670;&#160;</a></span>BondSelect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long <a class="el" href="classeonc_1_1BondBoost.html#a0f77561c1d0e53fb418e515b8f356dc4">BondBoost::BondSelect</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Select bonds within cutoff distance for boosting. </p>
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8cpp_source.html#l00240">240</a> of file <a class="el" href="BondBoost_8cpp_source.html">BondBoost.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  240</span>                           {</div>
+<div class="line"><span class="lineno">  241</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> qCutoff = <a class="code hl_variable" href="#a05e46883edd1df843538c0215873b9e1">parameters</a>.hyperdynamics_options.qcut;</div>
+<div class="line"><span class="lineno">  242</span> </div>
+<div class="line"><span class="lineno">  243</span>  <span class="comment">// Count bonds within cutoff</span></div>
+<div class="line"><span class="lineno">  244</span>  <span class="keywordtype">long</span> nSelected = 0;</div>
+<div class="line"><span class="lineno">  245</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#a2f79fd4d5444b040db6637c12301be9f">nTABs</a>; i++) {</div>
+<div class="line"><span class="lineno">  246</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1BondBoost.html#a944cda2bbab6f479a97bc34fb3e59d22">TABLList</a>(i, 0) &lt;= qCutoff) {</div>
+<div class="line"><span class="lineno">  247</span>      nSelected++;</div>
+<div class="line"><span class="lineno">  248</span>    }</div>
+<div class="line"><span class="lineno">  249</span>  }</div>
+<div class="line"><span class="lineno">  250</span> </div>
+<div class="line"><span class="lineno">  251</span>  <a class="code hl_variable" href="#a3bb1a2472a74f9eec0cea37e24fb1f9f">EBBLList</a>.setZero(nSelected, 1);</div>
+<div class="line"><span class="lineno">  252</span>  <a class="code hl_variable" href="#a8cd54613c0824d26fcc063add59c93f6">BBAList</a>.resize(2 * nSelected);</div>
+<div class="line"><span class="lineno">  253</span>  <span class="keywordtype">long</span> count = 0;</div>
+<div class="line"><span class="lineno">  254</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#a2f79fd4d5444b040db6637c12301be9f">nTABs</a>; i++) {</div>
+<div class="line"><span class="lineno">  255</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1BondBoost.html#a944cda2bbab6f479a97bc34fb3e59d22">TABLList</a>(i, 0) &lt;= qCutoff) {</div>
+<div class="line"><span class="lineno">  256</span>      <a class="code hl_variable" href="classeonc_1_1BondBoost.html#a3bb1a2472a74f9eec0cea37e24fb1f9f">EBBLList</a>(count, 0) = <a class="code hl_variable" href="classeonc_1_1BondBoost.html#a944cda2bbab6f479a97bc34fb3e59d22">TABLList</a>(i, 0);</div>
+<div class="line"><span class="lineno">  257</span>      <a class="code hl_variable" href="#a8cd54613c0824d26fcc063add59c93f6">BBAList</a>[2 * count] = <a class="code hl_variable" href="#ad449262b978dbed1543d77d8fc0dc824">TABAList</a>[2 * i];</div>
+<div class="line"><span class="lineno">  258</span>      <a class="code hl_variable" href="#a8cd54613c0824d26fcc063add59c93f6">BBAList</a>[2 * count + 1] = <a class="code hl_variable" href="#ad449262b978dbed1543d77d8fc0dc824">TABAList</a>[2 * i + 1];</div>
+<div class="line"><span class="lineno">  259</span>      count++;</div>
+<div class="line"><span class="lineno">  260</span>    }</div>
+<div class="line"><span class="lineno">  261</span>  }</div>
+<div class="line"><span class="lineno">  262</span>  <span class="keywordflow">return</span> nSelected;</div>
+<div class="line"><span class="lineno">  263</span>}</div>
+<div class="ttc" id="aclassBondBoost_html_a2f79fd4d5444b040db6637c12301be9f"><div class="ttname"><a href="#a2f79fd4d5444b040db6637c12301be9f">BondBoost::nTABs</a></div><div class="ttdeci">long nTABs</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00066">BondBoost.h:66</a></div></div>
+<div class="ttc" id="aclassBondBoost_html_a3bb1a2472a74f9eec0cea37e24fb1f9f"><div class="ttname"><a href="#a3bb1a2472a74f9eec0cea37e24fb1f9f">BondBoost::EBBLList</a></div><div class="ttdeci">Matrix&lt; double, Eigen::Dynamic, 1 &gt; EBBLList</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00062">BondBoost.h:62</a></div></div>
+<div class="ttc" id="aclassBondBoost_html_a8cd54613c0824d26fcc063add59c93f6"><div class="ttname"><a href="#a8cd54613c0824d26fcc063add59c93f6">BondBoost::BBAList</a></div><div class="ttdeci">std::vector&lt; long &gt; BBAList</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00058">BondBoost.h:58</a></div></div>
+<div class="ttc" id="aclassBondBoost_html_ad449262b978dbed1543d77d8fc0dc824"><div class="ttname"><a href="#ad449262b978dbed1543d77d8fc0dc824">BondBoost::TABAList</a></div><div class="ttdeci">std::vector&lt; long &gt; TABAList</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00057">BondBoost.h:57</a></div></div>
+<div class="ttc" id="aclasseonc_1_1BondBoost_html_a3bb1a2472a74f9eec0cea37e24fb1f9f"><div class="ttname"><a href="classeonc_1_1BondBoost.html#a3bb1a2472a74f9eec0cea37e24fb1f9f">eonc::BondBoost::EBBLList</a></div><div class="ttdeci">Matrix&lt; double, Eigen::Dynamic, 1 &gt; EBBLList</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00062">BondBoost.h:62</a></div></div>
+<div class="ttc" id="aclasseonc_1_1BondBoost_html_a944cda2bbab6f479a97bc34fb3e59d22"><div class="ttname"><a href="classeonc_1_1BondBoost.html#a944cda2bbab6f479a97bc34fb3e59d22">eonc::BondBoost::TABLList</a></div><div class="ttdeci">Matrix&lt; double, Eigen::Dynamic, 1 &gt; TABLList</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00061">BondBoost.h:61</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a427e1380e230adba29b76ccf53a3e11f" name="a427e1380e230adba29b76ccf53a3e11f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a427e1380e230adba29b76ccf53a3e11f">&#9670;&#160;</a></span>boost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classeonc_1_1BondBoost.html#a427e1380e230adba29b76ccf53a3e11f">BondBoost::boost</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluate the current bias potential and write bias forces. </p>
+<p>Safe to call from a force evaluation; does not increment nReg. </p>
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8cpp_source.html#l00110">110</a> of file <a class="el" href="BondBoost_8cpp_source.html">BondBoost.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  110</span>                        {</div>
+<div class="line"><span class="lineno">  111</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> RMDS = <a class="code hl_function" href="classeonc_1_1BondBoost.html#add65ad9cb580877459338e1dca39dff9">rmdSteps</a>();</div>
+<div class="line"><span class="lineno">  112</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a18060bf9aa342e43667c55a4ceb11fdd">nReg</a> &lt;= RMDS) {</div>
+<div class="line"><span class="lineno">  113</span>    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><span class="lineno">  114</span>  }</div>
+<div class="line"><span class="lineno">  115</span>  <span class="comment">// RMDS == 0 and a caller that never advance()s still has to select bonds</span></div>
+<div class="line"><span class="lineno">  116</span>  <span class="comment">// on the first evaluation; SafeHyper / ParallelReplica call advance()</span></div>
+<div class="line"><span class="lineno">  117</span>  <span class="comment">// first and reach BondSelect there.</span></div>
+<div class="line"><span class="lineno">  118</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a1caa81602a15351ba6e32ce953e33003">nBBs</a> == 0) {</div>
+<div class="line"><span class="lineno">  119</span>    <a class="code hl_variable" href="#a1caa81602a15351ba6e32ce953e33003">nBBs</a> = <a class="code hl_function" href="classeonc_1_1BondBoost.html#a0f77561c1d0e53fb418e515b8f356dc4">BondSelect</a>();</div>
+<div class="line"><span class="lineno">  120</span>  }</div>
+<div class="line"><span class="lineno">  121</span>  <a class="code hl_variable" href="#aa758204262ec0ff36e84a8cc43ee5103">Epsr_Q</a>.resize(<a class="code hl_variable" href="#a1caa81602a15351ba6e32ce953e33003">nBBs</a>);</div>
+<div class="line"><span class="lineno">  122</span>  <a class="code hl_variable" href="#aeb94d3e1f526be4243bb9d2d379fd10f">CBBLList</a>.setZero(<a class="code hl_variable" href="#a1caa81602a15351ba6e32ce953e33003">nBBs</a>, 1);</div>
+<div class="line"><span class="lineno">  123</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> biasPot = <a class="code hl_function" href="classeonc_1_1BondBoost.html#a3ee796e971caea2b5c7cc0c656d539b3">Booststeps</a>();</div>
+<div class="line"><span class="lineno">  124</span>  <a class="code hl_variable" href="#aa758204262ec0ff36e84a8cc43ee5103">Epsr_Q</a>.clear();</div>
+<div class="line"><span class="lineno">  125</span>  <span class="keywordflow">return</span> biasPot;</div>
+<div class="line"><span class="lineno">  126</span>}</div>
+<div class="ttc" id="aclassBondBoost_html_aa758204262ec0ff36e84a8cc43ee5103"><div class="ttname"><a href="#aa758204262ec0ff36e84a8cc43ee5103">BondBoost::Epsr_Q</a></div><div class="ttdeci">std::vector&lt; double &gt; Epsr_Q</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00059">BondBoost.h:59</a></div></div>
+<div class="ttc" id="aclassBondBoost_html_aeb94d3e1f526be4243bb9d2d379fd10f"><div class="ttname"><a href="#aeb94d3e1f526be4243bb9d2d379fd10f">BondBoost::CBBLList</a></div><div class="ttdeci">Matrix&lt; double, Eigen::Dynamic, 1 &gt; CBBLList</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00063">BondBoost.h:63</a></div></div>
+<div class="ttc" id="aclasseonc_1_1BondBoost_html_a3ee796e971caea2b5c7cc0c656d539b3"><div class="ttname"><a href="classeonc_1_1BondBoost.html#a3ee796e971caea2b5c7cc0c656d539b3">eonc::BondBoost::Booststeps</a></div><div class="ttdeci">double Booststeps()</div><div class="ttdoc">Compute bias potential and forces for bond-boost hyperdynamics.</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8cpp_source.html#l00130">BondBoost.cpp:130</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a3ee796e971caea2b5c7cc0c656d539b3" name="a3ee796e971caea2b5c7cc0c656d539b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ee796e971caea2b5c7cc0c656d539b3">&#9670;&#160;</a></span>Booststeps()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="classeonc_1_1BondBoost.html#a3ee796e971caea2b5c7cc0c656d539b3">BondBoost::Booststeps</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute bias potential and forces for bond-boost hyperdynamics. </p>
+<p>Returns the bias potential energy contribution. </p>
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8cpp_source.html#l00130">130</a> of file <a class="el" href="BondBoost_8cpp_source.html">BondBoost.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  130</span>                             {</div>
+<div class="line"><span class="lineno">  131</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> QRR = <a class="code hl_variable" href="#a05e46883edd1df843538c0215873b9e1">parameters</a>.hyperdynamics_options.qrr;</div>
+<div class="line"><span class="lineno">  132</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> PRR = <a class="code hl_variable" href="#a05e46883edd1df843538c0215873b9e1">parameters</a>.hyperdynamics_options.prr;</div>
+<div class="line"><span class="lineno">  133</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> DVMAX = <a class="code hl_variable" href="#a05e46883edd1df843538c0215873b9e1">parameters</a>.hyperdynamics_options.dvmax;</div>
+<div class="line"><span class="lineno">  134</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> nBBsD = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a1caa81602a15351ba6e32ce953e33003">nBBs</a>);</div>
+<div class="line"><span class="lineno">  135</span> </div>
+<div class="line"><span class="lineno">  136</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> addForces(<a class="code hl_variable" href="#a1caa81602a15351ba6e32ce953e33003">nBBs</a>, 3);</div>
+<div class="line"><span class="lineno">  137</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> TADF(<a class="code hl_variable" href="#a2d90302970d895c0c91322cd43192025">nAtoms</a>, 3);</div>
+<div class="line"><span class="lineno">  138</span>  addForces.setZero();</div>
+<div class="line"><span class="lineno">  139</span>  TADF.setZero();</div>
+<div class="line"><span class="lineno">  140</span> </div>
+<div class="line"><span class="lineno">  141</span>  <span class="comment">// Measure current bond lengths</span></div>
+<div class="line"><span class="lineno">  142</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#a1caa81602a15351ba6e32ce953e33003">nBBs</a>; i++) {</div>
+<div class="line"><span class="lineno">  143</span>    <a class="code hl_variable" href="classeonc_1_1BondBoost.html#aeb94d3e1f526be4243bb9d2d379fd10f">CBBLList</a>(i, 0) = <a class="code hl_variable" href="#a2a239f5f79e51f422d09c2b0c5ce30ee">matter</a>-&gt;distance(<a class="code hl_variable" href="#a8cd54613c0824d26fcc063add59c93f6">BBAList</a>[2 * i], <a class="code hl_variable" href="#a8cd54613c0824d26fcc063add59c93f6">BBAList</a>[2 * i + 1]);</div>
+<div class="line"><span class="lineno">  144</span>  }</div>
+<div class="line"><span class="lineno">  145</span> </div>
+<div class="line"><span class="lineno">  146</span>  <span class="comment">// Compute strain parameters and find maximum</span></div>
+<div class="line"><span class="lineno">  147</span>  <span class="keywordtype">double</span> epsrMax = 0.0;</div>
+<div class="line"><span class="lineno">  148</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#a1caa81602a15351ba6e32ce953e33003">nBBs</a>; i++) {</div>
+<div class="line"><span class="lineno">  149</span>    <a class="code hl_variable" href="#aa758204262ec0ff36e84a8cc43ee5103">Epsr_Q</a>[i] = (<a class="code hl_variable" href="classeonc_1_1BondBoost.html#aeb94d3e1f526be4243bb9d2d379fd10f">CBBLList</a>(i, 0) - <a class="code hl_variable" href="classeonc_1_1BondBoost.html#a3bb1a2472a74f9eec0cea37e24fb1f9f">EBBLList</a>(i, 0)) / <a class="code hl_variable" href="classeonc_1_1BondBoost.html#a3bb1a2472a74f9eec0cea37e24fb1f9f">EBBLList</a>(i, 0) / QRR;</div>
+<div class="line"><span class="lineno">  150</span>    <span class="keywordflow">if</span> (std::abs(<a class="code hl_variable" href="#aa758204262ec0ff36e84a8cc43ee5103">Epsr_Q</a>[i]) &gt;= epsrMax) {</div>
+<div class="line"><span class="lineno">  151</span>      epsrMax = std::abs(<a class="code hl_variable" href="#aa758204262ec0ff36e84a8cc43ee5103">Epsr_Q</a>[i]);</div>
+<div class="line"><span class="lineno">  152</span>    }</div>
+<div class="line"><span class="lineno">  153</span>  }</div>
+<div class="line"><span class="lineno">  154</span> </div>
+<div class="line"><span class="lineno">  155</span>  <span class="comment">// Envelope function A(eps_max)</span></div>
+<div class="line"><span class="lineno">  156</span>  <span class="keywordtype">double</span> A_eps = (1.0 - epsrMax * epsrMax) * (1.0 - epsrMax * epsrMax) /</div>
+<div class="line"><span class="lineno">  157</span>                 (1.0 - PRR * PRR * epsrMax * epsrMax);</div>
+<div class="line"><span class="lineno">  158</span> </div>
+<div class="line"><span class="lineno">  159</span>  <span class="comment">// Sum of individual bias potentials</span></div>
+<div class="line"><span class="lineno">  160</span>  <span class="keywordtype">double</span> sumV = 0.0;</div>
+<div class="line"><span class="lineno">  161</span>  <span class="keywordflow">if</span> (epsrMax &lt; 1.0) {</div>
+<div class="line"><span class="lineno">  162</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#a1caa81602a15351ba6e32ce953e33003">nBBs</a>; i++) {</div>
+<div class="line"><span class="lineno">  163</span>      sumV += DVMAX * (1.0 - <a class="code hl_variable" href="#aa758204262ec0ff36e84a8cc43ee5103">Epsr_Q</a>[i] * <a class="code hl_variable" href="#aa758204262ec0ff36e84a8cc43ee5103">Epsr_Q</a>[i]) / nBBsD;</div>
+<div class="line"><span class="lineno">  164</span>    }</div>
+<div class="line"><span class="lineno">  165</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  166</span>    A_eps = 0.0;</div>
+<div class="line"><span class="lineno">  167</span>  }</div>
+<div class="line"><span class="lineno">  168</span> </div>
+<div class="line"><span class="lineno">  169</span>  <span class="keywordtype">double</span> boostFact = A_eps * sumV;</div>
+<div class="line"><span class="lineno">  170</span> </div>
+<div class="line"><span class="lineno">  171</span>  <span class="comment">// Compute bias forces per bond, accumulate on atoms</span></div>
+<div class="line"><span class="lineno">  172</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#a1caa81602a15351ba6e32ce953e33003">nBBs</a>; i++) {</div>
+<div class="line"><span class="lineno">  173</span>    <span class="keywordtype">double</span> dforce = 0.0;</div>
+<div class="line"><span class="lineno">  174</span>    <span class="keywordtype">double</span> fact1 =</div>
+<div class="line"><span class="lineno">  175</span>        2.0 * A_eps * DVMAX * <a class="code hl_variable" href="#aa758204262ec0ff36e84a8cc43ee5103">Epsr_Q</a>[i] / QRR / <a class="code hl_variable" href="classeonc_1_1BondBoost.html#a3bb1a2472a74f9eec0cea37e24fb1f9f">EBBLList</a>(i, 0) / nBBsD;</div>
+<div class="line"><span class="lineno">  176</span> </div>
+<div class="line"><span class="lineno">  177</span>    <span class="keywordflow">if</span> (std::abs(<a class="code hl_variable" href="#aa758204262ec0ff36e84a8cc43ee5103">Epsr_Q</a>[i]) &lt; epsrMax) {</div>
+<div class="line"><span class="lineno">  178</span>      dforce = fact1;</div>
+<div class="line"><span class="lineno">  179</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  180</span>      <span class="comment">// Bond at maximum strain: additional envelope derivative</span></div>
+<div class="line"><span class="lineno">  181</span>      <span class="keywordtype">double</span> fTmp1 = 1.0 - PRR * PRR * <a class="code hl_variable" href="#aa758204262ec0ff36e84a8cc43ee5103">Epsr_Q</a>[i] * <a class="code hl_variable" href="#aa758204262ec0ff36e84a8cc43ee5103">Epsr_Q</a>[i];</div>
+<div class="line"><span class="lineno">  182</span>      <span class="keywordtype">double</span> fTmp2 = 1.0 - <a class="code hl_variable" href="#aa758204262ec0ff36e84a8cc43ee5103">Epsr_Q</a>[i] * <a class="code hl_variable" href="#aa758204262ec0ff36e84a8cc43ee5103">Epsr_Q</a>[i];</div>
+<div class="line"><span class="lineno">  183</span>      <span class="keywordtype">double</span> fact2 = 2.0 * fTmp2 * <a class="code hl_variable" href="#aa758204262ec0ff36e84a8cc43ee5103">Epsr_Q</a>[i] *</div>
+<div class="line"><span class="lineno">  184</span>                     (2.0 * fTmp1 - PRR * PRR * fTmp2) / QRR / <a class="code hl_variable" href="classeonc_1_1BondBoost.html#a3bb1a2472a74f9eec0cea37e24fb1f9f">EBBLList</a>(i, 0) /</div>
+<div class="line"><span class="lineno">  185</span>                     fTmp1 / fTmp1;</div>
+<div class="line"><span class="lineno">  186</span>      dforce = fact1 + sumV * fact2;</div>
+<div class="line"><span class="lineno">  187</span>    }</div>
+<div class="line"><span class="lineno">  188</span> </div>
+<div class="line"><span class="lineno">  189</span>    <span class="keywordtype">long</span> a1 = <a class="code hl_variable" href="#a8cd54613c0824d26fcc063add59c93f6">BBAList</a>[2 * i];</div>
+<div class="line"><span class="lineno">  190</span>    <span class="keywordtype">long</span> a2 = <a class="code hl_variable" href="#a8cd54613c0824d26fcc063add59c93f6">BBAList</a>[2 * i + 1];</div>
+<div class="line"><span class="lineno">  191</span>    <span class="keywordtype">double</span> R = <a class="code hl_variable" href="classeonc_1_1BondBoost.html#aeb94d3e1f526be4243bb9d2d379fd10f">CBBLList</a>(i, 0);</div>
+<div class="line"><span class="lineno">  192</span> </div>
+<div class="line"><span class="lineno">  193</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 3; j++) {</div>
+<div class="line"><span class="lineno">  194</span>      <span class="keywordtype">double</span> rij = <a class="code hl_variable" href="#a2a239f5f79e51f422d09c2b0c5ce30ee">matter</a>-&gt;pdistance(a1, a2, j);</div>
+<div class="line"><span class="lineno">  195</span>      <span class="keywordtype">double</span> fij = rij / R * dforce;</div>
+<div class="line"><span class="lineno">  196</span>      addForces(i, j) = fij;</div>
+<div class="line"><span class="lineno">  197</span>      TADF(a1, j) += fij;</div>
+<div class="line"><span class="lineno">  198</span>      TADF(a2, j) -= fij;</div>
+<div class="line"><span class="lineno">  199</span>    }</div>
+<div class="line"><span class="lineno">  200</span>  }</div>
+<div class="line"><span class="lineno">  201</span> </div>
+<div class="line"><span class="lineno">  202</span>  <span class="comment">// Apply free-atom mask and set bias forces</span></div>
+<div class="line"><span class="lineno">  203</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> biasForces = TADF.array() * <a class="code hl_variable" href="#a2a239f5f79e51f422d09c2b0c5ce30ee">matter</a>-&gt;getFree().array();</div>
+<div class="line"><span class="lineno">  204</span>  <a class="code hl_variable" href="#a2a239f5f79e51f422d09c2b0c5ce30ee">matter</a>-&gt;setBiasForces(biasForces);</div>
+<div class="line"><span class="lineno">  205</span>  <span class="keywordflow">return</span> boostFact;</div>
+<div class="line"><span class="lineno">  206</span>}</div>
+<div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
+<div class="ttc" id="aclasseonc_1_1BondBoost_html_aeb94d3e1f526be4243bb9d2d379fd10f"><div class="ttname"><a href="classeonc_1_1BondBoost.html#aeb94d3e1f526be4243bb9d2d379fd10f">eonc::BondBoost::CBBLList</a></div><div class="ttdeci">Matrix&lt; double, Eigen::Dynamic, 1 &gt; CBBLList</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00063">BondBoost.h:63</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a65bbb5ab72400de2c74953089ca4a819" name="a65bbb5ab72400de2c74953089ca4a819"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65bbb5ab72400de2c74953089ca4a819">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classeonc_1_1BondBoost.html#a65bbb5ab72400de2c74953089ca4a819">BondBoost::initialize</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8cpp_source.html#l00033">33</a> of file <a class="el" href="BondBoost_8cpp_source.html">BondBoost.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   33</span>                           {</div>
+<div class="line"><span class="lineno">   34</span>  <a class="code hl_variable" href="#a1caa81602a15351ba6e32ce953e33003">nBBs</a> = 0;</div>
+<div class="line"><span class="lineno">   35</span>  <a class="code hl_variable" href="#a18060bf9aa342e43667c55a4ceb11fdd">nReg</a> = 1;</div>
+<div class="line"><span class="lineno">   36</span> </div>
+<div class="line"><span class="lineno">   37</span>  <span class="keyword">const</span> std::string &amp;balString =</div>
+<div class="line"><span class="lineno">   38</span>      <a class="code hl_variable" href="#a05e46883edd1df843538c0215873b9e1">parameters</a>.hyperdynamics_options.boost_atom_list;</div>
+<div class="line"><span class="lineno">   39</span>  <span class="keyword">auto</span> atoms = <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a9cfe2031306dfa5240845ce81038968d">eonc::helpers::split_string_int</a>(balString, <span class="stringliteral">&quot;,&quot;</span>);</div>
+<div class="line"><span class="lineno">   40</span> </div>
+<div class="line"><span class="lineno">   41</span>  <span class="keywordflow">if</span> (balString == <span class="stringliteral">&quot;all&quot;</span> || atoms.empty()) {</div>
+<div class="line"><span class="lineno">   42</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a7c25d9c0475d2d137b0bbbe2397af69a">log</a>, <span class="stringliteral">&quot;boost all atoms that are set free\n&quot;</span>);</div>
+<div class="line"><span class="lineno">   43</span>    <a class="code hl_variable" href="#a2dcd7e4c2049bc32e20e49c66e022b02">nBAs</a> = <a class="code hl_variable" href="#a2a239f5f79e51f422d09c2b0c5ce30ee">matter</a>-&gt;numberOfFreeAtoms();</div>
+<div class="line"><span class="lineno">   44</span>    <a class="code hl_variable" href="#ab67c0fd4cf98728a33595464b581dd84">nRAs</a> = <a class="code hl_variable" href="#a2d90302970d895c0c91322cd43192025">nAtoms</a> - <a class="code hl_variable" href="#a2dcd7e4c2049bc32e20e49c66e022b02">nBAs</a>;</div>
+<div class="line"><span class="lineno">   45</span>    <a class="code hl_variable" href="#ae080a948d07ad5eb2c1a4ce7388824fe">BAList</a>.resize(<a class="code hl_variable" href="#a2dcd7e4c2049bc32e20e49c66e022b02">nBAs</a>);</div>
+<div class="line"><span class="lineno">   46</span>    <a class="code hl_variable" href="#af8c0e7c241bf021d3bb517f957c4aa67">RAList</a>.resize(<a class="code hl_variable" href="#ab67c0fd4cf98728a33595464b581dd84">nRAs</a>);</div>
+<div class="line"><span class="lineno">   47</span>    <span class="keywordtype">long</span> k = 0;</div>
+<div class="line"><span class="lineno">   48</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#a2d90302970d895c0c91322cd43192025">nAtoms</a>; i++) {</div>
+<div class="line"><span class="lineno">   49</span>      <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a2a239f5f79e51f422d09c2b0c5ce30ee">matter</a>-&gt;getFixed(i)) {</div>
+<div class="line"><span class="lineno">   50</span>        <a class="code hl_variable" href="#ae080a948d07ad5eb2c1a4ce7388824fe">BAList</a>[k++] = i;</div>
+<div class="line"><span class="lineno">   51</span>      }</div>
+<div class="line"><span class="lineno">   52</span>    }</div>
+<div class="line"><span class="lineno">   53</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   54</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a7c25d9c0475d2d137b0bbbe2397af69a">log</a>, <span class="stringliteral">&quot;boost the following selected atoms:&quot;</span>);</div>
+<div class="line"><span class="lineno">   55</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; atoms.size(); i++) {</div>
+<div class="line"><span class="lineno">   56</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a7c25d9c0475d2d137b0bbbe2397af69a">log</a>, <span class="stringliteral">&quot;{} &quot;</span>, atoms[i]);</div>
+<div class="line"><span class="lineno">   57</span>    }</div>
+<div class="line"><span class="lineno">   58</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a7c25d9c0475d2d137b0bbbe2397af69a">log</a>, <span class="stringliteral">&quot;\n&quot;</span>);</div>
+<div class="line"><span class="lineno">   59</span>    <a class="code hl_variable" href="#a2dcd7e4c2049bc32e20e49c66e022b02">nBAs</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(atoms.size());</div>
+<div class="line"><span class="lineno">   60</span>    <a class="code hl_variable" href="#ab67c0fd4cf98728a33595464b581dd84">nRAs</a> = <a class="code hl_variable" href="#a2d90302970d895c0c91322cd43192025">nAtoms</a> - <a class="code hl_variable" href="#a2dcd7e4c2049bc32e20e49c66e022b02">nBAs</a>;</div>
+<div class="line"><span class="lineno">   61</span>    <a class="code hl_variable" href="#ae080a948d07ad5eb2c1a4ce7388824fe">BAList</a>.resize(<a class="code hl_variable" href="#a2dcd7e4c2049bc32e20e49c66e022b02">nBAs</a>);</div>
+<div class="line"><span class="lineno">   62</span>    <a class="code hl_variable" href="#af8c0e7c241bf021d3bb517f957c4aa67">RAList</a>.resize(<a class="code hl_variable" href="#ab67c0fd4cf98728a33595464b581dd84">nRAs</a>);</div>
+<div class="line"><span class="lineno">   63</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#a2dcd7e4c2049bc32e20e49c66e022b02">nBAs</a>; i++) {</div>
+<div class="line"><span class="lineno">   64</span>      <a class="code hl_variable" href="#ae080a948d07ad5eb2c1a4ce7388824fe">BAList</a>[i] = atoms[i];</div>
+<div class="line"><span class="lineno">   65</span>    }</div>
+<div class="line"><span class="lineno">   66</span>  }</div>
+<div class="line"><span class="lineno">   67</span> </div>
+<div class="line"><span class="lineno">   68</span>  <span class="comment">// Build rest-atoms list (atoms not in BAList)</span></div>
+<div class="line"><span class="lineno">   69</span>  <span class="keywordtype">long</span> count = 0;</div>
+<div class="line"><span class="lineno">   70</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#a2d90302970d895c0c91322cd43192025">nAtoms</a>; i++) {</div>
+<div class="line"><span class="lineno">   71</span>    <span class="keywordtype">bool</span> isBoosted = std::any_of(<a class="code hl_variable" href="#ae080a948d07ad5eb2c1a4ce7388824fe">BAList</a>.begin(), <a class="code hl_variable" href="#ae080a948d07ad5eb2c1a4ce7388824fe">BAList</a>.end(),</div>
+<div class="line"><span class="lineno">   72</span>                                 [i](<span class="keywordtype">long</span> ba) { return ba == i; });</div>
+<div class="line"><span class="lineno">   73</span>    <span class="keywordflow">if</span> (!isBoosted) {</div>
+<div class="line"><span class="lineno">   74</span>      <a class="code hl_variable" href="#af8c0e7c241bf021d3bb517f957c4aa67">RAList</a>[count++] = i;</div>
+<div class="line"><span class="lineno">   75</span>    }</div>
+<div class="line"><span class="lineno">   76</span>  }</div>
+<div class="line"><span class="lineno">   77</span>  <span class="keywordflow">if</span> (count != <a class="code hl_variable" href="#ab67c0fd4cf98728a33595464b581dd84">nRAs</a>) {</div>
+<div class="line"><span class="lineno">   78</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a7c25d9c0475d2d137b0bbbe2397af69a">log</a>, <span class="stringliteral">&quot;Error: nRestAtoms does not equal counted number!\n&quot;</span>);</div>
+<div class="line"><span class="lineno">   79</span>  }</div>
+<div class="line"><span class="lineno">   80</span> </div>
+<div class="line"><span class="lineno">   81</span>  <a class="code hl_variable" href="#a2f79fd4d5444b040db6637c12301be9f">nTABs</a> = <a class="code hl_variable" href="#a2dcd7e4c2049bc32e20e49c66e022b02">nBAs</a> * (<a class="code hl_variable" href="#a2dcd7e4c2049bc32e20e49c66e022b02">nBAs</a> - 1) / 2 + <a class="code hl_variable" href="#a2dcd7e4c2049bc32e20e49c66e022b02">nBAs</a> * <a class="code hl_variable" href="#ab67c0fd4cf98728a33595464b581dd84">nRAs</a>;</div>
+<div class="line"><span class="lineno">   82</span>  <a class="code hl_variable" href="#ad449262b978dbed1543d77d8fc0dc824">TABAList</a>.resize(2 * <a class="code hl_variable" href="#a2f79fd4d5444b040db6637c12301be9f">nTABs</a>);</div>
+<div class="line"><span class="lineno">   83</span>  <a class="code hl_variable" href="#a944cda2bbab6f479a97bc34fb3e59d22">TABLList</a>.setZero(<a class="code hl_variable" href="#a2f79fd4d5444b040db6637c12301be9f">nTABs</a>, 1);</div>
+<div class="line"><span class="lineno">   84</span>  QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a7c25d9c0475d2d137b0bbbe2397af69a">log</a>, <span class="stringliteral">&quot;BondBoost Used !\n&quot;</span>);</div>
+<div class="line"><span class="lineno">   85</span>}</div>
+<div class="ttc" id="aclassBondBoost_html_a2dcd7e4c2049bc32e20e49c66e022b02"><div class="ttname"><a href="#a2dcd7e4c2049bc32e20e49c66e022b02">BondBoost::nBAs</a></div><div class="ttdeci">long nBAs</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00064">BondBoost.h:64</a></div></div>
+<div class="ttc" id="aclassBondBoost_html_a7c25d9c0475d2d137b0bbbe2397af69a"><div class="ttname"><a href="#a7c25d9c0475d2d137b0bbbe2397af69a">BondBoost::log</a></div><div class="ttdeci">eonc::log::Scoped log</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00069">BondBoost.h:69</a></div></div>
+<div class="ttc" id="aclassBondBoost_html_ab67c0fd4cf98728a33595464b581dd84"><div class="ttname"><a href="#ab67c0fd4cf98728a33595464b581dd84">BondBoost::nRAs</a></div><div class="ttdeci">long nRAs</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00065">BondBoost.h:65</a></div></div>
+<div class="ttc" id="aclassBondBoost_html_ae080a948d07ad5eb2c1a4ce7388824fe"><div class="ttname"><a href="#ae080a948d07ad5eb2c1a4ce7388824fe">BondBoost::BAList</a></div><div class="ttdeci">std::vector&lt; long &gt; BAList</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00055">BondBoost.h:55</a></div></div>
+<div class="ttc" id="aclassBondBoost_html_af8c0e7c241bf021d3bb517f957c4aa67"><div class="ttname"><a href="#af8c0e7c241bf021d3bb517f957c4aa67">BondBoost::RAList</a></div><div class="ttdeci">std::vector&lt; long &gt; RAList</div><div class="ttdef"><b>Definition</b> <a href="BondBoost_8h_source.html#l00056">BondBoost.h:56</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a9cfe2031306dfa5240845ce81038968d"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a9cfe2031306dfa5240845ce81038968d">eonc::helpers::split_string_int</a></div><div class="ttdeci">std::vector&lt; int &gt; split_string_int(std::string s, std::string delim)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00224">HelperFunctions.cpp:224</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a88224c60548053328642aebb382e0b06" name="a88224c60548053328642aebb382e0b06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88224c60548053328642aebb382e0b06">&#9670;&#160;</a></span>Rmdsteps()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Matrix&lt; double, Eigen::Dynamic, 1 &gt; <a class="el" href="classeonc_1_1BondBoost.html#a88224c60548053328642aebb382e0b06">BondBoost::Rmdsteps</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Measure all tagged-atom bond lengths for the equilibration phase. </p>
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8cpp_source.html#l00209">209</a> of file <a class="el" href="BondBoost_8cpp_source.html">BondBoost.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  209</span>                                                    {</div>
+<div class="line"><span class="lineno">  210</span>  Matrix&lt;double, Eigen::Dynamic, 1&gt; bondLengths(<a class="code hl_variable" href="#a2f79fd4d5444b040db6637c12301be9f">nTABs</a>, 1);</div>
+<div class="line"><span class="lineno">  211</span>  <span class="keywordtype">long</span> count = 0;</div>
+<div class="line"><span class="lineno">  212</span> </div>
+<div class="line"><span class="lineno">  213</span>  <span class="comment">// Boost-atom pairs</span></div>
+<div class="line"><span class="lineno">  214</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#a2dcd7e4c2049bc32e20e49c66e022b02">nBAs</a>; i++) {</div>
+<div class="line"><span class="lineno">  215</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = i + 1; j &lt; <a class="code hl_variable" href="#a2dcd7e4c2049bc32e20e49c66e022b02">nBAs</a>; j++) {</div>
+<div class="line"><span class="lineno">  216</span>      bondLengths(count, 0) = <a class="code hl_variable" href="#a2a239f5f79e51f422d09c2b0c5ce30ee">matter</a>-&gt;distance(<a class="code hl_variable" href="#ae080a948d07ad5eb2c1a4ce7388824fe">BAList</a>[i], <a class="code hl_variable" href="#ae080a948d07ad5eb2c1a4ce7388824fe">BAList</a>[j]);</div>
+<div class="line"><span class="lineno">  217</span>      <a class="code hl_variable" href="#ad449262b978dbed1543d77d8fc0dc824">TABAList</a>[2 * count] = <a class="code hl_variable" href="#ae080a948d07ad5eb2c1a4ce7388824fe">BAList</a>[i];</div>
+<div class="line"><span class="lineno">  218</span>      <a class="code hl_variable" href="#ad449262b978dbed1543d77d8fc0dc824">TABAList</a>[2 * count + 1] = <a class="code hl_variable" href="#ae080a948d07ad5eb2c1a4ce7388824fe">BAList</a>[j];</div>
+<div class="line"><span class="lineno">  219</span>      count++;</div>
+<div class="line"><span class="lineno">  220</span>    }</div>
+<div class="line"><span class="lineno">  221</span>  }</div>
+<div class="line"><span class="lineno">  222</span> </div>
+<div class="line"><span class="lineno">  223</span>  <span class="comment">// Boost-atom to rest-atom pairs</span></div>
+<div class="line"><span class="lineno">  224</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#a2dcd7e4c2049bc32e20e49c66e022b02">nBAs</a>; i++) {</div>
+<div class="line"><span class="lineno">  225</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> j = 0; j &lt; <a class="code hl_variable" href="#ab67c0fd4cf98728a33595464b581dd84">nRAs</a>; j++) {</div>
+<div class="line"><span class="lineno">  226</span>      bondLengths(count, 0) = <a class="code hl_variable" href="#a2a239f5f79e51f422d09c2b0c5ce30ee">matter</a>-&gt;distance(<a class="code hl_variable" href="#ae080a948d07ad5eb2c1a4ce7388824fe">BAList</a>[i], <a class="code hl_variable" href="#af8c0e7c241bf021d3bb517f957c4aa67">RAList</a>[j]);</div>
+<div class="line"><span class="lineno">  227</span>      <a class="code hl_variable" href="#ad449262b978dbed1543d77d8fc0dc824">TABAList</a>[2 * count] = <a class="code hl_variable" href="#ae080a948d07ad5eb2c1a4ce7388824fe">BAList</a>[i];</div>
+<div class="line"><span class="lineno">  228</span>      <a class="code hl_variable" href="#ad449262b978dbed1543d77d8fc0dc824">TABAList</a>[2 * count + 1] = <a class="code hl_variable" href="#af8c0e7c241bf021d3bb517f957c4aa67">RAList</a>[j];</div>
+<div class="line"><span class="lineno">  229</span>      count++;</div>
+<div class="line"><span class="lineno">  230</span>    }</div>
+<div class="line"><span class="lineno">  231</span>  }</div>
+<div class="line"><span class="lineno">  232</span> </div>
+<div class="line"><span class="lineno">  233</span>  <span class="keywordflow">if</span> (count != <a class="code hl_variable" href="#a2f79fd4d5444b040db6637c12301be9f">nTABs</a>) {</div>
+<div class="line"><span class="lineno">  234</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a7c25d9c0475d2d137b0bbbe2397af69a">log</a>, <span class="stringliteral">&quot;Total involved bond count does not match expected\n&quot;</span>);</div>
+<div class="line"><span class="lineno">  235</span>  }</div>
+<div class="line"><span class="lineno">  236</span>  <span class="keywordflow">return</span> bondLengths;</div>
+<div class="line"><span class="lineno">  237</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="add65ad9cb580877459338e1dca39dff9" name="add65ad9cb580877459338e1dca39dff9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add65ad9cb580877459338e1dca39dff9">&#9670;&#160;</a></span>rmdSteps()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long <a class="el" href="classeonc_1_1BondBoost.html#add65ad9cb580877459338e1dca39dff9">BondBoost::rmdSteps</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8cpp_source.html#l00087">87</a> of file <a class="el" href="BondBoost_8cpp_source.html">BondBoost.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   87</span>                               {</div>
+<div class="line"><span class="lineno">   88</span>  <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a05e46883edd1df843538c0215873b9e1">parameters</a>.hyperdynamics_options.rmd_time /</div>
+<div class="line"><span class="lineno">   89</span>                           <a class="code hl_variable" href="#a05e46883edd1df843538c0215873b9e1">parameters</a>.dynamics_options.time_step);</div>
+<div class="line"><span class="lineno">   90</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a4b16985b1f3c0ffdceecf2efcccb5216" name="a4b16985b1f3c0ffdceecf2efcccb5216"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b16985b1f3c0ffdceecf2efcccb5216">&#9670;&#160;</a></span>scheduleStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long <a class="el" href="classeonc_1_1BondBoost.html#a4b16985b1f3c0ffdceecf2efcccb5216">eonc::BondBoost::scheduleStep</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Equilibration counter (starts at 1). Used to test the per-step schedule. </p>
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00043">43</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   43</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a18060bf9aa342e43667c55a4ceb11fdd">nReg</a>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="ae080a948d07ad5eb2c1a4ce7388824fe" name="ae080a948d07ad5eb2c1a4ce7388824fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae080a948d07ad5eb2c1a4ce7388824fe">&#9670;&#160;</a></span>BAList</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;long&gt; <a class="el" href="classeonc_1_1BondBoost.html#ae080a948d07ad5eb2c1a4ce7388824fe">eonc::BondBoost::BAList</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00055">55</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+
+</div>
+</div>
+<a id="a8cd54613c0824d26fcc063add59c93f6" name="a8cd54613c0824d26fcc063add59c93f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cd54613c0824d26fcc063add59c93f6">&#9670;&#160;</a></span>BBAList</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;long&gt; <a class="el" href="classeonc_1_1BondBoost.html#a8cd54613c0824d26fcc063add59c93f6">eonc::BondBoost::BBAList</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00058">58</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+
+</div>
+</div>
+<a id="aeb94d3e1f526be4243bb9d2d379fd10f" name="aeb94d3e1f526be4243bb9d2d379fd10f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb94d3e1f526be4243bb9d2d379fd10f">&#9670;&#160;</a></span>CBBLList</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Matrix&lt;double, Eigen::Dynamic, 1&gt; <a class="el" href="classeonc_1_1BondBoost.html#aeb94d3e1f526be4243bb9d2d379fd10f">eonc::BondBoost::CBBLList</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00063">63</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+
+</div>
+</div>
+<a id="a3bb1a2472a74f9eec0cea37e24fb1f9f" name="a3bb1a2472a74f9eec0cea37e24fb1f9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bb1a2472a74f9eec0cea37e24fb1f9f">&#9670;&#160;</a></span>EBBLList</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Matrix&lt;double, Eigen::Dynamic, 1&gt; <a class="el" href="classeonc_1_1BondBoost.html#a3bb1a2472a74f9eec0cea37e24fb1f9f">eonc::BondBoost::EBBLList</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00062">62</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+
+</div>
+</div>
+<a id="aa758204262ec0ff36e84a8cc43ee5103" name="aa758204262ec0ff36e84a8cc43ee5103"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa758204262ec0ff36e84a8cc43ee5103">&#9670;&#160;</a></span>Epsr_Q</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; <a class="el" href="classeonc_1_1BondBoost.html#aa758204262ec0ff36e84a8cc43ee5103">eonc::BondBoost::Epsr_Q</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00059">59</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+
+</div>
+</div>
+<a id="a7c25d9c0475d2d137b0bbbe2397af69a" name="a7c25d9c0475d2d137b0bbbe2397af69a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c25d9c0475d2d137b0bbbe2397af69a">&#9670;&#160;</a></span>log</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1log_1_1Scoped.html">eonc::log::Scoped</a> <a class="el" href="classeonc_1_1BondBoost.html#a7c25d9c0475d2d137b0bbbe2397af69a">eonc::BondBoost::log</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00069">69</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+
+</div>
+</div>
+<a id="a2a239f5f79e51f422d09c2b0c5ce30ee" name="a2a239f5f79e51f422d09c2b0c5ce30ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a239f5f79e51f422d09c2b0c5ce30ee">&#9670;&#160;</a></span>matter</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classMatter.html">Matter</a>* <a class="el" href="classeonc_1_1BondBoost.html#a2a239f5f79e51f422d09c2b0c5ce30ee">eonc::BondBoost::matter</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">{</div>
+<div class="line">      <span class="keyword">nullptr</span>}</div>
+</div><!-- fragment -->
+<p>Pointer to atom object <b>outside</b> the scope of the class. </p>
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00051">51</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   51</span>                {</div>
+<div class="line"><span class="lineno">   52</span>      <span class="keyword">nullptr</span>}; </div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2d90302970d895c0c91322cd43192025" name="a2d90302970d895c0c91322cd43192025"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d90302970d895c0c91322cd43192025">&#9670;&#160;</a></span>nAtoms</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long <a class="el" href="classeonc_1_1BondBoost.html#a2d90302970d895c0c91322cd43192025">eonc::BondBoost::nAtoms</a> {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of free coordinates. </p>
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00050">50</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   50</span>{0}; </div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2dcd7e4c2049bc32e20e49c66e022b02" name="a2dcd7e4c2049bc32e20e49c66e022b02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dcd7e4c2049bc32e20e49c66e022b02">&#9670;&#160;</a></span>nBAs</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long <a class="el" href="classeonc_1_1BondBoost.html#a2dcd7e4c2049bc32e20e49c66e022b02">eonc::BondBoost::nBAs</a> {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00064">64</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   64</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1caa81602a15351ba6e32ce953e33003" name="a1caa81602a15351ba6e32ce953e33003"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1caa81602a15351ba6e32ce953e33003">&#9670;&#160;</a></span>nBBs</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long <a class="el" href="classeonc_1_1BondBoost.html#a1caa81602a15351ba6e32ce953e33003">eonc::BondBoost::nBBs</a> {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00068">68</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   68</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab67c0fd4cf98728a33595464b581dd84" name="ab67c0fd4cf98728a33595464b581dd84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab67c0fd4cf98728a33595464b581dd84">&#9670;&#160;</a></span>nRAs</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long <a class="el" href="classeonc_1_1BondBoost.html#ab67c0fd4cf98728a33595464b581dd84">eonc::BondBoost::nRAs</a> {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00065">65</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   65</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a18060bf9aa342e43667c55a4ceb11fdd" name="a18060bf9aa342e43667c55a4ceb11fdd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18060bf9aa342e43667c55a4ceb11fdd">&#9670;&#160;</a></span>nReg</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long <a class="el" href="classeonc_1_1BondBoost.html#a18060bf9aa342e43667c55a4ceb11fdd">eonc::BondBoost::nReg</a> {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00067">67</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   67</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2f79fd4d5444b040db6637c12301be9f" name="a2f79fd4d5444b040db6637c12301be9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f79fd4d5444b040db6637c12301be9f">&#9670;&#160;</a></span>nTABs</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long <a class="el" href="classeonc_1_1BondBoost.html#a2f79fd4d5444b040db6637c12301be9f">eonc::BondBoost::nTABs</a> {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00066">66</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   66</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a05e46883edd1df843538c0215873b9e1" name="a05e46883edd1df843538c0215873b9e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05e46883edd1df843538c0215873b9e1">&#9670;&#160;</a></span>parameters</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classParameters.html">Parameters</a>&amp; <a class="el" href="classeonc_1_1BondBoost.html#a05e46883edd1df843538c0215873b9e1">eonc::BondBoost::parameters</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reference to a structure outside the scope of the class containing runtime parameters. </p>
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00053">53</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+
+</div>
+</div>
+<a id="af8c0e7c241bf021d3bb517f957c4aa67" name="af8c0e7c241bf021d3bb517f957c4aa67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8c0e7c241bf021d3bb517f957c4aa67">&#9670;&#160;</a></span>RAList</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;long&gt; <a class="el" href="classeonc_1_1BondBoost.html#af8c0e7c241bf021d3bb517f957c4aa67">eonc::BondBoost::RAList</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00056">56</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+
+</div>
+</div>
+<a id="ad449262b978dbed1543d77d8fc0dc824" name="ad449262b978dbed1543d77d8fc0dc824"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad449262b978dbed1543d77d8fc0dc824">&#9670;&#160;</a></span>TABAList</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;long&gt; <a class="el" href="classeonc_1_1BondBoost.html#ad449262b978dbed1543d77d8fc0dc824">eonc::BondBoost::TABAList</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00057">57</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+
+</div>
+</div>
+<a id="a944cda2bbab6f479a97bc34fb3e59d22" name="a944cda2bbab6f479a97bc34fb3e59d22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a944cda2bbab6f479a97bc34fb3e59d22">&#9670;&#160;</a></span>TABLList</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Matrix&lt;double, Eigen::Dynamic, 1&gt; <a class="el" href="classeonc_1_1BondBoost.html#a944cda2bbab6f479a97bc34fb3e59d22">eonc::BondBoost::TABLList</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="BondBoost_8h_source.html#l00061">61</a> of file <a class="el" href="BondBoost_8h_source.html">BondBoost.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="BondBoost_8h_source.html">BondBoost.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/<a class="el" href="BondBoost_8cpp_source.html">BondBoost.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="classBondBoost.html">BondBoost</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

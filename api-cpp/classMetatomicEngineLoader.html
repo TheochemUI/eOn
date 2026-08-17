@@ -1,0 +1,818 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: MetatomicEngineLoader Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classMetatomicEngineLoader.html','','classMetatomicEngineLoader-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">MetatomicEngineLoader Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="MetatomicEngineLoader_8h_source.html">MetatomicEngineLoader.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:aa72fa02021a90350efdcd28ef5e2a394" id="r_aa72fa02021a90350efdcd28ef5e2a394"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#aa72fa02021a90350efdcd28ef5e2a394">MetatomicEngineLoader</a> (const <a class="el" href="structMetatomicEngineOptions.html">MetatomicEngineOptions</a> &amp;opt)</td></tr>
+<tr class="memitem:a9366185e68d7e098a743deef3c1fc008" id="r_a9366185e68d7e098a743deef3c1fc008"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a9366185e68d7e098a743deef3c1fc008">~MetatomicEngineLoader</a> ()</td></tr>
+<tr class="memitem:af722ac3e21513ddede8712e13e5a2221" id="r_af722ac3e21513ddede8712e13e5a2221"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#af722ac3e21513ddede8712e13e5a2221">MetatomicEngineLoader</a> (const <a class="el" href="classMetatomicEngineLoader.html">MetatomicEngineLoader</a> &amp;)=delete</td></tr>
+<tr class="memitem:a6bed693adcb2ff849706f866a3606d2d" id="r_a6bed693adcb2ff849706f866a3606d2d"><td class="memItemLeft"><a class="el" href="classMetatomicEngineLoader.html">MetatomicEngineLoader</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a6bed693adcb2ff849706f866a3606d2d">operator=</a> (const <a class="el" href="classMetatomicEngineLoader.html">MetatomicEngineLoader</a> &amp;)=delete</td></tr>
+<tr class="memitem:a90eeff4809cec48ad43d070f127273be" id="r_a90eeff4809cec48ad43d070f127273be"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a90eeff4809cec48ad43d070f127273be">available</a> () const noexcept</td></tr>
+<tr class="memitem:a7ca739d2076505bb0d0f1eef3c3f3c65" id="r_a7ca739d2076505bb0d0f1eef3c3f3c65"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a7ca739d2076505bb0d0f1eef3c3f3c65">force</a> (long N, const double *R, const int *atomicNrs, double *F, double *U, double *variance, const double *box) const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-types" class="groupheader"><a id="pri-types" name="pri-types"></a>
+Private Types</h2></td></tr>
+<tr class="memitem:a24b24b4dc46e248bb5b5ceeff1552ed6" id="r_a24b24b4dc46e248bb5b5ceeff1552ed6"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a24b24b4dc46e248bb5b5ceeff1552ed6">create_fn</a> = <a class="el" href="structRgpotMtaPot.html">RgpotMtaPot</a> *(*)(const <a class="el" href="structRgpotMtaConfig.html">RgpotMtaConfig</a> *, char *, size_t)</td></tr>
+<tr class="memitem:a20da2fb9d0673322010f536ea02c404b" id="r_a20da2fb9d0673322010f536ea02c404b"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a20da2fb9d0673322010f536ea02c404b">destroy_fn</a> = void (*)(<a class="el" href="structRgpotMtaPot.html">RgpotMtaPot</a> *)</td></tr>
+<tr class="memitem:a82ceec26d2837613c27f366f59ec13c5" id="r_a82ceec26d2837613c27f366f59ec13c5"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a82ceec26d2837613c27f366f59ec13c5">force_fn</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a3681ef3a465de562353ea0c89e47a833" id="r_a3681ef3a465de562353ea0c89e47a833"><td class="memItemLeft">void *&#160;</td><td class="memItemRight"><a class="el" href="#a3681ef3a465de562353ea0c89e47a833">m_lib</a> {nullptr}</td></tr>
+<tr class="memitem:a943961115bcd23d224b3ed4748544e00" id="r_a943961115bcd23d224b3ed4748544e00"><td class="memItemLeft"><a class="el" href="structRgpotMtaPot.html">RgpotMtaPot</a> *&#160;</td><td class="memItemRight"><a class="el" href="#a943961115bcd23d224b3ed4748544e00">m_pot</a> {nullptr}</td></tr>
+<tr class="memitem:a756cb303474addf7426195562542e820" id="r_a756cb303474addf7426195562542e820"><td class="memItemLeft"><a class="el" href="#a24b24b4dc46e248bb5b5ceeff1552ed6">create_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a756cb303474addf7426195562542e820">m_create</a> {nullptr}</td></tr>
+<tr class="memitem:a0b1854b1936215b99c18326bcbbe99bc" id="r_a0b1854b1936215b99c18326bcbbe99bc"><td class="memItemLeft"><a class="el" href="#a20da2fb9d0673322010f536ea02c404b">destroy_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a0b1854b1936215b99c18326bcbbe99bc">m_destroy</a> {nullptr}</td></tr>
+<tr class="memitem:a8cfee1abd69c805e7af11bbab74d23e8" id="r_a8cfee1abd69c805e7af11bbab74d23e8"><td class="memItemLeft"><a class="el" href="#a82ceec26d2837613c27f366f59ec13c5">force_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a8cfee1abd69c805e7af11bbab74d23e8">m_force</a> {nullptr}</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="MetatomicEngineLoader_8h_source.html#l00020">20</a> of file <a class="el" href="MetatomicEngineLoader_8h_source.html">MetatomicEngineLoader.h</a>.</p>
+</div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
+<a id="a24b24b4dc46e248bb5b5ceeff1552ed6" name="a24b24b4dc46e248bb5b5ceeff1552ed6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24b24b4dc46e248bb5b5ceeff1552ed6">&#9670;&#160;</a></span>create_fn</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a24b24b4dc46e248bb5b5ceeff1552ed6">MetatomicEngineLoader::create_fn</a> = <a class="el" href="structRgpotMtaPot.html">RgpotMtaPot</a> *(*)(const <a class="el" href="structRgpotMtaConfig.html">RgpotMtaConfig</a> *, char *, size_t)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicEngineLoader_8h_source.html#l00034">34</a> of file <a class="el" href="MetatomicEngineLoader_8h_source.html">MetatomicEngineLoader.h</a>.</p>
+
+</div>
+</div>
+<a id="a20da2fb9d0673322010f536ea02c404b" name="a20da2fb9d0673322010f536ea02c404b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20da2fb9d0673322010f536ea02c404b">&#9670;&#160;</a></span>destroy_fn</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a20da2fb9d0673322010f536ea02c404b">MetatomicEngineLoader::destroy_fn</a> = void (*)(<a class="el" href="structRgpotMtaPot.html">RgpotMtaPot</a> *)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicEngineLoader_8h_source.html#l00035">35</a> of file <a class="el" href="MetatomicEngineLoader_8h_source.html">MetatomicEngineLoader.h</a>.</p>
+
+</div>
+</div>
+<a id="a82ceec26d2837613c27f366f59ec13c5" name="a82ceec26d2837613c27f366f59ec13c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82ceec26d2837613c27f366f59ec13c5">&#9670;&#160;</a></span>force_fn</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a82ceec26d2837613c27f366f59ec13c5">MetatomicEngineLoader::force_fn</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">int (*)(<a class="code hl_struct" href="structRgpotMtaPot.html">RgpotMtaPot</a> *, long, <span class="keyword">const</span> <span class="keywordtype">double</span> *, <span class="keyword">const</span> <span class="keywordtype">int</span> *,</div>
+<div class="line">                          <span class="keywordtype">double</span> *, <span class="keywordtype">double</span> *, <span class="keywordtype">double</span> *, <span class="keyword">const</span> <span class="keywordtype">double</span> *)</div>
+<div class="ttc" id="astructRgpotMtaPot_html"><div class="ttname"><a href="structRgpotMtaPot.html">RgpotMtaPot</a></div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineAbi_8cpp_source.html#l00017">MetatomicEngineAbi.cpp:17</a></div></div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="MetatomicEngineLoader_8h_source.html#l00036">36</a> of file <a class="el" href="MetatomicEngineLoader_8h_source.html">MetatomicEngineLoader.h</a>.</p>
+
+</div>
+</div>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="aa72fa02021a90350efdcd28ef5e2a394" name="aa72fa02021a90350efdcd28ef5e2a394"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa72fa02021a90350efdcd28ef5e2a394">&#9670;&#160;</a></span>MetatomicEngineLoader() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">MetatomicEngineLoader::MetatomicEngineLoader </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structMetatomicEngineOptions.html">MetatomicEngineOptions</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>opt</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicEngineLoader_8cpp_source.html#l00033">33</a> of file <a class="el" href="MetatomicEngineLoader_8cpp_source.html">MetatomicEngineLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   34</span>                                       {</div>
+<div class="line"><span class="lineno">   35</span>  std::vector&lt;std::string&gt; paths;</div>
+<div class="line"><span class="lineno">   36</span>  <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a8ed14167b3893a576711fc6d751454b4">engine_path</a>.empty())</div>
+<div class="line"><span class="lineno">   37</span>    paths.push_back(opt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a8ed14167b3893a576711fc6d751454b4">engine_path</a>);</div>
+<div class="line"><span class="lineno">   38</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_METATOMIC_ENGINE&quot;</span>))</div>
+<div class="line"><span class="lineno">   39</span>    <span class="keywordflow">if</span> (e &amp;&amp; *e)</div>
+<div class="line"><span class="lineno">   40</span>      paths.emplace_back(e);</div>
+<div class="line"><span class="lineno">   41</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;METATOMIC_ENGINE&quot;</span>))</div>
+<div class="line"><span class="lineno">   42</span>    <span class="keywordflow">if</span> (e &amp;&amp; *e)</div>
+<div class="line"><span class="lineno">   43</span>      paths.emplace_back(e);</div>
+<div class="line"><span class="lineno">   44</span>  paths.emplace_back(<span class="stringliteral">&quot;libmetatomic_engine.so&quot;</span>);</div>
+<div class="line"><span class="lineno">   45</span>  <span class="keyword">auto</span> add_dirs = [&amp;](<span class="keyword">const</span> <span class="keywordtype">char</span> *env) {</div>
+<div class="line"><span class="lineno">   46</span>    <span class="keywordflow">if</span> (!env)</div>
+<div class="line"><span class="lineno">   47</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   48</span>    std::string s(env);</div>
+<div class="line"><span class="lineno">   49</span>    <span class="keywordtype">size_t</span> i = 0;</div>
+<div class="line"><span class="lineno">   50</span>    <span class="keywordflow">while</span> (i &lt; s.size()) {</div>
+<div class="line"><span class="lineno">   51</span>      <span class="keyword">auto</span> j = s.find(<span class="charliteral">&#39;:&#39;</span>, i);</div>
+<div class="line"><span class="lineno">   52</span>      <span class="keywordflow">if</span> (j == std::string::npos)</div>
+<div class="line"><span class="lineno">   53</span>        j = s.size();</div>
+<div class="line"><span class="lineno">   54</span>      <span class="keywordflow">if</span> (j &gt; i) {</div>
+<div class="line"><span class="lineno">   55</span>        std::string d = s.substr(i, j - i);</div>
+<div class="line"><span class="lineno">   56</span>        <span class="keywordflow">if</span> (!d.empty() &amp;&amp; d.back() != <span class="charliteral">&#39;/&#39;</span>)</div>
+<div class="line"><span class="lineno">   57</span>          d += <span class="charliteral">&#39;/&#39;</span>;</div>
+<div class="line"><span class="lineno">   58</span>        paths.push_back(d + <span class="stringliteral">&quot;libmetatomic_engine.so&quot;</span>);</div>
+<div class="line"><span class="lineno">   59</span>      }</div>
+<div class="line"><span class="lineno">   60</span>      i = j + 1;</div>
+<div class="line"><span class="lineno">   61</span>    }</div>
+<div class="line"><span class="lineno">   62</span>  };</div>
+<div class="line"><span class="lineno">   63</span>  add_dirs(std::getenv(<span class="stringliteral">&quot;EON_POTENTIALS_PATH&quot;</span>));</div>
+<div class="line"><span class="lineno">   64</span>  add_dirs(std::getenv(<span class="stringliteral">&quot;RGPOT_ENGINE_PATH&quot;</span>));</div>
+<div class="line"><span class="lineno">   65</span> </div>
+<div class="line"><span class="lineno">   66</span>  std::string last_dlerr;</div>
+<div class="line"><span class="lineno">   67</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;p : paths) {</div>
+<div class="line"><span class="lineno">   68</span>    <a class="code hl_variable" href="#a3681ef3a465de562353ea0c89e47a833">m_lib</a> = open_lib(p.c_str());</div>
+<div class="line"><span class="lineno">   69</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a3681ef3a465de562353ea0c89e47a833">m_lib</a>)</div>
+<div class="line"><span class="lineno">   70</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">   71</span><span class="preprocessor">#ifndef _WIN32</span></div>
+<div class="line"><span class="lineno">   72</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = dlerror())</div>
+<div class="line"><span class="lineno">   73</span>      last_dlerr = e;</div>
+<div class="line"><span class="lineno">   74</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">   75</span>  }</div>
+<div class="line"><span class="lineno">   76</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a3681ef3a465de562353ea0c89e47a833">m_lib</a>) {</div>
+<div class="line"><span class="lineno">   77</span>    std::string msg = <span class="stringliteral">&quot;RGPOT(metatomic): libmetatomic_engine.so not found &quot;</span></div>
+<div class="line"><span class="lineno">   78</span>                      <span class="stringliteral">&quot;(set RGPOT_METATOMIC_ENGINE or EON_POTENTIALS_PATH)&quot;</span>;</div>
+<div class="line"><span class="lineno">   79</span>    <span class="keywordflow">if</span> (!last_dlerr.empty())</div>
+<div class="line"><span class="lineno">   80</span>      msg += std::string(<span class="stringliteral">&quot;; last dlerror: &quot;</span>) + last_dlerr;</div>
+<div class="line"><span class="lineno">   81</span>    <span class="keywordflow">throw</span> std::runtime_error(msg);</div>
+<div class="line"><span class="lineno">   82</span>  }</div>
+<div class="line"><span class="lineno">   83</span> </div>
+<div class="line"><span class="lineno">   84</span>  <span class="keyword">auto</span> abi =</div>
+<div class="line"><span class="lineno">   85</span>      <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">int</span> (*)()<span class="keyword">&gt;</span>(load_sym(<a class="code hl_variable" href="#a3681ef3a465de562353ea0c89e47a833">m_lib</a>, <span class="stringliteral">&quot;rgpot_mta_abi_version&quot;</span>));</div>
+<div class="line"><span class="lineno">   86</span>  <a class="code hl_variable" href="#a756cb303474addf7426195562542e820">m_create</a> = <span class="keyword">reinterpret_cast&lt;</span><a class="code hl_typedef" href="#a24b24b4dc46e248bb5b5ceeff1552ed6">create_fn</a><span class="keyword">&gt;</span>(load_sym(<a class="code hl_variable" href="#a3681ef3a465de562353ea0c89e47a833">m_lib</a>, <span class="stringliteral">&quot;rgpot_mta_create&quot;</span>));</div>
+<div class="line"><span class="lineno">   87</span>  <a class="code hl_variable" href="#a0b1854b1936215b99c18326bcbbe99bc">m_destroy</a> =</div>
+<div class="line"><span class="lineno">   88</span>      <span class="keyword">reinterpret_cast&lt;</span><a class="code hl_typedef" href="#a20da2fb9d0673322010f536ea02c404b">destroy_fn</a><span class="keyword">&gt;</span>(load_sym(<a class="code hl_variable" href="#a3681ef3a465de562353ea0c89e47a833">m_lib</a>, <span class="stringliteral">&quot;rgpot_mta_destroy&quot;</span>));</div>
+<div class="line"><span class="lineno">   89</span>  <a class="code hl_variable" href="#a8cfee1abd69c805e7af11bbab74d23e8">m_force</a> = <span class="keyword">reinterpret_cast&lt;</span><a class="code hl_typedef" href="#a82ceec26d2837613c27f366f59ec13c5">force_fn</a><span class="keyword">&gt;</span>(load_sym(<a class="code hl_variable" href="#a3681ef3a465de562353ea0c89e47a833">m_lib</a>, <span class="stringliteral">&quot;rgpot_mta_force&quot;</span>));</div>
+<div class="line"><span class="lineno">   90</span>  <span class="keywordflow">if</span> (!abi || !<a class="code hl_variable" href="#a756cb303474addf7426195562542e820">m_create</a> || !<a class="code hl_variable" href="#a0b1854b1936215b99c18326bcbbe99bc">m_destroy</a> || !<a class="code hl_variable" href="#a8cfee1abd69c805e7af11bbab74d23e8">m_force</a> ||</div>
+<div class="line"><span class="lineno">   91</span>      abi() != <a class="code hl_define" href="Rgpot_2metatomic__c__abi_8h.html#a2108b4728d818bb75e88ace00bcd11d3">RGPOT_MTA_ABI_VERSION</a>) {</div>
+<div class="line"><span class="lineno">   92</span>    close_lib(<a class="code hl_variable" href="#a3681ef3a465de562353ea0c89e47a833">m_lib</a>);</div>
+<div class="line"><span class="lineno">   93</span>    <a class="code hl_variable" href="#a3681ef3a465de562353ea0c89e47a833">m_lib</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   94</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT(metatomic): engine C ABI missing/mismatch&quot;</span>);</div>
+<div class="line"><span class="lineno">   95</span>  }</div>
+<div class="line"><span class="lineno">   96</span>  <span class="keywordtype">char</span> err[1024]{};</div>
+<div class="line"><span class="lineno">   97</span>  <a class="code hl_typedef" href="Rgpot_2metatomic__c__abi_8h.html#a5f3ddc99188390e16bcefecd044cd132">RgpotMtaConfig</a> cfg{};</div>
+<div class="line"><span class="lineno">   98</span>  cfg.<a class="code hl_variable" href="structRgpotMtaConfig.html#a81e02b978716417d5981a61380522030">model_path</a> = opt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#aab1bf0b27c704116741e0c326596605a">model_path</a>.c_str();</div>
+<div class="line"><span class="lineno">   99</span>  cfg.<a class="code hl_variable" href="structRgpotMtaConfig.html#a67dc7e1e46a7139ed6f44f23dbff7bc6">device</a> = opt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a6fd2f80240040775e324c2e055ed0ad4">device</a>.c_str();</div>
+<div class="line"><span class="lineno">  100</span>  cfg.<a class="code hl_variable" href="structRgpotMtaConfig.html#aebb663fbb08d22b80b24bbe2b9ea0a55">length_unit</a> = opt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a3e43c144a75a29ff810f7d28db6cc43e">length_unit</a>.c_str();</div>
+<div class="line"><span class="lineno">  101</span>  cfg.<a class="code hl_variable" href="structRgpotMtaConfig.html#a47825f9f05548e0aa43356cff625c0ad">extensions_directory</a> = opt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a4b1d9a0464c43b847bfece2a00f264cd">extensions_directory</a>.c_str();</div>
+<div class="line"><span class="lineno">  102</span>  cfg.<a class="code hl_variable" href="structRgpotMtaConfig.html#ae190acb7c5a3f44395faf4a7f34b555b">check_consistency</a> = opt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a1cef54a2f9b9486f7d385a34adc86304">check_consistency</a> ? 1 : 0;</div>
+<div class="line"><span class="lineno">  103</span>  cfg.<a class="code hl_variable" href="structRgpotMtaConfig.html#a47adfcae3492f6a299b134dfa0d27953">uncertainty_threshold</a> = opt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a00d77bea84d45584d7293e68c510b601">uncertainty_threshold</a>;</div>
+<div class="line"><span class="lineno">  104</span>  cfg.<a class="code hl_variable" href="structRgpotMtaConfig.html#af567f59e7015736c36a2b187a94453b8">torch_determinism_strict</a> = opt.<a class="code hl_variable" href="structMetatomicEngineOptions.html#a83c338ed817e8bff2eb01864b386a663">torch_determinism_strict</a> ? 1 : 0;</div>
+<div class="line"><span class="lineno">  105</span>  <a class="code hl_variable" href="#a943961115bcd23d224b3ed4748544e00">m_pot</a> = <a class="code hl_variable" href="#a756cb303474addf7426195562542e820">m_create</a>(&amp;cfg, err, <span class="keyword">sizeof</span> err);</div>
+<div class="line"><span class="lineno">  106</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a943961115bcd23d224b3ed4748544e00">m_pot</a>) {</div>
+<div class="line"><span class="lineno">  107</span>    close_lib(<a class="code hl_variable" href="#a3681ef3a465de562353ea0c89e47a833">m_lib</a>);</div>
+<div class="line"><span class="lineno">  108</span>    <a class="code hl_variable" href="#a3681ef3a465de562353ea0c89e47a833">m_lib</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  109</span>    <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;RGPOT(metatomic): create failed: &quot;</span>) +</div>
+<div class="line"><span class="lineno">  110</span>                             err);</div>
+<div class="line"><span class="lineno">  111</span>  }</div>
+<div class="line"><span class="lineno">  112</span>}</div>
+<div class="ttc" id="aRgpot_2metatomic__c__abi_8h_html_a2108b4728d818bb75e88ace00bcd11d3"><div class="ttname"><a href="Rgpot_2metatomic__c__abi_8h.html#a2108b4728d818bb75e88ace00bcd11d3">RGPOT_MTA_ABI_VERSION</a></div><div class="ttdeci">#define RGPOT_MTA_ABI_VERSION</div><div class="ttdef"><b>Definition</b> <a href="Rgpot_2metatomic__c__abi_8h_source.html#l00043">metatomic_c_abi.h:43</a></div></div>
+<div class="ttc" id="aRgpot_2metatomic__c__abi_8h_html_a5f3ddc99188390e16bcefecd044cd132"><div class="ttname"><a href="Rgpot_2metatomic__c__abi_8h.html#a5f3ddc99188390e16bcefecd044cd132">RgpotMtaConfig</a></div><div class="ttdeci">struct RgpotMtaConfig RgpotMtaConfig</div><div class="ttdoc">Flat config (subset of MetatomicConfig).</div></div>
+<div class="ttc" id="aclassMetatomicEngineLoader_html_a0b1854b1936215b99c18326bcbbe99bc"><div class="ttname"><a href="#a0b1854b1936215b99c18326bcbbe99bc">MetatomicEngineLoader::m_destroy</a></div><div class="ttdeci">destroy_fn m_destroy</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00039">MetatomicEngineLoader.h:39</a></div></div>
+<div class="ttc" id="aclassMetatomicEngineLoader_html_a20da2fb9d0673322010f536ea02c404b"><div class="ttname"><a href="#a20da2fb9d0673322010f536ea02c404b">MetatomicEngineLoader::destroy_fn</a></div><div class="ttdeci">void(*)(RgpotMtaPot *) destroy_fn</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00035">MetatomicEngineLoader.h:35</a></div></div>
+<div class="ttc" id="aclassMetatomicEngineLoader_html_a24b24b4dc46e248bb5b5ceeff1552ed6"><div class="ttname"><a href="#a24b24b4dc46e248bb5b5ceeff1552ed6">MetatomicEngineLoader::create_fn</a></div><div class="ttdeci">RgpotMtaPot *(*)(const RgpotMtaConfig *, char *, size_t) create_fn</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00034">MetatomicEngineLoader.h:34</a></div></div>
+<div class="ttc" id="aclassMetatomicEngineLoader_html_a3681ef3a465de562353ea0c89e47a833"><div class="ttname"><a href="#a3681ef3a465de562353ea0c89e47a833">MetatomicEngineLoader::m_lib</a></div><div class="ttdeci">void * m_lib</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00032">MetatomicEngineLoader.h:32</a></div></div>
+<div class="ttc" id="aclassMetatomicEngineLoader_html_a756cb303474addf7426195562542e820"><div class="ttname"><a href="#a756cb303474addf7426195562542e820">MetatomicEngineLoader::m_create</a></div><div class="ttdeci">create_fn m_create</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00038">MetatomicEngineLoader.h:38</a></div></div>
+<div class="ttc" id="aclassMetatomicEngineLoader_html_a82ceec26d2837613c27f366f59ec13c5"><div class="ttname"><a href="#a82ceec26d2837613c27f366f59ec13c5">MetatomicEngineLoader::force_fn</a></div><div class="ttdeci">int(*)(RgpotMtaPot *, long, const double *, const int *, double *, double *, double *, const double *) force_fn</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00036">MetatomicEngineLoader.h:36</a></div></div>
+<div class="ttc" id="aclassMetatomicEngineLoader_html_a8cfee1abd69c805e7af11bbab74d23e8"><div class="ttname"><a href="#a8cfee1abd69c805e7af11bbab74d23e8">MetatomicEngineLoader::m_force</a></div><div class="ttdeci">force_fn m_force</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00040">MetatomicEngineLoader.h:40</a></div></div>
+<div class="ttc" id="aclassMetatomicEngineLoader_html_a943961115bcd23d224b3ed4748544e00"><div class="ttname"><a href="#a943961115bcd23d224b3ed4748544e00">MetatomicEngineLoader::m_pot</a></div><div class="ttdeci">RgpotMtaPot * m_pot</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00033">MetatomicEngineLoader.h:33</a></div></div>
+<div class="ttc" id="astructMetatomicEngineOptions_html_a00d77bea84d45584d7293e68c510b601"><div class="ttname"><a href="structMetatomicEngineOptions.html#a00d77bea84d45584d7293e68c510b601">MetatomicEngineOptions::uncertainty_threshold</a></div><div class="ttdeci">double uncertainty_threshold</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00015">MetatomicEngineLoader.h:15</a></div></div>
+<div class="ttc" id="astructMetatomicEngineOptions_html_a1cef54a2f9b9486f7d385a34adc86304"><div class="ttname"><a href="structMetatomicEngineOptions.html#a1cef54a2f9b9486f7d385a34adc86304">MetatomicEngineOptions::check_consistency</a></div><div class="ttdeci">bool check_consistency</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00014">MetatomicEngineLoader.h:14</a></div></div>
+<div class="ttc" id="astructMetatomicEngineOptions_html_a3e43c144a75a29ff810f7d28db6cc43e"><div class="ttname"><a href="structMetatomicEngineOptions.html#a3e43c144a75a29ff810f7d28db6cc43e">MetatomicEngineOptions::length_unit</a></div><div class="ttdeci">std::string length_unit</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00012">MetatomicEngineLoader.h:12</a></div></div>
+<div class="ttc" id="astructMetatomicEngineOptions_html_a4b1d9a0464c43b847bfece2a00f264cd"><div class="ttname"><a href="structMetatomicEngineOptions.html#a4b1d9a0464c43b847bfece2a00f264cd">MetatomicEngineOptions::extensions_directory</a></div><div class="ttdeci">std::string extensions_directory</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00013">MetatomicEngineLoader.h:13</a></div></div>
+<div class="ttc" id="astructMetatomicEngineOptions_html_a6fd2f80240040775e324c2e055ed0ad4"><div class="ttname"><a href="structMetatomicEngineOptions.html#a6fd2f80240040775e324c2e055ed0ad4">MetatomicEngineOptions::device</a></div><div class="ttdeci">std::string device</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00011">MetatomicEngineLoader.h:11</a></div></div>
+<div class="ttc" id="astructMetatomicEngineOptions_html_a83c338ed817e8bff2eb01864b386a663"><div class="ttname"><a href="structMetatomicEngineOptions.html#a83c338ed817e8bff2eb01864b386a663">MetatomicEngineOptions::torch_determinism_strict</a></div><div class="ttdeci">bool torch_determinism_strict</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00017">MetatomicEngineLoader.h:17</a></div></div>
+<div class="ttc" id="astructMetatomicEngineOptions_html_a8ed14167b3893a576711fc6d751454b4"><div class="ttname"><a href="structMetatomicEngineOptions.html#a8ed14167b3893a576711fc6d751454b4">MetatomicEngineOptions::engine_path</a></div><div class="ttdeci">std::string engine_path</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00016">MetatomicEngineLoader.h:16</a></div></div>
+<div class="ttc" id="astructMetatomicEngineOptions_html_aab1bf0b27c704116741e0c326596605a"><div class="ttname"><a href="structMetatomicEngineOptions.html#aab1bf0b27c704116741e0c326596605a">MetatomicEngineOptions::model_path</a></div><div class="ttdeci">std::string model_path</div><div class="ttdef"><b>Definition</b> <a href="MetatomicEngineLoader_8h_source.html#l00010">MetatomicEngineLoader.h:10</a></div></div>
+<div class="ttc" id="astructRgpotMtaConfig_html_a47825f9f05548e0aa43356cff625c0ad"><div class="ttname"><a href="structRgpotMtaConfig.html#a47825f9f05548e0aa43356cff625c0ad">RgpotMtaConfig::extensions_directory</a></div><div class="ttdeci">const char * extensions_directory</div><div class="ttdef"><b>Definition</b> <a href="Rgpot_2metatomic__c__abi_8h_source.html#l00033">metatomic_c_abi.h:33</a></div></div>
+<div class="ttc" id="astructRgpotMtaConfig_html_a47adfcae3492f6a299b134dfa0d27953"><div class="ttname"><a href="structRgpotMtaConfig.html#a47adfcae3492f6a299b134dfa0d27953">RgpotMtaConfig::uncertainty_threshold</a></div><div class="ttdeci">double uncertainty_threshold</div><div class="ttdef"><b>Definition</b> <a href="Rgpot_2metatomic__c__abi_8h_source.html#l00035">metatomic_c_abi.h:35</a></div></div>
+<div class="ttc" id="astructRgpotMtaConfig_html_a67dc7e1e46a7139ed6f44f23dbff7bc6"><div class="ttname"><a href="structRgpotMtaConfig.html#a67dc7e1e46a7139ed6f44f23dbff7bc6">RgpotMtaConfig::device</a></div><div class="ttdeci">const char * device</div><div class="ttdef"><b>Definition</b> <a href="Rgpot_2metatomic__c__abi_8h_source.html#l00031">metatomic_c_abi.h:31</a></div></div>
+<div class="ttc" id="astructRgpotMtaConfig_html_a81e02b978716417d5981a61380522030"><div class="ttname"><a href="structRgpotMtaConfig.html#a81e02b978716417d5981a61380522030">RgpotMtaConfig::model_path</a></div><div class="ttdeci">const char * model_path</div><div class="ttdef"><b>Definition</b> <a href="Rgpot_2metatomic__c__abi_8h_source.html#l00030">metatomic_c_abi.h:30</a></div></div>
+<div class="ttc" id="astructRgpotMtaConfig_html_ae190acb7c5a3f44395faf4a7f34b555b"><div class="ttname"><a href="structRgpotMtaConfig.html#ae190acb7c5a3f44395faf4a7f34b555b">RgpotMtaConfig::check_consistency</a></div><div class="ttdeci">int check_consistency</div><div class="ttdef"><b>Definition</b> <a href="Rgpot_2metatomic__c__abi_8h_source.html#l00034">metatomic_c_abi.h:34</a></div></div>
+<div class="ttc" id="astructRgpotMtaConfig_html_aebb663fbb08d22b80b24bbe2b9ea0a55"><div class="ttname"><a href="structRgpotMtaConfig.html#aebb663fbb08d22b80b24bbe2b9ea0a55">RgpotMtaConfig::length_unit</a></div><div class="ttdeci">const char * length_unit</div><div class="ttdef"><b>Definition</b> <a href="Rgpot_2metatomic__c__abi_8h_source.html#l00032">metatomic_c_abi.h:32</a></div></div>
+<div class="ttc" id="astructRgpotMtaConfig_html_af567f59e7015736c36a2b187a94453b8"><div class="ttname"><a href="structRgpotMtaConfig.html#af567f59e7015736c36a2b187a94453b8">RgpotMtaConfig::torch_determinism_strict</a></div><div class="ttdeci">int torch_determinism_strict</div><div class="ttdoc">0=Fast, 1=Strict</div><div class="ttdef"><b>Definition</b> <a href="Rgpot_2metatomic__c__abi_8h_source.html#l00040">metatomic_c_abi.h:40</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9366185e68d7e098a743deef3c1fc008" name="a9366185e68d7e098a743deef3c1fc008"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9366185e68d7e098a743deef3c1fc008">&#9670;&#160;</a></span>~MetatomicEngineLoader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MetatomicEngineLoader::~MetatomicEngineLoader </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicEngineLoader_8cpp_source.html#l00114">114</a> of file <a class="el" href="MetatomicEngineLoader_8cpp_source.html">MetatomicEngineLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  114</span>                                              {</div>
+<div class="line"><span class="lineno">  115</span>  <span class="comment">// Destroy the pot while the engine is still mapped. Do not dlclose</span></div>
+<div class="line"><span class="lineno">  116</span>  <span class="comment">// libmetatomic_engine.so: torch/metatomic static teardown after dlclose</span></div>
+<div class="line"><span class="lineno">  117</span>  <span class="comment">// routinely SEGV on process exit.</span></div>
+<div class="line"><span class="lineno">  118</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a943961115bcd23d224b3ed4748544e00">m_pot</a> &amp;&amp; <a class="code hl_variable" href="#a0b1854b1936215b99c18326bcbbe99bc">m_destroy</a>)</div>
+<div class="line"><span class="lineno">  119</span>    <a class="code hl_variable" href="#a0b1854b1936215b99c18326bcbbe99bc">m_destroy</a>(<a class="code hl_variable" href="#a943961115bcd23d224b3ed4748544e00">m_pot</a>);</div>
+<div class="line"><span class="lineno">  120</span>  <a class="code hl_variable" href="#a943961115bcd23d224b3ed4748544e00">m_pot</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  121</span>  <a class="code hl_variable" href="#a3681ef3a465de562353ea0c89e47a833">m_lib</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  122</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af722ac3e21513ddede8712e13e5a2221" name="af722ac3e21513ddede8712e13e5a2221"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af722ac3e21513ddede8712e13e5a2221">&#9670;&#160;</a></span>MetatomicEngineLoader() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">MetatomicEngineLoader::MetatomicEngineLoader </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classMetatomicEngineLoader.html">MetatomicEngineLoader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a90eeff4809cec48ad43d070f127273be" name="a90eeff4809cec48ad43d070f127273be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90eeff4809cec48ad43d070f127273be">&#9670;&#160;</a></span>available()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MetatomicEngineLoader::available </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicEngineLoader_8h_source.html#l00027">27</a> of file <a class="el" href="MetatomicEngineLoader_8h_source.html">MetatomicEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   27</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a943961115bcd23d224b3ed4748544e00">m_pot</a> != <span class="keyword">nullptr</span>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7ca739d2076505bb0d0f1eef3c3f3c65" name="a7ca739d2076505bb0d0f1eef3c3f3c65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ca739d2076505bb0d0f1eef3c3f3c65">&#9670;&#160;</a></span>force()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MetatomicEngineLoader::force </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>N</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>R</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em>atomicNrs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>F</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>U</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>variance</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>box</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicEngineLoader_8cpp_source.html#l00124">124</a> of file <a class="el" href="MetatomicEngineLoader_8cpp_source.html">MetatomicEngineLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  126</span>                                                           {</div>
+<div class="line"><span class="lineno">  127</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a943961115bcd23d224b3ed4748544e00">m_pot</a> || !<a class="code hl_variable" href="#a8cfee1abd69c805e7af11bbab74d23e8">m_force</a>)</div>
+<div class="line"><span class="lineno">  128</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT(metatomic): engine not available&quot;</span>);</div>
+<div class="line"><span class="lineno">  129</span>  <span class="keywordtype">double</span> var = 0.0;</div>
+<div class="line"><span class="lineno">  130</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> rc =</div>
+<div class="line"><span class="lineno">  131</span>      <a class="code hl_variable" href="#a8cfee1abd69c805e7af11bbab74d23e8">m_force</a>(<a class="code hl_variable" href="#a943961115bcd23d224b3ed4748544e00">m_pot</a>, N, R, atomicNrs, F, U, variance ? variance : &amp;var, box);</div>
+<div class="line"><span class="lineno">  132</span>  <span class="keywordflow">if</span> (rc != 0)</div>
+<div class="line"><span class="lineno">  133</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT(metatomic): force failed&quot;</span>);</div>
+<div class="line"><span class="lineno">  134</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6bed693adcb2ff849706f866a3606d2d" name="a6bed693adcb2ff849706f866a3606d2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bed693adcb2ff849706f866a3606d2d">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classMetatomicEngineLoader.html">MetatomicEngineLoader</a> &amp; MetatomicEngineLoader::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classMetatomicEngineLoader.html">MetatomicEngineLoader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a756cb303474addf7426195562542e820" name="a756cb303474addf7426195562542e820"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a756cb303474addf7426195562542e820">&#9670;&#160;</a></span>m_create</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a24b24b4dc46e248bb5b5ceeff1552ed6">create_fn</a> MetatomicEngineLoader::m_create {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicEngineLoader_8h_source.html#l00038">38</a> of file <a class="el" href="MetatomicEngineLoader_8h_source.html">MetatomicEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   38</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0b1854b1936215b99c18326bcbbe99bc" name="a0b1854b1936215b99c18326bcbbe99bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b1854b1936215b99c18326bcbbe99bc">&#9670;&#160;</a></span>m_destroy</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a20da2fb9d0673322010f536ea02c404b">destroy_fn</a> MetatomicEngineLoader::m_destroy {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicEngineLoader_8h_source.html#l00039">39</a> of file <a class="el" href="MetatomicEngineLoader_8h_source.html">MetatomicEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   39</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8cfee1abd69c805e7af11bbab74d23e8" name="a8cfee1abd69c805e7af11bbab74d23e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cfee1abd69c805e7af11bbab74d23e8">&#9670;&#160;</a></span>m_force</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a82ceec26d2837613c27f366f59ec13c5">force_fn</a> MetatomicEngineLoader::m_force {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicEngineLoader_8h_source.html#l00040">40</a> of file <a class="el" href="MetatomicEngineLoader_8h_source.html">MetatomicEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   40</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a3681ef3a465de562353ea0c89e47a833" name="a3681ef3a465de562353ea0c89e47a833"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3681ef3a465de562353ea0c89e47a833">&#9670;&#160;</a></span>m_lib</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* MetatomicEngineLoader::m_lib {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicEngineLoader_8h_source.html#l00032">32</a> of file <a class="el" href="MetatomicEngineLoader_8h_source.html">MetatomicEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   32</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a943961115bcd23d224b3ed4748544e00" name="a943961115bcd23d224b3ed4748544e00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a943961115bcd23d224b3ed4748544e00">&#9670;&#160;</a></span>m_pot</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structRgpotMtaPot.html">RgpotMtaPot</a>* MetatomicEngineLoader::m_pot {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MetatomicEngineLoader_8h_source.html#l00033">33</a> of file <a class="el" href="MetatomicEngineLoader_8h_source.html">MetatomicEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   33</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/potentials/Rgpot/<a class="el" href="MetatomicEngineLoader_8h_source.html">MetatomicEngineLoader.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/potentials/Rgpot/<a class="el" href="MetatomicEngineLoader_8cpp_source.html">MetatomicEngineLoader.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="classMetatomicEngineLoader.html">MetatomicEngineLoader</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

@@ -1,0 +1,1472 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::io Namespace Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('namespaceeonc_1_1io.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::io Namespace Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:ConMetadataValue" id="r_ConMetadataValue"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1io_1_1ConMetadataValue.html">ConMetadataValue</a></td></tr>
+<tr class="memitem:ConMetadataText" id="r_ConMetadataText"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1io_1_1ConMetadataText.html">ConMetadataText</a></td></tr>
+<tr class="memitem:ConFrameMetadata" id="r_ConFrameMetadata"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-enum-members" class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:aa96f30005b3cd2485a5da4371602a1c9" id="r_aa96f30005b3cd2485a5da4371602a1c9"><td class="memItemLeft">enum class &#160;</td><td class="memItemRight"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115">Ok</a> = 0
+, <a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9adf9be6f7af7c3f7196c5c3e731de0a87">ReadError</a> = 1
+, <a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9a4a02ea49d454392fd1e3426e53f14b58">WriteError</a> = 2
+, <a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9a58423b208aa79c16dda0160a86283922">AppendError</a> = 3
+, <br />
+&#160;&#160;<a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9ac51a07a6d1b3c8609dc095cc4d540e23">OpenError</a> = 4
+, <a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">InvalidArgument</a> = 5
+<br />
+ }</td></tr>
+<tr class="memdesc:aa96f30005b3cd2485a5da4371602a1c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structured I/O result for the client surface (nanobind-friendly).  <a href="#aa96f30005b3cd2485a5da4371602a1c9">More...</a><br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ad199f826cc24bd9826a30c68005ddd45" id="r_ad199f826cc24bd9826a30c68005ddd45"><td class="memItemLeft">readcon::ConFrame&#160;</td><td class="memItemRight"><a class="el" href="#ad199f826cc24bd9826a30c68005ddd45">matterToConFrame</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m, const <a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> *metadata=nullptr)</td></tr>
+<tr class="memdesc:ad199f826cc24bd9826a30c68005ddd45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a single stamped ConFrame from <a class="el" href="classeonc_1_1Matter.html">Matter</a> (same builder as matter2con).  <br /></td></tr>
+<tr class="memitem:ac1282d2f253eb7c3c17e948e7e663cf8" id="r_ac1282d2f253eb7c3c17e948e7e663cf8"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ac1282d2f253eb7c3c17e948e7e663cf8">set_write_con_forces</a> (bool enabled) noexcept</td></tr>
+<tr class="memdesc:ac1282d2f253eb7c3c17e948e7e663cf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether written .con frames carry "Forces of Component" sections.  <br /></td></tr>
+<tr class="memitem:a5d3959d80e4c17d49bbbd72e0ac2967f" id="r_a5d3959d80e4c17d49bbbd72e0ac2967f"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a5d3959d80e4c17d49bbbd72e0ac2967f">write_con_forces</a> () noexcept</td></tr>
+<tr class="memitem:a525b12eff16ef9d00847fc3482745e38" id="r_a525b12eff16ef9d00847fc3482745e38"><td class="memItemLeft"><a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a>&#160;</td><td class="memItemRight"><a class="el" href="#a525b12eff16ef9d00847fc3482745e38">metadata_from_frame</a> (const readcon::ConFrame &amp;frame)</td></tr>
+<tr class="memdesc:a525b12eff16ef9d00847fc3482745e38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract known frame-level fields from a parsed readcon frame.  <br /></td></tr>
+<tr class="memitem:a50c7405f7e722186a59eb9180dcf4f8e" id="r_a50c7405f7e722186a59eb9180dcf4f8e"><td class="memItemLeft">std::pair&lt; std::array&lt; double, 3 &gt;, std::array&lt; double, 3 &gt; &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a50c7405f7e722186a59eb9180dcf4f8e">cell_to_lengths_angles</a> (const <a class="el" href="classMatter.html">Matter</a> &amp;m)</td></tr>
+<tr class="memitem:a43ddd666235e811420f7a04d00419e1a" id="r_a43ddd666235e811420f7a04d00419e1a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a43ddd666235e811420f7a04d00419e1a">resetConAppendState</a> ()</td></tr>
+<tr class="memdesc:a43ddd666235e811420f7a04d00419e1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop the per-path bookkeeping that lets append-mode writes skip re-parsing frames this process wrote.  <br /></td></tr>
+<tr class="memitem:a5dc824257c3cab0e8a74eec0f3d814df" id="r_a5dc824257c3cab0e8a74eec0f3d814df"><td class="memItemLeft"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="#a5dc824257c3cab0e8a74eec0f3d814df">matter2con</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m, std::string filename, bool append=false, const <a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> *metadata=nullptr)</td></tr>
+<tr class="memdesc:a5dc824257c3cab0e8a74eec0f3d814df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a frame to a .con, or truncate and write one frame.  <br /></td></tr>
+<tr class="memitem:a6f13ca53e923b1a8dbb98436987c984c" id="r_a6f13ca53e923b1a8dbb98436987c984c"><td class="memItemLeft"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6f13ca53e923b1a8dbb98436987c984c">con2matter</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m, std::string filename)</td></tr>
+<tr class="memitem:a55354e1cf6389c5516c5b99e4a5b5343" id="r_a55354e1cf6389c5516c5b99e4a5b5343"><td class="memItemLeft"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="#a55354e1cf6389c5516c5b99e4a5b5343">con2matter</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m, const readcon::ConFrame &amp;frame, <a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> *out_metadata)</td></tr>
+<tr class="memitem:a34a1ebd1a28026f91910ae3eea60c1c1" id="r_a34a1ebd1a28026f91910ae3eea60c1c1"><td class="memItemLeft"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="#a34a1ebd1a28026f91910ae3eea60c1c1">matter2convel</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m, std::string filename)</td></tr>
+<tr class="memitem:a2b29146d14c962659dbda7d6db479c38" id="r_a2b29146d14c962659dbda7d6db479c38"><td class="memItemLeft"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="#a2b29146d14c962659dbda7d6db479c38">convel2matter</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m, std::string filename)</td></tr>
+<tr class="memitem:a92edb1d2a6c8cbe12752056317c5b889" id="r_a92edb1d2a6c8cbe12752056317c5b889"><td class="memItemLeft"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="#a92edb1d2a6c8cbe12752056317c5b889">matter2xyz</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m, std::string filename, bool append=false)</td></tr>
+<tr class="memdesc:a92edb1d2a6c8cbe12752056317c5b889"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write one extended-XYZ frame: Lattice= cell and 17-digit coordinates.  <br /></td></tr>
+<tr class="memitem:af6b4831ef3e56d5233f89c5a9689e7ec" id="r_af6b4831ef3e56d5233f89c5a9689e7ec"><td class="memItemLeft"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="#af6b4831ef3e56d5233f89c5a9689e7ec">writeTibble</a> (<a class="el" href="classMatter.html">Matter</a> &amp;m, std::string filename)</td></tr>
+<tr class="memdesc:af6b4831ef3e56d5233f89c5a9689e7ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Debug table (positions, optional cached forces). Not a structure format.  <br /></td></tr>
+<tr class="memitem:a82c7b62eba032ea919c9cc6abf2ba8af" id="r_a82c7b62eba032ea919c9cc6abf2ba8af"><td class="memItemLeft">std::vector&lt; readcon::ConFrame &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a82c7b62eba032ea919c9cc6abf2ba8af">buildNebPathFrames</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; <a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> &gt; &amp;metadata_per_image)</td></tr>
+<tr class="memdesc:a82c7b62eba032ea919c9cc6abf2ba8af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build NEB band ConFrames without writing (clone builder path of writeNebPath).  <br /></td></tr>
+<tr class="memitem:a2a321dfc9b8cf6c615a518a3f79ccdd0" id="r_a2a321dfc9b8cf6c615a518a3f79ccdd0"><td class="memItemLeft"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="#a2a321dfc9b8cf6c615a518a3f79ccdd0">writeConFrames</a> (std::string filename, const std::vector&lt; readcon::ConFrame &gt; &amp;frames)</td></tr>
+<tr class="memdesc:a2a321dfc9b8cf6c615a518a3f79ccdd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write already-built ConFrames to a multi-frame .con (temp or durable).  <br /></td></tr>
+<tr class="memitem:affc6614e11211166631b9bf5947db98c" id="r_affc6614e11211166631b9bf5947db98c"><td class="memItemLeft"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a>&#160;</td><td class="memItemRight"><a class="el" href="#affc6614e11211166631b9bf5947db98c">writeNebPath</a> (std::string filename, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;path, const std::vector&lt; <a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> &gt; &amp;metadata_per_image)</td></tr>
+<tr class="memdesc:affc6614e11211166631b9bf5947db98c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write a full NEB path as one multi-frame .con using ConFrameBuilder::clone().  <br /></td></tr>
+<tr class="memitem:af66b2723d892a4095754f9b0354b4f78" id="r_af66b2723d892a4095754f9b0354b4f78"><td class="memItemLeft">constexpr bool&#160;</td><td class="memItemRight"><a class="el" href="#af66b2723d892a4095754f9b0354b4f78">io_ok</a> (<a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> s) noexcept</td></tr>
+<tr class="memitem:aae21eb723a59fc2f645f7199099a117f" id="r_aae21eb723a59fc2f645f7199099a117f"><td class="memItemLeft">constexpr const char *&#160;</td><td class="memItemRight"><a class="el" href="#aae21eb723a59fc2f645f7199099a117f">io_status_name</a> (<a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> s) noexcept</td></tr>
+<tr class="memdesc:aae21eb723a59fc2f645f7199099a117f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Human-readable label for logging / bindings.  <br /></td></tr>
+</table>
+<a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Enumeration Type Documentation</h2>
+<a id="aa96f30005b3cd2485a5da4371602a1c9" name="aa96f30005b3cd2485a5da4371602a1c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa96f30005b3cd2485a5da4371602a1c9">&#9670;&#160;</a></span>IoStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">eonc::io::IoStatus</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel strong">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Structured I/O result for the client surface (nanobind-friendly). </p>
+<p>Prefer comparing to <a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115">IoStatus::Ok</a> rather than treating as bool. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115" name="aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115"></a>Ok&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa96f30005b3cd2485a5da4371602a1c9adf9be6f7af7c3f7196c5c3e731de0a87" name="aa96f30005b3cd2485a5da4371602a1c9adf9be6f7af7c3f7196c5c3e731de0a87"></a>ReadError&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa96f30005b3cd2485a5da4371602a1c9a4a02ea49d454392fd1e3426e53f14b58" name="aa96f30005b3cd2485a5da4371602a1c9a4a02ea49d454392fd1e3426e53f14b58"></a>WriteError&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa96f30005b3cd2485a5da4371602a1c9a58423b208aa79c16dda0160a86283922" name="aa96f30005b3cd2485a5da4371602a1c9a58423b208aa79c16dda0160a86283922"></a>AppendError&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa96f30005b3cd2485a5da4371602a1c9ac51a07a6d1b3c8609dc095cc4d540e23" name="aa96f30005b3cd2485a5da4371602a1c9ac51a07a6d1b3c8609dc095cc4d540e23"></a>OpenError&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b" name="aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b"></a>InvalidArgument&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8h_source.html#l00029">29</a> of file <a class="el" href="ConFileIO_8h_source.html">ConFileIO.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   29</span>                    : std::uint8_t {</div>
+<div class="line"><span class="lineno">   30</span>  <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115">Ok</a> = 0,</div>
+<div class="line"><span class="lineno">   31</span>  <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9adf9be6f7af7c3f7196c5c3e731de0a87">ReadError</a> = 1,</div>
+<div class="line"><span class="lineno">   32</span>  <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a4a02ea49d454392fd1e3426e53f14b58">WriteError</a> = 2,</div>
+<div class="line"><span class="lineno">   33</span>  <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a58423b208aa79c16dda0160a86283922">AppendError</a> = 3,</div>
+<div class="line"><span class="lineno">   34</span>  <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9ac51a07a6d1b3c8609dc095cc4d540e23">OpenError</a> = 4,</div>
+<div class="line"><span class="lineno">   35</span>  <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">InvalidArgument</a> = 5,</div>
+<div class="line"><span class="lineno">   36</span>};</div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">eonc::io::IoStatus::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00035">ConFileIO.h:35</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_aa96f30005b3cd2485a5da4371602a1c9a4a02ea49d454392fd1e3426e53f14b58"><div class="ttname"><a href="#aa96f30005b3cd2485a5da4371602a1c9a4a02ea49d454392fd1e3426e53f14b58">eonc::io::IoStatus::WriteError</a></div><div class="ttdeci">@ WriteError</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00032">ConFileIO.h:32</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_aa96f30005b3cd2485a5da4371602a1c9a58423b208aa79c16dda0160a86283922"><div class="ttname"><a href="#aa96f30005b3cd2485a5da4371602a1c9a58423b208aa79c16dda0160a86283922">eonc::io::IoStatus::AppendError</a></div><div class="ttdeci">@ AppendError</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00033">ConFileIO.h:33</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115"><div class="ttname"><a href="#aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115">eonc::io::IoStatus::Ok</a></div><div class="ttdeci">@ Ok</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00030">ConFileIO.h:30</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_aa96f30005b3cd2485a5da4371602a1c9ac51a07a6d1b3c8609dc095cc4d540e23"><div class="ttname"><a href="#aa96f30005b3cd2485a5da4371602a1c9ac51a07a6d1b3c8609dc095cc4d540e23">eonc::io::IoStatus::OpenError</a></div><div class="ttdeci">@ OpenError</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00034">ConFileIO.h:34</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_aa96f30005b3cd2485a5da4371602a1c9adf9be6f7af7c3f7196c5c3e731de0a87"><div class="ttname"><a href="#aa96f30005b3cd2485a5da4371602a1c9adf9be6f7af7c3f7196c5c3e731de0a87">eonc::io::IoStatus::ReadError</a></div><div class="ttdeci">@ ReadError</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00031">ConFileIO.h:31</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a82c7b62eba032ea919c9cc6abf2ba8af" name="a82c7b62eba032ea919c9cc6abf2ba8af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82c7b62eba032ea919c9cc6abf2ba8af">&#9670;&#160;</a></span>buildNebPathFrames()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; readcon::ConFrame &gt; eonc::io::buildNebPathFrames </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>metadata_per_image</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build NEB band ConFrames without writing (clone builder path of writeNebPath). </p>
+<p>Empty vector on invalid input.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>length must equal metadata_per_image (endpoints included) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8cpp_source.html#l00872">872</a> of file <a class="el" href="ConFileIO_8cpp_source.html">ConFileIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  873</span>                                                                          {</div>
+<div class="line"><span class="lineno">  874</span>  std::vector&lt;readcon::ConFrame&gt; frames;</div>
+<div class="line"><span class="lineno">  875</span>  <span class="keywordflow">if</span> (path.empty() || path.size() != metadata_per_image.size()) {</div>
+<div class="line"><span class="lineno">  876</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(</div>
+<div class="line"><span class="lineno">  877</span>        <span class="stringliteral">&quot;buildNebPathFrames: path/metadata size mismatch (path={}, meta={})&quot;</span>,</div>
+<div class="line"><span class="lineno">  878</span>        path.size(), metadata_per_image.size());</div>
+<div class="line"><span class="lineno">  879</span>    <span class="keywordflow">return</span> frames;</div>
+<div class="line"><span class="lineno">  880</span>  }</div>
+<div class="line"><span class="lineno">  881</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;img : path) {</div>
+<div class="line"><span class="lineno">  882</span>    <span class="keywordflow">if</span> (!img) {</div>
+<div class="line"><span class="lineno">  883</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;buildNebPathFrames: null Matter in path&quot;</span>);</div>
+<div class="line"><span class="lineno">  884</span>      <span class="keywordflow">return</span> {};</div>
+<div class="line"><span class="lineno">  885</span>    }</div>
+<div class="line"><span class="lineno">  886</span>  }</div>
+<div class="line"><span class="lineno">  887</span> </div>
+<div class="line"><span class="lineno">  888</span>  Matter &amp;template_m = *path.front();</div>
+<div class="line"><span class="lineno">  889</span>  template_m.<a class="code hl_function" href="classeonc_1_1Matter.html#a54be4d629faaa2d65e05f3735e4ec195">applyPeriodicBoundaryIfEnabled</a>();</div>
+<div class="line"><span class="lineno">  890</span> </div>
+<div class="line"><span class="lineno">  891</span>  std::vector&lt;uint64_t&gt; atom_ids;</div>
+<div class="line"><span class="lineno">  892</span>  std::array&lt;std::string, 2&gt; prebox;</div>
+<div class="line"><span class="lineno">  893</span>  std::array&lt;std::string, 2&gt; postbox;</div>
+<div class="line"><span class="lineno">  894</span>  collect_ids_headers(template_m, atom_ids, prebox, postbox);</div>
+<div class="line"><span class="lineno">  895</span> </div>
+<div class="line"><span class="lineno">  896</span>  frames.reserve(path.size());</div>
+<div class="line"><span class="lineno">  897</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  898</span>    <span class="keyword">auto</span> seed = seed_builder(template_m, prebox, postbox, atom_ids);</div>
+<div class="line"><span class="lineno">  899</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; path.size(); ++i) {</div>
+<div class="line"><span class="lineno">  900</span>      Matter &amp;img = *path[i];</div>
+<div class="line"><span class="lineno">  901</span>      img.<a class="code hl_function" href="classeonc_1_1Matter.html#a54be4d629faaa2d65e05f3735e4ec195">applyPeriodicBoundaryIfEnabled</a>();</div>
+<div class="line"><span class="lineno">  902</span>      <span class="keywordflow">if</span> (img.<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>() != template_m.<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>()) {</div>
+<div class="line"><span class="lineno">  903</span>        <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(</div>
+<div class="line"><span class="lineno">  904</span>            <span class="stringliteral">&quot;buildNebPathFrames: image {} atom count {} != template {}&quot;</span>, i,</div>
+<div class="line"><span class="lineno">  905</span>            img.<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>(), template_m.<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>());</div>
+<div class="line"><span class="lineno">  906</span>        <span class="keywordflow">return</span> {};</div>
+<div class="line"><span class="lineno">  907</span>      }</div>
+<div class="line"><span class="lineno">  908</span>      <span class="keyword">auto</span> builder = seed.clone();</div>
+<div class="line"><span class="lineno">  909</span>      apply_frame_metadata(builder, &amp;metadata_per_image[i]);</div>
+<div class="line"><span class="lineno">  910</span>      apply_geometry(builder, img, <span class="comment">/*with_velocities=*/</span><span class="keyword">false</span>,</div>
+<div class="line"><span class="lineno">  911</span>                     &amp;metadata_per_image[i]);</div>
+<div class="line"><span class="lineno">  912</span>      frames.push_back(builder.build());</div>
+<div class="line"><span class="lineno">  913</span>    }</div>
+<div class="line"><span class="lineno">  914</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><span class="lineno">  915</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;buildNebPathFrames failed: {}&quot;</span>, e.what());</div>
+<div class="line"><span class="lineno">  916</span>    <span class="keywordflow">return</span> {};</div>
+<div class="line"><span class="lineno">  917</span>  }</div>
+<div class="line"><span class="lineno">  918</span>  <span class="keywordflow">return</span> frames;</div>
+<div class="line"><span class="lineno">  919</span>}</div>
+<div class="ttc" id="aEonLogger_8h_html_a4cf9b473cf6a1d850b3725fca6805f86"><div class="ttname"><a href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a></div><div class="ttdeci">#define EONC_LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00262">EonLogger.h:262</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a54be4d629faaa2d65e05f3735e4ec195"><div class="ttname"><a href="classeonc_1_1Matter.html#a54be4d629faaa2d65e05f3735e4ec195">eonc::Matter::applyPeriodicBoundaryIfEnabled</a></div><div class="ttdeci">void applyPeriodicBoundaryIfEnabled()</div><div class="ttdoc">Apply MIC wrap when periodic boundaries are enabled (I/O path).</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00327">Matter.h:327</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a6d270e335854296565eaa5ba015753b5"><div class="ttname"><a href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">eonc::Matter::numberOfAtoms</a></div><div class="ttdeci">long int numberOfAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00209">Matter.cpp:209</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a50c7405f7e722186a59eb9180dcf4f8e" name="a50c7405f7e722186a59eb9180dcf4f8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50c7405f7e722186a59eb9180dcf4f8e">&#9670;&#160;</a></span>cell_to_lengths_angles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::pair&lt; std::array&lt; double, 3 &gt;, std::array&lt; double, 3 &gt; &gt; eonc::io::cell_to_lengths_angles </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>m</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8cpp_source.html#l00515">515</a> of file <a class="el" href="ConFileIO_8cpp_source.html">ConFileIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  515</span>                                        {</div>
+<div class="line"><span class="lineno">  516</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = m.<a class="code hl_function" href="classeonc_1_1Matter.html#adc4d758cf3f8a737ddb2e985c212f986">getCell</a>();</div>
+<div class="line"><span class="lineno">  517</span>  std::array&lt;double, 3&gt; lengths;</div>
+<div class="line"><span class="lineno">  518</span>  lengths[0] = cell.row(0).norm();</div>
+<div class="line"><span class="lineno">  519</span>  lengths[1] = cell.row(1).norm();</div>
+<div class="line"><span class="lineno">  520</span>  lengths[2] = cell.row(2).norm();</div>
+<div class="line"><span class="lineno">  521</span>  <span class="comment">// CON header line 4 is alpha beta gamma:</span></div>
+<div class="line"><span class="lineno">  522</span>  <span class="comment">// alpha = angle(b,c), beta = angle(a,c), gamma = angle(a,b).</span></div>
+<div class="line"><span class="lineno">  523</span>  std::array&lt;double, 3&gt; angles;</div>
+<div class="line"><span class="lineno">  524</span>  angles[0] = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a54d5df2519372b82461f76667d6f0223">eonc::safemath::safe_acos</a>(<a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(</div>
+<div class="line"><span class="lineno">  525</span>                  cell.row(1).dot(cell.row(2)), lengths[1] * lengths[2])) *</div>
+<div class="line"><span class="lineno">  526</span>              180.0 / <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a>;</div>
+<div class="line"><span class="lineno">  527</span>  angles[1] = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a54d5df2519372b82461f76667d6f0223">eonc::safemath::safe_acos</a>(<a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(</div>
+<div class="line"><span class="lineno">  528</span>                  cell.row(0).dot(cell.row(2)), lengths[0] * lengths[2])) *</div>
+<div class="line"><span class="lineno">  529</span>              180.0 / <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a>;</div>
+<div class="line"><span class="lineno">  530</span>  angles[2] = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a54d5df2519372b82461f76667d6f0223">eonc::safemath::safe_acos</a>(<a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(</div>
+<div class="line"><span class="lineno">  531</span>                  cell.row(0).dot(cell.row(1)), lengths[0] * lengths[1])) *</div>
+<div class="line"><span class="lineno">  532</span>              180.0 / <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a>;</div>
+<div class="line"><span class="lineno">  533</span>  <span class="keywordflow">return</span> {lengths, angles};</div>
+<div class="line"><span class="lineno">  534</span>}</div>
+<div class="ttc" id="aEigen_8h_html_a5a21583e98df78e5b867b370291714d0"><div class="ttname"><a href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a></div><div class="ttdeci">Eigen::Matrix&lt; double, 3, 3, eOnStorageOrder &gt; Matrix3d</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00035">Eigen.h:35</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_adc4d758cf3f8a737ddb2e985c212f986"><div class="ttname"><a href="classeonc_1_1Matter.html#adc4d758cf3f8a737ddb2e985c212f986">eonc::Matter::getCell</a></div><div class="ttdeci">Matrix3d getCell() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00211">Matter.cpp:211</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a96a0233e9530dc3963dbcd001e1015c0"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a></div><div class="ttdeci">constexpr double pi</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8h_source.html#l00028">HelperFunctions.h:28</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1safemath_html_a0d2ff3ef0f0032b6e2f75662df3816cf"><div class="ttname"><a href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a></div><div class="ttdeci">constexpr double safe_div(double num, double denom, double fallback=0.0)</div><div class="ttdef"><b>Definition</b> <a href="SafeMath_8h_source.html#l00021">SafeMath.h:21</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1safemath_html_a54d5df2519372b82461f76667d6f0223"><div class="ttname"><a href="namespaceeonc_1_1safemath.html#a54d5df2519372b82461f76667d6f0223">eonc::safemath::safe_acos</a></div><div class="ttdeci">double safe_acos(double x)</div><div class="ttdef"><b>Definition</b> <a href="SafeMath_8h_source.html#l00034">SafeMath.h:34</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a55354e1cf6389c5516c5b99e4a5b5343" name="a55354e1cf6389c5516c5b99e4a5b5343"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55354e1cf6389c5516c5b99e4a5b5343">&#9670;&#160;</a></span>con2matter() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> eonc::io::con2matter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>m</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const readcon::ConFrame &amp;</td>          <td class="paramname"><span class="paramname"><em>frame</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> *</td>          <td class="paramname"><span class="paramname"><em>out_metadata</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8cpp_source.html#l00615">615</a> of file <a class="el" href="ConFileIO_8cpp_source.html">ConFileIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  616</span>                                                    {</div>
+<div class="line"><span class="lineno">  617</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  618</span>    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;atoms = frame.atoms();</div>
+<div class="line"><span class="lineno">  619</span>    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;lengths = frame.cell();</div>
+<div class="line"><span class="lineno">  620</span>    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;angles_deg = frame.angles();</div>
+<div class="line"><span class="lineno">  621</span>    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;prebox = frame.prebox_header();</div>
+<div class="line"><span class="lineno">  622</span>    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;postbox = frame.postbox_header();</div>
+<div class="line"><span class="lineno">  623</span> </div>
+<div class="line"><span class="lineno">  624</span>    m.<a class="code hl_variable" href="classeonc_1_1Matter.html#aa325fdebfaf34c23fde537e5cb456e25">headerCon</a>[0] = prebox[0] + <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  625</span>    m.<a class="code hl_variable" href="classeonc_1_1Matter.html#aa325fdebfaf34c23fde537e5cb456e25">headerCon</a>[1] = prebox[1] + <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  626</span>    m.<a class="code hl_variable" href="classeonc_1_1Matter.html#aa325fdebfaf34c23fde537e5cb456e25">headerCon</a>[3] = postbox[0] + <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  627</span>    m.<a class="code hl_variable" href="classeonc_1_1Matter.html#aa325fdebfaf34c23fde537e5cb456e25">headerCon</a>[4] = postbox[1] + <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  628</span> </div>
+<div class="line"><span class="lineno">  629</span>    <span class="keywordtype">double</span> angles[3] = {angles_deg[0], angles_deg[1], angles_deg[2]};</div>
+<div class="line"><span class="lineno">  630</span>    <span class="keywordflow">if</span> (angles[0] == 90.0 &amp;&amp; angles[1] == 90.0 &amp;&amp; angles[2] == 90.0) {</div>
+<div class="line"><span class="lineno">  631</span>      <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = Matrix3d::Zero();</div>
+<div class="line"><span class="lineno">  632</span>      cell(0, 0) = lengths[0];</div>
+<div class="line"><span class="lineno">  633</span>      cell(1, 1) = lengths[1];</div>
+<div class="line"><span class="lineno">  634</span>      cell(2, 2) = lengths[2];</div>
+<div class="line"><span class="lineno">  635</span>      m.<a class="code hl_function" href="classeonc_1_1Matter.html#a9a7ab53872772b1e61e4d0234af1d5d8">setCell</a>(cell);</div>
+<div class="line"><span class="lineno">  636</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  637</span>      angles[0] *= <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a> / 180.0;</div>
+<div class="line"><span class="lineno">  638</span>      angles[1] *= <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a> / 180.0;</div>
+<div class="line"><span class="lineno">  639</span>      angles[2] *= <a class="code hl_variable" href="namespaceeonc_1_1helpers.html#a96a0233e9530dc3963dbcd001e1015c0">eonc::helpers::pi</a> / 180.0;</div>
+<div class="line"><span class="lineno">  640</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> alpha = angles[0];</div>
+<div class="line"><span class="lineno">  641</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> beta = angles[1];</div>
+<div class="line"><span class="lineno">  642</span>      <span class="keyword">const</span> <span class="keywordtype">double</span> gamma = angles[2];</div>
+<div class="line"><span class="lineno">  643</span> </div>
+<div class="line"><span class="lineno">  644</span>      <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = Matrix3d::Zero();</div>
+<div class="line"><span class="lineno">  645</span>      cell(0, 0) = 1.0;</div>
+<div class="line"><span class="lineno">  646</span>      cell(1, 0) = cos(gamma);</div>
+<div class="line"><span class="lineno">  647</span>      cell(1, 1) = sin(gamma);</div>
+<div class="line"><span class="lineno">  648</span>      cell(2, 0) = cos(beta);</div>
+<div class="line"><span class="lineno">  649</span>      cell(2, 1) = (cos(alpha) - cell(1, 0) * cell(2, 0)) / cell(1, 1);</div>
+<div class="line"><span class="lineno">  650</span>      cell(2, 2) = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#aca143ad04605edfbb9163b099c295c05">eonc::safemath::safe_sqrt</a>(1.0 - pow(cell(2, 0), 2) -</div>
+<div class="line"><span class="lineno">  651</span>                                             pow(cell(2, 1), 2));</div>
+<div class="line"><span class="lineno">  652</span> </div>
+<div class="line"><span class="lineno">  653</span>      cell(0, 0) *= lengths[0];</div>
+<div class="line"><span class="lineno">  654</span>      cell(1, 0) *= lengths[1];</div>
+<div class="line"><span class="lineno">  655</span>      cell(1, 1) *= lengths[1];</div>
+<div class="line"><span class="lineno">  656</span>      cell(2, 0) *= lengths[2];</div>
+<div class="line"><span class="lineno">  657</span>      cell(2, 1) *= lengths[2];</div>
+<div class="line"><span class="lineno">  658</span>      cell(2, 2) *= lengths[2];</div>
+<div class="line"><span class="lineno">  659</span>      m.<a class="code hl_function" href="classeonc_1_1Matter.html#a9a7ab53872772b1e61e4d0234af1d5d8">setCell</a>(cell);</div>
+<div class="line"><span class="lineno">  660</span>    }</div>
+<div class="line"><span class="lineno">  661</span>    m.<a class="code hl_variable" href="classeonc_1_1Matter.html#aa325fdebfaf34c23fde537e5cb456e25">headerCon</a>[2] =</div>
+<div class="line"><span class="lineno">  662</span>        std::format(<span class="stringliteral">&quot;{} {} {}\n&quot;</span>, angles_deg[0], angles_deg[1], angles_deg[2]);</div>
+<div class="line"><span class="lineno">  663</span> </div>
+<div class="line"><span class="lineno">  664</span>    <span class="keyword">const</span> <span class="keyword">auto</span> n = <span class="keyword">static_cast&lt;</span>Eigen::Index<span class="keyword">&gt;</span>(atoms.size());</div>
+<div class="line"><span class="lineno">  665</span>    m.<a class="code hl_function" href="classeonc_1_1Matter.html#a896d4984116557422d7774705d4eca5a">resize</a>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(atoms.size()));</div>
+<div class="line"><span class="lineno">  666</span> </div>
+<div class="line"><span class="lineno">  667</span>    <span class="comment">// Undo the species grouping the .con format imposes, so an index into</span></div>
+<div class="line"><span class="lineno">  668</span>    <span class="comment">// Matter addresses the same atom as the matching row of mode.dat.</span></div>
+<div class="line"><span class="lineno">  669</span>    <span class="keyword">const</span> std::vector&lt;size_t&gt; order = matter_order(atoms);</div>
+<div class="line"><span class="lineno">  670</span> </div>
+<div class="line"><span class="lineno">  671</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> positions = AtomMatrix::Zero(n, 3);</div>
+<div class="line"><span class="lineno">  672</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forces = AtomMatrix::Zero(n, 3);</div>
+<div class="line"><span class="lineno">  673</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> velocities = AtomMatrix::Zero(n, 3);</div>
+<div class="line"><span class="lineno">  674</span>    VectorXd masses = VectorXd::Zero(n);</div>
+<div class="line"><span class="lineno">  675</span>    VectorXi atomic_nrs = VectorXi::Zero(n);</div>
+<div class="line"><span class="lineno">  676</span>    <span class="keywordtype">bool</span> any_force = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  677</span>    <span class="keywordtype">bool</span> any_velocity = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  678</span> </div>
+<div class="line"><span class="lineno">  679</span>    <span class="keywordflow">for</span> (Eigen::Index i = 0; i &lt; n; ++i) {</div>
+<div class="line"><span class="lineno">  680</span>      <span class="keyword">const</span> <span class="keyword">auto</span> &amp;atom = atoms[order[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(i)]];</div>
+<div class="line"><span class="lineno">  681</span>      positions(i, 0) = atom.x;</div>
+<div class="line"><span class="lineno">  682</span>      positions(i, 1) = atom.y;</div>
+<div class="line"><span class="lineno">  683</span>      positions(i, 2) = atom.z;</div>
+<div class="line"><span class="lineno">  684</span>      masses(i) = atom.mass;</div>
+<div class="line"><span class="lineno">  685</span>      atomic_nrs(i) = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(atom.atomic_number);</div>
+<div class="line"><span class="lineno">  686</span>      <span class="keyword">const</span> <span class="keyword">auto</span> fixed = atom.fixed_mask();</div>
+<div class="line"><span class="lineno">  687</span>      m.<a class="code hl_function" href="classeonc_1_1Matter.html#adaaa781979ad1b98cb82976f3ff23db8">setFixedMask</a>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(i), {fixed[0], fixed[1], fixed[2]});</div>
+<div class="line"><span class="lineno">  688</span>      m.<a class="code hl_function" href="classeonc_1_1Matter.html#a6d6d51b783b4d307f500fa07d8ff46be">setAtomIndex</a>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(i),</div>
+<div class="line"><span class="lineno">  689</span>                     <span class="keyword">static_cast&lt;</span>std::int64_t<span class="keyword">&gt;</span>(atom.atom_id));</div>
+<div class="line"><span class="lineno">  690</span> </div>
+<div class="line"><span class="lineno">  691</span>      <span class="keywordflow">if</span> (<span class="keyword">auto</span> vel = atom.velocity()) {</div>
+<div class="line"><span class="lineno">  692</span>        any_velocity = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  693</span>        velocities(i, 0) = (*vel)[0];</div>
+<div class="line"><span class="lineno">  694</span>        velocities(i, 1) = (*vel)[1];</div>
+<div class="line"><span class="lineno">  695</span>        velocities(i, 2) = (*vel)[2];</div>
+<div class="line"><span class="lineno">  696</span>      }</div>
+<div class="line"><span class="lineno">  697</span>      <span class="keywordflow">if</span> (<span class="keyword">auto</span> force = atom.force()) {</div>
+<div class="line"><span class="lineno">  698</span>        any_force = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  699</span>        forces(i, 0) = (*force)[0];</div>
+<div class="line"><span class="lineno">  700</span>        forces(i, 1) = (*force)[1];</div>
+<div class="line"><span class="lineno">  701</span>        forces(i, 2) = (*force)[2];</div>
+<div class="line"><span class="lineno">  702</span>      }</div>
+<div class="line"><span class="lineno">  703</span>    }</div>
+<div class="line"><span class="lineno">  704</span> </div>
+<div class="line"><span class="lineno">  705</span>    m.<a class="code hl_function" href="classeonc_1_1Matter.html#a35a3894ee9a59e2fb9447480b31b25c5">setMasses</a>(masses);</div>
+<div class="line"><span class="lineno">  706</span>    m.<a class="code hl_function" href="classeonc_1_1Matter.html#a27b3b3354514294f1c2c1e4b0d4f1caa">setAtomicNrs</a>(atomic_nrs);</div>
+<div class="line"><span class="lineno">  707</span>    m.<a class="code hl_function" href="classeonc_1_1Matter.html#ae81d805ef12ff7ce616ddaf2c8da2990">setPositions</a>(positions);</div>
+<div class="line"><span class="lineno">  708</span> </div>
+<div class="line"><span class="lineno">  709</span>    <span class="keywordflow">if</span> (any_velocity || frame.has_velocities()) {</div>
+<div class="line"><span class="lineno">  710</span>      m.<a class="code hl_function" href="classeonc_1_1Matter.html#a53c3d67314edbf0fab9591c902921206">setVelocities</a>(velocities);</div>
+<div class="line"><span class="lineno">  711</span>    }</div>
+<div class="line"><span class="lineno">  712</span> </div>
+<div class="line"><span class="lineno">  713</span>    <span class="keyword">const</span> <span class="keyword">auto</span> meta = <a class="code hl_function" href="#a525b12eff16ef9d00847fc3482745e38">metadata_from_frame</a>(frame);</div>
+<div class="line"><span class="lineno">  714</span>    <span class="keywordflow">if</span> (out_metadata != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  715</span>      *out_metadata = meta;</div>
+<div class="line"><span class="lineno">  716</span>    }</div>
+<div class="line"><span class="lineno">  717</span> </div>
+<div class="line"><span class="lineno">  718</span>    <span class="comment">// Trust file energy+forces only when both are present. Energy-only must not</span></div>
+<div class="line"><span class="lineno">  719</span>    <span class="comment">// mark the pot clean with a zero force matrix (optimizer footgun). Prefer</span></div>
+<div class="line"><span class="lineno">  720</span>    <span class="comment">// writing raw forces (friend) so fixed-atom components survive RT; then</span></div>
+<div class="line"><span class="lineno">  721</span>    <span class="comment">// mark clean without setComputedPotential&#39;s net-force adjustment on zeros.</span></div>
+<div class="line"><span class="lineno">  722</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> has_force_section = any_force || frame.has_forces();</div>
+<div class="line"><span class="lineno">  723</span>    <span class="keywordflow">if</span> (meta.energy &amp;&amp; has_force_section) {</div>
+<div class="line"><span class="lineno">  724</span>      m.<a class="code hl_variable" href="classeonc_1_1Matter.html#a8bdadf93e454cfd261d3e3f823797e42">forces</a> = forces;</div>
+<div class="line"><span class="lineno">  725</span>      m.<a class="code hl_variable" href="classeonc_1_1Matter.html#a006dfbc2f8e6976a0a3fe529b7fe6c05">potentialEnergy</a> = *meta.energy;</div>
+<div class="line"><span class="lineno">  726</span>      m.<a class="code hl_variable" href="classeonc_1_1Matter.html#ae176c4b4d49e5281dc4e53f60ed1ad47">energyVariance</a> = 0.0;</div>
+<div class="line"><span class="lineno">  727</span>      m.<a class="code hl_variable" href="classeonc_1_1Matter.html#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  728</span>      m.<a class="code hl_variable" href="classeonc_1_1Matter.html#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  729</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (has_force_section) {</div>
+<div class="line"><span class="lineno">  730</span>      m.<a class="code hl_variable" href="classeonc_1_1Matter.html#a8bdadf93e454cfd261d3e3f823797e42">forces</a> = forces;</div>
+<div class="line"><span class="lineno">  731</span>      m.<a class="code hl_variable" href="classeonc_1_1Matter.html#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  732</span>      m.<a class="code hl_variable" href="classeonc_1_1Matter.html#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  733</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  734</span>      <span class="comment">// Classic geometry-only files: always recompute pot (main-era behavior).</span></div>
+<div class="line"><span class="lineno">  735</span>      m.<a class="code hl_variable" href="classeonc_1_1Matter.html#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  736</span>    }</div>
+<div class="line"><span class="lineno">  737</span> </div>
+<div class="line"><span class="lineno">  738</span>    <span class="comment">// setPositions already applied PBC when enabled; no second wrap here.</span></div>
+<div class="line"><span class="lineno">  739</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115">IoStatus::Ok</a>;</div>
+<div class="line"><span class="lineno">  740</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><span class="lineno">  741</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Failed to convert frame to matter: {}&quot;</span>, e.what());</div>
+<div class="line"><span class="lineno">  742</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9adf9be6f7af7c3f7196c5c3e731de0a87">IoStatus::ReadError</a>;</div>
+<div class="line"><span class="lineno">  743</span>  }</div>
+<div class="line"><span class="lineno">  744</span>}</div>
+<div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a006dfbc2f8e6976a0a3fe529b7fe6c05"><div class="ttname"><a href="classeonc_1_1Matter.html#a006dfbc2f8e6976a0a3fe529b7fe6c05">eonc::Matter::potentialEnergy</a></div><div class="ttdeci">double potentialEnergy</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00386">Matter.h:386</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a27b3b3354514294f1c2c1e4b0d4f1caa"><div class="ttname"><a href="classeonc_1_1Matter.html#a27b3b3354514294f1c2c1e4b0d4f1caa">eonc::Matter::setAtomicNrs</a></div><div class="ttdeci">void setAtomicNrs(const VectorXi &amp;atmnrs)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00571">Matter.cpp:571</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a35a3894ee9a59e2fb9447480b31b25c5"><div class="ttname"><a href="classeonc_1_1Matter.html#a35a3894ee9a59e2fb9447480b31b25c5">eonc::Matter::setMasses</a></div><div class="ttdeci">void setMasses(const VectorXd &amp;massesIn)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00386">Matter.cpp:386</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a5164aab0299da8bebd1f5c203bad021e"><div class="ttname"><a href="classeonc_1_1Matter.html#a5164aab0299da8bebd1f5c203bad021e">eonc::Matter::recomputeMaskedForces</a></div><div class="ttdeci">bool recomputeMaskedForces</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00381">Matter.h:381</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a53c3d67314edbf0fab9591c902921206"><div class="ttname"><a href="classeonc_1_1Matter.html#a53c3d67314edbf0fab9591c902921206">eonc::Matter::setVelocities</a></div><div class="ttdeci">void setVelocities(const AtomMatrix &amp;v)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00604">Matter.cpp:604</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a6d6d51b783b4d307f500fa07d8ff46be"><div class="ttname"><a href="classeonc_1_1Matter.html#a6d6d51b783b4d307f500fa07d8ff46be">eonc::Matter::setAtomIndex</a></div><div class="ttdeci">void setAtomIndex(long int atom, std::int64_t index)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00303">Matter.h:303</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a896d4984116557422d7774705d4eca5a"><div class="ttname"><a href="classeonc_1_1Matter.html#a896d4984116557422d7774705d4eca5a">eonc::Matter::resize</a></div><div class="ttdeci">void resize(long int nAtoms)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00173">Matter.cpp:173</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a8bdadf93e454cfd261d3e3f823797e42"><div class="ttname"><a href="classeonc_1_1Matter.html#a8bdadf93e454cfd261d3e3f823797e42">eonc::Matter::forces</a></div><div class="ttdeci">AtomMatrix forces</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00369">Matter.h:369</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a94d412b1be09524d9d598dede472e25c"><div class="ttname"><a href="classeonc_1_1Matter.html#a94d412b1be09524d9d598dede472e25c">eonc::Matter::recomputePotential</a></div><div class="ttdeci">bool recomputePotential</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00348">Matter.h:348</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a9a7ab53872772b1e61e4d0234af1d5d8"><div class="ttname"><a href="classeonc_1_1Matter.html#a9a7ab53872772b1e61e4d0234af1d5d8">eonc::Matter::setCell</a></div><div class="ttdeci">void setCell(const Matrix3d &amp;newCell)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00213">Matter.cpp:213</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_aa325fdebfaf34c23fde537e5cb456e25"><div class="ttname"><a href="classeonc_1_1Matter.html#aa325fdebfaf34c23fde537e5cb456e25">eonc::Matter::headerCon</a></div><div class="ttdeci">std::array&lt; std::string, 5 &gt; headerCon</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00354">Matter.h:354</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_adaaa781979ad1b98cb82976f3ff23db8"><div class="ttname"><a href="classeonc_1_1Matter.html#adaaa781979ad1b98cb82976f3ff23db8">eonc::Matter::setFixedMask</a></div><div class="ttdeci">void setFixedMask(long int atom, std::array&lt; bool, 3 &gt; mask)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00433">Matter.cpp:433</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_ae176c4b4d49e5281dc4e53f60ed1ad47"><div class="ttname"><a href="classeonc_1_1Matter.html#ae176c4b4d49e5281dc4e53f60ed1ad47">eonc::Matter::energyVariance</a></div><div class="ttdeci">double energyVariance</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00384">Matter.h:384</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_ae81d805ef12ff7ce616ddaf2c8da2990"><div class="ttname"><a href="classeonc_1_1Matter.html#ae81d805ef12ff7ce616ddaf2c8da2990">eonc::Matter::setPositions</a></div><div class="ttdeci">void setPositions(const AtomMatrix &amp;pos)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00273">Matter.cpp:273</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_a525b12eff16ef9d00847fc3482745e38"><div class="ttname"><a href="#a525b12eff16ef9d00847fc3482745e38">eonc::io::metadata_from_frame</a></div><div class="ttdeci">ConFrameMetadata metadata_from_frame(const readcon::ConFrame &amp;frame)</div><div class="ttdoc">Extract known frame-level fields from a parsed readcon frame.</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00498">ConFileIO.cpp:498</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1safemath_html_aca143ad04605edfbb9163b099c295c05"><div class="ttname"><a href="namespaceeonc_1_1safemath.html#aca143ad04605edfbb9163b099c295c05">eonc::safemath::safe_sqrt</a></div><div class="ttdeci">double safe_sqrt(double x)</div><div class="ttdef"><b>Definition</b> <a href="SafeMath_8h_source.html#l00038">SafeMath.h:38</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6f13ca53e923b1a8dbb98436987c984c" name="a6f13ca53e923b1a8dbb98436987c984c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f13ca53e923b1a8dbb98436987c984c">&#9670;&#160;</a></span>con2matter() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> eonc::io::con2matter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>m</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>filename</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8cpp_source.html#l00604">604</a> of file <a class="el" href="ConFileIO_8cpp_source.html">ConFileIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  604</span>                                                   {</div>
+<div class="line"><span class="lineno">  605</span>  filename = ensure_extension(std::move(filename), <span class="stringliteral">&quot;.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  606</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  607</span>    <span class="keyword">auto</span> frame = readcon::read_first_frame(filename);</div>
+<div class="line"><span class="lineno">  608</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a6f13ca53e923b1a8dbb98436987c984c">con2matter</a>(m, frame, <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">  609</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><span class="lineno">  610</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Failed to read {}: {}&quot;</span>, filename, e.what());</div>
+<div class="line"><span class="lineno">  611</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9adf9be6f7af7c3f7196c5c3e731de0a87">IoStatus::ReadError</a>;</div>
+<div class="line"><span class="lineno">  612</span>  }</div>
+<div class="line"><span class="lineno">  613</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_a6f13ca53e923b1a8dbb98436987c984c"><div class="ttname"><a href="#a6f13ca53e923b1a8dbb98436987c984c">eonc::io::con2matter</a></div><div class="ttdeci">IoStatus con2matter(Matter &amp;m, std::string filename)</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00604">ConFileIO.cpp:604</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2b29146d14c962659dbda7d6db479c38" name="a2b29146d14c962659dbda7d6db479c38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b29146d14c962659dbda7d6db479c38">&#9670;&#160;</a></span>convel2matter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> eonc::io::convel2matter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>m</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>filename</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8cpp_source.html#l00762">762</a> of file <a class="el" href="ConFileIO_8cpp_source.html">ConFileIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  762</span>                                                      {</div>
+<div class="line"><span class="lineno">  763</span>  filename = ensure_extension(std::move(filename), <span class="stringliteral">&quot;.convel&quot;</span>);</div>
+<div class="line"><span class="lineno">  764</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  765</span>    <span class="keyword">auto</span> frame = readcon::read_first_frame(filename);</div>
+<div class="line"><span class="lineno">  766</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a6f13ca53e923b1a8dbb98436987c984c">con2matter</a>(m, frame, <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">  767</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><span class="lineno">  768</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Failed to read convel {}: {}&quot;</span>, filename, e.what());</div>
+<div class="line"><span class="lineno">  769</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9adf9be6f7af7c3f7196c5c3e731de0a87">IoStatus::ReadError</a>;</div>
+<div class="line"><span class="lineno">  770</span>  }</div>
+<div class="line"><span class="lineno">  771</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af66b2723d892a4095754f9b0354b4f78" name="af66b2723d892a4095754f9b0354b4f78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af66b2723d892a4095754f9b0354b4f78">&#9670;&#160;</a></span>io_ok()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::io::io_ok </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a></td>          <td class="paramname"><span class="paramname"><em>s</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span><span class="mlabel constexpr">constexpr</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8h_source.html#l00038">38</a> of file <a class="el" href="ConFileIO_8h_source.html">ConFileIO.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   38</span>                                                        {</div>
+<div class="line"><span class="lineno">   39</span>  <span class="keywordflow">return</span> s == <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115">IoStatus::Ok</a>;</div>
+<div class="line"><span class="lineno">   40</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aae21eb723a59fc2f645f7199099a117f" name="aae21eb723a59fc2f645f7199099a117f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae21eb723a59fc2f645f7199099a117f">&#9670;&#160;</a></span>io_status_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eonc::io::io_status_name </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a></td>          <td class="paramname"><span class="paramname"><em>s</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span><span class="mlabel constexpr">constexpr</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Human-readable label for logging / bindings. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8h_source.html#l00043">43</a> of file <a class="el" href="ConFileIO_8h_source.html">ConFileIO.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   43</span>                                                                        {</div>
+<div class="line"><span class="lineno">   44</span>  <span class="keywordflow">switch</span> (s) {</div>
+<div class="line"><span class="lineno">   45</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115">IoStatus::Ok</a>:</div>
+<div class="line"><span class="lineno">   46</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;ok&quot;</span>;</div>
+<div class="line"><span class="lineno">   47</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9adf9be6f7af7c3f7196c5c3e731de0a87">IoStatus::ReadError</a>:</div>
+<div class="line"><span class="lineno">   48</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;read_error&quot;</span>;</div>
+<div class="line"><span class="lineno">   49</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a4a02ea49d454392fd1e3426e53f14b58">IoStatus::WriteError</a>:</div>
+<div class="line"><span class="lineno">   50</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;write_error&quot;</span>;</div>
+<div class="line"><span class="lineno">   51</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a58423b208aa79c16dda0160a86283922">IoStatus::AppendError</a>:</div>
+<div class="line"><span class="lineno">   52</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;append_error&quot;</span>;</div>
+<div class="line"><span class="lineno">   53</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9ac51a07a6d1b3c8609dc095cc4d540e23">IoStatus::OpenError</a>:</div>
+<div class="line"><span class="lineno">   54</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;open_error&quot;</span>;</div>
+<div class="line"><span class="lineno">   55</span>  <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">IoStatus::InvalidArgument</a>:</div>
+<div class="line"><span class="lineno">   56</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;invalid_argument&quot;</span>;</div>
+<div class="line"><span class="lineno">   57</span>  }</div>
+<div class="line"><span class="lineno">   58</span>  <span class="keywordflow">return</span> <span class="stringliteral">&quot;unknown&quot;</span>;</div>
+<div class="line"><span class="lineno">   59</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5dc824257c3cab0e8a74eec0f3d814df" name="a5dc824257c3cab0e8a74eec0f3d814df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5dc824257c3cab0e8a74eec0f3d814df">&#9670;&#160;</a></span>matter2con()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> eonc::io::matter2con </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>m</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>filename</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>append</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> *</td>          <td class="paramname"><span class="paramname"><em>metadata</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Append a frame to a .con, or truncate and write one frame. </p>
+<p>With <span class="tt">append</span>, an uncompressed target is extended in place: the new frame is serialized on its own and concatenated, so N appends cost N frame writes rather than N(N+1)/2. Earlier frames are never re-serialized, and the file is flushed before the call returns, so every intermediate state on disk is a complete multi-frame .con.</p>
+<p>A target that eOn did not write, or that changed size or mtime since eOn last wrote it, is parsed once before anything is added; an unparseable target yields <a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9a58423b208aa79c16dda0160a86283922">IoStatus::AppendError</a> with its bytes untouched. Gzip and zstd targets keep the read-all-and-rewrite path because a compressed member cannot be extended in place. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8cpp_source.html#l00541">541</a> of file <a class="el" href="ConFileIO_8cpp_source.html">ConFileIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  542</span>                                                      {</div>
+<div class="line"><span class="lineno">  543</span>  filename = ensure_extension(std::move(filename), <span class="stringliteral">&quot;.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  544</span> </div>
+<div class="line"><span class="lineno">  545</span>  m.<a class="code hl_function" href="classeonc_1_1Matter.html#a54be4d629faaa2d65e05f3735e4ec195">applyPeriodicBoundaryIfEnabled</a>();</div>
+<div class="line"><span class="lineno">  546</span> </div>
+<div class="line"><span class="lineno">  547</span>  <span class="keyword">const</span> fs::path path(filename);</div>
+<div class="line"><span class="lineno">  548</span>  <span class="keyword">const</span> <span class="keyword">auto</span> compression =</div>
+<div class="line"><span class="lineno">  549</span>      readcon::ConFrameWriter::compression_from_extension(path);</div>
+<div class="line"><span class="lineno">  550</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> streamable =</div>
+<div class="line"><span class="lineno">  551</span>      compression == readcon::ConFrameWriter::Compression::None;</div>
+<div class="line"><span class="lineno">  552</span> </div>
+<div class="line"><span class="lineno">  553</span>  <span class="comment">// The lock covers the stamp table and the read-then-extend window on one</span></div>
+<div class="line"><span class="lineno">  554</span>  <span class="comment">// path. Nothing under it evaluates a potential: frame_from_matter reads</span></div>
+<div class="line"><span class="lineno">  555</span>  <span class="comment">// cached energy and forces only while the pot is clean.</span></div>
+<div class="line"><span class="lineno">  556</span>  <span class="keyword">const</span> std::lock_guard&lt;std::mutex&gt; guard(append_mutex());</div>
+<div class="line"><span class="lineno">  557</span>  <span class="keyword">const</span> <span class="keyword">auto</span> key = append_key(path);</div>
+<div class="line"><span class="lineno">  558</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> exists = fs::exists(path);</div>
+<div class="line"><span class="lineno">  559</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> concatenate = append &amp;&amp; exists &amp;&amp; streamable;</div>
+<div class="line"><span class="lineno">  560</span> </div>
+<div class="line"><span class="lineno">  561</span>  <span class="comment">// ConFrame is move-only (no default ctor), so frames carries the new frame</span></div>
+<div class="line"><span class="lineno">  562</span>  <span class="comment">// either way. A gzip or zstd target cannot be concatenated: readcon-core</span></div>
+<div class="line"><span class="lineno">  563</span>  <span class="comment">// reads a single gzip member, so appended members would be invisible</span></div>
+<div class="line"><span class="lineno">  564</span>  <span class="comment">// on read-back, and the streaming writers cannot be flushed frame by frame.</span></div>
+<div class="line"><span class="lineno">  565</span>  <span class="comment">// Those targets keep the whole-file rewrite, which stays O(N) per append.</span></div>
+<div class="line"><span class="lineno">  566</span>  std::vector&lt;readcon::ConFrame&gt; frames;</div>
+<div class="line"><span class="lineno">  567</span>  <span class="keywordflow">if</span> (append &amp;&amp; exists &amp;&amp; !streamable) {</div>
+<div class="line"><span class="lineno">  568</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  569</span>      <span class="comment">// Prefer read_all_frames (single ownership hand-off) over the iterator</span></div>
+<div class="line"><span class="lineno">  570</span>      <span class="comment">// path for append rewrite; simpler lifetime for ASAN/CI envs.</span></div>
+<div class="line"><span class="lineno">  571</span>      frames = readcon::read_all_frames(path);</div>
+<div class="line"><span class="lineno">  572</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><span class="lineno">  573</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Failed to append to {}: {}&quot;</span>, filename, e.what());</div>
+<div class="line"><span class="lineno">  574</span>      <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a58423b208aa79c16dda0160a86283922">IoStatus::AppendError</a>;</div>
+<div class="line"><span class="lineno">  575</span>    }</div>
+<div class="line"><span class="lineno">  576</span>  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (concatenate &amp;&amp; !tail_is_ours(key, path)) {</div>
+<div class="line"><span class="lineno">  577</span>    <span class="comment">// Refuse to extend a file eOn cannot parse, matching the rewrite path:</span></div>
+<div class="line"><span class="lineno">  578</span>    <span class="comment">// the target keeps its bytes and the caller sees AppendError. Frames this</span></div>
+<div class="line"><span class="lineno">  579</span>    <span class="comment">// process wrote and nobody touched since need no such check.</span></div>
+<div class="line"><span class="lineno">  580</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  581</span>      [[maybe_unused]] <span class="keyword">const</span> <span class="keyword">auto</span> existing = readcon::read_all_frames(path);</div>
+<div class="line"><span class="lineno">  582</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><span class="lineno">  583</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Failed to append to {}: {}&quot;</span>, filename, e.what());</div>
+<div class="line"><span class="lineno">  584</span>      <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a58423b208aa79c16dda0160a86283922">IoStatus::AppendError</a>;</div>
+<div class="line"><span class="lineno">  585</span>    }</div>
+<div class="line"><span class="lineno">  586</span>  }</div>
+<div class="line"><span class="lineno">  587</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  588</span>    frames.push_back(frame_from_matter(m, metadata, <span class="comment">/*with_velocities=*/</span><span class="keyword">false</span>));</div>
+<div class="line"><span class="lineno">  589</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><span class="lineno">  590</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Failed to build frame for {}: {}&quot;</span>, filename, e.what());</div>
+<div class="line"><span class="lineno">  591</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">IoStatus::InvalidArgument</a>;</div>
+<div class="line"><span class="lineno">  592</span>  }</div>
+<div class="line"><span class="lineno">  593</span> </div>
+<div class="line"><span class="lineno">  594</span>  <span class="keyword">const</span> <span class="keyword">auto</span> status = concatenate ? append_frames(path, frames, kConPrecision)</div>
+<div class="line"><span class="lineno">  595</span>                                  : write_frames(path, frames, kConPrecision);</div>
+<div class="line"><span class="lineno">  596</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="#af66b2723d892a4095754f9b0354b4f78">io_ok</a>(status)) {</div>
+<div class="line"><span class="lineno">  597</span>    remember_stamp(key, path);</div>
+<div class="line"><span class="lineno">  598</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  599</span>    append_stamps().erase(key);</div>
+<div class="line"><span class="lineno">  600</span>  }</div>
+<div class="line"><span class="lineno">  601</span>  <span class="keywordflow">return</span> status;</div>
+<div class="line"><span class="lineno">  602</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_af66b2723d892a4095754f9b0354b4f78"><div class="ttname"><a href="#af66b2723d892a4095754f9b0354b4f78">eonc::io::io_ok</a></div><div class="ttdeci">constexpr bool io_ok(IoStatus s) noexcept</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00038">ConFileIO.h:38</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a34a1ebd1a28026f91910ae3eea60c1c1" name="a34a1ebd1a28026f91910ae3eea60c1c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34a1ebd1a28026f91910ae3eea60c1c1">&#9670;&#160;</a></span>matter2convel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> eonc::io::matter2convel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>m</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>filename</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8cpp_source.html#l00746">746</a> of file <a class="el" href="ConFileIO_8cpp_source.html">ConFileIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  746</span>                                                      {</div>
+<div class="line"><span class="lineno">  747</span>  filename = ensure_extension(std::move(filename), <span class="stringliteral">&quot;.convel&quot;</span>);</div>
+<div class="line"><span class="lineno">  748</span> </div>
+<div class="line"><span class="lineno">  749</span>  m.<a class="code hl_function" href="classeonc_1_1Matter.html#a54be4d629faaa2d65e05f3735e4ec195">applyPeriodicBoundaryIfEnabled</a>();</div>
+<div class="line"><span class="lineno">  750</span> </div>
+<div class="line"><span class="lineno">  751</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  752</span>    <span class="keyword">auto</span> frame = frame_from_matter(m, <span class="keyword">nullptr</span>, <span class="comment">/*with_velocities=*/</span><span class="keyword">true</span>);</div>
+<div class="line"><span class="lineno">  753</span>    std::vector&lt;readcon::ConFrame&gt; frames;</div>
+<div class="line"><span class="lineno">  754</span>    frames.push_back(std::move(frame));</div>
+<div class="line"><span class="lineno">  755</span>    <span class="keywordflow">return</span> write_frames(filename, frames, kConvelPrecision);</div>
+<div class="line"><span class="lineno">  756</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><span class="lineno">  757</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Failed to write convel {}: {}&quot;</span>, filename, e.what());</div>
+<div class="line"><span class="lineno">  758</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a4a02ea49d454392fd1e3426e53f14b58">IoStatus::WriteError</a>;</div>
+<div class="line"><span class="lineno">  759</span>  }</div>
+<div class="line"><span class="lineno">  760</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a92edb1d2a6c8cbe12752056317c5b889" name="a92edb1d2a6c8cbe12752056317c5b889"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92edb1d2a6c8cbe12752056317c5b889">&#9670;&#160;</a></span>matter2xyz()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> eonc::io::matter2xyz </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>m</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>filename</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>append</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Write one extended-XYZ frame: Lattice= cell and 17-digit coordinates. </p>
+<p><span class="tt">append</span> concatenates another frame. A target whose last frame has a different atom count yields InvalidArgument and is left unchanged. Chemfiles in readcon is ingress (XYZ/PDB/GRO into ConFrame), not XYZ egress, so this writer emits the Lattice= comment <a class="el" href="classASE.html">ASE</a> and chemfiles already read. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8cpp_source.html#l00773">773</a> of file <a class="el" href="ConFileIO_8cpp_source.html">ConFileIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  773</span>                                                                {</div>
+<div class="line"><span class="lineno">  774</span>  filename = ensure_extension(std::move(filename), <span class="stringliteral">&quot;.xyz&quot;</span>);</div>
+<div class="line"><span class="lineno">  775</span> </div>
+<div class="line"><span class="lineno">  776</span>  m.<a class="code hl_function" href="classeonc_1_1Matter.html#a54be4d629faaa2d65e05f3735e4ec195">applyPeriodicBoundaryIfEnabled</a>();</div>
+<div class="line"><span class="lineno">  777</span>  <span class="keyword">const</span> <span class="keywordtype">long</span> n = m.<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>();</div>
+<div class="line"><span class="lineno">  778</span> </div>
+<div class="line"><span class="lineno">  779</span>  <span class="keywordflow">if</span> (append &amp;&amp; fs::exists(filename)) {</div>
+<div class="line"><span class="lineno">  780</span>    std::error_code ec;</div>
+<div class="line"><span class="lineno">  781</span>    <span class="keyword">const</span> <span class="keyword">auto</span> sz = fs::file_size(filename, ec);</div>
+<div class="line"><span class="lineno">  782</span>    <span class="keywordflow">if</span> (!ec &amp;&amp; sz &gt; 0) {</div>
+<div class="line"><span class="lineno">  783</span>      <span class="keyword">const</span> <span class="keyword">auto</span> prev = last_xyz_natoms(filename);</div>
+<div class="line"><span class="lineno">  784</span>      <span class="keywordflow">if</span> (!prev) {</div>
+<div class="line"><span class="lineno">  785</span>        <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;matter2xyz: cannot parse existing {}&quot;</span>, filename);</div>
+<div class="line"><span class="lineno">  786</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a58423b208aa79c16dda0160a86283922">IoStatus::AppendError</a>;</div>
+<div class="line"><span class="lineno">  787</span>      }</div>
+<div class="line"><span class="lineno">  788</span>      <span class="keywordflow">if</span> (*prev != n) {</div>
+<div class="line"><span class="lineno">  789</span>        <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(</div>
+<div class="line"><span class="lineno">  790</span>            <span class="stringliteral">&quot;matter2xyz: append atom count {} != last frame {} in {}&quot;</span>, n, *prev,</div>
+<div class="line"><span class="lineno">  791</span>            filename);</div>
+<div class="line"><span class="lineno">  792</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">IoStatus::InvalidArgument</a>;</div>
+<div class="line"><span class="lineno">  793</span>      }</div>
+<div class="line"><span class="lineno">  794</span>    }</div>
+<div class="line"><span class="lineno">  795</span>  }</div>
+<div class="line"><span class="lineno">  796</span> </div>
+<div class="line"><span class="lineno">  797</span>  std::ofstream out;</div>
+<div class="line"><span class="lineno">  798</span>  out.open(filename,</div>
+<div class="line"><span class="lineno">  799</span>           append ? (std::ios::out | std::ios::app | std::ios::binary)</div>
+<div class="line"><span class="lineno">  800</span>                  : (std::ios::out | std::ios::trunc | std::ios::binary));</div>
+<div class="line"><span class="lineno">  801</span>  <span class="keywordflow">if</span> (!out) {</div>
+<div class="line"><span class="lineno">  802</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;matter2xyz: cannot open {}&quot;</span>, filename);</div>
+<div class="line"><span class="lineno">  803</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9ac51a07a6d1b3c8609dc095cc4d540e23">IoStatus::OpenError</a>;</div>
+<div class="line"><span class="lineno">  804</span>  }</div>
+<div class="line"><span class="lineno">  805</span> </div>
+<div class="line"><span class="lineno">  806</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> cell = m.<a class="code hl_function" href="classeonc_1_1Matter.html#adc4d758cf3f8a737ddb2e985c212f986">getCell</a>();</div>
+<div class="line"><span class="lineno">  807</span>  out &lt;&lt; std::format(</div>
+<div class="line"><span class="lineno">  808</span>      <span class="stringliteral">&quot;{}\nLattice=\&quot;{:.17g} {:.17g} {:.17g} {:.17g} {:.17g} {:.17g} &quot;</span></div>
+<div class="line"><span class="lineno">  809</span>      <span class="stringliteral">&quot;{:.17g} {:.17g} {:.17g}\&quot; Properties=species:S:1:pos:R:3 Generated &quot;</span></div>
+<div class="line"><span class="lineno">  810</span>      <span class="stringliteral">&quot;by eOn\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  811</span>      n, cell(0, 0), cell(0, 1), cell(0, 2), cell(1, 0), cell(1, 1), cell(1, 2),</div>
+<div class="line"><span class="lineno">  812</span>      cell(2, 0), cell(2, 1), cell(2, 2));</div>
+<div class="line"><span class="lineno">  813</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = m.<a class="code hl_function" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>();</div>
+<div class="line"><span class="lineno">  814</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; n; ++i) {</div>
+<div class="line"><span class="lineno">  815</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{}\t{:.17g}\t{:.17g}\t{:.17g}\n&quot;</span>,</div>
+<div class="line"><span class="lineno">  816</span>                       symbol_for_z(m.<a class="code hl_function" href="classeonc_1_1Matter.html#ada91063399840e5900d861c2472a8bbc">getAtomicNr</a>(i)), pos(i, 0), pos(i, 1),</div>
+<div class="line"><span class="lineno">  817</span>                       pos(i, 2));</div>
+<div class="line"><span class="lineno">  818</span>  }</div>
+<div class="line"><span class="lineno">  819</span>  <span class="comment">// Close before testing: the destructor&#39;s flush is where a full disk or a</span></div>
+<div class="line"><span class="lineno">  820</span>  <span class="comment">// short write surfaces, and by then the state is gone.</span></div>
+<div class="line"><span class="lineno">  821</span>  out.close();</div>
+<div class="line"><span class="lineno">  822</span>  <span class="keywordflow">if</span> (!out) {</div>
+<div class="line"><span class="lineno">  823</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;matter2xyz: failed to write {}&quot;</span>, filename);</div>
+<div class="line"><span class="lineno">  824</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a4a02ea49d454392fd1e3426e53f14b58">IoStatus::WriteError</a>;</div>
+<div class="line"><span class="lineno">  825</span>  }</div>
+<div class="line"><span class="lineno">  826</span>  <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115">IoStatus::Ok</a>;</div>
+<div class="line"><span class="lineno">  827</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_ada91063399840e5900d861c2472a8bbc"><div class="ttname"><a href="classeonc_1_1Matter.html#ada91063399840e5900d861c2472a8bbc">eonc::Matter::getAtomicNr</a></div><div class="ttdeci">long getAtomicNr(long int atom) const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00392">Matter.cpp:392</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_af4c79f27fe60b4dbd397064faf3f1f78"><div class="ttname"><a href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">eonc::Matter::getPositions</a></div><div class="ttdeci">const AtomMatrix &amp; getPositions() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00236">Matter.cpp:236</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad199f826cc24bd9826a30c68005ddd45" name="ad199f826cc24bd9826a30c68005ddd45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad199f826cc24bd9826a30c68005ddd45">&#9670;&#160;</a></span>matterToConFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">readcon::ConFrame eonc::io::matterToConFrame </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>m</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> *</td>          <td class="paramname"><span class="paramname"><em>metadata</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Build a single stamped ConFrame from <a class="el" href="classeonc_1_1Matter.html">Matter</a> (same builder as matter2con). </p>
+<p>Does not write to disk. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8cpp_source.html#l00485">485</a> of file <a class="el" href="ConFileIO_8cpp_source.html">ConFileIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  486</span>                                                                     {</div>
+<div class="line"><span class="lineno">  487</span>  <span class="keywordflow">return</span> frame_from_matter(m, metadata, <span class="comment">/*with_velocities=*/</span><span class="keyword">false</span>);</div>
+<div class="line"><span class="lineno">  488</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a525b12eff16ef9d00847fc3482745e38" name="a525b12eff16ef9d00847fc3482745e38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a525b12eff16ef9d00847fc3482745e38">&#9670;&#160;</a></span>metadata_from_frame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> eonc::io::metadata_from_frame </td>
+          <td>(</td>
+          <td class="paramtype">const readcon::ConFrame &amp;</td>          <td class="paramname"><span class="paramname"><em>frame</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extract known frame-level fields from a parsed readcon frame. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8cpp_source.html#l00498">498</a> of file <a class="el" href="ConFileIO_8cpp_source.html">ConFileIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  498</span>                                                                   {</div>
+<div class="line"><span class="lineno">  499</span>  <a class="code hl_struct" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> meta;</div>
+<div class="line"><span class="lineno">  500</span>  meta.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#a477c0c6939c5add657040782e213add1">energy</a> = frame.energy_opt();</div>
+<div class="line"><span class="lineno">  501</span>  meta.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#a1c066326eb4ccd15a01e3606e4abf5bd">frame_index</a> = frame.frame_index_opt();</div>
+<div class="line"><span class="lineno">  502</span>  meta.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#a6cb6baf1b7886d70774af5ea2dbaaeb9">time</a> = frame.time_opt();</div>
+<div class="line"><span class="lineno">  503</span>  meta.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#a4c09791d6dd61ca8199ee61a028fe610">timestep</a> = frame.timestep_opt();</div>
+<div class="line"><span class="lineno">  504</span>  meta.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#af120c8f87a26122f66264df1f1bf2a1b">neb_bead</a> = frame.neb_bead_opt();</div>
+<div class="line"><span class="lineno">  505</span>  meta.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#a1e3ec7c95a8f840aab609450248a3ce8">neb_band</a> = frame.neb_band_opt();</div>
+<div class="line"><span class="lineno">  506</span>  meta.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#a87789b3542a892ecd42f8053f8f6e0b2">potential_type</a> = frame.potential_type();</div>
+<div class="line"><span class="lineno">  507</span>  <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_typedef" href="ParametersJSON_8cpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> = frame.metadata_json();</div>
+<div class="line"><span class="lineno">  508</span>  <span class="keywordflow">if</span> (!<a class="code hl_typedef" href="ParametersJSON_8cpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a>.empty() &amp;&amp; <a class="code hl_typedef" href="ParametersJSON_8cpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a> != <span class="stringliteral">&quot;{}&quot;</span>) {</div>
+<div class="line"><span class="lineno">  509</span>    meta.<a class="code hl_variable" href="structeonc_1_1io_1_1ConFrameMetadata.html#a6f53f3c50f3b0968b1004af5a32f800e">raw_json</a> = <a class="code hl_typedef" href="ParametersJSON_8cpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a>;</div>
+<div class="line"><span class="lineno">  510</span>  }</div>
+<div class="line"><span class="lineno">  511</span>  <span class="keywordflow">return</span> meta;</div>
+<div class="line"><span class="lineno">  512</span>}</div>
+<div class="ttc" id="aParametersJSON_8cpp_html_ab701e3ac61a85b337ec5c1abaad6742d"><div class="ttname"><a href="ParametersJSON_8cpp.html#ab701e3ac61a85b337ec5c1abaad6742d">json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> <a href="ParametersJSON_8cpp_source.html#l00023">ParametersJSON.cpp:23</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html">eonc::io::ConFrameMetadata</a></div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00071">ConFileIO.h:71</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_a1c066326eb4ccd15a01e3606e4abf5bd"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#a1c066326eb4ccd15a01e3606e4abf5bd">eonc::io::ConFrameMetadata::frame_index</a></div><div class="ttdeci">std::optional&lt; uint64_t &gt; frame_index</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00072">ConFileIO.h:72</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_a1e3ec7c95a8f840aab609450248a3ce8"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#a1e3ec7c95a8f840aab609450248a3ce8">eonc::io::ConFrameMetadata::neb_band</a></div><div class="ttdeci">std::optional&lt; uint64_t &gt; neb_band</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00077">ConFileIO.h:77</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_a477c0c6939c5add657040782e213add1"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#a477c0c6939c5add657040782e213add1">eonc::io::ConFrameMetadata::energy</a></div><div class="ttdeci">std::optional&lt; double &gt; energy</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00073">ConFileIO.h:73</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_a4c09791d6dd61ca8199ee61a028fe610"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#a4c09791d6dd61ca8199ee61a028fe610">eonc::io::ConFrameMetadata::timestep</a></div><div class="ttdeci">std::optional&lt; double &gt; timestep</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00075">ConFileIO.h:75</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_a6cb6baf1b7886d70774af5ea2dbaaeb9"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#a6cb6baf1b7886d70774af5ea2dbaaeb9">eonc::io::ConFrameMetadata::time</a></div><div class="ttdeci">std::optional&lt; double &gt; time</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00074">ConFileIO.h:74</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_a6f53f3c50f3b0968b1004af5a32f800e"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#a6f53f3c50f3b0968b1004af5a32f800e">eonc::io::ConFrameMetadata::raw_json</a></div><div class="ttdeci">std::optional&lt; std::string &gt; raw_json</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00081">ConFileIO.h:81</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_a87789b3542a892ecd42f8053f8f6e0b2"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#a87789b3542a892ecd42f8053f8f6e0b2">eonc::io::ConFrameMetadata::potential_type</a></div><div class="ttdeci">std::optional&lt; std::string &gt; potential_type</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00078">ConFileIO.h:78</a></div></div>
+<div class="ttc" id="astructeonc_1_1io_1_1ConFrameMetadata_html_af120c8f87a26122f66264df1f1bf2a1b"><div class="ttname"><a href="structeonc_1_1io_1_1ConFrameMetadata.html#af120c8f87a26122f66264df1f1bf2a1b">eonc::io::ConFrameMetadata::neb_bead</a></div><div class="ttdeci">std::optional&lt; uint64_t &gt; neb_bead</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8h_source.html#l00076">ConFileIO.h:76</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a43ddd666235e811420f7a04d00419e1a" name="a43ddd666235e811420f7a04d00419e1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43ddd666235e811420f7a04d00419e1a">&#9670;&#160;</a></span>resetConAppendState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::io::resetConAppendState </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Drop the per-path bookkeeping that lets append-mode writes skip re-parsing frames this process wrote. </p>
+<p>Appends already re-parse a target whose size or mtime moved, so this only matters when a file is replaced with different content of the same size inside one filesystem timestamp tick. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8cpp_source.html#l00536">536</a> of file <a class="el" href="ConFileIO_8cpp_source.html">ConFileIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  536</span>                           {</div>
+<div class="line"><span class="lineno">  537</span>  <span class="keyword">const</span> std::lock_guard&lt;std::mutex&gt; guard(append_mutex());</div>
+<div class="line"><span class="lineno">  538</span>  append_stamps().clear();</div>
+<div class="line"><span class="lineno">  539</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac1282d2f253eb7c3c17e948e7e663cf8" name="ac1282d2f253eb7c3c17e948e7e663cf8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1282d2f253eb7c3c17e948e7e663cf8">&#9670;&#160;</a></span>set_write_con_forces()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::io::set_write_con_forces </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>enabled</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether written .con frames carry "Forces of Component" sections. </p>
+<p>Force sections enable force+energy co-loading on re-read (warm NEB restarts without re-evaluating the potential) but are not part of the classic con layout: external readers such as <a class="el" href="classASE.html">ASE</a>'s eon parser reject frames that carry them. Off unless [Main] write_con_forces enables it. A <a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html#af58aac5c164318bf2e21b322d37f0bc5" title="When set, this write includes or omits force sections regardless of Parameters.main_options....">ConFrameMetadata.write_con_forces</a> value, then the <a class="el" href="classeonc_1_1Matter.html">Matter</a> <a class="el" href="classeonc_1_1Parameters.html">Parameters</a> field, override this process-wide flag for a single write. Reading force-bearing frames is always supported regardless of this flag. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8cpp_source.html#l00490">490</a> of file <a class="el" href="ConFileIO_8cpp_source.html">ConFileIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  490</span>                                                 {</div>
+<div class="line"><span class="lineno">  491</span>  g_write_con_forces.store(enabled, std::memory_order_relaxed);</div>
+<div class="line"><span class="lineno">  492</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5d3959d80e4c17d49bbbd72e0ac2967f" name="a5d3959d80e4c17d49bbbd72e0ac2967f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d3959d80e4c17d49bbbd72e0ac2967f">&#9670;&#160;</a></span>write_con_forces()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::io::write_con_forces </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8cpp_source.html#l00494">494</a> of file <a class="el" href="ConFileIO_8cpp_source.html">ConFileIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  494</span>                                 {</div>
+<div class="line"><span class="lineno">  495</span>  <span class="keywordflow">return</span> g_write_con_forces.load(std::memory_order_relaxed);</div>
+<div class="line"><span class="lineno">  496</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a2a321dfc9b8cf6c615a518a3f79ccdd0" name="a2a321dfc9b8cf6c615a518a3f79ccdd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a321dfc9b8cf6c615a518a3f79ccdd0">&#9670;&#160;</a></span>writeConFrames()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> eonc::io::writeConFrames </td>
+          <td>(</td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>filename</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; readcon::ConFrame &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>frames</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Write already-built ConFrames to a multi-frame .con (temp or durable). </p>
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8cpp_source.html#l00921">921</a> of file <a class="el" href="ConFileIO_8cpp_source.html">ConFileIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  922</span>                                                                  {</div>
+<div class="line"><span class="lineno">  923</span>  <span class="keywordflow">if</span> (frames.empty()) {</div>
+<div class="line"><span class="lineno">  924</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">IoStatus::InvalidArgument</a>;</div>
+<div class="line"><span class="lineno">  925</span>  }</div>
+<div class="line"><span class="lineno">  926</span>  filename = ensure_extension(std::move(filename), <span class="stringliteral">&quot;.con&quot;</span>);</div>
+<div class="line"><span class="lineno">  927</span>  <span class="keyword">const</span> fs::path path(filename);</div>
+<div class="line"><span class="lineno">  928</span>  <span class="keyword">const</span> std::lock_guard&lt;std::mutex&gt; guard(append_mutex());</div>
+<div class="line"><span class="lineno">  929</span>  <span class="keyword">const</span> <span class="keyword">auto</span> key = append_key(path);</div>
+<div class="line"><span class="lineno">  930</span>  <span class="keyword">const</span> <span class="keyword">auto</span> status = write_frames(path, frames, kConPrecision);</div>
+<div class="line"><span class="lineno">  931</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="#af66b2723d892a4095754f9b0354b4f78">io_ok</a>(status)) {</div>
+<div class="line"><span class="lineno">  932</span>    remember_stamp(key, path);</div>
+<div class="line"><span class="lineno">  933</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  934</span>    append_stamps().erase(key);</div>
+<div class="line"><span class="lineno">  935</span>  }</div>
+<div class="line"><span class="lineno">  936</span>  <span class="keywordflow">return</span> status;</div>
+<div class="line"><span class="lineno">  937</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="affc6614e11211166631b9bf5947db98c" name="affc6614e11211166631b9bf5947db98c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affc6614e11211166631b9bf5947db98c">&#9670;&#160;</a></span>writeNebPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> eonc::io::writeNebPath </td>
+          <td>(</td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>filename</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classMatter.html">Matter</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>metadata_per_image</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Write a full NEB path as one multi-frame .con using ConFrameBuilder::clone(). </p>
+<p>Seeds identity (symbols/fixed/mass/id/cell headers) from path[0] only, then for each image clones that template and bulk-updates positions/forces + metadata. Images must share atom count and topology with path[0] (standard NEB band invariant); heterogeneous multi-frame movies should not use this. Avoids re-reading the output file per image (legacy append path).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>length must be numImages+2 (endpoints included) </td></tr>
+    <tr><td class="paramname">metadata_per_image</td><td>length must equal path.size() </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8cpp_source.html#l00939">939</a> of file <a class="el" href="ConFileIO_8cpp_source.html">ConFileIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  941</span>                                                                             {</div>
+<div class="line"><span class="lineno">  942</span>  <span class="keyword">auto</span> frames = <a class="code hl_function" href="#a82c7b62eba032ea919c9cc6abf2ba8af">buildNebPathFrames</a>(path, metadata_per_image);</div>
+<div class="line"><span class="lineno">  943</span>  <span class="keywordflow">if</span> (frames.empty()) {</div>
+<div class="line"><span class="lineno">  944</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a253ca7dd096ee0956cccee4d376cab8b">IoStatus::InvalidArgument</a>;</div>
+<div class="line"><span class="lineno">  945</span>  }</div>
+<div class="line"><span class="lineno">  946</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a2a321dfc9b8cf6c615a518a3f79ccdd0">writeConFrames</a>(std::move(filename), frames);</div>
+<div class="line"><span class="lineno">  947</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_a2a321dfc9b8cf6c615a518a3f79ccdd0"><div class="ttname"><a href="#a2a321dfc9b8cf6c615a518a3f79ccdd0">eonc::io::writeConFrames</a></div><div class="ttdeci">IoStatus writeConFrames(std::string filename, const std::vector&lt; readcon::ConFrame &gt; &amp;frames)</div><div class="ttdoc">Write already-built ConFrames to a multi-frame .con (temp or durable).</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00921">ConFileIO.cpp:921</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1io_html_a82c7b62eba032ea919c9cc6abf2ba8af"><div class="ttname"><a href="#a82c7b62eba032ea919c9cc6abf2ba8af">eonc::io::buildNebPathFrames</a></div><div class="ttdeci">std::vector&lt; readcon::ConFrame &gt; buildNebPathFrames(const std::vector&lt; std::shared_ptr&lt; Matter &gt; &gt; &amp;path, const std::vector&lt; ConFrameMetadata &gt; &amp;metadata_per_image)</div><div class="ttdoc">Build NEB band ConFrames without writing (clone builder path of writeNebPath).</div><div class="ttdef"><b>Definition</b> <a href="ConFileIO_8cpp_source.html#l00872">ConFileIO.cpp:872</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af6b4831ef3e56d5233f89c5a9689e7ec" name="af6b4831ef3e56d5233f89c5a9689e7ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6b4831ef3e56d5233f89c5a9689e7ec">&#9670;&#160;</a></span>writeTibble()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#aa96f30005b3cd2485a5da4371602a1c9">IoStatus</a> eonc::io::writeTibble </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classMatter.html">Matter</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>m</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>fname</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Debug table (positions, optional cached forces). Not a structure format. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConFileIO_8cpp_source.html#l00829">829</a> of file <a class="el" href="ConFileIO_8cpp_source.html">ConFileIO.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  829</span>                                                 {</div>
+<div class="line"><span class="lineno">  830</span>  <span class="comment">// Debug table, not a structure format. getForces()/getPotentialEnergy()</span></div>
+<div class="line"><span class="lineno">  831</span>  <span class="comment">// run computePotential() on a dirty pot, which would charge a dump to</span></div>
+<div class="line"><span class="lineno">  832</span>  <span class="comment">// the force-call count in results.dat. Cached values only; the header</span></div>
+<div class="line"><span class="lineno">  833</span>  <span class="comment">// drops the columns it cannot fill. atmID is the CON column-5 id.</span></div>
+<div class="line"><span class="lineno">  834</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> have_forces = !m.<a class="code hl_function" href="classeonc_1_1Matter.html#aa093532bd3da96f1e556173582439ba8">needsForceUpdate</a>();</div>
+<div class="line"><span class="lineno">  835</span>  <span class="keywordflow">if</span> (!have_forces) {</div>
+<div class="line"><span class="lineno">  836</span>    <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(</div>
+<div class="line"><span class="lineno">  837</span>        <span class="stringliteral">&quot;writeTibble: pot is dirty, {} omits the force and energy columns&quot;</span>,</div>
+<div class="line"><span class="lineno">  838</span>        fname);</div>
+<div class="line"><span class="lineno">  839</span>  }</div>
+<div class="line"><span class="lineno">  840</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = m.<a class="code hl_function" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>();</div>
+<div class="line"><span class="lineno">  841</span>  std::ofstream out(fname);</div>
+<div class="line"><span class="lineno">  842</span>  <span class="keywordflow">if</span> (!out) {</div>
+<div class="line"><span class="lineno">  843</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;writeTibble: cannot open {}&quot;</span>, fname);</div>
+<div class="line"><span class="lineno">  844</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9ac51a07a6d1b3c8609dc095cc4d540e23">IoStatus::OpenError</a>;</div>
+<div class="line"><span class="lineno">  845</span>  }</div>
+<div class="line"><span class="lineno">  846</span>  out &lt;&lt; (have_forces ? <span class="stringliteral">&quot;x y z fx fy fz energy mass symbol atmID fixed\n&quot;</span></div>
+<div class="line"><span class="lineno">  847</span>                      : <span class="stringliteral">&quot;x y z mass symbol atmID fixed\n&quot;</span>);</div>
+<div class="line"><span class="lineno">  848</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> fSys = have_forces ? m.<a class="code hl_function" href="classeonc_1_1Matter.html#a48cee072b3bab26b5e045d02fbd83860">getForces</a>() : <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a>();</div>
+<div class="line"><span class="lineno">  849</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> eSys = have_forces ? m.<a class="code hl_function" href="classeonc_1_1Matter.html#a0f627d29055314e02df9c51bdc05e53f">getPotentialEnergy</a>() : 0.0;</div>
+<div class="line"><span class="lineno">  850</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx = 0; idx &lt; m.<a class="code hl_function" href="classeonc_1_1Matter.html#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>(); ++idx) {</div>
+<div class="line"><span class="lineno">  851</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot;{} {} {}&quot;</span>, pos(idx, 0), pos(idx, 1), pos(idx, 2));</div>
+<div class="line"><span class="lineno">  852</span>    <span class="keywordflow">if</span> (have_forces) {</div>
+<div class="line"><span class="lineno">  853</span>      out &lt;&lt; std::format(<span class="stringliteral">&quot; {} {} {} {}&quot;</span>, fSys(idx, 0), fSys(idx, 1),</div>
+<div class="line"><span class="lineno">  854</span>                         fSys(idx, 2), eSys);</div>
+<div class="line"><span class="lineno">  855</span>    }</div>
+<div class="line"><span class="lineno">  856</span>    <span class="keyword">const</span> <span class="keyword">auto</span> mask = m.<a class="code hl_function" href="classeonc_1_1Matter.html#ab28f935aaa7c2d05e5a7004895f0f2c5">getFixedMask</a>(idx);</div>
+<div class="line"><span class="lineno">  857</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> fixed_bits =</div>
+<div class="line"><span class="lineno">  858</span>        (mask[0] ? 1 : 0) | (mask[1] ? 2 : 0) | (mask[2] ? 4 : 0);</div>
+<div class="line"><span class="lineno">  859</span>    out &lt;&lt; std::format(<span class="stringliteral">&quot; {} {} {} {}\n&quot;</span>, m.<a class="code hl_function" href="classeonc_1_1Matter.html#aec83c6643272c49c4f0de7126ec50386">getMass</a>(idx),</div>
+<div class="line"><span class="lineno">  860</span>                       symbol_for_z(m.<a class="code hl_function" href="classeonc_1_1Matter.html#ada91063399840e5900d861c2472a8bbc">getAtomicNr</a>(idx)), m.<a class="code hl_function" href="classeonc_1_1Matter.html#ad17ea2f3b6ea4b9d8a6f6427d16696b7">getAtomIndex</a>(idx),</div>
+<div class="line"><span class="lineno">  861</span>                       fixed_bits);</div>
+<div class="line"><span class="lineno">  862</span>  }</div>
+<div class="line"><span class="lineno">  863</span>  out.close();</div>
+<div class="line"><span class="lineno">  864</span>  <span class="keywordflow">if</span> (!out) {</div>
+<div class="line"><span class="lineno">  865</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;writeTibble: failed to write {}&quot;</span>, fname);</div>
+<div class="line"><span class="lineno">  866</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9a4a02ea49d454392fd1e3426e53f14b58">IoStatus::WriteError</a>;</div>
+<div class="line"><span class="lineno">  867</span>  }</div>
+<div class="line"><span class="lineno">  868</span>  <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="#aa96f30005b3cd2485a5da4371602a1c9aa60852f204ed8028c1c58808b746d115">IoStatus::Ok</a>;</div>
+<div class="line"><span class="lineno">  869</span>}</div>
+<div class="ttc" id="aEonLogger_8h_html_a85fddaf0620c36ee3fcf865df53a9327"><div class="ttname"><a href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a></div><div class="ttdeci">#define EONC_LOG_WARNING(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00256">EonLogger.h:256</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a0f627d29055314e02df9c51bdc05e53f"><div class="ttname"><a href="classeonc_1_1Matter.html#a0f627d29055314e02df9c51bdc05e53f">eonc::Matter::getPotentialEnergy</a></div><div class="ttdeci">double getPotentialEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00446">Matter.cpp:446</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a48cee072b3bab26b5e045d02fbd83860"><div class="ttname"><a href="classeonc_1_1Matter.html#a48cee072b3bab26b5e045d02fbd83860">eonc::Matter::getForces</a></div><div class="ttdeci">const AtomMatrix &amp; getForces() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00324">Matter.cpp:324</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_aa093532bd3da96f1e556173582439ba8"><div class="ttname"><a href="classeonc_1_1Matter.html#aa093532bd3da96f1e556173582439ba8">eonc::Matter::needsForceUpdate</a></div><div class="ttdeci">bool needsForceUpdate() const</div><div class="ttdoc">Whether forces need recomputation (positions changed since last eval).</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00232">Matter.h:232</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_ab28f935aaa7c2d05e5a7004895f0f2c5"><div class="ttname"><a href="classeonc_1_1Matter.html#ab28f935aaa7c2d05e5a7004895f0f2c5">eonc::Matter::getFixedMask</a></div><div class="ttdeci">std::array&lt; bool, 3 &gt; getFixedMask(long int atom) const</div><div class="ttdoc">Per-axis CON column-4 mask (bit0=x, bit1=y, bit2=z).</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00413">Matter.cpp:413</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_ad17ea2f3b6ea4b9d8a6f6427d16696b7"><div class="ttname"><a href="classeonc_1_1Matter.html#ad17ea2f3b6ea4b9d8a6f6427d16696b7">eonc::Matter::getAtomIndex</a></div><div class="ttdeci">std::int64_t getAtomIndex(long int atom) const</div><div class="ttdoc">.con column-5 index (pre-grouping); public for I/O / bindings.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00300">Matter.h:300</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_aec83c6643272c49c4f0de7126ec50386"><div class="ttname"><a href="classeonc_1_1Matter.html#aec83c6643272c49c4f0de7126ec50386">eonc::Matter::getMass</a></div><div class="ttdeci">double getMass(long int atom) const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00380">Matter.cpp:380</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="namespaceeonc_1_1io.html">io</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

@@ -1,0 +1,354 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: Class Index</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classes.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Class Index</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="qindex"><a class="qindex" href="#letter_A">A</a><div class="alphasepar"></div><a class="qindex" href="#letter_B">B</a><div class="alphasepar"></div><a class="qindex" href="#letter_C">C</a><div class="alphasepar"></div><a class="qindex" href="#letter_D">D</a><div class="alphasepar"></div><a class="qindex" href="#letter_E">E</a><div class="alphasepar"></div><a class="qindex" href="#letter_F">F</a><div class="alphasepar"></div><a class="qindex" href="#letter_G">G</a><div class="alphasepar"></div><a class="qindex" href="#letter_H">H</a><div class="alphasepar"></div><a class="qindex" href="#letter_I">I</a><div class="alphasepar"></div><a class="qindex" href="#letter_J">J</a><div class="alphasepar"></div><a class="qindex" href="#letter_L">L</a><div class="alphasepar"></div><a class="qindex" href="#letter_M">M</a><div class="alphasepar"></div><a class="qindex" href="#letter_N">N</a><div class="alphasepar"></div><a class="qindex" href="#letter_O">O</a><div class="alphasepar"></div><a class="qindex" href="#letter_P">P</a><div class="alphasepar"></div><a class="qindex" href="#letter_Q">Q</a><div class="alphasepar"></div><a class="qindex" href="#letter_R">R</a><div class="alphasepar"></div><a class="qindex" href="#letter_S">S</a><div class="alphasepar"></div><a class="qindex" href="#letter_T">T</a><div class="alphasepar"></div><a class="qindex" href="#letter_U">U</a><div class="alphasepar"></div><a class="qindex" href="#letter_V">V</a><div class="alphasepar"></div><a class="qindex" href="#letter_W">W</a><div class="alphasepar"></div><a class="qindex" href="#letter_X">X</a><div class="alphasepar"></div><a class="qindex" href="#letter_Z">Z</a></div>
+<div class="classindex">
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_A" name="letter_A">A</a></dt>
+<dd><a class="el" href="classAMS.html">AMS</a></dd><dd><a class="el" href="classAMS__IO.html">AMS_IO</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1ams__options__t.html">Parameters::ams_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1ams__options__t.html">Parameters::ams_options_t</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1artn__options__t.html">Parameters::artn_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1artn__options__t.html">Parameters::artn_options_t</a></dd><dd><a class="el" href="classeonc_1_1ARTnResource.html">ARTnResource</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classARTnSaddleSearch.html">ARTnSaddleSearch</a></dd><dd><a class="el" href="classeonc_1_1ARTnSaddleSearch.html">ARTnSaddleSearch</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classAsapPotential.html">AsapPotential</a></dd><dd><a class="el" href="classASE.html">ASE</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1ase__nwchem__options__t.html">Parameters::ase_nwchem_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1ase__nwchem__options__t.html">Parameters::ase_nwchem_options_t</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1ase__orca__options__t.html">Parameters::ase_orca_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1ase__orca__options__t.html">Parameters::ase_orca_options_t</a></dd><dd><a class="el" href="classASENwchemPot.html">ASENwchemPot</a></dd><dd><a class="el" href="classASEOrcaPot.html">ASEOrcaPot</a></dd><dd><a class="el" href="structeonc_1_1geometry_1_1atom.html">atom</a> (<a class="el" href="namespaceeonc_1_1geometry.html">eonc::geometry</a>)</dd><dd><a class="el" href="classAtomicGPDimer.html">AtomicGPDimer</a></dd><dd><a class="el" href="classeonc_1_1AtomicGPDimer.html">AtomicGPDimer</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classAtoms.html">Atoms</a></dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_B" name="letter_B">B</a></dt>
+<dd><a class="el" href="structeonc_1_1Parameters_1_1basin__hopping__options__t.html">Parameters::basin_hopping_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1basin__hopping__options__t.html">Parameters::basin_hopping_options_t</a></dd><dd><a class="el" href="classBasinHoppingJob.html">BasinHoppingJob</a></dd><dd><a class="el" href="classeonc_1_1BasinHoppingJob.html">BasinHoppingJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classBasinHoppingSaddleSearch.html">BasinHoppingSaddleSearch</a></dd><dd><a class="el" href="classeonc_1_1BasinHoppingSaddleSearch.html">BasinHoppingSaddleSearch</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structeonc_1_1Parameters_1_1bgsd__options__t.html">Parameters::bgsd_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1bgsd__options__t.html">Parameters::bgsd_options_t</a></dd><dd><a class="el" href="classBGSDObjectiveFunction.html">BGSDObjectiveFunction</a></dd><dd><a class="el" href="classBiasedGradientSquaredDescent.html">BiasedGradientSquaredDescent</a></dd><dd><a class="el" href="classeonc_1_1BiasedGradientSquaredDescent.html">BiasedGradientSquaredDescent</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classBondBoost.html">BondBoost</a></dd><dd><a class="el" href="classeonc_1_1BondBoost.html">BondBoost</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structeonc_1_1geometry_1_1by__atom.html">by_atom</a> (<a class="el" href="namespaceeonc_1_1geometry.html">eonc::geometry</a>)</dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_C" name="letter_C">C</a></dt>
+<dd><a class="el" href="structeonc_1_1Parameters_1_1catlearn__options__t.html">Parameters::catlearn_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1catlearn__options__t.html">Parameters::catlearn_options_t</a></dd><dd><a class="el" href="classCatLearnPot.html">CatLearnPot</a></dd><dd><a class="el" href="classforcefields_1_1Ccl.html">Ccl</a> (<a class="el" href="namespaceforcefields.html">forcefields</a>)</dd><dd><a class="el" href="classCellList.html">CellList</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1cg__t.html">Parameters::optimizer_options_t::cg_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1optimizer__options__t_1_1cg__t.html">Parameters::optimizer_options_t::cg_t</a></dd><dd><a class="el" href="structforcefields_1_1PotentialBase_1_1ChargeGroup.html">PotentialBase::ChargeGroup</a> (<a class="el" href="namespaceforcefields.html">forcefields</a>)</dd><dd><a class="el" href="structeonc_1_1Parameters_1_1neb__options__t_1_1climbing__image__options__t.html">Parameters::neb_options_t::climbing_image_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1neb__options__t_1_1climbing__image__options__t.html">Parameters::neb_options_t::climbing_image_options_t</a></dd><dd><a class="el" href="classCollectiveIDPPObjectiveFunction.html">CollectiveIDPPObjectiveFunction</a></dd><dd><a class="el" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html">CollectiveIDPPObjectiveFunction</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structeonc_1_1neb_1_1OCINEBController_1_1Config.html">OCINEBController::Config</a> (<a class="el" href="namespaceeonc_1_1neb.html">eonc::neb</a>)</dd><dd><a class="el" href="structeonc_1_1Parameters_1_1saddle__search__options__t_1_1confine__positive__t.html">Parameters::saddle_search_options_t::confine_positive_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1saddle__search__options__t_1_1confine__positive__t.html">Parameters::saddle_search_options_t::confine_positive_t</a></dd><dd><a class="el" href="structeonc_1_1io_1_1ConFrameMetadata.html">ConFrameMetadata</a> (<a class="el" href="namespaceeonc_1_1io.html">eonc::io</a>)</dd><dd><a class="el" href="classConjugateGradients.html">ConjugateGradients</a></dd><dd><a class="el" href="classeonc_1_1ConjugateGradients.html">ConjugateGradients</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structeonc_1_1io_1_1ConMetadataText.html">ConMetadataText</a> (<a class="el" href="namespaceeonc_1_1io.html">eonc::io</a>)</dd><dd><a class="el" href="structeonc_1_1io_1_1ConMetadataValue.html">ConMetadataValue</a> (<a class="el" href="namespaceeonc_1_1io.html">eonc::io</a>)</dd><dd><a class="el" href="classset_1_1const__iterator.html">set::const_iterator</a></dd><dd><a class="el" href="classstring_1_1const__iterator.html">string::const_iterator</a></dd><dd><a class="el" href="classvector_1_1const__iterator.html">vector::const_iterator</a></dd><dd><a class="el" href="classset_1_1const__reverse__iterator.html">set::const_reverse_iterator</a></dd><dd><a class="el" href="classstring_1_1const__reverse__iterator.html">string::const_reverse_iterator</a></dd><dd><a class="el" href="classvector_1_1const__reverse__iterator.html">vector::const_reverse_iterator</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1constants__t.html">Parameters::constants_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1constants__t.html">Parameters::constants_t</a></dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_D" name="letter_D">D</a></dt>
+<dd><a class="el" href="classDavidson.html">Davidson</a></dd><dd><a class="el" href="classeonc_1_1Davidson.html">Davidson</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structeonc_1_1Parameters_1_1davidson__options__t.html">Parameters::davidson_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1davidson__options__t.html">Parameters::davidson_options_t</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1debug__options__t.html">Parameters::debug_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1debug__options__t.html">Parameters::debug_options_t</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1gpr__dimer__options__t_1_1debug__params__t.html">Parameters::gpr_dimer_options_t::debug_params_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1gpr__dimer__options__t_1_1debug__params__t.html">Parameters::gpr_dimer_options_t::debug_params_t</a></dd><dd><a class="el" href="classDimer.html">Dimer</a></dd><dd><a class="el" href="classeonc_1_1Dimer.html">Dimer</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structeonc_1_1Parameters_1_1dimer__options__t.html">Parameters::dimer_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1dimer__options__t.html">Parameters::dimer_options_t</a></dd><dd><a class="el" href="classeonc_1_1DimerModeLostException.html">DimerModeLostException</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classeonc_1_1DimerModeRestoredException.html">DimerModeRestoredException</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structeonc_1_1DimerRotationResult.html">DimerRotationResult</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structeonc_1_1neb_1_1DNEB__Projection.html">DNEB_Projection</a> (<a class="el" href="namespaceeonc_1_1neb.html">eonc::neb</a>)</dd><dd><a class="el" href="structforcefields_1_1Ccl_1_1Dtheta.html">Ccl::Dtheta</a> (<a class="el" href="namespaceforcefields.html">forcefields</a>)</dd><dd><a class="el" href="classDynamics.html">Dynamics</a></dd><dd><a class="el" href="classeonc_1_1Dynamics.html">Dynamics</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structeonc_1_1Parameters_1_1dynamics__options__t.html">Parameters::dynamics_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1dynamics__options__t.html">Parameters::dynamics_options_t</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1saddle__search__options__t_1_1dynamics__t.html">Parameters::saddle_search_options_t::dynamics_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1saddle__search__options__t_1_1dynamics__t.html">Parameters::saddle_search_options_t::dynamics_t</a></dd><dd><a class="el" href="structDynamicsConfig.html">DynamicsConfig</a></dd><dd><a class="el" href="structeonc_1_1DynamicsConfig.html">DynamicsConfig</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classDynamicsJob.html">DynamicsJob</a></dd><dd><a class="el" href="classeonc_1_1DynamicsJob.html">DynamicsJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classDynamicsSaddleSearch.html">DynamicsSaddleSearch</a></dd><dd><a class="el" href="classeonc_1_1DynamicsSaddleSearch.html">DynamicsSaddleSearch</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_E" name="letter_E">E</a></dt>
+<dd><a class="el" href="classEAM.html">EAM</a></dd><dd><a class="el" href="classEffectiveMediumTheory.html">EffectiveMediumTheory</a></dd><dd><a class="el" href="structEAM_1_1element__parameters.html">EAM::element_parameters</a></dd><dd><a class="el" href="classEMT.html">EMT</a></dd><dd><a class="el" href="structemt__parameters.html">emt_parameters</a></dd><dd><a class="el" href="classEMTDefaultParameterProvider.html">EMTDefaultParameterProvider</a></dd><dd><a class="el" href="classEMTParameterProvider.html">EMTParameterProvider</a></dd><dd><a class="el" href="classEMTRasmussenParameterProvider.html">EMTRasmussenParameterProvider</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1neb__options__t_1_1endpoint__options__t.html">Parameters::neb_options_t::endpoint_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1neb__options__t_1_1endpoint__options__t.html">Parameters::neb_options_t::endpoint_options_t</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html">Parameters::neb_options_t::spring_options_t::energy_weighting_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1neb__options__t_1_1spring__options__t_1_1energy__weighting__t.html">Parameters::neb_options_t::spring_options_t::energy_weighting_t</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1ams__options__t_1_1env__t.html">Parameters::ams_options_t::env_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1ams__options__t_1_1env__t.html">Parameters::ams_options_t::env_t</a></dd><dd><a class="el" href="structEonMtaConfig.html">EonMtaConfig</a></dd><dd><a class="el" href="structEonMtaPot.html">EonMtaPot</a></dd><dd><a class="el" href="classException.html">Exception</a></dd><dd><a class="el" href="classExtPot.html">ExtPot</a></dd><dd><a class="el" href="structeonc_1_1neb_1_1ExtremaResult.html">ExtremaResult</a> (<a class="el" href="namespaceeonc_1_1neb.html">eonc::neb</a>)</dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_F" name="letter_F">F</a></dt>
+<dd><a class="el" href="structeonc_1_1log_1_1FileScoped.html">FileScoped</a> (<a class="el" href="namespaceeonc_1_1log.html">eonc::log</a>)</dd><dd><a class="el" href="classeonc_1_1FiniteDifferenceJob.html">FiniteDifferenceJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classFiniteDifferenceJob.html">FiniteDifferenceJob</a></dd><dd><a class="el" href="classeonc_1_1FIRE.html">FIRE</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classFIRE.html">FIRE</a></dd><dd><a class="el" href="classeonc_1_1ForceCallTimer.html">ForceCallTimer</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classeonc_1_1FPEHandler.html">FPEHandler</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_G" name="letter_G">G</a></dt>
+<dd><a class="el" href="structeonc_1_1params__ssot_1_1GeneratedDefaults.html">GeneratedDefaults</a> (<a class="el" href="namespaceeonc_1_1params__ssot.html">eonc::params_ssot</a>)</dd><dd><a class="el" href="classGhostAtoms.html">GhostAtoms</a></dd><dd><a class="el" href="classGhostPotential.html">GhostPotential</a></dd><dd><a class="el" href="classeonc_1_1GleThermostat.html">GleThermostat</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classGleThermostat.html">GleThermostat</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1global__optimization__options__t.html">Parameters::global_optimization_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1global__optimization__options__t.html">Parameters::global_optimization_options_t</a></dd><dd><a class="el" href="classeonc_1_1GlobalOptimization.html">GlobalOptimization</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classGlobalOptimization.html">GlobalOptimization</a></dd><dd><a class="el" href="classeonc_1_1GlobalOptimizationJob.html">GlobalOptimizationJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classGlobalOptimizationJob.html">GlobalOptimizationJob</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1gp__surrogate__options__t.html">Parameters::gp_surrogate_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1gp__surrogate__options__t.html">Parameters::gp_surrogate_options_t</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1gpr__dimer__options__t.html">Parameters::gpr_dimer_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1gpr__dimer__options__t.html">Parameters::gpr_dimer_options_t</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1gpr__dimer__options__t_1_1gpr__params__t.html">Parameters::gpr_dimer_options_t::gpr_params_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1gpr__dimer__options__t_1_1gpr__params__t.html">Parameters::gpr_dimer_options_t::gpr_params_t</a></dd><dd><a class="el" href="classGPRPotential.html">GPRPotential</a></dd><dd><a class="el" href="classeonc_1_1GPSurrogateJob.html">GPSurrogateJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classGPSurrogateJob.html">GPSurrogateJob</a></dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_H" name="letter_H">H</a></dt>
+<dd><a class="el" href="classeonc_1_1Hessian.html">Hessian</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classHessian.html">Hessian</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1hessian__options__t.html">Parameters::hessian_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1hessian__options__t.html">Parameters::hessian_options_t</a></dd><dd><a class="el" href="classeonc_1_1HessianJob.html">HessianJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classHessianJob.html">HessianJob</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1neb__options__t_1_1climbing__image__options__t_1_1hybrid__dimer__t.html">Parameters::neb_options_t::climbing_image_options_t::hybrid_dimer_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1neb__options__t_1_1climbing__image__options__t_1_1hybrid__dimer__t.html">Parameters::neb_options_t::climbing_image_options_t::hybrid_dimer_t</a></dd><dd><a class="el" href="classeonc_1_1Hyperdynamics.html">Hyperdynamics</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classHyperdynamics.html">Hyperdynamics</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1hyperdynamics__options__t.html">Parameters::hyperdynamics_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1hyperdynamics__options__t.html">Parameters::hyperdynamics_options_t</a></dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_I" name="letter_I">I</a></dt>
+<dd><a class="el" href="structforcefields_1_1zhu__philpott__parameters_1_1Iceland.html">Iceland</a> (<a class="el" href="namespaceforcefields_1_1zhu__philpott__parameters.html">forcefields::zhu_philpott_parameters</a>)</dd><dd><a class="el" href="classeonc_1_1IDPPObjectiveFunction.html">IDPPObjectiveFunction</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classIDPPObjectiveFunction.html">IDPPObjectiveFunction</a></dd><dd><a class="el" href="classifstream.html">ifstream</a></dd><dd><a class="el" href="structImage.html">Image</a></dd><dd><a class="el" href="structeonc_1_1neb_1_1ImageForceData.html">ImageForceData</a> (<a class="el" href="namespaceeonc_1_1neb.html">eonc::neb</a>)</dd><dd><a class="el" href="structRGPotEngine_1_1Impl.html">RGPotEngine::Impl</a></dd><dd><a class="el" href="classeonc_1_1ImprovedDimer.html">ImprovedDimer</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classImprovedDimer.html">ImprovedDimer</a></dd><dd><a class="el" href="structeonc_1_1neb_1_1ImprovedTangent.html">ImprovedTangent</a> (<a class="el" href="namespaceeonc_1_1neb.html">eonc::neb</a>)</dd><dd><a class="el" href="structeonc_1_1PotRegistry_1_1InstanceRecord.html">PotRegistry::InstanceRecord</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structPotRegistry_1_1InstanceRecord.html">PotRegistry::InstanceRecord</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1ira__options__t.html">Parameters::ira_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1ira__options__t.html">Parameters::ira_options_t</a></dd><dd><a class="el" href="classeonc_1_1IRACompare.html">IRACompare</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classIRACompare.html">IRACompare</a></dd><dd><a class="el" href="classeonc_1_1IRAResource.html">IRAResource</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classistream.html">istream</a></dd><dd><a class="el" href="classset_1_1iterator.html">set::iterator</a></dd><dd><a class="el" href="classstring_1_1iterator.html">string::iterator</a></dd><dd><a class="el" href="classvector_1_1iterator.html">vector::iterator</a></dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_J" name="letter_J">J</a></dt>
+<dd><a class="el" href="classeonc_1_1Job.html">Job</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classJob.html">Job</a></dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_L" name="letter_L">L</a></dt>
+<dd><a class="el" href="classeonc_1_1LammpsLoader.html">LammpsLoader</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classLAMMPSPot.html">LAMMPSPot</a></dd><dd><a class="el" href="classeonc_1_1Lanczos.html">Lanczos</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classLanczos.html">Lanczos</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1lanczos__options__t.html">Parameters::lanczos_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1lanczos__options__t.html">Parameters::lanczos_options_t</a></dd><dd><a class="el" href="classeonc_1_1LBFGS.html">LBFGS</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classLBFGS.html">LBFGS</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1lbfgs__t.html">Parameters::optimizer_options_t::lbfgs_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1optimizer__options__t_1_1lbfgs__t.html">Parameters::optimizer_options_t::lbfgs_t</a></dd><dd><a class="el" href="classeonc_1_1LORRotation.html">LORRotation</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classLORRotation.html">LORRotation</a></dd><dd><a class="el" href="classeonc_1_1LowestEigenmode.html">LowestEigenmode</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classLowestEigenmode.html">LowestEigenmode</a></dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_M" name="letter_M">M</a></dt>
+<dd><a class="el" href="structeonc_1_1Parameters_1_1main__options__t.html">Parameters::main_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1main__options__t.html">Parameters::main_options_t</a></dd><dd><a class="el" href="structeonc_1_1IRACompare_1_1MatchResult.html">IRACompare::MatchResult</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structIRACompare_1_1MatchResult.html">IRACompare::MatchResult</a></dd><dd><a class="el" href="classeonc_1_1Matter.html">Matter</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classMatter.html">Matter</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1metatomic__options__t.html">Parameters::metatomic_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1metatomic__options__t.html">Parameters::metatomic_options_t</a></dd><dd><a class="el" href="classeonc_1_1MetatomicDynPot.html">MetatomicDynPot</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classMetatomicEngineLoader.html">MetatomicEngineLoader</a></dd><dd><a class="el" href="structMetatomicEngineOptions.html">MetatomicEngineOptions</a></dd><dd><a class="el" href="classeonc_1_1MetatomicLoader.html">MetatomicLoader</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classMetatomicPotential.html">MetatomicPotential</a></dd><dd><a class="el" href="classeonc_1_1MinimizationJob.html">MinimizationJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classMinimizationJob.html">MinimizationJob</a></dd><dd><a class="el" href="classMinModeObjectiveFunction.html">MinModeObjectiveFunction</a></dd><dd><a class="el" href="classeonc_1_1MinModeSaddleSearch.html">MinModeSaddleSearch</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classMinModeSaddleSearch.html">MinModeSaddleSearch</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1neb__options__t_1_1mmf__peak__options__t.html">Parameters::neb_options_t::mmf_peak_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1neb__options__t_1_1mmf__peak__options__t.html">Parameters::neb_options_t::mmf_peak_options_t</a></dd><dd><a class="el" href="structeonc_1_1neb_1_1OCINEBController_1_1MMFResult.html">OCINEBController::MMFResult</a> (<a class="el" href="namespaceeonc_1_1neb.html">eonc::neb</a>)</dd><dd><a class="el" href="structeonc_1_1Parameters_1_1monte__carlo__options__t.html">Parameters::monte_carlo_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1monte__carlo__options__t.html">Parameters::monte_carlo_options_t</a></dd><dd><a class="el" href="classeonc_1_1MonteCarlo.html">MonteCarlo</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classMonteCarlo.html">MonteCarlo</a></dd><dd><a class="el" href="classeonc_1_1MonteCarloJob.html">MonteCarloJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classMonteCarloJob.html">MonteCarloJob</a></dd><dd><a class="el" href="classMPIPot.html">MPIPot</a></dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_N" name="letter_N">N</a></dt>
+<dd><a class="el" href="structeonc_1_1Parameters_1_1neb__options__t.html">Parameters::neb_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1neb__options__t.html">Parameters::neb_options_t</a></dd><dd><a class="el" href="structeonc_1_1neb_1_1NEB__Projection.html">NEB_Projection</a> (<a class="el" href="namespaceeonc_1_1neb.html">eonc::neb</a>)</dd><dd><a class="el" href="classeonc_1_1NEBObjectiveFunction.html">NEBObjectiveFunction</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classNEBObjectiveFunction.html">NEBObjectiveFunction</a></dd><dd><a class="el" href="classNeighborList.html">NeighborList</a></dd><dd><a class="el" href="classeonc_1_1NudgedElasticBand.html">NudgedElasticBand</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classNudgedElasticBand.html">NudgedElasticBand</a></dd><dd><a class="el" href="classeonc_1_1NudgedElasticBandJob.html">NudgedElasticBandJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classNudgedElasticBandJob.html">NudgedElasticBandJob</a></dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_O" name="letter_O">O</a></dt>
+<dd><a class="el" href="classeonc_1_1ObjectiveFunction.html">ObjectiveFunction</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classObjectiveFunction.html">ObjectiveFunction</a></dd><dd><a class="el" href="classeonc_1_1neb_1_1OCINEBController.html">OCINEBController</a> (<a class="el" href="namespaceeonc_1_1neb.html">eonc::neb</a>)</dd><dd><a class="el" href="structeonc_1_1Parameters_1_1oh__tst__options__t.html">Parameters::oh_tst_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1oh__tst__options__t.html">Parameters::oh_tst_options_t</a></dd><dd><a class="el" href="classeonc_1_1OHTSTJob.html">OHTSTJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classOHTSTJob.html">OHTSTJob</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html">Parameters::neb_options_t::spring_options_t::onsager_machlup_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1neb__options__t_1_1spring__options__t_1_1onsager__machlup__t.html">Parameters::neb_options_t::spring_options_t::onsager_machlup_t</a></dd><dd><a class="el" href="structeonc_1_1neb_1_1OnsagerMachlupSpring.html">OnsagerMachlupSpring</a> (<a class="el" href="namespaceeonc_1_1neb.html">eonc::neb</a>)</dd><dd><a class="el" href="structeonc_1_1Parameters_1_1gpr__dimer__options__t_1_1opt__params__t.html">Parameters::gpr_dimer_options_t::opt_params_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1gpr__dimer__options__t_1_1opt__params__t.html">Parameters::gpr_dimer_options_t::opt_params_t</a></dd><dd><a class="el" href="classeonc_1_1Optimizer.html">Optimizer</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classOptimizer.html">Optimizer</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1optimizer__options__t.html">Parameters::optimizer_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1optimizer__options__t.html">Parameters::optimizer_options_t</a></dd><dd><a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structeonc_1_1VesinNeighbors_1_1Options.html">VesinNeighbors::Options</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classostream.html">ostream</a></dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_P" name="letter_P">P</a></dt>
+<dd><a class="el" href="structeonc_1_1Parameters_1_1parallel__replica__options__t.html">Parameters::parallel_replica_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1parallel__replica__options__t.html">Parameters::parallel_replica_options_t</a></dd><dd><a class="el" href="classeonc_1_1ParallelReplicaJob.html">ParallelReplicaJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classParallelReplicaJob.html">ParallelReplicaJob</a></dd><dd><a class="el" href="classeonc_1_1Parameters.html">Parameters</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classParameters.html">Parameters</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1neb__options__t_1_1path__initialization__t.html">Parameters::neb_options_t::path_initialization_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1neb__options__t_1_1path__initialization__t.html">Parameters::neb_options_t::path_initialization_t</a></dd><dd><a class="el" href="structeonc_1_1neb_1_1PlainEB.html">PlainEB</a> (<a class="el" href="namespaceeonc_1_1neb.html">eonc::neb</a>)</dd><dd><a class="el" href="structeonc_1_1OHTSTJob_1_1PlaneAverages.html">OHTSTJob::PlaneAverages</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structOHTSTJob_1_1PlaneAverages.html">OHTSTJob::PlaneAverages</a></dd><dd><a class="el" href="classeonc_1_1PluginLoader.html">PluginLoader</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classeonc_1_1PointJob.html">PointJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classPointJob.html">PointJob</a></dd><dd><a class="el" href="classeonc_1_1Potential.html">Potential</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classPotential.html">Potential</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1potential__options__t.html">Parameters::potential_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1potential__options__t.html">Parameters::potential_options_t</a></dd><dd><a class="el" href="classforcefields_1_1PotentialBase.html">PotentialBase</a> (<a class="el" href="namespaceforcefields.html">forcefields</a>)</dd><dd><a class="el" href="classeonc_1_1PotRegistry.html">PotRegistry</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classPotRegistry.html">PotRegistry</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1prefactor__options__t.html">Parameters::prefactor_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1prefactor__options__t.html">Parameters::prefactor_options_t</a></dd><dd><a class="el" href="classeonc_1_1PrefactorJob.html">PrefactorJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classPrefactorJob.html">PrefactorJob</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1process__search__options__t.html">Parameters::process_search_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1process__search__options__t.html">Parameters::process_search_options_t</a></dd><dd><a class="el" href="classeonc_1_1ProcessSearchJob.html">ProcessSearchJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classProcessSearchJob.html">ProcessSearchJob</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1gpr__dimer__options__t_1_1prune__params__t.html">Parameters::gpr_dimer_options_t::prune_params_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1gpr__dimer__options__t_1_1prune__params__t.html">Parameters::gpr_dimer_options_t::prune_params_t</a></dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_Q" name="letter_Q">Q</a></dt>
+<dd><a class="el" href="classeonc_1_1Quickmin.html">Quickmin</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classQuickmin.html">Quickmin</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1quickmin__t.html">Parameters::optimizer_options_t::quickmin_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1optimizer__options__t_1_1quickmin__t.html">Parameters::optimizer_options_t::quickmin_t</a></dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_R" name="letter_R">R</a></dt>
+<dd><a class="el" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1refine__t.html">Parameters::optimizer_options_t::refine_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1optimizer__options__t_1_1refine__t.html">Parameters::optimizer_options_t::refine_t</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1replica__exchange__options__t.html">Parameters::replica_exchange_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1replica__exchange__options__t.html">Parameters::replica_exchange_options_t</a></dd><dd><a class="el" href="classeonc_1_1ReplicaDynamicsJob.html">ReplicaDynamicsJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classReplicaDynamicsJob.html">ReplicaDynamicsJob</a></dd><dd><a class="el" href="classeonc_1_1ReplicaExchangeJob.html">ReplicaExchangeJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classReplicaExchangeJob.html">ReplicaExchangeJob</a></dd><dd><a class="el" href="classset_1_1reverse__iterator.html">set::reverse_iterator</a></dd><dd><a class="el" href="classstring_1_1reverse__iterator.html">string::reverse_iterator</a></dd><dd><a class="el" href="classvector_1_1reverse__iterator.html">vector::reverse_iterator</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html">Parameters::rgpot_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1rgpot__options__t.html">Parameters::rgpot_options_t</a></dd><dd><a class="el" href="classRgpotAdapter.html">RgpotAdapter</a></dd><dd><a class="el" href="classRGPotEngine.html">RGPotEngine</a></dd><dd><a class="el" href="structRGPotEngineOptions.html">RGPotEngineOptions</a></dd><dd><a class="el" href="structRgpotMtaConfig.html">RgpotMtaConfig</a></dd><dd><a class="el" href="structRgpotMtaPot.html">RgpotMtaPot</a></dd><dd><a class="el" href="classRgpotPot.html">RgpotPot</a></dd><dd><a class="el" href="structRgpotXtbConfig.html">RgpotXtbConfig</a></dd><dd><a class="el" href="structforcefields_1_1Ccl_1_1Rho.html">Ccl::Rho</a> (<a class="el" href="namespaceforcefields.html">forcefields</a>)</dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_S" name="letter_S">S</a></dt>
+<dd><a class="el" href="structeonc_1_1Parameters_1_1saddle__search__options__t.html">Parameters::saddle_search_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1saddle__search__options__t.html">Parameters::saddle_search_options_t</a></dd><dd><a class="el" href="classeonc_1_1SaddleSearchJob.html">SaddleSearchJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classSaddleSearchJob.html">SaddleSearchJob</a></dd><dd><a class="el" href="classeonc_1_1SaddleSearchMethod.html">SaddleSearchMethod</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classSaddleSearchMethod.html">SaddleSearchMethod</a></dd><dd><a class="el" href="classeonc_1_1SafeHyperJob.html">SafeHyperJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classSafeHyperJob.html">SafeHyperJob</a></dd><dd><a class="el" href="structeonc_1_1log_1_1Scoped.html">Scoped</a> (<a class="el" href="namespaceeonc_1_1log.html">eonc::log</a>)</dd><dd><a class="el" href="structeonc_1_1Parameters_1_1optimizer__options__t_1_1sd__t.html">Parameters::optimizer_options_t::sd_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1optimizer__options__t_1_1sd__t.html">Parameters::optimizer_options_t::sd_t</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1serve__options__t.html">Parameters::serve_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1serve__options__t.html">Parameters::serve_options_t</a></dd><dd><a class="el" href="structeonc_1_1ServeEndpoint.html">ServeEndpoint</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structServeEndpoint.html">ServeEndpoint</a></dd><dd><a class="el" href="classset.html">set</a></dd><dd><a class="el" href="structeonc_1_1neb_1_1SimpleTangent.html">SimpleTangent</a> (<a class="el" href="namespaceeonc_1_1neb.html">eonc::neb</a>)</dd><dd><a class="el" href="structeonc_1_1Parameters_1_1socket__nwchem__options__t.html">Parameters::socket_nwchem_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1socket__nwchem__options__t.html">Parameters::socket_nwchem_options_t</a></dd><dd><a class="el" href="classSocketNWChemPot.html">SocketNWChemPot</a></dd><dd><a class="el" href="classforcefields_1_1SpceCcl.html">SpceCcl</a> (<a class="el" href="namespaceforcefields.html">forcefields</a>)</dd><dd><a class="el" href="classSpceCcl.html">SpceCcl</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1neb__options__t_1_1spring__options__t.html">Parameters::neb_options_t::spring_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1neb__options__t_1_1spring__options__t.html">Parameters::neb_options_t::spring_options_t</a></dd><dd><a class="el" href="structeonc_1_1neb_1_1SpringResult.html">SpringResult</a> (<a class="el" href="namespaceeonc_1_1neb.html">eonc::neb</a>)</dd><dd><a class="el" href="structforcefields_1_1zhu__philpott__parameters_1_1Standard.html">Standard</a> (<a class="el" href="namespaceforcefields_1_1zhu__philpott__parameters.html">forcefields::zhu_philpott_parameters</a>)</dd><dd><a class="el" href="classeonc_1_1SteepestDescent.html">SteepestDescent</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classSteepestDescent.html">SteepestDescent</a></dd><dd><a class="el" href="classstring.html">string</a></dd><dd><a class="el" href="classstringstream.html">stringstream</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html">Parameters::structure_comparison_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1structure__comparison__options__t.html">Parameters::structure_comparison_options_t</a></dd><dd><a class="el" href="classeonc_1_1StructureComparisonJob.html">StructureComparisonJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classStructureComparisonJob.html">StructureComparisonJob</a></dd><dd><a class="el" href="classSuperCell.html">SuperCell</a></dd><dd><a class="el" href="classeonc_1_1SurrogatePotential.html">SurrogatePotential</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classSurrogatePotential.html">SurrogatePotential</a></dd><dd><a class="el" href="structeonc_1_1IRACompare_1_1SymmetryResult.html">IRACompare::SymmetryResult</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structIRACompare_1_1SymmetryResult.html">IRACompare::SymmetryResult</a></dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_T" name="letter_T">T</a></dt>
+<dd><a class="el" href="structeonc_1_1Parameters_1_1tad__options__t.html">Parameters::tad_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1tad__options__t.html">Parameters::tad_options_t</a></dd><dd><a class="el" href="classeonc_1_1TADJob.html">TADJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classTADJob.html">TADJob</a></dd><dd><a class="el" href="classeonc_1_1TestJob.html">TestJob</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classTestJob.html">TestJob</a></dd><dd><a class="el" href="structeonc_1_1Parameters_1_1thermostat__options__t.html">Parameters::thermostat_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1thermostat__options__t.html">Parameters::thermostat_options_t</a></dd><dd><a class="el" href="classTinyMatrix.html">TinyMatrix</a></dd><dd><a class="el" href="classforcefields_1_1Tip4p.html">Tip4p</a> (<a class="el" href="namespaceforcefields.html">forcefields</a>)</dd><dd><a class="el" href="classTip4p.html">Tip4p</a></dd><dd><a class="el" href="classTip4p__Pt.html">Tip4p_Pt</a></dd><dd><a class="el" href="structeonc_1_1PotRegistry_1_1TypeStats.html">PotRegistry::TypeStats</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structPotRegistry_1_1TypeStats.html">PotRegistry::TypeStats</a></dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_U" name="letter_U">U</a></dt>
+<dd><a class="el" href="structeonc_1_1neb_1_1UniformSpring.html">UniformSpring</a> (<a class="el" href="namespaceeonc_1_1neb.html">eonc::neb</a>)</dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_V" name="letter_V">V</a></dt>
+<dd><a class="el" href="structeonc_1_1Parameters_1_1metatomic__options__t_1_1variants__t.html">Parameters::metatomic_options_t::variants_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1metatomic__options__t_1_1variants__t.html">Parameters::metatomic_options_t::variants_t</a></dd><dd><a class="el" href="classVASP.html">VASP</a></dd><dd><a class="el" href="classVec.html">Vec</a></dd><dd><a class="el" href="classvector.html">vector</a></dd><dd><a class="el" href="structforcefields_1_1PotentialBase_1_1Vector3.html">PotentialBase::Vector3</a> (<a class="el" href="namespaceforcefields.html">forcefields</a>)</dd><dd><a class="el" href="classeonc_1_1VesinNeighbors.html">VesinNeighbors</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_W" name="letter_W">W</a></dt>
+<dd><a class="el" href="structforcefields_1_1SpceCcl_1_1Water.html">SpceCcl::Water</a> (<a class="el" href="namespaceforcefields.html">forcefields</a>)</dd><dd><a class="el" href="structTip4p_1_1Water.html">Tip4p::Water</a></dd><dd><a class="el" href="structeonc_1_1neb_1_1WeightedSpring.html">WeightedSpring</a> (<a class="el" href="namespaceeonc_1_1neb.html">eonc::neb</a>)</dd></dl>
+<dl class="classindex even">
+<dt class="alphachar"><a id="letter_X" name="letter_X">X</a></dt>
+<dd><a class="el" href="structeonc_1_1Parameters_1_1xtb__options__t.html">Parameters::xtb_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1xtb__options__t.html">Parameters::xtb_options_t</a></dd><dd><a class="el" href="classXTBEngineLoader.html">XTBEngineLoader</a></dd><dd><a class="el" href="structXTBEngineOptions.html">XTBEngineOptions</a></dd><dd><a class="el" href="classXTBPot.html">XTBPot</a></dd></dl>
+<dl class="classindex odd">
+<dt class="alphachar"><a id="letter_Z" name="letter_Z">Z</a></dt>
+<dd><a class="el" href="structeonc_1_1Parameters_1_1zbl__options__t.html">Parameters::zbl_options_t</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="structParameters_1_1zbl__options__t.html">Parameters::zbl_options_t</a></dd><dd><a class="el" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html">ZBLRepulsiveIDPPObjective</a> (<a class="el" href="namespaceeonc.html">eonc</a>)</dd><dd><a class="el" href="classZBLRepulsiveIDPPObjective.html">ZBLRepulsiveIDPPObjective</a></dd><dd><a class="el" href="classforcefields_1_1ZhuPhilpott.html">ZhuPhilpott</a> (<a class="el" href="namespaceforcefields.html">forcefields</a>)</dd></dl>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

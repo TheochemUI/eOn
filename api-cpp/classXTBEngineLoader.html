@@ -1,0 +1,814 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: XTBEngineLoader Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classXTBEngineLoader.html','','classXTBEngineLoader-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">XTBEngineLoader Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="XTBEngineLoader_8h_source.html">XTBEngineLoader.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ac5af3a21e836bb5971078c573dacafc2" id="r_ac5af3a21e836bb5971078c573dacafc2"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ac5af3a21e836bb5971078c573dacafc2">XTBEngineLoader</a> (const <a class="el" href="structXTBEngineOptions.html">XTBEngineOptions</a> &amp;opt)</td></tr>
+<tr class="memitem:a00424ef5e3f421d32cb28f6f3f3eb475" id="r_a00424ef5e3f421d32cb28f6f3f3eb475"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a00424ef5e3f421d32cb28f6f3f3eb475">~XTBEngineLoader</a> ()</td></tr>
+<tr class="memitem:a1f697c570c1e367b0d7f5aa352507f98" id="r_a1f697c570c1e367b0d7f5aa352507f98"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a1f697c570c1e367b0d7f5aa352507f98">XTBEngineLoader</a> (const <a class="el" href="classXTBEngineLoader.html">XTBEngineLoader</a> &amp;)=delete</td></tr>
+<tr class="memitem:aaabddb34c2cff583598ec23044293ca4" id="r_aaabddb34c2cff583598ec23044293ca4"><td class="memItemLeft"><a class="el" href="classXTBEngineLoader.html">XTBEngineLoader</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#aaabddb34c2cff583598ec23044293ca4">operator=</a> (const <a class="el" href="classXTBEngineLoader.html">XTBEngineLoader</a> &amp;)=delete</td></tr>
+<tr class="memitem:abfc228a09a1511986b5e95bf3354c6b8" id="r_abfc228a09a1511986b5e95bf3354c6b8"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#abfc228a09a1511986b5e95bf3354c6b8">available</a> () const noexcept</td></tr>
+<tr class="memitem:a964c97cc1130f041b539d94bc0c0f3bf" id="r_a964c97cc1130f041b539d94bc0c0f3bf"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a964c97cc1130f041b539d94bc0c0f3bf">force</a> (long N, const double *R, const int *atomicNrs, double *F, double *U, double *variance, const double *box) const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-types" class="groupheader"><a id="pri-types" name="pri-types"></a>
+Private Types</h2></td></tr>
+<tr class="memitem:aa6aaab1c7ff33671a0344671391c6fbf" id="r_aa6aaab1c7ff33671a0344671391c6fbf"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#aa6aaab1c7ff33671a0344671391c6fbf">create_fn</a> = <a class="el" href="xtb__c__abi_8h.html#a37b502b1326e503b40aced0b4726dffb">RgpotXtbPot</a> *(*)(const <a class="el" href="structRgpotXtbConfig.html">RgpotXtbConfig</a> *, char *, size_t)</td></tr>
+<tr class="memitem:a649396b62a9143a7937daa92c9a83382" id="r_a649396b62a9143a7937daa92c9a83382"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#a649396b62a9143a7937daa92c9a83382">destroy_fn</a> = void (*)(<a class="el" href="xtb__c__abi_8h.html#a37b502b1326e503b40aced0b4726dffb">RgpotXtbPot</a> *)</td></tr>
+<tr class="memitem:ae0bdc20d1c35a89e58c367e07ece2e45" id="r_ae0bdc20d1c35a89e58c367e07ece2e45"><td class="memItemLeft">using&#160;</td><td class="memItemRight"><a class="el" href="#ae0bdc20d1c35a89e58c367e07ece2e45">force_fn</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:aa1fa7e35354ae73fe72af44f82eb5beb" id="r_aa1fa7e35354ae73fe72af44f82eb5beb"><td class="memItemLeft">void *&#160;</td><td class="memItemRight"><a class="el" href="#aa1fa7e35354ae73fe72af44f82eb5beb">m_lib</a> {nullptr}</td></tr>
+<tr class="memitem:aa905316cbecad22973bda8da105a102b" id="r_aa905316cbecad22973bda8da105a102b"><td class="memItemLeft"><a class="el" href="xtb__c__abi_8h.html#a37b502b1326e503b40aced0b4726dffb">RgpotXtbPot</a> *&#160;</td><td class="memItemRight"><a class="el" href="#aa905316cbecad22973bda8da105a102b">m_pot</a> {nullptr}</td></tr>
+<tr class="memitem:aa9d05f76c42b955e80483ac27764a977" id="r_aa9d05f76c42b955e80483ac27764a977"><td class="memItemLeft"><a class="el" href="#aa6aaab1c7ff33671a0344671391c6fbf">create_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#aa9d05f76c42b955e80483ac27764a977">m_create</a> {nullptr}</td></tr>
+<tr class="memitem:a6ab0ebeadf4c97b028eaca86fb8d6adb" id="r_a6ab0ebeadf4c97b028eaca86fb8d6adb"><td class="memItemLeft"><a class="el" href="#a649396b62a9143a7937daa92c9a83382">destroy_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6ab0ebeadf4c97b028eaca86fb8d6adb">m_destroy</a> {nullptr}</td></tr>
+<tr class="memitem:a6ad11bf2e0bc34fa1326861b44cb8d0e" id="r_a6ad11bf2e0bc34fa1326861b44cb8d0e"><td class="memItemLeft"><a class="el" href="#ae0bdc20d1c35a89e58c367e07ece2e45">force_fn</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6ad11bf2e0bc34fa1326861b44cb8d0e">m_force</a> {nullptr}</td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="XTBEngineLoader_8h_source.html#l00020">20</a> of file <a class="el" href="XTBEngineLoader_8h_source.html">XTBEngineLoader.h</a>.</p>
+</div><a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
+<a id="aa6aaab1c7ff33671a0344671391c6fbf" name="aa6aaab1c7ff33671a0344671391c6fbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6aaab1c7ff33671a0344671391c6fbf">&#9670;&#160;</a></span>create_fn</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#aa6aaab1c7ff33671a0344671391c6fbf">XTBEngineLoader::create_fn</a> = <a class="el" href="xtb__c__abi_8h.html#a37b502b1326e503b40aced0b4726dffb">RgpotXtbPot</a> *(*)(const <a class="el" href="structRgpotXtbConfig.html">RgpotXtbConfig</a> *, char *, size_t)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBEngineLoader_8h_source.html#l00034">34</a> of file <a class="el" href="XTBEngineLoader_8h_source.html">XTBEngineLoader.h</a>.</p>
+
+</div>
+</div>
+<a id="a649396b62a9143a7937daa92c9a83382" name="a649396b62a9143a7937daa92c9a83382"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a649396b62a9143a7937daa92c9a83382">&#9670;&#160;</a></span>destroy_fn</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a649396b62a9143a7937daa92c9a83382">XTBEngineLoader::destroy_fn</a> = void (*)(<a class="el" href="xtb__c__abi_8h.html#a37b502b1326e503b40aced0b4726dffb">RgpotXtbPot</a> *)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBEngineLoader_8h_source.html#l00035">35</a> of file <a class="el" href="XTBEngineLoader_8h_source.html">XTBEngineLoader.h</a>.</p>
+
+</div>
+</div>
+<a id="ae0bdc20d1c35a89e58c367e07ece2e45" name="ae0bdc20d1c35a89e58c367e07ece2e45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0bdc20d1c35a89e58c367e07ece2e45">&#9670;&#160;</a></span>force_fn</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#ae0bdc20d1c35a89e58c367e07ece2e45">XTBEngineLoader::force_fn</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">int (*)(<a class="code hl_typedef" href="xtb__c__abi_8h.html#a37b502b1326e503b40aced0b4726dffb">RgpotXtbPot</a> *, long, <span class="keyword">const</span> <span class="keywordtype">double</span> *, <span class="keyword">const</span> <span class="keywordtype">int</span> *,</div>
+<div class="line">                          <span class="keywordtype">double</span> *, <span class="keywordtype">double</span> *, <span class="keywordtype">double</span> *, <span class="keyword">const</span> <span class="keywordtype">double</span> *)</div>
+<div class="ttc" id="axtb__c__abi_8h_html_a37b502b1326e503b40aced0b4726dffb"><div class="ttname"><a href="xtb__c__abi_8h.html#a37b502b1326e503b40aced0b4726dffb">RgpotXtbPot</a></div><div class="ttdeci">struct RgpotXtbPot RgpotXtbPot</div><div class="ttdef"><b>Definition</b> <a href="xtb__c__abi_8h_source.html#l00028">xtb_c_abi.h:28</a></div></div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="XTBEngineLoader_8h_source.html#l00036">36</a> of file <a class="el" href="XTBEngineLoader_8h_source.html">XTBEngineLoader.h</a>.</p>
+
+</div>
+</div>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ac5af3a21e836bb5971078c573dacafc2" name="ac5af3a21e836bb5971078c573dacafc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5af3a21e836bb5971078c573dacafc2">&#9670;&#160;</a></span>XTBEngineLoader() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">XTBEngineLoader::XTBEngineLoader </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structXTBEngineOptions.html">XTBEngineOptions</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>opt</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBEngineLoader_8cpp_source.html#l00038">38</a> of file <a class="el" href="XTBEngineLoader_8cpp_source.html">XTBEngineLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   38</span>                                                            {</div>
+<div class="line"><span class="lineno">   39</span>  std::vector&lt;std::string&gt; paths;</div>
+<div class="line"><span class="lineno">   40</span>  <span class="keywordflow">if</span> (!opt.<a class="code hl_variable" href="structXTBEngineOptions.html#a5fc00e571e98d3e6ad9f9c33759f201e">engine_path</a>.empty())</div>
+<div class="line"><span class="lineno">   41</span>    paths.push_back(opt.<a class="code hl_variable" href="structXTBEngineOptions.html#a5fc00e571e98d3e6ad9f9c33759f201e">engine_path</a>);</div>
+<div class="line"><span class="lineno">   42</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;RGPOT_XTB_ENGINE&quot;</span>))</div>
+<div class="line"><span class="lineno">   43</span>    <span class="keywordflow">if</span> (e &amp;&amp; *e)</div>
+<div class="line"><span class="lineno">   44</span>      paths.emplace_back(e);</div>
+<div class="line"><span class="lineno">   45</span>  <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = std::getenv(<span class="stringliteral">&quot;XTB_ENGINE&quot;</span>))</div>
+<div class="line"><span class="lineno">   46</span>    <span class="keywordflow">if</span> (e &amp;&amp; *e)</div>
+<div class="line"><span class="lineno">   47</span>      paths.emplace_back(e);</div>
+<div class="line"><span class="lineno">   48</span>  paths.emplace_back(<span class="stringliteral">&quot;libxtb_engine.so&quot;</span>);</div>
+<div class="line"><span class="lineno">   49</span>  <span class="keyword">auto</span> add_dirs = [&amp;](<span class="keyword">const</span> <span class="keywordtype">char</span> *env) {</div>
+<div class="line"><span class="lineno">   50</span>    <span class="keywordflow">if</span> (!env)</div>
+<div class="line"><span class="lineno">   51</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   52</span>    std::string s(env);</div>
+<div class="line"><span class="lineno">   53</span>    <span class="keywordtype">size_t</span> i = 0;</div>
+<div class="line"><span class="lineno">   54</span>    <span class="keywordflow">while</span> (i &lt; s.size()) {</div>
+<div class="line"><span class="lineno">   55</span>      <span class="keyword">auto</span> j = s.find(<span class="charliteral">&#39;:&#39;</span>, i);</div>
+<div class="line"><span class="lineno">   56</span>      <span class="keywordflow">if</span> (j == std::string::npos)</div>
+<div class="line"><span class="lineno">   57</span>        j = s.size();</div>
+<div class="line"><span class="lineno">   58</span>      <span class="keywordflow">if</span> (j &gt; i) {</div>
+<div class="line"><span class="lineno">   59</span>        std::string d = s.substr(i, j - i);</div>
+<div class="line"><span class="lineno">   60</span>        <span class="keywordflow">if</span> (!d.empty() &amp;&amp; d.back() != <span class="charliteral">&#39;/&#39;</span>)</div>
+<div class="line"><span class="lineno">   61</span>          d += <span class="charliteral">&#39;/&#39;</span>;</div>
+<div class="line"><span class="lineno">   62</span>        paths.push_back(d + <span class="stringliteral">&quot;libxtb_engine.so&quot;</span>);</div>
+<div class="line"><span class="lineno">   63</span>      }</div>
+<div class="line"><span class="lineno">   64</span>      i = j + 1;</div>
+<div class="line"><span class="lineno">   65</span>    }</div>
+<div class="line"><span class="lineno">   66</span>  };</div>
+<div class="line"><span class="lineno">   67</span>  add_dirs(std::getenv(<span class="stringliteral">&quot;EON_POTENTIALS_PATH&quot;</span>));</div>
+<div class="line"><span class="lineno">   68</span>  add_dirs(std::getenv(<span class="stringliteral">&quot;RGPOT_ENGINE_PATH&quot;</span>));</div>
+<div class="line"><span class="lineno">   69</span> </div>
+<div class="line"><span class="lineno">   70</span>  std::string last_dlerr;</div>
+<div class="line"><span class="lineno">   71</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;p : paths) {</div>
+<div class="line"><span class="lineno">   72</span>    <a class="code hl_variable" href="#aa1fa7e35354ae73fe72af44f82eb5beb">m_lib</a> = open_lib(p.c_str());</div>
+<div class="line"><span class="lineno">   73</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa1fa7e35354ae73fe72af44f82eb5beb">m_lib</a>)</div>
+<div class="line"><span class="lineno">   74</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">   75</span><span class="preprocessor">#ifndef _WIN32</span></div>
+<div class="line"><span class="lineno">   76</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> *e = dlerror())</div>
+<div class="line"><span class="lineno">   77</span>      last_dlerr = e;</div>
+<div class="line"><span class="lineno">   78</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">   79</span>  }</div>
+<div class="line"><span class="lineno">   80</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa1fa7e35354ae73fe72af44f82eb5beb">m_lib</a>) {</div>
+<div class="line"><span class="lineno">   81</span>    std::string msg = <span class="stringliteral">&quot;RGPOT(xtb): libxtb_engine.so not found &quot;</span></div>
+<div class="line"><span class="lineno">   82</span>                      <span class="stringliteral">&quot;(set RGPOT_XTB_ENGINE or [RgpotPot] engine_path)&quot;</span>;</div>
+<div class="line"><span class="lineno">   83</span>    <span class="keywordflow">if</span> (!last_dlerr.empty())</div>
+<div class="line"><span class="lineno">   84</span>      msg += std::string(<span class="stringliteral">&quot;; last dlerror: &quot;</span>) + last_dlerr;</div>
+<div class="line"><span class="lineno">   85</span>    <span class="keywordflow">throw</span> std::runtime_error(msg);</div>
+<div class="line"><span class="lineno">   86</span>  }</div>
+<div class="line"><span class="lineno">   87</span> </div>
+<div class="line"><span class="lineno">   88</span>  <span class="keyword">auto</span> abi =</div>
+<div class="line"><span class="lineno">   89</span>      <span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">int</span> (*)()<span class="keyword">&gt;</span>(load_sym(<a class="code hl_variable" href="#aa1fa7e35354ae73fe72af44f82eb5beb">m_lib</a>, <span class="stringliteral">&quot;rgpot_xtb_abi_version&quot;</span>));</div>
+<div class="line"><span class="lineno">   90</span>  <a class="code hl_variable" href="#aa9d05f76c42b955e80483ac27764a977">m_create</a> = <span class="keyword">reinterpret_cast&lt;</span><a class="code hl_typedef" href="#aa6aaab1c7ff33671a0344671391c6fbf">create_fn</a><span class="keyword">&gt;</span>(load_sym(<a class="code hl_variable" href="#aa1fa7e35354ae73fe72af44f82eb5beb">m_lib</a>, <span class="stringliteral">&quot;rgpot_xtb_create&quot;</span>));</div>
+<div class="line"><span class="lineno">   91</span>  <a class="code hl_variable" href="#a6ab0ebeadf4c97b028eaca86fb8d6adb">m_destroy</a> =</div>
+<div class="line"><span class="lineno">   92</span>      <span class="keyword">reinterpret_cast&lt;</span><a class="code hl_typedef" href="#a649396b62a9143a7937daa92c9a83382">destroy_fn</a><span class="keyword">&gt;</span>(load_sym(<a class="code hl_variable" href="#aa1fa7e35354ae73fe72af44f82eb5beb">m_lib</a>, <span class="stringliteral">&quot;rgpot_xtb_destroy&quot;</span>));</div>
+<div class="line"><span class="lineno">   93</span>  <a class="code hl_variable" href="#a6ad11bf2e0bc34fa1326861b44cb8d0e">m_force</a> = <span class="keyword">reinterpret_cast&lt;</span><a class="code hl_typedef" href="#ae0bdc20d1c35a89e58c367e07ece2e45">force_fn</a><span class="keyword">&gt;</span>(load_sym(<a class="code hl_variable" href="#aa1fa7e35354ae73fe72af44f82eb5beb">m_lib</a>, <span class="stringliteral">&quot;rgpot_xtb_force&quot;</span>));</div>
+<div class="line"><span class="lineno">   94</span>  <span class="keywordflow">if</span> (!abi || !<a class="code hl_variable" href="#aa9d05f76c42b955e80483ac27764a977">m_create</a> || !<a class="code hl_variable" href="#a6ab0ebeadf4c97b028eaca86fb8d6adb">m_destroy</a> || !<a class="code hl_variable" href="#a6ad11bf2e0bc34fa1326861b44cb8d0e">m_force</a> ||</div>
+<div class="line"><span class="lineno">   95</span>      abi() != <a class="code hl_define" href="xtb__c__abi_8h.html#aa3b73c6a3161c5d0da0ec0b357f13b8f">RGPOT_XTB_ABI_VERSION</a>) {</div>
+<div class="line"><span class="lineno">   96</span>    close_lib(<a class="code hl_variable" href="#aa1fa7e35354ae73fe72af44f82eb5beb">m_lib</a>);</div>
+<div class="line"><span class="lineno">   97</span>    <a class="code hl_variable" href="#aa1fa7e35354ae73fe72af44f82eb5beb">m_lib</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   98</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT(xtb): engine C ABI missing/mismatch&quot;</span>);</div>
+<div class="line"><span class="lineno">   99</span>  }</div>
+<div class="line"><span class="lineno">  100</span>  <span class="keywordtype">char</span> err[1024]{};</div>
+<div class="line"><span class="lineno">  101</span>  <a class="code hl_typedef" href="xtb__c__abi_8h.html#a1786d9f1df089ee1d5b41e1389567afe">RgpotXtbConfig</a> cfg{};</div>
+<div class="line"><span class="lineno">  102</span>  cfg.<a class="code hl_variable" href="structRgpotXtbConfig.html#a7b43908e41e1c082c9f7ad38dac3bb08">method</a> = opt.<a class="code hl_variable" href="structXTBEngineOptions.html#aa81323b80eed2599ebf1487451957875">method</a>;</div>
+<div class="line"><span class="lineno">  103</span>  cfg.<a class="code hl_variable" href="structRgpotXtbConfig.html#a4a5bac5e366e4295cd94f1f1c8997d93">accuracy</a> = opt.<a class="code hl_variable" href="structXTBEngineOptions.html#ae7932f15a10e85e1e633f95f3cf273bb">accuracy</a>;</div>
+<div class="line"><span class="lineno">  104</span>  cfg.<a class="code hl_variable" href="structRgpotXtbConfig.html#acb9e0df8416e0e7d67f06a42d9a1dc3e">electronic_temperature</a> = opt.<a class="code hl_variable" href="structXTBEngineOptions.html#a9b47e44d1ba3d4656075292809e62e28">electronic_temperature</a>;</div>
+<div class="line"><span class="lineno">  105</span>  cfg.<a class="code hl_variable" href="structRgpotXtbConfig.html#a12de28c5fae37fd1c778978b92d1dc81">max_iterations</a> = opt.<a class="code hl_variable" href="structXTBEngineOptions.html#a70af5fbbada5662c935cdfe5e15bfeae">max_iterations</a>;</div>
+<div class="line"><span class="lineno">  106</span>  cfg.<a class="code hl_variable" href="structRgpotXtbConfig.html#aa5960455dfbf8cf2f8d83c99673b0f2a">charge</a> = opt.<a class="code hl_variable" href="structXTBEngineOptions.html#a711e7d3894625dd40e6ec71a7ae73288">charge</a>;</div>
+<div class="line"><span class="lineno">  107</span>  cfg.<a class="code hl_variable" href="structRgpotXtbConfig.html#aec9bb8e7b24bd74542ca2f946c802363">uhf</a> = opt.<a class="code hl_variable" href="structXTBEngineOptions.html#a01475518154082d4c901d4adfca2504a">uhf</a>;</div>
+<div class="line"><span class="lineno">  108</span>  <a class="code hl_variable" href="#aa905316cbecad22973bda8da105a102b">m_pot</a> = <a class="code hl_variable" href="#aa9d05f76c42b955e80483ac27764a977">m_create</a>(&amp;cfg, err, <span class="keyword">sizeof</span> err);</div>
+<div class="line"><span class="lineno">  109</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa905316cbecad22973bda8da105a102b">m_pot</a>) {</div>
+<div class="line"><span class="lineno">  110</span>    close_lib(<a class="code hl_variable" href="#aa1fa7e35354ae73fe72af44f82eb5beb">m_lib</a>);</div>
+<div class="line"><span class="lineno">  111</span>    <a class="code hl_variable" href="#aa1fa7e35354ae73fe72af44f82eb5beb">m_lib</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  112</span>    <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;RGPOT(xtb): create failed: &quot;</span>) + err);</div>
+<div class="line"><span class="lineno">  113</span>  }</div>
+<div class="line"><span class="lineno">  114</span>}</div>
+<div class="ttc" id="aclassXTBEngineLoader_html_a649396b62a9143a7937daa92c9a83382"><div class="ttname"><a href="#a649396b62a9143a7937daa92c9a83382">XTBEngineLoader::destroy_fn</a></div><div class="ttdeci">void(*)(RgpotXtbPot *) destroy_fn</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00035">XTBEngineLoader.h:35</a></div></div>
+<div class="ttc" id="aclassXTBEngineLoader_html_a6ab0ebeadf4c97b028eaca86fb8d6adb"><div class="ttname"><a href="#a6ab0ebeadf4c97b028eaca86fb8d6adb">XTBEngineLoader::m_destroy</a></div><div class="ttdeci">destroy_fn m_destroy</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00039">XTBEngineLoader.h:39</a></div></div>
+<div class="ttc" id="aclassXTBEngineLoader_html_a6ad11bf2e0bc34fa1326861b44cb8d0e"><div class="ttname"><a href="#a6ad11bf2e0bc34fa1326861b44cb8d0e">XTBEngineLoader::m_force</a></div><div class="ttdeci">force_fn m_force</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00040">XTBEngineLoader.h:40</a></div></div>
+<div class="ttc" id="aclassXTBEngineLoader_html_aa1fa7e35354ae73fe72af44f82eb5beb"><div class="ttname"><a href="#aa1fa7e35354ae73fe72af44f82eb5beb">XTBEngineLoader::m_lib</a></div><div class="ttdeci">void * m_lib</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00032">XTBEngineLoader.h:32</a></div></div>
+<div class="ttc" id="aclassXTBEngineLoader_html_aa6aaab1c7ff33671a0344671391c6fbf"><div class="ttname"><a href="#aa6aaab1c7ff33671a0344671391c6fbf">XTBEngineLoader::create_fn</a></div><div class="ttdeci">RgpotXtbPot *(*)(const RgpotXtbConfig *, char *, size_t) create_fn</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00034">XTBEngineLoader.h:34</a></div></div>
+<div class="ttc" id="aclassXTBEngineLoader_html_aa905316cbecad22973bda8da105a102b"><div class="ttname"><a href="#aa905316cbecad22973bda8da105a102b">XTBEngineLoader::m_pot</a></div><div class="ttdeci">RgpotXtbPot * m_pot</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00033">XTBEngineLoader.h:33</a></div></div>
+<div class="ttc" id="aclassXTBEngineLoader_html_aa9d05f76c42b955e80483ac27764a977"><div class="ttname"><a href="#aa9d05f76c42b955e80483ac27764a977">XTBEngineLoader::m_create</a></div><div class="ttdeci">create_fn m_create</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00038">XTBEngineLoader.h:38</a></div></div>
+<div class="ttc" id="aclassXTBEngineLoader_html_ae0bdc20d1c35a89e58c367e07ece2e45"><div class="ttname"><a href="#ae0bdc20d1c35a89e58c367e07ece2e45">XTBEngineLoader::force_fn</a></div><div class="ttdeci">int(*)(RgpotXtbPot *, long, const double *, const int *, double *, double *, double *, const double *) force_fn</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00036">XTBEngineLoader.h:36</a></div></div>
+<div class="ttc" id="astructRgpotXtbConfig_html_a12de28c5fae37fd1c778978b92d1dc81"><div class="ttname"><a href="structRgpotXtbConfig.html#a12de28c5fae37fd1c778978b92d1dc81">RgpotXtbConfig::max_iterations</a></div><div class="ttdeci">int max_iterations</div><div class="ttdef"><b>Definition</b> <a href="xtb__c__abi_8h_source.html#l00042">xtb_c_abi.h:42</a></div></div>
+<div class="ttc" id="astructRgpotXtbConfig_html_a4a5bac5e366e4295cd94f1f1c8997d93"><div class="ttname"><a href="structRgpotXtbConfig.html#a4a5bac5e366e4295cd94f1f1c8997d93">RgpotXtbConfig::accuracy</a></div><div class="ttdeci">double accuracy</div><div class="ttdef"><b>Definition</b> <a href="xtb__c__abi_8h_source.html#l00040">xtb_c_abi.h:40</a></div></div>
+<div class="ttc" id="astructRgpotXtbConfig_html_a7b43908e41e1c082c9f7ad38dac3bb08"><div class="ttname"><a href="structRgpotXtbConfig.html#a7b43908e41e1c082c9f7ad38dac3bb08">RgpotXtbConfig::method</a></div><div class="ttdeci">int method</div><div class="ttdoc">RGPOT_XTB_METHOD_*.</div><div class="ttdef"><b>Definition</b> <a href="xtb__c__abi_8h_source.html#l00039">xtb_c_abi.h:39</a></div></div>
+<div class="ttc" id="astructRgpotXtbConfig_html_aa5960455dfbf8cf2f8d83c99673b0f2a"><div class="ttname"><a href="structRgpotXtbConfig.html#aa5960455dfbf8cf2f8d83c99673b0f2a">RgpotXtbConfig::charge</a></div><div class="ttdeci">double charge</div><div class="ttdef"><b>Definition</b> <a href="xtb__c__abi_8h_source.html#l00043">xtb_c_abi.h:43</a></div></div>
+<div class="ttc" id="astructRgpotXtbConfig_html_acb9e0df8416e0e7d67f06a42d9a1dc3e"><div class="ttname"><a href="structRgpotXtbConfig.html#acb9e0df8416e0e7d67f06a42d9a1dc3e">RgpotXtbConfig::electronic_temperature</a></div><div class="ttdeci">double electronic_temperature</div><div class="ttdoc">Kelvin.</div><div class="ttdef"><b>Definition</b> <a href="xtb__c__abi_8h_source.html#l00041">xtb_c_abi.h:41</a></div></div>
+<div class="ttc" id="astructRgpotXtbConfig_html_aec9bb8e7b24bd74542ca2f946c802363"><div class="ttname"><a href="structRgpotXtbConfig.html#aec9bb8e7b24bd74542ca2f946c802363">RgpotXtbConfig::uhf</a></div><div class="ttdeci">int uhf</div><div class="ttdef"><b>Definition</b> <a href="xtb__c__abi_8h_source.html#l00044">xtb_c_abi.h:44</a></div></div>
+<div class="ttc" id="astructXTBEngineOptions_html_a01475518154082d4c901d4adfca2504a"><div class="ttname"><a href="structXTBEngineOptions.html#a01475518154082d4c901d4adfca2504a">XTBEngineOptions::uhf</a></div><div class="ttdeci">int uhf</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00016">XTBEngineLoader.h:16</a></div></div>
+<div class="ttc" id="astructXTBEngineOptions_html_a5fc00e571e98d3e6ad9f9c33759f201e"><div class="ttname"><a href="structXTBEngineOptions.html#a5fc00e571e98d3e6ad9f9c33759f201e">XTBEngineOptions::engine_path</a></div><div class="ttdeci">std::string engine_path</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00017">XTBEngineLoader.h:17</a></div></div>
+<div class="ttc" id="astructXTBEngineOptions_html_a70af5fbbada5662c935cdfe5e15bfeae"><div class="ttname"><a href="structXTBEngineOptions.html#a70af5fbbada5662c935cdfe5e15bfeae">XTBEngineOptions::max_iterations</a></div><div class="ttdeci">int max_iterations</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00014">XTBEngineLoader.h:14</a></div></div>
+<div class="ttc" id="astructXTBEngineOptions_html_a711e7d3894625dd40e6ec71a7ae73288"><div class="ttname"><a href="structXTBEngineOptions.html#a711e7d3894625dd40e6ec71a7ae73288">XTBEngineOptions::charge</a></div><div class="ttdeci">double charge</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00015">XTBEngineLoader.h:15</a></div></div>
+<div class="ttc" id="astructXTBEngineOptions_html_a9b47e44d1ba3d4656075292809e62e28"><div class="ttname"><a href="structXTBEngineOptions.html#a9b47e44d1ba3d4656075292809e62e28">XTBEngineOptions::electronic_temperature</a></div><div class="ttdeci">double electronic_temperature</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00013">XTBEngineLoader.h:13</a></div></div>
+<div class="ttc" id="astructXTBEngineOptions_html_aa81323b80eed2599ebf1487451957875"><div class="ttname"><a href="structXTBEngineOptions.html#aa81323b80eed2599ebf1487451957875">XTBEngineOptions::method</a></div><div class="ttdeci">int method</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00011">XTBEngineLoader.h:11</a></div></div>
+<div class="ttc" id="astructXTBEngineOptions_html_ae7932f15a10e85e1e633f95f3cf273bb"><div class="ttname"><a href="structXTBEngineOptions.html#ae7932f15a10e85e1e633f95f3cf273bb">XTBEngineOptions::accuracy</a></div><div class="ttdeci">double accuracy</div><div class="ttdef"><b>Definition</b> <a href="XTBEngineLoader_8h_source.html#l00012">XTBEngineLoader.h:12</a></div></div>
+<div class="ttc" id="axtb__c__abi_8h_html_a1786d9f1df089ee1d5b41e1389567afe"><div class="ttname"><a href="xtb__c__abi_8h.html#a1786d9f1df089ee1d5b41e1389567afe">RgpotXtbConfig</a></div><div class="ttdeci">struct RgpotXtbConfig RgpotXtbConfig</div></div>
+<div class="ttc" id="axtb__c__abi_8h_html_aa3b73c6a3161c5d0da0ec0b357f13b8f"><div class="ttname"><a href="xtb__c__abi_8h.html#aa3b73c6a3161c5d0da0ec0b357f13b8f">RGPOT_XTB_ABI_VERSION</a></div><div class="ttdeci">#define RGPOT_XTB_ABI_VERSION</div><div class="ttdef"><b>Definition</b> <a href="xtb__c__abi_8h_source.html#l00047">xtb_c_abi.h:47</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a00424ef5e3f421d32cb28f6f3f3eb475" name="a00424ef5e3f421d32cb28f6f3f3eb475"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00424ef5e3f421d32cb28f6f3f3eb475">&#9670;&#160;</a></span>~XTBEngineLoader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">XTBEngineLoader::~XTBEngineLoader </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBEngineLoader_8cpp_source.html#l00116">116</a> of file <a class="el" href="XTBEngineLoader_8cpp_source.html">XTBEngineLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  116</span>                                  {</div>
+<div class="line"><span class="lineno">  117</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa905316cbecad22973bda8da105a102b">m_pot</a> &amp;&amp; <a class="code hl_variable" href="#a6ab0ebeadf4c97b028eaca86fb8d6adb">m_destroy</a>)</div>
+<div class="line"><span class="lineno">  118</span>    <a class="code hl_variable" href="#a6ab0ebeadf4c97b028eaca86fb8d6adb">m_destroy</a>(<a class="code hl_variable" href="#aa905316cbecad22973bda8da105a102b">m_pot</a>);</div>
+<div class="line"><span class="lineno">  119</span>  <a class="code hl_variable" href="#aa905316cbecad22973bda8da105a102b">m_pot</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  120</span>  <span class="comment">// Safe to close: xtb has no torch-style static teardown hazard.</span></div>
+<div class="line"><span class="lineno">  121</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aa1fa7e35354ae73fe72af44f82eb5beb">m_lib</a>)</div>
+<div class="line"><span class="lineno">  122</span>    close_lib(<a class="code hl_variable" href="#aa1fa7e35354ae73fe72af44f82eb5beb">m_lib</a>);</div>
+<div class="line"><span class="lineno">  123</span>  <a class="code hl_variable" href="#aa1fa7e35354ae73fe72af44f82eb5beb">m_lib</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  124</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1f697c570c1e367b0d7f5aa352507f98" name="a1f697c570c1e367b0d7f5aa352507f98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f697c570c1e367b0d7f5aa352507f98">&#9670;&#160;</a></span>XTBEngineLoader() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">XTBEngineLoader::XTBEngineLoader </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classXTBEngineLoader.html">XTBEngineLoader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="abfc228a09a1511986b5e95bf3354c6b8" name="abfc228a09a1511986b5e95bf3354c6b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfc228a09a1511986b5e95bf3354c6b8">&#9670;&#160;</a></span>available()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool XTBEngineLoader::available </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBEngineLoader_8h_source.html#l00027">27</a> of file <a class="el" href="XTBEngineLoader_8h_source.html">XTBEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   27</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#aa905316cbecad22973bda8da105a102b">m_pot</a> != <span class="keyword">nullptr</span>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a964c97cc1130f041b539d94bc0c0f3bf" name="a964c97cc1130f041b539d94bc0c0f3bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a964c97cc1130f041b539d94bc0c0f3bf">&#9670;&#160;</a></span>force()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XTBEngineLoader::force </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>N</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>R</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em>atomicNrs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>F</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>U</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>variance</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>box</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBEngineLoader_8cpp_source.html#l00126">126</a> of file <a class="el" href="XTBEngineLoader_8cpp_source.html">XTBEngineLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  128</span>                                                     {</div>
+<div class="line"><span class="lineno">  129</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa905316cbecad22973bda8da105a102b">m_pot</a> || !<a class="code hl_variable" href="#a6ad11bf2e0bc34fa1326861b44cb8d0e">m_force</a>)</div>
+<div class="line"><span class="lineno">  130</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT(xtb): engine not available&quot;</span>);</div>
+<div class="line"><span class="lineno">  131</span>  <span class="keywordtype">double</span> var = 0.0;</div>
+<div class="line"><span class="lineno">  132</span>  <span class="keyword">const</span> <span class="keywordtype">int</span> rc =</div>
+<div class="line"><span class="lineno">  133</span>      <a class="code hl_variable" href="#a6ad11bf2e0bc34fa1326861b44cb8d0e">m_force</a>(<a class="code hl_variable" href="#aa905316cbecad22973bda8da105a102b">m_pot</a>, N, R, atomicNrs, F, U, variance ? variance : &amp;var, box);</div>
+<div class="line"><span class="lineno">  134</span>  <span class="keywordflow">if</span> (rc != 0)</div>
+<div class="line"><span class="lineno">  135</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;RGPOT(xtb): force failed&quot;</span>);</div>
+<div class="line"><span class="lineno">  136</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aaabddb34c2cff583598ec23044293ca4" name="aaabddb34c2cff583598ec23044293ca4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaabddb34c2cff583598ec23044293ca4">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classXTBEngineLoader.html">XTBEngineLoader</a> &amp; XTBEngineLoader::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classXTBEngineLoader.html">XTBEngineLoader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="aa9d05f76c42b955e80483ac27764a977" name="aa9d05f76c42b955e80483ac27764a977"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9d05f76c42b955e80483ac27764a977">&#9670;&#160;</a></span>m_create</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#aa6aaab1c7ff33671a0344671391c6fbf">create_fn</a> XTBEngineLoader::m_create {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBEngineLoader_8h_source.html#l00038">38</a> of file <a class="el" href="XTBEngineLoader_8h_source.html">XTBEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   38</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6ab0ebeadf4c97b028eaca86fb8d6adb" name="a6ab0ebeadf4c97b028eaca86fb8d6adb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ab0ebeadf4c97b028eaca86fb8d6adb">&#9670;&#160;</a></span>m_destroy</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a649396b62a9143a7937daa92c9a83382">destroy_fn</a> XTBEngineLoader::m_destroy {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBEngineLoader_8h_source.html#l00039">39</a> of file <a class="el" href="XTBEngineLoader_8h_source.html">XTBEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   39</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a6ad11bf2e0bc34fa1326861b44cb8d0e" name="a6ad11bf2e0bc34fa1326861b44cb8d0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ad11bf2e0bc34fa1326861b44cb8d0e">&#9670;&#160;</a></span>m_force</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#ae0bdc20d1c35a89e58c367e07ece2e45">force_fn</a> XTBEngineLoader::m_force {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBEngineLoader_8h_source.html#l00040">40</a> of file <a class="el" href="XTBEngineLoader_8h_source.html">XTBEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   40</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa1fa7e35354ae73fe72af44f82eb5beb" name="aa1fa7e35354ae73fe72af44f82eb5beb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1fa7e35354ae73fe72af44f82eb5beb">&#9670;&#160;</a></span>m_lib</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* XTBEngineLoader::m_lib {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBEngineLoader_8h_source.html#l00032">32</a> of file <a class="el" href="XTBEngineLoader_8h_source.html">XTBEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   32</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa905316cbecad22973bda8da105a102b" name="aa905316cbecad22973bda8da105a102b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa905316cbecad22973bda8da105a102b">&#9670;&#160;</a></span>m_pot</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="xtb__c__abi_8h.html#a37b502b1326e503b40aced0b4726dffb">RgpotXtbPot</a>* XTBEngineLoader::m_pot {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBEngineLoader_8h_source.html#l00033">33</a> of file <a class="el" href="XTBEngineLoader_8h_source.html">XTBEngineLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   33</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/potentials/Rgpot/<a class="el" href="XTBEngineLoader_8h_source.html">XTBEngineLoader.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/potentials/Rgpot/<a class="el" href="XTBEngineLoader_8cpp_source.html">XTBEngineLoader.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="classXTBEngineLoader.html">XTBEngineLoader</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

@@ -1,0 +1,626 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::pot Namespace Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('namespaceeonc_1_1pot.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::pot Namespace Reference</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a45de6b6995d3f1722923ace90da08bdd" id="r_a45de6b6995d3f1722923ace90da08bdd"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a45de6b6995d3f1722923ace90da08bdd">commandFailure</a> (int status)</td></tr>
+<tr class="memdesc:a45de6b6995d3f1722923ace90da08bdd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe how a command run through system() ended.  <br /></td></tr>
+<tr class="memitem:a7db8acc031ed83a0a00fc8714a93b18d" id="r_a7db8acc031ed83a0a00fc8714a93b18d"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a7db8acc031ed83a0a00fc8714a93b18d">runOrThrow</a> (const std::string &amp;command)</td></tr>
+<tr class="memdesc:a7db8acc031ed83a0a00fc8714a93b18d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run a shell command, throwing when it does not succeed.  <br /></td></tr>
+<tr class="memitem:a820f7fa2b28f4f9dd2fe9e11f8565800" id="r_a820f7fa2b28f4f9dd2fe9e11f8565800"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a820f7fa2b28f4f9dd2fe9e11f8565800">shellQuote</a> (const std::string &amp;text)</td></tr>
+<tr class="memdesc:a820f7fa2b28f4f9dd2fe9e11f8565800"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrap a path for the shell system() hands the command to, so spaces in it survive.  <br /></td></tr>
+<tr class="memitem:a84aaf640bbd2c4895dd6f623c62a15a0" id="r_a84aaf640bbd2c4895dd6f623c62a15a0"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a84aaf640bbd2c4895dd6f623c62a15a0">shebangInterpreter</a> (const std::filesystem::path &amp;path)</td></tr>
+<tr class="memdesc:a84aaf640bbd2c4895dd6f623c62a15a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the interpreter name from a <span class="tt">#!</span> line, or empty.  <br /></td></tr>
+<tr class="memitem:a1a85f0fafa707dd8f6ff5a171b9160f3" id="r_a1a85f0fafa707dd8f6ff5a171b9160f3"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a1a85f0fafa707dd8f6ff5a171b9160f3">isPythonInterpreterName</a> (std::string name)</td></tr>
+<tr class="memdesc:a1a85f0fafa707dd8f6ff5a171b9160f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when <code class="param">name</code> is python, python3, python3.12, python.exe, ...  <br /></td></tr>
+<tr class="memitem:aaaa50cd047a11cd495f5fa4e4281d8ab" id="r_aaaa50cd047a11cd495f5fa4e4281d8ab"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#aaaa50cd047a11cd495f5fa4e4281d8ab">wrapResolvedProgram</a> (const std::string &amp;command, const std::string &amp;python)</td></tr>
+<tr class="memdesc:aaaa50cd047a11cd495f5fa4e4281d8ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Quote a resolved program path, and on Windows prefix a script so cmd.exe can start it.  <br /></td></tr>
+</table>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
+<a id="a45de6b6995d3f1722923ace90da08bdd" name="a45de6b6995d3f1722923ace90da08bdd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45de6b6995d3f1722923ace90da08bdd">&#9670;&#160;</a></span>commandFailure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::pot::commandFailure </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>status</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Describe how a command run through system() ended. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">status</td><td>The value system() returned. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An empty string when the command ran to completion with exit status 0, otherwise a human readable reason for the failure. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="ExternalCommand_8h_source.html#l00029">29</a> of file <a class="el" href="ExternalCommand_8h_source.html">ExternalCommand.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   29</span>                                                          {</div>
+<div class="line"><span class="lineno">   30</span>  <span class="keywordflow">if</span> (status == -1) {</div>
+<div class="line"><span class="lineno">   31</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;could not be started&quot;</span>;</div>
+<div class="line"><span class="lineno">   32</span>  }</div>
+<div class="line"><span class="lineno">   33</span><span class="preprocessor">#ifndef _WIN32</span></div>
+<div class="line"><span class="lineno">   34</span>  <span class="keywordflow">if</span> (WIFSIGNALED(status)) {</div>
+<div class="line"><span class="lineno">   35</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;died on signal &quot;</span> + std::to_string(WTERMSIG(status));</div>
+<div class="line"><span class="lineno">   36</span>  }</div>
+<div class="line"><span class="lineno">   37</span>  <span class="keywordflow">if</span> (!WIFEXITED(status)) {</div>
+<div class="line"><span class="lineno">   38</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;terminated abnormally&quot;</span>;</div>
+<div class="line"><span class="lineno">   39</span>  }</div>
+<div class="line"><span class="lineno">   40</span>  <span class="keywordflow">if</span> (WEXITSTATUS(status) != 0) {</div>
+<div class="line"><span class="lineno">   41</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;exited with status &quot;</span> + std::to_string(WEXITSTATUS(status));</div>
+<div class="line"><span class="lineno">   42</span>  }</div>
+<div class="line"><span class="lineno">   43</span><span class="preprocessor">#else</span></div>
+<div class="line"><span class="lineno">   44</span>  <span class="keywordflow">if</span> (status != 0) {</div>
+<div class="line"><span class="lineno">   45</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;exited with status &quot;</span> + std::to_string(status);</div>
+<div class="line"><span class="lineno">   46</span>  }</div>
+<div class="line"><span class="lineno">   47</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">   48</span>  <span class="keywordflow">return</span> {};</div>
+<div class="line"><span class="lineno">   49</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a1a85f0fafa707dd8f6ff5a171b9160f3" name="a1a85f0fafa707dd8f6ff5a171b9160f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a85f0fafa707dd8f6ff5a171b9160f3">&#9670;&#160;</a></span>isPythonInterpreterName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eonc::pot::isPythonInterpreterName </td>
+          <td>(</td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>name</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when <code class="param">name</code> is python, python3, python3.12, python.exe, ... </p>
+
+<p class="definition">Definition at line <a class="el" href="ExtPotCommand_8h_source.html#l00096">96</a> of file <a class="el" href="ExtPotCommand_8h_source.html">ExtPotCommand.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   96</span>                                                    {</div>
+<div class="line"><span class="lineno">   97</span>  <span class="keywordflow">for</span> (<span class="keywordtype">char</span> &amp;c : name) {</div>
+<div class="line"><span class="lineno">   98</span>    c = <span class="keyword">static_cast&lt;</span><span class="keywordtype">char</span><span class="keyword">&gt;</span>(std::tolower(<span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>(c)));</div>
+<div class="line"><span class="lineno">   99</span>  }</div>
+<div class="line"><span class="lineno">  100</span>  <span class="keyword">constexpr</span> std::string_view exe{<span class="stringliteral">&quot;.exe&quot;</span>};</div>
+<div class="line"><span class="lineno">  101</span>  <span class="keywordflow">if</span> (name.size() &gt; exe.size() &amp;&amp;</div>
+<div class="line"><span class="lineno">  102</span>      name.compare(name.size() - exe.size(), exe.size(), exe.data()) == 0) {</div>
+<div class="line"><span class="lineno">  103</span>    name.resize(name.size() - exe.size());</div>
+<div class="line"><span class="lineno">  104</span>  }</div>
+<div class="line"><span class="lineno">  105</span>  <span class="keywordflow">return</span> name.rfind(<span class="stringliteral">&quot;python&quot;</span>, 0) == 0;</div>
+<div class="line"><span class="lineno">  106</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7db8acc031ed83a0a00fc8714a93b18d" name="a7db8acc031ed83a0a00fc8714a93b18d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7db8acc031ed83a0a00fc8714a93b18d">&#9670;&#160;</a></span>runOrThrow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eonc::pot::runOrThrow </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>command</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Run a shell command, throwing when it does not succeed. </p>
+<p>External potentials feed whatever the command leaves behind straight into the optimizer, so a failed command has to stop the run rather than let the caller parse a stale or partial result file. </p>
+
+<p class="definition">Definition at line <a class="el" href="ExternalCommand_8h_source.html#l00056">56</a> of file <a class="el" href="ExternalCommand_8h_source.html">ExternalCommand.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   56</span>                                                 {</div>
+<div class="line"><span class="lineno">   57</span>  <span class="keyword">const</span> std::string reason = <a class="code hl_function" href="#a45de6b6995d3f1722923ace90da08bdd">commandFailure</a>(std::system(command.c_str()));</div>
+<div class="line"><span class="lineno">   58</span>  <span class="keywordflow">if</span> (!reason.empty()) {</div>
+<div class="line"><span class="lineno">   59</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Command \&quot;&quot;</span> + command + <span class="stringliteral">&quot;\&quot; &quot;</span> + reason);</div>
+<div class="line"><span class="lineno">   60</span>  }</div>
+<div class="line"><span class="lineno">   61</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1pot_html_a45de6b6995d3f1722923ace90da08bdd"><div class="ttname"><a href="#a45de6b6995d3f1722923ace90da08bdd">eonc::pot::commandFailure</a></div><div class="ttdeci">std::string commandFailure(int status)</div><div class="ttdoc">Describe how a command run through system() ended.</div><div class="ttdef"><b>Definition</b> <a href="ExternalCommand_8h_source.html#l00029">ExternalCommand.h:29</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a84aaf640bbd2c4895dd6f623c62a15a0" name="a84aaf640bbd2c4895dd6f623c62a15a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84aaf640bbd2c4895dd6f623c62a15a0">&#9670;&#160;</a></span>shebangInterpreter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::pot::shebangInterpreter </td>
+          <td>(</td>
+          <td class="paramtype">const std::filesystem::path &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the interpreter name from a <span class="tt">#!</span> line, or empty. </p>
+<p><span class="tt">#!/usr/bin/env python3</span> and <span class="tt">#!/usr/bin/python3</span> both yield <span class="tt">python3</span>. <span class="tt">env</span> flags (<span class="tt">-S</span>) are skipped. A file with no shebang yields empty. </p>
+
+<p class="definition">Definition at line <a class="el" href="ExtPotCommand_8h_source.html#l00048">48</a> of file <a class="el" href="ExtPotCommand_8h_source.html">ExtPotCommand.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   48</span>                                                                   {</div>
+<div class="line"><span class="lineno">   49</span>  std::ifstream in(path);</div>
+<div class="line"><span class="lineno">   50</span>  std::string line;</div>
+<div class="line"><span class="lineno">   51</span>  <span class="keywordflow">if</span> (!in || !std::getline(in, line)) {</div>
+<div class="line"><span class="lineno">   52</span>    <span class="keywordflow">return</span> {};</div>
+<div class="line"><span class="lineno">   53</span>  }</div>
+<div class="line"><span class="lineno">   54</span>  <span class="keywordflow">if</span> (!line.empty() &amp;&amp; line.back() == <span class="charliteral">&#39;\r&#39;</span>) {</div>
+<div class="line"><span class="lineno">   55</span>    line.pop_back();</div>
+<div class="line"><span class="lineno">   56</span>  }</div>
+<div class="line"><span class="lineno">   57</span>  <span class="keywordflow">if</span> (line.size() &lt; 2 || line[0] != <span class="charliteral">&#39;#&#39;</span> || line[1] != <span class="charliteral">&#39;!&#39;</span>) {</div>
+<div class="line"><span class="lineno">   58</span>    <span class="keywordflow">return</span> {};</div>
+<div class="line"><span class="lineno">   59</span>  }</div>
+<div class="line"><span class="lineno">   60</span>  std::string rest = line.substr(2);</div>
+<div class="line"><span class="lineno">   61</span>  <span class="keyword">auto</span> take = [](std::string &amp;s) -&gt; std::string {</div>
+<div class="line"><span class="lineno">   62</span>    <span class="keyword">const</span> <span class="keyword">auto</span> begin = s.find_first_not_of(<span class="stringliteral">&quot; \t&quot;</span>);</div>
+<div class="line"><span class="lineno">   63</span>    <span class="keywordflow">if</span> (begin == std::string::npos) {</div>
+<div class="line"><span class="lineno">   64</span>      s.clear();</div>
+<div class="line"><span class="lineno">   65</span>      <span class="keywordflow">return</span> {};</div>
+<div class="line"><span class="lineno">   66</span>    }</div>
+<div class="line"><span class="lineno">   67</span>    <span class="keyword">const</span> <span class="keyword">auto</span> end = s.find_first_of(<span class="stringliteral">&quot; \t&quot;</span>, begin);</div>
+<div class="line"><span class="lineno">   68</span>    std::string tok = end == std::string::npos ? s.substr(begin)</div>
+<div class="line"><span class="lineno">   69</span>                                               : s.substr(begin, end - begin);</div>
+<div class="line"><span class="lineno">   70</span>    <span class="keywordflow">if</span> (end == std::string::npos) {</div>
+<div class="line"><span class="lineno">   71</span>      s.clear();</div>
+<div class="line"><span class="lineno">   72</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   73</span>      s.erase(0, end);</div>
+<div class="line"><span class="lineno">   74</span>    }</div>
+<div class="line"><span class="lineno">   75</span>    <span class="keywordflow">return</span> tok;</div>
+<div class="line"><span class="lineno">   76</span>  };</div>
+<div class="line"><span class="lineno">   77</span>  <span class="keyword">const</span> std::string first = take(rest);</div>
+<div class="line"><span class="lineno">   78</span>  <span class="keywordflow">if</span> (first.empty()) {</div>
+<div class="line"><span class="lineno">   79</span>    <span class="keywordflow">return</span> {};</div>
+<div class="line"><span class="lineno">   80</span>  }</div>
+<div class="line"><span class="lineno">   81</span>  std::string name = std::filesystem::path(first).filename().string();</div>
+<div class="line"><span class="lineno">   82</span>  <span class="keywordflow">if</span> (name == <span class="stringliteral">&quot;env&quot;</span>) {</div>
+<div class="line"><span class="lineno">   83</span>    std::string tok = take(rest);</div>
+<div class="line"><span class="lineno">   84</span>    <span class="keywordflow">while</span> (!tok.empty() &amp;&amp; tok.front() == <span class="charliteral">&#39;-&#39;</span>) {</div>
+<div class="line"><span class="lineno">   85</span>      tok = take(rest);</div>
+<div class="line"><span class="lineno">   86</span>    }</div>
+<div class="line"><span class="lineno">   87</span>    <span class="keywordflow">if</span> (tok.empty()) {</div>
+<div class="line"><span class="lineno">   88</span>      <span class="keywordflow">return</span> {};</div>
+<div class="line"><span class="lineno">   89</span>    }</div>
+<div class="line"><span class="lineno">   90</span>    name = std::filesystem::path(tok).filename().string();</div>
+<div class="line"><span class="lineno">   91</span>  }</div>
+<div class="line"><span class="lineno">   92</span>  <span class="keywordflow">return</span> name;</div>
+<div class="line"><span class="lineno">   93</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a820f7fa2b28f4f9dd2fe9e11f8565800" name="a820f7fa2b28f4f9dd2fe9e11f8565800"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a820f7fa2b28f4f9dd2fe9e11f8565800">&#9670;&#160;</a></span>shellQuote()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::pot::shellQuote </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>text</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Wrap a path for the shell system() hands the command to, so spaces in it survive. </p>
+
+<p class="definition">Definition at line <a class="el" href="ExtPotCommand_8h_source.html#l00025">25</a> of file <a class="el" href="ExtPotCommand_8h_source.html">ExtPotCommand.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   25</span>                                                   {</div>
+<div class="line"><span class="lineno">   26</span><span class="preprocessor">#ifdef _WIN32</span></div>
+<div class="line"><span class="lineno">   27</span>  <span class="comment">// cmd.exe takes double quotes and offers no escape for an embedded one,</span></div>
+<div class="line"><span class="lineno">   28</span>  <span class="comment">// which a Windows path cannot hold anyway.</span></div>
+<div class="line"><span class="lineno">   29</span>  <span class="keywordflow">return</span> <span class="stringliteral">&quot;\&quot;&quot;</span> + text + <span class="stringliteral">&quot;\&quot;&quot;</span>;</div>
+<div class="line"><span class="lineno">   30</span><span class="preprocessor">#else</span></div>
+<div class="line"><span class="lineno">   31</span>  std::string quoted{<span class="stringliteral">&quot;&#39;&quot;</span>};</div>
+<div class="line"><span class="lineno">   32</span>  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keywordtype">char</span> c : text) {</div>
+<div class="line"><span class="lineno">   33</span>    <span class="keywordflow">if</span> (c == <span class="charliteral">&#39;\&#39;&#39;</span>) {</div>
+<div class="line"><span class="lineno">   34</span>      quoted += <span class="stringliteral">&quot;&#39;\\&#39;&#39;&quot;</span>;</div>
+<div class="line"><span class="lineno">   35</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   36</span>      quoted += c;</div>
+<div class="line"><span class="lineno">   37</span>    }</div>
+<div class="line"><span class="lineno">   38</span>  }</div>
+<div class="line"><span class="lineno">   39</span>  quoted += <span class="stringliteral">&quot;&#39;&quot;</span>;</div>
+<div class="line"><span class="lineno">   40</span>  <span class="keywordflow">return</span> quoted;</div>
+<div class="line"><span class="lineno">   41</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">   42</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aaaa50cd047a11cd495f5fa4e4281d8ab" name="aaaa50cd047a11cd495f5fa4e4281d8ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaaa50cd047a11cd495f5fa4e4281d8ab">&#9670;&#160;</a></span>wrapResolvedProgram()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::pot::wrapResolvedProgram </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>command</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>python</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Quote a resolved program path, and on Windows prefix a script so cmd.exe can start it. </p>
+<p>cmd.exe will not execute an extensionless file, quoted or not. A Python shebang or a <span class="tt">.py</span> suffix becomes <span class="tt">python "path"</span>. A native <span class="tt">.exe</span> / <span class="tt">.bat</span> / <span class="tt">.cmd</span> is quoted only. A command line that is not a single existing file is returned unchanged. </p>
+
+<p class="definition">Definition at line <a class="el" href="ExtPotCommand_8h_source.html#l00115">115</a> of file <a class="el" href="ExtPotCommand_8h_source.html">ExtPotCommand.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  116</span>                                                                {</div>
+<div class="line"><span class="lineno">  117</span>  std::error_code ec;</div>
+<div class="line"><span class="lineno">  118</span>  <span class="keywordflow">if</span> (!std::filesystem::is_regular_file(command, ec) || ec) {</div>
+<div class="line"><span class="lineno">  119</span>    <span class="keywordflow">return</span> command;</div>
+<div class="line"><span class="lineno">  120</span>  }</div>
+<div class="line"><span class="lineno">  121</span><span class="preprocessor">#ifdef _WIN32</span></div>
+<div class="line"><span class="lineno">  122</span>  <span class="keyword">const</span> std::filesystem::path named{command};</div>
+<div class="line"><span class="lineno">  123</span>  std::string ext = named.extension().string();</div>
+<div class="line"><span class="lineno">  124</span>  <span class="keywordflow">for</span> (<span class="keywordtype">char</span> &amp;c : ext) {</div>
+<div class="line"><span class="lineno">  125</span>    c = <span class="keyword">static_cast&lt;</span><span class="keywordtype">char</span><span class="keyword">&gt;</span>(std::tolower(<span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span><span class="keyword">&gt;</span>(c)));</div>
+<div class="line"><span class="lineno">  126</span>  }</div>
+<div class="line"><span class="lineno">  127</span>  <span class="keywordflow">if</span> (ext == <span class="stringliteral">&quot;.exe&quot;</span> || ext == <span class="stringliteral">&quot;.com&quot;</span> || ext == <span class="stringliteral">&quot;.bat&quot;</span> || ext == <span class="stringliteral">&quot;.cmd&quot;</span>) {</div>
+<div class="line"><span class="lineno">  128</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="#a820f7fa2b28f4f9dd2fe9e11f8565800">shellQuote</a>(command);</div>
+<div class="line"><span class="lineno">  129</span>  }</div>
+<div class="line"><span class="lineno">  130</span>  <span class="keyword">const</span> std::string interp = <a class="code hl_function" href="#a84aaf640bbd2c4895dd6f623c62a15a0">shebangInterpreter</a>(named);</div>
+<div class="line"><span class="lineno">  131</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="#a1a85f0fafa707dd8f6ff5a171b9160f3">isPythonInterpreterName</a>(interp) || ext == <span class="stringliteral">&quot;.py&quot;</span> || ext == <span class="stringliteral">&quot;.pyw&quot;</span>) {</div>
+<div class="line"><span class="lineno">  132</span>    <span class="keyword">const</span> std::string runner = python.empty() ? std::string{<span class="stringliteral">&quot;python&quot;</span>} : python;</div>
+<div class="line"><span class="lineno">  133</span>    <span class="keywordflow">return</span> runner + <span class="stringliteral">&quot; &quot;</span> + <a class="code hl_function" href="#a820f7fa2b28f4f9dd2fe9e11f8565800">shellQuote</a>(command);</div>
+<div class="line"><span class="lineno">  134</span>  }</div>
+<div class="line"><span class="lineno">  135</span>  <span class="keywordflow">if</span> (!interp.empty()) {</div>
+<div class="line"><span class="lineno">  136</span>    <span class="keywordflow">return</span> interp + <span class="stringliteral">&quot; &quot;</span> + <a class="code hl_function" href="#a820f7fa2b28f4f9dd2fe9e11f8565800">shellQuote</a>(command);</div>
+<div class="line"><span class="lineno">  137</span>  }</div>
+<div class="line"><span class="lineno">  138</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a820f7fa2b28f4f9dd2fe9e11f8565800">shellQuote</a>(command);</div>
+<div class="line"><span class="lineno">  139</span><span class="preprocessor">#else</span></div>
+<div class="line"><span class="lineno">  140</span>  (void)python;</div>
+<div class="line"><span class="lineno">  141</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a820f7fa2b28f4f9dd2fe9e11f8565800">shellQuote</a>(command);</div>
+<div class="line"><span class="lineno">  142</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  143</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1pot_html_a1a85f0fafa707dd8f6ff5a171b9160f3"><div class="ttname"><a href="#a1a85f0fafa707dd8f6ff5a171b9160f3">eonc::pot::isPythonInterpreterName</a></div><div class="ttdeci">bool isPythonInterpreterName(std::string name)</div><div class="ttdoc">True when name is python, python3, python3.12, python.exe, ...</div><div class="ttdef"><b>Definition</b> <a href="ExtPotCommand_8h_source.html#l00096">ExtPotCommand.h:96</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pot_html_a820f7fa2b28f4f9dd2fe9e11f8565800"><div class="ttname"><a href="#a820f7fa2b28f4f9dd2fe9e11f8565800">eonc::pot::shellQuote</a></div><div class="ttdeci">std::string shellQuote(const std::string &amp;text)</div><div class="ttdoc">Wrap a path for the shell system() hands the command to, so spaces in it survive.</div><div class="ttdef"><b>Definition</b> <a href="ExtPotCommand_8h_source.html#l00025">ExtPotCommand.h:25</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1pot_html_a84aaf640bbd2c4895dd6f623c62a15a0"><div class="ttname"><a href="#a84aaf640bbd2c4895dd6f623c62a15a0">eonc::pot::shebangInterpreter</a></div><div class="ttdeci">std::string shebangInterpreter(const std::filesystem::path &amp;path)</div><div class="ttdoc">Return the interpreter name from a #! line, or empty.</div><div class="ttdef"><b>Definition</b> <a href="ExtPotCommand_8h_source.html#l00048">ExtPotCommand.h:48</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="namespaceeonc_1_1pot.html">pot</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

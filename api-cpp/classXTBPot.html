@@ -1,0 +1,1118 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: XTBPot Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classXTBPot.html','','classXTBPot-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">XTBPot Class Reference<span class="mlabels"><span class="mlabel final">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for XTBPot:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+ <div class="center">
+  <img src="classXTBPot.png" usemap="#XTBPot_map" alt=""/>
+  <map id="XTBPot_map" name="XTBPot_map">
+<area href="classeonc_1_1Potential.html" alt="eonc::Potential" shape="rect" coords="0,0,94,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a04d1167de2db4d046bafeb68530b19aa" id="r_a04d1167de2db4d046bafeb68530b19aa"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a04d1167de2db4d046bafeb68530b19aa">XTBPot</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a12b3e0fbefc963769ad974bf1bf756b3" id="r_a12b3e0fbefc963769ad974bf1bf756b3"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#a12b3e0fbefc963769ad974bf1bf756b3">~XTBPot</a> ()</td></tr>
+<tr class="memitem:a84d54f5eb710c2f3393347337bdf1fda" id="r_a84d54f5eb710c2f3393347337bdf1fda"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a84d54f5eb710c2f3393347337bdf1fda">XTBPot</a> (const <a class="el" href="classXTBPot.html">XTBPot</a> &amp;)=delete</td></tr>
+<tr class="memitem:af4d73fd4dfd751360b1525d4a7c3aa96" id="r_af4d73fd4dfd751360b1525d4a7c3aa96"><td class="memItemLeft"><a class="el" href="classXTBPot.html">XTBPot</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#af4d73fd4dfd751360b1525d4a7c3aa96">operator=</a> (const <a class="el" href="classXTBPot.html">XTBPot</a> &amp;)=delete</td></tr>
+<tr class="memitem:af7f12d12b8a3f72f38b039e0049f27d1" id="r_af7f12d12b8a3f72f38b039e0049f27d1"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#af7f12d12b8a3f72f38b039e0049f27d1">cleanMemory</a> (void)</td></tr>
+<tr class="memitem:a7617c95800c8821d3c81c75a80ccdd38" id="r_a7617c95800c8821d3c81c75a80ccdd38"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a7617c95800c8821d3c81c75a80ccdd38">force</a> (long N, const double *R, const int *atomicNrs, double *F, double *U, double *variance, const double *box) override</td></tr>
+<tr class="memitem:a10ce034cef18039d3d8e767d31f3b6d0" id="r_a10ce034cef18039d3d8e767d31f3b6d0"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a10ce034cef18039d3d8e767d31f3b6d0">isThreadSafe</a> () const noexcept override</td></tr>
+<tr class="memdesc:a10ce034cef18039d3d8e767d31f3b6d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">XTB Fortran library uses per-instance state (env/calc).  <br /></td></tr>
+<tr class="memitem:a76199d47259c1432ef416e3febfc946a" id="r_a76199d47259c1432ef416e3febfc946a"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a76199d47259c1432ef416e3febfc946a">needsPerImageInstance</a> () const noexcept override</td></tr>
+<tr class="memdesc:a76199d47259c1432ef416e3febfc946a"><td class="mdescLeft">&#160;</td><td class="mdescRight">XTB restart.f90 uses global Fortran file units that collide when multiple environments exist in one process.  <br /></td></tr>
+<tr class="inherit_header pub_methods_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
+<tr class="memitem:af81acd9a6775ff13fab861a51fb9ba95 inherit pub_methods_classeonc_1_1Potential" id="r_af81acd9a6775ff13fab861a51fb9ba95"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype)</td></tr>
+<tr class="memitem:a2aaa7956f073f9db72277909e51c40c9 inherit pub_methods_classeonc_1_1Potential" id="r_a2aaa7956f073f9db72277909e51c40c9"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2aaa7956f073f9db72277909e51c40c9">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype, const <a class="el" href="classParameters.html">Parameters</a> &amp;)</td></tr>
+<tr class="memitem:ac908414bc07e7c33019e01abb4a7d9ee inherit pub_methods_classeonc_1_1Potential" id="r_ac908414bc07e7c33019e01abb4a7d9ee"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac908414bc07e7c33019e01abb4a7d9ee">Potential</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memitem:a57af1d92eeff9618f873a0241e390de2 inherit pub_methods_classeonc_1_1Potential" id="r_a57af1d92eeff9618f873a0241e390de2"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a57af1d92eeff9618f873a0241e390de2">~Potential</a> ()</td></tr>
+<tr class="memitem:ac00fe80dcbd4f5887da244047aaf63f5 inherit pub_methods_classeonc_1_1Potential" id="r_ac00fe80dcbd4f5887da244047aaf63f5"><td class="memItemLeft">std::tuple&lt; double, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac00fe80dcbd4f5887da244047aaf63f5">get_ef</a> (const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;pos, const VectorXi &amp;atmnrs, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;box)</td></tr>
+<tr class="memitem:a4f0274548044ab1f714e4801352c4547 inherit pub_methods_classeonc_1_1Potential" id="r_a4f0274548044ab1f714e4801352c4547"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a4f0274548044ab1f714e4801352c4547">getType</a> () const</td></tr>
+<tr class="memitem:a85b0a3456f6528d8c464ab4b5774878e inherit pub_methods_classeonc_1_1Potential" id="r_a85b0a3456f6528d8c464ab4b5774878e"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a85b0a3456f6528d8c464ab4b5774878e">isSurrogate</a> () const noexcept</td></tr>
+<tr class="memdesc:a85b0a3456f6528d8c464ab4b5774878e inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this is a surrogate (GP) potential.  <br /></td></tr>
+<tr class="memitem:ac4c9e9deaa0e73fa27ff97b6d6acad98 inherit pub_methods_classeonc_1_1Potential" id="r_ac4c9e9deaa0e73fa27ff97b6d6acad98"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac4c9e9deaa0e73fa27ff97b6d6acad98">requiresIsolatedMoleculeLayout</a> () const noexcept</td></tr>
+<tr class="memdesc:ac4c9e9deaa0e73fa27ff97b6d6acad98 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">True for molecular QM / non-PBC backends (NWChem socket, <a class="el" href="classASE.html">ASE</a> ORCA/NWChem, …).  <br /></td></tr>
+<tr class="memitem:a8065b9661fcb0b025d397928243c987c inherit pub_methods_classeonc_1_1Potential" id="r_a8065b9661fcb0b025d397928243c987c"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a8065b9661fcb0b025d397928243c987c">isSharedInstanceThreadSafe</a> () const noexcept</td></tr>
+<tr class="memdesc:a8065b9661fcb0b025d397928243c987c inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conservative gate for sharing one <a class="el" href="classeonc_1_1Potential.html">Potential</a> instance across threads.  <br /></td></tr>
+<tr class="memitem:a2d8781e3cbea888f88b7523c5d00bc43 inherit pub_methods_classeonc_1_1Potential" id="r_a2d8781e3cbea888f88b7523c5d00bc43"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2d8781e3cbea888f88b7523c5d00bc43">supportsBatchEvaluation</a> () const noexcept</td></tr>
+<tr class="memdesc:a2d8781e3cbea888f88b7523c5d00bc43 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this potential supports batched evaluation of N systems in a single call.  <br /></td></tr>
+<tr class="memitem:aa66e1416134ff55639a6d20a34e3c1c1 inherit pub_methods_classeonc_1_1Potential" id="r_aa66e1416134ff55639a6d20a34e3c1c1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1">forceBatch</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</td></tr>
+<tr class="memdesc:aa66e1416134ff55639a6d20a34e3c1c1 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate forces for N systems in a single call.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-types" class="groupheader"><a id="pri-types" name="pri-types"></a>
+Private Types</h2></td></tr>
+<tr class="memitem:a202ab44bad464d4739df0b3360507a47" id="r_a202ab44bad464d4739df0b3360507a47"><td class="memItemLeft">enum class &#160;</td><td class="memItemRight"><a class="el" href="#a202ab44bad464d4739df0b3360507a47">GFNMethod</a> { <a class="el" href="#a202ab44bad464d4739df0b3360507a47a6f62d6b7f8b3a94e971d84f9eeecd534">GFNFF</a>
+, <a class="el" href="#a202ab44bad464d4739df0b3360507a47a6a135c34e4b52990043a8fb09950a320">GFN0xTB</a>
+, <a class="el" href="#a202ab44bad464d4739df0b3360507a47ad9d8be1a4b5713c231cd308f0960e1fe">GFN1xTB</a>
+, <a class="el" href="#a202ab44bad464d4739df0b3360507a47a59557bd48038c4ff9241df156c8774a6">GFN2xTB</a>
+ }</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a08193b1c8d3f2962dbebd452767cdfce" id="r_a08193b1c8d3f2962dbebd452767cdfce"><td class="memItemLeft"><a class="el" href="xtb_8h.html#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a>&#160;</td><td class="memItemRight"><a class="el" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a> = nullptr</td></tr>
+<tr class="memitem:aea923962ce08e6460d85dac9c5d5a08d" id="r_aea923962ce08e6460d85dac9c5d5a08d"><td class="memItemLeft"><a class="el" href="xtb_8h.html#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a>&#160;</td><td class="memItemRight"><a class="el" href="#aea923962ce08e6460d85dac9c5d5a08d">calc</a> = nullptr</td></tr>
+<tr class="memitem:a795604d10659bc7b7ac04c45ee595933" id="r_a795604d10659bc7b7ac04c45ee595933"><td class="memItemLeft"><a class="el" href="xtb_8h.html#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a>&#160;</td><td class="memItemRight"><a class="el" href="#a795604d10659bc7b7ac04c45ee595933">mol</a> = nullptr</td></tr>
+<tr class="memitem:ab68ee5684632340833aba673c334e0cd" id="r_ab68ee5684632340833aba673c334e0cd"><td class="memItemLeft"><a class="el" href="xtb_8h.html#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a>&#160;</td><td class="memItemRight"><a class="el" href="#ab68ee5684632340833aba673c334e0cd">res</a> = nullptr</td></tr>
+<tr class="memitem:af3e88b611a2e77416bf958dbdac0dea8" id="r_af3e88b611a2e77416bf958dbdac0dea8"><td class="memItemLeft"><a class="el" href="#a202ab44bad464d4739df0b3360507a47">GFNMethod</a>&#160;</td><td class="memItemRight"><a class="el" href="#af3e88b611a2e77416bf958dbdac0dea8">xtb_paramset</a></td></tr>
+<tr class="memitem:a003ca1628d2ffb0326cef28e27242428" id="r_a003ca1628d2ffb0326cef28e27242428"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a003ca1628d2ffb0326cef28e27242428">xtb_acc</a></td></tr>
+<tr class="memitem:a0a62d69f35ff94bd3fd01573f047fe74" id="r_a0a62d69f35ff94bd3fd01573f047fe74"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a0a62d69f35ff94bd3fd01573f047fe74">xtb_electronic_temperature</a></td></tr>
+<tr class="memitem:a8c0b49cee0305140b205b51c64d8fbec" id="r_a8c0b49cee0305140b205b51c64d8fbec"><td class="memItemLeft">size_t&#160;</td><td class="memItemRight"><a class="el" href="#a8c0b49cee0305140b205b51c64d8fbec">xtb_max_iter</a></td></tr>
+<tr class="memitem:a802672480b0ae0059e640ef229d46a20" id="r_a802672480b0ae0059e640ef229d46a20"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a802672480b0ae0059e640ef229d46a20">total_charge</a> = 0.0</td></tr>
+<tr class="memitem:abf5379ada755f3f2921f21518d9cfcd1" id="r_abf5379ada755f3f2921f21518d9cfcd1"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#abf5379ada755f3f2921f21518d9cfcd1">uhf</a> = 0</td></tr>
+<tr class="memitem:a871d48e8082d3e62e10443cdf693922f" id="r_a871d48e8082d3e62e10443cdf693922f"><td class="memItemLeft">size_t&#160;</td><td class="memItemRight"><a class="el" href="#a871d48e8082d3e62e10443cdf693922f">counter</a></td></tr>
+<tr class="memitem:a7d111794a7e42b8127020d0eccd30c09" id="r_a7d111794a7e42b8127020d0eccd30c09"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a7d111794a7e42b8127020d0eccd30c09">initialized</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_attribs_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
+<tr class="memitem:a2ae7cca425e3d69d2825c58d1c7704eb inherit pub_attribs_classeonc_1_1Potential" id="r_a2ae7cca425e3d69d2825c58d1c7704eb"><td class="memItemLeft">std::atomic&lt; size_t &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a></td></tr>
+<tr class="inherit_header pro_attribs_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
+<tr class="memitem:ac102f249b890f52d06d96feff8f2047a inherit pro_attribs_classeonc_1_1Potential" id="r_ac102f249b890f52d06d96feff8f2047a"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00020">20</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+</div><a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Member Enumeration Documentation</h2>
+<a id="a202ab44bad464d4739df0b3360507a47" name="a202ab44bad464d4739df0b3360507a47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a202ab44bad464d4739df0b3360507a47">&#9670;&#160;</a></span>GFNMethod</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="#a202ab44bad464d4739df0b3360507a47">XTBPot::GFNMethod</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel strong">strong</span><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a202ab44bad464d4739df0b3360507a47a6f62d6b7f8b3a94e971d84f9eeecd534" name="a202ab44bad464d4739df0b3360507a47a6f62d6b7f8b3a94e971d84f9eeecd534"></a>GFNFF&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a202ab44bad464d4739df0b3360507a47a6a135c34e4b52990043a8fb09950a320" name="a202ab44bad464d4739df0b3360507a47a6a135c34e4b52990043a8fb09950a320"></a>GFN0xTB&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a202ab44bad464d4739df0b3360507a47ad9d8be1a4b5713c231cd308f0960e1fe" name="a202ab44bad464d4739df0b3360507a47ad9d8be1a4b5713c231cd308f0960e1fe"></a>GFN1xTB&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a202ab44bad464d4739df0b3360507a47a59557bd48038c4ff9241df156c8774a6" name="a202ab44bad464d4739df0b3360507a47a59557bd48038c4ff9241df156c8774a6"></a>GFN2xTB&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00111">111</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  111</span>{ GFNFF, GFN0xTB, GFN1xTB, GFN2xTB };</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a04d1167de2db4d046bafeb68530b19aa" name="a04d1167de2db4d046bafeb68530b19aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04d1167de2db4d046bafeb68530b19aa">&#9670;&#160;</a></span>XTBPot() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">XTBPot::XTBPot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00023">23</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   24</span>      : <a class="code hl_function" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a>(<a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a1664de04ffa04bc035a8ab84fa11dba4">PotType::XTB</a>, p),</div>
+<div class="line"><span class="lineno">   25</span>        <a class="code hl_variable" href="#a003ca1628d2ffb0326cef28e27242428">xtb_acc</a>{p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a894a590628892e474efb1d66259cd1c0">xtb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1xtb__options__t.html#a01a1570712c247eb8422df673b0af535">acc</a>},</div>
+<div class="line"><span class="lineno">   26</span>        <a class="code hl_variable" href="#a0a62d69f35ff94bd3fd01573f047fe74">xtb_electronic_temperature</a>{p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a894a590628892e474efb1d66259cd1c0">xtb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1xtb__options__t.html#a150042e2353cb57834171ed7e6a2bbb5">elec_temperature</a>},</div>
+<div class="line"><span class="lineno">   27</span>        <a class="code hl_variable" href="#a8c0b49cee0305140b205b51c64d8fbec">xtb_max_iter</a>{p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a894a590628892e474efb1d66259cd1c0">xtb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1xtb__options__t.html#af341c3e747c0d06dfbd64570763ab16d">maxiter</a>},</div>
+<div class="line"><span class="lineno">   28</span>        <a class="code hl_variable" href="#a802672480b0ae0059e640ef229d46a20">total_charge</a>{p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a894a590628892e474efb1d66259cd1c0">xtb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1xtb__options__t.html#a446a2411d5b70827be677d6fb718ce7c">charge</a>},</div>
+<div class="line"><span class="lineno">   29</span>        <a class="code hl_variable" href="#abf5379ada755f3f2921f21518d9cfcd1">uhf</a>{p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a894a590628892e474efb1d66259cd1c0">xtb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1xtb__options__t.html#a584cf6314c1c3d730ead5ac587eb2583">uhf</a>} {</div>
+<div class="line"><span class="lineno">   30</span>    <span class="comment">// Deprecated for packaging: prefer -Dwith_rgpot=true + potential=RGPOT</span></div>
+<div class="line"><span class="lineno">   31</span>    <span class="comment">// backend=xtb (dlopen libxtb_engine.so). Native -Dwith_xtb stays available.</span></div>
+<div class="line"><span class="lineno">   32</span>    std::cerr</div>
+<div class="line"><span class="lineno">   33</span>        &lt;&lt; <span class="stringliteral">&quot;WARNING: native XTBPot (-Dwith_xtb) is deprecated for packaging; &quot;</span></div>
+<div class="line"><span class="lineno">   34</span>           <span class="stringliteral">&quot;prefer potential=RGPOT with [RgpotPot] backend=xtb &quot;</span></div>
+<div class="line"><span class="lineno">   35</span>           <span class="stringliteral">&quot;(dlopen libxtb_engine.so; set RGPOT_XTB_ENGINE).\n&quot;</span>;</div>
+<div class="line"><span class="lineno">   36</span>    <a class="code hl_variable" href="#a871d48e8082d3e62e10443cdf693922f">counter</a> = 0;</div>
+<div class="line"><span class="lineno">   37</span>    <a class="code hl_variable" href="#a7d111794a7e42b8127020d0eccd30c09">initialized</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">   38</span>    <a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a> = <a class="code hl_function" href="xtb_8h.html#a71d8e8c70c478f53c235e16e6de90352">xtb_newEnvironment</a>();</div>
+<div class="line"><span class="lineno">   39</span>    <a class="code hl_function" href="xtb_8h.html#a9fb75efcb52c295779ae9e39f5fc1d6b">xtb_setVerbosity</a>(<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>, <a class="code hl_define" href="xtb_8h.html#a7e9d7f10882d3f7afca709605684dfdc">XTB_VERBOSITY_MUTED</a>);</div>
+<div class="line"><span class="lineno">   40</span>    <span class="comment">// Release the default output unit to prevent Fortran NEWUNIT conflicts</span></div>
+<div class="line"><span class="lineno">   41</span>    <span class="comment">// when multiple XTB environments coexist (e.g. per-image NEB potentials)</span></div>
+<div class="line"><span class="lineno">   42</span>    <a class="code hl_function" href="xtb_8h.html#aa5e9f1a6e87c5cd61a50cda8805ecf1e">xtb_releaseOutput</a>(<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>);</div>
+<div class="line"><span class="lineno">   43</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>) {</div>
+<div class="line"><span class="lineno">   44</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Failed to create xtb environment&quot;</span>);</div>
+<div class="line"><span class="lineno">   45</span>    }</div>
+<div class="line"><span class="lineno">   46</span>    <a class="code hl_variable" href="#aea923962ce08e6460d85dac9c5d5a08d">calc</a> = <a class="code hl_function" href="xtb_8h.html#a054f5e1a8f0e858a60d23f6e132d201b">xtb_newCalculator</a>();</div>
+<div class="line"><span class="lineno">   47</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aea923962ce08e6460d85dac9c5d5a08d">calc</a>) {</div>
+<div class="line"><span class="lineno">   48</span>      <a class="code hl_function" href="xtb_8h.html#aa694a88ef8e5da705aba80dd07a93a56">xtb_delEnvironment</a>(&amp;<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>);</div>
+<div class="line"><span class="lineno">   49</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Failed to create xtb calculator&quot;</span>);</div>
+<div class="line"><span class="lineno">   50</span>    }</div>
+<div class="line"><span class="lineno">   51</span>    <a class="code hl_variable" href="#ab68ee5684632340833aba673c334e0cd">res</a> = <a class="code hl_function" href="xtb_8h.html#ac18a87a8013d19aeefe7d9f220689179">xtb_newResults</a>();</div>
+<div class="line"><span class="lineno">   52</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aea923962ce08e6460d85dac9c5d5a08d">calc</a>) {</div>
+<div class="line"><span class="lineno">   53</span>      <a class="code hl_function" href="xtb_8h.html#a535eb9de7c7e1ec381ef27ff3b82befa">xtb_delResults</a>(&amp;<a class="code hl_variable" href="#ab68ee5684632340833aba673c334e0cd">res</a>);</div>
+<div class="line"><span class="lineno">   54</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Failed to create xtb results&quot;</span>);</div>
+<div class="line"><span class="lineno">   55</span>    }</div>
+<div class="line"><span class="lineno">   56</span>    <span class="comment">// Unmarshal parameters</span></div>
+<div class="line"><span class="lineno">   57</span>    <span class="keywordflow">if</span> (p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a894a590628892e474efb1d66259cd1c0">xtb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1xtb__options__t.html#a6a08afdfc65e6712b5c19a179b65a391">paramset</a> == <span class="stringliteral">&quot;GFNFF&quot;</span>) {</div>
+<div class="line"><span class="lineno">   58</span>      <a class="code hl_variable" href="#af3e88b611a2e77416bf958dbdac0dea8">xtb_paramset</a> = <a class="code hl_enumvalue" href="#a202ab44bad464d4739df0b3360507a47a6f62d6b7f8b3a94e971d84f9eeecd534">GFNMethod::GFNFF</a>;</div>
+<div class="line"><span class="lineno">   59</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a894a590628892e474efb1d66259cd1c0">xtb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1xtb__options__t.html#a6a08afdfc65e6712b5c19a179b65a391">paramset</a> == <span class="stringliteral">&quot;GFN0xTB&quot;</span>) {</div>
+<div class="line"><span class="lineno">   60</span>      <a class="code hl_variable" href="#af3e88b611a2e77416bf958dbdac0dea8">xtb_paramset</a> = <a class="code hl_enumvalue" href="#a202ab44bad464d4739df0b3360507a47a6a135c34e4b52990043a8fb09950a320">GFNMethod::GFN0xTB</a>;</div>
+<div class="line"><span class="lineno">   61</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a894a590628892e474efb1d66259cd1c0">xtb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1xtb__options__t.html#a6a08afdfc65e6712b5c19a179b65a391">paramset</a> == <span class="stringliteral">&quot;GFN1xTB&quot;</span>) {</div>
+<div class="line"><span class="lineno">   62</span>      <a class="code hl_variable" href="#af3e88b611a2e77416bf958dbdac0dea8">xtb_paramset</a> = <a class="code hl_enumvalue" href="#a202ab44bad464d4739df0b3360507a47ad9d8be1a4b5713c231cd308f0960e1fe">GFNMethod::GFN1xTB</a>;</div>
+<div class="line"><span class="lineno">   63</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a894a590628892e474efb1d66259cd1c0">xtb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1xtb__options__t.html#a6a08afdfc65e6712b5c19a179b65a391">paramset</a> == <span class="stringliteral">&quot;GFN2xTB&quot;</span>) {</div>
+<div class="line"><span class="lineno">   64</span>      <a class="code hl_variable" href="#af3e88b611a2e77416bf958dbdac0dea8">xtb_paramset</a> = <a class="code hl_enumvalue" href="#a202ab44bad464d4739df0b3360507a47a59557bd48038c4ff9241df156c8774a6">GFNMethod::GFN2xTB</a>;</div>
+<div class="line"><span class="lineno">   65</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   66</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Parameter set for XTB must be one of GFNFF, &quot;</span></div>
+<div class="line"><span class="lineno">   67</span>                               <span class="stringliteral">&quot;GFN0xTB, GFN1xTB or GFN2xTB.\n&quot;</span>);</div>
+<div class="line"><span class="lineno">   68</span>    }</div>
+<div class="line"><span class="lineno">   69</span>  }</div>
+<div class="ttc" id="aclassXTBPot_html_a003ca1628d2ffb0326cef28e27242428"><div class="ttname"><a href="#a003ca1628d2ffb0326cef28e27242428">XTBPot::xtb_acc</a></div><div class="ttdeci">double xtb_acc</div><div class="ttdef"><b>Definition</b> <a href="XTBPot_8h_source.html#l00118">XTBPot.h:118</a></div></div>
+<div class="ttc" id="aclassXTBPot_html_a08193b1c8d3f2962dbebd452767cdfce"><div class="ttname"><a href="#a08193b1c8d3f2962dbebd452767cdfce">XTBPot::env</a></div><div class="ttdeci">xtb_TEnvironment env</div><div class="ttdef"><b>Definition</b> <a href="XTBPot_8h_source.html#l00112">XTBPot.h:112</a></div></div>
+<div class="ttc" id="aclassXTBPot_html_a0a62d69f35ff94bd3fd01573f047fe74"><div class="ttname"><a href="#a0a62d69f35ff94bd3fd01573f047fe74">XTBPot::xtb_electronic_temperature</a></div><div class="ttdeci">double xtb_electronic_temperature</div><div class="ttdef"><b>Definition</b> <a href="XTBPot_8h_source.html#l00119">XTBPot.h:119</a></div></div>
+<div class="ttc" id="aclassXTBPot_html_a202ab44bad464d4739df0b3360507a47a59557bd48038c4ff9241df156c8774a6"><div class="ttname"><a href="#a202ab44bad464d4739df0b3360507a47a59557bd48038c4ff9241df156c8774a6">XTBPot::GFNMethod::GFN2xTB</a></div><div class="ttdeci">@ GFN2xTB</div><div class="ttdef"><b>Definition</b> <a href="XTBPot_8h_source.html#l00111">XTBPot.h:111</a></div></div>
+<div class="ttc" id="aclassXTBPot_html_a202ab44bad464d4739df0b3360507a47a6a135c34e4b52990043a8fb09950a320"><div class="ttname"><a href="#a202ab44bad464d4739df0b3360507a47a6a135c34e4b52990043a8fb09950a320">XTBPot::GFNMethod::GFN0xTB</a></div><div class="ttdeci">@ GFN0xTB</div><div class="ttdef"><b>Definition</b> <a href="XTBPot_8h_source.html#l00111">XTBPot.h:111</a></div></div>
+<div class="ttc" id="aclassXTBPot_html_a202ab44bad464d4739df0b3360507a47a6f62d6b7f8b3a94e971d84f9eeecd534"><div class="ttname"><a href="#a202ab44bad464d4739df0b3360507a47a6f62d6b7f8b3a94e971d84f9eeecd534">XTBPot::GFNMethod::GFNFF</a></div><div class="ttdeci">@ GFNFF</div><div class="ttdef"><b>Definition</b> <a href="XTBPot_8h_source.html#l00111">XTBPot.h:111</a></div></div>
+<div class="ttc" id="aclassXTBPot_html_a202ab44bad464d4739df0b3360507a47ad9d8be1a4b5713c231cd308f0960e1fe"><div class="ttname"><a href="#a202ab44bad464d4739df0b3360507a47ad9d8be1a4b5713c231cd308f0960e1fe">XTBPot::GFNMethod::GFN1xTB</a></div><div class="ttdeci">@ GFN1xTB</div><div class="ttdef"><b>Definition</b> <a href="XTBPot_8h_source.html#l00111">XTBPot.h:111</a></div></div>
+<div class="ttc" id="aclassXTBPot_html_a7d111794a7e42b8127020d0eccd30c09"><div class="ttname"><a href="#a7d111794a7e42b8127020d0eccd30c09">XTBPot::initialized</a></div><div class="ttdeci">bool initialized</div><div class="ttdef"><b>Definition</b> <a href="XTBPot_8h_source.html#l00125">XTBPot.h:125</a></div></div>
+<div class="ttc" id="aclassXTBPot_html_a802672480b0ae0059e640ef229d46a20"><div class="ttname"><a href="#a802672480b0ae0059e640ef229d46a20">XTBPot::total_charge</a></div><div class="ttdeci">double total_charge</div><div class="ttdef"><b>Definition</b> <a href="XTBPot_8h_source.html#l00121">XTBPot.h:121</a></div></div>
+<div class="ttc" id="aclassXTBPot_html_a871d48e8082d3e62e10443cdf693922f"><div class="ttname"><a href="#a871d48e8082d3e62e10443cdf693922f">XTBPot::counter</a></div><div class="ttdeci">size_t counter</div><div class="ttdef"><b>Definition</b> <a href="XTBPot_8h_source.html#l00124">XTBPot.h:124</a></div></div>
+<div class="ttc" id="aclassXTBPot_html_a8c0b49cee0305140b205b51c64d8fbec"><div class="ttname"><a href="#a8c0b49cee0305140b205b51c64d8fbec">XTBPot::xtb_max_iter</a></div><div class="ttdeci">size_t xtb_max_iter</div><div class="ttdef"><b>Definition</b> <a href="XTBPot_8h_source.html#l00120">XTBPot.h:120</a></div></div>
+<div class="ttc" id="aclassXTBPot_html_ab68ee5684632340833aba673c334e0cd"><div class="ttname"><a href="#ab68ee5684632340833aba673c334e0cd">XTBPot::res</a></div><div class="ttdeci">xtb_TResults res</div><div class="ttdef"><b>Definition</b> <a href="XTBPot_8h_source.html#l00115">XTBPot.h:115</a></div></div>
+<div class="ttc" id="aclassXTBPot_html_abf5379ada755f3f2921f21518d9cfcd1"><div class="ttname"><a href="#abf5379ada755f3f2921f21518d9cfcd1">XTBPot::uhf</a></div><div class="ttdeci">int uhf</div><div class="ttdef"><b>Definition</b> <a href="XTBPot_8h_source.html#l00122">XTBPot.h:122</a></div></div>
+<div class="ttc" id="aclassXTBPot_html_aea923962ce08e6460d85dac9c5d5a08d"><div class="ttname"><a href="#aea923962ce08e6460d85dac9c5d5a08d">XTBPot::calc</a></div><div class="ttdeci">xtb_TCalculator calc</div><div class="ttdef"><b>Definition</b> <a href="XTBPot_8h_source.html#l00113">XTBPot.h:113</a></div></div>
+<div class="ttc" id="aclassXTBPot_html_af3e88b611a2e77416bf958dbdac0dea8"><div class="ttname"><a href="#af3e88b611a2e77416bf958dbdac0dea8">XTBPot::xtb_paramset</a></div><div class="ttdeci">GFNMethod xtb_paramset</div><div class="ttdef"><b>Definition</b> <a href="XTBPot_8h_source.html#l00117">XTBPot.h:117</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a894a590628892e474efb1d66259cd1c0"><div class="ttname"><a href="classeonc_1_1Parameters.html#a894a590628892e474efb1d66259cd1c0">eonc::Parameters::xtb_options</a></div><div class="ttdeci">struct eonc::Parameters::xtb_options_t xtb_options</div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_af81acd9a6775ff13fab861a51fb9ba95"><div class="ttname"><a href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">eonc::Potential::Potential</a></div><div class="ttdeci">Potential(PotType a_ptype)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00035">Potential.h:35</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a1664de04ffa04bc035a8ab84fa11dba4"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a1664de04ffa04bc035a8ab84fa11dba4">eonc::PotType::XTB</a></div><div class="ttdeci">@ XTB</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00063">BaseStructures.h:63</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1xtb__options__t_html_a01a1570712c247eb8422df673b0af535"><div class="ttname"><a href="structeonc_1_1Parameters_1_1xtb__options__t.html#a01a1570712c247eb8422df673b0af535">eonc::Parameters::xtb_options_t::acc</a></div><div class="ttdeci">double acc</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00105">Parameters.h:105</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1xtb__options__t_html_a150042e2353cb57834171ed7e6a2bbb5"><div class="ttname"><a href="structeonc_1_1Parameters_1_1xtb__options__t.html#a150042e2353cb57834171ed7e6a2bbb5">eonc::Parameters::xtb_options_t::elec_temperature</a></div><div class="ttdeci">double elec_temperature</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00103">Parameters.h:103</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1xtb__options__t_html_a446a2411d5b70827be677d6fb718ce7c"><div class="ttname"><a href="structeonc_1_1Parameters_1_1xtb__options__t.html#a446a2411d5b70827be677d6fb718ce7c">eonc::Parameters::xtb_options_t::charge</a></div><div class="ttdeci">double charge</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00106">Parameters.h:106</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1xtb__options__t_html_a584cf6314c1c3d730ead5ac587eb2583"><div class="ttname"><a href="structeonc_1_1Parameters_1_1xtb__options__t.html#a584cf6314c1c3d730ead5ac587eb2583">eonc::Parameters::xtb_options_t::uhf</a></div><div class="ttdeci">int uhf</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00107">Parameters.h:107</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1xtb__options__t_html_a6a08afdfc65e6712b5c19a179b65a391"><div class="ttname"><a href="structeonc_1_1Parameters_1_1xtb__options__t.html#a6a08afdfc65e6712b5c19a179b65a391">eonc::Parameters::xtb_options_t::paramset</a></div><div class="ttdeci">std::string paramset</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00102">Parameters.h:102</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1xtb__options__t_html_af341c3e747c0d06dfbd64570763ab16d"><div class="ttname"><a href="structeonc_1_1Parameters_1_1xtb__options__t.html#af341c3e747c0d06dfbd64570763ab16d">eonc::Parameters::xtb_options_t::maxiter</a></div><div class="ttdeci">size_t maxiter</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00104">Parameters.h:104</a></div></div>
+<div class="ttc" id="axtb_8h_html_a054f5e1a8f0e858a60d23f6e132d201b"><div class="ttname"><a href="xtb_8h.html#a054f5e1a8f0e858a60d23f6e132d201b">xtb_newCalculator</a></div><div class="ttdeci">XTB_API_ENTRY xtb_TCalculator XTB_API_CALL xtb_newCalculator(void) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Create new calculator object.</div></div>
+<div class="ttc" id="axtb_8h_html_a535eb9de7c7e1ec381ef27ff3b82befa"><div class="ttname"><a href="xtb_8h.html#a535eb9de7c7e1ec381ef27ff3b82befa">xtb_delResults</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_delResults(xtb_TResults *) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Delete singlepoint results object.</div></div>
+<div class="ttc" id="axtb_8h_html_a71d8e8c70c478f53c235e16e6de90352"><div class="ttname"><a href="xtb_8h.html#a71d8e8c70c478f53c235e16e6de90352">xtb_newEnvironment</a></div><div class="ttdeci">XTB_API_ENTRY xtb_TEnvironment XTB_API_CALL xtb_newEnvironment(void) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Create new xtb calculation environment object.</div></div>
+<div class="ttc" id="axtb_8h_html_a7e9d7f10882d3f7afca709605684dfdc"><div class="ttname"><a href="xtb_8h.html#a7e9d7f10882d3f7afca709605684dfdc">XTB_VERBOSITY_MUTED</a></div><div class="ttdeci">#define XTB_VERBOSITY_MUTED</div><div class="ttdef"><b>Definition</b> <a href="xtb_8h_source.html#l00034">xtb.h:34</a></div></div>
+<div class="ttc" id="axtb_8h_html_a9fb75efcb52c295779ae9e39f5fc1d6b"><div class="ttname"><a href="xtb_8h.html#a9fb75efcb52c295779ae9e39f5fc1d6b">xtb_setVerbosity</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_setVerbosity(xtb_TEnvironment, int) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Set verbosity of calculation output.</div></div>
+<div class="ttc" id="axtb_8h_html_aa5e9f1a6e87c5cd61a50cda8805ecf1e"><div class="ttname"><a href="xtb_8h.html#aa5e9f1a6e87c5cd61a50cda8805ecf1e">xtb_releaseOutput</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_releaseOutput(xtb_TEnvironment) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Release output unit from this environment.</div></div>
+<div class="ttc" id="axtb_8h_html_aa694a88ef8e5da705aba80dd07a93a56"><div class="ttname"><a href="xtb_8h.html#aa694a88ef8e5da705aba80dd07a93a56">xtb_delEnvironment</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_delEnvironment(xtb_TEnvironment *) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Delete a xtb calculation environment object.</div></div>
+<div class="ttc" id="axtb_8h_html_ac18a87a8013d19aeefe7d9f220689179"><div class="ttname"><a href="xtb_8h.html#ac18a87a8013d19aeefe7d9f220689179">xtb_newResults</a></div><div class="ttdeci">XTB_API_ENTRY xtb_TResults XTB_API_CALL xtb_newResults(void) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Create new singlepoint results object.</div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a12b3e0fbefc963769ad974bf1bf756b3" name="a12b3e0fbefc963769ad974bf1bf756b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12b3e0fbefc963769ad974bf1bf756b3">&#9670;&#160;</a></span>~XTBPot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual XTBPot::~XTBPot </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00071">71</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   71</span>                    {</div>
+<div class="line"><span class="lineno">   72</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ab68ee5684632340833aba673c334e0cd">res</a>) {</div>
+<div class="line"><span class="lineno">   73</span>      <a class="code hl_function" href="xtb_8h.html#a535eb9de7c7e1ec381ef27ff3b82befa">xtb_delResults</a>(&amp;<a class="code hl_variable" href="#ab68ee5684632340833aba673c334e0cd">res</a>);</div>
+<div class="line"><span class="lineno">   74</span>    }</div>
+<div class="line"><span class="lineno">   75</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aea923962ce08e6460d85dac9c5d5a08d">calc</a>) {</div>
+<div class="line"><span class="lineno">   76</span>      <a class="code hl_function" href="xtb_8h.html#af2849fb9a570a2bbc417da509d05a84b">xtb_delCalculator</a>(&amp;<a class="code hl_variable" href="#aea923962ce08e6460d85dac9c5d5a08d">calc</a>);</div>
+<div class="line"><span class="lineno">   77</span>    }</div>
+<div class="line"><span class="lineno">   78</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a795604d10659bc7b7ac04c45ee595933">mol</a>) {</div>
+<div class="line"><span class="lineno">   79</span>      <a class="code hl_function" href="xtb_8h.html#a50ddd91c72088c64f6470cf8e675c10b">xtb_delMolecule</a>(&amp;<a class="code hl_variable" href="#a795604d10659bc7b7ac04c45ee595933">mol</a>);</div>
+<div class="line"><span class="lineno">   80</span>    }</div>
+<div class="line"><span class="lineno">   81</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>) {</div>
+<div class="line"><span class="lineno">   82</span>      <a class="code hl_function" href="xtb_8h.html#aa5e9f1a6e87c5cd61a50cda8805ecf1e">xtb_releaseOutput</a>(<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>);</div>
+<div class="line"><span class="lineno">   83</span>      <a class="code hl_function" href="xtb_8h.html#aa694a88ef8e5da705aba80dd07a93a56">xtb_delEnvironment</a>(&amp;<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>);</div>
+<div class="line"><span class="lineno">   84</span>    }</div>
+<div class="line"><span class="lineno">   85</span>    QUILL_LOG_INFO(<a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>(), <span class="stringliteral">&quot;[XTB] called potential {} times&quot;</span>,</div>
+<div class="line"><span class="lineno">   86</span>                   <a class="code hl_variable" href="#a871d48e8082d3e62e10443cdf693922f">counter</a>++);</div>
+<div class="line"><span class="lineno">   87</span>  }</div>
+<div class="ttc" id="aclassXTBPot_html_a795604d10659bc7b7ac04c45ee595933"><div class="ttname"><a href="#a795604d10659bc7b7ac04c45ee595933">XTBPot::mol</a></div><div class="ttdeci">xtb_TMolecule mol</div><div class="ttdef"><b>Definition</b> <a href="XTBPot_8h_source.html#l00114">XTBPot.h:114</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1log_html_a4e7c8b5e4189cf657384f1c4bbf14dab"><div class="ttname"><a href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a></div><div class="ttdeci">quill::Logger * get() noexcept</div><div class="ttdoc">Get or create the default &quot;combi&quot; logger.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00044">EonLogger.h:44</a></div></div>
+<div class="ttc" id="axtb_8h_html_a50ddd91c72088c64f6470cf8e675c10b"><div class="ttname"><a href="xtb_8h.html#a50ddd91c72088c64f6470cf8e675c10b">xtb_delMolecule</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_delMolecule(xtb_TMolecule *) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Delete molecular structure data.</div></div>
+<div class="ttc" id="axtb_8h_html_af2849fb9a570a2bbc417da509d05a84b"><div class="ttname"><a href="xtb_8h.html#af2849fb9a570a2bbc417da509d05a84b">xtb_delCalculator</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_delCalculator(xtb_TCalculator *) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Delete calculator object.</div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a84d54f5eb710c2f3393347337bdf1fda" name="a84d54f5eb710c2f3393347337bdf1fda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84d54f5eb710c2f3393347337bdf1fda">&#9670;&#160;</a></span>XTBPot() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">XTBPot::XTBPot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classXTBPot.html">XTBPot</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="af7f12d12b8a3f72f38b039e0049f27d1" name="af7f12d12b8a3f72f38b039e0049f27d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7f12d12b8a3f72f38b039e0049f27d1">&#9670;&#160;</a></span>cleanMemory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XTBPot::cleanMemory </td>
+          <td>(</td>
+          <td class="paramtype">void</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7617c95800c8821d3c81c75a80ccdd38" name="a7617c95800c8821d3c81c75a80ccdd38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7617c95800c8821d3c81c75a80ccdd38">&#9670;&#160;</a></span>force()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void XTBPot::force </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>N</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>R</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em>atomicNrs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>F</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>U</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>variance</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>box</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8cpp_source.html#l00027">27</a> of file <a class="el" href="XTBPot_8cpp_source.html">XTBPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   28</span>                                                                   {</div>
+<div class="line"><span class="lineno">   29</span>  variance = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   30</span>  <span class="keywordtype">int</span> intN = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(N);</div>
+<div class="line"><span class="lineno">   31</span>  <span class="comment">// TODO: Periodicity shouldn&#39;t crash</span></div>
+<div class="line"><span class="lineno">   32</span>  <span class="keyword">const</span> <span class="keywordtype">bool</span> periodicity[3]{<span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>};</div>
+<div class="line"><span class="lineno">   33</span>  <span class="keywordtype">double</span> box_bohr[3 * 3];</div>
+<div class="line"><span class="lineno">   34</span> </div>
+<div class="line"><span class="lineno">   35</span>  <span class="comment">// Allocate memory for converted positions</span></div>
+<div class="line"><span class="lineno">   36</span>  std::vector&lt;double&gt; R_bohr(3 * N);</div>
+<div class="line"><span class="lineno">   37</span> </div>
+<div class="line"><span class="lineno">   38</span>  <span class="comment">// Convert positions from Angstrom to Bohr</span></div>
+<div class="line"><span class="lineno">   39</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx = 0; idx &lt; 3 * N; ++idx) {</div>
+<div class="line"><span class="lineno">   40</span>    R_bohr[idx] = R[idx] / <a class="code hl_variable" href="XTBPot_8cpp.html#a950f0ef8b8b26b7a8dc03e91bc21cdc7">BOHR</a>;</div>
+<div class="line"><span class="lineno">   41</span>  }</div>
+<div class="line"><span class="lineno">   42</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx = 0; idx &lt; 9; ++idx) {</div>
+<div class="line"><span class="lineno">   43</span>    box_bohr[idx] = box[idx] / <a class="code hl_variable" href="XTBPot_8cpp.html#a950f0ef8b8b26b7a8dc03e91bc21cdc7">BOHR</a>;</div>
+<div class="line"><span class="lineno">   44</span>  }</div>
+<div class="line"><span class="lineno">   45</span> </div>
+<div class="line"><span class="lineno">   46</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a7d111794a7e42b8127020d0eccd30c09">initialized</a>) {</div>
+<div class="line"><span class="lineno">   47</span>    <span class="comment">// First call: Create the molecule and load the Hamiltonian</span></div>
+<div class="line"><span class="lineno">   48</span>    <a class="code hl_variable" href="#a795604d10659bc7b7ac04c45ee595933">mol</a> = <a class="code hl_function" href="xtb_8h.html#a07c5c503de2eb5e189cca9fd1fc00fd8">xtb_newMolecule</a>(<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>, &amp;intN, atomicNrs, R_bohr.data(), &amp;<a class="code hl_variable" href="#a802672480b0ae0059e640ef229d46a20">total_charge</a>,</div>
+<div class="line"><span class="lineno">   49</span>                          &amp;<a class="code hl_variable" href="#abf5379ada755f3f2921f21518d9cfcd1">uhf</a>, box_bohr, periodicity);</div>
+<div class="line"><span class="lineno">   50</span> </div>
+<div class="line"><span class="lineno">   51</span>    <span class="keywordflow">switch</span> (<a class="code hl_variable" href="#af3e88b611a2e77416bf958dbdac0dea8">xtb_paramset</a>) {</div>
+<div class="line"><span class="lineno">   52</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="#a202ab44bad464d4739df0b3360507a47a6f62d6b7f8b3a94e971d84f9eeecd534">GFNMethod::GFNFF</a>:</div>
+<div class="line"><span class="lineno">   53</span>      <a class="code hl_function" href="xtb_8h.html#a687ddc5fcc3fdac24804b376a7348448">xtb_loadGFNFF</a>(<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>, <a class="code hl_variable" href="#a795604d10659bc7b7ac04c45ee595933">mol</a>, <a class="code hl_variable" href="#aea923962ce08e6460d85dac9c5d5a08d">calc</a>, <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">   54</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">   55</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="#a202ab44bad464d4739df0b3360507a47a6a135c34e4b52990043a8fb09950a320">GFNMethod::GFN0xTB</a>:</div>
+<div class="line"><span class="lineno">   56</span>      <a class="code hl_function" href="xtb_8h.html#a478b5452a0fe34d7b8d124a573ceb3b4">xtb_loadGFN0xTB</a>(<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>, <a class="code hl_variable" href="#a795604d10659bc7b7ac04c45ee595933">mol</a>, <a class="code hl_variable" href="#aea923962ce08e6460d85dac9c5d5a08d">calc</a>, <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">   57</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">   58</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="#a202ab44bad464d4739df0b3360507a47ad9d8be1a4b5713c231cd308f0960e1fe">GFNMethod::GFN1xTB</a>:</div>
+<div class="line"><span class="lineno">   59</span>      <a class="code hl_function" href="xtb_8h.html#a86c164100dcba00c9d4d794ccd820018">xtb_loadGFN1xTB</a>(<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>, <a class="code hl_variable" href="#a795604d10659bc7b7ac04c45ee595933">mol</a>, <a class="code hl_variable" href="#aea923962ce08e6460d85dac9c5d5a08d">calc</a>, <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">   60</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">   61</span>    <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="#a202ab44bad464d4739df0b3360507a47a59557bd48038c4ff9241df156c8774a6">GFNMethod::GFN2xTB</a>:</div>
+<div class="line"><span class="lineno">   62</span>      <a class="code hl_function" href="xtb_8h.html#ad0a8969cb9393b84e69e9334d5c14fdc">xtb_loadGFN2xTB</a>(<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>, <a class="code hl_variable" href="#a795604d10659bc7b7ac04c45ee595933">mol</a>, <a class="code hl_variable" href="#aea923962ce08e6460d85dac9c5d5a08d">calc</a>, <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">   63</span>      <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">   64</span>    }</div>
+<div class="line"><span class="lineno">   65</span> </div>
+<div class="line"><span class="lineno">   66</span>    <a class="code hl_function" href="xtb_8h.html#abda00d451987dd287cbdd6f2eeb36275">xtb_setAccuracy</a>(<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>, <a class="code hl_variable" href="#aea923962ce08e6460d85dac9c5d5a08d">calc</a>, <a class="code hl_variable" href="#a003ca1628d2ffb0326cef28e27242428">xtb_acc</a>);</div>
+<div class="line"><span class="lineno">   67</span>    <a class="code hl_function" href="xtb_8h.html#a5aea769cc6c55679c76089df18b33358">xtb_setElectronicTemp</a>(<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>, <a class="code hl_variable" href="#aea923962ce08e6460d85dac9c5d5a08d">calc</a>, <a class="code hl_variable" href="#a0a62d69f35ff94bd3fd01573f047fe74">xtb_electronic_temperature</a>);</div>
+<div class="line"><span class="lineno">   68</span>    <a class="code hl_function" href="xtb_8h.html#ac51c937bea8c228a219faa298900de9f">xtb_setMaxIter</a>(<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>, <a class="code hl_variable" href="#aea923962ce08e6460d85dac9c5d5a08d">calc</a>, <a class="code hl_variable" href="#a8c0b49cee0305140b205b51c64d8fbec">xtb_max_iter</a>);</div>
+<div class="line"><span class="lineno">   69</span>    <a class="code hl_variable" href="#a7d111794a7e42b8127020d0eccd30c09">initialized</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   70</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   71</span>    <span class="comment">// Subsequent calls: Only update coordinates and lattice</span></div>
+<div class="line"><span class="lineno">   72</span>    <a class="code hl_function" href="xtb_8h.html#a54d5d0e96b6d99495676c0a204553aef">xtb_updateMolecule</a>(<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>, <a class="code hl_variable" href="#a795604d10659bc7b7ac04c45ee595933">mol</a>, R_bohr.data(), box_bohr);</div>
+<div class="line"><span class="lineno">   73</span>  }</div>
+<div class="line"><span class="lineno">   74</span> </div>
+<div class="line"><span class="lineno">   75</span>  <a class="code hl_function" href="xtb_8h.html#adb3f42280b2b3bc08a4def8e6910967f">xtb_singlepoint</a>(<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>, <a class="code hl_variable" href="#a795604d10659bc7b7ac04c45ee595933">mol</a>, <a class="code hl_variable" href="#aea923962ce08e6460d85dac9c5d5a08d">calc</a>, <a class="code hl_variable" href="#ab68ee5684632340833aba673c334e0cd">res</a>);</div>
+<div class="line"><span class="lineno">   76</span> </div>
+<div class="line"><span class="lineno">   77</span>  <span class="comment">// Check for SCF convergence or internal xTB errors</span></div>
+<div class="line"><span class="lineno">   78</span>  <span class="keywordflow">if</span> (<a class="code hl_function" href="xtb_8h.html#a4d0135a16c8b40ef960211c1244c6066">xtb_checkEnvironment</a>(<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>) != 0) {</div>
+<div class="line"><span class="lineno">   79</span>    <span class="keywordtype">char</span> err_msg[512];</div>
+<div class="line"><span class="lineno">   80</span>    <a class="code hl_function" href="xtb_8h.html#ae08f9a75280d77e4c4fd487a05b38eea">xtb_getError</a>(<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>, err_msg, <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">   81</span>    <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;xTB Error: &quot;</span>) + err_msg);</div>
+<div class="line"><span class="lineno">   82</span>  }</div>
+<div class="line"><span class="lineno">   83</span> </div>
+<div class="line"><span class="lineno">   84</span>  <a class="code hl_function" href="xtb_8h.html#a369ae4dfb3ab5cc4e9d74e6295ae71ae">xtb_getEnergy</a>(<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>, <a class="code hl_variable" href="#ab68ee5684632340833aba673c334e0cd">res</a>, U);</div>
+<div class="line"><span class="lineno">   85</span>  <a class="code hl_function" href="xtb_8h.html#a0474fb0dfdbfffded5147bdeb3673dfc">xtb_getGradient</a>(<a class="code hl_variable" href="#a08193b1c8d3f2962dbebd452767cdfce">env</a>, <a class="code hl_variable" href="#ab68ee5684632340833aba673c334e0cd">res</a>, F);</div>
+<div class="line"><span class="lineno">   86</span> </div>
+<div class="line"><span class="lineno">   87</span>  <span class="comment">// Convert Hartree/Bohr to eV/Angstrom</span></div>
+<div class="line"><span class="lineno">   88</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; 3 * N; ++i) {</div>
+<div class="line"><span class="lineno">   89</span>    F[i] *= -1.0 * (<a class="code hl_variable" href="XTBPot_8cpp.html#a149bc12b876481da5e843df9471ecfb6">HARTREE</a> / <a class="code hl_variable" href="XTBPot_8cpp.html#a950f0ef8b8b26b7a8dc03e91bc21cdc7">BOHR</a>);</div>
+<div class="line"><span class="lineno">   90</span>  }</div>
+<div class="line"><span class="lineno">   91</span>  *U *= <a class="code hl_variable" href="XTBPot_8cpp.html#a149bc12b876481da5e843df9471ecfb6">HARTREE</a>;</div>
+<div class="line"><span class="lineno">   92</span>  <a class="code hl_variable" href="#a871d48e8082d3e62e10443cdf693922f">counter</a>++;</div>
+<div class="line"><span class="lineno">   93</span>}</div>
+<div class="ttc" id="aXTBPot_8cpp_html_a149bc12b876481da5e843df9471ecfb6"><div class="ttname"><a href="XTBPot_8cpp.html#a149bc12b876481da5e843df9471ecfb6">HARTREE</a></div><div class="ttdeci">const double HARTREE</div><div class="ttdef"><b>Definition</b> <a href="tip4p__unit__system_8hpp_source.html#l00275">tip4p_unit_system.hpp:275</a></div></div>
+<div class="ttc" id="aXTBPot_8cpp_html_a950f0ef8b8b26b7a8dc03e91bc21cdc7"><div class="ttname"><a href="XTBPot_8cpp.html#a950f0ef8b8b26b7a8dc03e91bc21cdc7">BOHR</a></div><div class="ttdeci">const double BOHR</div><div class="ttdef"><b>Definition</b> <a href="tip4p__unit__system_8hpp_source.html#l00274">tip4p_unit_system.hpp:274</a></div></div>
+<div class="ttc" id="axtb_8h_html_a0474fb0dfdbfffded5147bdeb3673dfc"><div class="ttname"><a href="xtb_8h.html#a0474fb0dfdbfffded5147bdeb3673dfc">xtb_getGradient</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_getGradient(xtb_TEnvironment, xtb_TResults, double *) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Query singlepoint results object for gradient in Hartree / Bohr.</div></div>
+<div class="ttc" id="axtb_8h_html_a07c5c503de2eb5e189cca9fd1fc00fd8"><div class="ttname"><a href="xtb_8h.html#a07c5c503de2eb5e189cca9fd1fc00fd8">xtb_newMolecule</a></div><div class="ttdeci">XTB_API_ENTRY xtb_TMolecule XTB_API_CALL xtb_newMolecule(xtb_TEnvironment, const int *, const int *, const double *, const double *, const int *, const double *, const bool *) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Create new molecular structure data (quantities in Bohr).</div></div>
+<div class="ttc" id="axtb_8h_html_a369ae4dfb3ab5cc4e9d74e6295ae71ae"><div class="ttname"><a href="xtb_8h.html#a369ae4dfb3ab5cc4e9d74e6295ae71ae">xtb_getEnergy</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_getEnergy(xtb_TEnvironment, xtb_TResults, double *) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Query singlepoint results object for energy in Hartree.</div></div>
+<div class="ttc" id="axtb_8h_html_a478b5452a0fe34d7b8d124a573ceb3b4"><div class="ttname"><a href="xtb_8h.html#a478b5452a0fe34d7b8d124a573ceb3b4">xtb_loadGFN0xTB</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_loadGFN0xTB(xtb_TEnvironment, xtb_TMolecule, xtb_TCalculator, char *) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Load GFN0-xTB calculator.</div></div>
+<div class="ttc" id="axtb_8h_html_a4d0135a16c8b40ef960211c1244c6066"><div class="ttname"><a href="xtb_8h.html#a4d0135a16c8b40ef960211c1244c6066">xtb_checkEnvironment</a></div><div class="ttdeci">XTB_API_ENTRY int XTB_API_CALL xtb_checkEnvironment(xtb_TEnvironment) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Check current status of calculation environment.</div></div>
+<div class="ttc" id="axtb_8h_html_a54d5d0e96b6d99495676c0a204553aef"><div class="ttname"><a href="xtb_8h.html#a54d5d0e96b6d99495676c0a204553aef">xtb_updateMolecule</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_updateMolecule(xtb_TEnvironment, xtb_TMolecule, const double *, const double *) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Update coordinates and lattice parameters (quantities in Bohr).</div></div>
+<div class="ttc" id="axtb_8h_html_a5aea769cc6c55679c76089df18b33358"><div class="ttname"><a href="xtb_8h.html#a5aea769cc6c55679c76089df18b33358">xtb_setElectronicTemp</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_setElectronicTemp(xtb_TEnvironment, xtb_TCalculator, double) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Set electronic temperature for level filling in tight binding calculators in K.</div></div>
+<div class="ttc" id="axtb_8h_html_a687ddc5fcc3fdac24804b376a7348448"><div class="ttname"><a href="xtb_8h.html#a687ddc5fcc3fdac24804b376a7348448">xtb_loadGFNFF</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_loadGFNFF(xtb_TEnvironment, xtb_TMolecule, xtb_TCalculator, char *) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Load GFN-FF calculator.</div></div>
+<div class="ttc" id="axtb_8h_html_a86c164100dcba00c9d4d794ccd820018"><div class="ttname"><a href="xtb_8h.html#a86c164100dcba00c9d4d794ccd820018">xtb_loadGFN1xTB</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_loadGFN1xTB(xtb_TEnvironment, xtb_TMolecule, xtb_TCalculator, char *) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Load GFN1-xTB calculator.</div></div>
+<div class="ttc" id="axtb_8h_html_abda00d451987dd287cbdd6f2eeb36275"><div class="ttname"><a href="xtb_8h.html#abda00d451987dd287cbdd6f2eeb36275">xtb_setAccuracy</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_setAccuracy(xtb_TEnvironment, xtb_TCalculator, double) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Set numerical accuracy of calculator in the range of 1000 to 0.0001.</div></div>
+<div class="ttc" id="axtb_8h_html_ac51c937bea8c228a219faa298900de9f"><div class="ttname"><a href="xtb_8h.html#ac51c937bea8c228a219faa298900de9f">xtb_setMaxIter</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_setMaxIter(xtb_TEnvironment, xtb_TCalculator, int) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Set maximum number of iterations for self-consistent TB calculators.</div></div>
+<div class="ttc" id="axtb_8h_html_ad0a8969cb9393b84e69e9334d5c14fdc"><div class="ttname"><a href="xtb_8h.html#ad0a8969cb9393b84e69e9334d5c14fdc">xtb_loadGFN2xTB</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_loadGFN2xTB(xtb_TEnvironment, xtb_TMolecule, xtb_TCalculator, char *) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Load GFN2-xTB calculator.</div></div>
+<div class="ttc" id="axtb_8h_html_adb3f42280b2b3bc08a4def8e6910967f"><div class="ttname"><a href="xtb_8h.html#adb3f42280b2b3bc08a4def8e6910967f">xtb_singlepoint</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_singlepoint(xtb_TEnvironment, xtb_TMolecule, xtb_TCalculator, xtb_TResults) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Perform singlepoint calculation.</div></div>
+<div class="ttc" id="axtb_8h_html_ae08f9a75280d77e4c4fd487a05b38eea"><div class="ttname"><a href="xtb_8h.html#ae08f9a75280d77e4c4fd487a05b38eea">xtb_getError</a></div><div class="ttdeci">XTB_API_ENTRY void XTB_API_CALL xtb_getError(xtb_TEnvironment, char *, const int *) XTB_API_SUFFIX__VERSION_2_0_0</div><div class="ttdoc">Return and empty error stack.</div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a10ce034cef18039d3d8e767d31f3b6d0" name="a10ce034cef18039d3d8e767d31f3b6d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10ce034cef18039d3d8e767d31f3b6d0">&#9670;&#160;</a></span>isThreadSafe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool XTBPot::isThreadSafe </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>XTB Fortran library uses per-instance state (env/calc). </p>
+<p>Thread-safe with separate instances; not safe on same instance. </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#af6c385eb52d3764246416ea389c84131">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00101">101</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  101</span>{ <span class="keywordflow">return</span> <span class="keyword">false</span>; }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a76199d47259c1432ef416e3febfc946a" name="a76199d47259c1432ef416e3febfc946a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76199d47259c1432ef416e3febfc946a">&#9670;&#160;</a></span>needsPerImageInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool XTBPot::needsPerImageInstance </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>XTB restart.f90 uses global Fortran file units that collide when multiple environments exist in one process. </p>
+<p>Run sequentially with a single instance until upstream fixes unit management. </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a8b83745c9898990f848daafa4c351c2f">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00106">106</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  106</span>                                                                     {</div>
+<div class="line"><span class="lineno">  107</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  108</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af4d73fd4dfd751360b1525d4a7c3aa96" name="af4d73fd4dfd751360b1525d4a7c3aa96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4d73fd4dfd751360b1525d4a7c3aa96">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classXTBPot.html">XTBPot</a> &amp; XTBPot::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classXTBPot.html">XTBPot</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel delete">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="aea923962ce08e6460d85dac9c5d5a08d" name="aea923962ce08e6460d85dac9c5d5a08d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea923962ce08e6460d85dac9c5d5a08d">&#9670;&#160;</a></span>calc</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="xtb_8h.html#a1addcca86f44e692bb6f1164c36d8ec5">xtb_TCalculator</a> XTBPot::calc = nullptr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00113">113</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+
+</div>
+</div>
+<a id="a871d48e8082d3e62e10443cdf693922f" name="a871d48e8082d3e62e10443cdf693922f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a871d48e8082d3e62e10443cdf693922f">&#9670;&#160;</a></span>counter</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t XTBPot::counter</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00124">124</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+
+</div>
+</div>
+<a id="a08193b1c8d3f2962dbebd452767cdfce" name="a08193b1c8d3f2962dbebd452767cdfce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08193b1c8d3f2962dbebd452767cdfce">&#9670;&#160;</a></span>env</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="xtb_8h.html#a3e459ec98eb99f93b639bee1f067e487">xtb_TEnvironment</a> XTBPot::env = nullptr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00112">112</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+
+</div>
+</div>
+<a id="a7d111794a7e42b8127020d0eccd30c09" name="a7d111794a7e42b8127020d0eccd30c09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d111794a7e42b8127020d0eccd30c09">&#9670;&#160;</a></span>initialized</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool XTBPot::initialized</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00125">125</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+
+</div>
+</div>
+<a id="a795604d10659bc7b7ac04c45ee595933" name="a795604d10659bc7b7ac04c45ee595933"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a795604d10659bc7b7ac04c45ee595933">&#9670;&#160;</a></span>mol</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="xtb_8h.html#a5be621396eff41e0ed5e01f8881468be">xtb_TMolecule</a> XTBPot::mol = nullptr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00114">114</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+
+</div>
+</div>
+<a id="ab68ee5684632340833aba673c334e0cd" name="ab68ee5684632340833aba673c334e0cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab68ee5684632340833aba673c334e0cd">&#9670;&#160;</a></span>res</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="xtb_8h.html#ae7e66e63839df3ba108dfded47c8a7e5">xtb_TResults</a> XTBPot::res = nullptr</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00115">115</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+
+</div>
+</div>
+<a id="a802672480b0ae0059e640ef229d46a20" name="a802672480b0ae0059e640ef229d46a20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a802672480b0ae0059e640ef229d46a20">&#9670;&#160;</a></span>total_charge</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double XTBPot::total_charge = 0.0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00121">121</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+
+</div>
+</div>
+<a id="abf5379ada755f3f2921f21518d9cfcd1" name="abf5379ada755f3f2921f21518d9cfcd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf5379ada755f3f2921f21518d9cfcd1">&#9670;&#160;</a></span>uhf</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int XTBPot::uhf = 0</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00122">122</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+
+</div>
+</div>
+<a id="a003ca1628d2ffb0326cef28e27242428" name="a003ca1628d2ffb0326cef28e27242428"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a003ca1628d2ffb0326cef28e27242428">&#9670;&#160;</a></span>xtb_acc</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double XTBPot::xtb_acc</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00118">118</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+
+</div>
+</div>
+<a id="a0a62d69f35ff94bd3fd01573f047fe74" name="a0a62d69f35ff94bd3fd01573f047fe74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a62d69f35ff94bd3fd01573f047fe74">&#9670;&#160;</a></span>xtb_electronic_temperature</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double XTBPot::xtb_electronic_temperature</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00119">119</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+
+</div>
+</div>
+<a id="a8c0b49cee0305140b205b51c64d8fbec" name="a8c0b49cee0305140b205b51c64d8fbec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c0b49cee0305140b205b51c64d8fbec">&#9670;&#160;</a></span>xtb_max_iter</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t XTBPot::xtb_max_iter</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00120">120</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+
+</div>
+</div>
+<a id="af3e88b611a2e77416bf958dbdac0dea8" name="af3e88b611a2e77416bf958dbdac0dea8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3e88b611a2e77416bf958dbdac0dea8">&#9670;&#160;</a></span>xtb_paramset</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="#a202ab44bad464d4739df0b3360507a47">GFNMethod</a> XTBPot::xtb_paramset</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="XTBPot_8h_source.html#l00117">117</a> of file <a class="el" href="XTBPot_8h_source.html">XTBPot.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/potentials/XTBPot/<a class="el" href="XTBPot_8h_source.html">XTBPot.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/potentials/XTBPot/<a class="el" href="XTBPot_8cpp_source.html">XTBPot.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="classXTBPot.html">XTBPot</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

@@ -1,0 +1,1426 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: LAMMPSPot Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classLAMMPSPot.html','','classLAMMPSPot-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">LAMMPSPot Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="LAMMPSPot_8h_source.html">LAMMPSPot.h</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for LAMMPSPot:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+ <div class="center">
+  <img src="classLAMMPSPot.png" usemap="#LAMMPSPot_map" alt=""/>
+  <map id="LAMMPSPot_map" name="LAMMPSPot_map">
+<area href="classeonc_1_1Potential.html" alt="eonc::Potential" shape="rect" coords="0,0,94,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:aae77d35cbf6bcf84a38b055de76ccaca" id="r_aae77d35cbf6bcf84a38b055de76ccaca"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aae77d35cbf6bcf84a38b055de76ccaca">needsPerImageInstance</a> () const noexcept override</td></tr>
+<tr class="memdesc:aae77d35cbf6bcf84a38b055de76ccaca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether NEB should create separate <a class="el" href="classPotential.html">Potential</a> instances per image for true parallel force evaluation.  <br /></td></tr>
+<tr class="memitem:a4288788d9c178882115668fb690ce3b5" id="r_a4288788d9c178882115668fb690ce3b5"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a4288788d9c178882115668fb690ce3b5">LAMMPSPot</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;p)</td></tr>
+<tr class="memitem:a55e042d1480f57863e725b9122851be0" id="r_a55e042d1480f57863e725b9122851be0"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a55e042d1480f57863e725b9122851be0">~LAMMPSPot</a> ()</td></tr>
+<tr class="memitem:a7d116d575dbddebcc0afa97bd627204f" id="r_a7d116d575dbddebcc0afa97bd627204f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a7d116d575dbddebcc0afa97bd627204f">cleanMemory</a> ()</td></tr>
+<tr class="memitem:ae6993a4dfc3a18a67140fa3e6054410e" id="r_ae6993a4dfc3a18a67140fa3e6054410e"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae6993a4dfc3a18a67140fa3e6054410e">force</a> (long N, const double *R, const int *atomicNrs, double *F, double *U, double *variance, const double *box) override</td></tr>
+<tr class="inherit_header pub_methods_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
+<tr class="memitem:af81acd9a6775ff13fab861a51fb9ba95 inherit pub_methods_classeonc_1_1Potential" id="r_af81acd9a6775ff13fab861a51fb9ba95"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype)</td></tr>
+<tr class="memitem:a2aaa7956f073f9db72277909e51c40c9 inherit pub_methods_classeonc_1_1Potential" id="r_a2aaa7956f073f9db72277909e51c40c9"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2aaa7956f073f9db72277909e51c40c9">Potential</a> (<a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a> a_ptype, const <a class="el" href="classParameters.html">Parameters</a> &amp;)</td></tr>
+<tr class="memitem:ac908414bc07e7c33019e01abb4a7d9ee inherit pub_methods_classeonc_1_1Potential" id="r_ac908414bc07e7c33019e01abb4a7d9ee"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac908414bc07e7c33019e01abb4a7d9ee">Potential</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memitem:a57af1d92eeff9618f873a0241e390de2 inherit pub_methods_classeonc_1_1Potential" id="r_a57af1d92eeff9618f873a0241e390de2"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a57af1d92eeff9618f873a0241e390de2">~Potential</a> ()</td></tr>
+<tr class="memitem:ac00fe80dcbd4f5887da244047aaf63f5 inherit pub_methods_classeonc_1_1Potential" id="r_ac00fe80dcbd4f5887da244047aaf63f5"><td class="memItemLeft">std::tuple&lt; double, <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac00fe80dcbd4f5887da244047aaf63f5">get_ef</a> (const <a class="el" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;pos, const VectorXi &amp;atmnrs, const <a class="el" href="Eigen_8h.html#a5a21583e98df78e5b867b370291714d0">Matrix3d</a> &amp;box)</td></tr>
+<tr class="memitem:a4f0274548044ab1f714e4801352c4547 inherit pub_methods_classeonc_1_1Potential" id="r_a4f0274548044ab1f714e4801352c4547"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a4f0274548044ab1f714e4801352c4547">getType</a> () const</td></tr>
+<tr class="memitem:a85b0a3456f6528d8c464ab4b5774878e inherit pub_methods_classeonc_1_1Potential" id="r_a85b0a3456f6528d8c464ab4b5774878e"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a85b0a3456f6528d8c464ab4b5774878e">isSurrogate</a> () const noexcept</td></tr>
+<tr class="memdesc:a85b0a3456f6528d8c464ab4b5774878e inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this is a surrogate (GP) potential.  <br /></td></tr>
+<tr class="memitem:ac4c9e9deaa0e73fa27ff97b6d6acad98 inherit pub_methods_classeonc_1_1Potential" id="r_ac4c9e9deaa0e73fa27ff97b6d6acad98"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac4c9e9deaa0e73fa27ff97b6d6acad98">requiresIsolatedMoleculeLayout</a> () const noexcept</td></tr>
+<tr class="memdesc:ac4c9e9deaa0e73fa27ff97b6d6acad98 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">True for molecular QM / non-PBC backends (NWChem socket, <a class="el" href="classASE.html">ASE</a> ORCA/NWChem, …).  <br /></td></tr>
+<tr class="memitem:af6c385eb52d3764246416ea389c84131 inherit pub_methods_classeonc_1_1Potential" id="r_af6c385eb52d3764246416ea389c84131"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#af6c385eb52d3764246416ea389c84131">isThreadSafe</a> () const noexcept</td></tr>
+<tr class="memdesc:af6c385eb52d3764246416ea389c84131 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this potential's <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">force()</a> can be called from multiple threads on the SAME instance.  <br /></td></tr>
+<tr class="memitem:a8065b9661fcb0b025d397928243c987c inherit pub_methods_classeonc_1_1Potential" id="r_a8065b9661fcb0b025d397928243c987c"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a8065b9661fcb0b025d397928243c987c">isSharedInstanceThreadSafe</a> () const noexcept</td></tr>
+<tr class="memdesc:a8065b9661fcb0b025d397928243c987c inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conservative gate for sharing one <a class="el" href="classeonc_1_1Potential.html">Potential</a> instance across threads.  <br /></td></tr>
+<tr class="memitem:a2d8781e3cbea888f88b7523c5d00bc43 inherit pub_methods_classeonc_1_1Potential" id="r_a2d8781e3cbea888f88b7523c5d00bc43"><td class="memItemLeft">virtual bool&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2d8781e3cbea888f88b7523c5d00bc43">supportsBatchEvaluation</a> () const noexcept</td></tr>
+<tr class="memdesc:a2d8781e3cbea888f88b7523c5d00bc43 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this potential supports batched evaluation of N systems in a single call.  <br /></td></tr>
+<tr class="memitem:aa66e1416134ff55639a6d20a34e3c1c1 inherit pub_methods_classeonc_1_1Potential" id="r_aa66e1416134ff55639a6d20a34e3c1c1"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#aa66e1416134ff55639a6d20a34e3c1c1">forceBatch</a> (long nSystems, long nAtoms, const double *const *positions, const int *const *atomicNrs, double *const *forces, double *energies, double *variances, const double *const *boxes)</td></tr>
+<tr class="memdesc:aa66e1416134ff55639a6d20a34e3c1c1 inherit pub_methods_classeonc_1_1Potential"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate forces for N systems in a single call.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a3b12ba08cdfe472dae835e56fe3c6e99" id="r_a3b12ba08cdfe472dae835e56fe3c6e99"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a3b12ba08cdfe472dae835e56fe3c6e99">makeNewLAMMPS</a> (long N, const double *R, const int *atomicNrs, const double *box)</td></tr>
+<tr class="memitem:ab5f20fc5621f5385d5ee3f1979783a8a" id="r_ab5f20fc5621f5385d5ee3f1979783a8a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ab5f20fc5621f5385d5ee3f1979783a8a">ensureWorker</a> ()</td></tr>
+<tr class="memitem:abab38af76f27b2f79afceee162ec96bd" id="r_abab38af76f27b2f79afceee162ec96bd"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#abab38af76f27b2f79afceee162ec96bd">runWorkerLoop</a> ()</td></tr>
+<tr class="memitem:aa15ee3f83ad586abfe09d95dbb4ec410" id="r_aa15ee3f83ad586abfe09d95dbb4ec410"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#aa15ee3f83ad586abfe09d95dbb4ec410">stopWorker</a> ()</td></tr>
+<tr class="memitem:af1b29c044d64f1543858566ebd14f066" id="r_af1b29c044d64f1543858566ebd14f066"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#af1b29c044d64f1543858566ebd14f066">forceLocal</a> (long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a48260530a46550f4542fdc28e4041b6a" id="r_a48260530a46550f4542fdc28e4041b6a"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a48260530a46550f4542fdc28e4041b6a">lammpsThr</a> {0}</td></tr>
+<tr class="memitem:ac1752b93f2ecb87f0fe048cd59179d8b" id="r_ac1752b93f2ecb87f0fe048cd59179d8b"><td class="memItemLeft">long&#160;</td><td class="memItemRight"><a class="el" href="#ac1752b93f2ecb87f0fe048cd59179d8b">numberOfAtoms</a> {0}</td></tr>
+<tr class="memitem:a06fa16605512c2495abe9822976af45c" id="r_a06fa16605512c2495abe9822976af45c"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a06fa16605512c2495abe9822976af45c">oldBox</a> [9] {}</td></tr>
+<tr class="memitem:aabfd481f1286ea1970524a2cf73a5fd6" id="r_aabfd481f1286ea1970524a2cf73a5fd6"><td class="memItemLeft">void *&#160;</td><td class="memItemRight"><a class="el" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a> {nullptr}</td></tr>
+<tr class="memitem:a9857c230ea9d56b4728d2383789c769a" id="r_a9857c230ea9d56b4728d2383789c769a"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a9857c230ea9d56b4728d2383789c769a">realunits</a> {false}</td></tr>
+<tr class="memitem:a8a3ed29c99da0d49e6df04846c225fd8" id="r_a8a3ed29c99da0d49e6df04846c225fd8"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a8a3ed29c99da0d49e6df04846c225fd8">workerRespawnsLeft</a> {3}</td></tr>
+<tr class="memitem:af44202704b328f579d71725a7c813f20" id="r_af44202704b328f579d71725a7c813f20"><td class="memItemLeft">std::mutex&#160;</td><td class="memItemRight"><a class="el" href="#af44202704b328f579d71725a7c813f20">workerMutex</a></td></tr>
+<tr class="memitem:a0f452e9fcf452ac82a9ab7e50aa3115b" id="r_a0f452e9fcf452ac82a9ab7e50aa3115b"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a0f452e9fcf452ac82a9ab7e50aa3115b">workerPid</a> {-1}</td></tr>
+<tr class="memitem:a0ce0dc60225cd98a391c5fc5038495a9" id="r_a0ce0dc60225cd98a391c5fc5038495a9"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a0ce0dc60225cd98a391c5fc5038495a9">reqFd</a> {-1}</td></tr>
+<tr class="memitem:afc7b221ec3dfd251ee65a82f8f5c65e1" id="r_afc7b221ec3dfd251ee65a82f8f5c65e1"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#afc7b221ec3dfd251ee65a82f8f5c65e1">resFd</a> {-1}</td></tr>
+<tr class="memitem:a7857755e99390ab437731431c1961d04" id="r_a7857755e99390ab437731431c1961d04"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a7857755e99390ab437731431c1961d04">workerSpawned</a> {false}</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pub_attribs_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
+<tr class="memitem:a2ae7cca425e3d69d2825c58d1c7704eb inherit pub_attribs_classeonc_1_1Potential" id="r_a2ae7cca425e3d69d2825c58d1c7704eb"><td class="memItemLeft">std::atomic&lt; size_t &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a></td></tr>
+<tr class="inherit_header pro_attribs_classeonc_1_1Potential"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1Potential')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1Potential.html">eonc::Potential</a></td></tr>
+<tr class="memitem:ac102f249b890f52d06d96feff8f2047a inherit pro_attribs_classeonc_1_1Potential" id="r_ac102f249b890f52d06d96feff8f2047a"><td class="memItemLeft"><a class="el" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2">PotType</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Potential.html#ac102f249b890f52d06d96feff8f2047a">ptype</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8h_source.html#l00021">21</a> of file <a class="el" href="LAMMPSPot_8h_source.html">LAMMPSPot.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a4288788d9c178882115668fb690ce3b5" name="a4288788d9c178882115668fb690ce3b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4288788d9c178882115668fb690ce3b5">&#9670;&#160;</a></span>LAMMPSPot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">LAMMPSPot::LAMMPSPot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>p</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8cpp_source.html#l00040">40</a> of file <a class="el" href="LAMMPSPot_8cpp_source.html">LAMMPSPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   41</span>    : <a class="code hl_function" href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">Potential</a>(p),</div>
+<div class="line"><span class="lineno">   42</span>      <a class="code hl_variable" href="#a48260530a46550f4542fdc28e4041b6a">lammpsThr</a>{p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">potential_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1potential__options__t.html#a663d97dfac589d4cb1158b68d8eaa0f7">LAMMPSThreads</a>}</div>
+<div class="line"><span class="lineno">   43</span><span class="preprocessor">#ifdef EONMPI</span></div>
+<div class="line"><span class="lineno">   44</span>      ,</div>
+<div class="line"><span class="lineno">   45</span>      mpiComm{p.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">potential_options</a>.MPIClientComm}</div>
+<div class="line"><span class="lineno">   46</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">   47</span>{</div>
+<div class="line"><span class="lineno">   48</span>  <span class="comment">// Fail fast if LAMMPS library not available</span></div>
+<div class="line"><span class="lineno">   49</span>  <a class="code hl_function" href="classeonc_1_1LammpsLoader.html#ad258a0e488b7535cbdb5b62a57d67edc">eonc::LammpsLoader::instance</a>().<a class="code hl_function" href="classeonc_1_1LammpsLoader.html#a21f37a53a4b81e8aee6d4fe571e48dcc">require_loaded</a>();</div>
+<div class="line"><span class="lineno">   50</span><span class="preprocessor">#if !defined(EONMPI) &amp;&amp; !defined(IS_WINDOWS)</span></div>
+<div class="line"><span class="lineno">   51</span>  <span class="comment">// Fork the worker NOW, at construction, before this process ever opens a</span></div>
+<div class="line"><span class="lineno">   52</span>  <span class="comment">// LAMMPS instance (and thus before liblammps initialises MPI).  Open MPI</span></div>
+<div class="line"><span class="lineno">   53</span>  <span class="comment">// does not support using MPI in a process that called MPI_Init before fork,</span></div>
+<div class="line"><span class="lineno">   54</span>  <span class="comment">// so the worker must be spawned from a still-MPI-clean parent.  Every</span></div>
+<div class="line"><span class="lineno">   55</span>  <span class="comment">// LAMMPSPot -- endpoints and per-image alike -- runs its LAMMPS in its own</span></div>
+<div class="line"><span class="lineno">   56</span>  <span class="comment">// child process, so the parent never initialises MPI at all.</span></div>
+<div class="line"><span class="lineno">   57</span>  <a class="code hl_function" href="#ab5f20fc5621f5385d5ee3f1979783a8a">ensureWorker</a>();</div>
+<div class="line"><span class="lineno">   58</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">   59</span>}</div>
+<div class="ttc" id="aclassLAMMPSPot_html_a48260530a46550f4542fdc28e4041b6a"><div class="ttname"><a href="#a48260530a46550f4542fdc28e4041b6a">LAMMPSPot::lammpsThr</a></div><div class="ttdeci">int lammpsThr</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8h_source.html#l00034">LAMMPSPot.h:34</a></div></div>
+<div class="ttc" id="aclassLAMMPSPot_html_ab5f20fc5621f5385d5ee3f1979783a8a"><div class="ttname"><a href="#ab5f20fc5621f5385d5ee3f1979783a8a">LAMMPSPot::ensureWorker</a></div><div class="ttdeci">void ensureWorker()</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8cpp_source.html#l00140">LAMMPSPot.cpp:140</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a21f37a53a4b81e8aee6d4fe571e48dcc"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#a21f37a53a4b81e8aee6d4fe571e48dcc">eonc::LammpsLoader::require_loaded</a></div><div class="ttdeci">void require_loaded()</div><div class="ttdoc">Load on first use, then throw if liblammps is not available.</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8cpp_source.html#l00124">LammpsLoader.cpp:124</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_ad258a0e488b7535cbdb5b62a57d67edc"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#ad258a0e488b7535cbdb5b62a57d67edc">eonc::LammpsLoader::instance</a></div><div class="ttdeci">static LammpsLoader &amp; instance()</div><div class="ttdoc">Thread-safe singleton accessor (Meyer&#39;s pattern). Does not dlopen.</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8cpp_source.html#l00079">LammpsLoader.cpp:79</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html_a75c3a463dab97989d367d624e455606c"><div class="ttname"><a href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">eonc::Parameters::potential_options</a></div><div class="ttdeci">struct eonc::Parameters::potential_options_t potential_options</div></div>
+<div class="ttc" id="aclasseonc_1_1Potential_html_af81acd9a6775ff13fab861a51fb9ba95"><div class="ttname"><a href="classeonc_1_1Potential.html#af81acd9a6775ff13fab861a51fb9ba95">eonc::Potential::Potential</a></div><div class="ttdeci">Potential(PotType a_ptype)</div><div class="ttdef"><b>Definition</b> <a href="Potential_8h_source.html#l00035">Potential.h:35</a></div></div>
+<div class="ttc" id="astructeonc_1_1Parameters_1_1potential__options__t_html_a663d97dfac589d4cb1158b68d8eaa0f7"><div class="ttname"><a href="structeonc_1_1Parameters_1_1potential__options__t.html#a663d97dfac589d4cb1158b68d8eaa0f7">eonc::Parameters::potential_options_t::LAMMPSThreads</a></div><div class="ttdeci">int LAMMPSThreads</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00070">Parameters.h:70</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a55e042d1480f57863e725b9122851be0" name="a55e042d1480f57863e725b9122851be0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55e042d1480f57863e725b9122851be0">&#9670;&#160;</a></span>~LAMMPSPot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">LAMMPSPot::~LAMMPSPot </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8cpp_source.html#l00061">61</a> of file <a class="el" href="LAMMPSPot_8cpp_source.html">LAMMPSPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   61</span>{ <a class="code hl_function" href="#a7d116d575dbddebcc0afa97bd627204f">cleanMemory</a>(); }</div>
+<div class="ttc" id="aclassLAMMPSPot_html_a7d116d575dbddebcc0afa97bd627204f"><div class="ttname"><a href="#a7d116d575dbddebcc0afa97bd627204f">LAMMPSPot::cleanMemory</a></div><div class="ttdeci">void cleanMemory()</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8cpp_source.html#l00063">LAMMPSPot.cpp:63</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a7d116d575dbddebcc0afa97bd627204f" name="a7d116d575dbddebcc0afa97bd627204f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d116d575dbddebcc0afa97bd627204f">&#9670;&#160;</a></span>cleanMemory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LAMMPSPot::cleanMemory </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8cpp_source.html#l00063">63</a> of file <a class="el" href="LAMMPSPot_8cpp_source.html">LAMMPSPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   63</span>                            {</div>
+<div class="line"><span class="lineno">   64</span><span class="preprocessor">#if !defined(EONMPI) &amp;&amp; !defined(IS_WINDOWS)</span></div>
+<div class="line"><span class="lineno">   65</span>  <a class="code hl_function" href="#aa15ee3f83ad586abfe09d95dbb4ec410">stopWorker</a>();</div>
+<div class="line"><span class="lineno">   66</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">   67</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a> != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">   68</span>    <a class="code hl_function" href="classeonc_1_1LammpsLoader.html#ad258a0e488b7535cbdb5b62a57d67edc">eonc::LammpsLoader::instance</a>().<a class="code hl_variable" href="classeonc_1_1LammpsLoader.html#ac7e3d027d196d639d26c8e36e83377f7">close</a>(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>);</div>
+<div class="line"><span class="lineno">   69</span>    <a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">   70</span>  }</div>
+<div class="line"><span class="lineno">   71</span>}</div>
+<div class="ttc" id="aclassLAMMPSPot_html_aa15ee3f83ad586abfe09d95dbb4ec410"><div class="ttname"><a href="#aa15ee3f83ad586abfe09d95dbb4ec410">LAMMPSPot::stopWorker</a></div><div class="ttdeci">void stopWorker()</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8cpp_source.html#l00232">LAMMPSPot.cpp:232</a></div></div>
+<div class="ttc" id="aclassLAMMPSPot_html_aabfd481f1286ea1970524a2cf73a5fd6"><div class="ttname"><a href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSPot::LAMMPSObj</a></div><div class="ttdeci">void * LAMMPSObj</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8h_source.html#l00040">LAMMPSPot.h:40</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_ac7e3d027d196d639d26c8e36e83377f7"><div class="ttname"><a href="classeonc_1_1LammpsLoader.html#ac7e3d027d196d639d26c8e36e83377f7">eonc::LammpsLoader::close</a></div><div class="ttdeci">close_fn close</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8h_source.html#l00052">LammpsLoader.h:52</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab5f20fc5621f5385d5ee3f1979783a8a" name="ab5f20fc5621f5385d5ee3f1979783a8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5f20fc5621f5385d5ee3f1979783a8a">&#9670;&#160;</a></span>ensureWorker()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LAMMPSPot::ensureWorker </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8cpp_source.html#l00140">140</a> of file <a class="el" href="LAMMPSPot_8cpp_source.html">LAMMPSPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  140</span>                             {</div>
+<div class="line"><span class="lineno">  141</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a7857755e99390ab437731431c1961d04">workerSpawned</a>)</div>
+<div class="line"><span class="lineno">  142</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  143</span> </div>
+<div class="line"><span class="lineno">  144</span>  <span class="keywordtype">int</span> reqPipe[2]; <span class="comment">// parent -&gt; child</span></div>
+<div class="line"><span class="lineno">  145</span>  <span class="keywordtype">int</span> resPipe[2]; <span class="comment">// child -&gt; parent</span></div>
+<div class="line"><span class="lineno">  146</span>  <span class="keywordflow">if</span> (pipe(reqPipe) != 0 || pipe(resPipe) != 0) {</div>
+<div class="line"><span class="lineno">  147</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;LAMMPSPot: failed to create worker pipes&quot;</span>);</div>
+<div class="line"><span class="lineno">  148</span>  }</div>
+<div class="line"><span class="lineno">  149</span> </div>
+<div class="line"><span class="lineno">  150</span>  <span class="comment">// Fork BEFORE opening any LAMMPS instance in this process, so MPI is first</span></div>
+<div class="line"><span class="lineno">  151</span>  <span class="comment">// initialised inside the child.  Each child is its own process with its own</span></div>
+<div class="line"><span class="lineno">  152</span>  <span class="comment">// MPI_COMM_WORLD; concurrent children never share a communicator.</span></div>
+<div class="line"><span class="lineno">  153</span>  pid_t pid = fork();</div>
+<div class="line"><span class="lineno">  154</span>  <span class="keywordflow">if</span> (pid &lt; 0) {</div>
+<div class="line"><span class="lineno">  155</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;LAMMPSPot: fork for worker failed&quot;</span>);</div>
+<div class="line"><span class="lineno">  156</span>  }</div>
+<div class="line"><span class="lineno">  157</span> </div>
+<div class="line"><span class="lineno">  158</span>  <span class="keywordflow">if</span> (pid == 0) {</div>
+<div class="line"><span class="lineno">  159</span>    <span class="comment">// Child: keep reqPipe read end and resPipe write end.</span></div>
+<div class="line"><span class="lineno">  160</span>    <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">close</a>(reqPipe[1]);</div>
+<div class="line"><span class="lineno">  161</span>    <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">close</a>(resPipe[0]);</div>
+<div class="line"><span class="lineno">  162</span>    <a class="code hl_variable" href="#a0ce0dc60225cd98a391c5fc5038495a9">reqFd</a> = reqPipe[0];</div>
+<div class="line"><span class="lineno">  163</span>    <a class="code hl_variable" href="#afc7b221ec3dfd251ee65a82f8f5c65e1">resFd</a> = resPipe[1];</div>
+<div class="line"><span class="lineno">  164</span>    <span class="comment">// Client main arms feenableexcept unconditionally. The worker inherits</span></div>
+<div class="line"><span class="lineno">  165</span>    <span class="comment">// that mask; LAMMPS EAM (PairEAM::compute) performs IEEE divisions that</span></div>
+<div class="line"><span class="lineno">  166</span>    <span class="comment">// can raise FE_DIVBYZERO on near-coincident pairs during saddle / product</span></div>
+<div class="line"><span class="lineno">  167</span>    <span class="comment">// minimisations. Under trapping that SIGFPEs, and the continue handler</span></div>
+<div class="line"><span class="lineno">  168</span>    <span class="comment">// without MXCSR masking re-storms forever in the child (GB of identical</span></div>
+<div class="line"><span class="lineno">  169</span>    <span class="comment">// &quot;FPE (continuing)&quot; lines). External pot code expects soft IEEE defaults;</span></div>
+<div class="line"><span class="lineno">  170</span>    <span class="comment">// demote trapping for the whole worker process before any LAMMPS call.</span></div>
+<div class="line"><span class="lineno">  171</span>    <a class="code hl_function" href="namespaceeonc.html#af1498c1ea50b21c6c40b704ff85d867c">eonc::disableFPE</a>();</div>
+<div class="line"><span class="lineno">  172</span>    <a class="code hl_function" href="#abab38af76f27b2f79afceee162ec96bd">runWorkerLoop</a>(); <span class="comment">// never returns</span></div>
+<div class="line"><span class="lineno">  173</span>  }</div>
+<div class="line"><span class="lineno">  174</span> </div>
+<div class="line"><span class="lineno">  175</span>  <span class="comment">// Parent: keep reqPipe write end and resPipe read end.</span></div>
+<div class="line"><span class="lineno">  176</span>  <span class="comment">//</span></div>
+<div class="line"><span class="lineno">  177</span>  <span class="comment">// Writing to a worker that has already exited raises SIGPIPE, whose default</span></div>
+<div class="line"><span class="lineno">  178</span>  <span class="comment">// action kills the client outright -- before writeExact can return the</span></div>
+<div class="line"><span class="lineno">  179</span>  <span class="comment">// error the caller is written to handle. A search that had converged on a</span></div>
+<div class="line"><span class="lineno">  180</span>  <span class="comment">// saddle at 0.062 eV died this way with signal 13 as its endpoints were</span></div>
+<div class="line"><span class="lineno">  181</span>  <span class="comment">// about to be minimised. Ignoring it turns the same condition into an</span></div>
+<div class="line"><span class="lineno">  182</span>  <span class="comment">// EPIPE return, which reaches the geometry-rejection path and respawns.</span></div>
+<div class="line"><span class="lineno">  183</span>  std::signal(SIGPIPE, SIG_IGN);</div>
+<div class="line"><span class="lineno">  184</span>  <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">close</a>(reqPipe[0]);</div>
+<div class="line"><span class="lineno">  185</span>  <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">close</a>(resPipe[1]);</div>
+<div class="line"><span class="lineno">  186</span>  <a class="code hl_variable" href="#a0ce0dc60225cd98a391c5fc5038495a9">reqFd</a> = reqPipe[1];</div>
+<div class="line"><span class="lineno">  187</span>  <a class="code hl_variable" href="#afc7b221ec3dfd251ee65a82f8f5c65e1">resFd</a> = resPipe[0];</div>
+<div class="line"><span class="lineno">  188</span>  <a class="code hl_variable" href="#a0f452e9fcf452ac82a9ab7e50aa3115b">workerPid</a> = pid;</div>
+<div class="line"><span class="lineno">  189</span>  <a class="code hl_variable" href="#a7857755e99390ab437731431c1961d04">workerSpawned</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  190</span>}</div>
+<div class="ttc" id="aclassLAMMPSPot_html_a0ce0dc60225cd98a391c5fc5038495a9"><div class="ttname"><a href="#a0ce0dc60225cd98a391c5fc5038495a9">LAMMPSPot::reqFd</a></div><div class="ttdeci">int reqFd</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8h_source.html#l00072">LAMMPSPot.h:72</a></div></div>
+<div class="ttc" id="aclassLAMMPSPot_html_a0f452e9fcf452ac82a9ab7e50aa3115b"><div class="ttname"><a href="#a0f452e9fcf452ac82a9ab7e50aa3115b">LAMMPSPot::workerPid</a></div><div class="ttdeci">int workerPid</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8h_source.html#l00071">LAMMPSPot.h:71</a></div></div>
+<div class="ttc" id="aclassLAMMPSPot_html_a7857755e99390ab437731431c1961d04"><div class="ttname"><a href="#a7857755e99390ab437731431c1961d04">LAMMPSPot::workerSpawned</a></div><div class="ttdeci">bool workerSpawned</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8h_source.html#l00074">LAMMPSPot.h:74</a></div></div>
+<div class="ttc" id="aclassLAMMPSPot_html_abab38af76f27b2f79afceee162ec96bd"><div class="ttname"><a href="#abab38af76f27b2f79afceee162ec96bd">LAMMPSPot::runWorkerLoop</a></div><div class="ttdeci">void runWorkerLoop()</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8cpp_source.html#l00192">LAMMPSPot.cpp:192</a></div></div>
+<div class="ttc" id="aclassLAMMPSPot_html_afc7b221ec3dfd251ee65a82f8f5c65e1"><div class="ttname"><a href="#afc7b221ec3dfd251ee65a82f8f5c65e1">LAMMPSPot::resFd</a></div><div class="ttdeci">int resFd</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8h_source.html#l00073">LAMMPSPot.h:73</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1dynlib_html_aaaf1d7f945f57fb1f9303e58ae88d832"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">eonc::dynlib::close</a></div><div class="ttdeci">void close(Handle h) noexcept</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00077">DynLib.h:77</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_af1498c1ea50b21c6c40b704ff85d867c"><div class="ttname"><a href="namespaceeonc.html#af1498c1ea50b21c6c40b704ff85d867c">eonc::disableFPE</a></div><div class="ttdeci">void disableFPE()</div><div class="ttdef"><b>Definition</b> <a href="fpe__handler_8cpp_source.html#l00229">fpe_handler.cpp:229</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ae6993a4dfc3a18a67140fa3e6054410e" name="ae6993a4dfc3a18a67140fa3e6054410e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6993a4dfc3a18a67140fa3e6054410e">&#9670;&#160;</a></span>force()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LAMMPSPot::force </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>N</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>R</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em>atomicNrs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>F</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>U</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>variance</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>box</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8cpp_source.html#l00273">273</a> of file <a class="el" href="LAMMPSPot_8cpp_source.html">LAMMPSPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  274</span>                                                                      {</div>
+<div class="line"><span class="lineno">  275</span>  variance = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  276</span> </div>
+<div class="line"><span class="lineno">  277</span><span class="preprocessor">#ifdef EONMPI</span></div>
+<div class="line"><span class="lineno">  278</span>  <a class="code hl_function" href="#af1b29c044d64f1543858566ebd14f066">forceLocal</a>(N, R, atomicNrs, F, U, box);</div>
+<div class="line"><span class="lineno">  279</span><span class="preprocessor">#elif defined(IS_WINDOWS)</span></div>
+<div class="line"><span class="lineno">  280</span>  <span class="comment">// No fork/pipe on Windows; call forceLocal directly.</span></div>
+<div class="line"><span class="lineno">  281</span>  <a class="code hl_function" href="#af1b29c044d64f1543858566ebd14f066">forceLocal</a>(N, R, atomicNrs, F, U, box);</div>
+<div class="line"><span class="lineno">  282</span><span class="preprocessor">#else</span></div>
+<div class="line"><span class="lineno">  283</span>  <span class="comment">// Drive the dedicated worker process so this image&#39;s LAMMPS runs in its own</span></div>
+<div class="line"><span class="lineno">  284</span>  <span class="comment">// process (own MPI_COMM_WORLD).  Per-image NEB threads thus evaluate forces</span></div>
+<div class="line"><span class="lineno">  285</span>  <span class="comment">// as truly concurrent processes with no shared-communicator contention.</span></div>
+<div class="line"><span class="lineno">  286</span>  std::lock_guard&lt;std::mutex&gt; workerLock(<a class="code hl_variable" href="#af44202704b328f579d71725a7c813f20">workerMutex</a>);</div>
+<div class="line"><span class="lineno">  287</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a8a3ed29c99da0d49e6df04846c225fd8">workerRespawnsLeft</a> &lt;= 0) {</div>
+<div class="line"><span class="lineno">  288</span>    rejectGeometry(U, F, N);</div>
+<div class="line"><span class="lineno">  289</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  290</span>  }</div>
+<div class="line"><span class="lineno">  291</span>  <a class="code hl_function" href="#ab5f20fc5621f5385d5ee3f1979783a8a">ensureWorker</a>();</div>
+<div class="line"><span class="lineno">  292</span> </div>
+<div class="line"><span class="lineno">  293</span>  <span class="keywordflow">if</span> (!writeExact(<a class="code hl_variable" href="#a0ce0dc60225cd98a391c5fc5038495a9">reqFd</a>, &amp;N, <span class="keyword">sizeof</span>(N)) ||</div>
+<div class="line"><span class="lineno">  294</span>      !writeExact(<a class="code hl_variable" href="#a0ce0dc60225cd98a391c5fc5038495a9">reqFd</a>, atomicNrs, <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>) * <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(N)) ||</div>
+<div class="line"><span class="lineno">  295</span>      !writeExact(<a class="code hl_variable" href="#a0ce0dc60225cd98a391c5fc5038495a9">reqFd</a>, box, <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>) * 9) ||</div>
+<div class="line"><span class="lineno">  296</span>      !writeExact(<a class="code hl_variable" href="#a0ce0dc60225cd98a391c5fc5038495a9">reqFd</a>, R, <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>) * <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * N))) {</div>
+<div class="line"><span class="lineno">  297</span>    <span class="comment">// A worker stopped by an earlier rejected geometry leaves the request</span></div>
+<div class="line"><span class="lineno">  298</span>    <span class="comment">// pipe closed, so the first send after it fails. Respawning happens on</span></div>
+<div class="line"><span class="lineno">  299</span>    <span class="comment">// the next evaluation; reject this one rather than end the client.</span></div>
+<div class="line"><span class="lineno">  300</span>    --<a class="code hl_variable" href="#a8a3ed29c99da0d49e6df04846c225fd8">workerRespawnsLeft</a>;</div>
+<div class="line"><span class="lineno">  301</span>    <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[LAMMPSPot] send to worker failed; {} respawns left &quot;</span></div>
+<div class="line"><span class="lineno">  302</span>                     <span class="stringliteral">&quot;(eon-7416)&quot;</span>,</div>
+<div class="line"><span class="lineno">  303</span>                     <a class="code hl_variable" href="#a8a3ed29c99da0d49e6df04846c225fd8">workerRespawnsLeft</a>);</div>
+<div class="line"><span class="lineno">  304</span>    <a class="code hl_function" href="#aa15ee3f83ad586abfe09d95dbb4ec410">stopWorker</a>();</div>
+<div class="line"><span class="lineno">  305</span>    rejectGeometry(U, F, N);</div>
+<div class="line"><span class="lineno">  306</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  307</span>  }</div>
+<div class="line"><span class="lineno">  308</span> </div>
+<div class="line"><span class="lineno">  309</span>  <span class="comment">// eon-7416: a worker stuck on a pathological geometry (LAMMPS spinning, or</span></div>
+<div class="line"><span class="lineno">  310</span>  <span class="comment">// a NaN it never returns) would make the blocking read below hang until the</span></div>
+<div class="line"><span class="lineno">  311</span>  <span class="comment">// akmc pass times out. Bound the wait: if the worker is silent past a</span></div>
+<div class="line"><span class="lineno">  312</span>  <span class="comment">// generous per-eval deadline, kill and reap it (a stuck worker never reaches</span></div>
+<div class="line"><span class="lineno">  313</span>  <span class="comment">// EOF, so a plain waitpid would block too) and fail this evaluation so the</span></div>
+<div class="line"><span class="lineno">  314</span>  <span class="comment">// search discards the geometry; ensureWorker respawns on the next call.</span></div>
+<div class="line"><span class="lineno">  315</span>  {</div>
+<div class="line"><span class="lineno">  316</span>    <span class="keyword">struct </span>pollfd pfd;</div>
+<div class="line"><span class="lineno">  317</span>    pfd.fd = <a class="code hl_variable" href="#afc7b221ec3dfd251ee65a82f8f5c65e1">resFd</a>;</div>
+<div class="line"><span class="lineno">  318</span>    pfd.events = POLLIN;</div>
+<div class="line"><span class="lineno">  319</span>    pfd.revents = 0;</div>
+<div class="line"><span class="lineno">  320</span>    <span class="keywordtype">int</span> pr = poll(&amp;pfd, 1, 90000); <span class="comment">// 90 s: orders beyond a normal force eval</span></div>
+<div class="line"><span class="lineno">  321</span>    <span class="keywordflow">if</span> (pr &lt;= 0) {</div>
+<div class="line"><span class="lineno">  322</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a0f452e9fcf452ac82a9ab7e50aa3115b">workerPid</a> &gt; 0) {</div>
+<div class="line"><span class="lineno">  323</span>        kill(<a class="code hl_variable" href="#a0f452e9fcf452ac82a9ab7e50aa3115b">workerPid</a>, SIGKILL);</div>
+<div class="line"><span class="lineno">  324</span>      }</div>
+<div class="line"><span class="lineno">  325</span>      --<a class="code hl_variable" href="#a8a3ed29c99da0d49e6df04846c225fd8">workerRespawnsLeft</a>;</div>
+<div class="line"><span class="lineno">  326</span>      <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(</div>
+<div class="line"><span class="lineno">  327</span>          <span class="stringliteral">&quot;[LAMMPSPot] worker force eval timed out; {} respawns left &quot;</span></div>
+<div class="line"><span class="lineno">  328</span>          <span class="stringliteral">&quot;(eon-7416)&quot;</span>,</div>
+<div class="line"><span class="lineno">  329</span>          <a class="code hl_variable" href="#a8a3ed29c99da0d49e6df04846c225fd8">workerRespawnsLeft</a>);</div>
+<div class="line"><span class="lineno">  330</span>      <a class="code hl_function" href="#aa15ee3f83ad586abfe09d95dbb4ec410">stopWorker</a>();</div>
+<div class="line"><span class="lineno">  331</span>      rejectGeometry(U, F, N);</div>
+<div class="line"><span class="lineno">  332</span>      <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  333</span>    }</div>
+<div class="line"><span class="lineno">  334</span>  }</div>
+<div class="line"><span class="lineno">  335</span>  <span class="keywordtype">int</span> status = 0;</div>
+<div class="line"><span class="lineno">  336</span>  <span class="keywordflow">if</span> (!readExact(<a class="code hl_variable" href="#afc7b221ec3dfd251ee65a82f8f5c65e1">resFd</a>, &amp;status, <span class="keyword">sizeof</span>(status)) ||</div>
+<div class="line"><span class="lineno">  337</span>      !readExact(<a class="code hl_variable" href="#afc7b221ec3dfd251ee65a82f8f5c65e1">resFd</a>, U, <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>)) ||</div>
+<div class="line"><span class="lineno">  338</span>      !readExact(<a class="code hl_variable" href="#afc7b221ec3dfd251ee65a82f8f5c65e1">resFd</a>, F, <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>) * <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * N))) {</div>
+<div class="line"><span class="lineno">  339</span>    --<a class="code hl_variable" href="#a8a3ed29c99da0d49e6df04846c225fd8">workerRespawnsLeft</a>;</div>
+<div class="line"><span class="lineno">  340</span>    <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(</div>
+<div class="line"><span class="lineno">  341</span>        <span class="stringliteral">&quot;[LAMMPSPot] worker died during force eval; {} respawns left &quot;</span></div>
+<div class="line"><span class="lineno">  342</span>        <span class="stringliteral">&quot;(eon-7416)&quot;</span>,</div>
+<div class="line"><span class="lineno">  343</span>        <a class="code hl_variable" href="#a8a3ed29c99da0d49e6df04846c225fd8">workerRespawnsLeft</a>);</div>
+<div class="line"><span class="lineno">  344</span>    <a class="code hl_function" href="#aa15ee3f83ad586abfe09d95dbb4ec410">stopWorker</a>();</div>
+<div class="line"><span class="lineno">  345</span>    rejectGeometry(U, F, N);</div>
+<div class="line"><span class="lineno">  346</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  347</span>  }</div>
+<div class="line"><span class="lineno">  348</span>  <span class="keywordflow">if</span> (status != 0) {</div>
+<div class="line"><span class="lineno">  349</span>    --<a class="code hl_variable" href="#a8a3ed29c99da0d49e6df04846c225fd8">workerRespawnsLeft</a>;</div>
+<div class="line"><span class="lineno">  350</span>    <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(</div>
+<div class="line"><span class="lineno">  351</span>        <span class="stringliteral">&quot;[LAMMPSPot] worker reported an evaluation error; {} respawns left &quot;</span></div>
+<div class="line"><span class="lineno">  352</span>        <span class="stringliteral">&quot;(eon-7416)&quot;</span>,</div>
+<div class="line"><span class="lineno">  353</span>        <a class="code hl_variable" href="#a8a3ed29c99da0d49e6df04846c225fd8">workerRespawnsLeft</a>);</div>
+<div class="line"><span class="lineno">  354</span>    <a class="code hl_function" href="#aa15ee3f83ad586abfe09d95dbb4ec410">stopWorker</a>();</div>
+<div class="line"><span class="lineno">  355</span>    rejectGeometry(U, F, N);</div>
+<div class="line"><span class="lineno">  356</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  357</span>  }</div>
+<div class="line"><span class="lineno">  358</span>  <span class="comment">// A saddle search that never terminates silently truncates the event</span></div>
+<div class="line"><span class="lineno">  359</span>  <span class="comment">// table: the KMC residence time is 1/sum_j k_j over the discovered</span></div>
+<div class="line"><span class="lineno">  360</span>  <span class="comment">// mechanisms, so a dropped search removes a term and biases the clock</span></div>
+<div class="line"><span class="lineno">  361</span>  <span class="comment">// (Pedersen and Jónsson, Math. Comput. Simul. 80, 1487 (2010),</span></div>
+<div class="line"><span class="lineno">  362</span>  <span class="comment">// doi:10.1016/j.matcom.2009.02.010, Fig. 1; Alexander and Schuh,</span></div>
+<div class="line"><span class="lineno">  363</span>  <span class="comment">// Modelling Simul. Mater. Sci. Eng. 24, 065014 (2016),</span></div>
+<div class="line"><span class="lineno">  364</span>  <span class="comment">// doi:10.1088/0965-0393/24/6/065014, on catalog completeness).</span></div>
+<div class="line"><span class="lineno">  365</span>  <span class="comment">// An over-aggressive saddle-search kick can drive atoms on top of</span></div>
+<div class="line"><span class="lineno">  366</span>  <span class="comment">// each other; the EAM force overflows to NaN/Inf and LAMMPS returns it</span></div>
+<div class="line"><span class="lineno">  367</span>  <span class="comment">// rather than crashing. The min-mode search then spins on non-finite</span></div>
+<div class="line"><span class="lineno">  368</span>  <span class="comment">// gradients until the akmc pass times out (0 processes). Reject the</span></div>
+<div class="line"><span class="lineno">  369</span>  <span class="comment">// evaluation so the search discards that displacement and continues.</span></div>
+<div class="line"><span class="lineno">  370</span>  <span class="comment">// Reject the geometry, not the process. Nothing between this call and</span></div>
+<div class="line"><span class="lineno">  371</span>  <span class="comment">// main catches a throw here, so the client terminates: a search that was</span></div>
+<div class="line"><span class="lineno">  372</span>  <span class="comment">// making progress is lost, and every other search sharing the pass goes</span></div>
+<div class="line"><span class="lineno">  373</span>  <span class="comment">// with it. A large finite energy with zeroed forces reads to the</span></div>
+<div class="line"><span class="lineno">  374</span>  <span class="comment">// optimiser as an impassable wall, so it backs out of the step and the</span></div>
+<div class="line"><span class="lineno">  375</span>  <span class="comment">// search abandons this configuration and carries on.</span></div>
+<div class="line"><span class="lineno">  376</span>  <span class="keywordtype">bool</span> nonfinite = !std::isfinite(*U);</div>
+<div class="line"><span class="lineno">  377</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; 3 * N &amp;&amp; !nonfinite; ++i) {</div>
+<div class="line"><span class="lineno">  378</span>    nonfinite = !std::isfinite(F[i]);</div>
+<div class="line"><span class="lineno">  379</span>  }</div>
+<div class="line"><span class="lineno">  380</span>  <span class="keywordflow">if</span> (nonfinite) {</div>
+<div class="line"><span class="lineno">  381</span>    <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(<span class="stringliteral">&quot;[LAMMPSPot] non-finite force or energy; rejecting &quot;</span></div>
+<div class="line"><span class="lineno">  382</span>                     <span class="stringliteral">&quot;geometry (eon-7416)&quot;</span>);</div>
+<div class="line"><span class="lineno">  383</span>    rejectGeometry(U, F, N);</div>
+<div class="line"><span class="lineno">  384</span>  }</div>
+<div class="line"><span class="lineno">  385</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  386</span>}</div>
+<div class="ttc" id="aEonLogger_8h_html_a85fddaf0620c36ee3fcf865df53a9327"><div class="ttname"><a href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a></div><div class="ttdeci">#define EONC_LOG_WARNING(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00256">EonLogger.h:256</a></div></div>
+<div class="ttc" id="aclassLAMMPSPot_html_a8a3ed29c99da0d49e6df04846c225fd8"><div class="ttname"><a href="#a8a3ed29c99da0d49e6df04846c225fd8">LAMMPSPot::workerRespawnsLeft</a></div><div class="ttdeci">int workerRespawnsLeft</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8h_source.html#l00061">LAMMPSPot.h:61</a></div></div>
+<div class="ttc" id="aclassLAMMPSPot_html_af1b29c044d64f1543858566ebd14f066"><div class="ttname"><a href="#af1b29c044d64f1543858566ebd14f066">LAMMPSPot::forceLocal</a></div><div class="ttdeci">void forceLocal(long N, const double *R, const int *atomicNrs, double *F, double *U, const double *box)</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8cpp_source.html#l00388">LAMMPSPot.cpp:388</a></div></div>
+<div class="ttc" id="aclassLAMMPSPot_html_af44202704b328f579d71725a7c813f20"><div class="ttname"><a href="#af44202704b328f579d71725a7c813f20">LAMMPSPot::workerMutex</a></div><div class="ttdeci">std::mutex workerMutex</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8h_source.html#l00070">LAMMPSPot.h:70</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af1b29c044d64f1543858566ebd14f066" name="af1b29c044d64f1543858566ebd14f066"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1b29c044d64f1543858566ebd14f066">&#9670;&#160;</a></span>forceLocal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LAMMPSPot::forceLocal </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>N</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>R</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em>atomicNrs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>F</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *</td>          <td class="paramname"><span class="paramname"><em>U</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>box</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8cpp_source.html#l00388">388</a> of file <a class="el" href="LAMMPSPot_8cpp_source.html">LAMMPSPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  389</span>                                                                    {</div>
+<div class="line"><span class="lineno">  390</span>  <span class="comment">// Same contract as ASE / Metatomic: external pot libraries are not written</span></div>
+<div class="line"><span class="lineno">  391</span>  <span class="comment">// for FE traps. Cover in-process (EONMPI / Windows) and any path that still</span></div>
+<div class="line"><span class="lineno">  392</span>  <span class="comment">// has trapping armed when forceLocal runs. Always restore so FE traps do not</span></div>
+<div class="line"><span class="lineno">  393</span>  <span class="comment">// stay demoted for the rest of the process after the first force call.</span></div>
+<div class="line"><span class="lineno">  394</span>  eonc::FPEHandler fpeh;</div>
+<div class="line"><span class="lineno">  395</span>  fpeh.<a class="code hl_function" href="classeonc_1_1FPEHandler.html#afd34f29eda64117a665d8340a5b43a1c">eat_fpe</a>();</div>
+<div class="line"><span class="lineno">  396</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  397</span>    <span class="keyword">auto</span> &amp;lmp = <a class="code hl_function" href="classeonc_1_1LammpsLoader.html#ad258a0e488b7535cbdb5b62a57d67edc">eonc::LammpsLoader::instance</a>();</div>
+<div class="line"><span class="lineno">  398</span> </div>
+<div class="line"><span class="lineno">  399</span>    <span class="keywordtype">bool</span> newLammps = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  400</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 9; i++) {</div>
+<div class="line"><span class="lineno">  401</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a06fa16605512c2495abe9822976af45c">oldBox</a>[i] != box[i])</div>
+<div class="line"><span class="lineno">  402</span>        newLammps = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  403</span>    }</div>
+<div class="line"><span class="lineno">  404</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ac1752b93f2ecb87f0fe048cd59179d8b">numberOfAtoms</a> != N)</div>
+<div class="line"><span class="lineno">  405</span>      newLammps = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  406</span>    <span class="keywordflow">if</span> (newLammps) {</div>
+<div class="line"><span class="lineno">  407</span>      <a class="code hl_function" href="#a3b12ba08cdfe472dae835e56fe3c6e99">makeNewLAMMPS</a>(N, R, atomicNrs, box);</div>
+<div class="line"><span class="lineno">  408</span>    }</div>
+<div class="line"><span class="lineno">  409</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>) {</div>
+<div class="line"><span class="lineno">  410</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Should have a LAMMPS instance by now&quot;</span>);</div>
+<div class="line"><span class="lineno">  411</span>    }</div>
+<div class="line"><span class="lineno">  412</span> </div>
+<div class="line"><span class="lineno">  413</span>    lmp.scatter_atoms(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;x&quot;</span>, 1, 3, <span class="keyword">const_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(R));</div>
+<div class="line"><span class="lineno">  414</span>    lmp.command(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;run 1 pre no post no&quot;</span>);</div>
+<div class="line"><span class="lineno">  415</span> </div>
+<div class="line"><span class="lineno">  416</span>    <span class="keyword">auto</span> *pe =</div>
+<div class="line"><span class="lineno">  417</span>        <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(lmp.extract_variable(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;pe&quot;</span>, <span class="keyword">nullptr</span>));</div>
+<div class="line"><span class="lineno">  418</span>    *U = *pe;</div>
+<div class="line"><span class="lineno">  419</span>    free(pe);</div>
+<div class="line"><span class="lineno">  420</span> </div>
+<div class="line"><span class="lineno">  421</span>    <span class="keyword">auto</span> *fx =</div>
+<div class="line"><span class="lineno">  422</span>        <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(lmp.extract_variable(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;fx&quot;</span>, <span class="stringliteral">&quot;all&quot;</span>));</div>
+<div class="line"><span class="lineno">  423</span>    <span class="keyword">auto</span> *fy =</div>
+<div class="line"><span class="lineno">  424</span>        <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(lmp.extract_variable(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;fy&quot;</span>, <span class="stringliteral">&quot;all&quot;</span>));</div>
+<div class="line"><span class="lineno">  425</span>    <span class="keyword">auto</span> *fz =</div>
+<div class="line"><span class="lineno">  426</span>        <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(lmp.extract_variable(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;fz&quot;</span>, <span class="stringliteral">&quot;all&quot;</span>));</div>
+<div class="line"><span class="lineno">  427</span> </div>
+<div class="line"><span class="lineno">  428</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; i++) {</div>
+<div class="line"><span class="lineno">  429</span>      F[3 * i + 0] = fx[i];</div>
+<div class="line"><span class="lineno">  430</span>      F[3 * i + 1] = fy[i];</div>
+<div class="line"><span class="lineno">  431</span>      F[3 * i + 2] = fz[i];</div>
+<div class="line"><span class="lineno">  432</span>    }</div>
+<div class="line"><span class="lineno">  433</span> </div>
+<div class="line"><span class="lineno">  434</span>    <span class="comment">// Convert kCal/mol -&gt; eV if LAMMPS is using real units</span></div>
+<div class="line"><span class="lineno">  435</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a9857c230ea9d56b4728d2383789c769a">realunits</a>) {</div>
+<div class="line"><span class="lineno">  436</span>      <span class="keyword">constexpr</span> <span class="keywordtype">double</span> kcalPerEv = 23.0609;</div>
+<div class="line"><span class="lineno">  437</span>      *U /= kcalPerEv;</div>
+<div class="line"><span class="lineno">  438</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; 3 * N; i++) {</div>
+<div class="line"><span class="lineno">  439</span>        F[i] /= kcalPerEv;</div>
+<div class="line"><span class="lineno">  440</span>      }</div>
+<div class="line"><span class="lineno">  441</span>    }</div>
+<div class="line"><span class="lineno">  442</span> </div>
+<div class="line"><span class="lineno">  443</span>    free(fx);</div>
+<div class="line"><span class="lineno">  444</span>    free(fy);</div>
+<div class="line"><span class="lineno">  445</span>    free(fz);</div>
+<div class="line"><span class="lineno">  446</span>  } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  447</span>    fpeh.<a class="code hl_function" href="classeonc_1_1FPEHandler.html#abce91443c8e3c366d6932a457145540a">restore_fpe</a>();</div>
+<div class="line"><span class="lineno">  448</span>    <span class="keywordflow">throw</span>;</div>
+<div class="line"><span class="lineno">  449</span>  }</div>
+<div class="line"><span class="lineno">  450</span>  fpeh.<a class="code hl_function" href="classeonc_1_1FPEHandler.html#abce91443c8e3c366d6932a457145540a">restore_fpe</a>();</div>
+<div class="line"><span class="lineno">  451</span>}</div>
+<div class="ttc" id="aclassLAMMPSPot_html_a06fa16605512c2495abe9822976af45c"><div class="ttname"><a href="#a06fa16605512c2495abe9822976af45c">LAMMPSPot::oldBox</a></div><div class="ttdeci">double oldBox[9]</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8h_source.html#l00039">LAMMPSPot.h:39</a></div></div>
+<div class="ttc" id="aclassLAMMPSPot_html_a3b12ba08cdfe472dae835e56fe3c6e99"><div class="ttname"><a href="#a3b12ba08cdfe472dae835e56fe3c6e99">LAMMPSPot::makeNewLAMMPS</a></div><div class="ttdeci">void makeNewLAMMPS(long N, const double *R, const int *atomicNrs, const double *box)</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8cpp_source.html#l00453">LAMMPSPot.cpp:453</a></div></div>
+<div class="ttc" id="aclassLAMMPSPot_html_a9857c230ea9d56b4728d2383789c769a"><div class="ttname"><a href="#a9857c230ea9d56b4728d2383789c769a">LAMMPSPot::realunits</a></div><div class="ttdeci">bool realunits</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8h_source.html#l00043">LAMMPSPot.h:43</a></div></div>
+<div class="ttc" id="aclassLAMMPSPot_html_ac1752b93f2ecb87f0fe048cd59179d8b"><div class="ttname"><a href="#ac1752b93f2ecb87f0fe048cd59179d8b">LAMMPSPot::numberOfAtoms</a></div><div class="ttdeci">long numberOfAtoms</div><div class="ttdef"><b>Definition</b> <a href="LAMMPSPot_8h_source.html#l00038">LAMMPSPot.h:38</a></div></div>
+<div class="ttc" id="aclasseonc_1_1FPEHandler_html_abce91443c8e3c366d6932a457145540a"><div class="ttname"><a href="classeonc_1_1FPEHandler.html#abce91443c8e3c366d6932a457145540a">eonc::FPEHandler::restore_fpe</a></div><div class="ttdeci">void restore_fpe()</div><div class="ttdef"><b>Definition</b> <a href="fpe__handler_8cpp_source.html#l00251">fpe_handler.cpp:251</a></div></div>
+<div class="ttc" id="aclasseonc_1_1FPEHandler_html_afd34f29eda64117a665d8340a5b43a1c"><div class="ttname"><a href="classeonc_1_1FPEHandler.html#afd34f29eda64117a665d8340a5b43a1c">eonc::FPEHandler::eat_fpe</a></div><div class="ttdeci">void eat_fpe()</div><div class="ttdef"><b>Definition</b> <a href="fpe__handler_8cpp_source.html#l00246">fpe_handler.cpp:246</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a3b12ba08cdfe472dae835e56fe3c6e99" name="a3b12ba08cdfe472dae835e56fe3c6e99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b12ba08cdfe472dae835e56fe3c6e99">&#9670;&#160;</a></span>makeNewLAMMPS()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LAMMPSPot::makeNewLAMMPS </td>
+          <td>(</td>
+          <td class="paramtype">long</td>          <td class="paramname"><span class="paramname"><em>N</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>R</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int *</td>          <td class="paramname"><span class="paramname"><em>atomicNrs</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double *</td>          <td class="paramname"><span class="paramname"><em>box</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8cpp_source.html#l00453">453</a> of file <a class="el" href="LAMMPSPot_8cpp_source.html">LAMMPSPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  454</span>                                                 {</div>
+<div class="line"><span class="lineno">  455</span>  <span class="keyword">auto</span> &amp;lmp = <a class="code hl_function" href="classeonc_1_1LammpsLoader.html#ad258a0e488b7535cbdb5b62a57d67edc">eonc::LammpsLoader::instance</a>();</div>
+<div class="line"><span class="lineno">  456</span> </div>
+<div class="line"><span class="lineno">  457</span>  <a class="code hl_variable" href="#ac1752b93f2ecb87f0fe048cd59179d8b">numberOfAtoms</a> = N;</div>
+<div class="line"><span class="lineno">  458</span>  std::memcpy(<a class="code hl_variable" href="#a06fa16605512c2495abe9822976af45c">oldBox</a>, box, 9 * <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>));</div>
+<div class="line"><span class="lineno">  459</span> </div>
+<div class="line"><span class="lineno">  460</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a> != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  461</span>    <a class="code hl_function" href="classeonc_1_1LammpsLoader.html#ad258a0e488b7535cbdb5b62a57d67edc">eonc::LammpsLoader::instance</a>().<a class="code hl_variable" href="classeonc_1_1LammpsLoader.html#ac7e3d027d196d639d26c8e36e83377f7">close</a>(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>);</div>
+<div class="line"><span class="lineno">  462</span>    <a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  463</span>  }</div>
+<div class="line"><span class="lineno">  464</span> </div>
+<div class="line"><span class="lineno">  465</span>  <span class="comment">// Map atomic numbers to LAMMPS type indices (1-based)</span></div>
+<div class="line"><span class="lineno">  466</span>  std::map&lt;int, int&gt; type_map;</div>
+<div class="line"><span class="lineno">  467</span>  <span class="keywordtype">int</span> ntypes = 0;</div>
+<div class="line"><span class="lineno">  468</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; i++) {</div>
+<div class="line"><span class="lineno">  469</span>    <span class="keywordflow">if</span> (type_map.count(atomicNrs[i]) == 0) {</div>
+<div class="line"><span class="lineno">  470</span>      type_map.insert({atomicNrs[i], ++ntypes});</div>
+<div class="line"><span class="lineno">  471</span>    }</div>
+<div class="line"><span class="lineno">  472</span>  }</div>
+<div class="line"><span class="lineno">  473</span> </div>
+<div class="line"><span class="lineno">  474</span><span class="preprocessor">#ifdef EONMPI</span></div>
+<div class="line"><span class="lineno">  475</span>  <span class="keyword">const</span> <span class="keywordtype">char</span> *lmpargv[] = {<span class="stringliteral">&quot;liblammps&quot;</span>, <span class="stringliteral">&quot;-log&quot;</span>, <span class="stringliteral">&quot;none&quot;</span>,    <span class="stringliteral">&quot;-echo&quot;</span>, <span class="stringliteral">&quot;log&quot;</span>,</div>
+<div class="line"><span class="lineno">  476</span>                           <span class="stringliteral">&quot;-screen&quot;</span>,   <span class="stringliteral">&quot;none&quot;</span>, <span class="stringliteral">&quot;-suffix&quot;</span>, <span class="stringliteral">&quot;omp&quot;</span>};</div>
+<div class="line"><span class="lineno">  477</span>  <span class="keywordtype">int</span> lmpargc = <span class="keyword">sizeof</span>(lmpargv) / <span class="keyword">sizeof</span>(<span class="keyword">const</span> <span class="keywordtype">char</span> *);</div>
+<div class="line"><span class="lineno">  478</span>  <span class="keywordflow">if</span> (!lmp.open_mpi) {</div>
+<div class="line"><span class="lineno">  479</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  480</span>        <span class="stringliteral">&quot;LAMMPS library found but lacks MPI support (lammps_open not found).\n&quot;</span></div>
+<div class="line"><span class="lineno">  481</span>        <span class="stringliteral">&quot;Install an MPI-enabled LAMMPS build.&quot;</span>);</div>
+<div class="line"><span class="lineno">  482</span>  }</div>
+<div class="line"><span class="lineno">  483</span>  MPI_Comm inst_comm = MPI_COMM_NULL;</div>
+<div class="line"><span class="lineno">  484</span>  MPI_Comm_dup(mpiComm, &amp;inst_comm); <span class="comment">// private comm per per-image instance</span></div>
+<div class="line"><span class="lineno">  485</span>  <a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a> =</div>
+<div class="line"><span class="lineno">  486</span>      lmp.open_mpi(lmpargc, <span class="keyword">const_cast&lt;</span><span class="keywordtype">char</span> **<span class="keyword">&gt;</span>(lmpargv), inst_comm, <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">  487</span><span class="preprocessor">#else</span></div>
+<div class="line"><span class="lineno">  488</span>  <span class="keyword">const</span> <span class="keywordtype">char</span> *lmpargv[] = {<span class="stringliteral">&quot;liblammps&quot;</span>, <span class="stringliteral">&quot;-log&quot;</span>,    <span class="stringliteral">&quot;none&quot;</span>, <span class="stringliteral">&quot;-echo&quot;</span>,</div>
+<div class="line"><span class="lineno">  489</span>                           <span class="stringliteral">&quot;log&quot;</span>,       <span class="stringliteral">&quot;-screen&quot;</span>, <span class="stringliteral">&quot;none&quot;</span>};</div>
+<div class="line"><span class="lineno">  490</span>  <span class="keywordtype">int</span> lmpargc = <span class="keyword">sizeof</span>(lmpargv) / <span class="keyword">sizeof</span>(<span class="keyword">const</span> <span class="keywordtype">char</span> *);</div>
+<div class="line"><span class="lineno">  491</span>  <a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a> = lmp.open_no_mpi(lmpargc, <span class="keyword">const_cast&lt;</span><span class="keywordtype">char</span> **<span class="keyword">&gt;</span>(lmpargv), <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">  492</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  493</span> </div>
+<div class="line"><span class="lineno">  494</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a48260530a46550f4542fdc28e4041b6a">lammpsThr</a> &gt; 0) {</div>
+<div class="line"><span class="lineno">  495</span>    std::string cmd = std::format(<span class="stringliteral">&quot;package omp {} force/neigh&quot;</span>, <a class="code hl_variable" href="#a48260530a46550f4542fdc28e4041b6a">lammpsThr</a>);</div>
+<div class="line"><span class="lineno">  496</span>    lmp.command(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, cmd.c_str());</div>
+<div class="line"><span class="lineno">  497</span>  }</div>
+<div class="line"><span class="lineno">  498</span> </div>
+<div class="line"><span class="lineno">  499</span>  <span class="comment">// Detect units from in.lammps: look for &quot;#!units real&quot; marker</span></div>
+<div class="line"><span class="lineno">  500</span>  <a class="code hl_variable" href="#a9857c230ea9d56b4728d2383789c769a">realunits</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  501</span>  <span class="keywordflow">if</span> (std::filesystem::exists(<span class="stringliteral">&quot;in.lammps&quot;</span>)) {</div>
+<div class="line"><span class="lineno">  502</span>    std::ifstream infile(<span class="stringliteral">&quot;in.lammps&quot;</span>);</div>
+<div class="line"><span class="lineno">  503</span>    std::string line;</div>
+<div class="line"><span class="lineno">  504</span>    <span class="keywordflow">while</span> (std::getline(infile, line)) {</div>
+<div class="line"><span class="lineno">  505</span>      <span class="keywordflow">if</span> (line == <span class="stringliteral">&quot;#!units real&quot;</span>) {</div>
+<div class="line"><span class="lineno">  506</span>        <a class="code hl_variable" href="#a9857c230ea9d56b4728d2383789c769a">realunits</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  507</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  508</span>      }</div>
+<div class="line"><span class="lineno">  509</span>    }</div>
+<div class="line"><span class="lineno">  510</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  511</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[LAMMPS] in.lammps not found in working directory&quot;</span>);</div>
+<div class="line"><span class="lineno">  512</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  513</span>  }</div>
+<div class="line"><span class="lineno">  514</span> </div>
+<div class="line"><span class="lineno">  515</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a9857c230ea9d56b4728d2383789c769a">realunits</a>) {</div>
+<div class="line"><span class="lineno">  516</span>    lmp.command(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;units real&quot;</span>);</div>
+<div class="line"><span class="lineno">  517</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  518</span>    lmp.command(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;units metal&quot;</span>);</div>
+<div class="line"><span class="lineno">  519</span>  }</div>
+<div class="line"><span class="lineno">  520</span> </div>
+<div class="line"><span class="lineno">  521</span>  lmp.command(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;atom_style charge&quot;</span>);</div>
+<div class="line"><span class="lineno">  522</span>  lmp.command(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;atom_modify map array sort 0 0&quot;</span>);</div>
+<div class="line"><span class="lineno">  523</span>  lmp.command(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;neigh_modify delay 1&quot;</span>);</div>
+<div class="line"><span class="lineno">  524</span> </div>
+<div class="line"><span class="lineno">  525</span>  <span class="comment">// Define periodic cell (prism for non-orthorhombic)</span></div>
+<div class="line"><span class="lineno">  526</span>  std::string region_cmd =</div>
+<div class="line"><span class="lineno">  527</span>      std::format(<span class="stringliteral">&quot;region cell prism 0 {} 0 {} 0 {} {} {} {} units box&quot;</span>, box[0],</div>
+<div class="line"><span class="lineno">  528</span>                  box[4], box[8], box[3], box[6], box[7]);</div>
+<div class="line"><span class="lineno">  529</span>  lmp.command(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, region_cmd.c_str());</div>
+<div class="line"><span class="lineno">  530</span> </div>
+<div class="line"><span class="lineno">  531</span>  std::string create_box_cmd = std::format(<span class="stringliteral">&quot;create_box {} cell&quot;</span>, ntypes);</div>
+<div class="line"><span class="lineno">  532</span>  lmp.command(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, create_box_cmd.c_str());</div>
+<div class="line"><span class="lineno">  533</span> </div>
+<div class="line"><span class="lineno">  534</span>  <span class="comment">// Initialize atoms</span></div>
+<div class="line"><span class="lineno">  535</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; N; i++) {</div>
+<div class="line"><span class="lineno">  536</span>    std::string atom_cmd =</div>
+<div class="line"><span class="lineno">  537</span>        std::format(<span class="stringliteral">&quot;create_atoms {} single {} {} {} units box&quot;</span>,</div>
+<div class="line"><span class="lineno">  538</span>                    type_map[atomicNrs[i]], 0.0, 0.0, 0.0);</div>
+<div class="line"><span class="lineno">  539</span>    lmp.command(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, atom_cmd.c_str());</div>
+<div class="line"><span class="lineno">  540</span>  }</div>
+<div class="line"><span class="lineno">  541</span> </div>
+<div class="line"><span class="lineno">  542</span>  lmp.command(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;mass * 1.0&quot;</span>);</div>
+<div class="line"><span class="lineno">  543</span> </div>
+<div class="line"><span class="lineno">  544</span>  <span class="comment">// Load user LAMMPS input script</span></div>
+<div class="line"><span class="lineno">  545</span>  lmp.file(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;in.lammps&quot;</span>);</div>
+<div class="line"><span class="lineno">  546</span> </div>
+<div class="line"><span class="lineno">  547</span>  <span class="comment">// Define variables for force/energy extraction</span></div>
+<div class="line"><span class="lineno">  548</span>  lmp.command(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;variable fx atom fx&quot;</span>);</div>
+<div class="line"><span class="lineno">  549</span>  lmp.command(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;variable fy atom fy&quot;</span>);</div>
+<div class="line"><span class="lineno">  550</span>  lmp.command(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;variable fz atom fz&quot;</span>);</div>
+<div class="line"><span class="lineno">  551</span>  lmp.command(<a class="code hl_variable" href="#aabfd481f1286ea1970524a2cf73a5fd6">LAMMPSObj</a>, <span class="stringliteral">&quot;variable pe equal pe&quot;</span>);</div>
+<div class="line"><span class="lineno">  552</span>}</div>
+<div class="ttc" id="aEonLogger_8h_html_a4cf9b473cf6a1d850b3725fca6805f86"><div class="ttname"><a href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a></div><div class="ttdeci">#define EONC_LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00262">EonLogger.h:262</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aae77d35cbf6bcf84a38b055de76ccaca" name="aae77d35cbf6bcf84a38b055de76ccaca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae77d35cbf6bcf84a38b055de76ccaca">&#9670;&#160;</a></span>needsPerImageInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool LAMMPSPot::needsPerImageInstance </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether NEB should create separate <a class="el" href="classPotential.html">Potential</a> instances per image for true parallel force evaluation. </p>
+<p>When true, NEB calls makePotential() once per image instead of sharing one instance. Override in potentials that use internal mutexes (e.g. <a class="el" href="classMetatomicPotential.html" title="A potential class that uses a metatomic model for energy and force calculations.">MetatomicPotential</a>). </p>
+
+<p>Reimplemented from <a class="el" href="classeonc_1_1Potential.html#a8b83745c9898990f848daafa4c351c2f">eonc::Potential</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8h_source.html#l00024">24</a> of file <a class="el" href="LAMMPSPot_8h_source.html">LAMMPSPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   24</span>                                                                     {</div>
+<div class="line"><span class="lineno">   25</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">   26</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="abab38af76f27b2f79afceee162ec96bd" name="abab38af76f27b2f79afceee162ec96bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abab38af76f27b2f79afceee162ec96bd">&#9670;&#160;</a></span>runWorkerLoop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LAMMPSPot::runWorkerLoop </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8cpp_source.html#l00192">192</a> of file <a class="el" href="LAMMPSPot_8cpp_source.html">LAMMPSPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  192</span>                              {</div>
+<div class="line"><span class="lineno">  193</span>  <span class="comment">// Running in the forked child.  Evaluate forces with an in-process LAMMPS</span></div>
+<div class="line"><span class="lineno">  194</span>  <span class="comment">// (this child&#39;s own MPI_COMM_WORLD) and stream results back to the parent.</span></div>
+<div class="line"><span class="lineno">  195</span>  <span class="keywordflow">for</span> (;;) {</div>
+<div class="line"><span class="lineno">  196</span>    <span class="keywordtype">long</span> N = 0;</div>
+<div class="line"><span class="lineno">  197</span>    <span class="keywordflow">if</span> (!readExact(<a class="code hl_variable" href="#a0ce0dc60225cd98a391c5fc5038495a9">reqFd</a>, &amp;N, <span class="keyword">sizeof</span>(N))) {</div>
+<div class="line"><span class="lineno">  198</span>      _exit(0); <span class="comment">// request pipe closed -&gt; shut down cleanly</span></div>
+<div class="line"><span class="lineno">  199</span>    }</div>
+<div class="line"><span class="lineno">  200</span>    <span class="keywordflow">if</span> (N &lt; 0) {</div>
+<div class="line"><span class="lineno">  201</span>      _exit(0); <span class="comment">// explicit shutdown sentinel from stopWorker()</span></div>
+<div class="line"><span class="lineno">  202</span>    }</div>
+<div class="line"><span class="lineno">  203</span>    std::vector&lt;int&gt; atomicNrs(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(N));</div>
+<div class="line"><span class="lineno">  204</span>    std::vector&lt;double&gt; R(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * N));</div>
+<div class="line"><span class="lineno">  205</span>    <span class="keywordtype">double</span> box[9];</div>
+<div class="line"><span class="lineno">  206</span>    <span class="keywordflow">if</span> (!readExact(<a class="code hl_variable" href="#a0ce0dc60225cd98a391c5fc5038495a9">reqFd</a>, atomicNrs.data(),</div>
+<div class="line"><span class="lineno">  207</span>                   <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>) * <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(N)) ||</div>
+<div class="line"><span class="lineno">  208</span>        !readExact(<a class="code hl_variable" href="#a0ce0dc60225cd98a391c5fc5038495a9">reqFd</a>, box, <span class="keyword">sizeof</span>(box)) ||</div>
+<div class="line"><span class="lineno">  209</span>        !readExact(<a class="code hl_variable" href="#a0ce0dc60225cd98a391c5fc5038495a9">reqFd</a>, R.data(),</div>
+<div class="line"><span class="lineno">  210</span>                   <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>) * <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * N))) {</div>
+<div class="line"><span class="lineno">  211</span>      _exit(1);</div>
+<div class="line"><span class="lineno">  212</span>    }</div>
+<div class="line"><span class="lineno">  213</span> </div>
+<div class="line"><span class="lineno">  214</span>    std::vector&lt;double&gt; F(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * N), 0.0);</div>
+<div class="line"><span class="lineno">  215</span>    <span class="keywordtype">double</span> U = 0.0;</div>
+<div class="line"><span class="lineno">  216</span>    <span class="keywordtype">int</span> status = 0;</div>
+<div class="line"><span class="lineno">  217</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  218</span>      <a class="code hl_function" href="#af1b29c044d64f1543858566ebd14f066">forceLocal</a>(N, R.data(), atomicNrs.data(), F.data(), &amp;U, box);</div>
+<div class="line"><span class="lineno">  219</span>    } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><span class="lineno">  220</span>      status = 1;</div>
+<div class="line"><span class="lineno">  221</span>    }</div>
+<div class="line"><span class="lineno">  222</span> </div>
+<div class="line"><span class="lineno">  223</span>    <span class="keywordflow">if</span> (!writeExact(<a class="code hl_variable" href="#afc7b221ec3dfd251ee65a82f8f5c65e1">resFd</a>, &amp;status, <span class="keyword">sizeof</span>(status)) ||</div>
+<div class="line"><span class="lineno">  224</span>        !writeExact(<a class="code hl_variable" href="#afc7b221ec3dfd251ee65a82f8f5c65e1">resFd</a>, &amp;U, <span class="keyword">sizeof</span>(U)) ||</div>
+<div class="line"><span class="lineno">  225</span>        !writeExact(<a class="code hl_variable" href="#afc7b221ec3dfd251ee65a82f8f5c65e1">resFd</a>, F.data(),</div>
+<div class="line"><span class="lineno">  226</span>                    <span class="keyword">sizeof</span>(<span class="keywordtype">double</span>) * <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(3 * N))) {</div>
+<div class="line"><span class="lineno">  227</span>      _exit(1);</div>
+<div class="line"><span class="lineno">  228</span>    }</div>
+<div class="line"><span class="lineno">  229</span>  }</div>
+<div class="line"><span class="lineno">  230</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="aa15ee3f83ad586abfe09d95dbb4ec410" name="aa15ee3f83ad586abfe09d95dbb4ec410"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa15ee3f83ad586abfe09d95dbb4ec410">&#9670;&#160;</a></span>stopWorker()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void LAMMPSPot::stopWorker </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8cpp_source.html#l00232">232</a> of file <a class="el" href="LAMMPSPot_8cpp_source.html">LAMMPSPot.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  232</span>                           {</div>
+<div class="line"><span class="lineno">  233</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a7857755e99390ab437731431c1961d04">workerSpawned</a>)</div>
+<div class="line"><span class="lineno">  234</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  235</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a0ce0dc60225cd98a391c5fc5038495a9">reqFd</a> &gt;= 0) {</div>
+<div class="line"><span class="lineno">  236</span>    <span class="comment">// Send an explicit shutdown sentinel, then close.  A sentinel (rather than</span></div>
+<div class="line"><span class="lineno">  237</span>    <span class="comment">// relying on pipe EOF) guarantees the child exits even when sibling worker</span></div>
+<div class="line"><span class="lineno">  238</span>    <span class="comment">// processes hold an inherited copy of this write end.</span></div>
+<div class="line"><span class="lineno">  239</span>    <span class="keywordtype">long</span> sentinel = -1;</div>
+<div class="line"><span class="lineno">  240</span>    writeExact(<a class="code hl_variable" href="#a0ce0dc60225cd98a391c5fc5038495a9">reqFd</a>, &amp;sentinel, <span class="keyword">sizeof</span>(sentinel));</div>
+<div class="line"><span class="lineno">  241</span>    <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">close</a>(<a class="code hl_variable" href="#a0ce0dc60225cd98a391c5fc5038495a9">reqFd</a>);</div>
+<div class="line"><span class="lineno">  242</span>    <a class="code hl_variable" href="#a0ce0dc60225cd98a391c5fc5038495a9">reqFd</a> = -1;</div>
+<div class="line"><span class="lineno">  243</span>  }</div>
+<div class="line"><span class="lineno">  244</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#afc7b221ec3dfd251ee65a82f8f5c65e1">resFd</a> &gt;= 0) {</div>
+<div class="line"><span class="lineno">  245</span>    <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">close</a>(<a class="code hl_variable" href="#afc7b221ec3dfd251ee65a82f8f5c65e1">resFd</a>);</div>
+<div class="line"><span class="lineno">  246</span>    <a class="code hl_variable" href="#afc7b221ec3dfd251ee65a82f8f5c65e1">resFd</a> = -1;</div>
+<div class="line"><span class="lineno">  247</span>  }</div>
+<div class="line"><span class="lineno">  248</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a0f452e9fcf452ac82a9ab7e50aa3115b">workerPid</a> &gt; 0) {</div>
+<div class="line"><span class="lineno">  249</span>    <span class="comment">// A wedged worker never acts on the sentinel or the closed pipe, and an</span></div>
+<div class="line"><span class="lineno">  250</span>    <span class="comment">// unconditional wait then blocks the client forever at no CPU cost -- the</span></div>
+<div class="line"><span class="lineno">  251</span>    <span class="comment">// hang this teardown exists to avoid. Give the child a brief chance to</span></div>
+<div class="line"><span class="lineno">  252</span>    <span class="comment">// exit on its own, then insist.</span></div>
+<div class="line"><span class="lineno">  253</span>    <span class="keywordtype">int</span> st = 0;</div>
+<div class="line"><span class="lineno">  254</span>    <span class="keywordtype">bool</span> reaped = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  255</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 100; ++i) { <span class="comment">// up to ~1 s</span></div>
+<div class="line"><span class="lineno">  256</span>      pid_t r = waitpid(<a class="code hl_variable" href="#a0f452e9fcf452ac82a9ab7e50aa3115b">workerPid</a>, &amp;st, WNOHANG);</div>
+<div class="line"><span class="lineno">  257</span>      <span class="keywordflow">if</span> (r == <a class="code hl_variable" href="#a0f452e9fcf452ac82a9ab7e50aa3115b">workerPid</a> || r &lt; 0) {</div>
+<div class="line"><span class="lineno">  258</span>        reaped = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  259</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  260</span>      }</div>
+<div class="line"><span class="lineno">  261</span>      usleep(10000);</div>
+<div class="line"><span class="lineno">  262</span>    }</div>
+<div class="line"><span class="lineno">  263</span>    <span class="keywordflow">if</span> (!reaped) {</div>
+<div class="line"><span class="lineno">  264</span>      kill(<a class="code hl_variable" href="#a0f452e9fcf452ac82a9ab7e50aa3115b">workerPid</a>, SIGKILL);</div>
+<div class="line"><span class="lineno">  265</span>      waitpid(<a class="code hl_variable" href="#a0f452e9fcf452ac82a9ab7e50aa3115b">workerPid</a>, &amp;st, 0);</div>
+<div class="line"><span class="lineno">  266</span>    }</div>
+<div class="line"><span class="lineno">  267</span>    <a class="code hl_variable" href="#a0f452e9fcf452ac82a9ab7e50aa3115b">workerPid</a> = -1;</div>
+<div class="line"><span class="lineno">  268</span>  }</div>
+<div class="line"><span class="lineno">  269</span>  <a class="code hl_variable" href="#a7857755e99390ab437731431c1961d04">workerSpawned</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  270</span>}</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="aabfd481f1286ea1970524a2cf73a5fd6" name="aabfd481f1286ea1970524a2cf73a5fd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabfd481f1286ea1970524a2cf73a5fd6">&#9670;&#160;</a></span>LAMMPSObj</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void* LAMMPSPot::LAMMPSObj {nullptr}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8h_source.html#l00040">40</a> of file <a class="el" href="LAMMPSPot_8h_source.html">LAMMPSPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   40</span>{<span class="keyword">nullptr</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a48260530a46550f4542fdc28e4041b6a" name="a48260530a46550f4542fdc28e4041b6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48260530a46550f4542fdc28e4041b6a">&#9670;&#160;</a></span>lammpsThr</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int LAMMPSPot::lammpsThr {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8h_source.html#l00034">34</a> of file <a class="el" href="LAMMPSPot_8h_source.html">LAMMPSPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   34</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac1752b93f2ecb87f0fe048cd59179d8b" name="ac1752b93f2ecb87f0fe048cd59179d8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1752b93f2ecb87f0fe048cd59179d8b">&#9670;&#160;</a></span>numberOfAtoms</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">long LAMMPSPot::numberOfAtoms {0}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8h_source.html#l00038">38</a> of file <a class="el" href="LAMMPSPot_8h_source.html">LAMMPSPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   38</span>{0};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a06fa16605512c2495abe9822976af45c" name="a06fa16605512c2495abe9822976af45c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06fa16605512c2495abe9822976af45c">&#9670;&#160;</a></span>oldBox</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double LAMMPSPot::oldBox[9] {}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8h_source.html#l00039">39</a> of file <a class="el" href="LAMMPSPot_8h_source.html">LAMMPSPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   39</span>{};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a9857c230ea9d56b4728d2383789c769a" name="a9857c230ea9d56b4728d2383789c769a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9857c230ea9d56b4728d2383789c769a">&#9670;&#160;</a></span>realunits</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool LAMMPSPot::realunits {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8h_source.html#l00043">43</a> of file <a class="el" href="LAMMPSPot_8h_source.html">LAMMPSPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   43</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a0ce0dc60225cd98a391c5fc5038495a9" name="a0ce0dc60225cd98a391c5fc5038495a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ce0dc60225cd98a391c5fc5038495a9">&#9670;&#160;</a></span>reqFd</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int LAMMPSPot::reqFd {-1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8h_source.html#l00072">72</a> of file <a class="el" href="LAMMPSPot_8h_source.html">LAMMPSPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   72</span>{-1}; <span class="comment">// parent writes requests here (child stdin side)</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="afc7b221ec3dfd251ee65a82f8f5c65e1" name="afc7b221ec3dfd251ee65a82f8f5c65e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc7b221ec3dfd251ee65a82f8f5c65e1">&#9670;&#160;</a></span>resFd</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int LAMMPSPot::resFd {-1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8h_source.html#l00073">73</a> of file <a class="el" href="LAMMPSPot_8h_source.html">LAMMPSPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   73</span>{-1}; <span class="comment">// parent reads results here (child stdout side)</span></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="af44202704b328f579d71725a7c813f20" name="af44202704b328f579d71725a7c813f20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af44202704b328f579d71725a7c813f20">&#9670;&#160;</a></span>workerMutex</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::mutex LAMMPSPot::workerMutex</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8h_source.html#l00070">70</a> of file <a class="el" href="LAMMPSPot_8h_source.html">LAMMPSPot.h</a>.</p>
+
+</div>
+</div>
+<a id="a0f452e9fcf452ac82a9ab7e50aa3115b" name="a0f452e9fcf452ac82a9ab7e50aa3115b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f452e9fcf452ac82a9ab7e50aa3115b">&#9670;&#160;</a></span>workerPid</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int LAMMPSPot::workerPid {-1}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8h_source.html#l00071">71</a> of file <a class="el" href="LAMMPSPot_8h_source.html">LAMMPSPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   71</span>{-1};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a8a3ed29c99da0d49e6df04846c225fd8" name="a8a3ed29c99da0d49e6df04846c225fd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a3ed29c99da0d49e6df04846c225fd8">&#9670;&#160;</a></span>workerRespawnsLeft</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int LAMMPSPot::workerRespawnsLeft {3}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8h_source.html#l00061">61</a> of file <a class="el" href="LAMMPSPot_8h_source.html">LAMMPSPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   61</span>{3};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7857755e99390ab437731431c1961d04" name="a7857755e99390ab437731431c1961d04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7857755e99390ab437731431c1961d04">&#9670;&#160;</a></span>workerSpawned</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool LAMMPSPot::workerSpawned {false}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LAMMPSPot_8h_source.html#l00074">74</a> of file <a class="el" href="LAMMPSPot_8h_source.html">LAMMPSPot.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   74</span>{<span class="keyword">false</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/potentials/LAMMPS/<a class="el" href="LAMMPSPot_8h_source.html">LAMMPSPot.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/potentials/LAMMPS/<a class="el" href="LAMMPSPot_8cpp_source.html">LAMMPSPot.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="classLAMMPSPot.html">LAMMPSPot</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

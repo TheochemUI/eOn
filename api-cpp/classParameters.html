@@ -1,0 +1,1196 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: Parameters Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classParameters.html','','classParameters-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Parameters Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="Parameters_8h_source.html">Parameters.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:constants_5Ft" id="r_constants_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1constants__t.html">constants_t</a></td></tr>
+<tr class="memitem:main_5Foptions_5Ft" id="r_main_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1main__options__t.html">main_options_t</a></td></tr>
+<tr class="memitem:potential_5Foptions_5Ft" id="r_potential_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1potential__options__t.html">potential_options_t</a></td></tr>
+<tr class="memitem:ams_5Foptions_5Ft" id="r_ams_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1ams__options__t.html">ams_options_t</a></td></tr>
+<tr class="memitem:xtb_5Foptions_5Ft" id="r_xtb_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1xtb__options__t.html">xtb_options_t</a></td></tr>
+<tr class="memitem:zbl_5Foptions_5Ft" id="r_zbl_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1zbl__options__t.html">zbl_options_t</a></td></tr>
+<tr class="memitem:socket_5Fnwchem_5Foptions_5Ft" id="r_socket_5Fnwchem_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1socket__nwchem__options__t.html">socket_nwchem_options_t</a></td></tr>
+<tr class="memitem:rgpot_5Foptions_5Ft" id="r_rgpot_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1rgpot__options__t.html">rgpot_options_t</a></td></tr>
+<tr class="memitem:structure_5Fcomparison_5Foptions_5Ft" id="r_structure_5Fcomparison_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1structure__comparison__options__t.html">structure_comparison_options_t</a></td></tr>
+<tr class="memitem:process_5Fsearch_5Foptions_5Ft" id="r_process_5Fsearch_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1process__search__options__t.html">process_search_options_t</a></td></tr>
+<tr class="memitem:saddle_5Fsearch_5Foptions_5Ft" id="r_saddle_5Fsearch_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1saddle__search__options__t.html">saddle_search_options_t</a></td></tr>
+<tr class="memitem:optimizer_5Foptions_5Ft" id="r_optimizer_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1optimizer__options__t.html">optimizer_options_t</a></td></tr>
+<tr class="memitem:dimer_5Foptions_5Ft" id="r_dimer_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1dimer__options__t.html">dimer_options_t</a></td></tr>
+<tr class="memitem:gpr_5Fdimer_5Foptions_5Ft" id="r_gpr_5Fdimer_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1gpr__dimer__options__t.html">gpr_dimer_options_t</a></td></tr>
+<tr class="memitem:gp_5Fsurrogate_5Foptions_5Ft" id="r_gp_5Fsurrogate_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1gp__surrogate__options__t.html">gp_surrogate_options_t</a></td></tr>
+<tr class="memitem:catlearn_5Foptions_5Ft" id="r_catlearn_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1catlearn__options__t.html">catlearn_options_t</a></td></tr>
+<tr class="memitem:ase_5Forca_5Foptions_5Ft" id="r_ase_5Forca_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1ase__orca__options__t.html">ase_orca_options_t</a></td></tr>
+<tr class="memitem:ase_5Fnwchem_5Foptions_5Ft" id="r_ase_5Fnwchem_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1ase__nwchem__options__t.html">ase_nwchem_options_t</a></td></tr>
+<tr class="memitem:metatomic_5Foptions_5Ft" id="r_metatomic_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1metatomic__options__t.html">metatomic_options_t</a></td></tr>
+<tr class="memitem:lanczos_5Foptions_5Ft" id="r_lanczos_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1lanczos__options__t.html">lanczos_options_t</a></td></tr>
+<tr class="memitem:davidson_5Foptions_5Ft" id="r_davidson_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1davidson__options__t.html">davidson_options_t</a></td></tr>
+<tr class="memitem:prefactor_5Foptions_5Ft" id="r_prefactor_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1prefactor__options__t.html">prefactor_options_t</a></td></tr>
+<tr class="memitem:hessian_5Foptions_5Ft" id="r_hessian_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1hessian__options__t.html">hessian_options_t</a></td></tr>
+<tr class="memitem:neb_5Foptions_5Ft" id="r_neb_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1neb__options__t.html">neb_options_t</a></td></tr>
+<tr class="memitem:dynamics_5Foptions_5Ft" id="r_dynamics_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1dynamics__options__t.html">dynamics_options_t</a></td></tr>
+<tr class="memitem:parallel_5Freplica_5Foptions_5Ft" id="r_parallel_5Freplica_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1parallel__replica__options__t.html">parallel_replica_options_t</a></td></tr>
+<tr class="memitem:tad_5Foptions_5Ft" id="r_tad_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1tad__options__t.html">tad_options_t</a></td></tr>
+<tr class="memitem:thermostat_5Foptions_5Ft" id="r_thermostat_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1thermostat__options__t.html">thermostat_options_t</a></td></tr>
+<tr class="memitem:replica_5Fexchange_5Foptions_5Ft" id="r_replica_5Fexchange_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1replica__exchange__options__t.html">replica_exchange_options_t</a></td></tr>
+<tr class="memitem:hyperdynamics_5Foptions_5Ft" id="r_hyperdynamics_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1hyperdynamics__options__t.html">hyperdynamics_options_t</a></td></tr>
+<tr class="memitem:basin_5Fhopping_5Foptions_5Ft" id="r_basin_5Fhopping_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1basin__hopping__options__t.html">basin_hopping_options_t</a></td></tr>
+<tr class="memitem:global_5Foptimization_5Foptions_5Ft" id="r_global_5Foptimization_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1global__optimization__options__t.html">global_optimization_options_t</a></td></tr>
+<tr class="memitem:monte_5Fcarlo_5Foptions_5Ft" id="r_monte_5Fcarlo_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1monte__carlo__options__t.html">monte_carlo_options_t</a></td></tr>
+<tr class="memitem:bgsd_5Foptions_5Ft" id="r_bgsd_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1bgsd__options__t.html">bgsd_options_t</a></td></tr>
+<tr class="memitem:serve_5Foptions_5Ft" id="r_serve_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1serve__options__t.html">serve_options_t</a></td></tr>
+<tr class="memitem:artn_5Foptions_5Ft" id="r_artn_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1artn__options__t.html">artn_options_t</a></td></tr>
+<tr class="memitem:ira_5Foptions_5Ft" id="r_ira_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1ira__options__t.html">ira_options_t</a></td></tr>
+<tr class="memitem:debug_5Foptions_5Ft" id="r_debug_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1debug__options__t.html">debug_options_t</a></td></tr>
+<tr class="memitem:oh_5Ftst_5Foptions_5Ft" id="r_oh_5Ftst_5Foptions_5Ft"><td class="memItemLeft">struct &#160;</td><td class="memItemRight"><a class="el" href="structParameters_1_1oh__tst__options__t.html">oh_tst_options_t</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:af4d94ee360ac0157d9065f78797fe9a1" id="r_af4d94ee360ac0157d9065f78797fe9a1"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#af4d94ee360ac0157d9065f78797fe9a1">Parameters</a> ()</td></tr>
+<tr class="memitem:a77da729bf052195e1960401eb5c31a90" id="r_a77da729bf052195e1960401eb5c31a90"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a77da729bf052195e1960401eb5c31a90">Parameters</a> (const <a class="el" href="classParameters.html">Parameters</a> &amp;)=default</td></tr>
+<tr class="memitem:aff9ca309c4822f8b16ed876331ac5fe1" id="r_aff9ca309c4822f8b16ed876331ac5fe1"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#aff9ca309c4822f8b16ed876331ac5fe1">~Parameters</a> ()=default</td></tr>
+<tr class="memitem:a5df820be7dd9b8743ec6802adf161615" id="r_a5df820be7dd9b8743ec6802adf161615"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a5df820be7dd9b8743ec6802adf161615">load</a> (std::string filename)</td></tr>
+<tr class="memitem:a735f6bf23cfbe8b63b5e0aa170bf1592" id="r_a735f6bf23cfbe8b63b5e0aa170bf1592"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a735f6bf23cfbe8b63b5e0aa170bf1592">load</a> (FILE *file)</td></tr>
+<tr class="memitem:a3dc3067d148211a7d88bcaa284ba4243" id="r_a3dc3067d148211a7d88bcaa284ba4243"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a3dc3067d148211a7d88bcaa284ba4243">load_json</a> (const std::string &amp;json_str)</td></tr>
+<tr class="memitem:a7201ee6d01bf074382d62faee3c0747c" id="r_a7201ee6d01bf074382d62faee3c0747c"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a7201ee6d01bf074382d62faee3c0747c">to_json</a> () const</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a2e272e72270d4796338d391b2ef1a8fe" id="r_a2e272e72270d4796338d391b2ef1a8fe"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1constants__t.html">eonc::Parameters::constants_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a2e272e72270d4796338d391b2ef1a8fe">constants</a></td></tr>
+<tr class="memitem:afd8b76ca52c432bb56efd1a73ebf8234" id="r_afd8b76ca52c432bb56efd1a73ebf8234"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1main__options__t.html">eonc::Parameters::main_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a></td></tr>
+<tr class="memitem:a75c3a463dab97989d367d624e455606c" id="r_a75c3a463dab97989d367d624e455606c"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1potential__options__t.html">eonc::Parameters::potential_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a75c3a463dab97989d367d624e455606c">potential_options</a></td></tr>
+<tr class="memitem:a97d1f3495ac0c1c3d6eec2465201a588" id="r_a97d1f3495ac0c1c3d6eec2465201a588"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1ams__options__t.html">eonc::Parameters::ams_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a></td></tr>
+<tr class="memitem:a894a590628892e474efb1d66259cd1c0" id="r_a894a590628892e474efb1d66259cd1c0"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1xtb__options__t.html">eonc::Parameters::xtb_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a894a590628892e474efb1d66259cd1c0">xtb_options</a></td></tr>
+<tr class="memitem:a9dbcae013f41b1aa8910455e255e9af6" id="r_a9dbcae013f41b1aa8910455e255e9af6"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1zbl__options__t.html">eonc::Parameters::zbl_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a9dbcae013f41b1aa8910455e255e9af6">zbl_options</a></td></tr>
+<tr class="memitem:a1003836cf5341ebffa9e7a061ea1e66e" id="r_a1003836cf5341ebffa9e7a061ea1e66e"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1socket__nwchem__options__t.html">eonc::Parameters::socket_nwchem_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a1003836cf5341ebffa9e7a061ea1e66e">socket_nwchem_options</a></td></tr>
+<tr class="memitem:a9c03e4f518e59eff0c18dad26b11f3c8" id="r_a9c03e4f518e59eff0c18dad26b11f3c8"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html">eonc::Parameters::rgpot_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a9c03e4f518e59eff0c18dad26b11f3c8">rgpot_options</a></td></tr>
+<tr class="memitem:a6a05f3bbfd2d579807f438e91880ba95" id="r_a6a05f3bbfd2d579807f438e91880ba95"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html">eonc::Parameters::structure_comparison_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6a05f3bbfd2d579807f438e91880ba95">structure_comparison_options</a></td></tr>
+<tr class="memitem:addc8c0b6222f19ae6a0242cee89a9788" id="r_addc8c0b6222f19ae6a0242cee89a9788"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1process__search__options__t.html">eonc::Parameters::process_search_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#addc8c0b6222f19ae6a0242cee89a9788">process_search_options</a></td></tr>
+<tr class="memitem:a9f940dfdbf98237a27dcfba042b57dd2" id="r_a9f940dfdbf98237a27dcfba042b57dd2"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1saddle__search__options__t.html">eonc::Parameters::saddle_search_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a9f940dfdbf98237a27dcfba042b57dd2">saddle_search_options</a></td></tr>
+<tr class="memitem:a1c3ba2cdc8f797e5ab2d8961720fe896" id="r_a1c3ba2cdc8f797e5ab2d8961720fe896"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1optimizer__options__t.html">eonc::Parameters::optimizer_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a></td></tr>
+<tr class="memitem:a6ba7de4dddcba8db2804af4ea15d1ad8" id="r_a6ba7de4dddcba8db2804af4ea15d1ad8"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1dimer__options__t.html">eonc::Parameters::dimer_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6ba7de4dddcba8db2804af4ea15d1ad8">dimer_options</a></td></tr>
+<tr class="memitem:a53b08dd3abac212d0c5427555925bdc3" id="r_a53b08dd3abac212d0c5427555925bdc3"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1gpr__dimer__options__t.html">eonc::Parameters::gpr_dimer_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a53b08dd3abac212d0c5427555925bdc3">gpr_dimer_options</a></td></tr>
+<tr class="memitem:a3bdb061b6f9e346b5382adac5e54f927" id="r_a3bdb061b6f9e346b5382adac5e54f927"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1gp__surrogate__options__t.html">eonc::Parameters::gp_surrogate_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a3bdb061b6f9e346b5382adac5e54f927">gp_surrogate_options</a></td></tr>
+<tr class="memitem:a19eb1ff0748c2a83337e4315a10a0c1e" id="r_a19eb1ff0748c2a83337e4315a10a0c1e"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1catlearn__options__t.html">eonc::Parameters::catlearn_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a19eb1ff0748c2a83337e4315a10a0c1e">catlearn_options</a></td></tr>
+<tr class="memitem:a705d26ac82a8beef678382aa017b0578" id="r_a705d26ac82a8beef678382aa017b0578"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1ase__orca__options__t.html">eonc::Parameters::ase_orca_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a705d26ac82a8beef678382aa017b0578">ase_orca_options</a></td></tr>
+<tr class="memitem:a5821dadd33334ada42925280e43311ad" id="r_a5821dadd33334ada42925280e43311ad"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1ase__nwchem__options__t.html">eonc::Parameters::ase_nwchem_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a5821dadd33334ada42925280e43311ad">ase_nwchem_options</a></td></tr>
+<tr class="memitem:abe39c95c9363fce1a030dc4c55634705" id="r_abe39c95c9363fce1a030dc4c55634705"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1metatomic__options__t.html">eonc::Parameters::metatomic_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#abe39c95c9363fce1a030dc4c55634705">metatomic_options</a></td></tr>
+<tr class="memitem:aed3102da98114cfc58e8b46b0721b2c5" id="r_aed3102da98114cfc58e8b46b0721b2c5"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1lanczos__options__t.html">eonc::Parameters::lanczos_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#aed3102da98114cfc58e8b46b0721b2c5">lanczos_options</a></td></tr>
+<tr class="memitem:ab9dbd4793e2134d0bb7711a9dec693e8" id="r_ab9dbd4793e2134d0bb7711a9dec693e8"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1davidson__options__t.html">eonc::Parameters::davidson_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#ab9dbd4793e2134d0bb7711a9dec693e8">davidson_options</a></td></tr>
+<tr class="memitem:ac978c51f86f70ee43b14ee7d7ae8c9ed" id="r_ac978c51f86f70ee43b14ee7d7ae8c9ed"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1prefactor__options__t.html">eonc::Parameters::prefactor_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#ac978c51f86f70ee43b14ee7d7ae8c9ed">prefactor_options</a></td></tr>
+<tr class="memitem:ada9df619127490e3b73b7f6284327a97" id="r_ada9df619127490e3b73b7f6284327a97"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1hessian__options__t.html">eonc::Parameters::hessian_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#ada9df619127490e3b73b7f6284327a97">hessian_options</a></td></tr>
+<tr class="memitem:a40bad5f66d7bb2ccfca684f8ecf850c2" id="r_a40bad5f66d7bb2ccfca684f8ecf850c2"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1neb__options__t.html">eonc::Parameters::neb_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a></td></tr>
+<tr class="memitem:adf85184daf1c75014080b998951e14b5" id="r_adf85184daf1c75014080b998951e14b5"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1dynamics__options__t.html">eonc::Parameters::dynamics_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#adf85184daf1c75014080b998951e14b5">dynamics_options</a></td></tr>
+<tr class="memitem:afe28b4f82f8a9ccc549c7bf6bcfd49cd" id="r_afe28b4f82f8a9ccc549c7bf6bcfd49cd"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1parallel__replica__options__t.html">eonc::Parameters::parallel_replica_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#afe28b4f82f8a9ccc549c7bf6bcfd49cd">parallel_replica_options</a></td></tr>
+<tr class="memitem:a546c882b3dcb35a80e6c509b82d7d019" id="r_a546c882b3dcb35a80e6c509b82d7d019"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1tad__options__t.html">eonc::Parameters::tad_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a546c882b3dcb35a80e6c509b82d7d019">tad_options</a></td></tr>
+<tr class="memitem:a6977c923fc1ea180dba292eda31dee3a" id="r_a6977c923fc1ea180dba292eda31dee3a"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1thermostat__options__t.html">eonc::Parameters::thermostat_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6977c923fc1ea180dba292eda31dee3a">thermostat_options</a></td></tr>
+<tr class="memitem:a7f592a2151353dd5093e17ad8cde1f67" id="r_a7f592a2151353dd5093e17ad8cde1f67"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1replica__exchange__options__t.html">eonc::Parameters::replica_exchange_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a7f592a2151353dd5093e17ad8cde1f67">replica_exchange_options</a></td></tr>
+<tr class="memitem:a4445e628f50802a2b0cce86ab20ebacd" id="r_a4445e628f50802a2b0cce86ab20ebacd"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1hyperdynamics__options__t.html">eonc::Parameters::hyperdynamics_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a4445e628f50802a2b0cce86ab20ebacd">hyperdynamics_options</a></td></tr>
+<tr class="memitem:a0a1d6737b80a60d8f1a4406cc62c9616" id="r_a0a1d6737b80a60d8f1a4406cc62c9616"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1basin__hopping__options__t.html">eonc::Parameters::basin_hopping_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a0a1d6737b80a60d8f1a4406cc62c9616">basin_hopping_options</a></td></tr>
+<tr class="memitem:a3e457fe4aabfd5741115d34cf37cada2" id="r_a3e457fe4aabfd5741115d34cf37cada2"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1global__optimization__options__t.html">eonc::Parameters::global_optimization_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a3e457fe4aabfd5741115d34cf37cada2">global_optimization_options</a></td></tr>
+<tr class="memitem:a150d2da33771d8ed9546f1bad61813bb" id="r_a150d2da33771d8ed9546f1bad61813bb"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1monte__carlo__options__t.html">eonc::Parameters::monte_carlo_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a150d2da33771d8ed9546f1bad61813bb">monte_carlo_options</a></td></tr>
+<tr class="memitem:afc1dbef0c49f14316be8b27520936c59" id="r_afc1dbef0c49f14316be8b27520936c59"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1bgsd__options__t.html">eonc::Parameters::bgsd_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#afc1dbef0c49f14316be8b27520936c59">bgsd_options</a></td></tr>
+<tr class="memitem:afe3f882ee9250f5bb11378ff41294d06" id="r_afe3f882ee9250f5bb11378ff41294d06"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1serve__options__t.html">eonc::Parameters::serve_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#afe3f882ee9250f5bb11378ff41294d06">serve_options</a></td></tr>
+<tr class="memitem:a8f5088a7b6d1b4137742065af408a163" id="r_a8f5088a7b6d1b4137742065af408a163"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1artn__options__t.html">eonc::Parameters::artn_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a8f5088a7b6d1b4137742065af408a163">artn_options</a></td></tr>
+<tr class="memitem:a520adc958603aed224403a62361dc278" id="r_a520adc958603aed224403a62361dc278"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1ira__options__t.html">eonc::Parameters::ira_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a520adc958603aed224403a62361dc278">ira_options</a></td></tr>
+<tr class="memitem:a82c189d4c9282373cb53addd6a4c2a89" id="r_a82c189d4c9282373cb53addd6a4c2a89"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1debug__options__t.html">eonc::Parameters::debug_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a82c189d4c9282373cb53addd6a4c2a89">debug_options</a></td></tr>
+<tr class="memitem:a87d02cc2e7b0ad305e8f894186603f7b" id="r_a87d02cc2e7b0ad305e8f894186603f7b"><td class="memItemLeft">struct <a class="el" href="structeonc_1_1Parameters_1_1oh__tst__options__t.html">eonc::Parameters::oh_tst_options_t</a>&#160;</td><td class="memItemRight"><a class="el" href="#a87d02cc2e7b0ad305e8f894186603f7b">oh_tst_options</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="Parameters_8h_source.html#l00028">28</a> of file <a class="el" href="Parameters_8h_source.html">Parameters.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="af4d94ee360ac0157d9065f78797fe9a1" name="af4d94ee360ac0157d9065f78797fe9a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4d94ee360ac0157d9065f78797fe9a1">&#9670;&#160;</a></span>Parameters() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeonc_1_1Parameters.html#af4d94ee360ac0157d9065f78797fe9a1">Parameters::Parameters</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8cpp_source.html#l00026">26</a> of file <a class="el" href="Parameters_8cpp_source.html">Parameters.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   26</span>                       {</div>
+<div class="line"><span class="lineno">   27</span>  <span class="comment">// Covered groups: defaults originate from schema/eon_params.capnp via</span></div>
+<div class="line"><span class="lineno">   28</span>  <span class="comment">// apply_ssot_defaults (codegen). Uncovered groups still use NSDMI.</span></div>
+<div class="line"><span class="lineno">   29</span>  <a class="code hl_function" href="namespaceeonc_1_1config.html#a26678e5e35275ab0aa6eb96a1f1b3012">eonc::config::apply_ssot_defaults</a>(*<span class="keyword">this</span>);</div>
+<div class="line"><span class="lineno">   30</span>  <span class="comment">// Resolve computed fields via validate_and_link.</span></div>
+<div class="line"><span class="lineno">   31</span>  <a class="code hl_function" href="namespaceeonc_1_1config.html#a78d7cf925cc0890b91729530015d1018">eonc::config::validate_and_link</a>(*<span class="keyword">this</span>);</div>
+<div class="line"><span class="lineno">   32</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1config_html_a26678e5e35275ab0aa6eb96a1f1b3012"><div class="ttname"><a href="namespaceeonc_1_1config.html#a26678e5e35275ab0aa6eb96a1f1b3012">eonc::config::apply_ssot_defaults</a></div><div class="ttdeci">void apply_ssot_defaults(Parameters &amp;p)</div><div class="ttdoc">Apply SSoT defaults for covered groups (Main, Potential, Optimizer, Structure Comparison,...</div><div class="ttdef"><b>Definition</b> <a href="ParametersSSOT_8cpp_source.html#l00102">ParametersSSOT.cpp:102</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1config_html_a78d7cf925cc0890b91729530015d1018"><div class="ttname"><a href="namespaceeonc_1_1config.html#a78d7cf925cc0890b91729530015d1018">eonc::config::validate_and_link</a></div><div class="ttdeci">void validate_and_link(Parameters &amp;params)</div><div class="ttdoc">Resolve cross-group defaults and time unit conversions.</div><div class="ttdef"><b>Definition</b> <a href="ParametersINI_8cpp_source.html#l01335">ParametersINI.cpp:1335</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a77da729bf052195e1960401eb5c31a90" name="a77da729bf052195e1960401eb5c31a90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77da729bf052195e1960401eb5c31a90">&#9670;&#160;</a></span>Parameters() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeonc_1_1Parameters.html#af4d94ee360ac0157d9065f78797fe9a1">eonc::Parameters::Parameters</a> </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aff9ca309c4822f8b16ed876331ac5fe1" name="aff9ca309c4822f8b16ed876331ac5fe1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff9ca309c4822f8b16ed876331ac5fe1">&#9670;&#160;</a></span>~Parameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeonc_1_1Parameters.html#aff9ca309c4822f8b16ed876331ac5fe1">eonc::Parameters::~Parameters</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a735f6bf23cfbe8b63b5e0aa170bf1592" name="a735f6bf23cfbe8b63b5e0aa170bf1592"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a735f6bf23cfbe8b63b5e0aa170bf1592">&#9670;&#160;</a></span>load() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classeonc_1_1Parameters.html#a5df820be7dd9b8743ec6802adf161615">Parameters::load</a> </td>
+          <td>(</td>
+          <td class="paramtype">FILE *</td>          <td class="paramname"><span class="paramname"><em>file</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8cpp_source.html#l00084">84</a> of file <a class="el" href="Parameters_8cpp_source.html">Parameters.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   84</span>                               {</div>
+<div class="line"><span class="lineno">   85</span>  <span class="comment">// Legacy FILE* overload: read into string buffer, use INIReader buffer ctor</span></div>
+<div class="line"><span class="lineno">   86</span>  fseek(file, 0, SEEK_END);</div>
+<div class="line"><span class="lineno">   87</span>  <span class="keywordtype">long</span> size = ftell(file);</div>
+<div class="line"><span class="lineno">   88</span>  fseek(file, 0, SEEK_SET);</div>
+<div class="line"><span class="lineno">   89</span> </div>
+<div class="line"><span class="lineno">   90</span>  std::string buffer(size, <span class="charliteral">&#39;\0&#39;</span>);</div>
+<div class="line"><span class="lineno">   91</span>  fread(buffer.data(), 1, size, file);</div>
+<div class="line"><span class="lineno">   92</span> </div>
+<div class="line"><span class="lineno">   93</span>  INIReader ini(buffer.c_str(), buffer.size());</div>
+<div class="line"><span class="lineno">   94</span>  <span class="keywordflow">if</span> (ini.ParseError() &lt; 0) {</div>
+<div class="line"><span class="lineno">   95</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Couldn&#39;t parse the ini file from FILE*&quot;</span>);</div>
+<div class="line"><span class="lineno">   96</span>    <span class="keywordflow">return</span> 1;</div>
+<div class="line"><span class="lineno">   97</span>  }</div>
+<div class="line"><span class="lineno">   98</span> </div>
+<div class="line"><span class="lineno">   99</span>  <span class="keywordtype">int</span> <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a> = <a class="code hl_function" href="namespaceeonc_1_1config.html#a088cf940288ff28adeba5722978a208b">eonc::config::load_ini</a>(ini, *<span class="keyword">this</span>);</div>
+<div class="line"><span class="lineno">  100</span>  <span class="comment">// Same validation as the filename overload</span></div>
+<div class="line"><span class="lineno">  101</span>  <span class="comment">// (duplicated intentionally for now; will be extracted to validate())</span></div>
+<div class="line"><span class="lineno">  102</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#afe28b4f82f8a9ccc549c7bf6bcfd49cd">parallel_replica_options</a>.state_check_interval &gt; <a class="code hl_variable" href="#adf85184daf1c75014080b998951e14b5">dynamics_options</a>.time &amp;&amp;</div>
+<div class="line"><span class="lineno">  103</span>      magic_enum::enum_name&lt;JobType&gt;(<a class="code hl_variable" href="#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.job) == <span class="stringliteral">&quot;parallel_replica&quot;</span>) {</div>
+<div class="line"><span class="lineno">  104</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[Parallel Replica] state_check_interval must be &lt;= time&quot;</span>);</div>
+<div class="line"><span class="lineno">  105</span>    <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a> = 1;</div>
+<div class="line"><span class="lineno">  106</span>  }</div>
+<div class="line"><span class="lineno">  107</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a9f940dfdbf98237a27dcfba042b57dd2">saddle_search_options</a>.dynamics.record_interval_input &gt;</div>
+<div class="line"><span class="lineno">  108</span>      <a class="code hl_variable" href="#a9f940dfdbf98237a27dcfba042b57dd2">saddle_search_options</a>.dynamics.state_check_interval_input) {</div>
+<div class="line"><span class="lineno">  109</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[Saddle Search] dynamics_record_interval must be &lt;= &quot;</span></div>
+<div class="line"><span class="lineno">  110</span>                   <span class="stringliteral">&quot;dynamics_state_check_interval&quot;</span>);</div>
+<div class="line"><span class="lineno">  111</span>    <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a> = 1;</div>
+<div class="line"><span class="lineno">  112</span>  }</div>
+<div class="line"><span class="lineno">  113</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>;</div>
+<div class="line"><span class="lineno">  114</span>}</div>
+<div class="ttc" id="aEonLogger_8h_html_a4cf9b473cf6a1d850b3725fca6805f86"><div class="ttname"><a href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a></div><div class="ttdeci">#define EONC_LOG_ERROR(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00262">EonLogger.h:262</a></div></div>
+<div class="ttc" id="aclassParameters_html_a9f940dfdbf98237a27dcfba042b57dd2"><div class="ttname"><a href="#a9f940dfdbf98237a27dcfba042b57dd2">Parameters::saddle_search_options</a></div><div class="ttdeci">struct eonc::Parameters::saddle_search_options_t saddle_search_options</div></div>
+<div class="ttc" id="aclassParameters_html_adf85184daf1c75014080b998951e14b5"><div class="ttname"><a href="#adf85184daf1c75014080b998951e14b5">Parameters::dynamics_options</a></div><div class="ttdeci">struct eonc::Parameters::dynamics_options_t dynamics_options</div></div>
+<div class="ttc" id="aclassParameters_html_afd8b76ca52c432bb56efd1a73ebf8234"><div class="ttname"><a href="#afd8b76ca52c432bb56efd1a73ebf8234">Parameters::main_options</a></div><div class="ttdeci">struct eonc::Parameters::main_options_t main_options</div></div>
+<div class="ttc" id="aclassParameters_html_afe28b4f82f8a9ccc549c7bf6bcfd49cd"><div class="ttname"><a href="#afe28b4f82f8a9ccc549c7bf6bcfd49cd">Parameters::parallel_replica_options</a></div><div class="ttdeci">struct eonc::Parameters::parallel_replica_options_t parallel_replica_options</div></div>
+<div class="ttc" id="anamespaceeonc_1_1config_html_a088cf940288ff28adeba5722978a208b"><div class="ttname"><a href="namespaceeonc_1_1config.html#a088cf940288ff28adeba5722978a208b">eonc::config::load_ini</a></div><div class="ttdeci">int load_ini(INIReader &amp;ini, Parameters &amp;params)</div><div class="ttdoc">Parse all INI sections into the Parameters struct.</div><div class="ttdef"><b>Definition</b> <a href="ParametersINI_8cpp_source.html#l00042">ParametersINI.cpp:42</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1dynlib_html_a793e2f7806f01afcc170a5b8054f4e6f"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">eonc::dynlib::error</a></div><div class="ttdeci">std::string error()</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00082">DynLib.h:82</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a5df820be7dd9b8743ec6802adf161615" name="a5df820be7dd9b8743ec6802adf161615"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5df820be7dd9b8743ec6802adf161615">&#9670;&#160;</a></span>load() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classeonc_1_1Parameters.html#a5df820be7dd9b8743ec6802adf161615">Parameters::load</a> </td>
+          <td>(</td>
+          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>filename</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8cpp_source.html#l00034">34</a> of file <a class="el" href="Parameters_8cpp_source.html">Parameters.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   34</span>                                       {</div>
+<div class="line"><span class="lineno">   35</span>  INIReader ini(filename);</div>
+<div class="line"><span class="lineno">   36</span>  <span class="keywordflow">if</span> (ini.ParseError() &lt; 0) {</div>
+<div class="line"><span class="lineno">   37</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;Can&#39;t load INI file: {}&quot;</span>, filename);</div>
+<div class="line"><span class="lineno">   38</span>    <span class="keywordflow">return</span> 1;</div>
+<div class="line"><span class="lineno">   39</span>  }</div>
+<div class="line"><span class="lineno">   40</span> </div>
+<div class="line"><span class="lineno">   41</span>  <span class="keywordtype">int</span> <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a> = <a class="code hl_function" href="namespaceeonc_1_1config.html#a088cf940288ff28adeba5722978a208b">eonc::config::load_ini</a>(ini, *<span class="keyword">this</span>);</div>
+<div class="line"><span class="lineno">   42</span> </div>
+<div class="line"><span class="lineno">   43</span>  <span class="comment">// Sanity Checks</span></div>
+<div class="line"><span class="lineno">   44</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#afe28b4f82f8a9ccc549c7bf6bcfd49cd">parallel_replica_options</a>.state_check_interval &gt; <a class="code hl_variable" href="#adf85184daf1c75014080b998951e14b5">dynamics_options</a>.time &amp;&amp;</div>
+<div class="line"><span class="lineno">   45</span>      magic_enum::enum_name&lt;JobType&gt;(<a class="code hl_variable" href="#afd8b76ca52c432bb56efd1a73ebf8234">main_options</a>.job) == <span class="stringliteral">&quot;parallel_replica&quot;</span>) {</div>
+<div class="line"><span class="lineno">   46</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[Parallel Replica] state_check_interval must be &lt;= time&quot;</span>);</div>
+<div class="line"><span class="lineno">   47</span>    <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a> = 1;</div>
+<div class="line"><span class="lineno">   48</span>  }</div>
+<div class="line"><span class="lineno">   49</span> </div>
+<div class="line"><span class="lineno">   50</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a>.initialization.input_path.empty() &amp;&amp;</div>
+<div class="line"><span class="lineno">   51</span>      <a class="code hl_variable" href="#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a>.initialization.method == <a class="code hl_enumvalue" href="namespaceeonc.html#a323be6616e43feab55a65202288b9459aaac544aacc3615aada24897a215f5046">NEBInit::LINEAR</a>) {</div>
+<div class="line"><span class="lineno">   52</span>    <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(</div>
+<div class="line"><span class="lineno">   53</span>        <span class="stringliteral">&quot;[Nudged Elastic Band] &#39;initial_path_in&#39; is provided, but &quot;</span></div>
+<div class="line"><span class="lineno">   54</span>        <span class="stringliteral">&quot;&#39;initializer&#39; defaults to linear. &quot;</span></div>
+<div class="line"><span class="lineno">   55</span>        <span class="stringliteral">&quot;Ensure this is intentional, as the loaded path will not be &quot;</span></div>
+<div class="line"><span class="lineno">   56</span>        <span class="stringliteral">&quot;used without initializer set to file.&quot;</span>);</div>
+<div class="line"><span class="lineno">   57</span>  }</div>
+<div class="line"><span class="lineno">   58</span> </div>
+<div class="line"><span class="lineno">   59</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a9f940dfdbf98237a27dcfba042b57dd2">saddle_search_options</a>.dynamics.record_interval_input &gt;</div>
+<div class="line"><span class="lineno">   60</span>      <a class="code hl_variable" href="#a9f940dfdbf98237a27dcfba042b57dd2">saddle_search_options</a>.dynamics.state_check_interval_input) {</div>
+<div class="line"><span class="lineno">   61</span>    <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[Saddle Search] dynamics_record_interval must be &lt;= &quot;</span></div>
+<div class="line"><span class="lineno">   62</span>                   <span class="stringliteral">&quot;dynamics_state_check_interval&quot;</span>);</div>
+<div class="line"><span class="lineno">   63</span>    <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a> = 1;</div>
+<div class="line"><span class="lineno">   64</span>  }</div>
+<div class="line"><span class="lineno">   65</span> </div>
+<div class="line"><span class="lineno">   66</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a75c3a463dab97989d367d624e455606c">potential_options</a>.potential == <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a065d784b407aa4ed171c0461a8e7cca7">PotType::AMS</a> ||</div>
+<div class="line"><span class="lineno">   67</span>      <a class="code hl_variable" href="#a75c3a463dab97989d367d624e455606c">potential_options</a>.potential == <a class="code hl_enumvalue" href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ad23bca783a57775346200e444f8a25ea">PotType::AMS_IO</a>) {</div>
+<div class="line"><span class="lineno">   68</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.forcefield.empty() &amp;&amp; <a class="code hl_variable" href="#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.model.empty() &amp;&amp;</div>
+<div class="line"><span class="lineno">   69</span>        <a class="code hl_variable" href="#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.xc.empty()) {</div>
+<div class="line"><span class="lineno">   70</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[AMS] Must provide atleast forcefield or model or xc&quot;</span>);</div>
+<div class="line"><span class="lineno">   71</span>      <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a> = 1;</div>
+<div class="line"><span class="lineno">   72</span>    }</div>
+<div class="line"><span class="lineno">   73</span> </div>
+<div class="line"><span class="lineno">   74</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.forcefield.empty() &amp;&amp; !<a class="code hl_variable" href="#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.model.empty() &amp;&amp;</div>
+<div class="line"><span class="lineno">   75</span>        !<a class="code hl_variable" href="#a97d1f3495ac0c1c3d6eec2465201a588">ams_options</a>.xc.empty()) {</div>
+<div class="line"><span class="lineno">   76</span>      <a class="code hl_define" href="EonLogger_8h.html#a4cf9b473cf6a1d850b3725fca6805f86">EONC_LOG_ERROR</a>(<span class="stringliteral">&quot;[AMS] Must provide either forcefield or model&quot;</span>);</div>
+<div class="line"><span class="lineno">   77</span>      <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a> = 1;</div>
+<div class="line"><span class="lineno">   78</span>    }</div>
+<div class="line"><span class="lineno">   79</span>  }</div>
+<div class="line"><span class="lineno">   80</span> </div>
+<div class="line"><span class="lineno">   81</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">error</a>;</div>
+<div class="line"><span class="lineno">   82</span>}</div>
+<div class="ttc" id="aEonLogger_8h_html_a85fddaf0620c36ee3fcf865df53a9327"><div class="ttname"><a href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a></div><div class="ttdeci">#define EONC_LOG_WARNING(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00256">EonLogger.h:256</a></div></div>
+<div class="ttc" id="aclassParameters_html_a40bad5f66d7bb2ccfca684f8ecf850c2"><div class="ttname"><a href="#a40bad5f66d7bb2ccfca684f8ecf850c2">Parameters::neb_options</a></div><div class="ttdeci">struct eonc::Parameters::neb_options_t neb_options</div></div>
+<div class="ttc" id="aclassParameters_html_a75c3a463dab97989d367d624e455606c"><div class="ttname"><a href="#a75c3a463dab97989d367d624e455606c">Parameters::potential_options</a></div><div class="ttdeci">struct eonc::Parameters::potential_options_t potential_options</div></div>
+<div class="ttc" id="aclassParameters_html_a97d1f3495ac0c1c3d6eec2465201a588"><div class="ttname"><a href="#a97d1f3495ac0c1c3d6eec2465201a588">Parameters::ams_options</a></div><div class="ttdeci">struct eonc::Parameters::ams_options_t ams_options</div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2a065d784b407aa4ed171c0461a8e7cca7"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a065d784b407aa4ed171c0461a8e7cca7">eonc::PotType::AMS</a></div><div class="ttdeci">@ AMS</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00059">BaseStructures.h:59</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a175de7946a44a0ade4cdbc0c762661d2ad23bca783a57775346200e444f8a25ea"><div class="ttname"><a href="namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ad23bca783a57775346200e444f8a25ea">eonc::PotType::AMS_IO</a></div><div class="ttdeci">@ AMS_IO</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00060">BaseStructures.h:60</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a323be6616e43feab55a65202288b9459aaac544aacc3615aada24897a215f5046"><div class="ttname"><a href="namespaceeonc.html#a323be6616e43feab55a65202288b9459aaac544aacc3615aada24897a215f5046">eonc::NEBInit::LINEAR</a></div><div class="ttdeci">@ LINEAR</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00109">BaseStructures.h:109</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a3dc3067d148211a7d88bcaa284ba4243" name="a3dc3067d148211a7d88bcaa284ba4243"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dc3067d148211a7d88bcaa284ba4243">&#9670;&#160;</a></span>load_json()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classeonc_1_1Parameters.html#a3dc3067d148211a7d88bcaa284ba4243">Parameters::load_json</a> </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>json_str</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8cpp_source.html#l00116">116</a> of file <a class="el" href="Parameters_8cpp_source.html">Parameters.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  116</span>                                                   {</div>
+<div class="line"><span class="lineno">  117</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1config.html#aaa0bdd2c5a5baa30a3ccb3a5b82441b2">eonc::config::load_json</a>(json_str, *<span class="keyword">this</span>);</div>
+<div class="line"><span class="lineno">  118</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1config_html_aaa0bdd2c5a5baa30a3ccb3a5b82441b2"><div class="ttname"><a href="namespaceeonc_1_1config.html#aaa0bdd2c5a5baa30a3ccb3a5b82441b2">eonc::config::load_json</a></div><div class="ttdeci">int load_json(const std::string &amp;json_str, Parameters &amp;params)</div><div class="ttdoc">Load Parameters from a JSON string. Returns 0 on success.</div><div class="ttdef"><b>Definition</b> <a href="ParametersJSON_8cpp_source.html#l00389">ParametersJSON.cpp:389</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a7201ee6d01bf074382d62faee3c0747c" name="a7201ee6d01bf074382d62faee3c0747c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7201ee6d01bf074382d62faee3c0747c">&#9670;&#160;</a></span>to_json()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="classeonc_1_1Parameters.html#a7201ee6d01bf074382d62faee3c0747c">Parameters::to_json</a> </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Parameters_8cpp_source.html#l00120">120</a> of file <a class="el" href="Parameters_8cpp_source.html">Parameters.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  120</span>                                    {</div>
+<div class="line"><span class="lineno">  121</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1config.html#a77aada85affc5e6c5eec9ee1a63504c9">eonc::config::to_json</a>(*this).dump(2);</div>
+<div class="line"><span class="lineno">  122</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1config_html_a77aada85affc5e6c5eec9ee1a63504c9"><div class="ttname"><a href="namespaceeonc_1_1config.html#a77aada85affc5e6c5eec9ee1a63504c9">eonc::config::to_json</a></div><div class="ttdeci">json to_json(const Parameters &amp;p)</div><div class="ttdoc">Serialize all Parameters to JSON.</div><div class="ttdef"><b>Definition</b> <a href="ParametersJSON_8cpp_source.html#l00046">ParametersJSON.cpp:46</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a97d1f3495ac0c1c3d6eec2465201a588" name="a97d1f3495ac0c1c3d6eec2465201a588"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97d1f3495ac0c1c3d6eec2465201a588">&#9670;&#160;</a></span>ams_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1ams__options__t.html">eonc::Parameters::ams_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a97d1f3495ac0c1c3d6eec2465201a588">eonc::Parameters::ams_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8f5088a7b6d1b4137742065af408a163" name="a8f5088a7b6d1b4137742065af408a163"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f5088a7b6d1b4137742065af408a163">&#9670;&#160;</a></span>artn_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1artn__options__t.html">eonc::Parameters::artn_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a8f5088a7b6d1b4137742065af408a163">eonc::Parameters::artn_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a5821dadd33334ada42925280e43311ad" name="a5821dadd33334ada42925280e43311ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5821dadd33334ada42925280e43311ad">&#9670;&#160;</a></span>ase_nwchem_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1ase__nwchem__options__t.html">eonc::Parameters::ase_nwchem_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a5821dadd33334ada42925280e43311ad">eonc::Parameters::ase_nwchem_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a705d26ac82a8beef678382aa017b0578" name="a705d26ac82a8beef678382aa017b0578"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a705d26ac82a8beef678382aa017b0578">&#9670;&#160;</a></span>ase_orca_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1ase__orca__options__t.html">eonc::Parameters::ase_orca_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a705d26ac82a8beef678382aa017b0578">eonc::Parameters::ase_orca_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0a1d6737b80a60d8f1a4406cc62c9616" name="a0a1d6737b80a60d8f1a4406cc62c9616"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a1d6737b80a60d8f1a4406cc62c9616">&#9670;&#160;</a></span>basin_hopping_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1basin__hopping__options__t.html">eonc::Parameters::basin_hopping_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a0a1d6737b80a60d8f1a4406cc62c9616">eonc::Parameters::basin_hopping_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afc1dbef0c49f14316be8b27520936c59" name="afc1dbef0c49f14316be8b27520936c59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc1dbef0c49f14316be8b27520936c59">&#9670;&#160;</a></span>bgsd_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1bgsd__options__t.html">eonc::Parameters::bgsd_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#afc1dbef0c49f14316be8b27520936c59">eonc::Parameters::bgsd_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a19eb1ff0748c2a83337e4315a10a0c1e" name="a19eb1ff0748c2a83337e4315a10a0c1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19eb1ff0748c2a83337e4315a10a0c1e">&#9670;&#160;</a></span>catlearn_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1catlearn__options__t.html">eonc::Parameters::catlearn_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a19eb1ff0748c2a83337e4315a10a0c1e">eonc::Parameters::catlearn_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2e272e72270d4796338d391b2ef1a8fe" name="a2e272e72270d4796338d391b2ef1a8fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e272e72270d4796338d391b2ef1a8fe">&#9670;&#160;</a></span>constants</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1constants__t.html">eonc::Parameters::constants_t</a> <a class="el" href="classeonc_1_1Parameters.html#a2e272e72270d4796338d391b2ef1a8fe">eonc::Parameters::constants</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab9dbd4793e2134d0bb7711a9dec693e8" name="ab9dbd4793e2134d0bb7711a9dec693e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9dbd4793e2134d0bb7711a9dec693e8">&#9670;&#160;</a></span>davidson_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1davidson__options__t.html">eonc::Parameters::davidson_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#ab9dbd4793e2134d0bb7711a9dec693e8">eonc::Parameters::davidson_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a82c189d4c9282373cb53addd6a4c2a89" name="a82c189d4c9282373cb53addd6a4c2a89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82c189d4c9282373cb53addd6a4c2a89">&#9670;&#160;</a></span>debug_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1debug__options__t.html">eonc::Parameters::debug_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a82c189d4c9282373cb53addd6a4c2a89">eonc::Parameters::debug_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6ba7de4dddcba8db2804af4ea15d1ad8" name="a6ba7de4dddcba8db2804af4ea15d1ad8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ba7de4dddcba8db2804af4ea15d1ad8">&#9670;&#160;</a></span>dimer_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1dimer__options__t.html">eonc::Parameters::dimer_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a6ba7de4dddcba8db2804af4ea15d1ad8">eonc::Parameters::dimer_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="adf85184daf1c75014080b998951e14b5" name="adf85184daf1c75014080b998951e14b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf85184daf1c75014080b998951e14b5">&#9670;&#160;</a></span>dynamics_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1dynamics__options__t.html">eonc::Parameters::dynamics_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#adf85184daf1c75014080b998951e14b5">eonc::Parameters::dynamics_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3e457fe4aabfd5741115d34cf37cada2" name="a3e457fe4aabfd5741115d34cf37cada2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e457fe4aabfd5741115d34cf37cada2">&#9670;&#160;</a></span>global_optimization_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1global__optimization__options__t.html">eonc::Parameters::global_optimization_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a3e457fe4aabfd5741115d34cf37cada2">eonc::Parameters::global_optimization_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3bdb061b6f9e346b5382adac5e54f927" name="a3bdb061b6f9e346b5382adac5e54f927"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bdb061b6f9e346b5382adac5e54f927">&#9670;&#160;</a></span>gp_surrogate_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1gp__surrogate__options__t.html">eonc::Parameters::gp_surrogate_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a3bdb061b6f9e346b5382adac5e54f927">eonc::Parameters::gp_surrogate_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a53b08dd3abac212d0c5427555925bdc3" name="a53b08dd3abac212d0c5427555925bdc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53b08dd3abac212d0c5427555925bdc3">&#9670;&#160;</a></span>gpr_dimer_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1gpr__dimer__options__t.html">eonc::Parameters::gpr_dimer_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a53b08dd3abac212d0c5427555925bdc3">eonc::Parameters::gpr_dimer_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ada9df619127490e3b73b7f6284327a97" name="ada9df619127490e3b73b7f6284327a97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada9df619127490e3b73b7f6284327a97">&#9670;&#160;</a></span>hessian_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1hessian__options__t.html">eonc::Parameters::hessian_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#ada9df619127490e3b73b7f6284327a97">eonc::Parameters::hessian_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4445e628f50802a2b0cce86ab20ebacd" name="a4445e628f50802a2b0cce86ab20ebacd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4445e628f50802a2b0cce86ab20ebacd">&#9670;&#160;</a></span>hyperdynamics_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1hyperdynamics__options__t.html">eonc::Parameters::hyperdynamics_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a4445e628f50802a2b0cce86ab20ebacd">eonc::Parameters::hyperdynamics_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a520adc958603aed224403a62361dc278" name="a520adc958603aed224403a62361dc278"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a520adc958603aed224403a62361dc278">&#9670;&#160;</a></span>ira_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1ira__options__t.html">eonc::Parameters::ira_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a520adc958603aed224403a62361dc278">eonc::Parameters::ira_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aed3102da98114cfc58e8b46b0721b2c5" name="aed3102da98114cfc58e8b46b0721b2c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed3102da98114cfc58e8b46b0721b2c5">&#9670;&#160;</a></span>lanczos_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1lanczos__options__t.html">eonc::Parameters::lanczos_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#aed3102da98114cfc58e8b46b0721b2c5">eonc::Parameters::lanczos_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afd8b76ca52c432bb56efd1a73ebf8234" name="afd8b76ca52c432bb56efd1a73ebf8234"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd8b76ca52c432bb56efd1a73ebf8234">&#9670;&#160;</a></span>main_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1main__options__t.html">eonc::Parameters::main_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#afd8b76ca52c432bb56efd1a73ebf8234">eonc::Parameters::main_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abe39c95c9363fce1a030dc4c55634705" name="abe39c95c9363fce1a030dc4c55634705"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe39c95c9363fce1a030dc4c55634705">&#9670;&#160;</a></span>metatomic_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1metatomic__options__t.html">eonc::Parameters::metatomic_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#abe39c95c9363fce1a030dc4c55634705">eonc::Parameters::metatomic_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a150d2da33771d8ed9546f1bad61813bb" name="a150d2da33771d8ed9546f1bad61813bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a150d2da33771d8ed9546f1bad61813bb">&#9670;&#160;</a></span>monte_carlo_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1monte__carlo__options__t.html">eonc::Parameters::monte_carlo_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a150d2da33771d8ed9546f1bad61813bb">eonc::Parameters::monte_carlo_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a40bad5f66d7bb2ccfca684f8ecf850c2" name="a40bad5f66d7bb2ccfca684f8ecf850c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40bad5f66d7bb2ccfca684f8ecf850c2">&#9670;&#160;</a></span>neb_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1neb__options__t.html">eonc::Parameters::neb_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">eonc::Parameters::neb_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a87d02cc2e7b0ad305e8f894186603f7b" name="a87d02cc2e7b0ad305e8f894186603f7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87d02cc2e7b0ad305e8f894186603f7b">&#9670;&#160;</a></span>oh_tst_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1oh__tst__options__t.html">eonc::Parameters::oh_tst_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a87d02cc2e7b0ad305e8f894186603f7b">eonc::Parameters::oh_tst_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1c3ba2cdc8f797e5ab2d8961720fe896" name="a1c3ba2cdc8f797e5ab2d8961720fe896"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c3ba2cdc8f797e5ab2d8961720fe896">&#9670;&#160;</a></span>optimizer_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1optimizer__options__t.html">eonc::Parameters::optimizer_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">eonc::Parameters::optimizer_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afe28b4f82f8a9ccc549c7bf6bcfd49cd" name="afe28b4f82f8a9ccc549c7bf6bcfd49cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe28b4f82f8a9ccc549c7bf6bcfd49cd">&#9670;&#160;</a></span>parallel_replica_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1parallel__replica__options__t.html">eonc::Parameters::parallel_replica_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#afe28b4f82f8a9ccc549c7bf6bcfd49cd">eonc::Parameters::parallel_replica_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a75c3a463dab97989d367d624e455606c" name="a75c3a463dab97989d367d624e455606c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75c3a463dab97989d367d624e455606c">&#9670;&#160;</a></span>potential_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1potential__options__t.html">eonc::Parameters::potential_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a75c3a463dab97989d367d624e455606c">eonc::Parameters::potential_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac978c51f86f70ee43b14ee7d7ae8c9ed" name="ac978c51f86f70ee43b14ee7d7ae8c9ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac978c51f86f70ee43b14ee7d7ae8c9ed">&#9670;&#160;</a></span>prefactor_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1prefactor__options__t.html">eonc::Parameters::prefactor_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#ac978c51f86f70ee43b14ee7d7ae8c9ed">eonc::Parameters::prefactor_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="addc8c0b6222f19ae6a0242cee89a9788" name="addc8c0b6222f19ae6a0242cee89a9788"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addc8c0b6222f19ae6a0242cee89a9788">&#9670;&#160;</a></span>process_search_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1process__search__options__t.html">eonc::Parameters::process_search_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#addc8c0b6222f19ae6a0242cee89a9788">eonc::Parameters::process_search_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7f592a2151353dd5093e17ad8cde1f67" name="a7f592a2151353dd5093e17ad8cde1f67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f592a2151353dd5093e17ad8cde1f67">&#9670;&#160;</a></span>replica_exchange_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1replica__exchange__options__t.html">eonc::Parameters::replica_exchange_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a7f592a2151353dd5093e17ad8cde1f67">eonc::Parameters::replica_exchange_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9c03e4f518e59eff0c18dad26b11f3c8" name="a9c03e4f518e59eff0c18dad26b11f3c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c03e4f518e59eff0c18dad26b11f3c8">&#9670;&#160;</a></span>rgpot_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1rgpot__options__t.html">eonc::Parameters::rgpot_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a9c03e4f518e59eff0c18dad26b11f3c8">eonc::Parameters::rgpot_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9f940dfdbf98237a27dcfba042b57dd2" name="a9f940dfdbf98237a27dcfba042b57dd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f940dfdbf98237a27dcfba042b57dd2">&#9670;&#160;</a></span>saddle_search_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1saddle__search__options__t.html">eonc::Parameters::saddle_search_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a9f940dfdbf98237a27dcfba042b57dd2">eonc::Parameters::saddle_search_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afe3f882ee9250f5bb11378ff41294d06" name="afe3f882ee9250f5bb11378ff41294d06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe3f882ee9250f5bb11378ff41294d06">&#9670;&#160;</a></span>serve_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1serve__options__t.html">eonc::Parameters::serve_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#afe3f882ee9250f5bb11378ff41294d06">eonc::Parameters::serve_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1003836cf5341ebffa9e7a061ea1e66e" name="a1003836cf5341ebffa9e7a061ea1e66e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1003836cf5341ebffa9e7a061ea1e66e">&#9670;&#160;</a></span>socket_nwchem_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1socket__nwchem__options__t.html">eonc::Parameters::socket_nwchem_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a1003836cf5341ebffa9e7a061ea1e66e">eonc::Parameters::socket_nwchem_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6a05f3bbfd2d579807f438e91880ba95" name="a6a05f3bbfd2d579807f438e91880ba95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a05f3bbfd2d579807f438e91880ba95">&#9670;&#160;</a></span>structure_comparison_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1structure__comparison__options__t.html">eonc::Parameters::structure_comparison_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a6a05f3bbfd2d579807f438e91880ba95">eonc::Parameters::structure_comparison_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a546c882b3dcb35a80e6c509b82d7d019" name="a546c882b3dcb35a80e6c509b82d7d019"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a546c882b3dcb35a80e6c509b82d7d019">&#9670;&#160;</a></span>tad_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1tad__options__t.html">eonc::Parameters::tad_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a546c882b3dcb35a80e6c509b82d7d019">eonc::Parameters::tad_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6977c923fc1ea180dba292eda31dee3a" name="a6977c923fc1ea180dba292eda31dee3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6977c923fc1ea180dba292eda31dee3a">&#9670;&#160;</a></span>thermostat_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1thermostat__options__t.html">eonc::Parameters::thermostat_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a6977c923fc1ea180dba292eda31dee3a">eonc::Parameters::thermostat_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a894a590628892e474efb1d66259cd1c0" name="a894a590628892e474efb1d66259cd1c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a894a590628892e474efb1d66259cd1c0">&#9670;&#160;</a></span>xtb_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1xtb__options__t.html">eonc::Parameters::xtb_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a894a590628892e474efb1d66259cd1c0">eonc::Parameters::xtb_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9dbcae013f41b1aa8910455e255e9af6" name="a9dbcae013f41b1aa8910455e255e9af6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dbcae013f41b1aa8910455e255e9af6">&#9670;&#160;</a></span>zbl_options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structeonc_1_1Parameters_1_1zbl__options__t.html">eonc::Parameters::zbl_options_t</a> <a class="el" href="classeonc_1_1Parameters.html#a9dbcae013f41b1aa8910455e255e9af6">eonc::Parameters::zbl_options</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="Parameters_8h_source.html">Parameters.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/<a class="el" href="Parameters_8cpp_source.html">Parameters.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="classParameters.html">Parameters</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

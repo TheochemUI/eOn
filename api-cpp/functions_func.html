@@ -1,0 +1,313 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: Class Members - Functions</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('functions_func.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contents">
+<div class="textblock">Here is a list of all functions with links to the classes they belong to:</div><br/>
+<div class="qindex"><a class="qindex" href="functions_func.html#index_a">A</a><div class="alphasepar"></div><a class="qindex" href="functions_func_b.html#index_b">B</a><div class="alphasepar"></div><a class="qindex" href="functions_func_c.html#index_c">C</a><div class="alphasepar"></div><a class="qindex" href="functions_func_d.html#index_d">D</a><div class="alphasepar"></div><a class="qindex" href="functions_func_e.html#index_e">E</a><div class="alphasepar"></div><a class="qindex" href="functions_func_f.html#index_f">F</a><div class="alphasepar"></div><a class="qindex" href="functions_func_g.html#index_g">G</a><div class="alphasepar"></div><a class="qindex" href="functions_func_h.html#index_h">H</a><div class="alphasepar"></div><a class="qindex" href="functions_func_i.html#index_i">I</a><div class="alphasepar"></div><a class="qindex" href="functions_func_j.html#index_j">J</a><div class="alphasepar"></div><a class="qindex" href="functions_func_k.html#index_k">K</a><div class="alphasepar"></div><a class="qindex" href="functions_func_l.html#index_l">L</a><div class="alphasepar"></div><a class="qindex" href="functions_func_m.html#index_m">M</a><div class="alphasepar"></div><a class="qindex" href="functions_func_n.html#index_n">N</a><div class="alphasepar"></div><a class="qindex" href="functions_func_o.html#index_o">O</a><div class="alphasepar"></div><a class="qindex" href="functions_func_p.html#index_p">P</a><div class="alphasepar"></div><a class="qindex" href="functions_func_q.html#index_q">Q</a><div class="alphasepar"></div><a class="qindex" href="functions_func_r.html#index_r">R</a><div class="alphasepar"></div><a class="qindex" href="functions_func_s.html#index_s">S</a><div class="alphasepar"></div><a class="qindex" href="functions_func_t.html#index_t">T</a><div class="alphasepar"></div><a class="qindex" href="functions_func_u.html#index_u">U</a><div class="alphasepar"></div><a class="qindex" href="functions_func_v.html#index_v">V</a><div class="alphasepar"></div><a class="qindex" href="functions_func_w.html#index_w">W</a><div class="alphasepar"></div><a class="qindex" href="functions_func_x.html#index_x">X</a><div class="alphasepar"></div><a class="qindex" href="functions_func_z.html#index_z">Z</a><div class="alphasepar"></div><a class="qindex" href="functions_func_~.html#index_~">~</a></div>
+
+
+<h3 class="doxsection"><a id="index_a" name="index_a"></a>- a -</h3><ul>
+<li>accept_connection()&#160;:&#160;<a class="el" href="classSocketNWChemPot.html#adbdd7fd9ee94aa095ac8ebeab8d95a23">SocketNWChemPot</a></li>
+<li>acceptRejectBoltzmann()&#160;:&#160;<a class="el" href="classeonc_1_1GlobalOptimizationJob.html#ad276422258003861d8093d044b50a498">eonc::GlobalOptimizationJob</a>, <a class="el" href="classGlobalOptimizationJob.html#ad276422258003861d8093d044b50a498">GlobalOptimizationJob</a></li>
+<li>acceptRejectNPEW()&#160;:&#160;<a class="el" href="classeonc_1_1GlobalOptimizationJob.html#ab0f6777481969b9db899afdfd021e67d">eonc::GlobalOptimizationJob</a>, <a class="el" href="classGlobalOptimizationJob.html#ab0f6777481969b9db899afdfd021e67d">GlobalOptimizationJob</a></li>
+<li>add_config_paths()&#160;:&#160;<a class="el" href="classeonc_1_1PluginLoader.html#a0ef33662eb17cfb854a4de8c51cde88f">eonc::PluginLoader</a></li>
+<li>addForces()&#160;:&#160;<a class="el" href="classforcefields_1_1PotentialBase.html#a866d5d81f2440152a6fd1b0efa588eb8">forcefields::PotentialBase</a>, <a class="el" href="structforcefields_1_1SpceCcl_1_1Water.html#a2b17023f44bdee3d9fe3380446caef80">forcefields::SpceCcl::Water</a></li>
+<li>advance()&#160;:&#160;<a class="el" href="classBondBoost.html#a6ef1c737696d60fc6ab6180b861e1c67">BondBoost</a>, <a class="el" href="classeonc_1_1BondBoost.html#a6ef1c737696d60fc6ab6180b861e1c67">eonc::BondBoost</a></li>
+<li>Allocate()&#160;:&#160;<a class="el" href="classEMT.html#aab4df399f1eadb268f11af6ffc79c0b2">EMT</a>, <a class="el" href="classNeighborList.html#a840cb774c40d73a5bede60706559891f">NeighborList</a>, <a class="el" href="classTinyMatrix.html#ab484186f3dcdfa3c9aca27bbb8d19d48">TinyMatrix&lt; Type &gt;</a></li>
+<li>AllocateStress()&#160;:&#160;<a class="el" href="classEMT.html#a495a1020c61ed36d160e4578b409b04a">EMT</a></li>
+<li>AMS()&#160;:&#160;<a class="el" href="classAMS.html#abab5b020ab2b66e0c31cc53b065f1217">AMS</a></li>
+<li>AMS_IO()&#160;:&#160;<a class="el" href="classAMS__IO.html#a79cc9c05096ff16ee8e37fdf2312ef62">AMS_IO</a></li>
+<li>analyze()&#160;:&#160;<a class="el" href="classeonc_1_1GlobalOptimizationJob.html#a36b4c609b3413ba6d1600d5c3c19db9a">eonc::GlobalOptimizationJob</a>, <a class="el" href="classGlobalOptimizationJob.html#a36b4c609b3413ba6d1600d5c3c19db9a">GlobalOptimizationJob</a></li>
+<li>andersenCollision()&#160;:&#160;<a class="el" href="classDynamics.html#ae4daa58a5b6e4ae9704fc370b2396234">Dynamics</a>, <a class="el" href="classeonc_1_1Dynamics.html#ae4daa58a5b6e4ae9704fc370b2396234">eonc::Dynamics</a></li>
+<li>anisotropic()&#160;:&#160;<a class="el" href="classforcefields_1_1ZhuPhilpott.html#a6203a3b0e30e4dc0f94333bbe8dc86e6">forcefields::ZhuPhilpott&lt; P &gt;</a></li>
+<li>AnyNeighbors()&#160;:&#160;<a class="el" href="classCellList.html#a94678324afa0513cd127456f2ec02201">CellList</a></li>
+<li>append_paths()&#160;:&#160;<a class="el" href="classeonc_1_1PluginLoader.html#a8d3f636e5289cebf412b685a441d70c0">eonc::PluginLoader</a></li>
+<li>apply()&#160;:&#160;<a class="el" href="classeonc_1_1GleThermostat.html#aa7a3c9730017b05b20ce86dcb6492913">eonc::GleThermostat</a>, <a class="el" href="classGleThermostat.html#aa7a3c9730017b05b20ce86dcb6492913">GleThermostat</a></li>
+<li>applyDecisionFeedback()&#160;:&#160;<a class="el" href="classeonc_1_1GlobalOptimizationJob.html#a95ec351fd47b358173e8c7e9978109cb">eonc::GlobalOptimizationJob</a>, <a class="el" href="classGlobalOptimizationJob.html#a95ec351fd47b358173e8c7e9978109cb">GlobalOptimizationJob</a></li>
+<li>applyMoveFeedbackMD()&#160;:&#160;<a class="el" href="classeonc_1_1GlobalOptimizationJob.html#af7b10a3120a26d05f23c8f496820742c">eonc::GlobalOptimizationJob</a>, <a class="el" href="classGlobalOptimizationJob.html#af7b10a3120a26d05f23c8f496820742c">GlobalOptimizationJob</a></li>
+<li>applyPeriodicBoundary()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a8c114b053047b48613893cdb90b1e194">eonc::Matter</a>, <a class="el" href="classMatter.html#a8c114b053047b48613893cdb90b1e194">Matter</a></li>
+<li>applyPeriodicBoundaryIfEnabled()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#a54be4d629faaa2d65e05f3735e4ec195">eonc::Matter</a>, <a class="el" href="classMatter.html#a54be4d629faaa2d65e05f3735e4ec195">Matter</a></li>
+<li>applyPeriodicity0()&#160;:&#160;<a class="el" href="classforcefields_1_1PotentialBase.html#a16a4ff3004563cbae05b1f797d6ef245">forcefields::PotentialBase</a></li>
+<li>applyPeriodicity1()&#160;:&#160;<a class="el" href="classforcefields_1_1PotentialBase.html#a9024403ecf6c10f072809dcf46151535">forcefields::PotentialBase</a></li>
+<li>ARTnResource()&#160;:&#160;<a class="el" href="classeonc_1_1ARTnResource.html#a62445671146915b5a9932c489c173683">eonc::ARTnResource</a></li>
+<li>ARTnSaddleSearch()&#160;:&#160;<a class="el" href="classARTnSaddleSearch.html#a39da3082bb6c91e2e4cd91770966edf9">ARTnSaddleSearch</a>, <a class="el" href="classeonc_1_1ARTnSaddleSearch.html#a39da3082bb6c91e2e4cd91770966edf9">eonc::ARTnSaddleSearch</a></li>
+<li>ASE()&#160;:&#160;<a class="el" href="classASE.html#a85554da4750d7dbdfad87abdd76ec530">ASE</a></li>
+<li>ASENwchemPot()&#160;:&#160;<a class="el" href="classASENwchemPot.html#af44bf8d9abd24fe97144f00ccfd06ea7">ASENwchemPot</a></li>
+<li>ASEOrcaPot()&#160;:&#160;<a class="el" href="classASEOrcaPot.html#a9b2f8f4404ab336a01b05c85aa6f115d">ASEOrcaPot</a></li>
+<li>assertIsolatedMoleculeLayoutSafe()&#160;:&#160;<a class="el" href="classeonc_1_1Matter.html#aa8feb78cd6d46aed293cd6b907f92299">eonc::Matter</a>, <a class="el" href="classMatter.html#aa8feb78cd6d46aed293cd6b907f92299">Matter</a></li>
+<li>AtomicGPDimer()&#160;:&#160;<a class="el" href="classAtomicGPDimer.html#ad9915c6c6f2fc7e83294a248b9cd3729">AtomicGPDimer</a>, <a class="el" href="classeonc_1_1AtomicGPDimer.html#ad9915c6c6f2fc7e83294a248b9cd3729">eonc::AtomicGPDimer</a></li>
+<li>Atoms()&#160;:&#160;<a class="el" href="classAtoms.html#a3830c2699ced729d323210992563ad52">Atoms</a></li>
+<li>available()&#160;:&#160;<a class="el" href="classeonc_1_1LammpsLoader.html#a1586ae65e5db2287e173cf287e573e6a">eonc::LammpsLoader</a>, <a class="el" href="classMetatomicEngineLoader.html#a90eeff4809cec48ad43d070f127273be">MetatomicEngineLoader</a>, <a class="el" href="classRGPotEngine.html#a0c61c6c36687621abfea0b27d227269a">RGPotEngine</a>, <a class="el" href="classXTBEngineLoader.html#abfc228a09a1511986b5e95bf3354c6b8">XTBEngineLoader</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

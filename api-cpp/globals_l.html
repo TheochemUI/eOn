@@ -1,0 +1,403 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: File Members</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('globals_l.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="contents">
+<div class="textblock">Here is a list of all file members with links to the files they belong to:</div><br/>
+<div class="qindex"><a class="qindex" href="globals.html#index_a">A</a><div class="alphasepar"></div><a class="qindex" href="globals_b.html#index_b">B</a><div class="alphasepar"></div><a class="qindex" href="globals_c.html#index_c">C</a><div class="alphasepar"></div><a class="qindex" href="globals_d.html#index_d">D</a><div class="alphasepar"></div><a class="qindex" href="globals_e.html#index_e">E</a><div class="alphasepar"></div><a class="qindex" href="globals_f.html#index_f">F</a><div class="alphasepar"></div><a class="qindex" href="globals_h.html#index_h">H</a><div class="alphasepar"></div><a class="qindex" href="globals_j.html#index_j">J</a><div class="alphasepar"></div><a class="qindex" href="globals_l.html#index_l">L</a><div class="alphasepar"></div><a class="qindex" href="globals_m.html#index_m">M</a><div class="alphasepar"></div><a class="qindex" href="globals_n.html#index_n">N</a><div class="alphasepar"></div><a class="qindex" href="globals_o.html#index_o">O</a><div class="alphasepar"></div><a class="qindex" href="globals_p.html#index_p">P</a><div class="alphasepar"></div><a class="qindex" href="globals_r.html#index_r">R</a><div class="alphasepar"></div><a class="qindex" href="globals_s.html#index_s">S</a><div class="alphasepar"></div><a class="qindex" href="globals_t.html#index_t">T</a><div class="alphasepar"></div><a class="qindex" href="globals_v.html#index_v">V</a><div class="alphasepar"></div><a class="qindex" href="globals_x.html#index_x">X</a><div class="alphasepar"></div><a class="qindex" href="globals__.html#index__">_</a></div>
+
+
+<h3 class="doxsection"><a id="index_l" name="index_l"></a>- l -</h3><ul>
+<li>lammps_close()&#160;:&#160;<a class="el" href="library_8h.html#a75570a623be78c153a75eb533a0b65d2">library.h</a></li>
+<li>lammps_command()&#160;:&#160;<a class="el" href="library_8h.html#a48721b1903a79541cb680dabea9b84d5">library.h</a></li>
+<li>lammps_commands_list()&#160;:&#160;<a class="el" href="library_8h.html#ab542f51c42bcf8e39b64722ffa426890">library.h</a></li>
+<li>lammps_commands_string()&#160;:&#160;<a class="el" href="library_8h.html#a82b8d3fb9db7e0a834f6da0996e61d6b">library.h</a></li>
+<li>lammps_config_accelerator()&#160;:&#160;<a class="el" href="library_8h.html#a503c6feaadbab30ac00b978fcf199399">library.h</a></li>
+<li>lammps_config_has_exceptions()&#160;:&#160;<a class="el" href="library_8h.html#ade5f1cc597079d8cb32a9765cbfff44c">library.h</a></li>
+<li>lammps_config_has_ffmpeg_support()&#160;:&#160;<a class="el" href="library_8h.html#acbbc33bf81d78002a4ed94e2b7ff8f06">library.h</a></li>
+<li>lammps_config_has_gzip_support()&#160;:&#160;<a class="el" href="library_8h.html#a0bd41d39a5dd5992d614e150b6d88a5f">library.h</a></li>
+<li>lammps_config_has_jpeg_support()&#160;:&#160;<a class="el" href="library_8h.html#ac3835bbc1c6797e56f8aa47443d11af6">library.h</a></li>
+<li>lammps_config_has_mpi_support()&#160;:&#160;<a class="el" href="library_8h.html#ada45e7d079fddf8400e31cc98710b5f8">library.h</a></li>
+<li>lammps_config_has_package()&#160;:&#160;<a class="el" href="library_8h.html#adca5959e5b824ab7413c74ee05eb9f0d">library.h</a></li>
+<li>lammps_config_has_png_support()&#160;:&#160;<a class="el" href="library_8h.html#a9de61d7686a3db2344fb94a4a22c67e4">library.h</a></li>
+<li>lammps_config_package_count()&#160;:&#160;<a class="el" href="library_8h.html#a233aefab279fd9290f14fae1e4c16be4">library.h</a></li>
+<li>lammps_config_package_name()&#160;:&#160;<a class="el" href="library_8h.html#aca1da31b8eb4342ee1eff02d721fa48d">library.h</a></li>
+<li>lammps_create_atoms()&#160;:&#160;<a class="el" href="library_8h.html#aeebd5ebadb0c014f80e2c25dd369ff44">library.h</a></li>
+<li>lammps_decode_image_flags()&#160;:&#160;<a class="el" href="library_8h.html#ae774bc2a40ffa11e7a7aecfac7a9c3c6">library.h</a></li>
+<li>LAMMPS_DOUBLE&#160;:&#160;<a class="el" href="library_8h.html#a8f60df5cd520b67959d22185afcdacc5a5a6c3a30d227047ab64e210c8a2fd468">library.h</a></li>
+<li>LAMMPS_DOUBLE_2D&#160;:&#160;<a class="el" href="library_8h.html#a8f60df5cd520b67959d22185afcdacc5a515e6e960fa5de1f4e22596ede33fdeb">library.h</a></li>
+<li>lammps_encode_image_flags()&#160;:&#160;<a class="el" href="library_8h.html#ad12aad3df456f3c85418ff8af6e55e10">library.h</a></li>
+<li>lammps_error()&#160;:&#160;<a class="el" href="library_8h.html#ad365a1950c1e4e6bf21e414cab86a57a">library.h</a></li>
+<li>lammps_extract_atom()&#160;:&#160;<a class="el" href="library_8h.html#aa195b895bff9cd756ec18ca2e9cab90d">library.h</a></li>
+<li>lammps_extract_atom_datatype()&#160;:&#160;<a class="el" href="library_8h.html#aed36a77c70d91c9497b5eee075d18aab">library.h</a></li>
+<li>lammps_extract_box()&#160;:&#160;<a class="el" href="library_8h.html#a5280ea3a305969261faa1a0258b9c7f9">library.h</a></li>
+<li>lammps_extract_compute()&#160;:&#160;<a class="el" href="library_8h.html#a2e90e8ad6e8a2566e3fe7970c1965567">library.h</a></li>
+<li>lammps_extract_fix()&#160;:&#160;<a class="el" href="library_8h.html#aa7a9a4e488fa0d717a9bfb637f2c6a4e">library.h</a></li>
+<li>lammps_extract_global()&#160;:&#160;<a class="el" href="library_8h.html#ae1abe908414c1dbb01548581f8fc74a9">library.h</a></li>
+<li>lammps_extract_global_datatype()&#160;:&#160;<a class="el" href="library_8h.html#a7a5da49a662d7cc3e8eaa79d7cc344e0">library.h</a></li>
+<li>lammps_extract_setting()&#160;:&#160;<a class="el" href="library_8h.html#aec668a9f577e41295afb673f7edc99da">library.h</a></li>
+<li>lammps_extract_variable()&#160;:&#160;<a class="el" href="library_8h.html#a95cb08b988b86d74a9fded90c47ad5a1">library.h</a></li>
+<li>lammps_extract_variable_datatype()&#160;:&#160;<a class="el" href="library_8h.html#a5725944733b98157d3f6993c2f6499ce">library.h</a></li>
+<li>lammps_file()&#160;:&#160;<a class="el" href="library_8h.html#a76c1ce1af98c09978578c7a94d778c0b">library.h</a></li>
+<li>lammps_find_compute_neighlist()&#160;:&#160;<a class="el" href="library_8h.html#a04b80d34fe95f6931d9f6906a2c7f869">library.h</a></li>
+<li>lammps_find_fix_neighlist()&#160;:&#160;<a class="el" href="library_8h.html#a51652806cc5a984712a87de083396a48">library.h</a></li>
+<li>lammps_find_pair_neighlist()&#160;:&#160;<a class="el" href="library_8h.html#a859b206fea42bc2db03c992acc478cbc">library.h</a></li>
+<li>lammps_fix_external_get_force()&#160;:&#160;<a class="el" href="library_8h.html#a3e5a4c1f126c6b6cdd756f99764e69d7">library.h</a></li>
+<li>lammps_fix_external_set_energy_global()&#160;:&#160;<a class="el" href="library_8h.html#a6ac4888e2c82846dcb9b1d013ef90f96">library.h</a></li>
+<li>lammps_fix_external_set_energy_peratom()&#160;:&#160;<a class="el" href="library_8h.html#aac2c2027c2779613dfe2ffa47205bbdf">library.h</a></li>
+<li>lammps_fix_external_set_vector()&#160;:&#160;<a class="el" href="library_8h.html#a627a37da0a0f1cd076cfac35ea488c18">library.h</a></li>
+<li>lammps_fix_external_set_vector_length()&#160;:&#160;<a class="el" href="library_8h.html#a65eccbce0a2c1154051c56296acc7598">library.h</a></li>
+<li>lammps_fix_external_set_virial_global()&#160;:&#160;<a class="el" href="library_8h.html#af707a45ddf44addec9b8345546deb83e">library.h</a></li>
+<li>lammps_fix_external_set_virial_peratom()&#160;:&#160;<a class="el" href="library_8h.html#ae85311d7c556c3c7aace6e329ab352a2">library.h</a></li>
+<li>lammps_flush_buffers()&#160;:&#160;<a class="el" href="library_8h.html#af54eb973fef3aa2bfe7708a0cf1139ff">library.h</a></li>
+<li>lammps_force_timeout()&#160;:&#160;<a class="el" href="library_8h.html#a298dbff8f43185d82bcbf0a8d76b9aa9">library.h</a></li>
+<li>lammps_free()&#160;:&#160;<a class="el" href="library_8h.html#aa521d27718fc92e9a58a255ae9f9cf87">library.h</a></li>
+<li>lammps_gather()&#160;:&#160;<a class="el" href="library_8h.html#aeaf5356f9fafd2fd9dbab0958a0a8ac3">library.h</a></li>
+<li>lammps_gather_angles()&#160;:&#160;<a class="el" href="library_8h.html#a6f8c39008d113b5c3450c2cffaadcf3c">library.h</a></li>
+<li>lammps_gather_atoms()&#160;:&#160;<a class="el" href="library_8h.html#ad3208ce7d03d54f74573a80565dc335d">library.h</a></li>
+<li>lammps_gather_atoms_concat()&#160;:&#160;<a class="el" href="library_8h.html#a5e433d99895ca2aa9d87843bc7ee49d5">library.h</a></li>
+<li>lammps_gather_atoms_subset()&#160;:&#160;<a class="el" href="library_8h.html#adb2aa14375aa277b1c32ad17a5f4a39f">library.h</a></li>
+<li>lammps_gather_bonds()&#160;:&#160;<a class="el" href="library_8h.html#a360d274b56e28d7a9fd0e195ff2171af">library.h</a></li>
+<li>lammps_gather_concat()&#160;:&#160;<a class="el" href="library_8h.html#add32cd75d71123448c752d69d96a9009">library.h</a></li>
+<li>lammps_gather_dihedrals()&#160;:&#160;<a class="el" href="library_8h.html#a93dac1f42646ebfa89521fc77a38a785">library.h</a></li>
+<li>lammps_gather_impropers()&#160;:&#160;<a class="el" href="library_8h.html#abf81ea4427e375c6605fb7362e995b92">library.h</a></li>
+<li>lammps_gather_subset()&#160;:&#160;<a class="el" href="library_8h.html#ab098fa5d18996508a54430ff5e3a0faf">library.h</a></li>
+<li>lammps_get_gpu_device_info()&#160;:&#160;<a class="el" href="library_8h.html#a8439a498ff1b8117a45e705e2a636c18">library.h</a></li>
+<li>lammps_get_last_error_message()&#160;:&#160;<a class="el" href="library_8h.html#a1900bdb6311f7f9649b5c82e20257cff">library.h</a></li>
+<li>lammps_get_mpi_comm()&#160;:&#160;<a class="el" href="library_8h.html#a27501b4b00aa53f6621e996e3eeeb149">library.h</a></li>
+<li>lammps_get_natoms()&#160;:&#160;<a class="el" href="library_8h.html#aa7d4ad0dc261c21fa41cffa38ea3ac21">library.h</a></li>
+<li>lammps_get_os_info()&#160;:&#160;<a class="el" href="library_8h.html#ae4b6178f693ff83002ee8a1559edd6ed">library.h</a></li>
+<li>lammps_get_thermo()&#160;:&#160;<a class="el" href="library_8h.html#a5f54fbac6f7be9c20605c0faf71ec77a">library.h</a></li>
+<li>lammps_has_error()&#160;:&#160;<a class="el" href="library_8h.html#a6f2f23eeafb8d56983ef90ad55e0c37d">library.h</a></li>
+<li>lammps_has_gpu_device()&#160;:&#160;<a class="el" href="library_8h.html#acd3fd9fa79e08b7fb530b51b9ca79c8e">library.h</a></li>
+<li>lammps_has_id()&#160;:&#160;<a class="el" href="library_8h.html#ad1ee62546d5d560747379cba84bea178">library.h</a></li>
+<li>lammps_has_style()&#160;:&#160;<a class="el" href="library_8h.html#a74aa598ce1e183ed70ce5eabf7202bec">library.h</a></li>
+<li>lammps_id_count()&#160;:&#160;<a class="el" href="library_8h.html#aaa1311b9ce55c53bfae199c2ee9cb955">library.h</a></li>
+<li>lammps_id_name()&#160;:&#160;<a class="el" href="library_8h.html#a42ba710155bca355ba451fd45dcda0f9">library.h</a></li>
+<li>LAMMPS_INT&#160;:&#160;<a class="el" href="library_8h.html#a8f60df5cd520b67959d22185afcdacc5a6f4597ad5c533e63a78fe90151d4d348">library.h</a></li>
+<li>LAMMPS_INT64&#160;:&#160;<a class="el" href="library_8h.html#a8f60df5cd520b67959d22185afcdacc5a3e0db9f4dfd611ebb971372cc245e80c">library.h</a></li>
+<li>LAMMPS_INT64_2D&#160;:&#160;<a class="el" href="library_8h.html#a8f60df5cd520b67959d22185afcdacc5abfc022018c51b292be00cbc87760ab60">library.h</a></li>
+<li>LAMMPS_INT_2D&#160;:&#160;<a class="el" href="library_8h.html#a8f60df5cd520b67959d22185afcdacc5acdc5b9e5771b685c0f5c0377a06380da">library.h</a></li>
+<li>lammps_is_running()&#160;:&#160;<a class="el" href="library_8h.html#a96130bd0ac1fcfbb01f56fe92f8cf7da">library.h</a></li>
+<li>lammps_kokkos_finalize()&#160;:&#160;<a class="el" href="library_8h.html#a295c98b87692b72b5bf594e7b291905b">library.h</a></li>
+<li>lammps_last_thermo()&#160;:&#160;<a class="el" href="library_8h.html#a3d51693ba1f7f0cb5b703b1ddead146a">library.h</a></li>
+<li>lammps_map_atom()&#160;:&#160;<a class="el" href="library_8h.html#a40e85a5c09ff9cc7763d119fea9603ec">library.h</a></li>
+<li>lammps_memory_usage()&#160;:&#160;<a class="el" href="library_8h.html#ab1a5d06bc29dd1233cde03c857ff0821">library.h</a></li>
+<li>lammps_mpi_finalize()&#160;:&#160;<a class="el" href="library_8h.html#a181557f91cb6d49ba67083a51cf110dc">library.h</a></li>
+<li>lammps_mpi_init()&#160;:&#160;<a class="el" href="library_8h.html#afee0113d4bcf1cbe55a8f83176b39b59">library.h</a></li>
+<li>lammps_neighlist_element_neighbors()&#160;:&#160;<a class="el" href="library_8h.html#a0bd03926cf3a3ebb93311dab400c792c">library.h</a></li>
+<li>lammps_neighlist_num_elements()&#160;:&#160;<a class="el" href="library_8h.html#ab4cd0310c0638fad6352d0081194bdd8">library.h</a></li>
+<li>LAMMPS_NONE&#160;:&#160;<a class="el" href="library_8h.html#a8f60df5cd520b67959d22185afcdacc5a2092f040c8fd7fd46efa6591c4f03515">library.h</a></li>
+<li>lammps_open_fortran()&#160;:&#160;<a class="el" href="library_8h.html#a00b91f3fe0d663da088490b873ae80d1">library.h</a></li>
+<li>lammps_open_no_mpi()&#160;:&#160;<a class="el" href="library_8h.html#a2532f747f8b8f91310a03e81b191c85b">library.h</a></li>
+<li>lammps_plugin_count()&#160;:&#160;<a class="el" href="library_8h.html#ad757b2f1e707a1ac0ab59967c9e3bcd0">library.h</a></li>
+<li>lammps_plugin_name()&#160;:&#160;<a class="el" href="library_8h.html#a8610437ec2c055efd550d493b9019dab">library.h</a></li>
+<li>lammps_python_api_version()&#160;:&#160;<a class="el" href="library_8h.html#ac696ed37ed39b295adbf05577111da90">library.h</a></li>
+<li>lammps_python_finalize()&#160;:&#160;<a class="el" href="library_8h.html#a5d625667e3988ecae35e94490cb5aa8f">library.h</a></li>
+<li>lammps_reset_box()&#160;:&#160;<a class="el" href="library_8h.html#ada23ca4aacdcc9b5991af9968e0369e8">library.h</a></li>
+<li>lammps_scatter()&#160;:&#160;<a class="el" href="library_8h.html#a1251a6d15588762a6810ed4021bfce11">library.h</a></li>
+<li>lammps_scatter_atoms()&#160;:&#160;<a class="el" href="library_8h.html#a912e450e211db31d9396ad5f421d500d">library.h</a></li>
+<li>lammps_scatter_atoms_subset()&#160;:&#160;<a class="el" href="library_8h.html#a42726943d284b0edad9b8f3cd3129398">library.h</a></li>
+<li>lammps_scatter_subset()&#160;:&#160;<a class="el" href="library_8h.html#ae379c37f2f8136e130030ddbe832695a">library.h</a></li>
+<li>lammps_set_fix_external_callback()&#160;:&#160;<a class="el" href="library_8h.html#a2b2994fdf05652cb2f3fe2afc4d00d1a">library.h</a></li>
+<li>lammps_set_internal_variable()&#160;:&#160;<a class="el" href="library_8h.html#a250fd1b00f6b69daf98cc4a879c78059">library.h</a></li>
+<li>lammps_set_string_variable()&#160;:&#160;<a class="el" href="library_8h.html#a540ffa539718883760eb6fafab3627bc">library.h</a></li>
+<li>lammps_set_variable()&#160;:&#160;<a class="el" href="library_8h.html#ab3cc202eaec7472181870b4747b3d577">library.h</a></li>
+<li>LAMMPS_SMALLBIG&#160;:&#160;<a class="el" href="library_8h.html#ad03951957166c33afc872342e6271f94">library.h</a></li>
+<li>LAMMPS_STRING&#160;:&#160;<a class="el" href="library_8h.html#a8f60df5cd520b67959d22185afcdacc5ae8c997bf96560c2d658a3d2a01518d72">library.h</a></li>
+<li>lammps_style_count()&#160;:&#160;<a class="el" href="library_8h.html#aef8b5d9f8c06dc22c55deb9088dbafd6">library.h</a></li>
+<li>lammps_style_name()&#160;:&#160;<a class="el" href="library_8h.html#ab91b5c7e97982f7a804d8d7cfa0f190a">library.h</a></li>
+<li>lammps_variable_info()&#160;:&#160;<a class="el" href="library_8h.html#a7d42a4fb49036f76e6042ca8302aa567">library.h</a></li>
+<li>lammps_version()&#160;:&#160;<a class="el" href="library_8h.html#a41f44a4eef975f8a189d3186259a8ef9">library.h</a></li>
+<li>LBFGS_EPS&#160;:&#160;<a class="el" href="LBFGS_8h.html#a404332b9146ef3dc795556570a797a52">LBFGS.h</a></li>
+<li>Length2()&#160;:&#160;<a class="el" href="Vec_8h.html#a209c719a5c0920e41a26f5e123664e6e">Vec.h</a></li>
+<li>LMP_ERROR_ALL&#160;:&#160;<a class="el" href="library_8h.html#a0a21501a166632d8dbabb0e8e5447a26a1ef79788d8579adde50ede733fb68e5f">library.h</a></li>
+<li>LMP_ERROR_ONE&#160;:&#160;<a class="el" href="library_8h.html#a0a21501a166632d8dbabb0e8e5447a26abe11bcded9b243338dd6ee3e80db923f">library.h</a></li>
+<li>LMP_ERROR_UNIVERSE&#160;:&#160;<a class="el" href="library_8h.html#a0a21501a166632d8dbabb0e8e5447a26a12d5d8e53105a4802eb80c80a5de4710">library.h</a></li>
+<li>LMP_ERROR_WARNING&#160;:&#160;<a class="el" href="library_8h.html#a0a21501a166632d8dbabb0e8e5447a26a075aa9d1918f3abd34441c5a978df2a0">library.h</a></li>
+<li>LMP_ERROR_WORLD&#160;:&#160;<a class="el" href="library_8h.html#a0a21501a166632d8dbabb0e8e5447a26a203eb1d032ac5ce0cad7deb634b3635b">library.h</a></li>
+<li>LMP_SIZE_COLS&#160;:&#160;<a class="el" href="library_8h.html#a30cd6a0606720be7addec2816760879ea0213053b1c6d4283bb6d662a00fecc16">library.h</a></li>
+<li>LMP_SIZE_ROWS&#160;:&#160;<a class="el" href="library_8h.html#a30cd6a0606720be7addec2816760879eaa65d78d0215fbb5d1f8cf6dfa05ed485">library.h</a></li>
+<li>LMP_SIZE_VECTOR&#160;:&#160;<a class="el" href="library_8h.html#a30cd6a0606720be7addec2816760879eab7e39a6a361f8bc210064c9d853b4ded">library.h</a></li>
+<li>LMP_STYLE_ATOM&#160;:&#160;<a class="el" href="library_8h.html#af78e950523b27d0aa9b74ccf93666d36aa1e72b0a28e28261262774733cdbadfa">library.h</a></li>
+<li>LMP_STYLE_GLOBAL&#160;:&#160;<a class="el" href="library_8h.html#af78e950523b27d0aa9b74ccf93666d36a5d9f763d2a7c13c4aea83405aaf4b3f3">library.h</a></li>
+<li>LMP_STYLE_LOCAL&#160;:&#160;<a class="el" href="library_8h.html#af78e950523b27d0aa9b74ccf93666d36a9b74ce240cd632e21f8c1a5a1cf07ed0">library.h</a></li>
+<li>LMP_TYPE_ARRAY&#160;:&#160;<a class="el" href="library_8h.html#a30cd6a0606720be7addec2816760879eaaacd44f7a32b76b06051cb01ff40451a">library.h</a></li>
+<li>LMP_TYPE_SCALAR&#160;:&#160;<a class="el" href="library_8h.html#a30cd6a0606720be7addec2816760879ea3a0d5e6c49cc929d953b366ed58c821b">library.h</a></li>
+<li>LMP_TYPE_VECTOR&#160;:&#160;<a class="el" href="library_8h.html#a30cd6a0606720be7addec2816760879ead7beec11786a3dc637fcdd2ac62506e8">library.h</a></li>
+<li>LMP_VAR_ATOM&#160;:&#160;<a class="el" href="library_8h.html#a09d7d9d1e5512d11257c5b6fce67ee37a4a336ec13f20754d421f7d0d218cc1a4">library.h</a></li>
+<li>LMP_VAR_EQUAL&#160;:&#160;<a class="el" href="library_8h.html#a09d7d9d1e5512d11257c5b6fce67ee37aeb6a1c0a08cdfb496bcaef2cc37d5047">library.h</a></li>
+<li>LMP_VAR_STRING&#160;:&#160;<a class="el" href="library_8h.html#a09d7d9d1e5512d11257c5b6fce67ee37a52551a127731cf3f7e193b9d1d83e6e8">library.h</a></li>
+<li>LMP_VAR_VECTOR&#160;:&#160;<a class="el" href="library_8h.html#a09d7d9d1e5512d11257c5b6fce67ee37a381da764a4e3a5f1bc183cc9905be43c">library.h</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

@@ -1,0 +1,961 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: eonc::ConjugateGradients Class Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  }
+};
+</script>
+<script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('classeonc_1_1ConjugateGradients.html','','classeonc_1_1ConjugateGradients-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">eonc::ConjugateGradients Class Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Decleration of the Conjugate Gradients optimizer.  
+ <a href="#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for eonc::ConjugateGradients:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+ <div class="center">
+  <img src="classeonc_1_1ConjugateGradients.png" usemap="#eonc_3A_3AConjugateGradients_map" alt=""/>
+  <map id="eonc_3A_3AConjugateGradients_map" name="eonc_3A_3AConjugateGradients_map">
+<area href="classeonc_1_1Optimizer.html" alt="eonc::Optimizer" shape="rect" coords="0,0,157,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a64fdf457c0ab0d0e5172b88039915c6e" id="r_a64fdf457c0ab0d0e5172b88039915c6e"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a64fdf457c0ab0d0e5172b88039915c6e">ConjugateGradients</a> (std::shared_ptr&lt; <a class="el" href="classObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memdesc:a64fdf457c0ab0d0e5172b88039915c6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conjugate Gradients optimizer constructor.  <br /></td></tr>
+<tr class="memitem:a32f6e1640c158c52e3eaa3529d62aa8c" id="r_a32f6e1640c158c52e3eaa3529d62aa8c"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a32f6e1640c158c52e3eaa3529d62aa8c">~ConjugateGradients</a> ()=default</td></tr>
+<tr class="memdesc:a32f6e1640c158c52e3eaa3529d62aa8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Conjugant Gradient deconstructor.  <br /></td></tr>
+<tr class="memitem:ad89001cedae22690017c65e1d87c0baf" id="r_ad89001cedae22690017c65e1d87c0baf"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#ad89001cedae22690017c65e1d87c0baf">step</a> (double a_maxMove) override</td></tr>
+<tr class="memdesc:ad89001cedae22690017c65e1d87c0baf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calls the next step in the algorithm.  <br /></td></tr>
+<tr class="memitem:a72375a449b4b7c023e594389284f0378" id="r_a72375a449b4b7c023e594389284f0378"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a72375a449b4b7c023e594389284f0378">run</a> (size_t a_maxIterations, double a_maxMove) override</td></tr>
+<tr class="memdesc:a72375a449b4b7c023e594389284f0378"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs the conjugate gradient.  <br /></td></tr>
+<tr class="memitem:aa6214e378d939d58e4bb00b924fbec83" id="r_aa6214e378d939d58e4bb00b924fbec83"><td class="memItemLeft">Eigen::VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#aa6214e378d939d58e4bb00b924fbec83">getStep</a> ()</td></tr>
+<tr class="memdesc:aa6214e378d939d58e4bb00b924fbec83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the direction of the next step.  <br /></td></tr>
+<tr class="inherit_header pub_methods_classeonc_1_1Optimizer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classeonc_1_1Optimizer')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classeonc_1_1Optimizer.html">eonc::Optimizer</a></td></tr>
+<tr class="memitem:a51ef8ef5f774fa7125131d8a5dd72710 inherit pub_methods_classeonc_1_1Optimizer" id="r_a51ef8ef5f774fa7125131d8a5dd72710"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, const <a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a> &amp;a_config)</td></tr>
+<tr class="memitem:af5e38a77399147106fd57aced5092a71 inherit pub_methods_classeonc_1_1Optimizer" id="r_af5e38a77399147106fd57aced5092a71"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#af5e38a77399147106fd57aced5092a71">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, <a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> a_optype, const <a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a> &amp;a_config)</td></tr>
+<tr class="memitem:a7359cf3da3da63ba17b3564de5428e18 inherit pub_methods_classeonc_1_1Optimizer" id="r_a7359cf3da3da63ba17b3564de5428e18"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#a7359cf3da3da63ba17b3564de5428e18">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memitem:a0799f30a0b8940646966008020d93e6d inherit pub_methods_classeonc_1_1Optimizer" id="r_a0799f30a0b8940646966008020d93e6d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#a0799f30a0b8940646966008020d93e6d">Optimizer</a> (std::shared_ptr&lt; <a class="el" href="classObjectiveFunction.html">ObjectiveFunction</a> &gt; a_objf, <a class="el" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56">OptType</a> a_optype, const <a class="el" href="classParameters.html">Parameters</a> &amp;a_params)</td></tr>
+<tr class="memitem:ae94c246f1e45f8f7b8f906667951543c inherit pub_methods_classeonc_1_1Optimizer" id="r_ae94c246f1e45f8f7b8f906667951543c"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#ae94c246f1e45f8f7b8f906667951543c">~Optimizer</a> ()</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a66e0103a00a5d69034f0d6c33a315b77" id="r_a66e0103a00a5d69034f0d6c33a315b77"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a66e0103a00a5d69034f0d6c33a315b77">single_step</a> (double a_maxMove)</td></tr>
+<tr class="memdesc:a66e0103a00a5d69034f0d6c33a315b77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Steps the conjugate gradient.  <br /></td></tr>
+<tr class="memitem:a09e77586c503aed788dbdcbca1bb1f7b" id="r_a09e77586c503aed788dbdcbca1bb1f7b"><td class="memItemLeft">int&#160;</td><td class="memItemRight"><a class="el" href="#a09e77586c503aed788dbdcbca1bb1f7b">line_search</a> (double a_maxMove)</td></tr>
+<tr class="memdesc:a09e77586c503aed788dbdcbca1bb1f7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Steps the conjugate gradient.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:aade8c61d0393fcc5bac7b5db8ce31614" id="r_aade8c61d0393fcc5bac7b5db8ce31614"><td class="memItemLeft">Eigen::VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#aade8c61d0393fcc5bac7b5db8ce31614">m_direction</a></td></tr>
+<tr class="memdesc:aade8c61d0393fcc5bac7b5db8ce31614"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current step direction of the conjugate gradient.  <br /></td></tr>
+<tr class="memitem:a2fa4863deaee58bd920e5bcfd447ab28" id="r_a2fa4863deaee58bd920e5bcfd447ab28"><td class="memItemLeft">Eigen::VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a2fa4863deaee58bd920e5bcfd447ab28">m_directionOld</a></td></tr>
+<tr class="memdesc:a2fa4863deaee58bd920e5bcfd447ab28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Algorithms previous step direction.  <br /></td></tr>
+<tr class="memitem:a2de0bdb23d86e6eeb445a1fa0d4158d2" id="r_a2de0bdb23d86e6eeb445a1fa0d4158d2"><td class="memItemLeft">Eigen::VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a></td></tr>
+<tr class="memdesc:a2de0bdb23d86e6eeb445a1fa0d4158d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalised version of the current direction vector.  <br /></td></tr>
+<tr class="memitem:a25bb3119cc6c478296f09434f7dcafbe" id="r_a25bb3119cc6c478296f09434f7dcafbe"><td class="memItemLeft">Eigen::VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a></td></tr>
+<tr class="memdesc:a25bb3119cc6c478296f09434f7dcafbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current force vector.  <br /></td></tr>
+<tr class="memitem:ae01c04ea295a7d03490538974ba0ddab" id="r_ae01c04ea295a7d03490538974ba0ddab"><td class="memItemLeft">Eigen::VectorXd&#160;</td><td class="memItemRight"><a class="el" href="#ae01c04ea295a7d03490538974ba0ddab">m_forceOld</a></td></tr>
+<tr class="memdesc:ae01c04ea295a7d03490538974ba0ddab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Previous force vector.  <br /></td></tr>
+<tr class="memitem:ae4cd215ba150decb4fd0dde059fc91c0" id="r_ae4cd215ba150decb4fd0dde059fc91c0"><td class="memItemLeft"><a class="el" href="structeonc_1_1log_1_1FileScoped.html">eonc::log::FileScoped</a>&#160;</td><td class="memItemRight"><a class="el" href="#ae4cd215ba150decb4fd0dde059fc91c0">m_log</a> {&quot;cg&quot;, &quot;_cg.log&quot;}</td></tr>
+<tr class="memitem:a59e7cb42c970482dd523e0f52956433e" id="r_a59e7cb42c970482dd523e0f52956433e"><td class="memItemLeft">size_t&#160;</td><td class="memItemRight"><a class="el" href="#a59e7cb42c970482dd523e0f52956433e">m_cg_i</a></td></tr>
+<tr class="memdesc:a59e7cb42c970482dd523e0f52956433e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the number of discrete steps until algorithm convergence.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_attribs_classeonc_1_1Optimizer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classeonc_1_1Optimizer')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classeonc_1_1Optimizer.html">eonc::Optimizer</a></td></tr>
+<tr class="memitem:a3bfcee12036bd655e29a065e8e1c1f4d inherit pro_attribs_classeonc_1_1Optimizer" id="r_a3bfcee12036bd655e29a065e8e1c1f4d"><td class="memItemLeft">const <a class="el" href="structeonc_1_1OptimizerConfig.html">OptimizerConfig</a>&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a></td></tr>
+<tr class="memitem:ac396cbda1caadf57ff9df7eda4db1822 inherit pro_attribs_classeonc_1_1Optimizer" id="r_ac396cbda1caadf57ff9df7eda4db1822"><td class="memItemLeft">std::shared_ptr&lt; <a class="el" href="classObjectiveFunction.html">ObjectiveFunction</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a></td></tr>
+</table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Decleration of the Conjugate Gradients optimizer. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00038">38</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a64fdf457c0ab0d0e5172b88039915c6e" name="a64fdf457c0ab0d0e5172b88039915c6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64fdf457c0ab0d0e5172b88039915c6e">&#9670;&#160;</a></span>ConjugateGradients()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eonc::ConjugateGradients::ConjugateGradients </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classObjectiveFunction.html">ObjectiveFunction</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>a_objf</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classParameters.html">Parameters</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>a_params</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Conjugate Gradients optimizer constructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">std::shared_ptr&lt;ObjectiveFunction&gt;</td><td>m_objf that tells the optimizer how to run</td></tr>
+    <tr><td class="paramname">const</td><td><a class="el" href="classeonc_1_1Parameters.html">Parameters</a>&amp; m_params defined by the config.init file </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00046">46</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   48</span>      : <a class="code hl_function" href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">Optimizer</a>(a_objf, <a class="code hl_enumvalue" href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">OptType::CG</a>, a_params),</div>
+<div class="line"><span class="lineno">   49</span>        <a class="code hl_variable" href="#a2fa4863deaee58bd920e5bcfd447ab28">m_directionOld</a>{(a_objf-&gt;getPositions()).setZero()},</div>
+<div class="line"><span class="lineno">   50</span>        <a class="code hl_variable" href="#ae01c04ea295a7d03490538974ba0ddab">m_forceOld</a>{(a_objf-&gt;getPositions()).setZero()}, <span class="comment">// use setZero instead</span></div>
+<div class="line"><span class="lineno">   51</span>        <a class="code hl_variable" href="#a59e7cb42c970482dd523e0f52956433e">m_cg_i</a>{0} {}</div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a2fa4863deaee58bd920e5bcfd447ab28"><div class="ttname"><a href="#a2fa4863deaee58bd920e5bcfd447ab28">eonc::ConjugateGradients::m_directionOld</a></div><div class="ttdeci">Eigen::VectorXd m_directionOld</div><div class="ttdoc">Algorithms previous step direction.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00074">ConjugateGradients.h:74</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a59e7cb42c970482dd523e0f52956433e"><div class="ttname"><a href="#a59e7cb42c970482dd523e0f52956433e">eonc::ConjugateGradients::m_cg_i</a></div><div class="ttdeci">size_t m_cg_i</div><div class="ttdoc">Counts the number of discrete steps until algorithm convergence.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00084">ConjugateGradients.h:84</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_ae01c04ea295a7d03490538974ba0ddab"><div class="ttname"><a href="#ae01c04ea295a7d03490538974ba0ddab">eonc::ConjugateGradients::m_forceOld</a></div><div class="ttdeci">Eigen::VectorXd m_forceOld</div><div class="ttdoc">Previous force vector.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00080">ConjugateGradients.h:80</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Optimizer_html_a51ef8ef5f774fa7125131d8a5dd72710"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a51ef8ef5f774fa7125131d8a5dd72710">eonc::Optimizer::Optimizer</a></div><div class="ttdeci">Optimizer(std::shared_ptr&lt; ObjectiveFunction &gt; a_objf, const OptimizerConfig &amp;a_config)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00071">Optimizer.h:71</a></div></div>
+<div class="ttc" id="anamespaceeonc_html_a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231"><div class="ttname"><a href="namespaceeonc.html#a0776629ae76e653dba046116f845ac56a5202c6586cac8bee468e86d1ff854231">eonc::OptType::CG</a></div><div class="ttdeci">@ CG</div><div class="ttdef"><b>Definition</b> <a href="BaseStructures_8h_source.html#l00103">BaseStructures.h:103</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a32f6e1640c158c52e3eaa3529d62aa8c" name="a32f6e1640c158c52e3eaa3529d62aa8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32f6e1640c158c52e3eaa3529d62aa8c">&#9670;&#160;</a></span>~ConjugateGradients()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eonc::ConjugateGradients::~ConjugateGradients </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Conjugant Gradient deconstructor. </p>
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="aa6214e378d939d58e4bb00b924fbec83" name="aa6214e378d939d58e4bb00b924fbec83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6214e378d939d58e4bb00b924fbec83">&#9670;&#160;</a></span>getStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd ConjugateGradients::getStep </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the direction of the next step. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8cpp_source.html#l00017">17</a> of file <a class="el" href="ConjugateGradients_8cpp_source.html">ConjugateGradients.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   17</span>                                          {</div>
+<div class="line"><span class="lineno">   18</span>  <span class="keywordtype">double</span> a = std::fabs(<a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>.dot(<a class="code hl_variable" href="#ae01c04ea295a7d03490538974ba0ddab">m_forceOld</a>));</div>
+<div class="line"><span class="lineno">   19</span>  <span class="keywordtype">double</span> b = <a class="code hl_variable" href="#ae01c04ea295a7d03490538974ba0ddab">m_forceOld</a>.squaredNorm();</div>
+<div class="line"><span class="lineno">   20</span>  <span class="keywordtype">double</span> gamma = 0.0;</div>
+<div class="line"><span class="lineno">   21</span>  <span class="keywordflow">if</span> (a &lt; 0.5 * b) {</div>
+<div class="line"><span class="lineno">   22</span>    <span class="comment">// Polak-Ribiere way to determine how much to mix in of old direction</span></div>
+<div class="line"><span class="lineno">   23</span>    gamma = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(<a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>.dot(<a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a> - <a class="code hl_variable" href="#ae01c04ea295a7d03490538974ba0ddab">m_forceOld</a>), b, 0.0);</div>
+<div class="line"><span class="lineno">   24</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   25</span>    gamma = 0;</div>
+<div class="line"><span class="lineno">   26</span>  }</div>
+<div class="line"><span class="lineno">   27</span>  <a class="code hl_variable" href="#aade8c61d0393fcc5bac7b5db8ce31614">m_direction</a> = <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a> + gamma * <a class="code hl_variable" href="#a2fa4863deaee58bd920e5bcfd447ab28">m_directionOld</a>;</div>
+<div class="line"><span class="lineno">   28</span>  <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a> = <a class="code hl_variable" href="#aade8c61d0393fcc5bac7b5db8ce31614">m_direction</a>;</div>
+<div class="line"><span class="lineno">   29</span>  eonc::safemath::safe_normalize_inplace(<a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
+<div class="line"><span class="lineno">   30</span>  <a class="code hl_variable" href="#a2fa4863deaee58bd920e5bcfd447ab28">m_directionOld</a> = <a class="code hl_variable" href="#aade8c61d0393fcc5bac7b5db8ce31614">m_direction</a>;</div>
+<div class="line"><span class="lineno">   31</span>  <a class="code hl_variable" href="#ae01c04ea295a7d03490538974ba0ddab">m_forceOld</a> = <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>;</div>
+<div class="line"><span class="lineno">   32</span> </div>
+<div class="line"><span class="lineno">   33</span>  <span class="comment">// Only if value for max nr of iteration before reset</span></div>
+<div class="line"><span class="lineno">   34</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.cg.max_iter_before_reset &gt; 0 &amp;&amp;</div>
+<div class="line"><span class="lineno">   35</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.cg.max_iter_before_reset &lt;= <a class="code hl_variable" href="#a59e7cb42c970482dd523e0f52956433e">m_cg_i</a>) {</div>
+<div class="line"><span class="lineno">   36</span>    <a class="code hl_variable" href="#a59e7cb42c970482dd523e0f52956433e">m_cg_i</a> = 0;</div>
+<div class="line"><span class="lineno">   37</span>    <a class="code hl_variable" href="#ae01c04ea295a7d03490538974ba0ddab">m_forceOld</a>.setZero();</div>
+<div class="line"><span class="lineno">   38</span>    <a class="code hl_variable" href="#a2fa4863deaee58bd920e5bcfd447ab28">m_directionOld</a>.setZero();</div>
+<div class="line"><span class="lineno">   39</span>  }</div>
+<div class="line"><span class="lineno">   40</span>  <a class="code hl_variable" href="#a59e7cb42c970482dd523e0f52956433e">m_cg_i</a> += 1;</div>
+<div class="line"><span class="lineno">   41</span> </div>
+<div class="line"><span class="lineno">   42</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#aade8c61d0393fcc5bac7b5db8ce31614">m_direction</a>;</div>
+<div class="line"><span class="lineno">   43</span>}</div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a25bb3119cc6c478296f09434f7dcafbe"><div class="ttname"><a href="#a25bb3119cc6c478296f09434f7dcafbe">eonc::ConjugateGradients::m_force</a></div><div class="ttdeci">Eigen::VectorXd m_force</div><div class="ttdoc">Current force vector.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00078">ConjugateGradients.h:78</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a2de0bdb23d86e6eeb445a1fa0d4158d2"><div class="ttname"><a href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">eonc::ConjugateGradients::m_directionNorm</a></div><div class="ttdeci">Eigen::VectorXd m_directionNorm</div><div class="ttdoc">Normalised version of the current direction vector.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00076">ConjugateGradients.h:76</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_aade8c61d0393fcc5bac7b5db8ce31614"><div class="ttname"><a href="#aade8c61d0393fcc5bac7b5db8ce31614">eonc::ConjugateGradients::m_direction</a></div><div class="ttdeci">Eigen::VectorXd m_direction</div><div class="ttdoc">Current step direction of the conjugate gradient.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00072">ConjugateGradients.h:72</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Optimizer_html_a3bfcee12036bd655e29a065e8e1c1f4d"><div class="ttname"><a href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">eonc::Optimizer::m_optConfig</a></div><div class="ttdeci">const OptimizerConfig m_optConfig</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00067">Optimizer.h:67</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1safemath_html_a0d2ff3ef0f0032b6e2f75662df3816cf"><div class="ttname"><a href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a></div><div class="ttdeci">constexpr double safe_div(double num, double denom, double fallback=0.0)</div><div class="ttdef"><b>Definition</b> <a href="SafeMath_8h_source.html#l00021">SafeMath.h:21</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a09e77586c503aed788dbdcbca1bb1f7b" name="a09e77586c503aed788dbdcbca1bb1f7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09e77586c503aed788dbdcbca1bb1f7b">&#9670;&#160;</a></span>line_search()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ConjugateGradients::line_search </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>a_maxMove</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Steps the conjugate gradient. </p>
+<p>Checks for convergence based on the ratio of the projected force along a line to the norm of the total force </p>
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8cpp_source.html#l00057">57</a> of file <a class="el" href="ConjugateGradients_8cpp_source.html">ConjugateGradients.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   57</span>                                                    {</div>
+<div class="line"><span class="lineno">   58</span>  Eigen::VectorXd pos;</div>
+<div class="line"><span class="lineno">   59</span>  Eigen::VectorXd posStep;</div>
+<div class="line"><span class="lineno">   60</span>  Eigen::VectorXd forceBeforeStep;</div>
+<div class="line"><span class="lineno">   61</span>  <span class="keywordtype">double</span> stepSize;</div>
+<div class="line"><span class="lineno">   62</span>  <span class="keywordtype">double</span> projectedForce;</div>
+<div class="line"><span class="lineno">   63</span>  <span class="keywordtype">double</span> projectedForceBeforeStep;</div>
+<div class="line"><span class="lineno">   64</span>  <span class="keywordtype">double</span> curvature;</div>
+<div class="line"><span class="lineno">   65</span> </div>
+<div class="line"><span class="lineno">   66</span>  forceBeforeStep = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient();</div>
+<div class="line"><span class="lineno">   67</span>  <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a> = forceBeforeStep;</div>
+<div class="line"><span class="lineno">   68</span>  <a class="code hl_function" href="#aa6214e378d939d58e4bb00b924fbec83">getStep</a>();</div>
+<div class="line"><span class="lineno">   69</span>  pos = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">   70</span>  projectedForceBeforeStep = <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>.dot(<a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
+<div class="line"><span class="lineno">   71</span> </div>
+<div class="line"><span class="lineno">   72</span>  <span class="comment">// move system an infinitesimal step to determine the optimal step size along</span></div>
+<div class="line"><span class="lineno">   73</span>  <span class="comment">// the search line</span></div>
+<div class="line"><span class="lineno">   74</span>  posStep = pos + <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a> * <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.finiteDifference;</div>
+<div class="line"><span class="lineno">   75</span>  <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(posStep);</div>
+<div class="line"><span class="lineno">   76</span>  <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a> = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient(<span class="keyword">true</span>);</div>
+<div class="line"><span class="lineno">   77</span>  projectedForce = <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>.dot(<a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
+<div class="line"><span class="lineno">   78</span>  stepSize = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.finiteDifference;</div>
+<div class="line"><span class="lineno">   79</span> </div>
+<div class="line"><span class="lineno">   80</span>  <span class="keywordtype">int</span> line_i = 0;</div>
+<div class="line"><span class="lineno">   81</span>  <span class="keywordflow">do</span> {</div>
+<div class="line"><span class="lineno">   82</span>    <span class="comment">// Determine curvature from last step (Secant method)</span></div>
+<div class="line"><span class="lineno">   83</span>    curvature = std::fabs(<a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(</div>
+<div class="line"><span class="lineno">   84</span>        projectedForceBeforeStep - projectedForce, stepSize, 0.0));</div>
+<div class="line"><span class="lineno">   85</span>    stepSize = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(projectedForce, curvature, a_maxMove);</div>
+<div class="line"><span class="lineno">   86</span> </div>
+<div class="line"><span class="lineno">   87</span>    <span class="keywordflow">if</span> (a_maxMove &lt; std::fabs(stepSize)) {</div>
+<div class="line"><span class="lineno">   88</span>      <span class="comment">// first part get the sign of stepSize</span></div>
+<div class="line"><span class="lineno">   89</span>      stepSize = ((stepSize &gt; 0) - (stepSize &lt; 0)) * a_maxMove;</div>
+<div class="line"><span class="lineno">   90</span>    }</div>
+<div class="line"><span class="lineno">   91</span> </div>
+<div class="line"><span class="lineno">   92</span>    forceBeforeStep = <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>;</div>
+<div class="line"><span class="lineno">   93</span>    projectedForceBeforeStep = projectedForce;</div>
+<div class="line"><span class="lineno">   94</span> </div>
+<div class="line"><span class="lineno">   95</span>    pos += stepSize * <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>;</div>
+<div class="line"><span class="lineno">   96</span>    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(pos);</div>
+<div class="line"><span class="lineno">   97</span>    <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a> = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient();</div>
+<div class="line"><span class="lineno">   98</span>    projectedForce = <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>.dot(<a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
+<div class="line"><span class="lineno">   99</span> </div>
+<div class="line"><span class="lineno">  100</span>    line_i += 1;</div>
+<div class="line"><span class="lineno">  101</span> </div>
+<div class="line"><span class="lineno">  102</span>    <span class="comment">// Line search considered converged based in the ratio between the projected</span></div>
+<div class="line"><span class="lineno">  103</span>    <span class="comment">// force and the norm of the true force</span></div>
+<div class="line"><span class="lineno">  104</span>  } <span class="keywordflow">while</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.cg.line_converged &lt;</div>
+<div class="line"><span class="lineno">  105</span>               std::fabs(projectedForce) /</div>
+<div class="line"><span class="lineno">  106</span>                   (std::sqrt(<a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>.dot(<a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>) +</div>
+<div class="line"><span class="lineno">  107</span>                              <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.cg.line_converged)) &amp;&amp;</div>
+<div class="line"><span class="lineno">  108</span>           line_i &lt; <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.cg.line_search_max_iter);</div>
+<div class="line"><span class="lineno">  109</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged())</div>
+<div class="line"><span class="lineno">  110</span>    <span class="keywordflow">return</span> 1;</div>
+<div class="line"><span class="lineno">  111</span>  <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">  112</span>}</div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_aa6214e378d939d58e4bb00b924fbec83"><div class="ttname"><a href="#aa6214e378d939d58e4bb00b924fbec83">eonc::ConjugateGradients::getStep</a></div><div class="ttdeci">Eigen::VectorXd getStep()</div><div class="ttdoc">Gets the direction of the next step.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8cpp_source.html#l00017">ConjugateGradients.cpp:17</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Optimizer_html_ac396cbda1caadf57ff9df7eda4db1822"><div class="ttname"><a href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">eonc::Optimizer::m_objf</a></div><div class="ttdeci">std::shared_ptr&lt; ObjectiveFunction &gt; m_objf</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00068">Optimizer.h:68</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a72375a449b4b7c023e594389284f0378" name="a72375a449b4b7c023e594389284f0378"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72375a449b4b7c023e594389284f0378">&#9670;&#160;</a></span>run()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ConjugateGradients::run </td>
+          <td>(</td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>a_maxIterations</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>a_maxMove</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Runs the conjugate gradient. </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo</a></b></dt><dd>method should also return an error code and message if the algorithm errors out</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>algorithm convergence </dd></dl>
+
+<p>Implements <a class="el" href="classeonc_1_1Optimizer.html#a94dd8b89c732857574c03586efa25273">eonc::Optimizer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8cpp_source.html#l00192">192</a> of file <a class="el" href="ConjugateGradients_8cpp_source.html">ConjugateGradients.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  192</span>                                                                    {</div>
+<div class="line"><span class="lineno">  193</span>  <span class="keywordtype">size_t</span> iterations = 0;</div>
+<div class="line"><span class="lineno">  194</span>  <span class="keywordflow">while</span> (!<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() &amp;&amp; iterations &lt;= a_maxIterations) {</div>
+<div class="line"><span class="lineno">  195</span>    <a class="code hl_function" href="#ad89001cedae22690017c65e1d87c0baf">step</a>(a_maxMove);</div>
+<div class="line"><span class="lineno">  196</span>    iterations++;</div>
+<div class="line"><span class="lineno">  197</span>  }</div>
+<div class="line"><span class="lineno">  198</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  199</span>}</div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_ad89001cedae22690017c65e1d87c0baf"><div class="ttname"><a href="#ad89001cedae22690017c65e1d87c0baf">eonc::ConjugateGradients::step</a></div><div class="ttdeci">int step(double a_maxMove) override</div><div class="ttdoc">Calls the next step in the algorithm.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8cpp_source.html#l00045">ConjugateGradients.cpp:45</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="a66e0103a00a5d69034f0d6c33a315b77" name="a66e0103a00a5d69034f0d6c33a315b77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66e0103a00a5d69034f0d6c33a315b77">&#9670;&#160;</a></span>single_step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ConjugateGradients::single_step </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>a_maxMove</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Steps the conjugate gradient. </p>
+<p>Checks for convergence based on the change in displacement or direction </p>
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8cpp_source.html#l00114">114</a> of file <a class="el" href="ConjugateGradients_8cpp_source.html">ConjugateGradients.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  114</span>                                                    {</div>
+<div class="line"><span class="lineno">  115</span>  Eigen::VectorXd pos;</div>
+<div class="line"><span class="lineno">  116</span>  Eigen::VectorXd posStep;</div>
+<div class="line"><span class="lineno">  117</span>  Eigen::VectorXd forceAfterStep;</div>
+<div class="line"><span class="lineno">  118</span> </div>
+<div class="line"><span class="lineno">  119</span>  <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a> = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient();</div>
+<div class="line"><span class="lineno">  120</span>  pos = <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  121</span>  <a class="code hl_function" href="#aa6214e378d939d58e4bb00b924fbec83">getStep</a>();</div>
+<div class="line"><span class="lineno">  122</span> </div>
+<div class="line"><span class="lineno">  123</span>  <span class="comment">// move system an infinitesimal step to determine the optimal step size along</span></div>
+<div class="line"><span class="lineno">  124</span>  <span class="comment">// the search line</span></div>
+<div class="line"><span class="lineno">  125</span>  posStep = pos + <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a> * <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.finiteDifference;</div>
+<div class="line"><span class="lineno">  126</span>  <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(posStep);</div>
+<div class="line"><span class="lineno">  127</span>  forceAfterStep = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient(<span class="keyword">true</span>);</div>
+<div class="line"><span class="lineno">  128</span> </div>
+<div class="line"><span class="lineno">  129</span>  <span class="comment">// Determine curvature</span></div>
+<div class="line"><span class="lineno">  130</span>  <span class="keywordtype">double</span> projectedForce1 = <a class="code hl_variable" href="#a25bb3119cc6c478296f09434f7dcafbe">m_force</a>.dot(<a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
+<div class="line"><span class="lineno">  131</span>  <span class="keywordtype">double</span> projectedForce2 = forceAfterStep.dot(<a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
+<div class="line"><span class="lineno">  132</span>  <span class="keywordtype">double</span> curvature = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(</div>
+<div class="line"><span class="lineno">  133</span>      projectedForce1 - projectedForce2, <a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.finiteDifference, 0.0);</div>
+<div class="line"><span class="lineno">  134</span> </div>
+<div class="line"><span class="lineno">  135</span>  <span class="keywordtype">double</span> stepSize = a_maxMove;</div>
+<div class="line"><span class="lineno">  136</span> </div>
+<div class="line"><span class="lineno">  137</span>  <span class="keywordflow">if</span> (curvature &gt; 0.0) {</div>
+<div class="line"><span class="lineno">  138</span>    stepSize = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(projectedForce1, curvature, a_maxMove);</div>
+<div class="line"><span class="lineno">  139</span>  }</div>
+<div class="line"><span class="lineno">  140</span> </div>
+<div class="line"><span class="lineno">  141</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.bowlBreakout &amp;&amp; a_maxMove &lt; 0.0) {</div>
+<div class="line"><span class="lineno">  142</span>    stepSize = -a_maxMove;</div>
+<div class="line"><span class="lineno">  143</span>    a_maxMove = -a_maxMove;</div>
+<div class="line"><span class="lineno">  144</span>  }</div>
+<div class="line"><span class="lineno">  145</span> </div>
+<div class="line"><span class="lineno">  146</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.cg.no_overshooting) {</div>
+<div class="line"><span class="lineno">  147</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.bowlBreakout) {</div>
+<div class="line"><span class="lineno">  148</span>      <span class="comment">// max displacement is based on system not single atom</span></div>
+<div class="line"><span class="lineno">  149</span>      pos += <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a74dc4eb878fa1a742ba96bd30d2ec237">eonc::helpers::maxMotionAppliedV</a>(stepSize * <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>,</div>
+<div class="line"><span class="lineno">  150</span>                                              a_maxMove);</div>
+<div class="line"><span class="lineno">  151</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  152</span>      pos += <a class="code hl_function" href="namespaceeonc_1_1helpers.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::helpers::maxAtomMotionAppliedV</a>(stepSize * <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>,</div>
+<div class="line"><span class="lineno">  153</span>                                                  a_maxMove);</div>
+<div class="line"><span class="lineno">  154</span>    }</div>
+<div class="line"><span class="lineno">  155</span>    <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(pos);</div>
+<div class="line"><span class="lineno">  156</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  157</span>    <span class="comment">// negative if product of the projected forces before and after the step are</span></div>
+<div class="line"><span class="lineno">  158</span>    <span class="comment">// in opposite directions</span></div>
+<div class="line"><span class="lineno">  159</span>    <span class="keywordtype">double</span> passedMinimum = -1.;</div>
+<div class="line"><span class="lineno">  160</span>    <span class="keywordtype">double</span> forceChange = 0.;</div>
+<div class="line"><span class="lineno">  161</span>    <span class="keywordflow">while</span> (passedMinimum &lt; 0.0 &amp;&amp;</div>
+<div class="line"><span class="lineno">  162</span>           0.1 * std::fabs(projectedForce1) &lt; std::fabs(projectedForce2)) {</div>
+<div class="line"><span class="lineno">  163</span>      posStep = pos + <a class="code hl_function" href="namespaceeonc_1_1helpers.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::helpers::maxAtomMotionAppliedV</a>(</div>
+<div class="line"><span class="lineno">  164</span>                          stepSize * <a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>, a_maxMove);</div>
+<div class="line"><span class="lineno">  165</span>      <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;setPositions(posStep);</div>
+<div class="line"><span class="lineno">  166</span>      forceAfterStep = -<a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;getGradient(<span class="keyword">true</span>);</div>
+<div class="line"><span class="lineno">  167</span>      projectedForce2 = forceAfterStep.dot(<a class="code hl_variable" href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">m_directionNorm</a>);</div>
+<div class="line"><span class="lineno">  168</span> </div>
+<div class="line"><span class="lineno">  169</span>      passedMinimum = projectedForce1 * projectedForce2;</div>
+<div class="line"><span class="lineno">  170</span>      <span class="keywordflow">if</span> (passedMinimum &lt; 0.0 &amp;&amp;</div>
+<div class="line"><span class="lineno">  171</span>          0.1 * std::fabs(projectedForce1) &lt; std::fabs(projectedForce2)) {</div>
+<div class="line"><span class="lineno">  172</span>        forceChange = (projectedForce1 - projectedForce2);</div>
+<div class="line"><span class="lineno">  173</span>        stepSize = <a class="code hl_function" href="namespaceeonc_1_1safemath.html#a0d2ff3ef0f0032b6e2f75662df3816cf">eonc::safemath::safe_div</a>(projectedForce1, forceChange, 0.0) *</div>
+<div class="line"><span class="lineno">  174</span>                   stepSize;</div>
+<div class="line"><span class="lineno">  175</span>        QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ae4cd215ba150decb4fd0dde059fc91c0">m_log</a>, <span class="stringliteral">&quot;Force changed {}, step size adjusted to {}&quot;</span>,</div>
+<div class="line"><span class="lineno">  176</span>                        forceChange, stepSize);</div>
+<div class="line"><span class="lineno">  177</span>      }</div>
+<div class="line"><span class="lineno">  178</span>    }</div>
+<div class="line"><span class="lineno">  179</span>  }</div>
+<div class="line"><span class="lineno">  180</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.cg.knock_out_max_move) {</div>
+<div class="line"><span class="lineno">  181</span>    <span class="keywordflow">if</span> (stepSize &gt;= a_maxMove) {</div>
+<div class="line"><span class="lineno">  182</span>      <span class="comment">// knockout old search direction</span></div>
+<div class="line"><span class="lineno">  183</span>      <a class="code hl_variable" href="#a2fa4863deaee58bd920e5bcfd447ab28">m_directionOld</a>.setZero();</div>
+<div class="line"><span class="lineno">  184</span>      <a class="code hl_variable" href="#ae01c04ea295a7d03490538974ba0ddab">m_forceOld</a>.setZero();</div>
+<div class="line"><span class="lineno">  185</span>      QUILL_LOG_DEBUG(<a class="code hl_variable" href="#ae4cd215ba150decb4fd0dde059fc91c0">m_log</a>, <span class="stringliteral">&quot;Resetting the old search direction&quot;</span>);</div>
+<div class="line"><span class="lineno">  186</span>    }</div>
+<div class="line"><span class="lineno">  187</span>  }</div>
+<div class="line"><span class="lineno">  188</span> </div>
+<div class="line"><span class="lineno">  189</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1Optimizer.html#ac396cbda1caadf57ff9df7eda4db1822">m_objf</a>-&gt;isConverged() ? 1 : 0;</div>
+<div class="line"><span class="lineno">  190</span>}</div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_ae4cd215ba150decb4fd0dde059fc91c0"><div class="ttname"><a href="#ae4cd215ba150decb4fd0dde059fc91c0">eonc::ConjugateGradients::m_log</a></div><div class="ttdeci">eonc::log::FileScoped m_log</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8h_source.html#l00081">ConjugateGradients.h:81</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_a74dc4eb878fa1a742ba96bd30d2ec237"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a74dc4eb878fa1a742ba96bd30d2ec237">eonc::helpers::maxMotionAppliedV</a></div><div class="ttdeci">VectorXd maxMotionAppliedV(const VectorXd v1, double maxMotion)</div><div class="ttdef"><b>Definition</b> <a href="GeometryAnalysis_8cpp_source.html#l00035">GeometryAnalysis.cpp:341</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_html_acbf42a1f91c3c4317451f0c12a60aeee"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#acbf42a1f91c3c4317451f0c12a60aeee">eonc::helpers::maxAtomMotionAppliedV</a></div><div class="ttdeci">VectorXd maxAtomMotionAppliedV(const VectorXd v1, double maxMotion)</div><div class="ttdef"><b>Definition</b> <a href="GeometryAnalysis_8cpp_source.html#l00033">GeometryAnalysis.cpp:319</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ad89001cedae22690017c65e1d87c0baf" name="ad89001cedae22690017c65e1d87c0baf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad89001cedae22690017c65e1d87c0baf">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int ConjugateGradients::step </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>a_maxMove</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Calls the next step in the algorithm. </p>
+<p>Either calls the single_step or line_search method depending on the parameters </p><dl class="section return"><dt>Returns</dt><dd>whether or not the algorithm has converged </dd></dl>
+
+<p>Implements <a class="el" href="classeonc_1_1Optimizer.html#aa66365f3f15e6d4b9829e555cfc9f2b5">eonc::Optimizer</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8cpp_source.html#l00045">45</a> of file <a class="el" href="ConjugateGradients_8cpp_source.html">ConjugateGradients.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   45</span>                                             {</div>
+<div class="line"><span class="lineno">   46</span>  <span class="keywordtype">bool</span> converged;</div>
+<div class="line"><span class="lineno">   47</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="classeonc_1_1Optimizer.html#a3bfcee12036bd655e29a065e8e1c1f4d">m_optConfig</a>.opts.cg.line_search) {</div>
+<div class="line"><span class="lineno">   48</span>    converged = <a class="code hl_function" href="#a09e77586c503aed788dbdcbca1bb1f7b">line_search</a>(a_maxMove);</div>
+<div class="line"><span class="lineno">   49</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   50</span>    converged = <a class="code hl_function" href="#a66e0103a00a5d69034f0d6c33a315b77">single_step</a>(a_maxMove);</div>
+<div class="line"><span class="lineno">   51</span>  }</div>
+<div class="line"><span class="lineno">   52</span>  <span class="keywordflow">if</span> (converged)</div>
+<div class="line"><span class="lineno">   53</span>    <span class="keywordflow">return</span> 1;</div>
+<div class="line"><span class="lineno">   54</span>  <span class="keywordflow">return</span> 0;</div>
+<div class="line"><span class="lineno">   55</span>}</div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a09e77586c503aed788dbdcbca1bb1f7b"><div class="ttname"><a href="#a09e77586c503aed788dbdcbca1bb1f7b">eonc::ConjugateGradients::line_search</a></div><div class="ttdeci">int line_search(double a_maxMove)</div><div class="ttdoc">Steps the conjugate gradient.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8cpp_source.html#l00057">ConjugateGradients.cpp:57</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ConjugateGradients_html_a66e0103a00a5d69034f0d6c33a315b77"><div class="ttname"><a href="#a66e0103a00a5d69034f0d6c33a315b77">eonc::ConjugateGradients::single_step</a></div><div class="ttdeci">int single_step(double a_maxMove)</div><div class="ttdoc">Steps the conjugate gradient.</div><div class="ttdef"><b>Definition</b> <a href="ConjugateGradients_8cpp_source.html#l00114">ConjugateGradients.cpp:114</a></div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a59e7cb42c970482dd523e0f52956433e" name="a59e7cb42c970482dd523e0f52956433e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59e7cb42c970482dd523e0f52956433e">&#9670;&#160;</a></span>m_cg_i</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eonc::ConjugateGradients::m_cg_i</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Counts the number of discrete steps until algorithm convergence. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00084">84</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+
+</div>
+</div>
+<a id="aade8c61d0393fcc5bac7b5db8ce31614" name="aade8c61d0393fcc5bac7b5db8ce31614"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aade8c61d0393fcc5bac7b5db8ce31614">&#9670;&#160;</a></span>m_direction</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd eonc::ConjugateGradients::m_direction</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current step direction of the conjugate gradient. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00072">72</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+
+</div>
+</div>
+<a id="a2de0bdb23d86e6eeb445a1fa0d4158d2" name="a2de0bdb23d86e6eeb445a1fa0d4158d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2de0bdb23d86e6eeb445a1fa0d4158d2">&#9670;&#160;</a></span>m_directionNorm</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd eonc::ConjugateGradients::m_directionNorm</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Normalised version of the current direction vector. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00076">76</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+
+</div>
+</div>
+<a id="a2fa4863deaee58bd920e5bcfd447ab28" name="a2fa4863deaee58bd920e5bcfd447ab28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fa4863deaee58bd920e5bcfd447ab28">&#9670;&#160;</a></span>m_directionOld</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd eonc::ConjugateGradients::m_directionOld</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Algorithms previous step direction. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00074">74</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+
+</div>
+</div>
+<a id="a25bb3119cc6c478296f09434f7dcafbe" name="a25bb3119cc6c478296f09434f7dcafbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25bb3119cc6c478296f09434f7dcafbe">&#9670;&#160;</a></span>m_force</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd eonc::ConjugateGradients::m_force</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current force vector. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00078">78</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+
+</div>
+</div>
+<a id="ae01c04ea295a7d03490538974ba0ddab" name="ae01c04ea295a7d03490538974ba0ddab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae01c04ea295a7d03490538974ba0ddab">&#9670;&#160;</a></span>m_forceOld</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd eonc::ConjugateGradients::m_forceOld</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Previous force vector. </p>
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00080">80</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+
+</div>
+</div>
+<a id="ae4cd215ba150decb4fd0dde059fc91c0" name="ae4cd215ba150decb4fd0dde059fc91c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4cd215ba150decb4fd0dde059fc91c0">&#9670;&#160;</a></span>m_log</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeonc_1_1log_1_1FileScoped.html">eonc::log::FileScoped</a> eonc::ConjugateGradients::m_log {&quot;cg&quot;, &quot;_cg.log&quot;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ConjugateGradients_8h_source.html#l00081">81</a> of file <a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   81</span>{<span class="stringliteral">&quot;cg&quot;</span>, <span class="stringliteral">&quot;_cg.log&quot;</span>};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/runner/work/eOn/eOn/include/eon/<a class="el" href="ConjugateGradients_8h_source.html">ConjugateGradients.h</a></li>
+<li>/home/runner/work/eOn/eOn/client/<a class="el" href="ConjugateGradients_8cpp_source.html">ConjugateGradients.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="namespaceeonc.html">eonc</a></li><li class="navelem"><a href="classeonc_1_1ConjugateGradients.html">ConjugateGradients</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

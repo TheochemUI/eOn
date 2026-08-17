@@ -1,0 +1,574 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/include/eon/IDPPObjectiveFunction.hpp Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('IDPPObjectiveFunction_8hpp_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">IDPPObjectiveFunction.hpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="IDPPObjectiveFunction_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">** This file is part of eOn.</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">**</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">** SPDX-License-Identifier: BSD-3-Clause</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">**</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">** Copyright (c) 2010--present, eOn Development Team</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">** All rights reserved.</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">**</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">** Repo:</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">** https://github.com/TheochemUI/eOn</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">*/</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="Matter_8h.html">Matter.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="ObjectiveFunction_8h.html">ObjectiveFunction.h</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="Parameters_8h.html">Parameters.h</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;Eigen/Dense&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeonc_1_1IDPPObjectiveFunction.html">   24</a></span><span class="keyword">class </span><a class="code hl_function" href="classeonc_1_1IDPPObjectiveFunction.html#ac3cfb160f8e89b2287d24fcd06e63c72">IDPPObjectiveFunction</a> : <span class="keyword">public</span> <a class="code hl_function" href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeonc_1_1IDPPObjectiveFunction.html#a2f358146ed2841134ceaa71f0f662403">   25</a></span>  std::shared_ptr&lt;Matter&gt; <a class="code hl_variable" href="classeonc_1_1IDPPObjectiveFunction.html#a2f358146ed2841134ceaa71f0f662403">matter</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="}">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeonc_1_1IDPPObjectiveFunction.html#ac3cfb160f8e89b2287d24fcd06e63c72">   28</a></span>  <a class="code hl_function" href="classeonc_1_1IDPPObjectiveFunction.html#ac3cfb160f8e89b2287d24fcd06e63c72">IDPPObjectiveFunction</a>(std::shared_ptr&lt;Matter&gt; matterPassed,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                        <span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;paramsPassed,</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>                        <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> &amp;targetDistances)</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>      : <a class="code hl_function" href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a>(paramsPassed),</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <a class="code hl_variable" href="classeonc_1_1IDPPObjectiveFunction.html#a2f358146ed2841134ceaa71f0f662403">matter</a>{std::move(matterPassed)},</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <a class="code hl_variable" href="classeonc_1_1IDPPObjectiveFunction.html#a138b5bef7c6a592ea262b09a27a1a169">d_target</a>(targetDistances) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="comment">// Initialize working variables to avoid re-allocation</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">int</span> natoms = <a class="code hl_variable" href="classeonc_1_1IDPPObjectiveFunction.html#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;numberOfAtoms();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  }</div>
+</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>  <span class="comment">// IDPP Energy: E = 0.5 * sum( w * (r_ij - d_target_ij)^2 )</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  <span class="comment">// w = 1 / r_ij^4</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>  <span class="keywordtype">double</span> <a class="code hl_function" href="classeonc_1_1IDPPObjectiveFunction.html#ace53feb4396c0274de88abe943f37315">getEnergy</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  <span class="comment">// IDPP Gradient</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  VectorXd <a class="code hl_function" href="classeonc_1_1IDPPObjectiveFunction.html#abe8e4e80bbdd4d3cd903eaee50419a44">getGradient</a>(<span class="keywordtype">bool</span> fdstep = <span class="keyword">false</span>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  <span class="comment">// Standard Interface Plumbing</span></div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="}">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeonc_1_1IDPPObjectiveFunction.html#ae7bb7895f4dc995b9eafbc0b8625746e">   47</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1IDPPObjectiveFunction.html#ae7bb7895f4dc995b9eafbc0b8625746e">setPositions</a>(<span class="keyword">const</span> VectorXd &amp;x)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="comment">// Map 3N vector back to Matter</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_variable" href="classeonc_1_1IDPPObjectiveFunction.html#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;setPositions(AtomMatrix::Map(x.data(), <a class="code hl_variable" href="classeonc_1_1IDPPObjectiveFunction.html#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;numberOfAtoms(), 3));</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  }</div>
+</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="foldopen" id="foldopen00052" data-start="{" data-end="}">
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeonc_1_1IDPPObjectiveFunction.html#ab769bf2e33f5735eb5cc36c9708f23ca">   52</a></span>  VectorXd <a class="code hl_function" href="classeonc_1_1IDPPObjectiveFunction.html#ab769bf2e33f5735eb5cc36c9708f23ca">getPositions</a>()<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="comment">// Map Matter positions to 3N vector</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">return</span> VectorXd::Map(<a class="code hl_variable" href="classeonc_1_1IDPPObjectiveFunction.html#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;getPositions().data(),</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                         3 * <a class="code hl_variable" href="classeonc_1_1IDPPObjectiveFunction.html#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;numberOfAtoms());</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>  }</div>
+</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeonc_1_1IDPPObjectiveFunction.html#af122751dbfc3a322ea3734b8e473bb51">   58</a></span>  <span class="keywordtype">int</span> <a class="code hl_function" href="classeonc_1_1IDPPObjectiveFunction.html#af122751dbfc3a322ea3734b8e473bb51">degreesOfFreedom</a>()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> 3 * <a class="code hl_variable" href="classeonc_1_1IDPPObjectiveFunction.html#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;numberOfAtoms(); }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="foldopen" id="foldopen00060" data-start="{" data-end="}">
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeonc_1_1IDPPObjectiveFunction.html#a0ddcd5dcc47f8cec5eb25ea4a851b25c">   60</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classeonc_1_1IDPPObjectiveFunction.html#a0ddcd5dcc47f8cec5eb25ea4a851b25c">isConverged</a>()<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeonc_1_1IDPPObjectiveFunction.html#a5da0083f895fd849c7a970af605c7ea8">getConvergence</a>() &lt; <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.neb_options.initialization.force_tolerance;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>  }</div>
+</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="}">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeonc_1_1IDPPObjectiveFunction.html#a5da0083f895fd849c7a970af605c7ea8">   64</a></span>  <span class="keywordtype">double</span> <a class="code hl_function" href="classeonc_1_1IDPPObjectiveFunction.html#a5da0083f895fd849c7a970af605c7ea8">getConvergence</a>()<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="comment">// Return max force component or norm depending on preference</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="comment">// Using norm here for simplicity in path generation</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeonc_1_1IDPPObjectiveFunction.html#abe8e4e80bbdd4d3cd903eaee50419a44">getGradient</a>().norm();</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  }</div>
+</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  <span class="comment">// Handles PBC difference correctly using the Matter object</span></div>
+<div class="foldopen" id="foldopen00071" data-start="{" data-end="}">
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeonc_1_1IDPPObjectiveFunction.html#aae8432293c167a5114b824d4e37e56a4">   71</a></span>  VectorXd <a class="code hl_function" href="classeonc_1_1IDPPObjectiveFunction.html#aae8432293c167a5114b824d4e37e56a4">difference</a>(<span class="keyword">const</span> VectorXd &amp;a, <span class="keyword">const</span> VectorXd &amp;b)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1IDPPObjectiveFunction.html#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;pbcV(a - b);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  }</div>
+</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeonc_1_1IDPPObjectiveFunction.html#a138b5bef7c6a592ea262b09a27a1a169">   76</a></span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> <a class="code hl_variable" href="classeonc_1_1IDPPObjectiveFunction.html#a138b5bef7c6a592ea262b09a27a1a169">d_target</a>; <span class="comment">// The interpolated &quot;ideal&quot; distances</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>};</div>
+</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="foldopen" id="foldopen00079" data-start="{" data-end="};">
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classCollectiveIDPPObjectiveFunction.html">   79</a></span><span class="keyword">class </span><a class="code hl_function" href="classCollectiveIDPPObjectiveFunction.html#aa59008f2d48bbce0debd9ca90af5c8ab">CollectiveIDPPObjectiveFunction</a> : <span class="keyword">public</span> <a class="code hl_function" href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a> {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#aa59008f2d48bbce0debd9ca90af5c8ab">   81</a></span>  <a class="code hl_function" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#aa59008f2d48bbce0debd9ca90af5c8ab">CollectiveIDPPObjectiveFunction</a>(std::vector&lt;Matter&gt; &amp;pathRef,</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                                  <span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;paramsPassed)</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>      : <a class="code hl_function" href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a>(paramsPassed),</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ac40fc648c4d4475cbcd821d4768e1386">path</a>(pathRef) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="comment">// Initialize distances for endpoints</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a82d4561fb213f6fcbfe14415269d772f">dInit</a> = <a class="code hl_function" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ae5df2a6d02738383e915697266c14f5b">getDistanceMatrix</a>(<a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ac40fc648c4d4475cbcd821d4768e1386">path</a>.front());</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad72dd2b2af6601f7933ef97e89f39d8a">dFinal</a> = <a class="code hl_function" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ae5df2a6d02738383e915697266c14f5b">getDistanceMatrix</a>(<a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ac40fc648c4d4475cbcd821d4768e1386">path</a>.back());</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>  }</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>  <span class="comment">// Return total energy (IDPP + Springs) - Optional for optimization but good</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>  <span class="comment">// for debugging</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#af41aeccb67babc20d5b59683cb3cedd3">   93</a></span>  <span class="keywordtype">double</span> <a class="code hl_function" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#af41aeccb67babc20d5b59683cb3cedd3">getEnergy</a>()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> 0.0; }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>  VectorXd <a class="code hl_function" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#afc82432c0649dc23c15ad5c565fb5314">getGradient</a>(<span class="keywordtype">bool</span> fdstep = <span class="keyword">false</span>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>  <span class="comment">// Plumbing to map the entire path (all images) to one vector</span></div>
+<div class="foldopen" id="foldopen00098" data-start="{" data-end="}">
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a074596ff89086f0b6c4c4735031d53d0">   98</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a074596ff89086f0b6c4c4735031d53d0">setPositions</a>(<span class="keyword">const</span> VectorXd &amp;x)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">int</span> atoms = <a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ac40fc648c4d4475cbcd821d4768e1386">path</a>[0].numberOfAtoms();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="comment">// Skip endpoints (0 and N+1)</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; <a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ac40fc648c4d4475cbcd821d4768e1386">path</a>.size() - 1; ++i) {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>      <a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ac40fc648c4d4475cbcd821d4768e1386">path</a>[i].setPositions(AtomMatrix::Map(</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>          x.segment(3 * atoms * (i - 1), 3 * atoms).data(), atoms, 3));</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    }</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>  }</div>
+</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="foldopen" id="foldopen00107" data-start="{" data-end="}">
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad7ce828dd4a5e7d148638c537720d071">  107</a></span>  VectorXd <a class="code hl_function" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad7ce828dd4a5e7d148638c537720d071">getPositions</a>()<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordtype">int</span> atoms = <a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ac40fc648c4d4475cbcd821d4768e1386">path</a>[0].numberOfAtoms();</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordtype">int</span> n_free_images = <a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ac40fc648c4d4475cbcd821d4768e1386">path</a>.size() - 2;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    VectorXd pos(3 * atoms * n_free_images);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; <a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ac40fc648c4d4475cbcd821d4768e1386">path</a>.size() - 1; ++i) {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>      pos.segment(3 * atoms * (i - 1), 3 * atoms) =</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>          VectorXd::Map(<a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ac40fc648c4d4475cbcd821d4768e1386">path</a>[i].<a class="code hl_function" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad7ce828dd4a5e7d148638c537720d071">getPositions</a>().data(), 3 * atoms);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    }</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordflow">return</span> pos;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>  }</div>
+</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="foldopen" id="foldopen00119" data-start="{" data-end="}">
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a6ff974cc9d2eb6cdde24300f3fc97547">  119</a></span>  <span class="keywordtype">int</span> <a class="code hl_function" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a6ff974cc9d2eb6cdde24300f3fc97547">degreesOfFreedom</a>()<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordflow">return</span> 3 * <a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ac40fc648c4d4475cbcd821d4768e1386">path</a>[0].numberOfAtoms() * (<a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ac40fc648c4d4475cbcd821d4768e1386">path</a>.size() - 2);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>  }</div>
+</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>  <span class="comment">// Check convergence of the IDPP-NEB</span></div>
+<div class="foldopen" id="foldopen00124" data-start="{" data-end="}">
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad14619c344e18ab9d89134de660af44e">  124</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad14619c344e18ab9d89134de660af44e">isConverged</a>()<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a0d1bde2e35ef4c8f90e6a1b05c1744bf">getConvergence</a>() &lt; <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.neb_options.initialization.force_tolerance;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>  }</div>
+</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno"><a class="line" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a0d1bde2e35ef4c8f90e6a1b05c1744bf">  128</a></span>  <span class="keywordtype">double</span> <a class="code hl_function" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a0d1bde2e35ef4c8f90e6a1b05c1744bf">getConvergence</a>()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a7ee49dc77ec38ae36ddb7f305515e1ad">lastMaxForce</a>; }</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="foldopen" id="foldopen00130" data-start="{" data-end="}">
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno"><a class="line" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad496eb626fec44af03540624e2ae653f">  130</a></span>  VectorXd <a class="code hl_function" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad496eb626fec44af03540624e2ae653f">difference</a>(<span class="keyword">const</span> VectorXd &amp;a, <span class="keyword">const</span> VectorXd &amp;b)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="comment">// Simple difference for this purpose, assuming pre-aligned or handling PBC</span></div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="comment">// inside</span></div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordflow">return</span> a - b;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>  }</div>
+</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ac40fc648c4d4475cbcd821d4768e1386">  137</a></span>  std::vector&lt;Matter&gt; &amp;<a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ac40fc648c4d4475cbcd821d4768e1386">path</a>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno"><a class="line" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad72dd2b2af6601f7933ef97e89f39d8a">  138</a></span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> <a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a82d4561fb213f6fcbfe14415269d772f">dInit</a>, <a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad72dd2b2af6601f7933ef97e89f39d8a">dFinal</a>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a7ee49dc77ec38ae36ddb7f305515e1ad">  139</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a7ee49dc77ec38ae36ddb7f305515e1ad">lastMaxForce</a> = 100.0;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> <a class="code hl_function" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ae5df2a6d02738383e915697266c14f5b">getDistanceMatrix</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;m);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>  <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> <a class="code hl_function" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a7fbf4034efd8b6939da647effee39c36">getIDPPForces</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> &amp;m, <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a> &amp;dTarget);</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>};</div>
+</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="foldopen" id="foldopen00145" data-start="{" data-end="};">
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html">  145</a></span><span class="keyword">class </span><a class="code hl_function" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a7ce4c2d84bf45cc62eecb56cdb13e83a">ZBLRepulsiveIDPPObjective</a> : <span class="keyword">public</span> <a class="code hl_function" href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a> {</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a731ba6e0e25013e977ae9c21594cbd69">  147</a></span>  std::shared_ptr&lt;ObjectiveFunction&gt; <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a731ba6e0e25013e977ae9c21594cbd69">idpp_obj</a>;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno"><a class="line" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a2a41964041904028d9406104f16625b7">  148</a></span>  std::shared_ptr&lt;Potential&gt; <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a2a41964041904028d9406104f16625b7">zbl_pot</a>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a40d42449b50066efce8d0e28a4cb5f3f">  149</a></span>  std::vector&lt;Matter&gt; &amp;<a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a40d42449b50066efce8d0e28a4cb5f3f">path</a>; <span class="comment">// Reference to the actual path vector</span></div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno"><a class="line" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#aec7c934278d51458b09f51415adb911d">  150</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#aec7c934278d51458b09f51415adb911d">zbl_weight</a>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
+<div class="foldopen" id="foldopen00152" data-start="{" data-end="}">
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a7ce4c2d84bf45cc62eecb56cdb13e83a">  152</a></span>  <a class="code hl_function" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a7ce4c2d84bf45cc62eecb56cdb13e83a">ZBLRepulsiveIDPPObjective</a>(std::shared_ptr&lt;ObjectiveFunction&gt; idpp,</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>                            std::shared_ptr&lt;Potential&gt; zbl,</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>                            std::vector&lt;Matter&gt; &amp;p, <span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;<a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>,</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>                            <span class="keywordtype">double</span> weight = 1.0)</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>      : <a class="code hl_function" href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">ObjectiveFunction</a>(<a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>),</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a731ba6e0e25013e977ae9c21594cbd69">idpp_obj</a>(idpp),</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a2a41964041904028d9406104f16625b7">zbl_pot</a>(zbl),</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a40d42449b50066efce8d0e28a4cb5f3f">path</a>(p),</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#aec7c934278d51458b09f51415adb911d">zbl_weight</a>(weight) {}</div>
+</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
+<div class="foldopen" id="foldopen00162" data-start="{" data-end="}">
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno"><a class="line" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a260d15f235d06ae312d14edebedad6c7">  162</a></span>  <span class="keywordtype">double</span> <a class="code hl_function" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a260d15f235d06ae312d14edebedad6c7">getEnergy</a>()<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="comment">// IDPP &quot;Energy&quot; (Residual) + ZBL Energy</span></div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a731ba6e0e25013e977ae9c21594cbd69">idpp_obj</a>-&gt;getEnergy();</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>  }</div>
+</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="foldopen" id="foldopen00167" data-start="{" data-end="}">
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ad74a5737ea8d57236b8b5e0ac4221ebd">  167</a></span>  VectorXd <a class="code hl_function" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ad74a5737ea8d57236b8b5e0ac4221ebd">getGradient</a>(<span class="keywordtype">bool</span> fdstep = <span class="keyword">false</span>)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="comment">// 1. Get IDPP Gradient (forces atoms towards interpolated distances)</span></div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    VectorXd grad = <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a731ba6e0e25013e977ae9c21594cbd69">idpp_obj</a>-&gt;getGradient(fdstep);</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="comment">// 2. Calculate ZBL Forces for every image</span></div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="keywordtype">int</span> n_images = <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a40d42449b50066efce8d0e28a4cb5f3f">path</a>.size();</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keywordtype">int</span> atoms_per_image = <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a40d42449b50066efce8d0e28a4cb5f3f">path</a>[0].numberOfAtoms();</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="comment">// ZBL calculation loop</span></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 1; i &lt; n_images - 1; ++i) { <span class="comment">// Skip endpoints</span></div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forces = MatrixXd::Zero(atoms_per_image, 3);</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>      <span class="keywordtype">double</span> energy = 0;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span> </div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>      <span class="comment">// Calculate ZBL forces for this image</span></div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>      <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a2a41964041904028d9406104f16625b7">zbl_pot</a>-&gt;force(atoms_per_image, <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a40d42449b50066efce8d0e28a4cb5f3f">path</a>[i].<a class="code hl_function" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ade4690f7ad170f9285ccee04fe5b9924">getPositions</a>().data(),</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>                     <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a40d42449b50066efce8d0e28a4cb5f3f">path</a>[i].getAtomicNrs().data(), forces.data(), &amp;energy,</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>                     <span class="keyword">nullptr</span>, <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a40d42449b50066efce8d0e28a4cb5f3f">path</a>[i].getCell().data());</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>      <span class="keywordtype">int</span> segment_start = (i - 1) * 3 * atoms_per_image;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>      VectorXd zbl_grad_vec = VectorXd::Map(forces.data(), 3 * atoms_per_image);</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>      <span class="comment">// Add repulsive push (negate force to get gradient)</span></div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>      grad.segment(segment_start, 3 * atoms_per_image) -=</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>          (zbl_grad_vec * <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#aec7c934278d51458b09f51415adb911d">zbl_weight</a>);</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    }</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keywordflow">return</span> grad;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>  }</div>
+</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>  <span class="comment">// Delegate other methods</span></div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno"><a class="line" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a40a01577f1935accb593eca541e0653a">  197</a></span>  <span class="keywordtype">void</span> <a class="code hl_function" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a40a01577f1935accb593eca541e0653a">setPositions</a>(<span class="keyword">const</span> VectorXd &amp;x)<span class="keyword"> override </span>{ <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a731ba6e0e25013e977ae9c21594cbd69">idpp_obj</a>-&gt;setPositions(x); }</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno"><a class="line" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ade4690f7ad170f9285ccee04fe5b9924">  198</a></span>  VectorXd <a class="code hl_function" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ade4690f7ad170f9285ccee04fe5b9924">getPositions</a>()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a731ba6e0e25013e977ae9c21594cbd69">idpp_obj</a>-&gt;getPositions(); }</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno"><a class="line" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a2db7b0646c93dd8f037aacce32bc2bac">  199</a></span>  <span class="keywordtype">int</span> <a class="code hl_function" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a2db7b0646c93dd8f037aacce32bc2bac">degreesOfFreedom</a>()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a731ba6e0e25013e977ae9c21594cbd69">idpp_obj</a>-&gt;degreesOfFreedom(); }</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno"><a class="line" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ace18e728f5424264c53ac7b9e7a84d73">  200</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ace18e728f5424264c53ac7b9e7a84d73">isConverged</a>()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a731ba6e0e25013e977ae9c21594cbd69">idpp_obj</a>-&gt;isConverged(); }</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno"><a class="line" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a43c5d668894a2a81bfa76d82f3f491e3">  201</a></span>  <span class="keywordtype">double</span> <a class="code hl_function" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a43c5d668894a2a81bfa76d82f3f491e3">getConvergence</a>()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a731ba6e0e25013e977ae9c21594cbd69">idpp_obj</a>-&gt;getConvergence(); }</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
+<div class="foldopen" id="foldopen00203" data-start="{" data-end="}">
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno"><a class="line" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a7419c7080be96e36b654b3615928b5ac">  203</a></span>  VectorXd <a class="code hl_function" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a7419c7080be96e36b654b3615928b5ac">difference</a>(<span class="keyword">const</span> VectorXd &amp;a, <span class="keyword">const</span> VectorXd &amp;b)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a731ba6e0e25013e977ae9c21594cbd69">idpp_obj</a>-&gt;difference(a, b);</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>  }</div>
+</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>};</div>
+</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span> </div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>} <span class="comment">// namespace eonc</span></div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span><span class="keyword">using </span><a class="code hl_class" href="classeonc_1_1CollectiveIDPPObjectiveFunction.html">eonc::CollectiveIDPPObjectiveFunction</a>;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span><span class="keyword">using </span><a class="code hl_class" href="classeonc_1_1IDPPObjectiveFunction.html">eonc::IDPPObjectiveFunction</a>;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span><span class="keyword">using </span><a class="code hl_class" href="classeonc_1_1ZBLRepulsiveIDPPObjective.html">eonc::ZBLRepulsiveIDPPObjective</a>;</div>
+<div class="ttc" id="aEigen_8h_html_a45bb4cbce093fca4dfb193d3f649da30"><div class="ttname"><a href="Eigen_8h.html#a45bb4cbce093fca4dfb193d3f649da30">MatrixXd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, eOnStorageOrder &gt; MatrixXd</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00033">Eigen.h:33</a></div></div>
+<div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
+<div class="ttc" id="aMatter_8h_html"><div class="ttname"><a href="Matter_8h.html">Matter.h</a></div></div>
+<div class="ttc" id="aObjectiveFunction_8h_html"><div class="ttname"><a href="ObjectiveFunction_8h.html">ObjectiveFunction.h</a></div></div>
+<div class="ttc" id="aParameters_8h_html"><div class="ttname"><a href="Parameters_8h.html">Parameters.h</a></div></div>
+<div class="ttc" id="aclassCollectiveIDPPObjectiveFunction_html_aa59008f2d48bbce0debd9ca90af5c8ab"><div class="ttname"><a href="classCollectiveIDPPObjectiveFunction.html#aa59008f2d48bbce0debd9ca90af5c8ab">CollectiveIDPPObjectiveFunction::CollectiveIDPPObjectiveFunction</a></div><div class="ttdeci">CollectiveIDPPObjectiveFunction(std::vector&lt; Matter &gt; &amp;pathRef, const Parameters &amp;paramsPassed)</div><div class="ttdef"><b>Definition</b> <a href="#l00081">IDPPObjectiveFunction.hpp:81</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html"><div class="ttname"><a href="classeonc_1_1CollectiveIDPPObjectiveFunction.html">eonc::CollectiveIDPPObjectiveFunction</a></div><div class="ttdef"><b>Definition</b> <a href="#l00079">IDPPObjectiveFunction.hpp:79</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_a074596ff89086f0b6c4c4735031d53d0"><div class="ttname"><a href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a074596ff89086f0b6c4c4735031d53d0">eonc::CollectiveIDPPObjectiveFunction::setPositions</a></div><div class="ttdeci">void setPositions(const VectorXd &amp;x) override</div><div class="ttdef"><b>Definition</b> <a href="#l00098">IDPPObjectiveFunction.hpp:98</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_a0d1bde2e35ef4c8f90e6a1b05c1744bf"><div class="ttname"><a href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a0d1bde2e35ef4c8f90e6a1b05c1744bf">eonc::CollectiveIDPPObjectiveFunction::getConvergence</a></div><div class="ttdeci">double getConvergence() override</div><div class="ttdef"><b>Definition</b> <a href="#l00128">IDPPObjectiveFunction.hpp:128</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_a6ff974cc9d2eb6cdde24300f3fc97547"><div class="ttname"><a href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a6ff974cc9d2eb6cdde24300f3fc97547">eonc::CollectiveIDPPObjectiveFunction::degreesOfFreedom</a></div><div class="ttdeci">int degreesOfFreedom() override</div><div class="ttdef"><b>Definition</b> <a href="#l00119">IDPPObjectiveFunction.hpp:119</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_a7ee49dc77ec38ae36ddb7f305515e1ad"><div class="ttname"><a href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a7ee49dc77ec38ae36ddb7f305515e1ad">eonc::CollectiveIDPPObjectiveFunction::lastMaxForce</a></div><div class="ttdeci">double lastMaxForce</div><div class="ttdef"><b>Definition</b> <a href="#l00139">IDPPObjectiveFunction.hpp:139</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_a7fbf4034efd8b6939da647effee39c36"><div class="ttname"><a href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a7fbf4034efd8b6939da647effee39c36">eonc::CollectiveIDPPObjectiveFunction::getIDPPForces</a></div><div class="ttdeci">MatrixXd getIDPPForces(const Matter &amp;m, const MatrixXd &amp;dTarget)</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8cpp_source.html#l00097">IDPPObjectiveFunction.cpp:97</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_a82d4561fb213f6fcbfe14415269d772f"><div class="ttname"><a href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#a82d4561fb213f6fcbfe14415269d772f">eonc::CollectiveIDPPObjectiveFunction::dInit</a></div><div class="ttdeci">MatrixXd dInit</div><div class="ttdef"><b>Definition</b> <a href="#l00138">IDPPObjectiveFunction.hpp:138</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_aa59008f2d48bbce0debd9ca90af5c8ab"><div class="ttname"><a href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#aa59008f2d48bbce0debd9ca90af5c8ab">eonc::CollectiveIDPPObjectiveFunction::CollectiveIDPPObjectiveFunction</a></div><div class="ttdeci">CollectiveIDPPObjectiveFunction(std::vector&lt; Matter &gt; &amp;pathRef, const Parameters &amp;paramsPassed)</div><div class="ttdef"><b>Definition</b> <a href="#l00081">IDPPObjectiveFunction.hpp:81</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_ac40fc648c4d4475cbcd821d4768e1386"><div class="ttname"><a href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ac40fc648c4d4475cbcd821d4768e1386">eonc::CollectiveIDPPObjectiveFunction::path</a></div><div class="ttdeci">std::vector&lt; Matter &gt; &amp; path</div><div class="ttdef"><b>Definition</b> <a href="#l00137">IDPPObjectiveFunction.hpp:137</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_ad14619c344e18ab9d89134de660af44e"><div class="ttname"><a href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad14619c344e18ab9d89134de660af44e">eonc::CollectiveIDPPObjectiveFunction::isConverged</a></div><div class="ttdeci">bool isConverged() override</div><div class="ttdef"><b>Definition</b> <a href="#l00124">IDPPObjectiveFunction.hpp:124</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_ad496eb626fec44af03540624e2ae653f"><div class="ttname"><a href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad496eb626fec44af03540624e2ae653f">eonc::CollectiveIDPPObjectiveFunction::difference</a></div><div class="ttdeci">VectorXd difference(const VectorXd &amp;a, const VectorXd &amp;b) override</div><div class="ttdef"><b>Definition</b> <a href="#l00130">IDPPObjectiveFunction.hpp:130</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_ad72dd2b2af6601f7933ef97e89f39d8a"><div class="ttname"><a href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad72dd2b2af6601f7933ef97e89f39d8a">eonc::CollectiveIDPPObjectiveFunction::dFinal</a></div><div class="ttdeci">MatrixXd dFinal</div><div class="ttdef"><b>Definition</b> <a href="#l00138">IDPPObjectiveFunction.hpp:138</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_ad7ce828dd4a5e7d148638c537720d071"><div class="ttname"><a href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ad7ce828dd4a5e7d148638c537720d071">eonc::CollectiveIDPPObjectiveFunction::getPositions</a></div><div class="ttdeci">VectorXd getPositions() override</div><div class="ttdef"><b>Definition</b> <a href="#l00107">IDPPObjectiveFunction.hpp:107</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_ae5df2a6d02738383e915697266c14f5b"><div class="ttname"><a href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#ae5df2a6d02738383e915697266c14f5b">eonc::CollectiveIDPPObjectiveFunction::getDistanceMatrix</a></div><div class="ttdeci">MatrixXd getDistanceMatrix(const Matter &amp;m)</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8cpp_source.html#l00084">IDPPObjectiveFunction.cpp:84</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_af41aeccb67babc20d5b59683cb3cedd3"><div class="ttname"><a href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#af41aeccb67babc20d5b59683cb3cedd3">eonc::CollectiveIDPPObjectiveFunction::getEnergy</a></div><div class="ttdeci">double getEnergy() override</div><div class="ttdef"><b>Definition</b> <a href="#l00093">IDPPObjectiveFunction.hpp:93</a></div></div>
+<div class="ttc" id="aclasseonc_1_1CollectiveIDPPObjectiveFunction_html_afc82432c0649dc23c15ad5c565fb5314"><div class="ttname"><a href="classeonc_1_1CollectiveIDPPObjectiveFunction.html#afc82432c0649dc23c15ad5c565fb5314">eonc::CollectiveIDPPObjectiveFunction::getGradient</a></div><div class="ttdeci">VectorXd getGradient(bool fdstep=false) override</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8cpp_source.html#l00124">IDPPObjectiveFunction.cpp:124</a></div></div>
+<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html">eonc::IDPPObjectiveFunction</a></div><div class="ttdef"><b>Definition</b> <a href="#l00024">IDPPObjectiveFunction.hpp:24</a></div></div>
+<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html_a0ddcd5dcc47f8cec5eb25ea4a851b25c"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html#a0ddcd5dcc47f8cec5eb25ea4a851b25c">eonc::IDPPObjectiveFunction::isConverged</a></div><div class="ttdeci">bool isConverged() override</div><div class="ttdef"><b>Definition</b> <a href="#l00060">IDPPObjectiveFunction.hpp:60</a></div></div>
+<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html_a138b5bef7c6a592ea262b09a27a1a169"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html#a138b5bef7c6a592ea262b09a27a1a169">eonc::IDPPObjectiveFunction::d_target</a></div><div class="ttdeci">MatrixXd d_target</div><div class="ttdef"><b>Definition</b> <a href="#l00076">IDPPObjectiveFunction.hpp:76</a></div></div>
+<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html_a2f358146ed2841134ceaa71f0f662403"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html#a2f358146ed2841134ceaa71f0f662403">eonc::IDPPObjectiveFunction::matter</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; matter</div><div class="ttdef"><b>Definition</b> <a href="#l00025">IDPPObjectiveFunction.hpp:25</a></div></div>
+<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html_a5da0083f895fd849c7a970af605c7ea8"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html#a5da0083f895fd849c7a970af605c7ea8">eonc::IDPPObjectiveFunction::getConvergence</a></div><div class="ttdeci">double getConvergence() override</div><div class="ttdef"><b>Definition</b> <a href="#l00064">IDPPObjectiveFunction.hpp:64</a></div></div>
+<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html_aae8432293c167a5114b824d4e37e56a4"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html#aae8432293c167a5114b824d4e37e56a4">eonc::IDPPObjectiveFunction::difference</a></div><div class="ttdeci">VectorXd difference(const VectorXd &amp;a, const VectorXd &amp;b) override</div><div class="ttdef"><b>Definition</b> <a href="#l00071">IDPPObjectiveFunction.hpp:71</a></div></div>
+<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html_ab769bf2e33f5735eb5cc36c9708f23ca"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html#ab769bf2e33f5735eb5cc36c9708f23ca">eonc::IDPPObjectiveFunction::getPositions</a></div><div class="ttdeci">VectorXd getPositions() override</div><div class="ttdef"><b>Definition</b> <a href="#l00052">IDPPObjectiveFunction.hpp:52</a></div></div>
+<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html_abe8e4e80bbdd4d3cd903eaee50419a44"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html#abe8e4e80bbdd4d3cd903eaee50419a44">eonc::IDPPObjectiveFunction::getGradient</a></div><div class="ttdeci">VectorXd getGradient(bool fdstep=false) override</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8cpp_source.html#l00045">IDPPObjectiveFunction.cpp:45</a></div></div>
+<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html_ac3cfb160f8e89b2287d24fcd06e63c72"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html#ac3cfb160f8e89b2287d24fcd06e63c72">eonc::IDPPObjectiveFunction::IDPPObjectiveFunction</a></div><div class="ttdeci">IDPPObjectiveFunction(std::shared_ptr&lt; Matter &gt; matterPassed, const Parameters &amp;paramsPassed, const MatrixXd &amp;targetDistances)</div><div class="ttdef"><b>Definition</b> <a href="#l00028">IDPPObjectiveFunction.hpp:28</a></div></div>
+<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html_ace53feb4396c0274de88abe943f37315"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html#ace53feb4396c0274de88abe943f37315">eonc::IDPPObjectiveFunction::getEnergy</a></div><div class="ttdeci">double getEnergy() override</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8cpp_source.html#l00018">IDPPObjectiveFunction.cpp:18</a></div></div>
+<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html_ae7bb7895f4dc995b9eafbc0b8625746e"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html#ae7bb7895f4dc995b9eafbc0b8625746e">eonc::IDPPObjectiveFunction::setPositions</a></div><div class="ttdeci">void setPositions(const VectorXd &amp;x) override</div><div class="ttdef"><b>Definition</b> <a href="#l00047">IDPPObjectiveFunction.hpp:47</a></div></div>
+<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html_af122751dbfc3a322ea3734b8e473bb51"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html#af122751dbfc3a322ea3734b8e473bb51">eonc::IDPPObjectiveFunction::degreesOfFreedom</a></div><div class="ttdeci">int degreesOfFreedom() override</div><div class="ttdef"><b>Definition</b> <a href="#l00058">IDPPObjectiveFunction.hpp:58</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html"><div class="ttname"><a href="classeonc_1_1Matter.html">eonc::Matter</a></div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00092">Matter.h:92</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ObjectiveFunction_html_a7539f6688c5b9e68654bf0a8762e8c34"><div class="ttname"><a href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">eonc::ObjectiveFunction::ObjectiveFunction</a></div><div class="ttdeci">ObjectiveFunction(const Parameters &amp;paramsPassed)</div><div class="ttdef"><b>Definition</b> <a href="ObjectiveFunction_8h_source.html#l00023">ObjectiveFunction.h:23</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ObjectiveFunction_html_a9d74eea28a1c17f36202adff592ca871"><div class="ttname"><a href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">eonc::ObjectiveFunction::params</a></div><div class="ttdeci">const Parameters &amp; params</div><div class="ttdef"><b>Definition</b> <a href="ObjectiveFunction_8h_source.html#l00020">ObjectiveFunction.h:20</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html"><div class="ttname"><a href="classeonc_1_1Parameters.html">eonc::Parameters</a></div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00028">Parameters.h:28</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ZBLRepulsiveIDPPObjective_html"><div class="ttname"><a href="classeonc_1_1ZBLRepulsiveIDPPObjective.html">eonc::ZBLRepulsiveIDPPObjective</a></div><div class="ttdef"><b>Definition</b> <a href="#l00145">IDPPObjectiveFunction.hpp:145</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ZBLRepulsiveIDPPObjective_html_a260d15f235d06ae312d14edebedad6c7"><div class="ttname"><a href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a260d15f235d06ae312d14edebedad6c7">eonc::ZBLRepulsiveIDPPObjective::getEnergy</a></div><div class="ttdeci">double getEnergy() override</div><div class="ttdef"><b>Definition</b> <a href="#l00162">IDPPObjectiveFunction.hpp:162</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ZBLRepulsiveIDPPObjective_html_a2a41964041904028d9406104f16625b7"><div class="ttname"><a href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a2a41964041904028d9406104f16625b7">eonc::ZBLRepulsiveIDPPObjective::zbl_pot</a></div><div class="ttdeci">std::shared_ptr&lt; Potential &gt; zbl_pot</div><div class="ttdef"><b>Definition</b> <a href="#l00148">IDPPObjectiveFunction.hpp:148</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ZBLRepulsiveIDPPObjective_html_a2db7b0646c93dd8f037aacce32bc2bac"><div class="ttname"><a href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a2db7b0646c93dd8f037aacce32bc2bac">eonc::ZBLRepulsiveIDPPObjective::degreesOfFreedom</a></div><div class="ttdeci">int degreesOfFreedom() override</div><div class="ttdef"><b>Definition</b> <a href="#l00199">IDPPObjectiveFunction.hpp:199</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ZBLRepulsiveIDPPObjective_html_a40a01577f1935accb593eca541e0653a"><div class="ttname"><a href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a40a01577f1935accb593eca541e0653a">eonc::ZBLRepulsiveIDPPObjective::setPositions</a></div><div class="ttdeci">void setPositions(const VectorXd &amp;x) override</div><div class="ttdef"><b>Definition</b> <a href="#l00197">IDPPObjectiveFunction.hpp:197</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ZBLRepulsiveIDPPObjective_html_a40d42449b50066efce8d0e28a4cb5f3f"><div class="ttname"><a href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a40d42449b50066efce8d0e28a4cb5f3f">eonc::ZBLRepulsiveIDPPObjective::path</a></div><div class="ttdeci">std::vector&lt; Matter &gt; &amp; path</div><div class="ttdef"><b>Definition</b> <a href="#l00149">IDPPObjectiveFunction.hpp:149</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ZBLRepulsiveIDPPObjective_html_a43c5d668894a2a81bfa76d82f3f491e3"><div class="ttname"><a href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a43c5d668894a2a81bfa76d82f3f491e3">eonc::ZBLRepulsiveIDPPObjective::getConvergence</a></div><div class="ttdeci">double getConvergence() override</div><div class="ttdef"><b>Definition</b> <a href="#l00201">IDPPObjectiveFunction.hpp:201</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ZBLRepulsiveIDPPObjective_html_a731ba6e0e25013e977ae9c21594cbd69"><div class="ttname"><a href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a731ba6e0e25013e977ae9c21594cbd69">eonc::ZBLRepulsiveIDPPObjective::idpp_obj</a></div><div class="ttdeci">std::shared_ptr&lt; ObjectiveFunction &gt; idpp_obj</div><div class="ttdef"><b>Definition</b> <a href="#l00147">IDPPObjectiveFunction.hpp:147</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ZBLRepulsiveIDPPObjective_html_a7419c7080be96e36b654b3615928b5ac"><div class="ttname"><a href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a7419c7080be96e36b654b3615928b5ac">eonc::ZBLRepulsiveIDPPObjective::difference</a></div><div class="ttdeci">VectorXd difference(const VectorXd &amp;a, const VectorXd &amp;b) override</div><div class="ttdef"><b>Definition</b> <a href="#l00203">IDPPObjectiveFunction.hpp:203</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ZBLRepulsiveIDPPObjective_html_a7ce4c2d84bf45cc62eecb56cdb13e83a"><div class="ttname"><a href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#a7ce4c2d84bf45cc62eecb56cdb13e83a">eonc::ZBLRepulsiveIDPPObjective::ZBLRepulsiveIDPPObjective</a></div><div class="ttdeci">ZBLRepulsiveIDPPObjective(std::shared_ptr&lt; ObjectiveFunction &gt; idpp, std::shared_ptr&lt; Potential &gt; zbl, std::vector&lt; Matter &gt; &amp;p, const Parameters &amp;params, double weight=1.0)</div><div class="ttdef"><b>Definition</b> <a href="#l00152">IDPPObjectiveFunction.hpp:152</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ZBLRepulsiveIDPPObjective_html_ace18e728f5424264c53ac7b9e7a84d73"><div class="ttname"><a href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ace18e728f5424264c53ac7b9e7a84d73">eonc::ZBLRepulsiveIDPPObjective::isConverged</a></div><div class="ttdeci">bool isConverged() override</div><div class="ttdef"><b>Definition</b> <a href="#l00200">IDPPObjectiveFunction.hpp:200</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ZBLRepulsiveIDPPObjective_html_ad74a5737ea8d57236b8b5e0ac4221ebd"><div class="ttname"><a href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ad74a5737ea8d57236b8b5e0ac4221ebd">eonc::ZBLRepulsiveIDPPObjective::getGradient</a></div><div class="ttdeci">VectorXd getGradient(bool fdstep=false) override</div><div class="ttdef"><b>Definition</b> <a href="#l00167">IDPPObjectiveFunction.hpp:167</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ZBLRepulsiveIDPPObjective_html_ade4690f7ad170f9285ccee04fe5b9924"><div class="ttname"><a href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#ade4690f7ad170f9285ccee04fe5b9924">eonc::ZBLRepulsiveIDPPObjective::getPositions</a></div><div class="ttdeci">VectorXd getPositions() override</div><div class="ttdef"><b>Definition</b> <a href="#l00198">IDPPObjectiveFunction.hpp:198</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ZBLRepulsiveIDPPObjective_html_aec7c934278d51458b09f51415adb911d"><div class="ttname"><a href="classeonc_1_1ZBLRepulsiveIDPPObjective.html#aec7c934278d51458b09f51415adb911d">eonc::ZBLRepulsiveIDPPObjective::zbl_weight</a></div><div class="ttdeci">double zbl_weight</div><div class="ttdef"><b>Definition</b> <a href="#l00150">IDPPObjectiveFunction.hpp:150</a></div></div>
+<div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00019">ARTnSaddleSearch.cpp:19</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="dir_2527c5cc2e6dc8ce970a4d420439d1d9.html">eon</a></li><li class="navelem"><a href="IDPPObjectiveFunction_8hpp.html">IDPPObjectiveFunction.hpp</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>

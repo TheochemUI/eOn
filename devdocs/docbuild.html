@@ -39,12 +39,12 @@
       <strong>eOn</strong>
     </a>
     <div class="sy-head-nav" id="head-nav">
-      <nav class="sy-head-links"><ul>
-      <li class="link"><button class="js-menu" type="button" id="nav-trigger-1" aria-controls="nav-children-1">
+      <nav class="sy-head-links"><ul><li class="link"><a href="/api-cpp/index.html">C++ API</a></li>
+      <li class="link"><button class="js-menu" type="button" id="nav-trigger-2" aria-controls="nav-children-2">
             <span>Ecosystem</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul id="nav-children-1" aria-labelledby="nav-trigger-1"><li><a href="https://rgpycrumbs.rgoswami.me">
+        <ul id="nav-children-2" aria-labelledby="nav-trigger-2"><li><a href="https://rgpycrumbs.rgoswami.me">
                 <span>rgpycrumbs</span>
                 <small>Python helpers for eOn workflows</small>
               </a></li><li><a href="https://chemparseplot.rgoswami.me">
@@ -410,6 +410,13 @@ is handled via the <code class="docutils literal notranslate"><span class="pre">
 </span><span data-line="5">uvx<span class="w"> </span>pdm<span class="w"> </span>run<span class="w"> </span>sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span>docs/source<span class="w"> </span>docs/build/html
 </span></pre></div>
 </div>
+<p>The current in-tree path is pixi:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>docs<span class="w"> </span>makedocs
+</span><span data-line="2">pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>docs<span class="w"> </span>install-doxyhtml
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">makedocs</span></code> is the Sphinx book. <code class="docutils literal notranslate"><span class="pre">install-doxyhtml</span></code> writes the sibling
+doxyYoda C++ API tree to <code class="docutils literal notranslate"><span class="pre">docs/build/html/api-cpp/</span></code>.</p>
 <p>This can be viewed locally with an HTTP server.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>-m<span class="w"> </span>http.server<span class="w"> </span>docs/build/html
 </span></pre></div>

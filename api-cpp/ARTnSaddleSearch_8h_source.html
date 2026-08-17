@@ -1,0 +1,384 @@
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML header for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="generator" content="Doxygen 1.17.0"/>
+<title>eOn: /home/runner/work/eOn/eOn/include/eon/ARTnSaddleSearch.h Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="codefolding.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme: theme });
+</script>
+<!-- Antics analytics -->
+<script defer src="https://antics-api.turtletech.us/antics.js"></script>
+<script>window.antics=window.antics||{event:function(){}};document.addEventListener("click",function(e){var a=e.target.closest("a");if(a&&a.hostname!==location.hostname)antics.event("Outbound Link",{url:a.href});});</script>
+<!-- doxyYoda owns presentation; stock doxygen.css is not linked (theme SCSS covers Doxygen classes). -->
+<link href="doxyYoda.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript">
+/* doxyYoda theme boot: apply stored or OS preference before first paint */
+(function () {
+  try {
+    var stored = localStorage.getItem("doxyYoda-theme");
+    var root = document.documentElement;
+    if (stored === "dark") {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    } else if (stored === "light") {
+      root.classList.add("light");
+    } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      root.classList.add("dark");
+      root.classList.add("dark-mode");
+    }
+  } catch (e) { /* private mode */ }
+})();
+</script>
+</head>
+<body>
+<div class="grid-contents">
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<nav class="title_area" aria-label="Project">
+<div class="title_area__start"></div>
+<div class="title_area__center">
+<span class="project_info">eOn client</span>
+<span class="project_brief">Long-timescale dynamics: aKMC, NEB, parallel replica</span>
+</div>
+<div class="title_area__end">
+<button type="button" class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">&#9790;</button>
+</div>
+</nav>
+<!-- end header part -->
+<script type="text/javascript">
+/* doxyYoda interactive: foldable fragments, copy buttons, dark-mode toggle */
+document.addEventListener("DOMContentLoaded", function () {
+  function prefersDark() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function isDarkMode() {
+    var root = document.documentElement;
+    if (root.classList.contains("dark") || root.classList.contains("dark-mode")) return true;
+    if (root.classList.contains("light")) return false;
+    return prefersDark();
+  }
+  // Optional folding: wrap .fragment in open <details class="code-details">.
+  // Skip fragments already inside details and native Doxygen .foldopen listings.
+  document.querySelectorAll(".fragment").forEach(function (frag) {
+    if (frag.closest("details.code-details")) return;
+    if (frag.querySelector(".foldopen")) return;
+    var details = document.createElement("details");
+    details.className = "code-details";
+    details.open = true;
+    var summary = document.createElement("summary");
+    summary.textContent = "Code";
+    frag.parentNode.insertBefore(details, frag);
+    details.appendChild(summary);
+    details.appendChild(frag);
+  });
+  // Copy-to-clipboard on div.fragment (themed .copy-btn only)
+  document.querySelectorAll("div.fragment").forEach(function (frag) {
+    if (frag.querySelector(".copy-btn")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
+    btn.addEventListener("click", function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      var clone = frag.cloneNode(true);
+      var extra = clone.querySelector(".copy-btn");
+      if (extra) extra.remove();
+      var lines = clone.querySelectorAll(".line");
+      var text = lines.length
+        ? Array.prototype.map.call(lines, function (l) { return l.textContent; }).join("\n")
+        : clone.textContent;
+      var done = function () {
+        btn.textContent = "Copied!";
+        setTimeout(function () { btn.textContent = "Copy"; }, 2000);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          /* ignore */
+        });
+      }
+    });
+    frag.appendChild(btn);
+  });
+  // Dark mode toggle
+  var toggle = document.getElementById("darkModeToggle");
+  if (toggle) {
+    function updateIcon() {
+      var dark = isDarkMode();
+      toggle.innerHTML = dark ? "&#9788;" : "&#9790;";
+      toggle.setAttribute("aria-pressed", dark ? "true" : "false");
+    }
+    updateIcon();
+    toggle.addEventListener("click", function () {
+      var root = document.documentElement;
+      var nextDark = !isDarkMode();
+      root.classList.toggle("dark", nextDark);
+      root.classList.toggle("dark-mode", nextDark);
+      root.classList.toggle("light", !nextDark);
+      try {
+        localStorage.setItem("doxyYoda-theme", nextDark ? "dark" : "light");
+      } catch (e) { /* private mode */ }
+      updateIcon();
+    });
+  }
+});
+</script>
+<!-- Generated by Doxygen 1.17.0 -->
+<script type="text/javascript">
+let searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', codefold.init);
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  initMenu('',true);
+  init_search();
+});
+</script>
+<div id="main-nav-mobile">
+<div class="sm sm-dox"><input id="main-menu-state" type="checkbox"/>
+<label class="main-menu-btn" for="main-menu-state">
+<span class="main-menu-btn-icon"></span> Toggle main menu visibility</label>
+<span id="searchBoxPos1" style="position:absolute;right:8px;top:8px;height:36px;"></span>
+</div>
+</div><!-- main-nav-mobile -->
+<div id="main-nav">
+  <ul class="sm sm-dox" id="main-menu">
+    <li id="searchBoxPos2" style="float:right">
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect" class="search-icon" onmouseover="return searchBox.OnSearchSelectShow()" onmouseout="return searchBox.OnSearchSelectHide()"><span class="search-icon-dropdown"></span></span>
+          <input type="text" id="MSearchField" value="" placeholder="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><div id="MSearchCloseImg" class="close-icon"></div></a>
+          </span>
+        </div>
+    </li>
+  </ul>
+</div><!-- main-nav -->
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded',() => { initNavTree('ARTnSaddleSearch_8h_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">ARTnSaddleSearch.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ARTnSaddleSearch_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment"> * This file is part of eOn.</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment"> * SPDX-License-Identifier: BSD-3-Clause</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment"> * Copyright (c) 2010--present, eOn Development Team</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment"> * All rights reserved.</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment"> * Repo:</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment"> * https://github.com/TheochemUI/eOn</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="EonLogger_8h.html">EonLogger.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="Matter_8h.html">Matter.h</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="MinModeSaddleSearch_8h.html">MinModeSaddleSearch.h</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="Parameters_8h.html">Parameters.h</a>&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="SaddleSearchMethod_8h.html">SaddleSearchMethod.h</a>&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">// Include the ARTn resource for thread-local access</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#ifdef WITH_ARTN</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &quot;<a class="code" href="ARTnResource_8h.html">libs/ARTn/ARTnResource.h</a>&quot;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeonc.html">eonc</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment">/*</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="comment"> * ARTn integration with thread-local dynamic loading</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#ifdef WITH_ARTN</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="comment">// Constants</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">constexpr</span> <span class="keywordtype">double</span> ARTN_MODE_TOLERANCE = 1e-10;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">constexpr</span> <span class="keywordtype">double</span> ARTN_SMALL_DISPLACEMENT = 1e-6;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="comment">// WARNING: All ARTn operations are serialized through a global mutex</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="comment">// due to the non-thread-safe Fortran backend. This can be a performance</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="comment">// bottleneck in multi-threaded contexts. Consider process-level parallelism</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="comment">// if true concurrent ARTn operations are required.</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="preprocessor">#endif </span><span class="comment">// WITH_ARTN</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span></div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="};">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classARTnSaddleSearch.html">   47</a></span><span class="keyword">class </span><a class="code hl_function" href="classARTnSaddleSearch.html#a39da3082bb6c91e2e4cd91770966edf9">ARTnSaddleSearch</a> : <span class="keyword">public</span> <a class="code hl_function" href="classeonc_1_1SaddleSearchMethod.html#ade6fc7a704aedacdd52fb16335b472c8">SaddleSearchMethod</a> {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnSaddleSearch.html#ab1f87ca36c32e5ac9dd1ed2182552a02">   49</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="classeonc_1_1ARTnSaddleSearch.html#ab1f87ca36c32e5ac9dd1ed2182552a02">STATUS_GOOD</a> = 0;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnSaddleSearch.html#af711a802abaa2eca2cfedf919e41774c">   50</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="classeonc_1_1ARTnSaddleSearch.html#af711a802abaa2eca2cfedf919e41774c">STATUS_BAD_MAX_ITERATIONS</a> =</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>      <a class="code hl_enumvalue" href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a357ef1429672374690911f30278bc52d">MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnSaddleSearch.html#ad43a6eb6458d147689dcfd99ecea6eed">   52</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="classeonc_1_1ARTnSaddleSearch.html#ad43a6eb6458d147689dcfd99ecea6eed">STATUS_BAD_ARTN_ERROR</a> = 22;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>  <a class="code hl_function" href="classeonc_1_1ARTnSaddleSearch.html#a39da3082bb6c91e2e4cd91770966edf9">ARTnSaddleSearch</a>(std::shared_ptr&lt;Matter&gt; matterPassed,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                   std::shared_ptr&lt;Potential&gt; potPassed, <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> modeInitial,</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                   <span class="keyword">const</span> <a class="code hl_class" href="classeonc_1_1Parameters.html">Parameters</a> &amp;paramsPassed);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>  <a class="code hl_function" href="classeonc_1_1ARTnSaddleSearch.html#a040588123f330366ed7280e8f541a68a">~ARTnSaddleSearch</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>  <span class="keywordtype">int</span> <a class="code hl_function" href="classeonc_1_1ARTnSaddleSearch.html#a595c87426f4699d89a9c2dbd840581cd">run</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>  <span class="keywordtype">double</span> <a class="code hl_function" href="classeonc_1_1ARTnSaddleSearch.html#a205e6a87c5c6177149b4de976f2d2b16">getEigenvalue</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> <a class="code hl_function" href="classeonc_1_1ARTnSaddleSearch.html#aa97778468b89a4d7c179908c26d9d460">getEigenvector</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>  std::string_view <a class="code hl_function" href="classeonc_1_1ARTnSaddleSearch.html#a875ced0e833849f06f1d89b260d12efd">describeStatus</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="classeonc_1_1ARTnSaddleSearch.html#a5edb11b350ea7f079856891f9e4d3ae7">status</a>) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnSaddleSearch.html#ae78593c43ac10a6fcfa5529bc8e91f43">   63</a></span>  <span class="keywordtype">int</span> <a class="code hl_function" href="classeonc_1_1ARTnSaddleSearch.html#ae78593c43ac10a6fcfa5529bc8e91f43">getStatus</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ARTnSaddleSearch.html#a5edb11b350ea7f079856891f9e4d3ae7">status</a>; }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnSaddleSearch.html#af77451859061c286ed91220d3f675b3c">   64</a></span>  <span class="keywordtype">int</span> <a class="code hl_function" href="classeonc_1_1ARTnSaddleSearch.html#af77451859061c286ed91220d3f675b3c">getIterationCount</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ARTnSaddleSearch.html#aa5f5d33587fb9d8be7d52a41d9ac8c30">iteration</a>; }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnSaddleSearch.html#ab19f93bd7f43e18f1cab48ac3eadcf18">   65</a></span>  <span class="keywordtype">int</span> <a class="code hl_function" href="classeonc_1_1ARTnSaddleSearch.html#ab19f93bd7f43e18f1cab48ac3eadcf18">getForceCalls</a>()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="classeonc_1_1ARTnSaddleSearch.html#a3f5202c437244bfbbdd2258634a14af3">forcecalls</a>; }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnSaddleSearch.html#aec171c441abe01b229382a9cc232ee40">   68</a></span>  std::shared_ptr&lt;Matter&gt; <a class="code hl_variable" href="classeonc_1_1ARTnSaddleSearch.html#aec171c441abe01b229382a9cc232ee40">matter</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnSaddleSearch.html#a37c24d15e124d9d26dbb836cc7bd1fcc">   69</a></span>  <span class="keywordtype">double</span> <a class="code hl_variable" href="classeonc_1_1ARTnSaddleSearch.html#a37c24d15e124d9d26dbb836cc7bd1fcc">eigenvalue</a>{std::numeric_limits&lt;double&gt;::quiet_NaN()};</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnSaddleSearch.html#a1edaae6844c4be1b4607b9903e92d9f7">   70</a></span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> <a class="code hl_variable" href="classeonc_1_1ARTnSaddleSearch.html#a1edaae6844c4be1b4607b9903e92d9f7">eigenvector</a>, <a class="code hl_variable" href="classeonc_1_1ARTnSaddleSearch.html#aa7446ab71a09b166085ba80ee5bb92c7">mode</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnSaddleSearch.html#a5edb11b350ea7f079856891f9e4d3ae7">   71</a></span>  <span class="keywordtype">int</span> <a class="code hl_variable" href="classeonc_1_1ARTnSaddleSearch.html#a5edb11b350ea7f079856891f9e4d3ae7">status</a>{0};</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnSaddleSearch.html#aa5f5d33587fb9d8be7d52a41d9ac8c30">   72</a></span>  <span class="keywordtype">int</span> <a class="code hl_variable" href="classeonc_1_1ARTnSaddleSearch.html#aa5f5d33587fb9d8be7d52a41d9ac8c30">iteration</a>{0};</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnSaddleSearch.html#a3f5202c437244bfbbdd2258634a14af3">   73</a></span>  <span class="keywordtype">int</span> <a class="code hl_variable" href="classeonc_1_1ARTnSaddleSearch.html#a3f5202c437244bfbbdd2258634a14af3">forcecalls</a>{0};</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeonc_1_1ARTnSaddleSearch.html#a78c07d88f73681895b495ce201354e55">   74</a></span>  <a class="code hl_struct" href="structeonc_1_1log_1_1Scoped.html">eonc::log::Scoped</a> <a class="code hl_variable" href="classeonc_1_1ARTnSaddleSearch.html#a78c07d88f73681895b495ce201354e55">log</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>};</div>
+</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>} <span class="comment">// namespace eonc</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="keyword">using </span><a class="code hl_class" href="classeonc_1_1ARTnSaddleSearch.html">eonc::ARTnSaddleSearch</a>;</div>
+<div class="ttc" id="aARTnResource_8h_html"><div class="ttname"><a href="ARTnResource_8h.html">ARTnResource.h</a></div></div>
+<div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
+<div class="ttc" id="aEonLogger_8h_html"><div class="ttname"><a href="EonLogger_8h.html">EonLogger.h</a></div></div>
+<div class="ttc" id="aMatter_8h_html"><div class="ttname"><a href="Matter_8h.html">Matter.h</a></div></div>
+<div class="ttc" id="aMinModeSaddleSearch_8h_html"><div class="ttname"><a href="MinModeSaddleSearch_8h.html">MinModeSaddleSearch.h</a></div></div>
+<div class="ttc" id="aParameters_8h_html"><div class="ttname"><a href="Parameters_8h.html">Parameters.h</a></div></div>
+<div class="ttc" id="aSaddleSearchMethod_8h_html"><div class="ttname"><a href="SaddleSearchMethod_8h.html">SaddleSearchMethod.h</a></div></div>
+<div class="ttc" id="aclassARTnSaddleSearch_html_a39da3082bb6c91e2e4cd91770966edf9"><div class="ttname"><a href="classARTnSaddleSearch.html#a39da3082bb6c91e2e4cd91770966edf9">ARTnSaddleSearch::ARTnSaddleSearch</a></div><div class="ttdeci">ARTnSaddleSearch(std::shared_ptr&lt; Matter &gt; matterPassed, std::shared_ptr&lt; Potential &gt; potPassed, AtomMatrix modeInitial, const Parameters &amp;paramsPassed)</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00021">ARTnSaddleSearch.cpp:21</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html">eonc::ARTnSaddleSearch</a></div><div class="ttdoc">Saddle search method using the Activation-Relaxation Technique nouveau.</div><div class="ttdef"><b>Definition</b> <a href="#l00047">ARTnSaddleSearch.h:47</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_a040588123f330366ed7280e8f541a68a"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#a040588123f330366ed7280e8f541a68a">eonc::ARTnSaddleSearch::~ARTnSaddleSearch</a></div><div class="ttdeci">~ARTnSaddleSearch() override</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00035">ARTnSaddleSearch.cpp:35</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_a1edaae6844c4be1b4607b9903e92d9f7"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#a1edaae6844c4be1b4607b9903e92d9f7">eonc::ARTnSaddleSearch::eigenvector</a></div><div class="ttdeci">AtomMatrix eigenvector</div><div class="ttdef"><b>Definition</b> <a href="#l00070">ARTnSaddleSearch.h:70</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_a205e6a87c5c6177149b4de976f2d2b16"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#a205e6a87c5c6177149b4de976f2d2b16">eonc::ARTnSaddleSearch::getEigenvalue</a></div><div class="ttdeci">double getEigenvalue() override</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00427">ARTnSaddleSearch.cpp:427</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_a37c24d15e124d9d26dbb836cc7bd1fcc"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#a37c24d15e124d9d26dbb836cc7bd1fcc">eonc::ARTnSaddleSearch::eigenvalue</a></div><div class="ttdeci">double eigenvalue</div><div class="ttdef"><b>Definition</b> <a href="#l00069">ARTnSaddleSearch.h:69</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_a39da3082bb6c91e2e4cd91770966edf9"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#a39da3082bb6c91e2e4cd91770966edf9">eonc::ARTnSaddleSearch::ARTnSaddleSearch</a></div><div class="ttdeci">ARTnSaddleSearch(std::shared_ptr&lt; Matter &gt; matterPassed, std::shared_ptr&lt; Potential &gt; potPassed, AtomMatrix modeInitial, const Parameters &amp;paramsPassed)</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00021">ARTnSaddleSearch.cpp:21</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_a3f5202c437244bfbbdd2258634a14af3"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#a3f5202c437244bfbbdd2258634a14af3">eonc::ARTnSaddleSearch::forcecalls</a></div><div class="ttdeci">int forcecalls</div><div class="ttdef"><b>Definition</b> <a href="#l00073">ARTnSaddleSearch.h:73</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_a595c87426f4699d89a9c2dbd840581cd"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#a595c87426f4699d89a9c2dbd840581cd">eonc::ARTnSaddleSearch::run</a></div><div class="ttdeci">int run() override</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00041">ARTnSaddleSearch.cpp:41</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_a5edb11b350ea7f079856891f9e4d3ae7"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#a5edb11b350ea7f079856891f9e4d3ae7">eonc::ARTnSaddleSearch::status</a></div><div class="ttdeci">int status</div><div class="ttdef"><b>Definition</b> <a href="#l00071">ARTnSaddleSearch.h:71</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_a78c07d88f73681895b495ce201354e55"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#a78c07d88f73681895b495ce201354e55">eonc::ARTnSaddleSearch::log</a></div><div class="ttdeci">eonc::log::Scoped log</div><div class="ttdef"><b>Definition</b> <a href="#l00074">ARTnSaddleSearch.h:74</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_a875ced0e833849f06f1d89b260d12efd"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#a875ced0e833849f06f1d89b260d12efd">eonc::ARTnSaddleSearch::describeStatus</a></div><div class="ttdeci">std::string_view describeStatus(int status) const override</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00441">ARTnSaddleSearch.cpp:441</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_aa5f5d33587fb9d8be7d52a41d9ac8c30"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#aa5f5d33587fb9d8be7d52a41d9ac8c30">eonc::ARTnSaddleSearch::iteration</a></div><div class="ttdeci">int iteration</div><div class="ttdef"><b>Definition</b> <a href="#l00072">ARTnSaddleSearch.h:72</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_aa7446ab71a09b166085ba80ee5bb92c7"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#aa7446ab71a09b166085ba80ee5bb92c7">eonc::ARTnSaddleSearch::mode</a></div><div class="ttdeci">AtomMatrix mode</div><div class="ttdef"><b>Definition</b> <a href="#l00070">ARTnSaddleSearch.h:70</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_aa97778468b89a4d7c179908c26d9d460"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#aa97778468b89a4d7c179908c26d9d460">eonc::ARTnSaddleSearch::getEigenvector</a></div><div class="ttdeci">AtomMatrix getEigenvector() override</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00434">ARTnSaddleSearch.cpp:434</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_ab19f93bd7f43e18f1cab48ac3eadcf18"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#ab19f93bd7f43e18f1cab48ac3eadcf18">eonc::ARTnSaddleSearch::getForceCalls</a></div><div class="ttdeci">int getForceCalls() const override</div><div class="ttdef"><b>Definition</b> <a href="#l00065">ARTnSaddleSearch.h:65</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_ab1f87ca36c32e5ac9dd1ed2182552a02"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#ab1f87ca36c32e5ac9dd1ed2182552a02">eonc::ARTnSaddleSearch::STATUS_GOOD</a></div><div class="ttdeci">static constexpr int STATUS_GOOD</div><div class="ttdef"><b>Definition</b> <a href="#l00049">ARTnSaddleSearch.h:49</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_ad43a6eb6458d147689dcfd99ecea6eed"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#ad43a6eb6458d147689dcfd99ecea6eed">eonc::ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR</a></div><div class="ttdeci">static constexpr int STATUS_BAD_ARTN_ERROR</div><div class="ttdef"><b>Definition</b> <a href="#l00052">ARTnSaddleSearch.h:52</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_ae78593c43ac10a6fcfa5529bc8e91f43"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#ae78593c43ac10a6fcfa5529bc8e91f43">eonc::ARTnSaddleSearch::getStatus</a></div><div class="ttdeci">int getStatus() const override</div><div class="ttdef"><b>Definition</b> <a href="#l00063">ARTnSaddleSearch.h:63</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_aec171c441abe01b229382a9cc232ee40"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#aec171c441abe01b229382a9cc232ee40">eonc::ARTnSaddleSearch::matter</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; matter</div><div class="ttdef"><b>Definition</b> <a href="#l00068">ARTnSaddleSearch.h:68</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_af711a802abaa2eca2cfedf919e41774c"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#af711a802abaa2eca2cfedf919e41774c">eonc::ARTnSaddleSearch::STATUS_BAD_MAX_ITERATIONS</a></div><div class="ttdeci">static constexpr int STATUS_BAD_MAX_ITERATIONS</div><div class="ttdef"><b>Definition</b> <a href="#l00050">ARTnSaddleSearch.h:50</a></div></div>
+<div class="ttc" id="aclasseonc_1_1ARTnSaddleSearch_html_af77451859061c286ed91220d3f675b3c"><div class="ttname"><a href="classeonc_1_1ARTnSaddleSearch.html#af77451859061c286ed91220d3f675b3c">eonc::ARTnSaddleSearch::getIterationCount</a></div><div class="ttdeci">int getIterationCount() const override</div><div class="ttdef"><b>Definition</b> <a href="#l00064">ARTnSaddleSearch.h:64</a></div></div>
+<div class="ttc" id="aclasseonc_1_1MinModeSaddleSearch_html_a4a5c4ebad104382ef600037faafd5960a357ef1429672374690911f30278bc52d"><div class="ttname"><a href="classeonc_1_1MinModeSaddleSearch.html#a4a5c4ebad104382ef600037faafd5960a357ef1429672374690911f30278bc52d">eonc::MinModeSaddleSearch::STATUS_BAD_MAX_ITERATIONS</a></div><div class="ttdeci">@ STATUS_BAD_MAX_ITERATIONS</div><div class="ttdef"><b>Definition</b> <a href="MinModeSaddleSearch_8h_source.html#l00036">MinModeSaddleSearch.h:36</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Parameters_html"><div class="ttname"><a href="classeonc_1_1Parameters.html">eonc::Parameters</a></div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00028">Parameters.h:28</a></div></div>
+<div class="ttc" id="aclasseonc_1_1SaddleSearchMethod_html_ade6fc7a704aedacdd52fb16335b472c8"><div class="ttname"><a href="classeonc_1_1SaddleSearchMethod.html#ade6fc7a704aedacdd52fb16335b472c8">eonc::SaddleSearchMethod::SaddleSearchMethod</a></div><div class="ttdeci">SaddleSearchMethod(std::shared_ptr&lt; Potential &gt; potPassed, const Parameters &amp;paramsPassed)</div><div class="ttdef"><b>Definition</b> <a href="SaddleSearchMethod_8h_source.html#l00027">SaddleSearchMethod.h:27</a></div></div>
+<div class="ttc" id="anamespaceeonc_html"><div class="ttname"><a href="namespaceeonc.html">eonc</a></div><div class="ttdoc">RAII resource manager for the ARTn C library with global synchronization.</div><div class="ttdef"><b>Definition</b> <a href="ARTnSaddleSearch_8cpp_source.html#l00019">ARTnSaddleSearch.cpp:19</a></div></div>
+<div class="ttc" id="astructeonc_1_1log_1_1Scoped_html"><div class="ttname"><a href="structeonc_1_1log_1_1Scoped.html">eonc::log::Scoped</a></div><div class="ttdoc">RAII helper for class-scoped logging.</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00171">EonLogger.h:171</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<!-- Copyright 2020–2026 Rohit Goswami <rog32@hi.is>
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. -->
+<!-- HTML footer for doxygen >= 1.17 (tested with 1.17.0 and 1.18.0) -->
+<!-- Doxygen already closed #doc-content and #container before this template. -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a href="dir_2527c5cc2e6dc8ce970a4d420439d1d9.html">eon</a></li><li class="navelem"><a href="ARTnSaddleSearch_8h.html">ARTnSaddleSearch.h</a></li>
+    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.17.0 </li>
+  </ul>
+</div>
+<div class="doxyyoda-attrib" role="contentinfo">
+  <span class="doxyyoda-attrib__item">
+    <span>Generated by <a href="https://www.doxygen.org/index.html">Doxygen 1.17.0</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7,20H4V4h3V20z M14,20h-3V12h3V20z M21,20h-3V8h3V20z"/></svg>
+    <span>Analytics by <a href="https://antics.turtletech.us/" target="_blank" rel="noopener noreferrer">Antics</a></span>
+  </span>
+  <span class="doxyyoda-attrib__item">
+    <span>provided by</span>
+    <span class="doxyyoda-attrib__brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 64 64" aria-hidden="true"><g fill-rule="evenodd"><ellipse cx="32" cy="11" fill="#80D25B" rx="7" ry="9"/><path fill="#80D25B" d="M20.3,46c0,0-3.2,9.9.3,13.8c3.5,3.9 6.1,3.4 6.1-6C26.8,44.3 20.3,46 20.3,46Z"/><path fill="#80D25B" d="M38.3,46c0,0-3.2,9.9.4,13.8c3.5,3.9 6.1,3.4 6.1-6C44.8,44.3 38.3,46 38.3,46Z" transform="matrix(-1 0 0 1 81.8 0)"/><path fill="#80D25B" d="M20.6,21.2c0,0-6.7-5.8-10.5-5.2C6.2,16.7 6,22.2 6,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L20.6,21.2Z"/><path fill="#80D25B" d="M57.6,21.2c0,0-6.6-5.8-10.5-5.2C43.2,16.7 43,22.2 43,24c0,1.8 1.8,13.3 3.8,12.5c2-0.8 4-8.5 4-8.5c1.9,2.3 4.8,2.5 4.8,2.5L57.6,21.2Z" transform="matrix(-1 0 0 1 100.623 0)"/><path fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32,53C40.8,53 48,44.5 48,34C48,23.5 46.7,17 32,17C17.3,17 16,23.5 16,34C16,44.5 23.2,53 32,53Z"/><polygon fill="#BD7575" stroke="#595959" stroke-linecap="round" stroke-width="2" points="32 22 38.9 26 38.9 34 32 38 25.1 34 25.1 26"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M30,8C28.9,8 28,8.9 28,10"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M36,8C34.9,8 34,8.9 34,10" transform="matrix(-1 0 0 1 70 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M32.1,38.2L32.1,52.4M32,21.7L32,17M25.2,26L17.7,23.1M25.1,34.2L16.8,38.9"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M46.2,26L38.7,23.1" transform="matrix(-1 0 0 1 84.951 0)"/><path stroke="#595959" stroke-linecap="round" stroke-width="2" d="M47.1,34.2L38.8,38.9" transform="matrix(-1 0 0 1 85.891 0)"/></g></svg>
+      <a href="https://turtletech.us/" target="_blank" rel="noopener noreferrer">TurtleTech ehf</a>
+    </span>
+  </span>
+</div>
+</div><!-- close .grid-contents (opened in header.html) -->
+</body>
+</html>
