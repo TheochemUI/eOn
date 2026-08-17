@@ -193,7 +193,7 @@ cmd = "doxygen Doxyfile_doxyyoda.cfg"
 [feature.docs.tasks.install-doxyhtml]
 description = "Copy doxyYoda HTML into the Sphinx publish tree"
 depends-on = ["doxyhtml"]
-cmd = "test -d docs/build/html && rm -rf docs/build/html/api-cpp && cp -a docs/doxygen-html/html docs/build/html/api-cpp"
+cmd = "test -d docs/build/html && rm -rf docs/build/html/api-cpp && cp -R docs/doxygen-html/html docs/build/html/api-cpp"
 
 [feature.docs.tasks.makedocs]
 cmd = "sphinx-build docs/source docs/build/html"
@@ -204,7 +204,7 @@ depends-on = [
   { task = "doxyhtml", environment = "docs" },
 ]
 cmd = """
-test -d docs/build/html && rm -rf docs/build/html/api-cpp && cp -a docs/doxygen-html/html docs/build/html/api-cpp
+test -d docs/build/html && rm -rf docs/build/html/api-cpp && cp -R docs/doxygen-html/html docs/build/html/api-cpp
 cd docs/build/html && python -m http.server 8234
 """
 
