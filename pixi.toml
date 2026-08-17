@@ -201,8 +201,10 @@ cmd = "sphinx-build docs/source docs/build/html"
 [feature.docs.tasks.srvdocs]
 depends-on = [
   { task = "makedocs", environment = "docs" },
+  { task = "doxyhtml", environment = "docs" },
 ]
 cmd = """
+test -d docs/build/html && rm -rf docs/build/html/api-cpp && cp -a docs/doxygen-html/html docs/build/html/api-cpp
 cd docs/build/html && python -m http.server 8234
 """
 

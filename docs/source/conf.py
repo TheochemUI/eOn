@@ -109,6 +109,7 @@ html_theme_options = {
         {
             "title": "C++ API",
             "url": "/api-cpp/index.html",
+            "resource": True,
         },
         {
             "title": "Ecosystem",
