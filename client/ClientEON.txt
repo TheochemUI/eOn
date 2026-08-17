@@ -1,10 +1,5 @@
 /*! \mainpage The eOnClient API
 
-<b>Version \version</b>, Build Date: \builddate
-
-Built by: \builduser on \buildhost
-<hr>
-
 \section Overview
 
 The eOnClient API is a set of pages dedicated to the internal documentation of the client-side eOn codebase. eOn is a software package that is used to explore the configuration space of molecular systems and to accelerate the simulation of their dynamics over long times. The information presented in this document gives weight to a full spectrum coverage of the code as opposed to program usability; the intended goal is to document the full extent and capabilities of the program, and to answer the questions what or how the code is actual running.
