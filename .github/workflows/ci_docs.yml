@@ -63,6 +63,7 @@ jobs:
             -Dwith_metatomic=True -Dtorch_version=2.10 -Dpip_metatomic=True
           meson install --skip-subprojects -C bbdir
           sphinx-build -b html -j auto docs/source docs/build/html
+          pixi run -e docs-mta install-doxyhtml
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

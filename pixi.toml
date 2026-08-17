@@ -154,6 +154,7 @@ psutil = ">=7.0.0, <8"
 sphinx = ">=7"
 shibuya = "*"
 uv = "*"
+doxygen = ">=1.17,<2"
 
 [feature.docs.target.linux-64.dependencies]
 ira = ">=2"
@@ -178,6 +179,21 @@ sphinx-autodoc2 = "*"
 rgpycrumbs = { version = ">=1.9.9,<2", extras = ["analysis"] }
 chemparseplot = { version = ">=1.9.7,<2", extras = ["neb", "plot"] }
 adjustText = "*"
+
+[feature.docs.tasks.fetch-doxyyoda]
+description = "Download the doxyYoda 0.2.2 HTML theme"
+cmd = "bash scripts/get_doxyyoda.sh"
+
+[feature.docs.tasks.doxyhtml]
+description = "Standalone doxyYoda C++ API HTML"
+cwd = "docs/source"
+depends-on = ["fetch-doxyyoda"]
+cmd = "doxygen Doxyfile_doxyyoda.cfg"
+
+[feature.docs.tasks.install-doxyhtml]
+description = "Copy doxyYoda HTML into the Sphinx publish tree"
+depends-on = ["doxyhtml"]
+cmd = "test -d docs/build/html && rm -rf docs/build/html/api-cpp && cp -a docs/doxygen-html/html docs/build/html/api-cpp"
 
 [feature.docs.tasks.makedocs]
 cmd = "sphinx-build docs/source docs/build/html"

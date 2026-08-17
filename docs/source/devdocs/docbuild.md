@@ -37,6 +37,16 @@ uvx pdm run pip install . -vvv
 uvx pdm run sphinx-build -b html docs/source docs/build/html
 ```
 
+The current in-tree path is pixi:
+
+```{code-block} bash
+pixi run -e docs makedocs
+pixi run -e docs install-doxyhtml
+```
+
+`makedocs` is the Sphinx book. `install-doxyhtml` writes the sibling
+doxyYoda C++ API tree to `docs/build/html/api-cpp/`.
+
 This can be viewed locally with an HTTP server.
 
 ```{code-block} bash

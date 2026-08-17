@@ -107,6 +107,10 @@ html_theme_options = {
     "globaltoc_expand_depth": 2,
     "nav_links": [
         {
+            "title": "C++ API",
+            "url": "/api-cpp/index.html",
+        },
+        {
             "title": "Ecosystem",
             "children": [
                 {
