@@ -108,8 +108,12 @@
     "7773": "docs(releases): curate the v3.2.0 release notes",
     "7775": "Merge pull request #397 from HaoZeke/chore/release-3.2.0-notes",
     "7777": "chore(version): v3.2.0",
-    "7782": "docs(site): drop Umami/Plausible; keep Antics",
-    "7783": "Merge pull request #399 from HaoZeke/docs/drop-plausible-keep-antics"
+    "7781": "docs(site): drop Umami/Plausible; keep Antics",
+    "7782": "Merge pull request #399 from HaoZeke/docs/drop-plausible-keep-antics",
+    "7786": "docs: publish a sibling doxyYoda C++ API site",
+    "7787": "fix(docs): keep the C++ API nav from growing a second .html",
+    "7788": "fix(docs): copy api-cpp with POSIX cp -R",
+    "7789": "docs: publish a sibling doxyYoda C++ API site (#400)"
   },
   "dcbade17ecc8386a4ee5804354b4994c8ba1d6d8": "update lammps webpage",
   "292bc143343709b10fb7ed150ae5bb493748b289": "gitig: Update",
@@ -220,5 +224,9 @@
   "be3df63a7043a44bb3a289518d2fb7750c0dad58": "Merge pull request #397 from HaoZeke/chore/release-3.2.0-notes",
   "be4ed4f13b0af8bfd8511afa2a893e50a9206f00": "chore(version): v3.2.0",
   "574468ebb8499094e5b31abc4bc0383e78524752": "docs(site): drop Umami/Plausible; keep Antics",
-  "5b0968bc5f903fbb054e2530bf268b22b6e88ad5": "Merge pull request #399 from HaoZeke/docs/drop-plausible-keep-antics"
+  "5b0968bc5f903fbb054e2530bf268b22b6e88ad5": "Merge pull request #399 from HaoZeke/docs/drop-plausible-keep-antics",
+  "c231ad8a647b8402041290d6bd6078abfea2f4e1": "docs: publish a sibling doxyYoda C++ API site",
+  "c7ab0cca0804ae259181c93133fa2cace85b769a": "fix(docs): keep the C++ API nav from growing a second .html",
+  "d82377d40e468a54b7869ca418d179714b98cf0f": "fix(docs): copy api-cpp with POSIX cp -R",
+  "8e51e1dcb736409a7fd1a71ab5dc669bd417a477": "docs: publish a sibling doxyYoda C++ API site (#400)"
 }
