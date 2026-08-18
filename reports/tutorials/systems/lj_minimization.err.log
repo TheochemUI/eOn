@@ -49,20 +49,20 @@ show_plot(out)
 ------------------
 
 ----- stdout -----
-$ /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 -m rgpycrumbs.cli eon plt-min --job-dir /tmp/eon_lj_min_hcccz_m_ --label lj cluster --plot-type landscape --project-path --surface-type grad_imq --plot-structures endpoints --strip-renderer xyzrender --strip-dividers --xyzrender-config paton --rotation 90x,0y,0z --dpi 150 -o /tmp/eon_lj_min_hcccz_m_/plots/min_2d.png
+$ /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 -m rgpycrumbs.cli eon plt-min --job-dir /tmp/eon_lj_min_2vrlyo1f --label lj cluster --plot-type landscape --project-path --surface-type grad_imq --plot-structures endpoints --strip-renderer xyzrender --strip-dividers --xyzrender-config paton --rotation 90x,0y,0z --dpi 150 -o /tmp/eon_lj_min_2vrlyo1f/plots/min_2d.png
 ----- stdout -----
---> Dispatching to: /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py --job-dir /tmp/eon_lj_min_hcccz_m_ --label lj cluster --plot-type landscape --project-path --surface-type grad_imq --plot-structures endpoints --strip-renderer xyzrender --strip-dividers --xyzrender-config paton --rotation 90x,0y,0z --dpi 150 -o /tmp/eon_lj_min_hcccz_m_/plots/min_2d.png
-[2;36m[08/17/26 21:17:01][0m[2;36m [0m[34mINFO    [0m INFO - Loading minimization trajectory from        
-[2;36m                    [0m         [35m/tmp/[0m[95meon_lj_min_hcccz_m_[0m                           
+--> Dispatching to: /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/bin/python3.12 /home/runner/work/eOn/eOn/.pixi/envs/docs-mta/lib/python3.12/site-packages/rgpycrumbs/eon/plt_min.py --job-dir /tmp/eon_lj_min_2vrlyo1f --label lj cluster --plot-type landscape --project-path --surface-type grad_imq --plot-structures endpoints --strip-renderer xyzrender --strip-dividers --xyzrender-config paton --rotation 90x,0y,0z --dpi 150 -o /tmp/eon_lj_min_2vrlyo1f/plots/min_2d.png
+[2;36m[08/18/26 22:42:14][0m[2;36m [0m[34mINFO    [0m INFO - Loading minimization trajectory from        
+[2;36m                    [0m         [35m/tmp/[0m[95meon_lj_min_2vrlyo1f[0m                           
 [2;36m                   [0m[2;36m [0m[34mINFO    [0m INFO - Using minimization metrics from frame       
 [2;36m                    [0m         metadata [1m([0m[1;36m1[0m rows[1m)[0m                                  
 [2;36m                   [0m[2;36m [0m[34mINFO    [0m INFO - Loaded [1;36m1[0m frames, [1;36m1[0m data rows                
 [2;36m                   [0m[2;36m [0m[34mINFO    [0m INFO - Loaded minimization trajectory from         
-[2;36m                    [0m         [35m/tmp/[0m[95meon_lj_min_hcccz_m_[0m [1m([0m[1;36m1[0m frames[1m)[0m                
+[2;36m                    [0m         [35m/tmp/[0m[95meon_lj_min_2vrlyo1f[0m [1m([0m[1;36m1[0m frames[1m)[0m                
 [2;36m                   [0m[2;36m [0m[34mINFO    [0m INFO - Setting global rcParams for ruhi theme      
 [2;36m                   [0m[2;36m [0m[33mWARNING [0m WARNING - Font [32m'Atkinson Hyperlegible'[0m not found.  
 [2;36m                    [0m         Falling back to [32m'sans-serif'[0m.                      
-[2;36m[08/17/26 21:17:02][0m[2;36m [0m[34mINFO    [0m INFO - Calculating landscape coordinates [1m([0mRMSD-A,  
+[2;36m[08/18/26 22:42:15][0m[2;36m [0m[34mINFO    [0m INFO - Calculating landscape coordinates [1m([0mRMSD-A,  
 [2;36m                    [0m         RMSD-B[1m)[0m[33m...[0m
 ----- stderr -----
 --> Using active interpreter (readcon/plot stack present or --dev)
