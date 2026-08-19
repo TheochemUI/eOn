@@ -1,0 +1,1 @@
+{"regressions": [["bench_eonclient.TimeNEBMorsePt.time_neb", "graphs/branch-HEAD/cpu-gha/machine-github-actions/os-Linux/python-_home_runner_work_eOn_eOn_src_.pixi_envs_default_bin_python/ram-0/bench_eonclient.TimeNEBMorsePt.time_neb.json", {}, null, 0.2032753789999333, 0.1900014990001182, [[null, 7429, 0.1900014990001182, 0.2032753789999333]]]]}
