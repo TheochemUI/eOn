@@ -412,11 +412,11 @@ is handled via the <code class="docutils literal notranslate"><span class="pre">
 </div>
 <p>The current in-tree path is pixi:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>docs<span class="w"> </span>makedocs
-</span><span data-line="2">pixi<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span>docs<span class="w"> </span>install-doxyhtml
 </span></pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">makedocs</span></code> is the Sphinx book. <code class="docutils literal notranslate"><span class="pre">install-doxyhtml</span></code> writes the sibling
-doxyYoda C++ API tree to <code class="docutils literal notranslate"><span class="pre">docs/build/html/api-cpp/</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">makedocs</span></code> builds the Sphinx book and writes the sibling doxyYoda C++
+API tree to <code class="docutils literal notranslate"><span class="pre">docs/build/html/api-cpp/</span></code>. The book nav and landing page
+point at that tree; the Doxygen mainpage points back at the book.</p>
 <p>This can be viewed locally with an HTTP server.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>-m<span class="w"> </span>http.server<span class="w"> </span>docs/build/html
 </span></pre></div>
