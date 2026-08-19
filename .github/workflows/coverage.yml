@@ -132,15 +132,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install gfortran + lcov
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends gfortran lcov
-
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           cache: true
           cache-write: true
+
+      - name: Install lcov
+        run: pixi add lcov
 
       - name: Install cbindgen
         shell: pixi run bash -e {0}

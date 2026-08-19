@@ -196,17 +196,17 @@ depends-on = ["doxyhtml"]
 cmd = "test -d docs/build/html && rm -rf docs/build/html/api-cpp && cp -R docs/doxygen-html/html docs/build/html/api-cpp"
 
 [feature.docs.tasks.makedocs]
-cmd = "sphinx-build docs/source docs/build/html"
+description = "Sphinx book plus sibling doxyYoda C++ API"
+depends-on = ["doxyhtml"]
+cmd = """
+sphinx-build docs/source docs/build/html
+rm -rf docs/build/html/api-cpp
+cp -R docs/doxygen-html/html docs/build/html/api-cpp
+"""
 
 [feature.docs.tasks.srvdocs]
-depends-on = [
-  { task = "makedocs", environment = "docs" },
-  { task = "doxyhtml", environment = "docs" },
-]
-cmd = """
-test -d docs/build/html && rm -rf docs/build/html/api-cpp && cp -R docs/doxygen-html/html docs/build/html/api-cpp
-cd docs/build/html && python -m http.server 8234
-"""
+depends-on = [{ task = "makedocs", environment = "docs" }]
+cmd = "cd docs/build/html && python -m http.server 8234"
 
 [feature.release.dependencies]
 
