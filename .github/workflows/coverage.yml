@@ -138,15 +138,7 @@ jobs:
           cache-write: true
 
       - name: Install lcov
-        timeout-minutes: 5
-        run: |
-          # Azure archive hangs on this runner; use archive.ubuntu.com.
-          sudo sed -i 's#http://azure.archive.ubuntu.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
-            /etc/apt/sources.list /etc/apt/sources.list.d/*.list 2>/dev/null || true
-          sudo DEBIAN_FRONTEND=noninteractive apt-get update
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends lcov
-          command -v gfortran || sudo DEBIAN_FRONTEND=noninteractive apt-get \
-            install -y --no-install-recommends gfortran
+        run: pixi add lcov
 
       - name: Install cbindgen
         shell: pixi run bash -e {0}
