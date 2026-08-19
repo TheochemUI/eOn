@@ -132,17 +132,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install gfortran + lcov
-        timeout-minutes: 5
-        run: |
-          sudo apt-get -o Acquire::ForceIPv4=true -o Acquire::Retries=3 update
-          sudo DEBIAN_FRONTEND=noninteractive apt-get \
-            -o Acquire::ForceIPv4=true -y --no-install-recommends install gfortran lcov
-
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           cache: true
           cache-write: true
+
+      - name: Install lcov
+        timeout-minutes: 5
+        run: |
+          # Azure archive hangs on this runner; use archive.ubuntu.com.
+          sudo sed -i 's#http://azure.archive.ubuntu.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+            /etc/apt/sources.list /etc/apt/sources.list.d/*.list 2>/dev/null || true
+          sudo DEBIAN_FRONTEND=noninteractive apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends lcov
+          command -v gfortran || sudo DEBIAN_FRONTEND=noninteractive apt-get \
+            install -y --no-install-recommends gfortran
 
       - name: Install cbindgen
         shell: pixi run bash -e {0}
