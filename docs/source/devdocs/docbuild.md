@@ -41,11 +41,11 @@ The current in-tree path is pixi:
 
 ```{code-block} bash
 pixi run -e docs makedocs
-pixi run -e docs install-doxyhtml
 ```
 
-`makedocs` is the Sphinx book. `install-doxyhtml` writes the sibling
-doxyYoda C++ API tree to `docs/build/html/api-cpp/`.
+`makedocs` builds the Sphinx book and writes the sibling doxyYoda C++
+API tree to `docs/build/html/api-cpp/`. The book nav and landing page
+point at that tree; the Doxygen mainpage points back at the book.
 
 This can be viewed locally with an HTTP server.
 
