@@ -543,6 +543,9 @@ struct neb_options_t {
       long ci_stability_count{5};
       double angle_tol{0.7071}; // 1/sqrt(2): Householder stability bound
       double trigger_factor{0.0};
+      // Off: Frontiers / published OCINEB. On: restore CI when MMF
+      // does not improve the band force (OptBench pair 26).
+      bool restore_unhelpful{false};
     } ocineb;
   } climbing_image;
 
