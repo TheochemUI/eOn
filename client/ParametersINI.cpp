@@ -925,6 +925,8 @@ int load_ini(INIReader &ini, Parameters &params) {
   oci.ci_stability_count = ini.GetInteger(
       neb_section, "ci_mmf_ci_stability_count", oci.ci_stability_count);
   oci.angle_tol = ini.GetReal(neb_section, "ci_mmf_angle", oci.angle_tol);
+  oci.restore_unhelpful = ini.GetBoolean(
+      neb_section, "ci_mmf_restore_unhelpful", oci.restore_unhelpful);
 
   auto &init = params.neb_options.initialization;
   init.method =

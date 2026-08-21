@@ -1961,6 +1961,10 @@ class NudgedElasticBandConfig(BaseModel):
         default=0.8,
         description="Alignment threshold w.r.t NEB mode.",
     )
+    ci_mmf_restore_unhelpful: bool = Field(
+        default=False,
+        description="Restore the climbing image after an unhelpful MMF walk. Published OCINEB restores only on positive curvature.",
+    )
     setup_mmf_peaks: bool = Field(
         default=True,
         description="Generate modes and peak configurations.",

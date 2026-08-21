@@ -33,6 +33,7 @@ public:
     long ci_stability_count;
     double angle_tol;
     double force_tolerance;
+    bool restore_unhelpful;
   };
 
   static Config fromParams(const Parameters &params);

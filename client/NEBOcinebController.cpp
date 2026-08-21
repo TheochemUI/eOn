@@ -31,6 +31,7 @@ OCINEBController::fromParams(const Parameters &params) {
       r.ci_stability_count,
       r.angle_tol,
       params.neb_options.force_tolerance,
+      r.restore_unhelpful,
   };
 }
 
@@ -103,19 +104,25 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
                     mmfResult, convForce, newForce, newForce / baseline_force_,
                     current_threshold_);
   } else {
-    // Alignment rejects and force increases leave the CI at the dimer
-    // walk (LJ38 pair 26: 0.007 -> 8.5). Restore whenever MMF did not
-    // improve the band force, not only on positive curvature.
-    neb.path[neb.climbingImage]->setPositions(savedPositions);
-    neb.movedAfterForceCall = true;
-    has_cached_mode_ = false;
-    newForce = convForce;
+    // Published OCINEB restores only on positive curvature (status -2).
+    // restore_unhelpful also restores on alignment rejects and force
+    // increases (LJ38 pair 26: 0.007 -> 8.5). Off by default until
+    // Baker nebmmf_repro is strictly better with it on.
+    const bool restore =
+        cfg_.restore_unhelpful || mmfResult == -2;
+    if (restore) {
+      neb.path[neb.climbingImage]->setPositions(savedPositions);
+      neb.movedAfterForceCall = true;
+      has_cached_mode_ = false;
+      newForce = convForce;
+    }
     updateThresholdBackoff(alignment);
     QUILL_LOG_DEBUG(
         log,
         "MMF backoff (status={}). Force: {:.4f} -> {:.4f}, "
-        "Alignment:  {:.3f}. Restored CI. New threshold: {:.4f} ({:.2f}x baseline)",
-        mmfResult, convForce, newForce, alignment, current_threshold_,
+        "Alignment:  {:.3f}. {}New threshold: {:.4f} ({:.2f}x baseline)",
+        mmfResult, convForce, newForce, alignment,
+        restore ? "Restored CI. " : "", current_threshold_,
         current_threshold_ / baseline_force_);
   }
 

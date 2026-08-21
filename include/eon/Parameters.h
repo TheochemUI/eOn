@@ -549,6 +549,10 @@ public:
         long ci_stability_count{5};
         double angle_tol{0.7071}; // 1/sqrt(2): Householder stability bound
         double trigger_factor{0.0};
+        // Restore the CI after an unhelpful MMF walk. Published OCINEB
+        // restores only on positive curvature (status -2). Off until
+        // the Baker nebmmf_repro set is strictly better with it on.
+        bool restore_unhelpful{false};
       } ocineb;
     } climbing_image;
 

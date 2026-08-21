@@ -351,6 +351,10 @@ Nudged Elastic Band:
             kind: float
             default: 0.7071
 
+        ci_mmf_restore_unhelpful:
+            kind: boolean
+            default: false
+
 ################################################################################
 
 Distributed Replica:
