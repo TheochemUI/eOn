@@ -1782,8 +1782,22 @@ Optimizer:
             default: lbfgs
             values:
                 - lbfgs
+                - bfgs
+                - sr1
+                - sr2
                 - newton
                 - rfo
+                - steepest
+                - adam
+                - pso
+                - polak_ribiere
+                - fletcher_reeves
+                - hestenes_stiefel
+                - dai_yuan
+                - conjugate_descent
+                - hager_zhang
+                - liu_storey
+                - fr_pr
 
 ################################################################################
 
@@ -2126,13 +2140,27 @@ LBFGS:
 
 Xtsci:
     options:
-        xtsci_method:
+        method:
             kind: string
             default: lbfgs
             values:
                 - lbfgs
+                - bfgs
+                - sr1
+                - sr2
                 - newton
                 - rfo
+                - steepest
+                - adam
+                - pso
+                - polak_ribiere
+                - fletcher_reeves
+                - hestenes_stiefel
+                - dai_yuan
+                - conjugate_descent
+                - hager_zhang
+                - liu_storey
+                - fr_pr
 
 ################################################################################
 

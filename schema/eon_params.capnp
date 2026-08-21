@@ -120,6 +120,10 @@ struct OptimizerSdOptions {
 }
 
 struct OptimizerXtsciOptions {
+  # Engine-local solver. Tokens match xtsci-optimize xts_method_t:
+  # lbfgs, bfgs, sr1, sr2, newton, rfo, steepest, adam, pso,
+  # polak_ribiere, fletcher_reeves, hestenes_stiefel, dai_yuan,
+  # conjugate_descent, hager_zhang, liu_storey, fr_pr
   method @0 :Text = "lbfgs";
 }
 

@@ -427,3 +427,48 @@ def test_parity_nested_optimizer_model_defaults_match_ssot():
             assert fdefault == exp or (
                 isinstance(exp, float) and float(fdefault) == float(exp)
             ), f"{model_name}.{fname} default {fdefault!r} != SSoT {exp!r}"
+
+
+_XTSCI_METHODS = (
+    "lbfgs",
+    "bfgs",
+    "sr1",
+    "sr2",
+    "newton",
+    "rfo",
+    "steepest",
+    "adam",
+    "pso",
+    "polak_ribiere",
+    "fletcher_reeves",
+    "hestenes_stiefel",
+    "dai_yuan",
+    "conjugate_descent",
+    "hager_zhang",
+    "liu_storey",
+    "fr_pr",
+)
+
+
+def test_xtsci_engine_method_catalog():
+    """[Xtsci] method is the engine-local solver list, not a third L-BFGS knob."""
+    from eon_schema.config import XtsciConfig
+    from pydantic import ValidationError
+
+    assert XtsciConfig().method == "lbfgs"
+    for token in _XTSCI_METHODS:
+        assert XtsciConfig(method=token).method == token
+    try:
+        XtsciConfig(method="not_a_solver")
+    except ValidationError:
+        pass
+    else:
+        raise AssertionError("XtsciConfig accepted an unknown method")
+
+    full = yaml.load(
+        (REPO / "eon" / "config.yaml").read_text(), Loader=yaml.BaseLoader
+    )
+    assert set(full["Xtsci"]["options"]["method"]["values"]) == set(_XTSCI_METHODS)
+    assert set(full["Optimizer"]["options"]["xtsci_method"]["values"]) == set(
+        _XTSCI_METHODS
+    )

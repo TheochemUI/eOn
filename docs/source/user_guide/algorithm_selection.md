@@ -49,7 +49,7 @@ then minimizes from the saddle to identify the product.
 | **CG** | Moderate | Good | O(N) |
 | **QuickMin** | Slow | Tolerant of poor guesses | O(N) |
 | **SD** | Very slow | Guaranteed descent | O(N) |
-| **xtsci** | Newton / RFO on the pair Hessian | Needs ``-Dwith_xtsci=true`` | O(N²) pair Hessian |
+| **xtsci** | Engine: L-BFGS, BFGS, SR1/SR2, Newton, RFO, NLCG, Adam, PSO | Needs ``-Dwith_xtsci=true`` | O(N) or O(N²) pair Hessian |
 
 For most tasks, start with **LBFGS**. If it fails to converge, try **FIRE**
 or the refinement feature (start with FIRE, switch to LBFGS at threshold).

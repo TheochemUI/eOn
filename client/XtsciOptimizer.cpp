@@ -113,13 +113,62 @@ xts_status_t hessian(void *user, const DLManagedTensorVersioned *x,
 }
 
 xts_method_t method_from_name(const std::string &name) {
+  if (name == "lbfgs") {
+    return XTS_LBFGS;
+  }
+  if (name == "bfgs") {
+    return XTS_BFGS;
+  }
+  if (name == "sr1") {
+    return XTS_SR1;
+  }
+  if (name == "sr2") {
+    return XTS_SR2;
+  }
   if (name == "newton") {
     return XTS_NEWTON;
   }
   if (name == "rfo") {
     return XTS_RFO;
   }
-  return XTS_LBFGS;
+  if (name == "steepest") {
+    return XTS_STEEPEST;
+  }
+  if (name == "adam") {
+    return XTS_ADAM;
+  }
+  if (name == "pso") {
+    return XTS_PSO;
+  }
+  if (name == "polak_ribiere" || name == "nlcg" || name == "pr") {
+    return XTS_POLAK_RIBIERE;
+  }
+  if (name == "fletcher_reeves") {
+    return XTS_FLETCHER_REEVES;
+  }
+  if (name == "hestenes_stiefel") {
+    return XTS_HESTENES_STIEFEL;
+  }
+  if (name == "dai_yuan") {
+    return XTS_DAI_YUAN;
+  }
+  if (name == "conjugate_descent") {
+    return XTS_CONJUGATE_DESCENT;
+  }
+  if (name == "hager_zhang") {
+    return XTS_HAGER_ZHANG;
+  }
+  if (name == "liu_storey") {
+    return XTS_LIU_STOREY;
+  }
+  if (name == "fr_pr") {
+    return XTS_FR_PR;
+  }
+  throw std::invalid_argument(
+      "unknown Xtsci.method '" + name +
+      "' (lbfgs, bfgs, sr1, sr2, newton, rfo, steepest, adam, pso, "
+      "polak_ribiere, fletcher_reeves, hestenes_stiefel, dai_yuan, "
+      "conjugate_descent, hager_zhang, liu_storey, fr_pr)");
 }
 
 } // namespace
@@ -163,7 +212,7 @@ int XtsciOptimizer::run(size_t a_maxIterations, double a_maxMove) {
       std::max(a_maxMove, 0.0),
   };
   xts_report_t report{};
-  const xts_method_t method = method_from_name(m_optConfig.opts.xtsci_method);
+  const xts_method_t method = method_from_name(m_optConfig.opts.xtsci.method);
   xts_status_t status;
   if (method == XTS_NEWTON || method == XTS_RFO) {
     status = xts_minimize_hess(evaluate, gradient, hessian, &context, tensor,

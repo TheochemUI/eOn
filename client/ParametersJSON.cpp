@@ -150,7 +150,7 @@ json to_json(const Parameters &p) {
        ParametersLoadAccess::optimizer_options(p).lbfgs.precon_rcut},
   };
   j["Optimizer"]["Xtsci"] = {
-      {"method", ParametersLoadAccess::optimizer_options(p).xtsci_method},
+      {"method", ParametersLoadAccess::optimizer_options(p).xtsci.method},
   };
 
   // [Dynamics]
@@ -433,10 +433,10 @@ void from_json(const json &j, Parameters &p) {
     if (s.contains("Xtsci")) {
       auto &x = s.at("Xtsci");
       JSON_OPT(x, "method",
-               ParametersLoadAccess::optimizer_options(p).xtsci_method);
+               ParametersLoadAccess::optimizer_options(p).xtsci.method);
     }
     JSON_OPT(s, "xtsci_method",
-             ParametersLoadAccess::optimizer_options(p).xtsci_method);
+             ParametersLoadAccess::optimizer_options(p).xtsci.method);
   }
 
   // [Dynamics]
