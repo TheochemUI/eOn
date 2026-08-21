@@ -128,8 +128,11 @@ engine also runs the other xtsci-optimize methods (`lbfgs`, `bfgs`,
 `sr1`, `sr2`, `steepest`, `adam`, `pso`, and the NLCG conjugacies).
 - `lbfgs_h0 = sy_yy` (Nocedal–Wright 7.20), `ss_sy` (Barzilai–Borwein
   2), or `adaptive` (the smaller of the two when both are positive).
-- `lbfgs_accept = nonmonotone` is the Grippo–Lampariello–Lucidi
-  window of the last five energies (SIAM J. Numer. Anal. 1986).
+- `lbfgs_accept = none` (default) takes the two-loop step, matching
+  ASE and historical eOn. `energy` refuses a rise (OPTIM-style
+  shrink; each trial is a potential call). `nonmonotone` is the
+  Grippo–Lampariello–Lucidi window of the last five energies
+  (SIAM J. Numer. Anal. 1986).
 - `lbfgs_extra_updates = p` reuses the newest pair `p` extra times
   in the two-loop recursion (Al-Baali, 2000/2014).
 

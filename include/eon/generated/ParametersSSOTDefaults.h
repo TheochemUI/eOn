@@ -48,7 +48,7 @@ struct GeneratedDefaults {
   static constexpr auto OPTIMIZER_LBFGS_SECANT = std::string_view{"standard"};
   static constexpr auto OPTIMIZER_LBFGS_PRECON = std::string_view{"none"};
   static constexpr auto OPTIMIZER_LBFGS_H0 = std::string_view{"sy_yy"};
-  static constexpr auto OPTIMIZER_LBFGS_ACCEPT = std::string_view{"energy"};
+  static constexpr auto OPTIMIZER_LBFGS_ACCEPT = std::string_view{"none"};
   static constexpr auto OPTIMIZER_LBFGS_EXTRA_UPDATES = 0;
   static constexpr auto OPTIMIZER_LBFGS_CAUTIOUS_EPS = 1e-06;
   static constexpr auto OPTIMIZER_LBFGS_CAUTIOUS_ALPHA = 0.01;

@@ -91,7 +91,7 @@ struct OptimizerLbfgsOptions {
   secant @8 :Text = "standard";
   precon @9 :Text = "none";
   h0 @10 :Text = "sy_yy";
-  accept @11 :Text = "energy";
+  accept @11 :Text = "none";
   extraUpdates @12 :Int64 = 0;
   cautiousEps @13 :Float64 = 0.000001;
   cautiousAlpha @14 :Float64 = 0.01;
