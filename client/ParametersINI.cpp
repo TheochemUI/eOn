@@ -396,23 +396,27 @@ int load_ini(INIReader &ini, Parameters &params) {
         params.optimizer_options.max_time_step_input /
         params.constants.timeUnit;
   }
-  if (ini.HasSection("LBFGS")) {
+  // 2014 optbench INI puts lbfgs_* on [Optimizer]. Prefer [LBFGS] when present.
+  {
+    const char *lbfgs_sec =
+        ini.HasSection("LBFGS") ? "LBFGS" : "Optimizer";
     params.optimizer_options.lbfgs.memory = ini.GetInteger(
-        "LBFGS", "lbfgs_memory", params.optimizer_options.lbfgs.memory);
+        lbfgs_sec, "lbfgs_memory", params.optimizer_options.lbfgs.memory);
     params.optimizer_options.lbfgs.inverse_curvature =
-        ini.GetReal("LBFGS", "lbfgs_inverse_curvature",
+        ini.GetReal(lbfgs_sec, "lbfgs_inverse_curvature",
                     params.optimizer_options.lbfgs.inverse_curvature);
     params.optimizer_options.lbfgs.max_inverse_curvature =
-        ini.GetReal("LBFGS", "lbfgs_max_inverse_curvature",
+        ini.GetReal(lbfgs_sec, "lbfgs_max_inverse_curvature",
                     params.optimizer_options.lbfgs.max_inverse_curvature);
     params.optimizer_options.lbfgs.auto_scale = ini.GetBoolean(
-        "LBFGS", "lbfgs_auto_scale", params.optimizer_options.lbfgs.auto_scale);
-    params.optimizer_options.lbfgs.angle_reset =
-        ini.GetBoolean("LBFGS", "lbfgs_angle_reset",
-                       params.optimizer_options.lbfgs.angle_reset);
-    params.optimizer_options.lbfgs.distance_reset =
-        ini.GetBoolean("LBFGS", "lbfgs_distance_reset",
-                       params.optimizer_options.lbfgs.distance_reset);
+        lbfgs_sec, "lbfgs_auto_scale",
+        params.optimizer_options.lbfgs.auto_scale);
+    params.optimizer_options.lbfgs.angle_reset = ini.GetBoolean(
+        lbfgs_sec, "lbfgs_angle_reset",
+        params.optimizer_options.lbfgs.angle_reset);
+    params.optimizer_options.lbfgs.distance_reset = ini.GetBoolean(
+        lbfgs_sec, "lbfgs_distance_reset",
+        params.optimizer_options.lbfgs.distance_reset);
   }
   if (ini.HasSection("CG")) {
     params.optimizer_options.cg.no_overshooting =

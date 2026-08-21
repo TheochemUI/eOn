@@ -257,6 +257,9 @@ eonc::helpers::convergenceMetricLabel(std::string_view metric) {
   if (metric == "norm") {
     return "||Force||";
   }
+  if (metric == "rms") {
+    return "RMS force";
+  }
   return std::nullopt;
 }
 
@@ -293,6 +296,10 @@ public:
   double getConvergence() {
     if (params.optimizer_options.convergence_metric == "norm") {
       return m_matter.getForcesFreeV().norm();
+    } else if (params.optimizer_options.convergence_metric == "rms") {
+      const VectorXd f = m_matter.getForcesFreeV();
+      const auto n = f.size();
+      return n > 0 ? f.norm() / std::sqrt(static_cast<double>(n)) : 0.0;
     } else if (params.optimizer_options.convergence_metric == "max_atom") {
       return m_matter.maxForce();
     } else if (params.optimizer_options.convergence_metric == "max_component") {

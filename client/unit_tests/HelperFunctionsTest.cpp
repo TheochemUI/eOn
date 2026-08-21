@@ -137,6 +137,7 @@ TEST_CASE("HelperFunctions: maxAtomMotionV", "[helpers]") {
 TEST_CASE("HelperFunctions: convergenceMetricLabel known spellings",
           "[helpers][convergence]") {
   REQUIRE(eonc::helpers::convergenceMetricLabel("norm") == "||Force||");
+  REQUIRE(eonc::helpers::convergenceMetricLabel("rms") == "RMS force");
   REQUIRE(eonc::helpers::convergenceMetricLabel("max_atom") ==
           "Max atom force");
   REQUIRE(eonc::helpers::convergenceMetricLabel("max_component") ==

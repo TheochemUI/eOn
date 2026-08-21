@@ -39,27 +39,6 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
     }
   }
 
-  if (m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale) {
-    m_objf->setPositions(r + m_optConfig.finiteDifference *
-                                 eonc::safemath::safe_normalized(a_f));
-    Eigen::VectorXd dg = m_objf->getGradient(true) + a_f;
-    double C = dg.dot(eonc::safemath::safe_normalized(a_f)) /
-               m_optConfig.finiteDifference;
-    H0 = eonc::safemath::safe_recip(C, -1.0);
-    m_objf->setPositions(r);
-    if (H0 < 0) {
-      QUILL_LOG_WARNING(m_log,
-                        "[LBFGS] Negative curvature calculated via FD: {:.4e} "
-                        "eV/A^2, take max move step",
-                        C);
-      reset();
-      return eonc::helpers::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
-    } else {
-      QUILL_LOG_DEBUG(m_log,
-                      "[LBFGS] Curvature calculated via FD: {:.4e} eV/A^2", C);
-    }
-  }
-
   int loopmax = m_s.size();
   std::vector<double> a(loopmax);
 
@@ -145,6 +124,7 @@ int LBFGS::step(double a_maxMove) {
   int status = 0;
   Eigen::VectorXd r = m_objf->getPositions();
   Eigen::VectorXd f = -m_objf->getGradient();
+  const double e0 = m_objf->getEnergy();
 
   if (m_iteration > 0) {
     status = update(r, m_rPrev, f, m_fPrev);
@@ -153,8 +133,24 @@ int LBFGS::step(double a_maxMove) {
     return -1;
 
   Eigen::VectorXd dr = getStep(a_maxMove, f);
-
-  m_objf->setPositions(r + dr);
+  // OPTIM MYLBFGS: no Wolfe search; shrink the step if the energy rises.
+  constexpr double max_erise = 1.0e-8;
+  double alpha = 1.0;
+  bool accepted = false;
+  for (int dec = 0; dec < 10; ++dec) {
+    m_objf->setPositions(r + alpha * dr);
+    if (m_objf->getEnergy() - e0 <= max_erise) {
+      accepted = true;
+      break;
+    }
+    alpha *= 0.5;
+  }
+  if (!accepted) {
+    m_objf->setPositions(r);
+    reset();
+    m_objf->setPositions(
+        r + eonc::helpers::maxAtomMotionAppliedV(0.1 * f, a_maxMove));
+  }
 
   m_rPrev = r;
   m_fPrev = f;
