@@ -128,6 +128,15 @@ json to_json(const Parameters &p) {
        ParametersLoadAccess::optimizer_options(p).lbfgs.angle_reset},
       {"distance_reset",
        ParametersLoadAccess::optimizer_options(p).lbfgs.distance_reset},
+      {"curvature", ParametersLoadAccess::optimizer_options(p).lbfgs.curvature},
+      {"project_rigid",
+       ParametersLoadAccess::optimizer_options(p).lbfgs.project_rigid},
+      {"secant", ParametersLoadAccess::optimizer_options(p).lbfgs.secant},
+      {"precon", ParametersLoadAccess::optimizer_options(p).lbfgs.precon},
+      {"h0", ParametersLoadAccess::optimizer_options(p).lbfgs.h0},
+      {"accept", ParametersLoadAccess::optimizer_options(p).lbfgs.accept},
+      {"extra_updates",
+       ParametersLoadAccess::optimizer_options(p).lbfgs.extra_updates},
   };
 
   // [Dynamics]
@@ -378,6 +387,19 @@ void from_json(const json &j, Parameters &p) {
                ParametersLoadAccess::optimizer_options(p).lbfgs.angle_reset);
       JSON_OPT(l, "distance_reset",
                ParametersLoadAccess::optimizer_options(p).lbfgs.distance_reset);
+      JSON_OPT(l, "curvature",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.curvature);
+      JSON_OPT(l, "project_rigid",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.project_rigid);
+      JSON_OPT(l, "secant",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.secant);
+      JSON_OPT(l, "precon",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.precon);
+      JSON_OPT(l, "h0", ParametersLoadAccess::optimizer_options(p).lbfgs.h0);
+      JSON_OPT(l, "accept",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.accept);
+      JSON_OPT(l, "extra_updates",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.extra_updates);
     }
   }
 

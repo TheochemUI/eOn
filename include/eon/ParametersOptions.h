@@ -245,6 +245,16 @@ struct optimizer_options_t {
     // Isolated clusters: project 6 rigid-body modes out of the
     // L-BFGS force and step. Off for PBC / frozen atoms.
     bool project_rigid{false};
+    std::string secant{"standard"};
+    std::string precon{"none"};
+    std::string h0{"sy_yy"};
+    std::string accept{"energy"};
+    long extra_updates{0};
+    double cautious_eps{1.0e-6};
+    double cautious_alpha{0.01};
+    double precon_A{3.0};
+    double precon_mu{1.0};
+    double precon_rcut{0.0};
   } lbfgs;
   struct cg_t {
     bool no_overshooting{false};
