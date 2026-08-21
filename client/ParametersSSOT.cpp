@@ -174,7 +174,7 @@ void apply_ssot_defaults(Parameters &p) {
   p.optimizer_options.lbfgs.precon_A = GD::OPTIMIZER_LBFGS_PRECON_A;
   p.optimizer_options.lbfgs.precon_mu = GD::OPTIMIZER_LBFGS_PRECON_MU;
   p.optimizer_options.lbfgs.precon_rcut = GD::OPTIMIZER_LBFGS_PRECON_RCUT;
-  p.optimizer_options.xtsci_method = std::string(GD::OPTIMIZER_XTSCI_METHOD);
+  p.optimizer_options.xtsci.method = std::string(GD::OPTIMIZER_XTSCI_METHOD);
 
   p.optimizer_options.cg.no_overshooting = GD::OPTIMIZER_CG_NO_OVERSHOOTING;
   p.optimizer_options.cg.knock_out_max_move =

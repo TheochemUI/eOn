@@ -1431,7 +1431,7 @@ class OptimizerConfig(BaseModel):
       - ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer
       - ``fire``: Fast inertial relaxation engine
       - ``sd``: Steepest descent
-      - ``xtsci``: xtsci-optimize backend (Newton / RFO / L-BFGS). Needs ``-Dwith_xtsci=true``.
+      - ``xtsci``: xtsci-optimize engine. Pick the solver with ``[Xtsci] method``. Needs ``-Dwith_xtsci=true``.
     """
     convergence_metric: Literal["norm", "rms", "max_atom", "max_component"] = Field(
         default="norm",
@@ -1572,15 +1572,51 @@ class LBFGSConfig(BaseModel):
 class XtsciConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
-    xtsci_method: Literal["lbfgs", "newton", "rfo"] = Field(
+    method: Literal[
+        "lbfgs",
+        "bfgs",
+        "sr1",
+        "sr2",
+        "newton",
+        "rfo",
+        "steepest",
+        "adam",
+        "pso",
+        "polak_ribiere",
+        "fletcher_reeves",
+        "hestenes_stiefel",
+        "dai_yuan",
+        "conjugate_descent",
+        "hager_zhang",
+        "liu_storey",
+        "fr_pr",
+    ] = Field(
         default="lbfgs",
-        description="xtsci-optimize solver when opt_method is xtsci.",
+        description="Solver inside the xtsci-optimize engine (opt_method = xtsci).",
     )
     """
-    Options:
-      - ``lbfgs``: xtsci two-loop L-BFGS (Nocedal-Wright 7.4)
-      - ``newton``: Levenberg-shifted Newton on the pair Hessian
+    ``opt_method = xtsci`` selects the engine. This field selects the
+    method the engine runs. Tokens match ``xts_method_t``.
+
+    Quasi-Newton:
+      - ``lbfgs``: two-loop L-BFGS (Nocedal-Wright 7.4)
+      - ``bfgs``: dense inverse-BFGS
+      - ``sr1``: inverse SR1
+      - ``sr2``: SR2 Hessian update
+
+    Hessian (pair Hessian from eOn, ``xts_minimize_hess``):
+      - ``newton``: Levenberg-shifted Newton
       - ``rfo``: Banerjee / Baker rational function optimization
+
+    First-order:
+      - ``steepest``: ``d = -g``
+      - ``adam``: Kingma-Ba Adam with a line search
+      - ``pso``: particle swarm
+
+    Nonlinear CG (conjugacy is the method token):
+      - ``polak_ribiere``, ``fletcher_reeves``, ``hestenes_stiefel``,
+        ``dai_yuan``, ``conjugate_descent``, ``hager_zhang``,
+        ``liu_storey``, ``fr_pr``
     """
 
 

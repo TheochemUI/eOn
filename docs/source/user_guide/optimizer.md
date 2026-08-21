@@ -84,12 +84,17 @@ Each of the optimizer methods have their own settings as well.
 
 ### Xtsci
 
-Newton and RFO live in xtsci-optimize. Build with ``-Dwith_xtsci=true``
-and set ``opt_method = xtsci``. The pair Hessian is still built in eOn
-(``lbfgs_precon``) and passed through ``xts_minimize_hess``.
+``opt_method = xtsci`` selects the xtsci-optimize engine. The solver
+inside that engine is ``[Xtsci] method``. Build with
+``-Dwith_xtsci=true``. Newton and RFO still take the pair Hessian from
+eOn (``lbfgs_precon``) through ``xts_minimize_hess``.
 
 ```{code-block} ini
+[Optimizer]
+opt_method = xtsci
+
 [Xtsci]
+method = newton
 ```
 
 ```{eval-rst}

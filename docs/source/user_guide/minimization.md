@@ -113,15 +113,19 @@ from the INI:
 ```{code-block} ini
 [Optimizer]
 opt_method = xtsci
-xtsci_method = newton
 converged_force = 0.01
+
+[Xtsci]
+method = newton
 
 [LBFGS]
 lbfgs_precon = pair
 ```
 
-`xtsci_method = rfo` is Banerjee RFO. The pair Hessian is still built
-in eOn (`lbfgs_precon`) and handed to Rust through `xts_minimize_hess`.
+`method = rfo` is Banerjee RFO. The pair Hessian is still built in eOn
+(`lbfgs_precon`) and handed to Rust through `xts_minimize_hess`. The
+engine also runs the other xtsci-optimize methods (`lbfgs`, `bfgs`,
+`sr1`, `sr2`, `steepest`, `adam`, `pso`, and the NLCG conjugacies).
 - `lbfgs_h0 = sy_yy` (Nocedal–Wright 7.20), `ss_sy` (Barzilai–Borwein
   2), or `adaptive` (the smaller of the two when both are positive).
 - `lbfgs_accept = nonmonotone` is the Grippo–Lampariello–Lucidi

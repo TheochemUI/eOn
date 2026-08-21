@@ -1,6 +1,6 @@
 """L1 job-config models live in eon-schema (shared with eon-akmc)."""
 
-from eon_schema.config import Config, MainConfig, Metatomic, PotentialConfig
+from eon_schema.config import Config, MainConfig, Metatomic, PotentialConfig, XtsciConfig
 
 
 def test_main_config_defaults():
@@ -19,3 +19,11 @@ def test_root_config_composes_sections():
     assert MainConfig is not None
     assert PotentialConfig is not None
     assert Config is not None
+
+
+def test_xtsci_is_an_engine_with_methods():
+    assert XtsciConfig().method == "lbfgs"
+    assert XtsciConfig(method="newton").method == "newton"
+    assert XtsciConfig(method="polak_ribiere").method == "polak_ribiere"
+    assert "method" in XtsciConfig.model_fields
+    assert "xtsci_method" not in XtsciConfig.model_fields
