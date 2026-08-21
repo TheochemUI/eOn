@@ -585,6 +585,14 @@ int load_ini(INIReader &ini, Parameters &params) {
         ini.GetBoolean(lbfgs_sec, "lbfgs_distance_reset",
                        ParametersLoadAccess::optimizer_options(params)
                            .lbfgs.distance_reset);
+    ParametersLoadAccess::optimizer_options(params).lbfgs.curvature =
+        toLowerCase(ini.Get(
+            lbfgs_sec, "lbfgs_curvature",
+            ParametersLoadAccess::optimizer_options(params).lbfgs.curvature));
+    ParametersLoadAccess::optimizer_options(params).lbfgs.project_rigid =
+        ini.GetBoolean(lbfgs_sec, "lbfgs_project_rigid",
+                       ParametersLoadAccess::optimizer_options(params)
+                           .lbfgs.project_rigid);
   }
   if (ini.HasSection("CG")) {
     ParametersLoadAccess::optimizer_options(params).cg.no_overshooting =
