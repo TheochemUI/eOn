@@ -315,6 +315,12 @@ public:
   VectorXd difference(const VectorXd &a, const VectorXd &b) {
     return m_matter.pbcV(a - b);
   }
+  void minimumImage(Eigen::Ref<Eigen::Vector3d> dr) const override {
+    AtomMatrix m(1, 3);
+    m.row(0) = dr.transpose();
+    m = m_matter.pbc(m);
+    dr = m.row(0).transpose();
+  }
 };
 } // namespace
 

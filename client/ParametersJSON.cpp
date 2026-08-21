@@ -102,6 +102,13 @@ json to_json(const Parameters &p) {
       {"auto_scale", p.optimizer_options.lbfgs.auto_scale},
       {"angle_reset", p.optimizer_options.lbfgs.angle_reset},
       {"distance_reset", p.optimizer_options.lbfgs.distance_reset},
+      {"curvature", p.optimizer_options.lbfgs.curvature},
+      {"project_rigid", p.optimizer_options.lbfgs.project_rigid},
+      {"secant", p.optimizer_options.lbfgs.secant},
+      {"precon", p.optimizer_options.lbfgs.precon},
+      {"h0", p.optimizer_options.lbfgs.h0},
+      {"accept", p.optimizer_options.lbfgs.accept},
+      {"extra_updates", p.optimizer_options.lbfgs.extra_updates},
   };
 
   // [Dynamics]
@@ -290,6 +297,13 @@ void from_json(const json &j, Parameters &p) {
       JSON_OPT(l, "auto_scale", p.optimizer_options.lbfgs.auto_scale);
       JSON_OPT(l, "angle_reset", p.optimizer_options.lbfgs.angle_reset);
       JSON_OPT(l, "distance_reset", p.optimizer_options.lbfgs.distance_reset);
+      JSON_OPT(l, "curvature", p.optimizer_options.lbfgs.curvature);
+      JSON_OPT(l, "project_rigid", p.optimizer_options.lbfgs.project_rigid);
+      JSON_OPT(l, "secant", p.optimizer_options.lbfgs.secant);
+      JSON_OPT(l, "precon", p.optimizer_options.lbfgs.precon);
+      JSON_OPT(l, "h0", p.optimizer_options.lbfgs.h0);
+      JSON_OPT(l, "accept", p.optimizer_options.lbfgs.accept);
+      JSON_OPT(l, "extra_updates", p.optimizer_options.lbfgs.extra_updates);
     }
   }
 

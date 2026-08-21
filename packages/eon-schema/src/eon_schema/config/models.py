@@ -1505,19 +1505,61 @@ class LBFGSConfig(BaseModel):
     lbfgs_distance_reset: bool = Field(
         default=True, description="If true, reset the LBFGS distance."
     )
-    lbfgs_curvature: Literal["reset", "skip", "damped"] = Field(
+    lbfgs_curvature: Literal["reset", "skip", "damped", "cautious"] = Field(
         default="reset",
         description="How to treat a pair with insufficient curvature.",
     )
     """
     Options:
       - ``reset``: wipe L-BFGS memory (ASE-style default)
-      - ``skip``: Li-Fukushima cautious skip of that pair only
+      - ``skip``: skip that pair when ``s·y < 0.2 sᵀ B0 s``
       - ``damped``: Powell 1978 damping, ŷ = θy+(1-θ)B0 s
+      - ``cautious``: Li-Fukushima 2001, keep the pair only if
+        ``s·y >= ε ||s||² ||g||^α``
     """
     lbfgs_project_rigid: bool = Field(
         default=False,
         description="Project translation and rotation out of the L-BFGS force and step. Isolated clusters only.",
+    )
+    lbfgs_secant: Literal["standard", "zhangxu"] = Field(
+        default="standard",
+        description="Secant pair: standard y = g_{k+1}-g_k, or Zhang-Xu modified secant using the two energies.",
+    )
+    lbfgs_precon: Literal["none", "exp", "c1"] = Field(
+        default="none",
+        description="Packwood-Kermode-Csanyi pair preconditioner (JCP 2016). none is H0 I.",
+    )
+    lbfgs_h0: Literal["sy_yy", "ss_sy", "adaptive"] = Field(
+        default="sy_yy",
+        description="Initial inverse-Hessian scale: Nocedal-Wright 7.20, Barzilai-Borwein-2, or the smaller of the two.",
+    )
+    lbfgs_accept: Literal["energy", "nonmonotone"] = Field(
+        default="energy",
+        description="energy refuses a rise. nonmonotone is a Grippo window of the last five values.",
+    )
+    lbfgs_extra_updates: int = Field(
+        default=0,
+        description="Al-Baali extra-updates: reuse the newest pair this many extra times in the two-loop recursion.",
+    )
+    lbfgs_cautious_eps: float = Field(
+        default=1.0e-6,
+        description="Li-Fukushima ε in s·y >= ε ||s||² ||g||^α.",
+    )
+    lbfgs_cautious_alpha: float = Field(
+        default=0.01,
+        description="Li-Fukushima α in s·y >= ε ||s||² ||g||^α.",
+    )
+    lbfgs_precon_A: float = Field(
+        default=3.0,
+        description="Packwood Exp stiffness A in μ exp(-A (r/r_nn - 1)).",
+    )
+    lbfgs_precon_mu: float = Field(
+        default=1.0,
+        description="Packwood pair-preconditioner scale μ.",
+    )
+    lbfgs_precon_rcut: float = Field(
+        default=0.0,
+        description="Pair-preconditioner cutoff. 0 means 2 r_nn.",
     )
 
 

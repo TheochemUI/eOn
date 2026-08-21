@@ -1687,6 +1687,54 @@ Optimizer:
             kind: boolean
             default: true
 
+        lbfgs_curvature:
+            kind: string
+            default: "reset"
+
+        lbfgs_project_rigid:
+            kind: boolean
+            default: false
+
+        lbfgs_secant:
+            kind: string
+            default: "standard"
+
+        lbfgs_precon:
+            kind: string
+            default: "none"
+
+        lbfgs_h0:
+            kind: string
+            default: "sy_yy"
+
+        lbfgs_accept:
+            kind: string
+            default: "energy"
+
+        lbfgs_extra_updates:
+            kind: int
+            default: 0
+
+        lbfgs_cautious_eps:
+            kind: float
+            default: 0.000001
+
+        lbfgs_cautious_alpha:
+            kind: float
+            default: 0.01
+
+        lbfgs_precon_A:
+            kind: float
+            default: 3.0
+
+        lbfgs_precon_mu:
+            kind: float
+            default: 1.0
+
+        lbfgs_precon_rcut:
+            kind: float
+            default: 0.0
+
         cg_no_overshooting:
             kind: boolean
             default: false

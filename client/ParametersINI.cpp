@@ -423,6 +423,30 @@ int load_ini(INIReader &ini, Parameters &params) {
     params.optimizer_options.lbfgs.project_rigid = ini.GetBoolean(
         lbfgs_sec, "lbfgs_project_rigid",
         params.optimizer_options.lbfgs.project_rigid);
+    params.optimizer_options.lbfgs.secant = toLowerCase(ini.Get(
+        lbfgs_sec, "lbfgs_secant", params.optimizer_options.lbfgs.secant));
+    params.optimizer_options.lbfgs.precon = toLowerCase(ini.Get(
+        lbfgs_sec, "lbfgs_precon", params.optimizer_options.lbfgs.precon));
+    params.optimizer_options.lbfgs.h0 = toLowerCase(
+        ini.Get(lbfgs_sec, "lbfgs_h0", params.optimizer_options.lbfgs.h0));
+    params.optimizer_options.lbfgs.accept = toLowerCase(ini.Get(
+        lbfgs_sec, "lbfgs_accept", params.optimizer_options.lbfgs.accept));
+    params.optimizer_options.lbfgs.extra_updates = ini.GetInteger(
+        lbfgs_sec, "lbfgs_extra_updates",
+        params.optimizer_options.lbfgs.extra_updates);
+    params.optimizer_options.lbfgs.cautious_eps = ini.GetReal(
+        lbfgs_sec, "lbfgs_cautious_eps",
+        params.optimizer_options.lbfgs.cautious_eps);
+    params.optimizer_options.lbfgs.cautious_alpha = ini.GetReal(
+        lbfgs_sec, "lbfgs_cautious_alpha",
+        params.optimizer_options.lbfgs.cautious_alpha);
+    params.optimizer_options.lbfgs.precon_A = ini.GetReal(
+        lbfgs_sec, "lbfgs_precon_A", params.optimizer_options.lbfgs.precon_A);
+    params.optimizer_options.lbfgs.precon_mu = ini.GetReal(
+        lbfgs_sec, "lbfgs_precon_mu", params.optimizer_options.lbfgs.precon_mu);
+    params.optimizer_options.lbfgs.precon_rcut = ini.GetReal(
+        lbfgs_sec, "lbfgs_precon_rcut",
+        params.optimizer_options.lbfgs.precon_rcut);
   }
   if (ini.HasSection("CG")) {
     params.optimizer_options.cg.no_overshooting =

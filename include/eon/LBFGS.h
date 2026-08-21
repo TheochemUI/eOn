@@ -39,11 +39,16 @@ public:
   int step(double a_maxMove) override;
   int run(size_t a_maxIterations, double a_maxMove) override;
   int update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
-             const Eigen::VectorXd &a_f1, const Eigen::VectorXd &a_f0);
+             const Eigen::VectorXd &a_f1, const Eigen::VectorXd &a_f0,
+             double a_e1, double a_e0);
   void reset(void);
 
 private:
   Eigen::VectorXd getStep(double a_maxMove, const Eigen::VectorXd &a_f);
+  Eigen::Vector3d micRij(const Eigen::VectorXd &pos, int i, int j) const;
+  Eigen::MatrixXd buildPrecon(const Eigen::VectorXd &pos) const;
+  Eigen::VectorXd applyH0(const Eigen::VectorXd &q, double H0,
+                          const Eigen::VectorXd &pos) const;
 
   int m_iteration;
   int m_memory;
@@ -51,9 +56,11 @@ private:
   std::deque<Eigen::VectorXd> m_s;
   std::deque<Eigen::VectorXd> m_y;
   std::deque<double> m_rho;
+  std::deque<double> m_eHist;
 
   Eigen::VectorXd m_rPrev;
   Eigen::VectorXd m_fPrev;
+  double m_ePrev{0.0};
   eonc::log::FileScoped m_log{"lbfgs", "_lbfgs.log"};
 };
 

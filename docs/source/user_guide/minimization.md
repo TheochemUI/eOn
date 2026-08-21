@@ -49,7 +49,7 @@ convergence panels. For two endpoints, use **separate** landscape plots (one
 
 | Optimizer | Best for | Key parameter |
 |---|---|---|
-| **LBFGS** (default) | Most minimizations, fast convergence near minima | `lbfgs_memory` (default 20); optional `lbfgs_curvature` / `lbfgs_project_rigid` |
+| **LBFGS** (default) | Most minimizations, fast convergence near minima | `lbfgs_memory` (default 20); optional `lbfgs_secant` / `lbfgs_precon` / `lbfgs_curvature` |
 | **FIRE** | Systems far from equilibrium, tolerant of bad initial guesses | `time_step` |
 | **CG** | Large systems where LBFGS memory is a concern | `cg_line_search` |
 | **QuickMin** | Simple dynamics-based relaxation | `time_step` |
@@ -71,14 +71,32 @@ compared. The default is eOn's historical `norm`, not OPTIM's RMS.
 - **max_component**: maximum Cartesian component of any free-atom force
 
 L-BFGS memory updates are controlled by `lbfgs_curvature` (default
-`reset`, the ASE wipe). `skip` is the Li–Fukushima cautious rule
-(keep older pairs when `s·y` is not safely positive). `damped` is
-Powell's 1978 replacement `ŷ = θ y + (1-θ) B0 s` with
+`reset`, the ASE wipe). `skip` drops a pair when `s·y < 0.2 sᵀB0s`.
+`damped` is Powell's 1978 replacement `ŷ = θ y + (1-θ) B0 s` with
 `θ = 0.8 sᵀB0s / (sᵀB0s − sᵀy)` when `sᵀy < 0.2 sᵀB0s` (Nocedal
-and Wright, *Numerical Optimization*, §18.3). Isolated clusters can
-set `lbfgs_project_rigid = true` to remove the six rigid-body modes
+and Wright, *Numerical Optimization*, §18.3). `cautious` is the
+Li–Fukushima (2001) rule: keep the pair only if
+`s·y ≥ ε ||s||² ||g||^α`. Isolated clusters can set
+`lbfgs_project_rigid = true` to remove the six rigid-body modes
 from the force and the step (those modes are Hessian-null; they
 should not enter the limited-memory pairs).
+
+Further L-BFGS knobs, all optional and off by default:
+
+- `lbfgs_secant = zhangxu` replaces `y` by the Zhang–Deng–Chen /
+  Zhang–Xu modified secant, which folds the two function values into
+  the pair (JOTA 1999 / 2001). No extra potential call.
+- `lbfgs_precon = exp` or `c1` uses the Packwood–Kermode–Csanyi pair
+  Laplacian (J. Chem. Phys. 2016) as the two-loop `H0` metric.
+  `exp` is `μ exp(-A (r/r_nn - 1))`; `c1` is a C¹ cutoff. Cutoff
+  defaults to `2 r_nn`. This is the production upgrade for Cartesian
+  cluster and condensed-phase minimizations in ASE `PreconLBFGS`.
+- `lbfgs_h0 = sy_yy` (Nocedal–Wright 7.20), `ss_sy` (Barzilai–Borwein
+  2), or `adaptive` (the smaller of the two when both are positive).
+- `lbfgs_accept = nonmonotone` is the Grippo–Lampariello–Lucidi
+  window of the last five energies (SIAM J. Numer. Anal. 1986).
+- `lbfgs_extra_updates = p` reuses the newest pair `p` extra times
+  in the two-loop recursion (Al-Baali, 2000/2014).
 
 ## Refinement
 

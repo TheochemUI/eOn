@@ -86,6 +86,18 @@ struct OptimizerLbfgsOptions {
   autoScale @3 :Bool = true;
   angleReset @4 :Bool = true;
   distanceReset @5 :Bool = true;
+  curvature @6 :Text = "reset";
+  projectRigid @7 :Bool = false;
+  secant @8 :Text = "standard";
+  precon @9 :Text = "none";
+  h0 @10 :Text = "sy_yy";
+  accept @11 :Text = "energy";
+  extraUpdates @12 :Int64 = 0;
+  cautiousEps @13 :Float64 = 0.000001;
+  cautiousAlpha @14 :Float64 = 0.01;
+  preconA @15 :Float64 = 3.0;
+  preconMu @16 :Float64 = 1.0;
+  preconRcut @17 :Float64 = 0.0;
 }
 
 struct OptimizerCgOptions {

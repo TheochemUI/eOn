@@ -158,6 +158,19 @@ void apply_ssot_defaults(Parameters &p) {
   p.optimizer_options.lbfgs.auto_scale = GD::OPTIMIZER_LBFGS_AUTO_SCALE;
   p.optimizer_options.lbfgs.angle_reset = GD::OPTIMIZER_LBFGS_ANGLE_RESET;
   p.optimizer_options.lbfgs.distance_reset = GD::OPTIMIZER_LBFGS_DISTANCE_RESET;
+  p.optimizer_options.lbfgs.curvature =
+      std::string(GD::OPTIMIZER_LBFGS_CURVATURE);
+  p.optimizer_options.lbfgs.project_rigid = GD::OPTIMIZER_LBFGS_PROJECT_RIGID;
+  p.optimizer_options.lbfgs.secant = std::string(GD::OPTIMIZER_LBFGS_SECANT);
+  p.optimizer_options.lbfgs.precon = std::string(GD::OPTIMIZER_LBFGS_PRECON);
+  p.optimizer_options.lbfgs.h0 = std::string(GD::OPTIMIZER_LBFGS_H0);
+  p.optimizer_options.lbfgs.accept = std::string(GD::OPTIMIZER_LBFGS_ACCEPT);
+  p.optimizer_options.lbfgs.extra_updates = GD::OPTIMIZER_LBFGS_EXTRA_UPDATES;
+  p.optimizer_options.lbfgs.cautious_eps = GD::OPTIMIZER_LBFGS_CAUTIOUS_EPS;
+  p.optimizer_options.lbfgs.cautious_alpha = GD::OPTIMIZER_LBFGS_CAUTIOUS_ALPHA;
+  p.optimizer_options.lbfgs.precon_A = GD::OPTIMIZER_LBFGS_PRECON_A;
+  p.optimizer_options.lbfgs.precon_mu = GD::OPTIMIZER_LBFGS_PRECON_MU;
+  p.optimizer_options.lbfgs.precon_rcut = GD::OPTIMIZER_LBFGS_PRECON_RCUT;
 
   p.optimizer_options.cg.no_overshooting = GD::OPTIMIZER_CG_NO_OVERSHOOTING;
   p.optimizer_options.cg.knock_out_max_move =

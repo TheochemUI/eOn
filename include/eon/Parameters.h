@@ -238,12 +238,34 @@ public:
       bool auto_scale{true};
       bool angle_reset{true};
       bool distance_reset{true};
-      // reset: wipe memory on bad s·y (ASE). skip: Li-Fukushima cautious
-      // skip of that pair. damped: Powell (1978) ŷ = θy+(1-θ)B0 s.
+      // reset: wipe memory on bad s·y (ASE). skip: skip that pair when
+      // s·y < 0.2 s^T B0 s. damped: Powell (1978) ŷ = θy+(1-θ)B0 s.
+      // cautious: Li-Fukushima 2001, keep the pair only if
+      // s·y >= ε ||s||^2 ||g||^α.
       std::string curvature{"reset"};
       // Isolated clusters: project 6 rigid-body modes out of the
       // L-BFGS force and step. Off for PBC / frozen atoms.
       bool project_rigid{false};
+      // standard: y = g_{k+1}-g_k. zhangxu: Zhang-Deng-Chen / Zhang-Xu
+      // modified secant, ŷ = y + (θ/||s||^2) s, using the two energies.
+      std::string secant{"standard"};
+      // none: H0 I. exp/c1: Packwood-Kermode-Csanyi pair Laplacian
+      // (JCP 2016) as the initial inverse-Hessian metric.
+      std::string precon{"none"};
+      // Nocedal-Wright 7.20 (sy/yy), Barzilai-Borwein-2 (ss/sy), or
+      // the smaller of the two when both are positive.
+      std::string h0{"sy_yy"};
+      // energy: accept if the value does not rise. nonmonotone: Grippo
+      // window of the last five values (GLL 1986).
+      std::string accept{"energy"};
+      // Al-Baali extra-update: reuse the newest pair this many extra
+      // times in the two-loop recursion.
+      long extra_updates{0};
+      double cautious_eps{1.0e-6};
+      double cautious_alpha{0.01};
+      double precon_A{3.0};
+      double precon_mu{1.0};
+      double precon_rcut{0.0};
     } lbfgs;
     struct cg_t {
       bool no_overshooting{false};
