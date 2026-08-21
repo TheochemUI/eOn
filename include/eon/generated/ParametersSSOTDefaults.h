@@ -65,6 +65,7 @@ struct GeneratedDefaults {
   static constexpr auto OPTIMIZER_QUICKMIN_STEEPEST_DESCENT = false;
   static constexpr auto OPTIMIZER_SD_ALPHA = 0.1;
   static constexpr auto OPTIMIZER_SD_TWO_POINT = false;
+  static constexpr auto OPTIMIZER_XTSCI_METHOD = std::string_view{"lbfgs"};
   static constexpr auto OPTIMIZER_OPT_METHOD = std::string_view{"cg"};
   static constexpr auto OPTIMIZER_CONVERGENCE_METRIC = std::string_view{"norm"};
   static constexpr auto OPTIMIZER_MAX_ITERATIONS = 1000;

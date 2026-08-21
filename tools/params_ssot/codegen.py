@@ -37,6 +37,7 @@ SECTION_MAP = {
     "OptimizerCgOptions": "Optimizer.CG",
     "OptimizerQuickminOptions": "Optimizer.Quickmin",
     "OptimizerSdOptions": "Optimizer.SD",
+    "OptimizerXtsciOptions": "Optimizer.Xtsci",
 }
 
 # Nested SSoT path → flat config.ini / config.yaml option name (historical)
@@ -71,6 +72,7 @@ FLAT_ALIASES: dict[str, str] = {
     "Optimizer.Quickmin.steepest_descent": "qm_steepest_descent",
     "Optimizer.SD.alpha": "sd_alpha",
     "Optimizer.SD.two_point": "sd_two_point",
+    "Optimizer.Xtsci.method": "xtsci_method",
 }
 
 FIELD_SNAKE = {

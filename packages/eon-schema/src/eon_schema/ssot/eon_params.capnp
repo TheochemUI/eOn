@@ -119,6 +119,10 @@ struct OptimizerSdOptions {
   twoPoint @1 :Bool = false;
 }
 
+struct OptimizerXtsciOptions {
+  method @0 :Text = "lbfgs";
+}
+
 struct OptimizerOptions {
   optMethod @0 :Text = "cg";
   convergenceMetric @1 :Text = "norm";
@@ -131,6 +135,7 @@ struct OptimizerOptions {
   cg @8 :OptimizerCgOptions;
   quickmin @9 :OptimizerQuickminOptions;
   sd @10 :OptimizerSdOptions;
+  xtsci @11 :OptimizerXtsciOptions;
 }
 
 # ---------------------------------------------------------------------

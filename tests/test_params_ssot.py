@@ -326,6 +326,11 @@ _NESTED_OPT_MODELS = {
         "alias_prefix": "sd_",
         "ssot_section": "Optimizer.SD",
     },
+    "XtsciConfig": {
+        "fields_from_flat_aliases": True,
+        "alias_prefix": "xtsci_",
+        "ssot_section": "Optimizer.Xtsci",
+    },
 }
 
 
@@ -404,7 +409,7 @@ def test_parity_nested_optimizer_model_defaults_match_ssot():
                 nested_defs = params_ssot.defaults_for(meta["ssot_section"])
                 # strip known prefixes
                 bare = fname
-                for pref in ("lbfgs_", "cg_", "qm_", "sd_"):
+                for pref in ("lbfgs_", "cg_", "qm_", "sd_", "xtsci_"):
                     if bare.startswith(pref):
                         bare = bare[len(pref):]
                         break

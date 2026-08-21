@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Configuration options for the various geometry optimizers in eOn, including LBFGS, QuickMin, FIRE, CG, and SD."
-    "keywords": "eOn optimizer, LBFGS, QuickMin, FIRE, CG, SD, geometry optimization"
+    "description": "Configuration options for the various geometry optimizers in eOn, including LBFGS, QuickMin, FIRE, CG, SD, and xtsci."
+    "keywords": "eOn optimizer, LBFGS, QuickMin, FIRE, CG, SD, xtsci, Newton, RFO, geometry optimization"
 ---
 
 # Optimizer
@@ -80,6 +80,20 @@ Each of the optimizer methods have their own settings as well.
 
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.SDConfig
+```
+
+### Xtsci
+
+Newton and RFO live in xtsci-optimize. Build with ``-Dwith_xtsci=true``
+and set ``opt_method = xtsci``. The pair Hessian is still built in eOn
+(``lbfgs_precon``) and passed through ``xts_minimize_hess``.
+
+```{code-block} ini
+[Xtsci]
+```
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.XtsciConfig
 ```
 
 ## References
