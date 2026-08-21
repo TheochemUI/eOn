@@ -57,12 +57,18 @@ convergence panels. For two endpoints, use **separate** landscape plots (one
 
 ## Convergence
 
-The minimization converges when the force criterion is met. Three metrics are
-available via `convergence_metric`:
+The minimization converges when `converged_force` is met. The number is
+always in eV/A; `convergence_metric` chooses **which** force scalar is
+compared. The default is eOn's historical `norm`, not OPTIM's RMS.
 
-- **norm** (default): root-mean-square force across all free atoms
-- **max_atom**: maximum force on any single atom
-- **max_component**: maximum force component (x, y, or z)
+- **norm** (default): Euclidean `||F||_2` of the free-atom force vector
+  (`sqrt(sum_i F_i^2)`). This is **not** an RMS: it grows with system
+  size. Chill / OPTIM `||F|| < 1e-2` is a different scalar.
+- **rms**: `||F||_2 / sqrt(3 N_free)`, matching OPTIM MYLBFGS
+  (`SQRT(SUM(VNEW**2)/(3*NATOMS))`). Opt-in for an OPTIM-comparable
+  stop; it is not the eOn default.
+- **max_atom**: maximum `||F||` on any single free atom
+- **max_component**: maximum Cartesian component of any free-atom force
 
 ## Refinement
 

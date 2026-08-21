@@ -149,6 +149,8 @@ TEST_CASE("HelperFunctions: requireKnownConvergenceMetric throws on typo",
           "[helpers][convergence]") {
   REQUIRE_NOTHROW(
       eonc::helpers::requireKnownConvergenceMetric("norm", "[test]"));
+  REQUIRE_NOTHROW(
+      eonc::helpers::requireKnownConvergenceMetric("rms", "[test]"));
   REQUIRE_THROWS_AS(
       eonc::helpers::requireKnownConvergenceMetric("nope", "[test]"),
       std::invalid_argument);

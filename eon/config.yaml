@@ -1637,6 +1637,7 @@ Optimizer:
             default: norm
             values:
                 - norm
+                - rms
                 - max_atom
                 - max_component
 

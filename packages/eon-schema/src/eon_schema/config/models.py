@@ -1431,13 +1431,14 @@ class OptimizerConfig(BaseModel):
       - ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer
       - ``fire``: Fast inertial relaxation engine
     """
-    convergence_metric: Literal["norm", "max_atom", "max_component"] = Field(
+    convergence_metric: Literal["norm", "rms", "max_atom", "max_component"] = Field(
         default="norm",
         description="The metric to use to determine when an optimization is complete.",
     )
     """
     Options:
-      - ``norm``: The norm of the entire force vector
+      - ``norm``: Euclidean ``||F||_2`` of the free-atom force vector (default)
+      - ``rms``: ``||F||_2 / sqrt(3 N_free)``, OPTIM MYLBFGS RMS. Opt-in.
       - ``max_atom``: The maximum force on any non-frozen atom
       - ``max_component``: The maximum force on any non-frozen degree of freedom
     """
