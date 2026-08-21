@@ -450,6 +450,11 @@ int load_ini(INIReader &ini, Parameters &params) {
         lbfgs_sec, "lbfgs_precon_rcut",
         params.optimizer_options.lbfgs.precon_rcut);
   }
+  {
+    const char *xs = ini.HasSection("Xtsci") ? "Xtsci" : "Optimizer";
+    params.optimizer_options.xtsci_method = toLowerCase(ini.Get(
+        xs, "xtsci_method", params.optimizer_options.xtsci_method));
+  }
   if (ini.HasSection("CG")) {
     params.optimizer_options.cg.no_overshooting =
         ini.GetBoolean("CG", "cg_no_overshooting",

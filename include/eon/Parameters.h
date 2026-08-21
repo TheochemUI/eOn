@@ -273,6 +273,8 @@ public:
       double precon_mu{1.0};
       double precon_rcut{0.0};
     } lbfgs;
+    // xtsci-optimize method when opt_method = xtsci: lbfgs|newton|rfo
+    std::string xtsci_method{"lbfgs"};
     struct cg_t {
       bool no_overshooting{false};
       bool knock_out_max_move{false};

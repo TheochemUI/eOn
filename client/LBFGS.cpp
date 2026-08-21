@@ -16,6 +16,7 @@
 
 #include "eon/LBFGS.h"
 #include "eon/GeometryAnalysis.h"
+#include "eon/PairHessian.h"
 #include "eon/SafeMath.h"
 
 #include <algorithm>
