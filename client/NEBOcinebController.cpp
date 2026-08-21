@@ -109,8 +109,7 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
     // failure keeps the walked CI and applies the linear penalty.
     // restore_unhelpful also restores on alignment reject / force
     // increase. Default false: the paper setting.
-    const bool restore =
-        cfg_.restore_unhelpful || mmfResult == -2;
+    const bool restore = cfg_.restore_unhelpful || mmfResult == -2;
     if (restore) {
       neb.path[neb.climbingImage]->setPositions(savedPositions);
       neb.movedAfterForceCall = true;

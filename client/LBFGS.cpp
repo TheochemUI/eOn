@@ -57,9 +57,8 @@ void addPairBlock(Eigen::MatrixXd &P, int i, int j, const Eigen::Vector3d &rij,
     return;
   }
   const Eigen::Vector3d u = rij / r;
-  const Eigen::Matrix3d H =
-      k_perp * Eigen::Matrix3d::Identity() +
-      (k_par - k_perp) * (u * u.transpose());
+  const Eigen::Matrix3d H = k_perp * Eigen::Matrix3d::Identity() +
+                            (k_par - k_perp) * (u * u.transpose());
   for (int a = 0; a < 3; ++a) {
     for (int b = 0; b < 3; ++b) {
       const int ia = 3 * i + a;
@@ -301,7 +300,8 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
 
   for (int k = loopmax - 1; k >= 0; k--) {
     const int i = idx[static_cast<size_t>(k)];
-    a[static_cast<size_t>(k)] = m_rho[static_cast<size_t>(i)] * m_s[static_cast<size_t>(i)].dot(q);
+    a[static_cast<size_t>(k)] =
+        m_rho[static_cast<size_t>(i)] * m_s[static_cast<size_t>(i)].dot(q);
     q -= a[static_cast<size_t>(k)] * m_y[static_cast<size_t>(i)];
   }
 
@@ -389,11 +389,11 @@ int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
   if (curv == "cautious") {
     // Li and Fukushima, J. Comput. Appl. Math. 129, 15 (2001).
     const double thresh =
-        cfg.cautious_eps * ss * std::pow(std::max(gnorm, 1.0e-30), cfg.cautious_alpha);
+        cfg.cautious_eps * ss *
+        std::pow(std::max(gnorm, 1.0e-30), cfg.cautious_alpha);
     if (sy < thresh) {
-      QUILL_LOG_DEBUG(m_log,
-                      "[LBFGS] Li-Fukushima skip, s·y={:.4e} < {:.4e}", sy,
-                      thresh);
+      QUILL_LOG_DEBUG(m_log, "[LBFGS] Li-Fukushima skip, s·y={:.4e} < {:.4e}",
+                      sy, thresh);
       return 0;
     }
   } else if (std::abs(sy) < LBFGS_EPS || (curv != "reset" && sy < 0.2 * sBs)) {

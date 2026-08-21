@@ -42,7 +42,8 @@ map_input(const DLManagedTensorVersioned *tensor) {
       dl.shape == nullptr || dl.data == nullptr) {
     throw std::runtime_error("xtsci objective requires a CPU f64 vector");
   }
-  return {static_cast<const double *>(dl.data) + dl.byte_offset / sizeof(double),
+  return {static_cast<const double *>(dl.data) +
+              dl.byte_offset / sizeof(double),
           static_cast<Eigen::Index>(dl.shape[0])};
 }
 
@@ -190,19 +191,15 @@ int XtsciOptimizer::run(size_t a_maxIterations, double a_maxMove) {
   if (xts_abi_compatible(&stamp) == 0) {
     throw std::runtime_error("incompatible xtsci-optimize ABI");
   }
-  auto *tensor = xts_tensor_borrow_cpu_f64(positions.data(),
-                                           static_cast<size_t>(positions.size()));
+  auto *tensor = xts_tensor_borrow_cpu_f64(
+      positions.data(), static_cast<size_t>(positions.size()));
   if (tensor == nullptr) {
     throw std::runtime_error("could not allocate xtsci objective tensor");
   }
   const auto &lbfgs = m_optConfig.opts.lbfgs;
   XtsObjectiveContext context{
-      m_objf.get(),
-      m_optConfig.potential,
-      lbfgs.precon,
-      lbfgs.precon_A,
-      lbfgs.precon_mu,
-      lbfgs.precon_rcut,
+      m_objf.get(),   m_optConfig.potential, lbfgs.precon,
+      lbfgs.precon_A, lbfgs.precon_mu,       lbfgs.precon_rcut,
   };
   xts_control_t control{
       a_maxIterations,
