@@ -85,12 +85,16 @@ Further L-BFGS knobs, all optional and off by default:
 
 - `lbfgs_secant = zhangxu` replaces `y` by the Zhang–Deng–Chen /
   Zhang–Xu modified secant, which folds the two function values into
-  the pair (JOTA 1999 / 2001). No extra potential call.
+  the pair (JOTA 1999 / 2001). No extra potential call. On
+  Lennard-Jones and Morse pair potentials this pair inflates the
+  force-call count; leave it at `standard` there.
 - `lbfgs_precon = exp` or `c1` uses the Packwood–Kermode–Csanyi pair
   Laplacian (J. Chem. Phys. 2016) as the two-loop `H0` metric.
   `exp` is `μ exp(-A (r/r_nn - 1))`; `c1` is a C¹ cutoff. Cutoff
-  defaults to `2 r_nn`. This is the production upgrade for Cartesian
-  cluster and condensed-phase minimizations in ASE `PreconLBFGS`.
+  defaults to `2 r_nn`. This is the ASE `PreconLBFGS` metric for
+  condensed-phase cells. On clusters smaller than about 100 atoms
+  the same paper's ASE default falls back to unpreconditioned
+  L-BFGS; `exp` on LJ38 costs force calls.
 - `lbfgs_h0 = sy_yy` (Nocedal–Wright 7.20), `ss_sy` (Barzilai–Borwein
   2), or `adaptive` (the smaller of the two when both are positive).
 - `lbfgs_accept = nonmonotone` is the Grippo–Lampariello–Lucidi
