@@ -1632,6 +1632,7 @@ Optimizer:
                 - lbfgs
                 - fire
                 - sd
+                - xtsci
 
         convergence_metric:
             kind: string
@@ -1775,6 +1776,14 @@ Optimizer:
         sd_two_point:
             kind: boolean
             default: false
+
+        xtsci_method:
+            kind: string
+            default: lbfgs
+            values:
+                - lbfgs
+                - newton
+                - rfo
 
 ################################################################################
 
@@ -2112,6 +2121,18 @@ LBFGS:
         lbfgs_auto_scale:
             kind: boolean
             default: True
+
+################################################################################
+
+Xtsci:
+    options:
+        xtsci_method:
+            kind: string
+            default: lbfgs
+            values:
+                - lbfgs
+                - newton
+                - rfo
 
 ################################################################################
 

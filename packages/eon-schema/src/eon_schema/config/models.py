@@ -1444,7 +1444,7 @@ class CoarseGrainingConfig(BaseModel):
 class OptimizerConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
-    opt_method: Literal["box", "cg", "qm", "lbfgs", "fire"] = Field(
+    opt_method: Literal["box", "cg", "qm", "lbfgs", "fire", "sd", "xtsci"] = Field(
         default="cg",
         description="The optimization method to use.",
     )
@@ -1455,6 +1455,8 @@ class OptimizerConfig(BaseModel):
       - ``qm``: Quickmin
       - ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer
       - ``fire``: Fast inertial relaxation engine
+      - ``sd``: Steepest descent
+      - ``xtsci``: xtsci-optimize backend (Newton / RFO / L-BFGS). Needs ``-Dwith_xtsci=true``.
     """
     convergence_metric: Literal["norm", "rms", "max_atom", "max_component"] = Field(
         default="norm",
@@ -1590,6 +1592,21 @@ class LBFGSConfig(BaseModel):
         default=0.0,
         description="Pair-preconditioner cutoff. 0 means 2 r_nn.",
     )
+
+
+class XtsciConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    xtsci_method: Literal["lbfgs", "newton", "rfo"] = Field(
+        default="lbfgs",
+        description="xtsci-optimize solver when opt_method is xtsci.",
+    )
+    """
+    Options:
+      - ``lbfgs``: xtsci two-loop L-BFGS (Nocedal-Wright 7.4)
+      - ``newton``: Levenberg-shifted Newton on the pair Hessian
+      - ``rfo``: Banerjee / Baker rational function optimization
+    """
 
 
 class CGConfig(BaseModel):

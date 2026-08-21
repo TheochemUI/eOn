@@ -173,6 +173,12 @@ CATALOG = {
       "flat_key": "sd_two_point",
       "ssot_path": "Optimizer.SD.two_point",
       "yaml_section": "Optimizer"
+    },
+    {
+      "default": "lbfgs",
+      "flat_key": "xtsci_method",
+      "ssot_path": "Optimizer.Xtsci.method",
+      "yaml_section": "Optimizer"
     }
   ],
   "schema_version": 1,
@@ -355,6 +361,14 @@ CATALOG = {
           "ordinal": 10,
           "snake": "sd",
           "type": "OptimizerSdOptions"
+        },
+        {
+          "capnp": "xtsci",
+          "default": None,
+          "nested": True,
+          "ordinal": 11,
+          "snake": "xtsci",
+          "type": "OptimizerXtsciOptions"
         }
       ],
       "struct": "OptimizerOptions"
@@ -574,6 +588,18 @@ CATALOG = {
         }
       ],
       "struct": "OptimizerSdOptions"
+    },
+    "Optimizer.Xtsci": {
+      "fields": [
+        {
+          "capnp": "method",
+          "default": "lbfgs",
+          "ordinal": 0,
+          "snake": "method",
+          "type": "Text"
+        }
+      ],
+      "struct": "OptimizerXtsciOptions"
     },
     "Potential": {
       "fields": [

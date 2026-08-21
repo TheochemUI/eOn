@@ -94,6 +94,8 @@ OptType opt_from_ssot(std::string_view m) {
     return OptType::SD;
   if (m == "fire")
     return OptType::FIRE;
+  if (m == "xtsci")
+    return OptType::XTSCI;
   return OptType::CG;
 }
 
@@ -208,6 +210,8 @@ void apply_ssot_defaults(Parameters &p) {
       GD::OPTIMIZER_LBFGS_PRECON_MU;
   ParametersLoadAccess::optimizer_options(p).lbfgs.precon_rcut =
       GD::OPTIMIZER_LBFGS_PRECON_RCUT;
+  ParametersLoadAccess::optimizer_options(p).xtsci_method =
+      std::string(GD::OPTIMIZER_XTSCI_METHOD);
 
   ParametersLoadAccess::optimizer_options(p).cg.no_overshooting =
       GD::OPTIMIZER_CG_NO_OVERSHOOTING;

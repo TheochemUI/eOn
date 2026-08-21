@@ -219,6 +219,7 @@ struct saddle_search_options_t {
 // [Optimizer] //
 struct optimizer_options_t {
   OptType method{OptType::CG};
+  std::string xtsci_method{"lbfgs"};
   std::string convergence_metric{"norm"};
   std::string convergence_metric_label;
   size_t max_iterations{1000};
