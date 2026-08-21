@@ -75,10 +75,17 @@ OCINEB {cite:t}`neb-goswamiEnhancedClimbingImage2026` activates a Min-Mode
 Following (dimer) search on the climbing image after it stabilizes, using
 hessian eigenmode alignment to refine the saddle point to higher accuracy
 without additional NEB iterations. Enable with `ci_mmf = true`.
-`ci_mmf_restore_unhelpful` restores the climbing image after an
-unhelpful MMF walk (alignment reject or force increase). The published
-protocol restores only on positive curvature. Leave the extra restore
-off until the Baker nebmmf_repro set is strictly better with it on.
+
+The Frontiers article
+([doi:10.3389/fchem.2026.1807063](https://doi.org/10.3389/fchem.2026.1807063))
+restores the climbing image only on positive curvature (Algorithm 1:
+curvature $> 0$). On alignment failure it keeps the most-negative-curvature
+point and raises the trigger with the linear penalty. That is
+`ci_mmf_restore_unhelpful = false`, the default.
+
+`ci_mmf_restore_unhelpful = true` also restores after an alignment reject
+or a force increase. That is an opt-in deviation from the published
+protocol. Do not turn it on by default.
 
 ### Parallel evaluation
 

@@ -104,10 +104,11 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
                     mmfResult, convForce, newForce, newForce / baseline_force_,
                     current_threshold_);
   } else {
-    // Published OCINEB restores only on positive curvature (status -2).
-    // restore_unhelpful also restores on alignment rejects and force
-    // increases (LJ38 pair 26: 0.007 -> 8.5). Off by default until
-    // Baker nebmmf_repro is strictly better with it on.
+    // Frontiers OCI-NEB (doi:10.3389/fchem.2026.1807063, Algorithm 1)
+    // restores only on positive curvature (status -2). Alignment
+    // failure keeps the walked CI and applies the linear penalty.
+    // restore_unhelpful also restores on alignment reject / force
+    // increase. Default false: the paper setting.
     const bool restore =
         cfg_.restore_unhelpful || mmfResult == -2;
     if (restore) {

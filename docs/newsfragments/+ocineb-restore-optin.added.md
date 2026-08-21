@@ -1,1 +1,1 @@
-`ci_mmf_restore_unhelpful` restores the climbing image after an unhelpful MMF walk. The published OCINEB protocol restores only on positive curvature; this extra restore stays off until the Baker set is strictly better with it on.
+`ci_mmf_restore_unhelpful` (default false) restores the climbing image after an alignment reject or force increase. The Frontiers OCI-NEB article (doi:10.3389/fchem.2026.1807063, Algorithm 1) restores only on positive curvature; that is the default.
