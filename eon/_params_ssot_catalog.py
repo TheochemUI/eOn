@@ -115,6 +115,12 @@ CATALOG = {
       "yaml_section": "Optimizer"
     },
     {
+      "default": "lbfgs",
+      "flat_key": "lbfgs_step",
+      "ssot_path": "Optimizer.LBFGS.step",
+      "yaml_section": "Optimizer"
+    },
+    {
       "default": False,
       "flat_key": "cg_no_overshooting",
       "ssot_path": "Optimizer.CG.no_overshooting",
@@ -527,6 +533,13 @@ CATALOG = {
           "ordinal": 17,
           "snake": "precon_rcut",
           "type": "Float64"
+        },
+        {
+          "capnp": "step",
+          "default": "lbfgs",
+          "ordinal": 18,
+          "snake": "step",
+          "type": "Text"
         }
       ],
       "struct": "OptimizerLbfgsOptions"

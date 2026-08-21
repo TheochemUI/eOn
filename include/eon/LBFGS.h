@@ -50,6 +50,7 @@ private:
   Eigen::MatrixXd buildPrecon(const Eigen::VectorXd &pos) const;
   Eigen::VectorXd applyH0(const Eigen::VectorXd &q, double H0,
                           const Eigen::VectorXd &pos) const;
+  Eigen::VectorXd hessianStep(double a_maxMove, const Eigen::VectorXd &a_f);
 
   int m_iteration;
   int m_memory;

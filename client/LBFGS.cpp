@@ -52,7 +52,7 @@ void addPairBlock(Eigen::MatrixXd &P, int i, int j, const Eigen::Vector3d &rij,
   if (r < 1.0e-14 || (!std::isfinite(k_par) && !std::isfinite(k_perp))) {
     return;
   }
-  if (k_par <= 0.0 && k_perp <= 0.0) {
+  if (k_par == 0.0 && k_perp == 0.0) {
     return;
   }
   const Eigen::Vector3d u = rij / r;
@@ -99,7 +99,7 @@ Eigen::Vector3d LBFGS::micRij(const Eigen::VectorXd &pos, int i, int j) const {
 bool LBFGS::usesPrecon() const {
   const std::string &p = m_optConfig.opts.lbfgs.precon;
   return p == "exp" || p == "c1" || p == "lindh" || p == "pair" ||
-         p == "pair_abs";
+         p == "pair_abs" || p == "pair_full";
 }
 
 Eigen::MatrixXd LBFGS::buildPrecon(const Eigen::VectorXd &pos) const {
@@ -155,9 +155,15 @@ Eigen::MatrixXd LBFGS::buildPrecon(const Eigen::VectorXd &pos) const {
         // Mones 2018 Sci. Rep.: keep the positive-definite pair pieces.
         // pair_abs uses |V''| and |V'/r| so attractive LJ neighbours
         // still contribute (the well sits past the LJ inflection).
-        const bool use_abs = kind == "pair_abs";
-        const double k_par = use_abs ? std::abs(vpp) : std::max(vpp, 0.0);
-        const double k_perp = use_abs ? std::abs(vp / r) : std::max(vp / r, 0.0);
+        double k_par = std::max(vpp, 0.0);
+        double k_perp = std::max(vp / r, 0.0);
+        if (kind == "pair_abs") {
+          k_par = std::abs(vpp);
+          k_perp = std::abs(vp / r);
+        } else if (kind == "pair_full") {
+          k_par = vpp;
+          k_perp = vp / r;
+        }
         addPairBlock(P, i, j, rij, k_par, k_perp);
       } else if (kind == "lindh") {
         // Lindh, Bernhardsson, Karlstrom, Malmqvist, Chem. Phys. Lett. 1995.
@@ -193,7 +199,57 @@ Eigen::VectorXd LBFGS::applyH0(const Eigen::VectorXd &q, double H0,
   return H0 * q;
 }
 
+Eigen::VectorXd LBFGS::hessianStep(double a_maxMove,
+                                   const Eigen::VectorXd &a_f) {
+  Eigen::VectorXd r = m_objf->getPositions();
+  Eigen::VectorXd f = a_f;
+  if (!usesPrecon()) {
+    return eonc::helpers::maxAtomMotionAppliedV(
+        m_optConfig.opts.lbfgs.inverse_curvature * f, a_maxMove);
+  }
+  maybeProjectRigid(f, r, m_optConfig.opts.lbfgs.project_rigid);
+  const Eigen::VectorXd g = -f;
+  Eigen::MatrixXd H = buildPrecon(r);
+  Eigen::VectorXd d;
+  if (m_optConfig.opts.lbfgs.step == "rfo") {
+    // Banerjee, Adams, Simons, Shepard, J. Phys. Chem. 1985.
+    // Baker, J. Comput. Chem. 1986. Lowest mode of the augmented Hessian.
+    const int n = static_cast<int>(H.rows());
+    Eigen::MatrixXd A = Eigen::MatrixXd::Zero(n + 1, n + 1);
+    A.topLeftCorner(n, n) = H;
+    A.col(n).head(n) = g;
+    A.row(n).head(n) = g.transpose();
+    Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es(A);
+    if (es.info() != Eigen::Success) {
+      return eonc::helpers::maxAtomMotionAppliedV(f, a_maxMove);
+    }
+    const Eigen::VectorXd v = es.eigenvectors().col(0);
+    if (std::abs(v(n)) < 1.0e-14) {
+      return eonc::helpers::maxAtomMotionAppliedV(f, a_maxMove);
+    }
+    d = v.head(n) / v(n);
+  } else {
+    // Regularized Newton: H + mu I with mu = max(0, eps - lambda_min).
+    Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es(H);
+    if (es.info() != Eigen::Success) {
+      return eonc::helpers::maxAtomMotionAppliedV(f, a_maxMove);
+    }
+    Eigen::VectorXd ev = es.eigenvalues();
+    const double lmin = ev.minCoeff();
+    const double mu = (lmin < 1.0e-8) ? (1.0e-8 - lmin) : 0.0;
+    ev.array() += mu;
+    d = -es.eigenvectors() *
+        (es.eigenvectors().transpose() * g).cwiseQuotient(ev);
+  }
+  maybeProjectRigid(d, r, m_optConfig.opts.lbfgs.project_rigid);
+  return eonc::helpers::maxAtomMotionAppliedV(d, a_maxMove);
+}
+
 Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
+  const std::string &step = m_optConfig.opts.lbfgs.step;
+  if (step == "newton" || step == "rfo") {
+    return hessianStep(a_maxMove, a_f);
+  }
   double H0 = m_optConfig.opts.lbfgs.inverse_curvature;
   Eigen::VectorXd r = m_objf->getPositions();
   Eigen::VectorXd f = a_f;

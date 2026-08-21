@@ -98,6 +98,7 @@ struct OptimizerLbfgsOptions {
   preconA @15 :Float64 = 3.0;
   preconMu @16 :Float64 = 1.0;
   preconRcut @17 :Float64 = 0.0;
+  step @18 :Text = "lbfgs";
 }
 
 struct OptimizerCgOptions {

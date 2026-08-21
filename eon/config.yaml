@@ -1703,6 +1703,10 @@ Optimizer:
             kind: string
             default: "none"
 
+        lbfgs_step:
+            kind: string
+            default: "lbfgs"
+
         lbfgs_h0:
             kind: string
             default: "sy_yy"

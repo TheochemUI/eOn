@@ -427,6 +427,8 @@ int load_ini(INIReader &ini, Parameters &params) {
         lbfgs_sec, "lbfgs_secant", params.optimizer_options.lbfgs.secant));
     params.optimizer_options.lbfgs.precon = toLowerCase(ini.Get(
         lbfgs_sec, "lbfgs_precon", params.optimizer_options.lbfgs.precon));
+    params.optimizer_options.lbfgs.step = toLowerCase(
+        ini.Get(lbfgs_sec, "lbfgs_step", params.optimizer_options.lbfgs.step));
     params.optimizer_options.lbfgs.h0 = toLowerCase(
         ini.Get(lbfgs_sec, "lbfgs_h0", params.optimizer_options.lbfgs.h0));
     params.optimizer_options.lbfgs.accept = toLowerCase(ini.Get(

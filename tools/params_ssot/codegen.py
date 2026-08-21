@@ -61,6 +61,7 @@ FLAT_ALIASES: dict[str, str] = {
     "Optimizer.LBFGS.precon_A": "lbfgs_precon_A",
     "Optimizer.LBFGS.precon_mu": "lbfgs_precon_mu",
     "Optimizer.LBFGS.precon_rcut": "lbfgs_precon_rcut",
+    "Optimizer.LBFGS.step": "lbfgs_step",
     "Optimizer.CG.no_overshooting": "cg_no_overshooting",
     "Optimizer.CG.knock_out_max_move": "cg_knock_out_max_move",
     "Optimizer.CG.line_search": "cg_line_search",

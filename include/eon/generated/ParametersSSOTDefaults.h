@@ -55,6 +55,7 @@ struct GeneratedDefaults {
   static constexpr auto OPTIMIZER_LBFGS_PRECON_A = 3.0;
   static constexpr auto OPTIMIZER_LBFGS_PRECON_MU = 1.0;
   static constexpr auto OPTIMIZER_LBFGS_PRECON_RCUT = 0.0;
+  static constexpr auto OPTIMIZER_LBFGS_STEP = std::string_view{"lbfgs"};
   static constexpr auto OPTIMIZER_CG_NO_OVERSHOOTING = false;
   static constexpr auto OPTIMIZER_CG_KNOCK_OUT_MAX_MOVE = false;
   static constexpr auto OPTIMIZER_CG_LINE_SEARCH = false;

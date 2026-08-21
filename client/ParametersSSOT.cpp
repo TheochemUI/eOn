@@ -163,6 +163,7 @@ void apply_ssot_defaults(Parameters &p) {
   p.optimizer_options.lbfgs.project_rigid = GD::OPTIMIZER_LBFGS_PROJECT_RIGID;
   p.optimizer_options.lbfgs.secant = std::string(GD::OPTIMIZER_LBFGS_SECANT);
   p.optimizer_options.lbfgs.precon = std::string(GD::OPTIMIZER_LBFGS_PRECON);
+  p.optimizer_options.lbfgs.step = std::string(GD::OPTIMIZER_LBFGS_STEP);
   p.optimizer_options.lbfgs.h0 = std::string(GD::OPTIMIZER_LBFGS_H0);
   p.optimizer_options.lbfgs.accept = std::string(GD::OPTIMIZER_LBFGS_ACCEPT);
   p.optimizer_options.lbfgs.extra_updates = GD::OPTIMIZER_LBFGS_EXTRA_UPDATES;

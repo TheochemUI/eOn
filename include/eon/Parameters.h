@@ -253,7 +253,11 @@ public:
       // exp/c1: Packwood-Kermode pair Laplacian (JCP 2016).
       // lindh: Lindh 1995 stretch model Hessian.
       // pair: Mones 2018 positive-definite pair Hessian of LJ or Morse.
+      // pair_full: signed pair Hessian (RFO / shifted Newton).
       std::string precon{"none"};
+      // lbfgs: two-loop. newton: Levenberg-shifted H^{-1} g.
+      // rfo: Banerjee 1985 / Baker 1986 rational function step.
+      std::string step{"lbfgs"};
       // Nocedal-Wright 7.20 (sy/yy), Barzilai-Borwein-2 (ss/sy), or
       // the smaller of the two when both are positive.
       std::string h0{"sy_yy"};
