@@ -588,6 +588,7 @@ int load_ini(INIReader &ini, Parameters &params) {
         toLowerCase(ini.Get(lbfgs_sec, "lbfgs_secant", lbfgs.secant));
     lbfgs.precon =
         toLowerCase(ini.Get(lbfgs_sec, "lbfgs_precon", lbfgs.precon));
+    lbfgs.step = toLowerCase(ini.Get(lbfgs_sec, "lbfgs_step", lbfgs.step));
     lbfgs.h0 = toLowerCase(ini.Get(lbfgs_sec, "lbfgs_h0", lbfgs.h0));
     lbfgs.accept =
         toLowerCase(ini.Get(lbfgs_sec, "lbfgs_accept", lbfgs.accept));

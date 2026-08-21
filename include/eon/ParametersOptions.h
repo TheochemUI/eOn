@@ -247,6 +247,7 @@ struct optimizer_options_t {
     bool project_rigid{false};
     std::string secant{"standard"};
     std::string precon{"none"};
+    std::string step{"lbfgs"};
     std::string h0{"sy_yy"};
     std::string accept{"energy"};
     long extra_updates{0};

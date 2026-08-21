@@ -190,6 +190,8 @@ void apply_ssot_defaults(Parameters &p) {
       std::string(GD::OPTIMIZER_LBFGS_SECANT);
   ParametersLoadAccess::optimizer_options(p).lbfgs.precon =
       std::string(GD::OPTIMIZER_LBFGS_PRECON);
+  ParametersLoadAccess::optimizer_options(p).lbfgs.step =
+      std::string(GD::OPTIMIZER_LBFGS_STEP);
   ParametersLoadAccess::optimizer_options(p).lbfgs.h0 =
       std::string(GD::OPTIMIZER_LBFGS_H0);
   ParametersLoadAccess::optimizer_options(p).lbfgs.accept =
