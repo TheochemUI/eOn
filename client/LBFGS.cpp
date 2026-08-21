@@ -98,7 +98,8 @@ Eigen::Vector3d LBFGS::micRij(const Eigen::VectorXd &pos, int i, int j) const {
 
 bool LBFGS::usesPrecon() const {
   const std::string &p = m_optConfig.opts.lbfgs.precon;
-  return p == "exp" || p == "c1" || p == "lindh" || p == "pair";
+  return p == "exp" || p == "c1" || p == "lindh" || p == "pair" ||
+         p == "pair_abs";
 }
 
 Eigen::MatrixXd LBFGS::buildPrecon(const Eigen::VectorXd &pos) const {
@@ -151,9 +152,13 @@ Eigen::MatrixXd LBFGS::buildPrecon(const Eigen::VectorXd &pos) const {
           // rgpot LJ / LJCluster: 4 u0 ((psi/r)^12 - (psi/r)^6), u0=psi=1
           ljDerivs(r, 1.0, 1.0, vp, vpp);
         }
-        // Mones 2018: keep the positive-definite pair-Hessian pieces.
-        addPairBlock(P, i, j, rij, std::max(vpp, 0.0),
-                     std::max(vp / r, 0.0));
+        // Mones 2018 Sci. Rep.: keep the positive-definite pair pieces.
+        // pair_abs uses |V''| and |V'/r| so attractive LJ neighbours
+        // still contribute (the well sits past the LJ inflection).
+        const bool use_abs = kind == "pair_abs";
+        const double k_par = use_abs ? std::abs(vpp) : std::max(vpp, 0.0);
+        const double k_perp = use_abs ? std::abs(vp / r) : std::max(vp / r, 0.0);
+        addPairBlock(P, i, j, rij, k_par, k_perp);
       } else if (kind == "lindh") {
         // Lindh, Bernhardsson, Karlstrom, Malmqvist, Chem. Phys. Lett. 1995.
         const double alpha = A > 0.0 ? A : 1.0;
