@@ -104,6 +104,15 @@ Further L-BFGS knobs, all optional and off by default:
   energy is itself a pair potential (Morse bulk). `pair_abs` uses
   `|V''|` and `|V'/r|` so attractive LJ neighbours still contribute;
   on LJ38 it does not beat an unpreconditioned two-loop.
+
+- `lbfgs_step = newton` takes the Levenberg-shifted Newton step
+  `d = -(H + μI)^{-1} g` with `μ = max(0, 10^{-8} - λ_min)`.
+  `lbfgs_step = rfo` is Banerjee–Adams–Simons–Shepard
+  (J. Phys. Chem. 1985, doi:10.1021/j100247a015) / Baker
+  (J. Comput. Chem. 1986, doi:10.1002/jcc.540070402): the lowest
+  mode of the augmented Hessian. Both use `lbfgs_precon` as `H`,
+  not as L-BFGS `H0`. On LJ38, `newton` + `pair` is the cheap
+  analytic-Hessian step; the two-loop does not get that Hessian.
 - `lbfgs_h0 = sy_yy` (Nocedal–Wright 7.20), `ss_sy` (Barzilai–Borwein
   2), or `adaptive` (the smaller of the two when both are positive).
 - `lbfgs_accept = nonmonotone` is the Grippo–Lampariello–Lucidi
