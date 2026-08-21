@@ -86,10 +86,10 @@ Each of the optimizer methods have their own settings as well.
 
 ``opt_method = xtsci`` selects the xtsci-optimize engine. The solver
 inside that engine is ``[Xtsci] method``. Build with
-``-Dwith_xtsci=true``. The first ``step()`` runs one ``xts_minimize``
-solve with ``max_iterations`` so L-BFGS / CG history stays inside the
-Rust engine. Newton and RFO still take the pair Hessian from
-eOn (``lbfgs_precon``) through ``xts_minimize_hess``.
+``-Dwith_xtsci=true``. The adapter holds an ``xts_solver_t`` session;
+each ``step()`` is one outer iteration so L-BFGS pairs and NLCG
+conjugacy survive the host loop. Newton and RFO still take the pair
+Hessian from eOn (``lbfgs_precon``) through ``xts_solver_step_hess``.
 
 ```{code-block} ini
 [Optimizer]

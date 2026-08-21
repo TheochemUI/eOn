@@ -13,6 +13,8 @@
 
 #include "eon/Optimizer.h"
 
+struct xts_solver_t;
+
 namespace eonc {
 
 /// xtsci-optimize backend. Newton / RFO live in Rust; this class is the
@@ -23,14 +25,19 @@ public:
                  const Parameters &a_params)
       : Optimizer(a_objf, OptType::XTSCI,
                   OptimizerConfig::fromParams(a_params)) {}
+  ~XtsciOptimizer() override;
+
+  XtsciOptimizer(const XtsciOptimizer &) = delete;
+  XtsciOptimizer &operator=(const XtsciOptimizer &) = delete;
 
   int step(double a_maxMove) override;
   int run(size_t a_maxIterations, double a_maxMove) override;
 
 private:
-  // xts_minimize is a full solve. A maxiter=1 step() cold-starts
-  // every first-order method and discards L-BFGS / CG history.
-  bool m_ran{false};
+  // Opaque xtsci session. L-BFGS pairs / NLCG directions live here.
+  xts_solver_t *m_solver{nullptr};
+
+  void ensureSolver(double a_maxMove);
 };
 
 } // namespace eonc

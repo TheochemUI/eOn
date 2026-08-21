@@ -19,8 +19,8 @@
 
 #include <xts.h>
 
-#if XTS_ABI_VERSION_MINOR < 1
-#error "xtsci-optimize ABI minor 1 or newer is required for Newton/RFO"
+#if XTS_ABI_VERSION_MINOR < 2
+#error "xtsci-optimize ABI minor 2 or newer is required for xts_solver_t"
 #endif
 
 namespace {
@@ -176,28 +176,49 @@ xts_method_t method_from_name(const std::string &name) {
 
 namespace eonc {
 
-int XtsciOptimizer::step(double a_maxMove) {
-  if (m_ran) {
-    return m_objf->isConverged() ? 1 : 0;
-  }
-  m_ran = true;
-  const auto maxiter = static_cast<size_t>(
-      std::max<long>(1, m_optConfig.opts.max_iterations));
-  return run(maxiter, a_maxMove);
-}
+XtsciOptimizer::~XtsciOptimizer() { xts_solver_free(m_solver); }
 
-int XtsciOptimizer::run(size_t a_maxIterations, double a_maxMove) {
-  if (m_objf->degreesOfFreedom() <= 0 || a_maxIterations == 0) {
-    return m_objf->isConverged() ? 1 : 0;
+void XtsciOptimizer::ensureSolver(double a_maxMove) {
+  if (m_solver != nullptr) {
+    return;
   }
-
-  auto positions = m_objf->getPositions();
-  if (positions.size() != m_objf->degreesOfFreedom()) {
-    throw std::runtime_error("xtsci objective position dimension mismatch");
+  const auto dim = static_cast<size_t>(m_objf->degreesOfFreedom());
+  if (dim == 0) {
+    return;
   }
   const auto stamp = xts_abi_stamp();
   if (xts_abi_compatible(&stamp) == 0) {
     throw std::runtime_error("incompatible xtsci-optimize ABI");
+  }
+  const auto &lbfgs = m_optConfig.opts.lbfgs;
+  xts_control_t control{
+      static_cast<size_t>(
+          std::max<long>(1, m_optConfig.opts.max_iterations)),
+      m_optConfig.opts.converged_force,
+      std::max(a_maxMove, 1.0e-12),
+      static_cast<size_t>(std::max<long>(0, lbfgs.memory)),
+      std::max(a_maxMove, 0.0),
+  };
+  m_solver = xts_solver_create(method_from_name(m_optConfig.opts.xtsci.method),
+                               &control, dim);
+  if (m_solver == nullptr) {
+    throw std::runtime_error(xts_last_error());
+  }
+}
+
+int XtsciOptimizer::step(double a_maxMove) {
+  if (m_objf->degreesOfFreedom() <= 0) {
+    return m_objf->isConverged() ? 1 : 0;
+  }
+  ensureSolver(a_maxMove);
+  if (m_solver == nullptr) {
+    return m_objf->isConverged() ? 1 : 0;
+  }
+  xts_solver_set_maxmove(m_solver, std::max(a_maxMove, 0.0));
+
+  auto positions = m_objf->getPositions();
+  if (positions.size() != m_objf->degreesOfFreedom()) {
+    throw std::runtime_error("xtsci objective position dimension mismatch");
   }
   auto *tensor = xts_tensor_borrow_cpu_f64(
       positions.data(), static_cast<size_t>(positions.size()));
@@ -209,28 +230,33 @@ int XtsciOptimizer::run(size_t a_maxIterations, double a_maxMove) {
       m_objf.get(),   m_optConfig.potential, lbfgs.precon,
       lbfgs.precon_A, lbfgs.precon_mu,       lbfgs.precon_rcut,
   };
-  xts_control_t control{
-      a_maxIterations,
-      m_optConfig.opts.converged_force,
-      std::max(a_maxMove, 1.0e-12),
-      static_cast<size_t>(std::max<long>(0, lbfgs.memory)),
-      std::max(a_maxMove, 0.0),
-  };
   xts_report_t report{};
   const xts_method_t method = method_from_name(m_optConfig.opts.xtsci.method);
   xts_status_t status;
   if (method == XTS_NEWTON || method == XTS_RFO) {
-    status = xts_minimize_hess(evaluate, gradient, hessian, &context, tensor,
-                               &control, method, &report);
+    status = xts_solver_step_hess(m_solver, evaluate, gradient, hessian,
+                                  &context, tensor, &report);
   } else {
-    status = xts_minimize(evaluate, gradient, &context, tensor, &control,
-                          method, &report);
+    status = xts_solver_step(m_solver, evaluate, gradient, &context, tensor,
+                             &report);
   }
   xts_tensor_free(tensor);
   if (status != XTS_SUCCESS) {
     throw std::runtime_error(xts_last_error());
   }
   m_objf->setPositions(positions);
+  return m_objf->isConverged() ? 1 : 0;
+}
+
+int XtsciOptimizer::run(size_t a_maxIterations, double a_maxMove) {
+  if (m_objf->degreesOfFreedom() <= 0 || a_maxIterations == 0) {
+    return m_objf->isConverged() ? 1 : 0;
+  }
+  for (size_t i = 0; i < a_maxIterations; ++i) {
+    if (step(a_maxMove) != 0) {
+      return 1;
+    }
+  }
   return m_objf->isConverged() ? 1 : 0;
 }
 
