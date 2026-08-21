@@ -86,7 +86,9 @@ Each of the optimizer methods have their own settings as well.
 
 ``opt_method = xtsci`` selects the xtsci-optimize engine. The solver
 inside that engine is ``[Xtsci] method``. Build with
-``-Dwith_xtsci=true``. Newton and RFO still take the pair Hessian from
+``-Dwith_xtsci=true``. The first ``step()`` runs one ``xts_minimize``
+solve with ``max_iterations`` so L-BFGS / CG history stays inside the
+Rust engine. Newton and RFO still take the pair Hessian from
 eOn (``lbfgs_precon``) through ``xts_minimize_hess``.
 
 ```{code-block} ini

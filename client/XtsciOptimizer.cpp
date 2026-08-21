@@ -176,7 +176,15 @@ xts_method_t method_from_name(const std::string &name) {
 
 namespace eonc {
 
-int XtsciOptimizer::step(double a_maxMove) { return run(1, a_maxMove); }
+int XtsciOptimizer::step(double a_maxMove) {
+  if (m_ran) {
+    return m_objf->isConverged() ? 1 : 0;
+  }
+  m_ran = true;
+  const auto maxiter = static_cast<size_t>(
+      std::max<long>(1, m_optConfig.opts.max_iterations));
+  return run(maxiter, a_maxMove);
+}
 
 int XtsciOptimizer::run(size_t a_maxIterations, double a_maxMove) {
   if (m_objf->degreesOfFreedom() <= 0 || a_maxIterations == 0) {
