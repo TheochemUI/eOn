@@ -1964,10 +1964,11 @@ class NudgedElasticBandConfig(BaseModel):
     ci_mmf_restore_unhelpful: bool = Field(
         default=False,
         description=(
-            "Restore the climbing image after an alignment reject or force "
-            "increase. False is the Frontiers OCI-NEB protocol "
-            "(doi:10.3389/fchem.2026.1807063, Algorithm 1): restore only "
-            "on positive curvature."
+            "Restore the walked image after an alignment reject or force "
+            "increase on that image. A CI-index hop after a downhill dimer "
+            "step is not a force increase. False is the Frontiers OCI-NEB "
+            "protocol (doi:10.3389/fchem.2026.1807063, Algorithm 1): restore "
+            "only on positive curvature."
         ),
     )
     setup_mmf_peaks: bool = Field(

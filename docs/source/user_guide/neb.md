@@ -84,7 +84,9 @@ point and raises the trigger with the linear penalty. That is
 `ci_mmf_restore_unhelpful = false`, the default.
 
 `ci_mmf_restore_unhelpful = true` also restores after an alignment reject
-or a force increase. That is an opt-in deviation from the published
+or a force increase **on the image the dimer moved**. After a downhill
+walk `maxEnergyImage` can hop; the band CI force is then a neighbor and
+is not the restore score. That is an opt-in deviation from the published
 protocol. Do not turn it on by default.
 
 ### Parallel evaluation
