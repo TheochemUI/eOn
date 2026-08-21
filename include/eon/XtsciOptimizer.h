@@ -26,6 +26,11 @@ public:
 
   int step(double a_maxMove) override;
   int run(size_t a_maxIterations, double a_maxMove) override;
+
+private:
+  // xts_minimize is a full solve. A maxiter=1 step() cold-starts
+  // every first-order method and discards L-BFGS / CG history.
+  bool m_ran{false};
 };
 
 } // namespace eonc
