@@ -101,7 +101,9 @@ Further L-BFGS knobs, all optional and off by default:
   potential: analytic `V''` and `V'/r` of LJ (`4ε[(σ/r)¹²-(σ/r)⁶]`,
   `ε=σ=1`) or Morse_Pt (`D=0.7102`, `α=1.6047`, `r0=2.897`), with
   negative pieces dropped. That is the right metric when the
-  energy is itself a pair potential.
+  energy is itself a pair potential (Morse bulk). `pair_abs` uses
+  `|V''|` and `|V'/r|` so attractive LJ neighbours still contribute;
+  on LJ38 it does not beat an unpreconditioned two-loop.
 - `lbfgs_h0 = sy_yy` (Nocedal–Wright 7.20), `ss_sy` (Barzilai–Borwein
   2), or `adaptive` (the smaller of the two when both are positive).
 - `lbfgs_accept = nonmonotone` is the Grippo–Lampariello–Lucidi
