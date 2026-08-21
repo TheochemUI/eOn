@@ -1505,6 +1505,20 @@ class LBFGSConfig(BaseModel):
     lbfgs_distance_reset: bool = Field(
         default=True, description="If true, reset the LBFGS distance."
     )
+    lbfgs_curvature: Literal["reset", "skip", "damped"] = Field(
+        default="reset",
+        description="How to treat a pair with insufficient curvature.",
+    )
+    """
+    Options:
+      - ``reset``: wipe L-BFGS memory (ASE-style default)
+      - ``skip``: Li-Fukushima cautious skip of that pair only
+      - ``damped``: Powell 1978 damping, ŷ = θy+(1-θ)B0 s
+    """
+    lbfgs_project_rigid: bool = Field(
+        default=False,
+        description="Project translation and rotation out of the L-BFGS force and step. Isolated clusters only.",
+    )
 
 
 class CGConfig(BaseModel):

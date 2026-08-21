@@ -238,6 +238,12 @@ public:
       bool auto_scale{true};
       bool angle_reset{true};
       bool distance_reset{true};
+      // reset: wipe memory on bad s·y (ASE). skip: Li-Fukushima cautious
+      // skip of that pair. damped: Powell (1978) ŷ = θy+(1-θ)B0 s.
+      std::string curvature{"reset"};
+      // Isolated clusters: project 6 rigid-body modes out of the
+      // L-BFGS force and step. Off for PBC / frozen atoms.
+      bool project_rigid{false};
     } lbfgs;
     struct cg_t {
       bool no_overshooting{false};

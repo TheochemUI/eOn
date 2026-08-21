@@ -49,7 +49,7 @@ convergence panels. For two endpoints, use **separate** landscape plots (one
 
 | Optimizer | Best for | Key parameter |
 |---|---|---|
-| **LBFGS** (default) | Most minimizations, fast convergence near minima | `lbfgs_memory` (default 20) |
+| **LBFGS** (default) | Most minimizations, fast convergence near minima | `lbfgs_memory` (default 20); optional `lbfgs_curvature` / `lbfgs_project_rigid` |
 | **FIRE** | Systems far from equilibrium, tolerant of bad initial guesses | `time_step` |
 | **CG** | Large systems where LBFGS memory is a concern | `cg_line_search` |
 | **QuickMin** | Simple dynamics-based relaxation | `time_step` |
@@ -69,6 +69,16 @@ compared. The default is eOn's historical `norm`, not OPTIM's RMS.
   stop; it is not the eOn default.
 - **max_atom**: maximum `||F||` on any single free atom
 - **max_component**: maximum Cartesian component of any free-atom force
+
+L-BFGS memory updates are controlled by `lbfgs_curvature` (default
+`reset`, the ASE wipe). `skip` is the Li–Fukushima cautious rule
+(keep older pairs when `s·y` is not safely positive). `damped` is
+Powell's 1978 replacement `ŷ = θ y + (1-θ) B0 s` with
+`θ = 0.8 sᵀB0s / (sᵀB0s − sᵀy)` when `sᵀy < 0.2 sᵀB0s` (Nocedal
+and Wright, *Numerical Optimization*, §18.3). Isolated clusters can
+set `lbfgs_project_rigid = true` to remove the six rigid-body modes
+from the force and the step (those modes are Hessian-null; they
+should not enter the limited-memory pairs).
 
 ## Refinement
 

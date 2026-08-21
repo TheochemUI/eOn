@@ -12,25 +12,43 @@
 // Based on the LBFGS minimizer written in ASE.
 
 #include "eon/LBFGS.h"
+#include "eon/GeometryAnalysis.h"
 #include "eon/SafeMath.h"
 
+#include <algorithm>
 #include <cmath>
+
+namespace {
+void maybeProjectRigid(Eigen::VectorXd &vec, const Eigen::VectorXd &pos,
+                       bool enabled) {
+  if (!enabled || pos.size() < 6 || pos.size() % 3 != 0) {
+    return;
+  }
+  const long nat = pos.size() / 3;
+  const AtomMatrix coords = Eigen::Map<const AtomMatrix>(pos.data(), nat, 3);
+  eonc::geometry::projectOutRotTrans(vec, coords);
+}
+} // namespace
 
 Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
   double H0 = m_optConfig.opts.lbfgs.inverse_curvature;
   Eigen::VectorXd r = m_objf->getPositions();
+  Eigen::VectorXd f = a_f;
+  maybeProjectRigid(f, r, m_optConfig.opts.lbfgs.project_rigid);
 
   if (m_iteration > 0) {
     Eigen::VectorXd dr = m_objf->difference(r, m_rPrev);
-    // double C = dr.dot(fPrev-f)/dr.dot(dr);
-    double C = eonc::safemath::safe_div((m_fPrev - a_f).dot(m_fPrev - a_f),
-                                        dr.dot(m_fPrev - a_f), -1.0);
+    double C = eonc::safemath::safe_div((m_fPrev - f).dot(m_fPrev - f),
+                                        dr.dot(m_fPrev - f), -1.0);
     if (C < 0) {
       QUILL_LOG_DEBUG(
           m_log, "[LBFGS] Negative curvature: {:.4f} eV/A^2 take max move step",
           C);
-      reset();
-      return eonc::helpers::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
+      // Li-Fukushima / Powell: keep older pairs. reset is the ASE wipe.
+      if (m_optConfig.opts.lbfgs.curvature == "reset") {
+        reset();
+      }
+      return eonc::helpers::maxAtomMotionAppliedV(1000 * f, a_maxMove);
     }
 
     if (m_optConfig.opts.lbfgs.auto_scale) {
@@ -42,7 +60,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
   int loopmax = m_s.size();
   std::vector<double> a(loopmax);
 
-  Eigen::VectorXd q = -a_f;
+  Eigen::VectorXd q = -f;
 
   for (int i = loopmax - 1; i >= 0; i--) {
     a[i] = m_rho[i] * m_s[i].dot(q);
@@ -64,11 +82,11 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
                     "[LBFGS] reset memory, proposed step too large: {:.4f}",
                     distance);
     reset();
-    return eonc::helpers::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
+    return eonc::helpers::maxAtomMotionAppliedV(H0 * f, a_maxMove);
   }
 
   double vd = eonc::safemath::safe_normalized(d).dot(
-      eonc::safemath::safe_normalized(a_f));
+      eonc::safemath::safe_normalized(f));
   if (vd > 1.0)
     vd = 1.0;
   if (vd < -1.0)
@@ -80,9 +98,10 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
                     "force too large: {:.4f}",
                     angle);
     reset();
-    return eonc::helpers::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
+    return eonc::helpers::maxAtomMotionAppliedV(H0 * f, a_maxMove);
   }
 
+  maybeProjectRigid(d, r, m_optConfig.opts.lbfgs.project_rigid);
   return eonc::helpers::maxAtomMotionAppliedV(d, a_maxMove);
 }
 
@@ -98,17 +117,37 @@ int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
 
   // y0 is the change in the gradient, not the force
   Eigen::VectorXd y0 = a_f0 - a_f1;
+  double sy = s0.dot(y0);
+  const std::string &curv = m_optConfig.opts.lbfgs.curvature;
+  const double H0 = std::max(m_optConfig.opts.lbfgs.inverse_curvature, 1.0e-16);
+  // B0 = I/H0, so s^T B0 s = ||s||^2 / H0 (Powell / Nocedal-Wright §18.3).
+  const double sBs = s0.squaredNorm() / H0;
 
-  // Skip degenerate curvature update (reset memory instead of aborting)
-  if (std::abs(s0.dot(y0)) < LBFGS_EPS) {
-    QUILL_LOG_WARNING(m_log,
-                      "[LBFGS] s0.y0 too small ({:.4e}), resetting memory",
-                      s0.dot(y0));
-    reset();
+  if (std::abs(sy) < LBFGS_EPS || (curv != "reset" && sy < 0.2 * sBs)) {
+    if (curv == "skip") {
+      QUILL_LOG_DEBUG(m_log, "[LBFGS] Li-Fukushima skip, s·y={:.4e}", sy);
+      return 0;
+    }
+    if (curv == "damped" && sBs > sy) {
+      const double theta = std::clamp(0.8 * sBs / (sBs - sy), 0.0, 1.0);
+      y0 = theta * y0 + (1.0 - theta) * (s0 / H0);
+      sy = s0.dot(y0);
+      QUILL_LOG_DEBUG(m_log, "[LBFGS] Powell damp θ={:.3f} s·ŷ={:.4e}", theta,
+                      sy);
+    } else if (std::abs(sy) < LBFGS_EPS) {
+      QUILL_LOG_WARNING(m_log,
+                        "[LBFGS] s0.y0 too small ({:.4e}), resetting memory",
+                        s0.dot(y0));
+      reset();
+      return 0;
+    }
+  }
+
+  if (std::abs(sy) < LBFGS_EPS) {
     return 0;
   }
 
-  m_rho.push_back(eonc::safemath::safe_recip(s0.dot(y0), 0.0));
+  m_rho.push_back(eonc::safemath::safe_recip(sy, 0.0));
   m_s.push_back(std::move(s0));
   m_y.push_back(std::move(y0));
 
