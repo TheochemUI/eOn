@@ -88,13 +88,20 @@ Further L-BFGS knobs, all optional and off by default:
   the pair (JOTA 1999 / 2001). No extra potential call. On
   Lennard-Jones and Morse pair potentials this pair inflates the
   force-call count; leave it at `standard` there.
-- `lbfgs_precon = exp` or `c1` uses the Packwood–Kermode–Csanyi pair
-  Laplacian (J. Chem. Phys. 2016) as the two-loop `H0` metric.
-  `exp` is `μ exp(-A (r/r_nn - 1))`; `c1` is a C¹ cutoff. Cutoff
-  defaults to `2 r_nn`. This is the ASE `PreconLBFGS` metric for
-  condensed-phase cells. On clusters smaller than about 100 atoms
-  the same paper's ASE default falls back to unpreconditioned
-  L-BFGS; `exp` on LJ38 costs force calls.
+- `lbfgs_precon` selects the two-loop `H0` metric.
+  `none` is `H0 I`.
+  `exp` / `c1` is the Packwood–Kermode–Csanyi pair Laplacian
+  (J. Chem. Phys. 2016, doi:10.1063/1.4947024). ASE falls back
+  below about 100 atoms; `exp` on LJ38 costs force calls.
+  `lindh` is the Lindh stretch model Hessian
+  (Chem. Phys. Lett. 1995, doi:10.1016/0009-2614(95)00646-L):
+  `k = μ exp(α (r_nn² - r²))` along each pair, `α = lbfgs_precon_A`.
+  `pair` is the Mones–Ortner–Csanyi positive-definite pair Hessian
+  (Sci. Rep. 2018, doi:10.1038/s41598-018-32105-x) of the running
+  potential: analytic `V''` and `V'/r` of LJ (`4ε[(σ/r)¹²-(σ/r)⁶]`,
+  `ε=σ=1`) or Morse_Pt (`D=0.7102`, `α=1.6047`, `r0=2.897`), with
+  negative pieces dropped. That is the right metric when the
+  energy is itself a pair potential.
 - `lbfgs_h0 = sy_yy` (Nocedal–Wright 7.20), `ss_sy` (Barzilai–Borwein
   2), or `adaptive` (the smaller of the two when both are positive).
 - `lbfgs_accept = nonmonotone` is the Grippo–Lampariello–Lucidi

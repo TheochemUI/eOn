@@ -249,8 +249,10 @@ public:
       // standard: y = g_{k+1}-g_k. zhangxu: Zhang-Deng-Chen / Zhang-Xu
       // modified secant, ŷ = y + (θ/||s||^2) s, using the two energies.
       std::string secant{"standard"};
-      // none: H0 I. exp/c1: Packwood-Kermode-Csanyi pair Laplacian
-      // (JCP 2016) as the initial inverse-Hessian metric.
+      // none: H0 I.
+      // exp/c1: Packwood-Kermode pair Laplacian (JCP 2016).
+      // lindh: Lindh 1995 stretch model Hessian.
+      // pair: Mones 2018 positive-definite pair Hessian of LJ or Morse.
       std::string precon{"none"};
       // Nocedal-Wright 7.20 (sy/yy), Barzilai-Borwein-2 (ss/sy), or
       // the smaller of the two when both are positive.

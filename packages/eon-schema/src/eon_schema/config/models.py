@@ -1525,9 +1525,9 @@ class LBFGSConfig(BaseModel):
         default="standard",
         description="Secant pair: standard y = g_{k+1}-g_k, or Zhang-Xu modified secant using the two energies.",
     )
-    lbfgs_precon: Literal["none", "exp", "c1"] = Field(
+    lbfgs_precon: Literal["none", "exp", "c1", "lindh", "pair"] = Field(
         default="none",
-        description="Packwood-Kermode-Csanyi pair preconditioner (JCP 2016). none is H0 I.",
+        description="Two-loop H0 metric. none is H0 I. exp/c1 is Packwood-Kermode (JCP 2016). lindh is the Lindh 1995 stretch model. pair is the Mones 2018 positive-definite pair Hessian of LJ or Morse.",
     )
     lbfgs_h0: Literal["sy_yy", "ss_sy", "adaptive"] = Field(
         default="sy_yy",

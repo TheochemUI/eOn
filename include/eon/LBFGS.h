@@ -46,6 +46,7 @@ public:
 private:
   Eigen::VectorXd getStep(double a_maxMove, const Eigen::VectorXd &a_f);
   Eigen::Vector3d micRij(const Eigen::VectorXd &pos, int i, int j) const;
+  bool usesPrecon() const;
   Eigen::MatrixXd buildPrecon(const Eigen::VectorXd &pos) const;
   Eigen::VectorXd applyH0(const Eigen::VectorXd &q, double H0,
                           const Eigen::VectorXd &pos) const;
