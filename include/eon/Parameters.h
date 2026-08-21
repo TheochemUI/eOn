@@ -261,9 +261,10 @@ public:
       // Nocedal-Wright 7.20 (sy/yy), Barzilai-Borwein-2 (ss/sy), or
       // the smaller of the two when both are positive.
       std::string h0{"sy_yy"};
-      // energy: accept if the value does not rise. nonmonotone: Grippo
-      // window of the last five values (GLL 1986).
-      std::string accept{"energy"};
+      // none: take the two-loop step (ASE / historical eOn).
+      // energy: refuse a rise (OPTIM-style shrink). nonmonotone:
+      // Grippo window of the last five values (GLL 1986).
+      std::string accept{"none"};
       // Al-Baali extra-update: reuse the newest pair this many extra
       // times in the two-loop recursion.
       long extra_updates{0};

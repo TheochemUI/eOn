@@ -1718,7 +1718,7 @@ Optimizer:
 
         lbfgs_accept:
             kind: string
-            default: "energy"
+            default: "none"
 
         lbfgs_extra_updates:
             kind: int

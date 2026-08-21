@@ -1539,9 +1539,9 @@ class LBFGSConfig(BaseModel):
         default="sy_yy",
         description="Initial inverse-Hessian scale: Nocedal-Wright 7.20, Barzilai-Borwein-2, or the smaller of the two.",
     )
-    lbfgs_accept: Literal["energy", "nonmonotone"] = Field(
-        default="energy",
-        description="energy refuses a rise. nonmonotone is a Grippo window of the last five values.",
+    lbfgs_accept: Literal["none", "energy", "nonmonotone"] = Field(
+        default="none",
+        description="none takes the two-loop step (ASE / historical eOn). energy refuses a rise. nonmonotone is a Grippo window of the last five values.",
     )
     lbfgs_extra_updates: int = Field(
         default=0,

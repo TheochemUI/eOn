@@ -190,9 +190,12 @@ Eigen::VectorXd LBFGS::applyH0(const Eigen::VectorXd &q, double H0,
   const auto &cfg = m_optConfig.opts.lbfgs;
   if (usesPrecon() && pos.size() >= 6 && pos.size() % 3 == 0) {
     const Eigen::MatrixXd P = buildPrecon(pos);
-    Eigen::LDLT<Eigen::MatrixXd> ldlt(P);
-    if (ldlt.info() == Eigen::Success) {
-      return ldlt.solve(q);
+    // PartialPivLU, not LDLT: manylinux Eigen + C++20 rewrites
+    // Array==Scalar in LDLT::unblocked as a non-bool comparison.
+    Eigen::PartialPivLU<Eigen::MatrixXd> lu(P);
+    const Eigen::VectorXd z = lu.solve(q);
+    if (z.allFinite()) {
+      return z;
     }
     QUILL_LOG_DEBUG(m_log, "[LBFGS] Packwood P failed to factor, using H0 I");
   }
@@ -288,6 +291,26 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
       }
       QUILL_LOG_DEBUG(m_log, "[LBFGS] H0={:.4e} ({} scale)", H0, h0);
     }
+  }
+
+  if (m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale) {
+    m_objf->setPositions(r + m_optConfig.finiteDifference *
+                                 eonc::safemath::safe_normalized(a_f));
+    Eigen::VectorXd dg = m_objf->getGradient(true) + a_f;
+    const double C = dg.dot(eonc::safemath::safe_normalized(a_f)) /
+                     m_optConfig.finiteDifference;
+    H0 = eonc::safemath::safe_recip(C, -1.0);
+    m_objf->setPositions(r);
+    if (H0 < 0) {
+      QUILL_LOG_WARNING(m_log,
+                        "[LBFGS] Negative curvature calculated via FD: {:.4e} "
+                        "eV/A^2, take max move step",
+                        C);
+      reset();
+      return eonc::helpers::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
+    }
+    QUILL_LOG_DEBUG(m_log, "[LBFGS] Curvature calculated via FD: {:.4e} eV/A^2",
+                    C);
   }
 
   const auto idx =
@@ -420,8 +443,14 @@ int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
     }
   }
 
-  // Relative curvature skip (xtsci / compact-Hessian safeguard).
-  if (!std::isfinite(sy) || sy <= 1.0e-8 * sn * yn) {
+  if (!std::isfinite(sy)) {
+    QUILL_LOG_WARNING(m_log, "[LBFGS] non-finite s·y, resetting memory");
+    reset();
+    return 0;
+  }
+  // Relative overlap skip belongs to skip/damped/cautious. reset
+  // keeps the ASE rule: only |s·y| < LBFGS_EPS drops the pair.
+  if (curv != "reset" && sy <= 1.0e-8 * sn * yn) {
     QUILL_LOG_DEBUG(m_log, "[LBFGS] overlap skip, s·y={:.4e}", sy);
     return 0;
   }
@@ -442,7 +471,10 @@ int LBFGS::step(double a_maxMove) {
   int status = 0;
   Eigen::VectorXd r = m_objf->getPositions();
   Eigen::VectorXd f = -m_objf->getGradient();
-  const double e0 = m_objf->getEnergy();
+  const std::string &accept = m_optConfig.opts.lbfgs.accept;
+  const bool energyAccept = accept == "energy" || accept == "nonmonotone";
+  const bool needE = energyAccept || m_optConfig.opts.lbfgs.secant == "zhangxu";
+  const double e0 = needE ? m_objf->getEnergy() : 0.0;
 
   if (m_iteration > 0) {
     status = update(r, m_rPrev, f, m_fPrev, e0, m_ePrev);
@@ -451,34 +483,37 @@ int LBFGS::step(double a_maxMove) {
     return -1;
 
   Eigen::VectorXd dr = getStep(a_maxMove, f);
-  constexpr double max_erise = 1.0e-8;
-  double ref = e0;
-  if (m_optConfig.opts.lbfgs.accept == "nonmonotone" && !m_eHist.empty()) {
-    ref = *std::max_element(m_eHist.begin(), m_eHist.end());
-  }
-  double alpha = 1.0;
-  bool accepted = false;
-  double e_acc = e0;
-  for (int dec = 0; dec < 10; ++dec) {
-    m_objf->setPositions(r + alpha * dr);
-    e_acc = m_objf->getEnergy();
-    if (e_acc - ref <= max_erise) {
-      accepted = true;
-      break;
+  if (energyAccept) {
+    constexpr double max_erise = 1.0e-8;
+    double ref = e0;
+    if (accept == "nonmonotone" && !m_eHist.empty()) {
+      ref = *std::max_element(m_eHist.begin(), m_eHist.end());
     }
-    alpha *= 0.5;
-  }
-  if (!accepted) {
-    m_objf->setPositions(r);
-    reset();
-    m_objf->setPositions(
-        r + eonc::helpers::maxAtomMotionAppliedV(0.1 * f, a_maxMove));
-    e_acc = m_objf->getEnergy();
-  }
-
-  m_eHist.push_back(e_acc);
-  if (m_eHist.size() > 5) {
-    m_eHist.pop_front();
+    double alpha = 1.0;
+    bool accepted = false;
+    double e_acc = e0;
+    for (int dec = 0; dec < 10; ++dec) {
+      m_objf->setPositions(r + alpha * dr);
+      e_acc = m_objf->getEnergy();
+      if (e_acc - ref <= max_erise) {
+        accepted = true;
+        break;
+      }
+      alpha *= 0.5;
+    }
+    if (!accepted) {
+      m_objf->setPositions(r);
+      reset();
+      m_objf->setPositions(
+          r + eonc::helpers::maxAtomMotionAppliedV(0.1 * f, a_maxMove));
+      e_acc = m_objf->getEnergy();
+    }
+    m_eHist.push_back(e_acc);
+    if (m_eHist.size() > 5) {
+      m_eHist.pop_front();
+    }
+  } else {
+    m_objf->setPositions(r + dr);
   }
 
   m_rPrev = r;

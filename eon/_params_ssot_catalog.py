@@ -73,7 +73,7 @@ CATALOG = {
       "yaml_section": "Optimizer"
     },
     {
-      "default": "energy",
+      "default": "none",
       "flat_key": "lbfgs_accept",
       "ssot_path": "Optimizer.LBFGS.accept",
       "yaml_section": "Optimizer"
@@ -501,7 +501,7 @@ CATALOG = {
         },
         {
           "capnp": "accept",
-          "default": "energy",
+          "default": "none",
           "ordinal": 11,
           "snake": "accept",
           "type": "Text"
