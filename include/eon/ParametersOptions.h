@@ -225,6 +225,7 @@ struct optimizer_options_t {
     std::string qn_step{"lbfgs"};
     std::string precon{"none"};
     std::string accept{"energy"};
+    bool highs{false};
   } xtsci;
   std::string convergence_metric{"norm"};
   std::string convergence_metric_label;

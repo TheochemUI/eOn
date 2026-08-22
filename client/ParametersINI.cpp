@@ -614,7 +614,11 @@ int load_ini(INIReader &ini, Parameters &params) {
       xtsci.qn_step = toLowerCase(ini.Get("Xtsci", "qn_step", xtsci.qn_step));
       xtsci.precon = toLowerCase(ini.Get("Xtsci", "precon", xtsci.precon));
       xtsci.accept = toLowerCase(ini.Get("Xtsci", "accept", xtsci.accept));
+      xtsci.highs = ini.GetBoolean(
+          "Xtsci", "highs",
+          ini.GetBoolean("Xtsci", "xtsci_highs", xtsci.highs));
     }
+    xtsci.highs = ini.GetBoolean("Optimizer", "xtsci_highs", xtsci.highs);
     ParametersLoadAccess::optimizer_options(params).xtsci_method = xtsci.method;
   }
   if (ini.HasSection("CG")) {

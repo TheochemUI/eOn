@@ -129,6 +129,10 @@ method = newton
 lbfgs_precon = pair
 ```
 
+`[Xtsci] highs = true` asks HiGHS for the step (Newton QP on the
+host pair matrix, or two-loop plus boxes). Build xtsci-optimize
+with `--features capi,highs`.
+
 `method = rfo` is Banerjee RFO. The pair Hessian is still built in eOn
 (`lbfgs_precon`) and handed to Rust through `xts_minimize_hess`. The
 engine also runs the other xtsci-optimize methods (`lbfgs`, `bfgs`,

@@ -463,6 +463,8 @@ def test_xtsci_engine_method_catalog():
     assert XtsciConfig().qn_step == "lbfgs"
     assert XtsciConfig().precon == "none"
     assert XtsciConfig().accept == "none"
+    assert XtsciConfig().highs is False
+    assert XtsciConfig(highs=True).highs is True
     for token in _XTSCI_METHODS:
         assert XtsciConfig(method=token).method == token
     for token in ("lbfgs", "newton", "rfo"):

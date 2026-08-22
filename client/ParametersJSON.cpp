@@ -154,6 +154,7 @@ json to_json(const Parameters &p) {
       {"qn_step", ParametersLoadAccess::optimizer_options(p).xtsci.qn_step},
       {"precon", ParametersLoadAccess::optimizer_options(p).xtsci.precon},
       {"accept", ParametersLoadAccess::optimizer_options(p).xtsci.accept},
+      {"highs", ParametersLoadAccess::optimizer_options(p).xtsci.highs},
   };
 
   // [Dynamics]

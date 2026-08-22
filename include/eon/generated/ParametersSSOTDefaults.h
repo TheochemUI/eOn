@@ -69,6 +69,7 @@ struct GeneratedDefaults {
   static constexpr auto OPTIMIZER_XTSCI_QN_STEP = std::string_view{"lbfgs"};
   static constexpr auto OPTIMIZER_XTSCI_PRECON = std::string_view{"none"};
   static constexpr auto OPTIMIZER_XTSCI_ACCEPT = std::string_view{"none"};
+  static constexpr bool OPTIMIZER_XTSCI_HIGHS = false;
   static constexpr auto OPTIMIZER_OPT_METHOD = std::string_view{"cg"};
   static constexpr auto OPTIMIZER_CONVERGENCE_METRIC = std::string_view{"norm"};
   static constexpr auto OPTIMIZER_MAX_ITERATIONS = 1000;

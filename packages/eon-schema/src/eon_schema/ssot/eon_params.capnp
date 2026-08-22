@@ -136,6 +136,8 @@ struct OptimizerXtsciOptions {
   # How the session takes a proposed step. xts_accept_t: none, energy,
   # nonmonotone. none is one oracle at the new point.
   accept @3 :Text = "none";
+  # HiGHS feasible-set QP on the host Hessian or two-loop direction.
+  highs @4 :Bool = false;
 }
 
 struct OptimizerOptions {
