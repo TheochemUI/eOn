@@ -104,6 +104,13 @@ Further L-BFGS knobs, all optional and off by default:
   energy is itself a pair potential (Morse bulk). `pair_abs` uses
   `|V''|` and `|V'/r|` so attractive LJ neighbours still contribute;
   on LJ38 it does not beat an unpreconditioned two-loop.
+  `lindh_full` adds Lindh bend and torsion blocks (`B^T k B`).
+  `fischer` is the Fischer-Almlof 1992 model Hessian
+  (doi:10.1021/j100203a036). `schlegel` is the Schlegel 1984
+  estimated Hessian (doi:10.1007/BF00554788). `swart` is the
+  Swart-Bickelhaupt strong/weak screen of Lindh
+  (doi:10.1002/qua.21049). All four are host Cartesian matrices;
+  `[Xtsci] precon` takes the same tokens.
 
 Newton and RFO are not L-BFGS. They live in
 [xtsci-optimize](https://github.com/HaoZeke/xtsci-optimize) as

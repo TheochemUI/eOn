@@ -1826,6 +1826,10 @@ Optimizer:
                 - exp
                 - c1
                 - lindh
+                - lindh_full
+                - fischer
+                - schlegel
+                - swart
 
         xtsci_accept:
             kind: string
@@ -2221,6 +2225,10 @@ Xtsci:
                 - exp
                 - c1
                 - lindh
+                - lindh_full
+                - fischer
+                - schlegel
+                - swart
 
         accept:
             kind: string

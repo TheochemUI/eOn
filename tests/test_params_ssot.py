@@ -467,7 +467,19 @@ def test_xtsci_engine_method_catalog():
         assert XtsciConfig(method=token).method == token
     for token in ("lbfgs", "newton", "rfo"):
         assert XtsciConfig(qn_step=token).qn_step == token
-    for token in ("none", "pair", "pair_abs", "pair_full", "exp", "c1", "lindh"):
+    for token in (
+        "none",
+        "pair",
+        "pair_abs",
+        "pair_full",
+        "exp",
+        "c1",
+        "lindh",
+        "lindh_full",
+        "fischer",
+        "schlegel",
+        "swart",
+    ):
         assert XtsciConfig(precon=token).precon == token
     for token in ("none", "energy", "nonmonotone"):
         assert XtsciConfig(accept=token).accept == token
@@ -516,6 +528,10 @@ def test_xtsci_engine_method_catalog():
         "exp",
         "c1",
         "lindh",
+        "lindh_full",
+        "fischer",
+        "schlegel",
+        "swart",
     }
     assert set(full["Optimizer"]["options"]["xtsci_qn_step"]["values"]) == {
         "lbfgs",
@@ -530,6 +546,10 @@ def test_xtsci_engine_method_catalog():
         "exp",
         "c1",
         "lindh",
+        "lindh_full",
+        "fischer",
+        "schlegel",
+        "swart",
     }
     assert set(full["Xtsci"]["options"]["accept"]["values"]) == {
         "none",

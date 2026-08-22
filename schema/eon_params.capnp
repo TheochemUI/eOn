@@ -129,8 +129,9 @@ struct OptimizerXtsciOptions {
   # How an L-BFGS session uses a host Hessian. Tokens match
   # xts_qn_step_t: lbfgs (two-loop, P is H0), newton, rfo.
   qnStep @1 :Text = "lbfgs";
-  # Host pair / Lindh matrix kind. none, pair, pair_abs, pair_full,
-  # exp, c1, lindh. Built in eOn; xtsci only applies it.
+  # Host pair / model Hessian. none, pair, pair_abs, pair_full,
+  # exp, c1, lindh, lindh_full, fischer, schlegel, swart.
+  # Built in eOn; xtsci only applies it.
   precon @2 :Text = "none";
   # How the session takes a proposed step. xts_accept_t: none, energy,
   # nonmonotone. none is one oracle at the new point.
