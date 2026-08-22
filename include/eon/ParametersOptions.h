@@ -226,6 +226,7 @@ struct optimizer_options_t {
     std::string precon{"none"};
     std::string accept{"energy"};
     bool highs{false};
+    std::string manifold{"euclidean"};
   } xtsci;
   std::string convergence_metric{"norm"};
   std::string convergence_metric_label;

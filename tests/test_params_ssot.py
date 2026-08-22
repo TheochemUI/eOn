@@ -465,6 +465,9 @@ def test_xtsci_engine_method_catalog():
     assert XtsciConfig().accept == "none"
     assert XtsciConfig().highs is False
     assert XtsciConfig(highs=True).highs is True
+    assert XtsciConfig().manifold == "euclidean"
+    for token in ("euclidean", "sphere", "so3", "stiefel", "se3"):
+        assert XtsciConfig(manifold=token).manifold == token
     for token in _XTSCI_METHODS:
         assert XtsciConfig(method=token).method == token
     for token in ("lbfgs", "newton", "rfo"):
@@ -509,6 +512,12 @@ def test_xtsci_engine_method_catalog():
         pass
     else:
         raise AssertionError("XtsciConfig accepted an unknown accept")
+    try:
+        XtsciConfig(manifold="not_a_manifold")
+    except ValidationError:
+        pass
+    else:
+        raise AssertionError("XtsciConfig accepted an unknown manifold")
 
     full = yaml.load(
         (REPO / "eon" / "config.yaml").read_text(), Loader=yaml.BaseLoader

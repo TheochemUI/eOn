@@ -155,6 +155,7 @@ json to_json(const Parameters &p) {
       {"precon", ParametersLoadAccess::optimizer_options(p).xtsci.precon},
       {"accept", ParametersLoadAccess::optimizer_options(p).xtsci.accept},
       {"highs", ParametersLoadAccess::optimizer_options(p).xtsci.highs},
+      {"manifold", ParametersLoadAccess::optimizer_options(p).xtsci.manifold},
   };
 
   // [Dynamics]

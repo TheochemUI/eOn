@@ -77,6 +77,7 @@ FLAT_ALIASES: dict[str, str] = {
     "Optimizer.Xtsci.precon": "xtsci_precon",
     "Optimizer.Xtsci.accept": "xtsci_accept",
     "Optimizer.Xtsci.highs": "xtsci_highs",
+    "Optimizer.Xtsci.manifold": "xtsci_manifold",
 }
 
 FIELD_SNAKE = {

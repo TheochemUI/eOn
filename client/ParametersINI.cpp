@@ -617,6 +617,8 @@ int load_ini(INIReader &ini, Parameters &params) {
       xtsci.highs = ini.GetBoolean(
           "Xtsci", "highs",
           ini.GetBoolean("Xtsci", "xtsci_highs", xtsci.highs));
+      xtsci.manifold = toLowerCase(ini.Get(
+          "Xtsci", "manifold", ini.Get("Xtsci", "xtsci_manifold", xtsci.manifold)));
     }
     xtsci.highs = ini.GetBoolean("Optimizer", "xtsci_highs", xtsci.highs);
     ParametersLoadAccess::optimizer_options(params).xtsci_method = xtsci.method;
