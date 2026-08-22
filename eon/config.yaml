@@ -1838,6 +1838,10 @@ Optimizer:
                 - energy
                 - nonmonotone
 
+        xtsci_highs:
+            kind: boolean
+            default: false
+
 ################################################################################
 
 AMS_ENV:
@@ -2236,6 +2240,10 @@ Xtsci:
                 - none
                 - energy
                 - nonmonotone
+
+        highs:
+            kind: boolean
+            default: false
 
 ################################################################################
 

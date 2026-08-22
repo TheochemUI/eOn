@@ -304,6 +304,12 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
   } else {
     xts_solver_set_cautious(m_solver, 0.0, lbfgs.cautious_alpha);
   }
+  if (m_optConfig.opts.xtsci.highs) {
+    if (xts_solver_set_highs(m_solver, 1) != 0) {
+      throw std::runtime_error(
+          "Xtsci.highs needs xtsci-optimize built with --features highs");
+    }
+  }
 }
 
 int XtsciOptimizer::step(double a_maxMove) {

@@ -1683,6 +1683,16 @@ class XtsciConfig(BaseModel):
     refuses a rise. ``nonmonotone`` is the Grippo window of five.
     """
 
+    highs: bool = Field(
+        default=False,
+        description="HiGHS feasible-set step (xts_solver_set_highs).",
+    )
+    """
+    When true, xtsci asks HiGHS for the step: Newton QP on the host
+    pair Hessian if one is passed, otherwise two-loop plus boxes.
+    Needs ``--features highs`` on the xtsci-optimize build.
+    """
+
 
 class CGConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)

@@ -288,6 +288,8 @@ public:
       std::string precon{"none"};
       // [Xtsci] accept. none: take the clipped step. energy / nonmonotone.
       std::string accept{"none"};
+      // HiGHS feasible-set step on the host Hessian / two-loop direction.
+      bool highs{false};
     } xtsci;
     struct cg_t {
       bool no_overshooting{false};
