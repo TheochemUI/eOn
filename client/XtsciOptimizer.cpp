@@ -19,9 +19,8 @@
 
 #include <xts.h>
 
-#if XTS_ABI_VERSION_MINOR < 5
-#error                                                                         \
-    "xtsci-optimize ABI minor 5 or newer is required for atom maxmove and rematch LBFGS policy"
+#if XTS_ABI_VERSION_MINOR < 6
+#error "xtsci-optimize ABI minor 6 or newer is required for FIRE / BB / dogleg"
 #endif
 
 namespace {
@@ -182,11 +181,24 @@ xts_method_t method_from_name(const std::string &name) {
   if (name == "fr_pr") {
     return XTS_FR_PR;
   }
+  if (name == "fire") {
+    return XTS_FIRE;
+  }
+  if (name == "bb" || name == "barzilai_borwein") {
+    return XTS_BB;
+  }
+  if (name == "dogleg") {
+    return XTS_DOGLEG;
+  }
+  if (name == "fire2") {
+    return XTS_FIRE2;
+  }
   throw std::invalid_argument(
       "unknown Xtsci.method '" + name +
       "' (lbfgs, bfgs, sr1, sr2, newton, rfo, steepest, adam, pso, "
       "polak_ribiere, fletcher_reeves, hestenes_stiefel, dai_yuan, "
-      "conjugate_descent, hager_zhang, liu_storey, fr_pr)");
+      "conjugate_descent, hager_zhang, liu_storey, fr_pr, fire, bb, "
+      "dogleg, fire2)");
 }
 
 bool is_host_precon(const std::string &name) {
@@ -244,15 +256,25 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
     throw std::runtime_error("incompatible xtsci-optimize ABI");
   }
   const auto &lbfgs = m_optConfig.opts.lbfgs;
+  const xts_method_t method = method_from_name(m_optConfig.opts.xtsci.method);
+  double istep = std::max(a_maxMove, 1.0e-12);
+  if (method == XTS_FIRE || method == XTS_FIRE2) {
+    istep = m_optConfig.opts.time_step;
+    if (istep <= 0.0) {
+      istep = m_optConfig.opts.time_step_input;
+    }
+    if (istep <= 0.0) {
+      istep = 0.1;
+    }
+  }
   xts_control_t control{
       static_cast<size_t>(std::max<long>(1, m_optConfig.opts.max_iterations)),
       m_optConfig.opts.converged_force,
-      std::max(a_maxMove, 1.0e-12),
+      istep,
       static_cast<size_t>(std::max<long>(0, lbfgs.memory)),
       0.0,
   };
-  m_solver = xts_solver_create(method_from_name(m_optConfig.opts.xtsci.method),
-                               &control, dim);
+  m_solver = xts_solver_create(method, &control, dim);
   if (m_solver == nullptr) {
     throw std::runtime_error(xts_last_error());
   }
@@ -306,15 +328,18 @@ int XtsciOptimizer::step(double a_maxMove) {
     throw std::runtime_error("could not allocate xtsci objective tensor");
   }
   const auto &lbfgs = m_optConfig.opts.lbfgs;
-  const auto precon = resolved_precon(m_optConfig.opts);
+  std::string precon = resolved_precon(m_optConfig.opts);
+  const xts_method_t method = method_from_name(m_optConfig.opts.xtsci.method);
+  if (method == XTS_DOGLEG && !is_host_precon(precon)) {
+    precon = "pair";
+  }
   XtsObjectiveContext context{
       m_objf.get(),    m_optConfig.potential, precon,      lbfgs.precon_A,
       lbfgs.precon_mu, lbfgs.precon_rcut,     &m_cached_x,
   };
   xts_report_t report{};
-  const xts_method_t method = method_from_name(m_optConfig.opts.xtsci.method);
-  const bool want_hess =
-      method == XTS_NEWTON || method == XTS_RFO || is_host_precon(precon);
+  const bool want_hess = method == XTS_NEWTON || method == XTS_RFO ||
+                         method == XTS_DOGLEG || is_host_precon(precon);
   xts_status_t status;
   if (want_hess) {
     status = xts_solver_step_hess_fg(m_solver, evaluate_gradient, hessian,

@@ -1802,6 +1802,10 @@ Optimizer:
                 - hager_zhang
                 - liu_storey
                 - fr_pr
+                - fire
+                - bb
+                - dogleg
+                - fire2
 
         xtsci_qn_step:
             kind: string
@@ -2193,6 +2197,10 @@ Xtsci:
                 - hager_zhang
                 - liu_storey
                 - fr_pr
+                - fire
+                - bb
+                - dogleg
+                - fire2
 
         qn_step:
             kind: string
