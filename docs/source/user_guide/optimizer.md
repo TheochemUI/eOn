@@ -88,8 +88,11 @@ Each of the optimizer methods have their own settings as well.
 inside that engine is ``[Xtsci] method``. Build with
 ``-Dwith_xtsci=true``. The adapter holds an ``xts_solver_t`` session;
 each ``step()`` is one outer iteration so L-BFGS pairs and NLCG
-conjugacy survive the host loop. Newton and RFO still take the pair
-Hessian from eOn (``lbfgs_precon``) through ``xts_solver_step_hess``.
+conjugacy survive the host loop. ``lbfgs_step`` and ``lbfgs_precon``
+map onto ``xts_solver_set_qn_step`` and ``xts_solver_step_hess``.
+The pair / Lindh matrix is still built in eOn. Two-loop plus that
+matrix is \(H_0 = P^{-1}\); ``lbfgs_step = newton`` is regularized
+Newton on the same ``P``.
 
 ```{code-block} ini
 [Optimizer]
