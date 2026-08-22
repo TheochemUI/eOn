@@ -191,6 +191,12 @@ CATALOG = {
       "flat_key": "xtsci_precon",
       "ssot_path": "Optimizer.Xtsci.precon",
       "yaml_section": "Optimizer"
+    },
+    {
+      "default": "none",
+      "flat_key": "xtsci_accept",
+      "ssot_path": "Optimizer.Xtsci.accept",
+      "yaml_section": "Optimizer"
     }
   ],
   "schema_version": 1,
@@ -622,6 +628,13 @@ CATALOG = {
           "default": "none",
           "ordinal": 2,
           "snake": "precon",
+          "type": "Text"
+        },
+        {
+          "capnp": "accept",
+          "default": "none",
+          "ordinal": 3,
+          "snake": "accept",
           "type": "Text"
         }
       ],

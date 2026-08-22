@@ -1822,6 +1822,14 @@ Optimizer:
                 - c1
                 - lindh
 
+        xtsci_accept:
+            kind: string
+            default: none
+            values:
+                - none
+                - energy
+                - nonmonotone
+
 ################################################################################
 
 AMS_ENV:
@@ -2204,6 +2212,14 @@ Xtsci:
                 - exp
                 - c1
                 - lindh
+
+        accept:
+            kind: string
+            default: none
+            values:
+                - none
+                - energy
+                - nonmonotone
 
 ################################################################################
 

@@ -282,6 +282,8 @@ public:
       std::string qn_step{"lbfgs"};
       // [Xtsci] precon. none, or a host pairhess kind.
       std::string precon{"none"};
+      // [Xtsci] accept. none: take the clipped step. energy / nonmonotone.
+      std::string accept{"none"};
     } xtsci;
     struct cg_t {
       bool no_overshooting{false};

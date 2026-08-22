@@ -1647,6 +1647,15 @@ class XtsciConfig(BaseModel):
     ``xts_solver_step_hess``.
     """
 
+    accept: Literal["none", "energy", "nonmonotone"] = Field(
+        default="none",
+        description="How the session takes a proposed step (xts_accept_t).",
+    )
+    """
+    ``none`` takes the maxmove-clipped step (one oracle). ``energy``
+    refuses a rise. ``nonmonotone`` is the Grippo window of five.
+    """
+
 
 class CGConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
