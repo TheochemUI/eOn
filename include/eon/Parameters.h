@@ -278,6 +278,10 @@ public:
     // solver inside it (xts_method_t token: lbfgs, newton, rfo, ...).
     struct xtsci_t {
       std::string method{"lbfgs"};
+      // [Xtsci] qn_step. lbfgs: two-loop (P is H0). newton / rfo on P.
+      std::string qn_step{"lbfgs"};
+      // [Xtsci] precon. none, or a host pairhess kind.
+      std::string precon{"none"};
     } xtsci;
     struct cg_t {
       bool no_overshooting{false};

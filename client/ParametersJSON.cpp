@@ -120,6 +120,8 @@ json to_json(const Parameters &p) {
   };
   j["Optimizer"]["Xtsci"] = {
       {"method", p.optimizer_options.xtsci.method},
+      {"qn_step", p.optimizer_options.xtsci.qn_step},
+      {"precon", p.optimizer_options.xtsci.precon},
   };
 
   // [Dynamics]
@@ -327,8 +329,12 @@ void from_json(const json &j, Parameters &p) {
     if (s.contains("Xtsci")) {
       auto &x = s.at("Xtsci");
       JSON_OPT(x, "method", p.optimizer_options.xtsci.method);
+      JSON_OPT(x, "qn_step", p.optimizer_options.xtsci.qn_step);
+      JSON_OPT(x, "precon", p.optimizer_options.xtsci.precon);
     }
     JSON_OPT(s, "xtsci_method", p.optimizer_options.xtsci.method);
+    JSON_OPT(s, "xtsci_qn_step", p.optimizer_options.xtsci.qn_step);
+    JSON_OPT(s, "xtsci_precon", p.optimizer_options.xtsci.precon);
   }
 
   // [Dynamics]

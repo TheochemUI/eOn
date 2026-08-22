@@ -452,11 +452,23 @@ int load_ini(INIReader &ini, Parameters &params) {
   {
     params.optimizer_options.xtsci.method = toLowerCase(ini.Get(
         "Optimizer", "xtsci_method", params.optimizer_options.xtsci.method));
+    params.optimizer_options.xtsci.qn_step = toLowerCase(ini.Get(
+        "Optimizer", "xtsci_qn_step", params.optimizer_options.xtsci.qn_step));
+    params.optimizer_options.xtsci.precon = toLowerCase(ini.Get(
+        "Optimizer", "xtsci_precon", params.optimizer_options.xtsci.precon));
     if (ini.HasSection("Xtsci")) {
       params.optimizer_options.xtsci.method =
           toLowerCase(ini.Get("Xtsci", "method",
                               ini.Get("Xtsci", "xtsci_method",
                                       params.optimizer_options.xtsci.method)));
+      params.optimizer_options.xtsci.qn_step = toLowerCase(
+          ini.Get("Xtsci", "qn_step",
+                  ini.Get("Xtsci", "xtsci_qn_step",
+                          params.optimizer_options.xtsci.qn_step)));
+      params.optimizer_options.xtsci.precon = toLowerCase(
+          ini.Get("Xtsci", "precon",
+                  ini.Get("Xtsci", "xtsci_precon",
+                          params.optimizer_options.xtsci.precon)));
     }
   }
   if (ini.HasSection("CG")) {

@@ -1619,6 +1619,34 @@ class XtsciConfig(BaseModel):
         ``liu_storey``, ``fr_pr``
     """
 
+    qn_step: Literal["lbfgs", "newton", "rfo"] = Field(
+        default="lbfgs",
+        description="How an L-BFGS session uses a host Hessian (xts_qn_step_t).",
+    )
+    r"""
+    Only used when ``method = lbfgs``. ``lbfgs`` is two-loop with
+    optional ``precon`` as \(H_0 = P^{-1}\). ``newton`` / ``rfo`` take
+    that same host matrix as the step (eOn rematch).
+    """
+
+    precon: Literal[
+        "none",
+        "pair",
+        "pair_abs",
+        "pair_full",
+        "exp",
+        "c1",
+        "lindh",
+    ] = Field(
+        default="none",
+        description="Host pair / Lindh matrix kind. Built in eOn, not in xtsci.",
+    )
+    """
+    ``pair`` is the Mones PSD clip. ``pair_full`` keeps signed
+    curvature. The matrix is assembled in eOn and passed through
+    ``xts_solver_step_hess``.
+    """
+
 
 class CGConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)

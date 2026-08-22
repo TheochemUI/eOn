@@ -25,5 +25,11 @@ def test_xtsci_is_an_engine_with_methods():
     assert XtsciConfig().method == "lbfgs"
     assert XtsciConfig(method="newton").method == "newton"
     assert XtsciConfig(method="polak_ribiere").method == "polak_ribiere"
+    assert XtsciConfig().qn_step == "lbfgs"
+    assert XtsciConfig().precon == "none"
+    assert XtsciConfig(qn_step="newton", precon="pair").qn_step == "newton"
+    assert XtsciConfig(qn_step="newton", precon="pair").precon == "pair"
     assert "method" in XtsciConfig.model_fields
+    assert "qn_step" in XtsciConfig.model_fields
+    assert "precon" in XtsciConfig.model_fields
     assert "xtsci_method" not in XtsciConfig.model_fields

@@ -1802,6 +1802,26 @@ Optimizer:
                 - liu_storey
                 - fr_pr
 
+        xtsci_qn_step:
+            kind: string
+            default: lbfgs
+            values:
+                - lbfgs
+                - newton
+                - rfo
+
+        xtsci_precon:
+            kind: string
+            default: none
+            values:
+                - none
+                - pair
+                - pair_abs
+                - pair_full
+                - exp
+                - c1
+                - lindh
+
 ################################################################################
 
 AMS_ENV:
@@ -2164,6 +2184,26 @@ Xtsci:
                 - hager_zhang
                 - liu_storey
                 - fr_pr
+
+        qn_step:
+            kind: string
+            default: lbfgs
+            values:
+                - lbfgs
+                - newton
+                - rfo
+
+        precon:
+            kind: string
+            default: none
+            values:
+                - none
+                - pair
+                - pair_abs
+                - pair_full
+                - exp
+                - c1
+                - lindh
 
 ################################################################################
 
