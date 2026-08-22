@@ -460,6 +460,9 @@ int load_ini(INIReader &ini, Parameters &params) {
         "Optimizer", "xtsci_accept", params.optimizer_options.xtsci.accept));
     params.optimizer_options.xtsci.highs = ini.GetBoolean(
         "Optimizer", "xtsci_highs", params.optimizer_options.xtsci.highs);
+    params.optimizer_options.xtsci.manifold =
+        toLowerCase(ini.Get("Optimizer", "xtsci_manifold",
+                            params.optimizer_options.xtsci.manifold));
     if (ini.HasSection("Xtsci")) {
       params.optimizer_options.xtsci.method =
           toLowerCase(ini.Get("Xtsci", "method",
@@ -481,6 +484,10 @@ int load_ini(INIReader &ini, Parameters &params) {
           ini.GetBoolean("Xtsci", "highs",
                          ini.GetBoolean("Xtsci", "xtsci_highs",
                                         params.optimizer_options.xtsci.highs));
+      params.optimizer_options.xtsci.manifold = toLowerCase(
+          ini.Get("Xtsci", "manifold",
+                  ini.Get("Xtsci", "xtsci_manifold",
+                          params.optimizer_options.xtsci.manifold)));
     }
   }
   if (ini.HasSection("CG")) {

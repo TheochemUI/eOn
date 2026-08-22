@@ -28,6 +28,7 @@ def test_xtsci_is_an_engine_with_methods():
     assert XtsciConfig().qn_step == "lbfgs"
     assert XtsciConfig().precon == "none"
     assert XtsciConfig().accept == "none"
+    assert XtsciConfig().manifold == "euclidean"
     assert XtsciConfig(qn_step="newton", precon="pair").qn_step == "newton"
     assert XtsciConfig(qn_step="newton", precon="pair").precon == "pair"
     assert XtsciConfig(accept="nonmonotone").accept == "nonmonotone"

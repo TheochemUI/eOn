@@ -197,6 +197,18 @@ CATALOG = {
       "flat_key": "xtsci_accept",
       "ssot_path": "Optimizer.Xtsci.accept",
       "yaml_section": "Optimizer"
+    },
+    {
+      "default": False,
+      "flat_key": "xtsci_highs",
+      "ssot_path": "Optimizer.Xtsci.highs",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": "euclidean",
+      "flat_key": "xtsci_manifold",
+      "ssot_path": "Optimizer.Xtsci.manifold",
+      "yaml_section": "Optimizer"
     }
   ],
   "schema_version": 1,
@@ -635,6 +647,20 @@ CATALOG = {
           "default": "none",
           "ordinal": 3,
           "snake": "accept",
+          "type": "Text"
+        },
+        {
+          "capnp": "highs",
+          "default": False,
+          "ordinal": 4,
+          "snake": "highs",
+          "type": "Bool"
+        },
+        {
+          "capnp": "manifold",
+          "default": "euclidean",
+          "ordinal": 5,
+          "snake": "manifold",
           "type": "Text"
         }
       ],

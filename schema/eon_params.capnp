@@ -138,6 +138,9 @@ struct OptimizerXtsciOptions {
   accept @3 :Text = "none";
   # HiGHS feasible-set QP on the host Hessian or two-loop direction.
   highs @4 :Bool = false;
+  # Embedded manifold. Tokens match xts_manifold_t:
+  # euclidean, sphere, so3, stiefel, se3.
+  manifold @5 :Text = "euclidean";
 }
 
 struct OptimizerOptions {

@@ -179,6 +179,8 @@ void apply_ssot_defaults(Parameters &p) {
   p.optimizer_options.xtsci.precon = std::string(GD::OPTIMIZER_XTSCI_PRECON);
   p.optimizer_options.xtsci.accept = std::string(GD::OPTIMIZER_XTSCI_ACCEPT);
   p.optimizer_options.xtsci.highs = GD::OPTIMIZER_XTSCI_HIGHS;
+  p.optimizer_options.xtsci.manifold =
+      std::string(GD::OPTIMIZER_XTSCI_MANIFOLD);
 
   p.optimizer_options.cg.no_overshooting = GD::OPTIMIZER_CG_NO_OVERSHOOTING;
   p.optimizer_options.cg.knock_out_max_move =

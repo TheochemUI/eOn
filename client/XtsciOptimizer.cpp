@@ -19,8 +19,8 @@
 
 #include <xts.h>
 
-#if XTS_ABI_VERSION_MINOR < 6
-#error "xtsci-optimize ABI minor 6 or newer is required for FIRE / BB / dogleg"
+#if XTS_ABI_VERSION_MINOR < 8
+#error "xtsci-optimize ABI minor 8 or newer is required for set_manifold"
 #endif
 
 namespace {
@@ -309,6 +309,18 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
       throw std::runtime_error(
           "Xtsci.highs needs xtsci-optimize built with --features highs");
     }
+  }
+  const auto &mani = m_optConfig.opts.xtsci.manifold;
+  if (mani == "sphere") {
+    xts_solver_set_manifold(m_solver, XTS_MANIFOLD_SPHERE);
+  } else if (mani == "so3") {
+    xts_solver_set_manifold(m_solver, XTS_MANIFOLD_SO3);
+  } else if (mani == "stiefel") {
+    xts_solver_set_manifold(m_solver, XTS_MANIFOLD_STIEFEL);
+  } else if (mani == "se3") {
+    xts_solver_set_manifold(m_solver, XTS_MANIFOLD_SE3);
+  } else {
+    xts_solver_set_manifold(m_solver, XTS_MANIFOLD_EUCLIDEAN);
   }
 }
 

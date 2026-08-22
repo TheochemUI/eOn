@@ -124,6 +124,7 @@ json to_json(const Parameters &p) {
       {"precon", p.optimizer_options.xtsci.precon},
       {"accept", p.optimizer_options.xtsci.accept},
       {"highs", p.optimizer_options.xtsci.highs},
+      {"manifold", p.optimizer_options.xtsci.manifold},
   };
 
   // [Dynamics]
@@ -335,12 +336,14 @@ void from_json(const json &j, Parameters &p) {
       JSON_OPT(x, "precon", p.optimizer_options.xtsci.precon);
       JSON_OPT(x, "accept", p.optimizer_options.xtsci.accept);
       JSON_OPT(x, "highs", p.optimizer_options.xtsci.highs);
+      JSON_OPT(x, "manifold", p.optimizer_options.xtsci.manifold);
     }
     JSON_OPT(s, "xtsci_method", p.optimizer_options.xtsci.method);
     JSON_OPT(s, "xtsci_qn_step", p.optimizer_options.xtsci.qn_step);
     JSON_OPT(s, "xtsci_precon", p.optimizer_options.xtsci.precon);
     JSON_OPT(s, "xtsci_accept", p.optimizer_options.xtsci.accept);
     JSON_OPT(s, "xtsci_highs", p.optimizer_options.xtsci.highs);
+    JSON_OPT(s, "xtsci_manifold", p.optimizer_options.xtsci.manifold);
   }
 
   // [Dynamics]

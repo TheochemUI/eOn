@@ -1842,6 +1842,16 @@ Optimizer:
             kind: boolean
             default: false
 
+        xtsci_manifold:
+            kind: string
+            default: euclidean
+            values:
+                - euclidean
+                - sphere
+                - so3
+                - stiefel
+                - se3
+
 ################################################################################
 
 AMS_ENV:
@@ -2244,6 +2254,16 @@ Xtsci:
         highs:
             kind: boolean
             default: false
+
+        manifold:
+            kind: string
+            default: euclidean
+            values:
+                - euclidean
+                - sphere
+                - so3
+                - stiefel
+                - se3
 
 ################################################################################
 
