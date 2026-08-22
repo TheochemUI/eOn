@@ -36,6 +36,9 @@ public:
 private:
   // Opaque xtsci session. L-BFGS pairs / NLCG directions live here.
   xts_solver_t *m_solver{nullptr};
+  // Last x passed to setPositions. Persists across step() so eval
+  // at the accepted point does not dirty Matter.
+  Eigen::VectorXd m_cached_x;
 
   void ensureSolver(double a_maxMove);
 };
