@@ -39,6 +39,9 @@ private:
   // Last x passed to setPositions. Persists across step() so eval
   // at the accepted point does not dirty Matter.
   Eigen::VectorXd m_cached_x;
+  // Solver state. write_report updates this in place. Do not refresh
+  // from Matter::getPositions: PBC wrap would break last-x reuse.
+  Eigen::VectorXd m_x;
 
   void ensureSolver(double a_maxMove);
 };
