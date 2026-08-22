@@ -19,8 +19,9 @@
 
 #include <xts.h>
 
-#if XTS_ABI_VERSION_MINOR < 2
-#error "xtsci-optimize ABI minor 2 or newer is required for xts_solver_t"
+#if XTS_ABI_VERSION_MINOR < 3
+#error \
+    "xtsci-optimize ABI minor 3 or newer is required for xts_solver_set_qn_step"
 #endif
 
 namespace {
@@ -204,6 +205,14 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
   if (m_solver == nullptr) {
     throw std::runtime_error(xts_last_error());
   }
+  const auto &step = m_optConfig.opts.lbfgs.step;
+  if (step == "newton") {
+    xts_solver_set_qn_step(m_solver, XTS_QN_NEWTON);
+  } else if (step == "rfo") {
+    xts_solver_set_qn_step(m_solver, XTS_QN_RFO);
+  } else {
+    xts_solver_set_qn_step(m_solver, XTS_QN_LBFGS);
+  }
 }
 
 int XtsciOptimizer::step(double a_maxMove) {
@@ -232,8 +241,13 @@ int XtsciOptimizer::step(double a_maxMove) {
   };
   xts_report_t report{};
   const xts_method_t method = method_from_name(m_optConfig.opts.xtsci.method);
+  const auto &precon = lbfgs.precon;
+  const bool want_hess =
+      method == XTS_NEWTON || method == XTS_RFO || precon == "pair" ||
+      precon == "pair_abs" || precon == "pair_full" || precon == "exp" ||
+      precon == "c1" || precon == "lindh";
   xts_status_t status;
-  if (method == XTS_NEWTON || method == XTS_RFO) {
+  if (want_hess) {
     status = xts_solver_step_hess(m_solver, evaluate, gradient, hessian,
                                   &context, tensor, &report);
   } else {
