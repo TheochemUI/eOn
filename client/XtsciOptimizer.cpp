@@ -19,8 +19,8 @@
 
 #include <xts.h>
 
-#if XTS_ABI_VERSION_MINOR < 9
-#error "xtsci-optimize ABI minor 9 or newer is required for rigid_quotient"
+#if XTS_ABI_VERSION_MINOR < 10
+#error "xtsci-optimize ABI minor 10 or newer is required for set_periodic"
 #endif
 
 namespace {
@@ -346,6 +346,10 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
     }
   } else {
     xts_solver_set_manifold(m_solver, XTS_MANIFOLD_EUCLIDEAN);
+  }
+  if (mani == "rigid_quotient" || mani == "mw_rigid" || mani == "sella" ||
+      mani == "eckart" || mani == "irc") {
+    xts_solver_set_periodic(m_solver, m_objf->getPeriodic() ? 1 : 0);
   }
 }
 

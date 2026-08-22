@@ -327,6 +327,7 @@ public:
     }
     return out;
   }
+  bool getPeriodic() const override { return m_matter.getPeriodic(); }
   void minimumImage(Eigen::Ref<Eigen::Vector3d> dr) const override {
     AtomMatrix m(1, 3);
     m.row(0) = dr.transpose();

@@ -35,6 +35,8 @@ public:
   virtual void minimumImage(Eigen::Ref<Eigen::Vector3d> /*dr*/) const {}
   // Per-atom masses of the free atoms (length N, not 3N). Empty if unknown.
   virtual VectorXd getMasses() const { return VectorXd(); }
+  // True when the geometry uses periodic boundaries (Sella proj_rot off).
+  virtual bool getPeriodic() const { return false; }
 };
 
 } // namespace eonc
