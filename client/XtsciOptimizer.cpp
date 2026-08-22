@@ -33,6 +33,7 @@ struct XtsObjectiveContext {
   double precon_A;
   double precon_mu;
   double precon_rcut;
+  Eigen::VectorXd *cached_x;
 };
 
 Eigen::Map<const Eigen::VectorXd>
@@ -63,12 +64,16 @@ Eigen::Map<Eigen::VectorXd> map_output(DLManagedTensorVersioned *tensor) {
 // forces come from one potential->force() call, so eval then grad at
 // the same x must not setPositions twice.
 void set_positions_if_changed(eonc::ObjectiveFunction *obj,
-                              const Eigen::VectorXd &x) {
-  const auto cur = obj->getPositions();
-  if (cur.size() == x.size() && (cur - x).isZero(0.0)) {
+                              const Eigen::VectorXd &x,
+                              Eigen::VectorXd *cached) {
+  if (cached != nullptr && cached->size() == x.size() &&
+      (*cached - x).isZero(0.0)) {
     return;
   }
   obj->setPositions(x);
+  if (cached != nullptr) {
+    *cached = x;
+  }
 }
 
 // One Matter::computePotential. Energy and forces share that call.
@@ -78,7 +83,7 @@ xts_status_t evaluate_gradient(void *user, const DLManagedTensorVersioned *x,
   try {
     auto *context = static_cast<XtsObjectiveContext *>(user);
     const auto positions = map_input(x);
-    set_positions_if_changed(context->objective, positions);
+    set_positions_if_changed(context->objective, positions, context->cached_x);
     *value_out = context->objective->getEnergy();
     const auto gradient_value = context->objective->getGradient();
     auto output = map_output(gradient_out);
@@ -292,8 +297,8 @@ int XtsciOptimizer::step(double a_maxMove) {
   const auto &lbfgs = m_optConfig.opts.lbfgs;
   const auto precon = resolved_precon(m_optConfig.opts);
   XtsObjectiveContext context{
-      m_objf.get(),   m_optConfig.potential, precon,
-      lbfgs.precon_A, lbfgs.precon_mu,       lbfgs.precon_rcut,
+      m_objf.get(),    m_optConfig.potential, precon,      lbfgs.precon_A,
+      lbfgs.precon_mu, lbfgs.precon_rcut,     &m_cached_x,
   };
   xts_report_t report{};
   const xts_method_t method = method_from_name(m_optConfig.opts.xtsci.method);
@@ -311,7 +316,7 @@ int XtsciOptimizer::step(double a_maxMove) {
   if (status != XTS_SUCCESS) {
     throw std::runtime_error(xts_last_error());
   }
-  set_positions_if_changed(m_objf.get(), positions);
+  set_positions_if_changed(m_objf.get(), positions, &m_cached_x);
   return m_objf->isConverged() ? 1 : 0;
 }
 
