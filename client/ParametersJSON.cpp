@@ -99,9 +99,32 @@ json to_json(const Parameters &p) {
   j["Optimizer"]["LBFGS"] = {
       {"memory", p.optimizer_options.lbfgs.memory},
       {"inverse_curvature", p.optimizer_options.lbfgs.inverse_curvature},
+      {"max_inverse_curvature",
+       p.optimizer_options.lbfgs.max_inverse_curvature},
       {"auto_scale", p.optimizer_options.lbfgs.auto_scale},
       {"angle_reset", p.optimizer_options.lbfgs.angle_reset},
       {"distance_reset", p.optimizer_options.lbfgs.distance_reset},
+      {"curvature", p.optimizer_options.lbfgs.curvature},
+      {"project_rigid", p.optimizer_options.lbfgs.project_rigid},
+      {"secant", p.optimizer_options.lbfgs.secant},
+      {"precon", p.optimizer_options.lbfgs.precon},
+      {"step", p.optimizer_options.lbfgs.step},
+      {"h0", p.optimizer_options.lbfgs.h0},
+      {"accept", p.optimizer_options.lbfgs.accept},
+      {"extra_updates", p.optimizer_options.lbfgs.extra_updates},
+      {"cautious_eps", p.optimizer_options.lbfgs.cautious_eps},
+      {"cautious_alpha", p.optimizer_options.lbfgs.cautious_alpha},
+      {"precon_A", p.optimizer_options.lbfgs.precon_A},
+      {"precon_mu", p.optimizer_options.lbfgs.precon_mu},
+      {"precon_rcut", p.optimizer_options.lbfgs.precon_rcut},
+  };
+  j["Optimizer"]["Xtsci"] = {
+      {"method", p.optimizer_options.xtsci.method},
+      {"qn_step", p.optimizer_options.xtsci.qn_step},
+      {"precon", p.optimizer_options.xtsci.precon},
+      {"accept", p.optimizer_options.xtsci.accept},
+      {"highs", p.optimizer_options.xtsci.highs},
+      {"manifold", p.optimizer_options.xtsci.manifold},
   };
 
   // [Dynamics]
@@ -287,10 +310,40 @@ void from_json(const json &j, Parameters &p) {
       JSON_OPT(l, "memory", p.optimizer_options.lbfgs.memory);
       JSON_OPT(l, "inverse_curvature",
                p.optimizer_options.lbfgs.inverse_curvature);
+      JSON_OPT(l, "max_inverse_curvature",
+               p.optimizer_options.lbfgs.max_inverse_curvature);
       JSON_OPT(l, "auto_scale", p.optimizer_options.lbfgs.auto_scale);
       JSON_OPT(l, "angle_reset", p.optimizer_options.lbfgs.angle_reset);
       JSON_OPT(l, "distance_reset", p.optimizer_options.lbfgs.distance_reset);
+      JSON_OPT(l, "curvature", p.optimizer_options.lbfgs.curvature);
+      JSON_OPT(l, "project_rigid", p.optimizer_options.lbfgs.project_rigid);
+      JSON_OPT(l, "secant", p.optimizer_options.lbfgs.secant);
+      JSON_OPT(l, "precon", p.optimizer_options.lbfgs.precon);
+      JSON_OPT(l, "step", p.optimizer_options.lbfgs.step);
+      JSON_OPT(l, "h0", p.optimizer_options.lbfgs.h0);
+      JSON_OPT(l, "accept", p.optimizer_options.lbfgs.accept);
+      JSON_OPT(l, "extra_updates", p.optimizer_options.lbfgs.extra_updates);
+      JSON_OPT(l, "cautious_eps", p.optimizer_options.lbfgs.cautious_eps);
+      JSON_OPT(l, "cautious_alpha", p.optimizer_options.lbfgs.cautious_alpha);
+      JSON_OPT(l, "precon_A", p.optimizer_options.lbfgs.precon_A);
+      JSON_OPT(l, "precon_mu", p.optimizer_options.lbfgs.precon_mu);
+      JSON_OPT(l, "precon_rcut", p.optimizer_options.lbfgs.precon_rcut);
     }
+    if (s.contains("Xtsci")) {
+      auto &x = s.at("Xtsci");
+      JSON_OPT(x, "method", p.optimizer_options.xtsci.method);
+      JSON_OPT(x, "qn_step", p.optimizer_options.xtsci.qn_step);
+      JSON_OPT(x, "precon", p.optimizer_options.xtsci.precon);
+      JSON_OPT(x, "accept", p.optimizer_options.xtsci.accept);
+      JSON_OPT(x, "highs", p.optimizer_options.xtsci.highs);
+      JSON_OPT(x, "manifold", p.optimizer_options.xtsci.manifold);
+    }
+    JSON_OPT(s, "xtsci_method", p.optimizer_options.xtsci.method);
+    JSON_OPT(s, "xtsci_qn_step", p.optimizer_options.xtsci.qn_step);
+    JSON_OPT(s, "xtsci_precon", p.optimizer_options.xtsci.precon);
+    JSON_OPT(s, "xtsci_accept", p.optimizer_options.xtsci.accept);
+    JSON_OPT(s, "xtsci_highs", p.optimizer_options.xtsci.highs);
+    JSON_OPT(s, "xtsci_manifold", p.optimizer_options.xtsci.manifold);
   }
 
   // [Dynamics]

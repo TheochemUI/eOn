@@ -326,6 +326,11 @@ _NESTED_OPT_MODELS = {
         "alias_prefix": "sd_",
         "ssot_section": "Optimizer.SD",
     },
+    "XtsciConfig": {
+        "fields_from_flat_aliases": True,
+        "alias_prefix": "xtsci_",
+        "ssot_section": "Optimizer.Xtsci",
+    },
 }
 
 
@@ -404,7 +409,7 @@ def test_parity_nested_optimizer_model_defaults_match_ssot():
                 nested_defs = params_ssot.defaults_for(meta["ssot_section"])
                 # strip known prefixes
                 bare = fname
-                for pref in ("lbfgs_", "cg_", "qm_", "sd_"):
+                for pref in ("lbfgs_", "cg_", "qm_", "sd_", "xtsci_"):
                     if bare.startswith(pref):
                         bare = bare[len(pref):]
                         break
@@ -422,3 +427,156 @@ def test_parity_nested_optimizer_model_defaults_match_ssot():
             assert fdefault == exp or (
                 isinstance(exp, float) and float(fdefault) == float(exp)
             ), f"{model_name}.{fname} default {fdefault!r} != SSoT {exp!r}"
+
+
+_XTSCI_METHODS = (
+    "lbfgs",
+    "bfgs",
+    "sr1",
+    "sr2",
+    "newton",
+    "rfo",
+    "steepest",
+    "adam",
+    "pso",
+    "polak_ribiere",
+    "fletcher_reeves",
+    "hestenes_stiefel",
+    "dai_yuan",
+    "conjugate_descent",
+    "hager_zhang",
+    "liu_storey",
+    "fr_pr",
+    "fire",
+    "bb",
+    "dogleg",
+    "fire2",
+)
+
+
+def test_xtsci_engine_method_catalog():
+    """[Xtsci] method is the engine-local solver list, not a third L-BFGS knob."""
+    from eon_schema.config import XtsciConfig
+    from pydantic import ValidationError
+
+    assert XtsciConfig().method == "lbfgs"
+    assert XtsciConfig().qn_step == "lbfgs"
+    assert XtsciConfig().precon == "none"
+    assert XtsciConfig().accept == "none"
+    assert XtsciConfig().highs is False
+    assert XtsciConfig(highs=True).highs is True
+    assert XtsciConfig().manifold == "euclidean"
+    for token in (
+        "euclidean",
+        "rigid_quotient",
+        "mw_rigid",
+        "sphere",
+        "so3",
+        "stiefel",
+        "se3",
+    ):
+        assert XtsciConfig(manifold=token).manifold == token
+    for token in _XTSCI_METHODS:
+        assert XtsciConfig(method=token).method == token
+    for token in ("lbfgs", "newton", "rfo"):
+        assert XtsciConfig(qn_step=token).qn_step == token
+    for token in (
+        "none",
+        "pair",
+        "pair_abs",
+        "pair_full",
+        "exp",
+        "c1",
+        "lindh",
+        "lindh_full",
+        "fischer",
+        "schlegel",
+        "swart",
+    ):
+        assert XtsciConfig(precon=token).precon == token
+    for token in ("none", "energy", "nonmonotone"):
+        assert XtsciConfig(accept=token).accept == token
+    try:
+        XtsciConfig(method="not_a_solver")
+    except ValidationError:
+        pass
+    else:
+        raise AssertionError("XtsciConfig accepted an unknown method")
+    try:
+        XtsciConfig(qn_step="not_a_step")
+    except ValidationError:
+        pass
+    else:
+        raise AssertionError("XtsciConfig accepted an unknown qn_step")
+    try:
+        XtsciConfig(precon="not_a_precon")
+    except ValidationError:
+        pass
+    else:
+        raise AssertionError("XtsciConfig accepted an unknown precon")
+    try:
+        XtsciConfig(accept="not_an_accept")
+    except ValidationError:
+        pass
+    else:
+        raise AssertionError("XtsciConfig accepted an unknown accept")
+    try:
+        XtsciConfig(manifold="not_a_manifold")
+    except ValidationError:
+        pass
+    else:
+        raise AssertionError("XtsciConfig accepted an unknown manifold")
+
+    full = yaml.load(
+        (REPO / "eon" / "config.yaml").read_text(), Loader=yaml.BaseLoader
+    )
+    assert set(full["Xtsci"]["options"]["method"]["values"]) == set(_XTSCI_METHODS)
+    assert set(full["Optimizer"]["options"]["xtsci_method"]["values"]) == set(
+        _XTSCI_METHODS
+    )
+    assert set(full["Xtsci"]["options"]["qn_step"]["values"]) == {
+        "lbfgs",
+        "newton",
+        "rfo",
+    }
+    assert set(full["Xtsci"]["options"]["precon"]["values"]) == {
+        "none",
+        "pair",
+        "pair_abs",
+        "pair_full",
+        "exp",
+        "c1",
+        "lindh",
+        "lindh_full",
+        "fischer",
+        "schlegel",
+        "swart",
+    }
+    assert set(full["Optimizer"]["options"]["xtsci_qn_step"]["values"]) == {
+        "lbfgs",
+        "newton",
+        "rfo",
+    }
+    assert set(full["Optimizer"]["options"]["xtsci_precon"]["values"]) == {
+        "none",
+        "pair",
+        "pair_abs",
+        "pair_full",
+        "exp",
+        "c1",
+        "lindh",
+        "lindh_full",
+        "fischer",
+        "schlegel",
+        "swart",
+    }
+    assert set(full["Xtsci"]["options"]["accept"]["values"]) == {
+        "none",
+        "energy",
+        "nonmonotone",
+    }
+    assert set(full["Optimizer"]["options"]["xtsci_accept"]["values"]) == {
+        "none",
+        "energy",
+        "nonmonotone",
+    }

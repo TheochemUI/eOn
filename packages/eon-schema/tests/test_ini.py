@@ -10,6 +10,7 @@ from eon_schema.config import (
     MainConfig,
     DimerConfig,
     PotentialConfig,
+    XtsciConfig,
     defaults_from_catalog,
     hydrate_ini,
     model_to_ini_section,
@@ -74,6 +75,16 @@ def test_unknown_ini_keys_skips_uncovered_sections():
         covered_only=True,
     )
     assert not any(x.startswith("SocketNWChemPot") for x in bad)
+
+
+def test_model_to_ini_section_xtsci_qn():
+    opts = model_to_ini_section(
+        XtsciConfig(method="lbfgs", qn_step="newton", precon="pair")
+    )
+    assert opts["method"] == "lbfgs"
+    assert opts["qn_step"] == "newton"
+    assert opts["precon"] == "pair"
+    assert "xtsci_qn_step" not in opts
 
 
 def test_model_to_ini_section_dimer_aliases():

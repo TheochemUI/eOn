@@ -103,7 +103,8 @@ enum class OptType {
   CG,
   LBFGS,
   FIRE,
-  SD
+  SD,
+  XTSCI
 };
 
 enum class NEBInit { LINEAR, IDPP, IDPP_COLLECTIVE, SIDPP, SIDPP_ZBL, FILE };

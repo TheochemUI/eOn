@@ -86,6 +86,19 @@ struct OptimizerLbfgsOptions {
   autoScale @3 :Bool = true;
   angleReset @4 :Bool = true;
   distanceReset @5 :Bool = true;
+  curvature @6 :Text = "reset";
+  projectRigid @7 :Bool = false;
+  secant @8 :Text = "standard";
+  precon @9 :Text = "none";
+  h0 @10 :Text = "sy_yy";
+  accept @11 :Text = "none";
+  extraUpdates @12 :Int64 = 0;
+  cautiousEps @13 :Float64 = 0.000001;
+  cautiousAlpha @14 :Float64 = 0.01;
+  preconA @15 :Float64 = 3.0;
+  preconMu @16 :Float64 = 1.0;
+  preconRcut @17 :Float64 = 0.0;
+  step @18 :Text = "lbfgs";
 }
 
 struct OptimizerCgOptions {
@@ -106,6 +119,33 @@ struct OptimizerSdOptions {
   twoPoint @1 :Bool = false;
 }
 
+struct OptimizerXtsciOptions {
+  # Engine-local solver. Tokens match xtsci-optimize xts_method_t:
+  # lbfgs, bfgs, sr1, sr2, newton, rfo, steepest, adam, pso,
+  # polak_ribiere, fletcher_reeves, hestenes_stiefel, dai_yuan,
+  # conjugate_descent, hager_zhang, liu_storey, fr_pr,
+  # fire, bb, dogleg, fire2
+  method @0 :Text = "lbfgs";
+  # How an L-BFGS session uses a host Hessian. Tokens match
+  # xts_qn_step_t: lbfgs (two-loop, P is H0), newton, rfo.
+  qnStep @1 :Text = "lbfgs";
+  # Host pair / model Hessian. none, pair, pair_abs, pair_full,
+  # exp, c1, lindh, lindh_full, fischer, schlegel, swart.
+  # Built in eOn; xtsci only applies it.
+  precon @2 :Text = "none";
+  # How the session takes a proposed step. xts_accept_t: none, energy,
+  # nonmonotone. none is one oracle at the new point.
+  accept @3 :Text = "none";
+  # HiGHS feasible-set QP on the host Hessian or two-loop direction.
+  highs @4 :Bool = false;
+  # Embedded manifold. Tokens match xts_manifold_t:
+  # euclidean, rigid_quotient, mw_rigid, sphere, so3, stiefel, se3.
+  # Isolated molecules: rigid_quotient (Sella Cartesian T+R) or
+  # mw_rigid (Page-McIver / Sella IRC Eckart). so3 is length 9;
+  # se3 is length 12.
+  manifold @5 :Text = "euclidean";
+}
+
 struct OptimizerOptions {
   optMethod @0 :Text = "cg";
   convergenceMetric @1 :Text = "norm";
@@ -118,6 +158,7 @@ struct OptimizerOptions {
   cg @8 :OptimizerCgOptions;
   quickmin @9 :OptimizerQuickminOptions;
   sd @10 :OptimizerSdOptions;
+  xtsci @11 :OptimizerXtsciOptions;
 }
 
 # ---------------------------------------------------------------------

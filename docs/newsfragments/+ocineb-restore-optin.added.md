@@ -1,0 +1,1 @@
+`ci_mmf_restore_unhelpful` (default false) restores the climbing image after an alignment reject or force increase. The Frontiers OCI-NEB article (doi:10.3389/fchem.2026.1807063, Algorithm 1) restores only on positive curvature; that is the default.

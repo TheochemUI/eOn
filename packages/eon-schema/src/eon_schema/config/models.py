@@ -1419,7 +1419,7 @@ class CoarseGrainingConfig(BaseModel):
 class OptimizerConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
 
-    opt_method: Literal["box", "cg", "qm", "lbfgs", "fire"] = Field(
+    opt_method: Literal["box", "cg", "qm", "lbfgs", "fire", "sd", "xtsci"] = Field(
         default="cg",
         description="The optimization method to use.",
     )
@@ -1430,14 +1430,17 @@ class OptimizerConfig(BaseModel):
       - ``qm``: Quickmin
       - ``lbfgs``: Limited Memory Broyden-Fletcher-Goldfarb-Shanno QuasiNewton optimizer
       - ``fire``: Fast inertial relaxation engine
+      - ``sd``: Steepest descent
+      - ``xtsci``: xtsci-optimize engine. Pick the solver with ``[Xtsci] method``. Needs ``-Dwith_xtsci=true``.
     """
-    convergence_metric: Literal["norm", "max_atom", "max_component"] = Field(
+    convergence_metric: Literal["norm", "rms", "max_atom", "max_component"] = Field(
         default="norm",
         description="The metric to use to determine when an optimization is complete.",
     )
     """
     Options:
-      - ``norm``: The norm of the entire force vector
+      - ``norm``: Euclidean ``||F||_2`` of the free-atom force vector (default)
+      - ``rms``: ``||F||_2 / sqrt(3 N_free)``, OPTIM MYLBFGS RMS. Opt-in.
       - ``max_atom``: The maximum force on any non-frozen atom
       - ``max_component``: The maximum force on any non-frozen degree of freedom
     """
@@ -1504,6 +1507,212 @@ class LBFGSConfig(BaseModel):
     lbfgs_distance_reset: bool = Field(
         default=True, description="If true, reset the LBFGS distance."
     )
+    lbfgs_curvature: Literal["reset", "skip", "damped", "cautious"] = Field(
+        default="reset",
+        description="How to treat a pair with insufficient curvature.",
+    )
+    """
+    Options:
+      - ``reset``: wipe L-BFGS memory (ASE-style default)
+      - ``skip``: skip that pair when ``s·y < 0.2 sᵀ B0 s``
+      - ``damped``: Powell 1978 damping, ŷ = θy+(1-θ)B0 s
+      - ``cautious``: Li-Fukushima 2001, keep the pair only if
+        ``s·y >= ε ||s||² ||g||^α``
+    """
+    lbfgs_project_rigid: bool = Field(
+        default=False,
+        description="Project translation and rotation out of the L-BFGS force and step. Isolated clusters only.",
+    )
+    lbfgs_secant: Literal["standard", "zhangxu"] = Field(
+        default="standard",
+        description="Secant pair: standard y = g_{k+1}-g_k, or Zhang-Xu modified secant using the two energies.",
+    )
+    lbfgs_precon: Literal[
+        "none",
+        "exp",
+        "c1",
+        "lindh",
+        "lindh_full",
+        "pair",
+        "pair_abs",
+        "pair_full",
+        "fischer",
+        "schlegel",
+        "swart",
+    ] = Field(
+        default="none",
+        description="Two-loop H0 metric. none is H0 I. exp/c1 is Packwood-Kermode (JCP 2016). lindh is the Lindh 1995 stretch model. pair is the Mones 2018 positive-definite pair Hessian of LJ or Morse. pair_full is the signed pair Hessian for Newton/RFO.",
+    )
+    lbfgs_step: Literal["lbfgs", "newton", "rfo"] = Field(
+        default="lbfgs",
+        description="lbfgs is the two-loop direction. newton is Levenberg-shifted H^{-1} g. rfo is Banerjee/Baker rational function optimization.",
+    )
+    lbfgs_h0: Literal["sy_yy", "ss_sy", "adaptive"] = Field(
+        default="sy_yy",
+        description="Initial inverse-Hessian scale: Nocedal-Wright 7.20, Barzilai-Borwein-2, or the smaller of the two.",
+    )
+    lbfgs_accept: Literal["none", "energy", "nonmonotone"] = Field(
+        default="none",
+        description="none takes the two-loop step (ASE / historical eOn). energy refuses a rise. nonmonotone is a Grippo window of the last five values.",
+    )
+    lbfgs_extra_updates: int = Field(
+        default=0,
+        description="Al-Baali extra-updates: reuse the newest pair this many extra times in the two-loop recursion.",
+    )
+    lbfgs_cautious_eps: float = Field(
+        default=1.0e-6,
+        description="Li-Fukushima ε in s·y >= ε ||s||² ||g||^α.",
+    )
+    lbfgs_cautious_alpha: float = Field(
+        default=0.01,
+        description="Li-Fukushima α in s·y >= ε ||s||² ||g||^α.",
+    )
+    lbfgs_precon_A: float = Field(
+        default=3.0,
+        description="Packwood Exp stiffness A in μ exp(-A (r/r_nn - 1)).",
+    )
+    lbfgs_precon_mu: float = Field(
+        default=1.0,
+        description="Packwood pair-preconditioner scale μ.",
+    )
+    lbfgs_precon_rcut: float = Field(
+        default=0.0,
+        description="Pair-preconditioner cutoff. 0 means 2 r_nn.",
+    )
+
+
+class XtsciConfig(BaseModel):
+    model_config = ConfigDict(use_attribute_docstrings=True)
+
+    method: Literal[
+        "lbfgs",
+        "bfgs",
+        "sr1",
+        "sr2",
+        "newton",
+        "rfo",
+        "steepest",
+        "adam",
+        "pso",
+        "polak_ribiere",
+        "fletcher_reeves",
+        "hestenes_stiefel",
+        "dai_yuan",
+        "conjugate_descent",
+        "hager_zhang",
+        "liu_storey",
+        "fr_pr",
+        "fire",
+        "bb",
+        "dogleg",
+        "fire2",
+    ] = Field(
+        default="lbfgs",
+        description="Solver inside the xtsci-optimize engine (opt_method = xtsci).",
+    )
+    """
+    ``opt_method = xtsci`` selects the engine. This field selects the
+    method the engine runs. Tokens match ``xts_method_t``.
+
+    Quasi-Newton:
+      - ``lbfgs``: two-loop L-BFGS (Nocedal-Wright 7.4)
+      - ``bfgs``: dense inverse-BFGS
+      - ``sr1``: inverse SR1
+      - ``sr2``: SR2 Hessian update
+
+    Hessian (pair Hessian from eOn, ``xts_minimize_hess``):
+      - ``newton``: Levenberg-shifted Newton
+      - ``rfo``: Banerjee / Baker rational function optimization
+
+    First-order:
+      - ``steepest``: ``d = -g``
+      - ``adam``: Kingma-Ba Adam with a line search
+      - ``pso``: particle swarm
+      - ``fire``: Bitzek FIRE (one fused force per geometry)
+      - ``fire2``: Guénolé FIRE 2.0
+      - ``bb``: Barzilai-Borwein spectral step
+
+    Trust-region Hessian (pair Hessian from eOn):
+      - ``dogleg``: Powell dogleg on the host pair matrix
+
+    Nonlinear CG (conjugacy is the method token):
+      - ``polak_ribiere``, ``fletcher_reeves``, ``hestenes_stiefel``,
+        ``dai_yuan``, ``conjugate_descent``, ``hager_zhang``,
+        ``liu_storey``, ``fr_pr``
+    """
+
+    qn_step: Literal["lbfgs", "newton", "rfo"] = Field(
+        default="lbfgs",
+        description="How an L-BFGS session uses a host Hessian (xts_qn_step_t).",
+    )
+    r"""
+    Only used when ``method = lbfgs``. ``lbfgs`` is two-loop with
+    optional ``precon`` as \(H_0 = P^{-1}\). ``newton`` / ``rfo`` take
+    that same host matrix as the step (eOn rematch).
+    """
+
+    precon: Literal[
+        "none",
+        "pair",
+        "pair_abs",
+        "pair_full",
+        "exp",
+        "c1",
+        "lindh",
+        "lindh_full",
+        "fischer",
+        "schlegel",
+        "swart",
+    ] = Field(
+        default="none",
+        description="Host pair / model Hessian kind. Built in eOn, not in xtsci.",
+    )
+    """
+    ``pair`` is the Mones PSD clip. ``pair_full`` keeps signed
+    curvature. ``lindh_full`` / ``fischer`` / ``schlegel`` / ``swart``
+    are Cartesian model Hessians (B^T k B). The matrix is assembled
+    in eOn and passed through ``xts_solver_step_hess``.
+    """
+
+    accept: Literal["none", "energy", "nonmonotone"] = Field(
+        default="none",
+        description="How the session takes a proposed step (xts_accept_t).",
+    )
+    """
+    ``none`` takes the maxmove-clipped step (one oracle). ``energy``
+    refuses a rise. ``nonmonotone`` is the Grippo window of five.
+    """
+
+    highs: bool = Field(
+        default=False,
+        description="HiGHS feasible-set step (xts_solver_set_highs).",
+    )
+    """
+    When true, xtsci asks HiGHS for the step: Newton QP on the host
+    pair Hessian if one is passed, otherwise two-loop plus boxes.
+    Needs ``--features highs`` on the xtsci-optimize build.
+    """
+
+    manifold: Literal[
+        "euclidean",
+        "rigid_quotient",
+        "mw_rigid",
+        "sphere",
+        "so3",
+        "stiefel",
+        "se3",
+    ] = Field(
+        default="euclidean",
+        description="Embedded manifold (xts_manifold_t).",
+    )
+    """
+    Euclidean is the default. Isolated molecules use
+    ``rigid_quotient`` (Sella Cartesian \(R^{3N}/SE(3)\)) or
+    ``mw_rigid`` (Page-McIver / Sella IRC Eckart). ``sphere`` is
+    \(S^{n-1}\), ``so3`` a row-major 9-vector, ``stiefel`` is
+    \(\mathrm{St}(n,1)\), ``se3`` is rotation then translation
+    (length 12).
+    """
 
 
 class CGConfig(BaseModel):
@@ -1846,6 +2055,16 @@ class NudgedElasticBandConfig(BaseModel):
     ci_mmf_angle: float = Field(
         default=0.8,
         description="Alignment threshold w.r.t NEB mode.",
+    )
+    ci_mmf_restore_unhelpful: bool = Field(
+        default=False,
+        description=(
+            "Restore the walked image after an alignment reject or force "
+            "increase on that image. A CI-index hop after a downhill dimer "
+            "step is not a force increase. False is the Frontiers OCI-NEB "
+            "protocol (doi:10.3389/fchem.2026.1807063, Algorithm 1): restore "
+            "only on positive curvature."
+        ),
     )
     setup_mmf_peaks: bool = Field(
         default=True,

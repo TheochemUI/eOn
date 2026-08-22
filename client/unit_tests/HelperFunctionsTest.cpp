@@ -137,6 +137,7 @@ TEST_CASE("HelperFunctions: maxAtomMotionV", "[helpers]") {
 TEST_CASE("HelperFunctions: convergenceMetricLabel known spellings",
           "[helpers][convergence]") {
   REQUIRE(eonc::helpers::convergenceMetricLabel("norm") == "||Force||");
+  REQUIRE(eonc::helpers::convergenceMetricLabel("rms") == "RMS force");
   REQUIRE(eonc::helpers::convergenceMetricLabel("max_atom") ==
           "Max atom force");
   REQUIRE(eonc::helpers::convergenceMetricLabel("max_component") ==
@@ -148,6 +149,8 @@ TEST_CASE("HelperFunctions: requireKnownConvergenceMetric throws on typo",
           "[helpers][convergence]") {
   REQUIRE_NOTHROW(
       eonc::helpers::requireKnownConvergenceMetric("norm", "[test]"));
+  REQUIRE_NOTHROW(
+      eonc::helpers::requireKnownConvergenceMetric("rms", "[test]"));
   REQUIRE_THROWS_AS(
       eonc::helpers::requireKnownConvergenceMetric("nope", "[test]"),
       std::invalid_argument);
