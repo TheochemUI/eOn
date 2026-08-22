@@ -88,18 +88,27 @@ Each of the optimizer methods have their own settings as well.
 inside that engine is ``[Xtsci] method``. Build with
 ``-Dwith_xtsci=true``. The adapter holds an ``xts_solver_t`` session;
 each ``step()`` is one outer iteration so L-BFGS pairs and NLCG
-conjugacy survive the host loop. ``lbfgs_step`` and ``lbfgs_precon``
-map onto ``xts_solver_set_qn_step`` and ``xts_solver_step_hess``.
-The pair / Lindh matrix is still built in eOn. Two-loop plus that
-matrix is \(H_0 = P^{-1}\); ``lbfgs_step = newton`` is regularized
-Newton on the same ``P``.
+conjugacy survive the host loop.
+
+``[Xtsci] qn_step`` and ``[Xtsci] precon`` are the first-class knobs
+for an L-BFGS session. They map onto ``xts_solver_set_qn_step`` and
+``xts_solver_step_hess``. The pair / Lindh matrix is still built in
+eOn. Two-loop plus that matrix is \(H_0 = P^{-1}\);
+``qn_step = newton`` is regularized Newton on the same ``P``.
+``method = newton`` is a different, memoryless Newton solver.
+
+The native ``[LBFGS]`` optimizer is unchanged. ``lbfgs_step`` and
+``lbfgs_precon`` still drive it, and the xtsci adapter falls back to
+them when the ``[Xtsci]`` fields are left at their defaults.
 
 ```{code-block} ini
 [Optimizer]
 opt_method = xtsci
 
 [Xtsci]
-method = newton
+method = lbfgs
+qn_step = newton
+precon = pair
 ```
 
 ```{eval-rst}

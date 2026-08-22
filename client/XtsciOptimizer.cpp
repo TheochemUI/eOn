@@ -20,7 +20,7 @@
 #include <xts.h>
 
 #if XTS_ABI_VERSION_MINOR < 3
-#error \
+#error                                                                         \
     "xtsci-optimize ABI minor 3 or newer is required for xts_solver_set_qn_step"
 #endif
 
@@ -173,6 +173,32 @@ xts_method_t method_from_name(const std::string &name) {
       "conjugate_descent, hager_zhang, liu_storey, fr_pr)");
 }
 
+bool is_host_precon(const std::string &name) {
+  return name == "pair" || name == "pair_abs" || name == "pair_full" ||
+         name == "exp" || name == "c1" || name == "lindh";
+}
+
+// [Xtsci] qn_step / precon are the natural knobs. [LBFGS] lbfgs_step
+// and lbfgs_precon stay on the native optimizer and fill in when the
+// Xtsci fields are still at their defaults.
+std::string
+resolved_qn_step(const eonc::Parameters::optimizer_options_t &opts) {
+  if (opts.xtsci.qn_step != "lbfgs") {
+    return opts.xtsci.qn_step;
+  }
+  if (opts.lbfgs.step == "newton" || opts.lbfgs.step == "rfo") {
+    return opts.lbfgs.step;
+  }
+  return opts.xtsci.qn_step;
+}
+
+std::string resolved_precon(const eonc::Parameters::optimizer_options_t &opts) {
+  if (opts.xtsci.precon != "none") {
+    return opts.xtsci.precon;
+  }
+  return opts.lbfgs.precon;
+}
+
 } // namespace
 
 namespace eonc {
@@ -193,8 +219,7 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
   }
   const auto &lbfgs = m_optConfig.opts.lbfgs;
   xts_control_t control{
-      static_cast<size_t>(
-          std::max<long>(1, m_optConfig.opts.max_iterations)),
+      static_cast<size_t>(std::max<long>(1, m_optConfig.opts.max_iterations)),
       m_optConfig.opts.converged_force,
       std::max(a_maxMove, 1.0e-12),
       static_cast<size_t>(std::max<long>(0, lbfgs.memory)),
@@ -205,7 +230,7 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
   if (m_solver == nullptr) {
     throw std::runtime_error(xts_last_error());
   }
-  const auto &step = m_optConfig.opts.lbfgs.step;
+  const auto step = resolved_qn_step(m_optConfig.opts);
   if (step == "newton") {
     xts_solver_set_qn_step(m_solver, XTS_QN_NEWTON);
   } else if (step == "rfo") {
@@ -235,17 +260,15 @@ int XtsciOptimizer::step(double a_maxMove) {
     throw std::runtime_error("could not allocate xtsci objective tensor");
   }
   const auto &lbfgs = m_optConfig.opts.lbfgs;
+  const auto precon = resolved_precon(m_optConfig.opts);
   XtsObjectiveContext context{
-      m_objf.get(),   m_optConfig.potential, lbfgs.precon,
+      m_objf.get(),   m_optConfig.potential, precon,
       lbfgs.precon_A, lbfgs.precon_mu,       lbfgs.precon_rcut,
   };
   xts_report_t report{};
   const xts_method_t method = method_from_name(m_optConfig.opts.xtsci.method);
-  const auto &precon = lbfgs.precon;
   const bool want_hess =
-      method == XTS_NEWTON || method == XTS_RFO || precon == "pair" ||
-      precon == "pair_abs" || precon == "pair_full" || precon == "exp" ||
-      precon == "c1" || precon == "lindh";
+      method == XTS_NEWTON || method == XTS_RFO || is_host_precon(precon);
   xts_status_t status;
   if (want_hess) {
     status = xts_solver_step_hess(m_solver, evaluate, gradient, hessian,
