@@ -19,9 +19,9 @@
 
 #include <xts.h>
 
-#if XTS_ABI_VERSION_MINOR < 4
+#if XTS_ABI_VERSION_MINOR < 5
 #error                                                                         \
-    "xtsci-optimize ABI minor 4 or newer is required for fused evalgrad and set_accept"
+    "xtsci-optimize ABI minor 5 or newer is required for atom maxmove and rematch LBFGS policy"
 #endif
 
 namespace {
@@ -235,7 +235,7 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
       m_optConfig.opts.converged_force,
       std::max(a_maxMove, 1.0e-12),
       static_cast<size_t>(std::max<long>(0, lbfgs.memory)),
-      std::max(a_maxMove, 0.0),
+      0.0,
   };
   m_solver = xts_solver_create(method_from_name(m_optConfig.opts.xtsci.method),
                                &control, dim);
@@ -258,6 +258,14 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
   } else {
     xts_solver_set_accept(m_solver, XTS_ACCEPT_NONE);
   }
+  xts_solver_set_project_rigid(m_solver, lbfgs.project_rigid ? 1 : 0);
+  xts_solver_set_extra_updates(
+      m_solver, static_cast<size_t>(std::max<long>(0, lbfgs.extra_updates)));
+  if (lbfgs.curvature == "cautious") {
+    xts_solver_set_cautious(m_solver, lbfgs.cautious_eps, lbfgs.cautious_alpha);
+  } else {
+    xts_solver_set_cautious(m_solver, 0.0, lbfgs.cautious_alpha);
+  }
 }
 
 int XtsciOptimizer::step(double a_maxMove) {
@@ -268,7 +276,9 @@ int XtsciOptimizer::step(double a_maxMove) {
   if (m_solver == nullptr) {
     return m_objf->isConverged() ? 1 : 0;
   }
-  xts_solver_set_maxmove(m_solver, std::max(a_maxMove, 0.0));
+  // Native LBFGS clips by the largest per-atom move, not ||d||_2.
+  xts_solver_set_maxmove(m_solver, 0.0);
+  xts_solver_set_atom_maxmove(m_solver, std::max(a_maxMove, 0.0));
 
   auto positions = m_objf->getPositions();
   if (positions.size() != m_objf->degreesOfFreedom()) {
