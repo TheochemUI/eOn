@@ -447,6 +447,10 @@ _XTSCI_METHODS = (
     "hager_zhang",
     "liu_storey",
     "fr_pr",
+    "fire",
+    "bb",
+    "dogleg",
+    "fire2",
 )
 
 

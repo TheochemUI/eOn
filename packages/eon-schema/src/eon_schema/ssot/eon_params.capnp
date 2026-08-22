@@ -123,7 +123,8 @@ struct OptimizerXtsciOptions {
   # Engine-local solver. Tokens match xtsci-optimize xts_method_t:
   # lbfgs, bfgs, sr1, sr2, newton, rfo, steepest, adam, pso,
   # polak_ribiere, fletcher_reeves, hestenes_stiefel, dai_yuan,
-  # conjugate_descent, hager_zhang, liu_storey, fr_pr
+  # conjugate_descent, hager_zhang, liu_storey, fr_pr,
+  # fire, bb, dogleg, fire2
   method @0 :Text = "lbfgs";
   # How an L-BFGS session uses a host Hessian. Tokens match
   # xts_qn_step_t: lbfgs (two-loop, P is H0), newton, rfo.

@@ -1590,6 +1590,10 @@ class XtsciConfig(BaseModel):
         "hager_zhang",
         "liu_storey",
         "fr_pr",
+        "fire",
+        "bb",
+        "dogleg",
+        "fire2",
     ] = Field(
         default="lbfgs",
         description="Solver inside the xtsci-optimize engine (opt_method = xtsci).",
@@ -1612,6 +1616,12 @@ class XtsciConfig(BaseModel):
       - ``steepest``: ``d = -g``
       - ``adam``: Kingma-Ba Adam with a line search
       - ``pso``: particle swarm
+      - ``fire``: Bitzek FIRE (one fused force per geometry)
+      - ``fire2``: Guénolé FIRE 2.0
+      - ``bb``: Barzilai-Borwein spectral step
+
+    Trust-region Hessian (pair Hessian from eOn):
+      - ``dogleg``: Powell dogleg on the host pair matrix
 
     Nonlinear CG (conjugacy is the method token):
       - ``polak_ribiere``, ``fletcher_reeves``, ``hestenes_stiefel``,
