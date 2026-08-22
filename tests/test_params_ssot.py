@@ -466,7 +466,15 @@ def test_xtsci_engine_method_catalog():
     assert XtsciConfig().highs is False
     assert XtsciConfig(highs=True).highs is True
     assert XtsciConfig().manifold == "euclidean"
-    for token in ("euclidean", "sphere", "so3", "stiefel", "se3"):
+    for token in (
+        "euclidean",
+        "rigid_quotient",
+        "mw_rigid",
+        "sphere",
+        "so3",
+        "stiefel",
+        "se3",
+    ):
         assert XtsciConfig(manifold=token).manifold == token
     for token in _XTSCI_METHODS:
         assert XtsciConfig(method=token).method == token

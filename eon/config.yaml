@@ -1847,6 +1847,8 @@ Optimizer:
             default: euclidean
             values:
                 - euclidean
+                - rigid_quotient
+                - mw_rigid
                 - sphere
                 - so3
                 - stiefel
@@ -2260,6 +2262,8 @@ Xtsci:
             default: euclidean
             values:
                 - euclidean
+                - rigid_quotient
+                - mw_rigid
                 - sphere
                 - so3
                 - stiefel

@@ -315,6 +315,18 @@ public:
   VectorXd difference(const VectorXd &a, const VectorXd &b) {
     return m_matter.pbcV(a - b);
   }
+  VectorXd getMasses() const override {
+    const auto all = m_matter.getMasses();
+    const auto mask = m_matter.getFree();
+    VectorXd out(m_matter.numberOfFreeAtoms());
+    long k = 0;
+    for (long i = 0; i < m_matter.numberOfAtoms(); ++i) {
+      if (mask.row(i).sum() > 0.5) {
+        out[k++] = all[i];
+      }
+    }
+    return out;
+  }
   void minimumImage(Eigen::Ref<Eigen::Vector3d> dr) const override {
     AtomMatrix m(1, 3);
     m.row(0) = dr.transpose();

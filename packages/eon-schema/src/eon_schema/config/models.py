@@ -1693,14 +1693,25 @@ class XtsciConfig(BaseModel):
     Needs ``--features highs`` on the xtsci-optimize build.
     """
 
-    manifold: Literal["euclidean", "sphere", "so3", "stiefel", "se3"] = Field(
+    manifold: Literal[
+        "euclidean",
+        "rigid_quotient",
+        "mw_rigid",
+        "sphere",
+        "so3",
+        "stiefel",
+        "se3",
+    ] = Field(
         default="euclidean",
         description="Embedded manifold (xts_manifold_t).",
     )
     """
-    Euclidean is the default. ``sphere`` is \(S^{n-1}\), ``so3`` a
-    row-major 9-vector, ``stiefel`` is \(\mathrm{St}(n,1)\), ``se3``
-    is rotation then translation (length 12).
+    Euclidean is the default. Isolated molecules use
+    ``rigid_quotient`` (Sella Cartesian \(R^{3N}/SE(3)\)) or
+    ``mw_rigid`` (Page-McIver / Sella IRC Eckart). ``sphere`` is
+    \(S^{n-1}\), ``so3`` a row-major 9-vector, ``stiefel`` is
+    \(\mathrm{St}(n,1)\), ``se3`` is rotation then translation
+    (length 12).
     """
 
 

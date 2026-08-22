@@ -291,6 +291,9 @@ public:
       // HiGHS feasible-set step on the host Hessian / two-loop direction.
       bool highs{false};
       // Embedded manifold (xts_manifold_t). euclidean is the default.
+      // Isolated clusters: rigid_quotient (Sella R^{3N}/SE(3)) or
+      // mw_rigid (Page-McIver / Sella IRC Eckart). so3 is length 9;
+      // se3 is length 12.
       std::string manifold{"euclidean"};
     } xtsci;
     struct cg_t {

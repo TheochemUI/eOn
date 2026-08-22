@@ -139,7 +139,10 @@ struct OptimizerXtsciOptions {
   # HiGHS feasible-set QP on the host Hessian or two-loop direction.
   highs @4 :Bool = false;
   # Embedded manifold. Tokens match xts_manifold_t:
-  # euclidean, sphere, so3, stiefel, se3.
+  # euclidean, rigid_quotient, mw_rigid, sphere, so3, stiefel, se3.
+  # Isolated molecules: rigid_quotient (Sella Cartesian T+R) or
+  # mw_rigid (Page-McIver / Sella IRC Eckart). so3 is length 9;
+  # se3 is length 12.
   manifold @5 :Text = "euclidean";
 }
 
