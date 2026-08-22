@@ -19,9 +19,9 @@
 
 #include <xts.h>
 
-#if XTS_ABI_VERSION_MINOR < 3
+#if XTS_ABI_VERSION_MINOR < 4
 #error                                                                         \
-    "xtsci-optimize ABI minor 3 or newer is required for xts_solver_set_qn_step"
+    "xtsci-optimize ABI minor 4 or newer is required for fused evalgrad and set_accept"
 #endif
 
 namespace {
@@ -59,25 +59,27 @@ Eigen::Map<Eigen::VectorXd> map_output(DLManagedTensorVersioned *tensor) {
           static_cast<Eigen::Index>(dl.shape[0])};
 }
 
-xts_status_t evaluate(void *user, const DLManagedTensorVersioned *x,
-                      double *value_out) {
-  try {
-    auto *context = static_cast<XtsObjectiveContext *>(user);
-    const auto positions = map_input(x);
-    context->objective->setPositions(positions);
-    *value_out = context->objective->getEnergy();
-    return XTS_SUCCESS;
-  } catch (...) {
-    return XTS_INTERNAL_ERROR;
+// Matter::setPositions always dirties the PES cache. Energy and
+// forces come from one potential->force() call, so eval then grad at
+// the same x must not setPositions twice.
+void set_positions_if_changed(eonc::ObjectiveFunction *obj,
+                              const Eigen::VectorXd &x) {
+  const auto cur = obj->getPositions();
+  if (cur.size() == x.size() && (cur - x).isZero(0.0)) {
+    return;
   }
+  obj->setPositions(x);
 }
 
-xts_status_t gradient(void *user, const DLManagedTensorVersioned *x,
-                      DLManagedTensorVersioned *gradient_out) {
+// One Matter::computePotential. Energy and forces share that call.
+xts_status_t evaluate_gradient(void *user, const DLManagedTensorVersioned *x,
+                               double *value_out,
+                               DLManagedTensorVersioned *gradient_out) {
   try {
     auto *context = static_cast<XtsObjectiveContext *>(user);
     const auto positions = map_input(x);
-    context->objective->setPositions(positions);
+    set_positions_if_changed(context->objective, positions);
+    *value_out = context->objective->getEnergy();
     const auto gradient_value = context->objective->getGradient();
     auto output = map_output(gradient_out);
     if (output.size() != gradient_value.size()) {
@@ -199,6 +201,16 @@ std::string resolved_precon(const eonc::Parameters::optimizer_options_t &opts) {
   return opts.lbfgs.precon;
 }
 
+std::string resolved_accept(const eonc::Parameters::optimizer_options_t &opts) {
+  if (opts.xtsci.accept != "none") {
+    return opts.xtsci.accept;
+  }
+  if (opts.lbfgs.accept == "energy" || opts.lbfgs.accept == "nonmonotone") {
+    return opts.lbfgs.accept;
+  }
+  return opts.xtsci.accept;
+}
+
 } // namespace
 
 namespace eonc {
@@ -238,6 +250,14 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
   } else {
     xts_solver_set_qn_step(m_solver, XTS_QN_LBFGS);
   }
+  const auto accept = resolved_accept(m_optConfig.opts);
+  if (accept == "energy") {
+    xts_solver_set_accept(m_solver, XTS_ACCEPT_ENERGY);
+  } else if (accept == "nonmonotone") {
+    xts_solver_set_accept(m_solver, XTS_ACCEPT_NONMONOTONE);
+  } else {
+    xts_solver_set_accept(m_solver, XTS_ACCEPT_NONE);
+  }
 }
 
 int XtsciOptimizer::step(double a_maxMove) {
@@ -271,17 +291,17 @@ int XtsciOptimizer::step(double a_maxMove) {
       method == XTS_NEWTON || method == XTS_RFO || is_host_precon(precon);
   xts_status_t status;
   if (want_hess) {
-    status = xts_solver_step_hess(m_solver, evaluate, gradient, hessian,
-                                  &context, tensor, &report);
+    status = xts_solver_step_hess_fg(m_solver, evaluate_gradient, hessian,
+                                     &context, tensor, &report);
   } else {
-    status = xts_solver_step(m_solver, evaluate, gradient, &context, tensor,
-                             &report);
+    status = xts_solver_step_fg(m_solver, evaluate_gradient, &context, tensor,
+                                &report);
   }
   xts_tensor_free(tensor);
   if (status != XTS_SUCCESS) {
     throw std::runtime_error(xts_last_error());
   }
-  m_objf->setPositions(positions);
+  set_positions_if_changed(m_objf.get(), positions);
   return m_objf->isConverged() ? 1 : 0;
 }
 
