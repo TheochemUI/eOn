@@ -458,12 +458,15 @@ def test_xtsci_engine_method_catalog():
     assert XtsciConfig().method == "lbfgs"
     assert XtsciConfig().qn_step == "lbfgs"
     assert XtsciConfig().precon == "none"
+    assert XtsciConfig().accept == "none"
     for token in _XTSCI_METHODS:
         assert XtsciConfig(method=token).method == token
     for token in ("lbfgs", "newton", "rfo"):
         assert XtsciConfig(qn_step=token).qn_step == token
     for token in ("none", "pair", "pair_abs", "pair_full", "exp", "c1", "lindh"):
         assert XtsciConfig(precon=token).precon == token
+    for token in ("none", "energy", "nonmonotone"):
+        assert XtsciConfig(accept=token).accept == token
     try:
         XtsciConfig(method="not_a_solver")
     except ValidationError:
@@ -482,6 +485,12 @@ def test_xtsci_engine_method_catalog():
         pass
     else:
         raise AssertionError("XtsciConfig accepted an unknown precon")
+    try:
+        XtsciConfig(accept="not_an_accept")
+    except ValidationError:
+        pass
+    else:
+        raise AssertionError("XtsciConfig accepted an unknown accept")
 
     full = yaml.load(
         (REPO / "eon" / "config.yaml").read_text(), Loader=yaml.BaseLoader
@@ -517,4 +526,14 @@ def test_xtsci_engine_method_catalog():
         "exp",
         "c1",
         "lindh",
+    }
+    assert set(full["Xtsci"]["options"]["accept"]["values"]) == {
+        "none",
+        "energy",
+        "nonmonotone",
+    }
+    assert set(full["Optimizer"]["options"]["xtsci_accept"]["values"]) == {
+        "none",
+        "energy",
+        "nonmonotone",
     }

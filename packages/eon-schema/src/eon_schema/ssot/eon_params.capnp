@@ -131,6 +131,9 @@ struct OptimizerXtsciOptions {
   # Host pair / Lindh matrix kind. none, pair, pair_abs, pair_full,
   # exp, c1, lindh. Built in eOn; xtsci only applies it.
   precon @2 :Text = "none";
+  # How the session takes a proposed step. xts_accept_t: none, energy,
+  # nonmonotone. none is one oracle at the new point.
+  accept @3 :Text = "none";
 }
 
 struct OptimizerOptions {

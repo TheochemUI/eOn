@@ -613,6 +613,7 @@ int load_ini(INIReader &ini, Parameters &params) {
           "Xtsci", "method", ini.Get("Xtsci", "xtsci_method", xtsci.method)));
       xtsci.qn_step = toLowerCase(ini.Get("Xtsci", "qn_step", xtsci.qn_step));
       xtsci.precon = toLowerCase(ini.Get("Xtsci", "precon", xtsci.precon));
+      xtsci.accept = toLowerCase(ini.Get("Xtsci", "accept", xtsci.accept));
     }
     ParametersLoadAccess::optimizer_options(params).xtsci_method = xtsci.method;
   }
