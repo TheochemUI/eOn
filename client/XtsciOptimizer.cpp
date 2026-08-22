@@ -316,7 +316,6 @@ int XtsciOptimizer::step(double a_maxMove) {
   if (status != XTS_SUCCESS) {
     throw std::runtime_error(xts_last_error());
   }
-  set_positions_if_changed(m_objf.get(), positions, &m_cached_x);
   return m_objf->isConverged() ? 1 : 0;
 }
 
