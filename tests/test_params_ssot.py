@@ -456,14 +456,32 @@ def test_xtsci_engine_method_catalog():
     from pydantic import ValidationError
 
     assert XtsciConfig().method == "lbfgs"
+    assert XtsciConfig().qn_step == "lbfgs"
+    assert XtsciConfig().precon == "none"
     for token in _XTSCI_METHODS:
         assert XtsciConfig(method=token).method == token
+    for token in ("lbfgs", "newton", "rfo"):
+        assert XtsciConfig(qn_step=token).qn_step == token
+    for token in ("none", "pair", "pair_abs", "pair_full", "exp", "c1", "lindh"):
+        assert XtsciConfig(precon=token).precon == token
     try:
         XtsciConfig(method="not_a_solver")
     except ValidationError:
         pass
     else:
         raise AssertionError("XtsciConfig accepted an unknown method")
+    try:
+        XtsciConfig(qn_step="not_a_step")
+    except ValidationError:
+        pass
+    else:
+        raise AssertionError("XtsciConfig accepted an unknown qn_step")
+    try:
+        XtsciConfig(precon="not_a_precon")
+    except ValidationError:
+        pass
+    else:
+        raise AssertionError("XtsciConfig accepted an unknown precon")
 
     full = yaml.load(
         (REPO / "eon" / "config.yaml").read_text(), Loader=yaml.BaseLoader
@@ -472,3 +490,31 @@ def test_xtsci_engine_method_catalog():
     assert set(full["Optimizer"]["options"]["xtsci_method"]["values"]) == set(
         _XTSCI_METHODS
     )
+    assert set(full["Xtsci"]["options"]["qn_step"]["values"]) == {
+        "lbfgs",
+        "newton",
+        "rfo",
+    }
+    assert set(full["Xtsci"]["options"]["precon"]["values"]) == {
+        "none",
+        "pair",
+        "pair_abs",
+        "pair_full",
+        "exp",
+        "c1",
+        "lindh",
+    }
+    assert set(full["Optimizer"]["options"]["xtsci_qn_step"]["values"]) == {
+        "lbfgs",
+        "newton",
+        "rfo",
+    }
+    assert set(full["Optimizer"]["options"]["xtsci_precon"]["values"]) == {
+        "none",
+        "pair",
+        "pair_abs",
+        "pair_full",
+        "exp",
+        "c1",
+        "lindh",
+    }

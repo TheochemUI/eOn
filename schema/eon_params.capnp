@@ -125,6 +125,12 @@ struct OptimizerXtsciOptions {
   # polak_ribiere, fletcher_reeves, hestenes_stiefel, dai_yuan,
   # conjugate_descent, hager_zhang, liu_storey, fr_pr
   method @0 :Text = "lbfgs";
+  # How an L-BFGS session uses a host Hessian. Tokens match
+  # xts_qn_step_t: lbfgs (two-loop, P is H0), newton, rfo.
+  qnStep @1 :Text = "lbfgs";
+  # Host pair / Lindh matrix kind. none, pair, pair_abs, pair_full,
+  # exp, c1, lindh. Built in eOn; xtsci only applies it.
+  precon @2 :Text = "none";
 }
 
 struct OptimizerOptions {

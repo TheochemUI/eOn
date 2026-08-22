@@ -212,6 +212,10 @@ void apply_ssot_defaults(Parameters &p) {
       GD::OPTIMIZER_LBFGS_PRECON_RCUT;
   ParametersLoadAccess::optimizer_options(p).xtsci.method =
       std::string(GD::OPTIMIZER_XTSCI_METHOD);
+  ParametersLoadAccess::optimizer_options(p).xtsci.qn_step =
+      std::string(GD::OPTIMIZER_XTSCI_QN_STEP);
+  ParametersLoadAccess::optimizer_options(p).xtsci.precon =
+      std::string(GD::OPTIMIZER_XTSCI_PRECON);
   ParametersLoadAccess::optimizer_options(p).xtsci_method =
       std::string(GD::OPTIMIZER_XTSCI_METHOD);
 

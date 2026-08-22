@@ -179,6 +179,18 @@ CATALOG = {
       "flat_key": "xtsci_method",
       "ssot_path": "Optimizer.Xtsci.method",
       "yaml_section": "Optimizer"
+    },
+    {
+      "default": "lbfgs",
+      "flat_key": "xtsci_qn_step",
+      "ssot_path": "Optimizer.Xtsci.qn_step",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": "none",
+      "flat_key": "xtsci_precon",
+      "ssot_path": "Optimizer.Xtsci.precon",
+      "yaml_section": "Optimizer"
     }
   ],
   "schema_version": 1,
@@ -596,6 +608,20 @@ CATALOG = {
           "default": "lbfgs",
           "ordinal": 0,
           "snake": "method",
+          "type": "Text"
+        },
+        {
+          "capnp": "qnStep",
+          "default": "lbfgs",
+          "ordinal": 1,
+          "snake": "qn_step",
+          "type": "Text"
+        },
+        {
+          "capnp": "precon",
+          "default": "none",
+          "ordinal": 2,
+          "snake": "precon",
           "type": "Text"
         }
       ],

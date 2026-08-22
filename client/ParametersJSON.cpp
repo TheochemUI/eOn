@@ -151,6 +151,8 @@ json to_json(const Parameters &p) {
   };
   j["Optimizer"]["Xtsci"] = {
       {"method", ParametersLoadAccess::optimizer_options(p).xtsci.method},
+      {"qn_step", ParametersLoadAccess::optimizer_options(p).xtsci.qn_step},
+      {"precon", ParametersLoadAccess::optimizer_options(p).xtsci.precon},
   };
 
   // [Dynamics]

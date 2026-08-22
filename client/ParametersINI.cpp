@@ -605,14 +605,16 @@ int load_ini(INIReader &ini, Parameters &params) {
         ini.GetReal(lbfgs_sec, "lbfgs_precon_rcut", lbfgs.precon_rcut);
   }
   {
-    params.optimizer_options.xtsci.method = toLowerCase(ini.Get(
-        "Optimizer", "xtsci_method", params.optimizer_options.xtsci.method));
+    auto &xtsci = ParametersLoadAccess::optimizer_options(params).xtsci;
+    xtsci.method = toLowerCase(
+        ini.Get("Optimizer", "xtsci_method", xtsci.method));
     if (ini.HasSection("Xtsci")) {
-      params.optimizer_options.xtsci.method = toLowerCase(ini.Get(
-          "Xtsci", "method",
-          ini.Get("Xtsci", "xtsci_method",
-                  params.optimizer_options.xtsci.method)));
+      xtsci.method = toLowerCase(ini.Get(
+          "Xtsci", "method", ini.Get("Xtsci", "xtsci_method", xtsci.method)));
+      xtsci.qn_step = toLowerCase(ini.Get("Xtsci", "qn_step", xtsci.qn_step));
+      xtsci.precon = toLowerCase(ini.Get("Xtsci", "precon", xtsci.precon));
     }
+    ParametersLoadAccess::optimizer_options(params).xtsci_method = xtsci.method;
   }
   if (ini.HasSection("CG")) {
     ParametersLoadAccess::optimizer_options(params).cg.no_overshooting =
