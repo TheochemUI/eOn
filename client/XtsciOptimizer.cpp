@@ -19,8 +19,8 @@
 
 #include <xts.h>
 
-#if XTS_ABI_VERSION_MINOR < 8
-#error "xtsci-optimize ABI minor 8 or newer is required for set_manifold"
+#if XTS_ABI_VERSION_MINOR < 9
+#error "xtsci-optimize ABI minor 9 or newer is required for rigid_quotient"
 #endif
 
 namespace {
@@ -311,6 +311,22 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
     }
   }
   const auto &mani = m_optConfig.opts.xtsci.manifold;
+  if (mani == "so3" && dim != 9) {
+    throw std::runtime_error(
+        "Xtsci.manifold=so3 needs length 9; a 3N cluster is "
+        "rigid_quotient (Sella R^{3N}/SE(3)), not a packed rotation");
+  }
+  if (mani == "se3" && dim != 12) {
+    throw std::runtime_error(
+        "Xtsci.manifold=se3 needs length 12; a 3N cluster is "
+        "rigid_quotient (Sella R^{3N}/SE(3)), not an SE(3) prefix");
+  }
+  if ((mani == "rigid_quotient" || mani == "mw_rigid" || mani == "sella" ||
+       mani == "eckart" || mani == "irc") &&
+      (dim < 6 || dim % 3 != 0)) {
+    throw std::runtime_error("Xtsci.manifold=" + mani +
+                             " needs 3N Cartesians with N >= 2");
+  }
   if (mani == "sphere") {
     xts_solver_set_manifold(m_solver, XTS_MANIFOLD_SPHERE);
   } else if (mani == "so3") {
@@ -319,6 +335,15 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
     xts_solver_set_manifold(m_solver, XTS_MANIFOLD_STIEFEL);
   } else if (mani == "se3") {
     xts_solver_set_manifold(m_solver, XTS_MANIFOLD_SE3);
+  } else if (mani == "rigid_quotient" || mani == "sella") {
+    xts_solver_set_manifold(m_solver, XTS_MANIFOLD_RIGID_QUOTIENT);
+  } else if (mani == "mw_rigid" || mani == "eckart" || mani == "irc") {
+    xts_solver_set_manifold(m_solver, XTS_MANIFOLD_MW_RIGID);
+    const auto masses = m_objf->getMasses();
+    if (masses.size() > 0) {
+      xts_solver_set_masses(m_solver, masses.data(),
+                            static_cast<size_t>(masses.size()));
+    }
   } else {
     xts_solver_set_manifold(m_solver, XTS_MANIFOLD_EUCLIDEAN);
   }

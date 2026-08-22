@@ -33,6 +33,8 @@ public:
   // Packwood/Kermode pair preconditioner: MIC of one Cartesian pair.
   // Default leaves dr unchanged (no cell).
   virtual void minimumImage(Eigen::Ref<Eigen::Vector3d> /*dr*/) const {}
+  // Per-atom masses of the free atoms (length N, not 3N). Empty if unknown.
+  virtual VectorXd getMasses() const { return VectorXd(); }
 };
 
 } // namespace eonc
