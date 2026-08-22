@@ -285,12 +285,14 @@ int XtsciOptimizer::step(double a_maxMove) {
   xts_solver_set_maxmove(m_solver, 0.0);
   xts_solver_set_atom_maxmove(m_solver, std::max(a_maxMove, 0.0));
 
-  auto positions = m_objf->getPositions();
-  if (positions.size() != m_objf->degreesOfFreedom()) {
+  if (m_x.size() == 0) {
+    m_x = m_objf->getPositions();
+  }
+  if (m_x.size() != m_objf->degreesOfFreedom()) {
     throw std::runtime_error("xtsci objective position dimension mismatch");
   }
-  auto *tensor = xts_tensor_borrow_cpu_f64(
-      positions.data(), static_cast<size_t>(positions.size()));
+  auto *tensor =
+      xts_tensor_borrow_cpu_f64(m_x.data(), static_cast<size_t>(m_x.size()));
   if (tensor == nullptr) {
     throw std::runtime_error("could not allocate xtsci objective tensor");
   }
