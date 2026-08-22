@@ -1527,7 +1527,19 @@ class LBFGSConfig(BaseModel):
         default="standard",
         description="Secant pair: standard y = g_{k+1}-g_k, or Zhang-Xu modified secant using the two energies.",
     )
-    lbfgs_precon: Literal["none", "exp", "c1", "lindh", "pair", "pair_abs", "pair_full"] = Field(
+    lbfgs_precon: Literal[
+        "none",
+        "exp",
+        "c1",
+        "lindh",
+        "lindh_full",
+        "pair",
+        "pair_abs",
+        "pair_full",
+        "fischer",
+        "schlegel",
+        "swart",
+    ] = Field(
         default="none",
         description="Two-loop H0 metric. none is H0 I. exp/c1 is Packwood-Kermode (JCP 2016). lindh is the Lindh 1995 stretch model. pair is the Mones 2018 positive-definite pair Hessian of LJ or Morse. pair_full is the signed pair Hessian for Newton/RFO.",
     )
@@ -1647,14 +1659,19 @@ class XtsciConfig(BaseModel):
         "exp",
         "c1",
         "lindh",
+        "lindh_full",
+        "fischer",
+        "schlegel",
+        "swart",
     ] = Field(
         default="none",
-        description="Host pair / Lindh matrix kind. Built in eOn, not in xtsci.",
+        description="Host pair / model Hessian kind. Built in eOn, not in xtsci.",
     )
     """
     ``pair`` is the Mones PSD clip. ``pair_full`` keeps signed
-    curvature. The matrix is assembled in eOn and passed through
-    ``xts_solver_step_hess``.
+    curvature. ``lindh_full`` / ``fischer`` / ``schlegel`` / ``swart``
+    are Cartesian model Hessians (B^T k B). The matrix is assembled
+    in eOn and passed through ``xts_solver_step_hess``.
     """
 
     accept: Literal["none", "energy", "nonmonotone"] = Field(

@@ -203,7 +203,9 @@ xts_method_t method_from_name(const std::string &name) {
 
 bool is_host_precon(const std::string &name) {
   return name == "pair" || name == "pair_abs" || name == "pair_full" ||
-         name == "exp" || name == "c1" || name == "lindh";
+         name == "exp" || name == "c1" || name == "lindh" ||
+         name == "lindh_full" || name == "fischer" || name == "schlegel" ||
+         name == "swart";
 }
 
 // [Xtsci] qn_step / precon are the natural knobs. [LBFGS] lbfgs_step

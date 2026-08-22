@@ -46,48 +46,6 @@ std::vector<int> twoLoopIndex(int nPairs, int extra) {
   }
   return idx;
 }
-
-void addPairBlock(Eigen::MatrixXd &P, int i, int j, const Eigen::Vector3d &rij,
-                  double k_par, double k_perp) {
-  const double r = rij.norm();
-  if (r < 1.0e-14 || (!std::isfinite(k_par) && !std::isfinite(k_perp))) {
-    return;
-  }
-  if (k_par == 0.0 && k_perp == 0.0) {
-    return;
-  }
-  const Eigen::Vector3d u = rij / r;
-  const Eigen::Matrix3d H = k_perp * Eigen::Matrix3d::Identity() +
-                            (k_par - k_perp) * (u * u.transpose());
-  for (int a = 0; a < 3; ++a) {
-    for (int b = 0; b < 3; ++b) {
-      const int ia = 3 * i + a;
-      const int ib = 3 * i + b;
-      const int ja = 3 * j + a;
-      const int jb = 3 * j + b;
-      P(ia, ib) += H(a, b);
-      P(ja, jb) += H(a, b);
-      P(ia, jb) -= H(a, b);
-      P(ja, ib) -= H(a, b);
-    }
-  }
-}
-
-void ljDerivs(double r, double eps, double sigma, double &vp, double &vpp) {
-  const double inv = sigma / r;
-  const double x6 = inv * inv * inv * inv * inv * inv;
-  const double x12 = x6 * x6;
-  vp = 4.0 * eps * (-12.0 * x12 + 6.0 * x6) / r;
-  vpp = 4.0 * eps * (156.0 * x12 - 42.0 * x6) / (r * r);
-}
-
-void morseDerivs(double r, double D, double a, double re, double &vp,
-                 double &vpp) {
-  const double e1 = std::exp(-a * (r - re));
-  const double e2 = e1 * e1;
-  vp = 2.0 * D * a * (e1 - e2);
-  vpp = 2.0 * D * a * a * (2.0 * e2 - e1);
-}
 } // namespace
 
 Eigen::Vector3d LBFGS::micRij(const Eigen::VectorXd &pos, int i, int j) const {
@@ -98,91 +56,15 @@ Eigen::Vector3d LBFGS::micRij(const Eigen::VectorXd &pos, int i, int j) const {
 
 bool LBFGS::usesPrecon() const {
   const std::string &p = m_optConfig.opts.lbfgs.precon;
-  return p == "exp" || p == "c1" || p == "lindh" || p == "pair" ||
-         p == "pair_abs" || p == "pair_full";
+  return p == "exp" || p == "c1" || p == "lindh" || p == "lindh_full" ||
+         p == "pair" || p == "pair_abs" || p == "pair_full" || p == "fischer" ||
+         p == "schlegel" || p == "swart";
 }
 
 Eigen::MatrixXd LBFGS::buildPrecon(const Eigen::VectorXd &pos) const {
-  const int n = static_cast<int>(pos.size());
-  const int nat = n / 3;
   const auto &cfg = m_optConfig.opts.lbfgs;
-  std::vector<double> nn(static_cast<size_t>(nat),
-                         std::numeric_limits<double>::infinity());
-  for (int i = 0; i < nat; ++i) {
-    for (int j = 0; j < nat; ++j) {
-      if (i == j) {
-        continue;
-      }
-      const double r = micRij(pos, i, j).norm();
-      if (r > 1.0e-12 && r < nn[static_cast<size_t>(i)]) {
-        nn[static_cast<size_t>(i)] = r;
-      }
-    }
-  }
-  double r_nn = 0.0;
-  for (double v : nn) {
-    if (std::isfinite(v)) {
-      r_nn = std::max(r_nn, v);
-    }
-  }
-  if (r_nn <= 0.0) {
-    r_nn = 1.0;
-  }
-  const double rcut = cfg.precon_rcut > 0.0 ? cfg.precon_rcut : 2.5 * r_nn;
-  const double A = cfg.precon_A;
-  const double mu = cfg.precon_mu;
-  const std::string &kind = cfg.precon;
-  const PotType pot = m_optConfig.potential;
-
-  Eigen::MatrixXd P = Eigen::MatrixXd::Zero(n, n);
-  for (int i = 0; i < nat; ++i) {
-    for (int j = i + 1; j < nat; ++j) {
-      const Eigen::Vector3d rij = micRij(pos, i, j);
-      const double r = rij.norm();
-      if (r >= rcut || r < 1.0e-14) {
-        continue;
-      }
-      if (kind == "pair") {
-        double vp = 0.0;
-        double vpp = 0.0;
-        if (pot == PotType::MORSE_PT) {
-          // eOn Morse_Pt / LAMMPS pair_coeff 0.7102 1.6047 2.897
-          morseDerivs(r, 0.7102, 1.6047, 2.897, vp, vpp);
-        } else {
-          // rgpot LJ / LJCluster: 4 u0 ((psi/r)^12 - (psi/r)^6), u0=psi=1
-          ljDerivs(r, 1.0, 1.0, vp, vpp);
-        }
-        // Mones 2018 Sci. Rep.: keep the positive-definite pair pieces.
-        // pair_abs uses |V''| and |V'/r| so attractive LJ neighbours
-        // still contribute (the well sits past the LJ inflection).
-        double k_par = std::max(vpp, 0.0);
-        double k_perp = std::max(vp / r, 0.0);
-        if (kind == "pair_abs") {
-          k_par = std::abs(vpp);
-          k_perp = std::abs(vp / r);
-        } else if (kind == "pair_full") {
-          k_par = vpp;
-          k_perp = vp / r;
-        }
-        addPairBlock(P, i, j, rij, k_par, k_perp);
-      } else if (kind == "lindh") {
-        // Lindh, Bernhardsson, Karlstrom, Malmqvist, Chem. Phys. Lett. 1995.
-        const double alpha = A > 0.0 ? A : 1.0;
-        const double k = mu * std::exp(alpha * (r_nn * r_nn - r * r));
-        addPairBlock(P, i, j, rij, k, 0.0);
-      } else if (kind == "c1") {
-        const double x = r / rcut;
-        const double w = mu * (1.0 - x) * (1.0 - x) * (1.0 + 2.0 * x);
-        addPairBlock(P, i, j, rij, w, w);
-      } else {
-        const double w = mu * std::exp(-A * (r / r_nn - 1.0));
-        addPairBlock(P, i, j, rij, w, w);
-      }
-    }
-  }
-  const double shift = 1.0e-6 * std::max(1.0, P.diagonal().mean());
-  P.diagonal().array() += shift;
-  return P;
+  return pairhess::build(pos, cfg.precon, m_optConfig.potential, cfg.precon_A,
+                         cfg.precon_mu, cfg.precon_rcut, *m_objf);
 }
 
 Eigen::VectorXd LBFGS::applyH0(const Eigen::VectorXd &q, double H0,

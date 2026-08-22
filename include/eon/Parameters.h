@@ -251,7 +251,11 @@ public:
       std::string secant{"standard"};
       // none: H0 I.
       // exp/c1: Packwood-Kermode pair Laplacian (JCP 2016).
-      // lindh: Lindh 1995 stretch model Hessian.
+      // lindh: Lindh 1995 stretch-only model Hessian.
+      // lindh_full: Lindh stretch + bend + torsion (B^T k B).
+      // fischer: Fischer-Almlof 1992 model Hessian.
+      // schlegel: Schlegel 1984 estimated Hessian.
+      // swart: Swart-Bickelhaupt strong/weak screen of Lindh.
       // pair: Mones 2018 positive-definite pair Hessian of LJ or Morse.
       // pair_full: signed pair Hessian (RFO / shifted Newton).
       std::string precon{"none"};
