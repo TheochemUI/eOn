@@ -70,6 +70,15 @@ void set_positions_if_changed(eonc::ObjectiveFunction *obj,
       (*cached - x).isZero(0.0)) {
     return;
   }
+  // First host iteration: relaxMatter already called isConverged()
+  // at this geometry. Do not dirty that cache.
+  const auto cur = obj->getPositions();
+  if (cur.size() == x.size() && (cur - x).isZero(0.0)) {
+    if (cached != nullptr) {
+      *cached = x;
+    }
+    return;
+  }
   obj->setPositions(x);
   if (cached != nullptr) {
     *cached = x;
