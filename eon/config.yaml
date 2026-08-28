@@ -351,6 +351,10 @@ Nudged Elastic Band:
             kind: float
             default: 0.7071
 
+        ci_mmf_restore_unhelpful:
+            kind: boolean
+            default: false
+
 ################################################################################
 
 Distributed Replica:
@@ -1631,12 +1635,14 @@ Optimizer:
                 - lbfgs
                 - fire
                 - sd
+                - xtsci
 
         convergence_metric:
             kind: string
             default: norm
             values:
                 - norm
+                - rms
                 - max_atom
                 - max_component
 
@@ -1686,6 +1692,58 @@ Optimizer:
             kind: boolean
             default: true
 
+        lbfgs_curvature:
+            kind: string
+            default: "reset"
+
+        lbfgs_project_rigid:
+            kind: boolean
+            default: false
+
+        lbfgs_secant:
+            kind: string
+            default: "standard"
+
+        lbfgs_precon:
+            kind: string
+            default: "none"
+
+        lbfgs_step:
+            kind: string
+            default: "lbfgs"
+
+        lbfgs_h0:
+            kind: string
+            default: "sy_yy"
+
+        lbfgs_accept:
+            kind: string
+            default: "none"
+
+        lbfgs_extra_updates:
+            kind: int
+            default: 0
+
+        lbfgs_cautious_eps:
+            kind: float
+            default: 0.000001
+
+        lbfgs_cautious_alpha:
+            kind: float
+            default: 0.01
+
+        lbfgs_precon_A:
+            kind: float
+            default: 3.0
+
+        lbfgs_precon_mu:
+            kind: float
+            default: 1.0
+
+        lbfgs_precon_rcut:
+            kind: float
+            default: 0.0
+
         cg_no_overshooting:
             kind: boolean
             default: false
@@ -1721,6 +1779,80 @@ Optimizer:
         sd_two_point:
             kind: boolean
             default: false
+
+        xtsci_method:
+            kind: string
+            default: lbfgs
+            values:
+                - lbfgs
+                - bfgs
+                - sr1
+                - sr2
+                - newton
+                - rfo
+                - steepest
+                - adam
+                - pso
+                - polak_ribiere
+                - fletcher_reeves
+                - hestenes_stiefel
+                - dai_yuan
+                - conjugate_descent
+                - hager_zhang
+                - liu_storey
+                - fr_pr
+                - fire
+                - bb
+                - dogleg
+                - fire2
+
+        xtsci_qn_step:
+            kind: string
+            default: lbfgs
+            values:
+                - lbfgs
+                - newton
+                - rfo
+
+        xtsci_precon:
+            kind: string
+            default: none
+            values:
+                - none
+                - pair
+                - pair_abs
+                - pair_full
+                - exp
+                - c1
+                - lindh
+                - lindh_full
+                - fischer
+                - schlegel
+                - swart
+
+        xtsci_accept:
+            kind: string
+            default: none
+            values:
+                - none
+                - energy
+                - nonmonotone
+
+        xtsci_highs:
+            kind: boolean
+            default: false
+
+        xtsci_manifold:
+            kind: string
+            default: euclidean
+            values:
+                - euclidean
+                - rigid_quotient
+                - mw_rigid
+                - sphere
+                - so3
+                - stiefel
+                - se3
 
 ################################################################################
 
@@ -2058,6 +2190,84 @@ LBFGS:
         lbfgs_auto_scale:
             kind: boolean
             default: True
+
+################################################################################
+
+Xtsci:
+    options:
+        method:
+            kind: string
+            default: lbfgs
+            values:
+                - lbfgs
+                - bfgs
+                - sr1
+                - sr2
+                - newton
+                - rfo
+                - steepest
+                - adam
+                - pso
+                - polak_ribiere
+                - fletcher_reeves
+                - hestenes_stiefel
+                - dai_yuan
+                - conjugate_descent
+                - hager_zhang
+                - liu_storey
+                - fr_pr
+                - fire
+                - bb
+                - dogleg
+                - fire2
+
+        qn_step:
+            kind: string
+            default: lbfgs
+            values:
+                - lbfgs
+                - newton
+                - rfo
+
+        precon:
+            kind: string
+            default: none
+            values:
+                - none
+                - pair
+                - pair_abs
+                - pair_full
+                - exp
+                - c1
+                - lindh
+                - lindh_full
+                - fischer
+                - schlegel
+                - swart
+
+        accept:
+            kind: string
+            default: none
+            values:
+                - none
+                - energy
+                - nonmonotone
+
+        highs:
+            kind: boolean
+            default: false
+
+        manifold:
+            kind: string
+            default: euclidean
+            values:
+                - euclidean
+                - rigid_quotient
+                - mw_rigid
+                - sphere
+                - so3
+                - stiefel
+                - se3
 
 ################################################################################
 

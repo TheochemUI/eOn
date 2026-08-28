@@ -257,6 +257,9 @@ eonc::helpers::convergenceMetricLabel(std::string_view metric) {
   if (metric == "norm") {
     return "||Force||";
   }
+  if (metric == "rms") {
+    return "RMS force";
+  }
   return std::nullopt;
 }
 
@@ -293,6 +296,10 @@ public:
   double getConvergence() {
     if (params.optimizer_options.convergence_metric == "norm") {
       return m_matter.getForcesFreeV().norm();
+    } else if (params.optimizer_options.convergence_metric == "rms") {
+      const VectorXd f = m_matter.getForcesFreeV();
+      const auto n = f.size();
+      return n > 0 ? f.norm() / std::sqrt(static_cast<double>(n)) : 0.0;
     } else if (params.optimizer_options.convergence_metric == "max_atom") {
       return m_matter.maxForce();
     } else if (params.optimizer_options.convergence_metric == "max_component") {
@@ -307,6 +314,25 @@ public:
   }
   VectorXd difference(const VectorXd &a, const VectorXd &b) {
     return m_matter.pbcV(a - b);
+  }
+  VectorXd getMasses() const override {
+    const auto all = m_matter.getMasses();
+    const auto mask = m_matter.getFree();
+    VectorXd out(m_matter.numberOfFreeAtoms());
+    long k = 0;
+    for (long i = 0; i < m_matter.numberOfAtoms(); ++i) {
+      if (mask.row(i).sum() > 0.5) {
+        out[k++] = all[i];
+      }
+    }
+    return out;
+  }
+  bool getPeriodic() const override { return m_matter.getPeriodic(); }
+  void minimumImage(Eigen::Ref<Eigen::Vector3d> dr) const override {
+    AtomMatrix m(1, 3);
+    m.row(0) = dr.transpose();
+    m = m_matter.pbc(m);
+    dr = m.row(0).transpose();
   }
 };
 } // namespace

@@ -74,6 +74,7 @@ MODEL_INI_SECTION: dict[str, str] = {
     "FIREConfig": "FIRE",
     "QuickMinConfig": "QuickMin",
     "SDConfig": "SD",
+    "XtsciConfig": "Xtsci",
     "GPRDimerConfig": "GPR Dimer",
     "BGSDConfig": "BGSD",
     "DistributedReplicaConfig": "Distributed Replica",

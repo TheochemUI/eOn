@@ -287,6 +287,7 @@ features_list = [
     ['WITH_SERVE_MODE', 'Serve Mode'],
     ['WITH_RGPOT', 'RGPOT direct in-process (NWChemPot/CPMDPot dlopen)'],
     ['EMBED_PYTHON', 'Embedded Python'],
+    ['WITH_XTSCI', 'xtsci-optimize backend'],
 ]
 
 # features_string + version.h are assembled AFTER optional with_* blocks append
@@ -304,6 +305,17 @@ endif
 
 threads_dep = dependency('threads', required: true)
 _deps += threads_dep
+
+if get_option('with_xtsci')
+    xtsci_dep = dependency(
+        'xtsci-optimize',
+        version: '>=0.1.0',
+        method: 'pkg-config',
+        required: true,
+    )
+    _deps += xtsci_dep
+    _args += ['-DWITH_XTSCI']
+endif
 
 eigen_dep = dependency('eigen3', required: false)
 if not eigen_dep.found()
@@ -668,6 +680,10 @@ eonclib_sources = [
     'SaddleSearchJob.cpp',
     'BasinHoppingSaddleSearch.cpp',
 ]
+
+if get_option('with_xtsci')
+    eonclib_sources += ['XtsciOptimizer.cpp']
+endif
 
 eonclient_sources = ['ClientEON.cpp', 'CommandLine.cpp']
 

@@ -238,7 +238,64 @@ public:
       bool auto_scale{true};
       bool angle_reset{true};
       bool distance_reset{true};
+      // reset: wipe memory on bad s·y (ASE). skip: skip that pair when
+      // s·y < 0.2 s^T B0 s. damped: Powell (1978) ŷ = θy+(1-θ)B0 s.
+      // cautious: Li-Fukushima 2001, keep the pair only if
+      // s·y >= ε ||s||^2 ||g||^α.
+      std::string curvature{"reset"};
+      // Isolated clusters: project 6 rigid-body modes out of the
+      // L-BFGS force and step. Off for PBC / frozen atoms.
+      bool project_rigid{false};
+      // standard: y = g_{k+1}-g_k. zhangxu: Zhang-Deng-Chen / Zhang-Xu
+      // modified secant, ŷ = y + (θ/||s||^2) s, using the two energies.
+      std::string secant{"standard"};
+      // none: H0 I.
+      // exp/c1: Packwood-Kermode pair Laplacian (JCP 2016).
+      // lindh: Lindh 1995 stretch-only model Hessian.
+      // lindh_full: Lindh stretch + bend + torsion (B^T k B).
+      // fischer: Fischer-Almlof 1992 model Hessian.
+      // schlegel: Schlegel 1984 estimated Hessian.
+      // swart: Swart-Bickelhaupt strong/weak screen of Lindh.
+      // pair: Mones 2018 positive-definite pair Hessian of LJ or Morse.
+      // pair_full: signed pair Hessian (RFO / shifted Newton).
+      std::string precon{"none"};
+      // lbfgs: two-loop. newton: Levenberg-shifted H^{-1} g.
+      // rfo: Banerjee 1985 / Baker 1986 rational function step.
+      std::string step{"lbfgs"};
+      // Nocedal-Wright 7.20 (sy/yy), Barzilai-Borwein-2 (ss/sy), or
+      // the smaller of the two when both are positive.
+      std::string h0{"sy_yy"};
+      // none: take the two-loop step (ASE / historical eOn).
+      // energy: refuse a rise (OPTIM-style shrink). nonmonotone:
+      // Grippo window of the last five values (GLL 1986).
+      std::string accept{"none"};
+      // Al-Baali extra-update: reuse the newest pair this many extra
+      // times in the two-loop recursion.
+      long extra_updates{0};
+      double cautious_eps{1.0e-6};
+      double cautious_alpha{0.01};
+      double precon_A{3.0};
+      double precon_mu{1.0};
+      double precon_rcut{0.0};
     } lbfgs;
+    // xtsci-optimize is the engine (opt_method = xtsci). method is the
+    // solver inside it (xts_method_t token: lbfgs, newton, rfo, ...).
+    struct xtsci_t {
+      std::string method{"lbfgs"};
+      // [Xtsci] qn_step. lbfgs: two-loop (P is H0). newton / rfo on P.
+      std::string qn_step{"lbfgs"};
+      // [Xtsci] precon. none, or a host pairhess kind.
+      std::string precon{"none"};
+      // [Xtsci] accept. none: take the clipped step. energy / nonmonotone.
+      std::string accept{"none"};
+      // HiGHS feasible-set step on the host Hessian / two-loop direction.
+      bool highs{false};
+      // Embedded manifold (xts_manifold_t). euclidean is the default.
+      // Isolated clusters: rigid_quotient (Sella R^{3N}/SE(3)) or
+      // mw_rigid (Page-McIver / Sella IRC Eckart). so3 is length 9;
+      // se3 is length 12.
+      std::string manifold{"euclidean"};
+    } xtsci;
     struct cg_t {
       bool no_overshooting{false};
       bool knock_out_max_move{false};
@@ -510,6 +567,10 @@ public:
         long ci_stability_count{5};
         double angle_tol{0.7071}; // 1/sqrt(2): Householder stability bound
         double trigger_factor{0.0};
+        // Extra restore after alignment reject / force increase.
+        // False is Frontiers OCI-NEB (doi:10.3389/fchem.2026.1807063):
+        // restore only on positive curvature.
+        bool restore_unhelpful{false};
       } ocineb;
     } climbing_image;
 
@@ -713,17 +774,17 @@ public:
   struct oh_tst_options_t {
     std::string reactant_filename{"pos.con"};
     std::string product_filename{"product.con"};
-    double time_step{1.0};       // fs, constrained sampling dynamics
-    long equil_steps{200};       // per-plane equilibration steps
-    long sample_steps{800};      // per-plane averaging steps
-    long max_planes{200};        // plane-progression iterations
-    double plane_mass{50.0};     // m_s, inertia of the s coordinate
-    double alpha_rot{50.0};      // rotational inertia of the normal
-    double plane_time_step{0.1}; // Verlet step for (s, n) updates
-    double ds_max{0.1};          // A, clamp on per-iteration plane moves
-    double dtheta_max{0.05};     // rad, clamp on per-iteration rotations
-    double force_tol{0.005};     // eV/A convergence on plane force
-    double s_init{0.05};         // starting fraction along the guideline
+    double time_step{1.0};         // fs, constrained sampling dynamics
+    long equil_steps{200};         // per-plane equilibration steps
+    long sample_steps{800};        // per-plane averaging steps
+    long max_planes{200};          // plane-progression iterations
+    double plane_mass{50.0};       // m_s, inertia of the s coordinate
+    double alpha_rot{50.0};        // rotational inertia of the normal
+    double plane_time_step{0.1};   // Verlet step for (s, n) updates
+    double ds_max{0.1};            // A, clamp on per-iteration plane moves
+    double dtheta_max{0.05};       // rad, clamp on per-iteration rotations
+    double force_tol{0.005};       // eV/A convergence on plane force
+    double s_init{0.05};           // starting fraction along the guideline
     long reactant_md_steps{20000}; // unconstrained reactant trajectory
     double max_delta_a{10.0};      // eV, divergence guard on the work
     // Thermostat for the plane-constrained and reactant sampling:
@@ -746,7 +807,6 @@ public:
     bool pmf_scan{false};
     long scan_planes{40}; // uniform planes across the guideline
   } oh_tst_options;
-
 };
 
 } // namespace eonc

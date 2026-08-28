@@ -18,6 +18,7 @@
 #include "eon/Eigen.h"
 #include "eon/HelperFunctions.h"
 #include "eon/NEBForceProjection.h"
+#include "eon/NEBOcinebController.h"
 #include "eon/NEBSplineExtrema.h"
 #include "eon/NEBSpringForce.h"
 #include "eon/NEBTangent.h"
@@ -203,6 +204,19 @@ TEST_CASE("climbingImageForce: reverses parallel component", "[neb]") {
   // F_CI = F - 2*(F.t)*t = (3,4,0,...) - 2*3*(1,0,0,...) = (-3,4,0,...)
   REQUIRE(fCI(0, 0) == Catch::Approx(-3.0));
   REQUIRE(fCI(0, 1) == Catch::Approx(4.0));
+}
+
+TEST_CASE("OCINEB walkHelped scores the walked image", "[neb][ocineb]") {
+  using eonc::neb::OCINEBController;
+  // Parent DA first MMF: dimer raw force 0.043 on image 6, band CI
+  // hopped to a neighbor at 3.84. Help is the 0.043.
+  REQUIRE(OCINEBController::walkHelped(0.043, 2.3855, 0));
+  REQUIRE_FALSE(OCINEBController::walkHelped(3.8373, 2.3855, 0));
+  // Bicyclobutane: alignment reject, walked force rose.
+  REQUIRE_FALSE(OCINEBController::walkHelped(3.5028, 1.4958, -1));
+  // Positive curvature never counts as help.
+  REQUIRE_FALSE(OCINEBController::walkHelped(0.01, 2.0, -2));
+  REQUIRE_FALSE(OCINEBController::walkHelped(2.3855, 2.3855, 0));
 }
 
 TEST_CASE("climbingImageForce: includes DNEB contribution", "[neb]") {

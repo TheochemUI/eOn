@@ -137,6 +137,29 @@ TEST_CASE("LBFGS optimizer converges on quadratic", "[optimizer][lbfgs]") {
   CHECK(status == 1);
 }
 
+TEST_CASE("LBFGS Zhang-Xu cautious nonmonotone converges on quadratic",
+          "[optimizer][lbfgs][zhangxu]") {
+  auto params = makeOptParams();
+  params.optimizer_options.lbfgs.secant = "zhangxu";
+  params.optimizer_options.lbfgs.curvature = "cautious";
+  params.optimizer_options.lbfgs.accept = "nonmonotone";
+  params.optimizer_options.lbfgs.h0 = "adaptive";
+  params.optimizer_options.lbfgs.extra_updates = 1;
+  params.optimizer_options.lbfgs.angle_reset = false;
+  params.optimizer_options.lbfgs.distance_reset = false;
+  auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
+  VectorXd start(2);
+  start << 5.0, 3.0;
+  objf->setPositions(start);
+
+  LBFGS opt(objf, params);
+  int status = opt.run(1000, params.optimizer_options.max_move);
+  auto final_pos = objf->getPositions();
+
+  REQUIRE(final_pos.norm() < 0.01);
+  CHECK(status == 1);
+}
+
 TEST_CASE("CG optimizer converges on quadratic", "[optimizer][cg]") {
   auto params = makeOptParams();
   params.optimizer_options.converged_force = 1e-3; // CG needs looser tol
