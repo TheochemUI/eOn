@@ -25,7 +25,7 @@ as a potential without per-call process overhead.
 A conda (or mamba/pixi) environment with at minimum:
 
 ```{code-block} bash
-conda create -n eon python numpy ase pybind11 eigen spdlog fmt meson ninja pkg-config compilers
+conda create -n eon python numpy ase pybind11 eigen spdlog fmt meson ninja pkg-config compilers quill pyyaml
 conda activate eon
 ```
 
