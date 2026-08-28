@@ -81,6 +81,7 @@ def ase_calc():
     calc = LennardJones(epsilon=0.0103, sigma=3.40, rc=10.0, ro=0.0, smooth=True)
     return calc
 
+
 #=======================================================================
 # DO NOT EDIT below this line
 def _calculate(R, atomicNrs, box, calc):
@@ -113,6 +114,39 @@ def ase_calc():
     from mace.calculators import MACECalculator
     return MACECalculator(model_paths="/absolute/path/to/model.pt", device="cuda")
 ```
+
+## Batch calculations
+
+For some potentials, like many MLIPs, batch evaluation is more efficient than individually
+calculating the energy and force of each structure. eOn supports this as well, by adding
+a function called `batch_calculate`.
+```{code-block} python
+from ase import Atoms
+from ase.calculators.lj import LennardJones
+
+def ase_calc():
+    # --- customize this section ---
+    calc = LennardJones(epsilon=0.0103, sigma=3.40, rc=10.0, ro=0.0, smooth=True)
+    return calc
+
+def batch_calculate(Rs, atomicNrs, boxs, calc):
+    # --- customize this section ---
+    return energies, forces
+
+#=======================================================================
+# DO NOT EDIT below this line
+def _calculate(R, atomicNrs, box, calc):
+    system = Atoms(symbols=atomicNrs, positions=R, pbc=True, cell=box)
+    system.calc = calc
+    forces = system.get_forces()
+    energy = system.get_potential_energy()
+    return energy, forces
+#=======================================================================
+```
+Now, if running an NEB, dimer or other method that calculates the energies
+and forces of multiple structures at a time, `batch_calculate` is called instead of
+calling `_calculate` for each structure. The energies should be returned as a `np.ndarray`,
+and the forces as a np array with shape `n_structures*n_atoms*3`.
 
 ## Alternatives
 

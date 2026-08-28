@@ -86,7 +86,9 @@ def test_ase_hot_path_many_force_calls():
 
 def test_ase_force_matches_direct_calculator():
     """eOn AseCalcPotential must match ASE calculator results (bulk path)."""
-    pos = np.array([[0.0, 0.0, 0.0], [1.4, 0.1, 0.0], [0.2, 1.3, 0.0]], dtype=np.float64)
+    pos = np.array(
+        [[0.0, 0.0, 0.0], [1.4, 0.1, 0.0], [0.2, 1.3, 0.0]], dtype=np.float64
+    )
     z = np.array([1, 1, 1], dtype=np.int64)
     cell = np.eye(3) * 12.0
     calc = LennardJones(epsilon=1.0, sigma=1.0, rc=6.0, ro=0.0, smooth=False)
@@ -95,7 +97,9 @@ def test_ase_force_matches_direct_calculator():
     E_ref = float(atoms.get_potential_energy())
     F_ref = np.asarray(atoms.get_forces(), dtype=np.float64)
 
-    pot = pyec.potential_from_ase(LennardJones(epsilon=1.0, sigma=1.0, rc=6.0, ro=0.0, smooth=False))
+    pot = pyec.potential_from_ase(
+        LennardJones(epsilon=1.0, sigma=1.0, rc=6.0, ro=0.0, smooth=False)
+    )
     E, F = pot.get_ef(pos, z, cell)
     assert E == pytest.approx(E_ref, rel=1e-10, abs=1e-10)
     assert np.allclose(F, F_ref, rtol=1e-10, atol=1e-10)

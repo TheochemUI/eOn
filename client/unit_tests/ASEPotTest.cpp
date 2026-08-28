@@ -43,6 +43,7 @@ public:
 
     const std::string confile("pos.con");
     const bool file_read_ok = eonc::io::io_ok(matter->con2matter(confile));
+    REQUIRE(pot->supportsBatchEvaluation());
     REQUIRE(file_read_ok);
   }
 
@@ -76,6 +77,49 @@ TEST_CASE_METHOD(ASEPotTest, "ASE LJ energy and forces match reference",
   auto matEq =
       std::bind(eonc::helpers::eigenEquality<AtomMatrix>, _1, _2, threshold);
   REQUIRE(matEq(calculated_forces, expected_forces));
+}
+
+TEST_CASE_METHOD(ASEPotTest, "ASE batch energy and forces match reference",
+                 "[PotTest][ASE]") {
+  // Reference: two Al atoms at (0,0,0) and (1.5,0,0) in 10x10x10 box
+  // LJ(epsilon=1, sigma=1, rc=10, smooth=False) via ASE
+  const double expected_energy = -0.339200131812;
+  AtomMatrix expected_forces(2, 3);
+  expected_forces.row(0) << 1.158021344587014, 0.0, 0.0;
+  expected_forces.row(1) << -1.158021344587014, 0.0, 0.0;
+
+  int nSystems = 2;
+  int nAtoms = matter->numberOfAtoms();
+  const double *const positions[] = {matter->getPositions().data(),
+                                     matter->getPositions().data()};
+  const int *const atomicNrs[] = {matter->getAtomicNrs().data(),
+                                  matter->getAtomicNrs().data()};
+
+  std::vector<double *> boxes(nSystems);
+  for (long i = 0; i < nSystems; ++i) {
+    boxes[i] = matter->getCell().data();
+  }
+
+  std::vector<double> calculated_energy(nSystems, 0.0);
+
+  std::vector<AtomMatrix> calculated_forces(nSystems,
+                                            MatrixXd::Zero(nAtoms, 3));
+  std::vector<double *> calculated_force_ptrs(nSystems);
+  for (long i = 0; i < nSystems; ++i) {
+    calculated_force_ptrs[i] = calculated_forces[i].data();
+  }
+
+  pot->forceBatch(nSystems, nAtoms, positions, atomicNrs,
+                  calculated_force_ptrs.data(), calculated_energy.data(),
+                  nullptr, boxes.data());
+
+  for (int i = 0; i < nSystems; ++i) {
+    REQUIRE_THAT(calculated_energy[i], WithinAbs(expected_energy, threshold));
+
+    auto matEq =
+        std::bind(eonc::helpers::eigenEquality<AtomMatrix>, _1, _2, threshold);
+    REQUIRE(matEq(calculated_forces[i], expected_forces));
+  };
 }
 
 } // namespace tests

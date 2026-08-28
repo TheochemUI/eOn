@@ -59,6 +59,10 @@ ASE::ASE(const Parameters &a_params)
     calculator = py_module.attr("ase_calc")();
     _calculate = py_module.attr("_calculate");
 
+    if (py::hasattr(py_module, "batch_calculate")) {
+      batch_calculate = py_module.attr("batch_calculate");
+    }
+
   } catch (const std::exception &e) {
     fprintf(stderr,
             "ASE Calculator: Exception during Python module import: %s\n",
@@ -105,5 +109,67 @@ void ASE::force(long nAtoms, const double *R, const int *atomicNrs, double *F,
   }
 
   counter++;
+  return;
+}
+
+void ASE::forceBatch(long nSystems, long nAtoms, const double *const *R,
+                     const int *const *atomicNrs, double *const *forces,
+                     double *energies, double *variances,
+                     const double *const *boxes) {
+  if (!batch_calculate) {
+    for (int i = 0; i < nSystems; ++i) {
+      force(nAtoms, R[i], atomicNrs[i], forces[i], &energies[i], &variances[i],
+            boxes[i]);
+    }
+    return;
+  }
+
+  variances = nullptr;
+
+  std::vector<double> R_data(static_cast<size_t>(nSystems) *
+                             static_cast<size_t>(nAtoms) * 3);
+  std::vector<int> atomicNrs_data(static_cast<size_t>(nSystems) *
+                                  static_cast<size_t>(nAtoms));
+  std::vector<double> boxes_data(static_cast<size_t>(nSystems) * 9);
+
+  for (long i = 0; i < nSystems; ++i) {
+    std::copy(R[i], R[i] + nAtoms * 3, R_data.begin() + i * nAtoms * 3);
+
+    std::copy(atomicNrs[i], atomicNrs[i] + nAtoms,
+              atomicNrs_data.begin() + i * nAtoms);
+
+    std::copy(boxes[i], boxes[i] + 9, boxes_data.begin() + i * 9);
+  }
+
+  std::vector<size_t> R_shape = {static_cast<size_t>(nSystems),
+                                 static_cast<size_t>(nAtoms), 3};
+  py::array_t<double> R_np(R_shape, R_data.data());
+
+  std::vector<size_t> atomicNrs_shape = {static_cast<size_t>(nSystems),
+                                         static_cast<size_t>(nAtoms)};
+  py::array_t<int> atomicNrs_np(atomicNrs_shape, atomicNrs_data.data());
+
+  std::vector<size_t> boxes_shape = {static_cast<size_t>(nSystems), 3, 3};
+  py::array_t<double> boxes_np(boxes_shape, boxes_data.data());
+
+  std::tuple<py::array_t<double>, py::array_t<double>> py_result =
+      (*batch_calculate)(R_np, atomicNrs_np, boxes_np, calculator)
+          .cast<std::tuple<py::array_t<double>, py::array_t<double>>>();
+
+  // copy the results to the output arrays
+  py::array_t<double> E = std::get<0>(py_result);
+  auto buffer_E = E.request();
+  double *ptr_E = static_cast<double *>(buffer_E.ptr);
+  std::copy(ptr_E, ptr_E + buffer_E.size, energies);
+
+  py::array_t<double> F = std::get<1>(py_result);
+  auto buffer_F = F.request();
+  double *ptr_F = static_cast<double *>(buffer_F.ptr);
+
+  for (long i = 0; i < nSystems; ++i) {
+    std::copy(ptr_F + i * nAtoms * 3, ptr_F + (i + 1) * nAtoms * 3, forces[i]);
+  }
+
+  counter += nSystems;
   return;
 }

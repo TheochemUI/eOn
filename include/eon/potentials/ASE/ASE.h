@@ -24,6 +24,8 @@ private:
   py::object calculator; // Member to store the ASE calculator object
   py::object _calculate; // Member to store the Python function to calculate
                          // forces and energy
+  std::optional<py::object> batch_calculate; // Member to store the Python function to calculate
+                                             // forces and energies of multiple structures at once
 
 public:
   ASE(const Parameters &a_params);
@@ -40,4 +42,13 @@ public:
   [[nodiscard]] bool needsPerImageInstance() const noexcept override {
     return true;
   }
+
+  [[nodiscard]] bool supportsBatchEvaluation() const noexcept override {
+    return true;
+  }
+  void forceBatch(long nSystems, long nAtoms, const double *const *positions,
+                  const int *const *atomicNrs, double *const *forces,
+                  double *energies, double *variances,
+                  const double *const *boxes) override;
+
 };
