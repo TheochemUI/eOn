@@ -16,6 +16,18 @@ project(
 
 host_system = host_machine.system()
 
+# MSVC: Cap'n Proto templates break when windows.h defines `interface`.
+# Force-include the guard after compiler detection. A /FI path in CXXFLAGS
+# is applied to Meson's cl.exe sanity check; a drive-letter path becomes
+# /FID:/... and Meson reports that cl.exe cannot compile programs.
+if host_system == 'windows' and meson.get_compiler('cpp').get_id() == 'msvc'
+    add_project_arguments(
+        '/FI',
+        meson.current_source_dir() / 'msvc_capnp_guard.h',
+        language: 'cpp',
+    )
+endif
+
 _args = []  # Extra arguments
 _fargs = []  # Fortran arguments
 _deps = []  # Dependencies
