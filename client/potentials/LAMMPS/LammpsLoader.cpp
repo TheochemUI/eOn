@@ -85,9 +85,22 @@ void LammpsLoader::ensure_loaded() {
   if (m_tried)
     return;
   m_tried = true;
+  m_last_error.clear();
+
+  if (!lib_file_visible(lammps_lib_names())) {
+    m_last_error =
+        "liblammps.so not visible on LD_LIBRARY_PATH / cwd "
+        "(liblammps_pot.so is the eOn plugin, not LAMMPS)";
+    return;
+  }
 
   m_handle = dynlib::openFirst(lammps_lib_names());
   if (!m_handle) {
+    const std::string dle = dynlib::error();
+    m_last_error = "liblammps.so is visible but dlopen failed";
+    if (!dle.empty()) {
+      m_last_error += ": " + dle;
+    }
     return;
   }
 
@@ -107,6 +120,9 @@ void LammpsLoader::ensure_loaded() {
   if (!open_no_mpi || !close || !command || !file || !scatter_atoms ||
       !extract_variable) {
     std::cerr << "[LAMMPS] Library loaded but missing required symbols\n";
+    m_last_error =
+        "opened a liblammps* but lammps_open_no_mpi is missing "
+        "(plugin or ABI mismatch, not the LAMMPS C library)";
     dynlib::close(m_handle);
     m_handle = {};
     return;
@@ -124,11 +140,16 @@ bool LammpsLoader::available() const {
 void LammpsLoader::require_loaded() {
   ensure_loaded();
   if (!m_loaded) {
-    throw std::runtime_error(
-        "LAMMPS potential requested but liblammps not found.\n"
-        "Install via: conda install -c conda-forge lammps\n"
-        "Or ensure liblammps is in your library search path "
-        "(LD_LIBRARY_PATH / DYLD_LIBRARY_PATH / PATH).");
+    std::string msg =
+        "LAMMPS potential requested but liblammps is not usable.\n";
+    if (!m_last_error.empty()) {
+      msg += m_last_error;
+      msg += "\n";
+    }
+    msg += "Need a real liblammps.so with lammps_open_no_mpi, built for "
+           "this glibc. conda-forge latest may need a newer libc than "
+           "the host. liblammps_pot.so is the eOn plugin, not LAMMPS.";
+    throw std::runtime_error(msg);
   }
 }
 

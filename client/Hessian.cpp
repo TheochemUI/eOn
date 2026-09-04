@@ -238,10 +238,10 @@ bool Hessian::calculate() {
 
   if (!parameters.main_options.quiet) {
     QUILL_LOG_DEBUG(log, "[Hessian] writing hessian\n");
-    std::ofstream hessfile;
-    hessfile.open("hessian.dat");
+  }
+  {
+    std::ofstream hessfile("hessian.dat");
     hessfile << hessian;
-    hessfile.close();
   }
 
   // Completed run: remove checkpoint so a later job does not resume stale cols

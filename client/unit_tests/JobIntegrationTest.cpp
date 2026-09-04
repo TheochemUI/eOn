@@ -363,6 +363,27 @@ potential = lj
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
+                 "HessianJob writes hessian.dat when quiet=true",
+                 "[job][hessian][integration]") {
+  EON_REQUIRE_TEST_DATA(".");
+  writeConfig(R"(
+[Main]
+job = hessian
+quiet = true
+random_seed = 42
+
+[Potential]
+potential = lj
+)");
+
+  std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+
+  auto results = runJob();
+  REQUIRE(std::filesystem::exists(workdir / "hessian.dat"));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
                  "SaddleSearchJob matches SVN on Morse Pt",
                  "[job][saddle_search][integration]") {
   // Use the actual saddle_search test system with Morse Pt

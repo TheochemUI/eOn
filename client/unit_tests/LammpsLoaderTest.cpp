@@ -67,7 +67,7 @@ TEST_CASE("LammpsLoader: require_loaded is consistent with is_loaded",
     // Absent from disk: the loader refuses by name and stays unloaded.
     REQUIRE_THROWS_WITH(
         loader.require_loaded(),
-        Catch::Matchers::ContainsSubstring("liblammps not found"));
+        Catch::Matchers::ContainsSubstring("liblammps"));
     REQUIRE_FALSE(loader.is_loaded());
     REQUIRE(loader.open_no_mpi == nullptr);
   }
