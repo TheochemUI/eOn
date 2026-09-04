@@ -366,6 +366,10 @@ TEST_CASE_METHOD(JobIntegrationFixture,
                  "HessianJob writes hessian.dat when quiet=true",
                  "[job][hessian][integration]") {
   EON_REQUIRE_TEST_DATA(".");
+  // neb_morse tracks a 9-line fixture hessian.dat; copyTestData would
+  // leave it in workdir so exists() cannot prove the job wrote it.
+  std::filesystem::remove(workdir / "hessian.dat");
+  REQUIRE_FALSE(std::filesystem::exists(workdir / "hessian.dat"));
   writeConfig(R"(
 [Main]
 job = hessian
@@ -381,6 +385,14 @@ potential = lj
 
   auto results = runJob();
   REQUIRE(std::filesystem::exists(workdir / "hessian.dat"));
+  std::ifstream hf((workdir / "hessian.dat").string());
+  int lineCount = 0;
+  std::string line;
+  while (std::getline(hf, line)) {
+    if (!line.empty())
+      lineCount++;
+  }
+  REQUIRE(lineCount >= 38);
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
