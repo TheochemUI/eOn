@@ -351,17 +351,37 @@ class ListedAtoms(Displace):
         Displace.__init__(self, reactant, std_dev, radius, hole_epicenters, config)
 
         self.displace_all = displace_all
-        # each item in this list is the index of a free atom
-        self.listed_atoms = [ i for i in self.config.disp_listed_atoms
-                if self.reactant.atom_is_free()[i] ]
-        #print "self.listed_atoms:"
-        #print self.listed_atoms
+        # disp_listed_atoms are CON file-order rows in the docs
+        # (0, 1, 2). Structure rows are atom_id order. If the file-order
+        # list is all frozen after the sort, remap and try again.
+        free = self.reactant.atom_is_free()
+        listed = self.config.disp_listed_atoms
+        self.listed_atoms = [i for i in listed if 0 <= i < len(free) and free[i]]
+        if len(self.listed_atoms) == 0 and listed:
+            f2s = getattr(self.reactant, "file_to_struct", None)
+            if f2s is not None:
+                remapped = [
+                    int(f2s[i]) for i in listed if 0 <= int(i) < len(f2s)
+                ]
+            else:
+                from eon.structure import file_rows_to_structure_rows
+
+                remapped = file_rows_to_structure_rows(
+                    self.reactant.atom_ids, listed
+                )
+            self.listed_atoms = [
+                i for i in remapped if 0 <= i < len(free) and free[i]
+            ]
+            if self.listed_atoms:
+                logger.debug(
+                    "Listed atoms remapped through atom_id sort: %s -> %s",
+                    listed,
+                    self.listed_atoms,
+                )
         self.listed_atoms = self.filter_epicenters(self.listed_atoms)
         logger.debug("Listed atoms: %s", self.listed_atoms)
 
-        #print self.listed_atoms
         if len(self.listed_atoms) == 0:
-            #raise DisplaceError("Listed atoms are all frozen")
             raise DisplaceError("Listed atoms are all frozen")
 
     def make_displacement(self):

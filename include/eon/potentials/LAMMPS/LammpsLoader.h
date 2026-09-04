@@ -65,6 +65,11 @@ public:
   /// dlopen, so LAMMPS static initializers (the banner) do not run.
   [[nodiscard]] bool available() const;
 
+  /// Why the last ensure_loaded() failed. Empty if unused or loaded.
+  [[nodiscard]] const std::string &last_error() const noexcept {
+    return m_last_error;
+  }
+
   /// Load on first use, then throw if liblammps is not available.
   void require_loaded();
 
@@ -80,6 +85,7 @@ private:
   bool m_loaded{false};
   bool m_tried{false};
   dynlib::Handle m_handle{};
+  std::string m_last_error{};
 
   /// Try to load a symbol; returns nullptr on failure.
   template <typename Fn> Fn load_sym(const char *name) {

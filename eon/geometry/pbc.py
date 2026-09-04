@@ -7,8 +7,20 @@ from typing import Optional
 import numpy as np
 
 
+def _pbc_numpy(r, box, ibox: Optional[np.ndarray]) -> np.ndarray:
+    if ibox is None:
+        ibox = np.linalg.inv(box)
+    vdir = np.dot(r, ibox)
+    vdir = (vdir % 1.0 + 1.5) % 1.0 - 0.5
+    return np.dot(vdir, box)
+
+
 def pbc(r, box, ibox: Optional[np.ndarray] = None) -> np.ndarray:
     """Minimum-image convention for displacement(s).
+
+    The kernel is :mod:`minimage` (same wrap linkcell uses). The numpy
+    path remains as :func:`pbc_eon_legacy` for the eOn/GROMACS/LAMMPS
+    agreement tests.
 
     Parameters
     ----------
@@ -19,11 +31,28 @@ def pbc(r, box, ibox: Optional[np.ndarray] = None) -> np.ndarray:
     ibox : (3, 3), optional
         Inverse of *box*; computed if omitted.
     """
-    if ibox is None:
-        ibox = np.linalg.inv(box)
-    vdir = np.dot(r, ibox)
-    vdir = (vdir % 1.0 + 1.5) % 1.0 - 0.5
-    return np.dot(vdir, box)
+    r = np.asarray(r, dtype=float)
+    box = np.asarray(box, dtype=float)
+    try:
+        import minimage
+
+        cell = minimage.Cell.from_vesin(box.tolist())
+        if r.ndim == 1:
+            return np.asarray(cell.displacement([0.0, 0.0, 0.0], r.tolist()), dtype=float)
+        out = np.empty_like(r, dtype=float)
+        zero = [0.0, 0.0, 0.0]
+        for i, row in enumerate(np.atleast_2d(r)):
+            out[i] = cell.displacement(zero, row.tolist())
+        return out
+    except ImportError:
+        return _pbc_numpy(r, box, ibox)
+
+
+def pbc_eon_legacy(r, box, ibox: Optional[np.ndarray] = None) -> np.ndarray:
+    """eOn numpy wrap. Kept so tests can compare it to minimage."""
+    r = np.asarray(r, dtype=float)
+    box = np.asarray(box, dtype=float)
+    return _pbc_numpy(r, box, ibox)
 
 
 def per_atom_norm(v, box, ibox: Optional[np.ndarray] = None) -> np.ndarray:
