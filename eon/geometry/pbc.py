@@ -18,9 +18,9 @@ def _pbc_numpy(r, box, ibox: Optional[np.ndarray]) -> np.ndarray:
 def pbc(r, box, ibox: Optional[np.ndarray] = None) -> np.ndarray:
     """Minimum-image convention for displacement(s).
 
-    Uses :mod:`minimage` when that package is importable so the wrap
-    matches the C/Rust cell used by linkcell. Falls back to the numpy
-    wrap if minimage is not installed.
+    The kernel is :mod:`minimage` (same wrap linkcell uses). The numpy
+    path remains as :func:`pbc_eon_legacy` for the eOn/GROMACS/LAMMPS
+    agreement tests.
 
     Parameters
     ----------
@@ -44,8 +44,15 @@ def pbc(r, box, ibox: Optional[np.ndarray] = None) -> np.ndarray:
         for i, row in enumerate(np.atleast_2d(r)):
             out[i] = cell.displacement(zero, row.tolist())
         return out
-    except Exception:
+    except ImportError:
         return _pbc_numpy(r, box, ibox)
+
+
+def pbc_eon_legacy(r, box, ibox: Optional[np.ndarray] = None) -> np.ndarray:
+    """eOn numpy wrap. Kept so tests can compare it to minimage."""
+    r = np.asarray(r, dtype=float)
+    box = np.asarray(box, dtype=float)
+    return _pbc_numpy(r, box, ibox)
 
 
 def per_atom_norm(v, box, ibox: Optional[np.ndarray] = None) -> np.ndarray:

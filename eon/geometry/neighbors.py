@@ -118,9 +118,23 @@ def neighbor_list_linkcell(
         return [[] for _ in range(n)]
     xyz = np.ascontiguousarray(r, dtype=np.float64)
     cell = np.ascontiguousarray(box, dtype=np.float64)
-    nn, d2 = linkcell.knearest(xyz, cell, kk)
-    nn = np.from_dlpack(nn)
-    d2 = np.from_dlpack(d2)
+    raw = linkcell.knearest(xyz, cell, kk)
+    if isinstance(raw, tuple) and len(raw) == 2:
+        nn = np.from_dlpack(raw[0])
+        d2 = np.from_dlpack(raw[1])
+    else:
+        nn = np.from_dlpack(raw)
+        import minimage
+
+        mi = minimage.Cell.from_vesin(box.tolist())
+        d2 = np.empty(nn.shape, dtype=np.float64)
+        for i in range(n):
+            for j in range(kk):
+                idx = int(nn[i, j])
+                if idx < 0:
+                    d2[i, j] = np.nan
+                else:
+                    d2[i, j] = mi.dist2(r[i].tolist(), r[idx].tolist())
     cut2 = float(cutoff) * float(cutoff)
     out: List[List[int]] = []
     for i in range(n):
