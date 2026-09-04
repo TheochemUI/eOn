@@ -69,6 +69,30 @@ def structure_order(atom_ids: np.ndarray) -> np.ndarray:
     return np.argsort(ids, kind="stable")
 
 
+def file_rows_to_structure_rows(
+    atom_ids: np.ndarray, file_rows: Sequence[int]
+) -> List[int]:
+    """Map CON file-order rows onto :class:`Structure` rows.
+
+    ``from_conframe`` argsorts unique ``atom_id``s. ``displace_atom_list``
+    is applied after that sort. A movable-first AV file then lists row 0
+    as free while Structure row 0 is the smallest id (often a frozen
+    buffer atom).
+    """
+    order = structure_order(atom_ids)
+    n = int(np.asarray(atom_ids).shape[0])
+    file_to_struct = np.empty(n, dtype=np.int64)
+    file_to_struct[order] = np.arange(n, dtype=np.int64)
+    out: List[int] = []
+    for raw in file_rows:
+        r = int(raw)
+        if 0 <= r < n:
+            out.append(int(file_to_struct[r]))
+        else:
+            out.append(r)
+    return out
+
+
 class Structure:
     """Mutable atomic configuration (numpy-backed).
 
@@ -97,7 +121,7 @@ class Structure:
         scratch; whatever the file carried for one read off disk.
     """
 
-    __slots__ = ("r", "_free", "box", "names", "mass", "atom_ids")
+    __slots__ = ("r", "_free", "box", "names", "mass", "atom_ids", "file_to_struct")
 
     def __init__(self, n_atoms: int = 0):
         self.r = np.zeros((n_atoms, 3), dtype=float)
@@ -106,6 +130,7 @@ class Structure:
         self.names: List[str] = [""] * n_atoms
         self.mass = np.zeros(n_atoms, dtype=float)
         self.atom_ids = np.arange(1, n_atoms + 1, dtype=np.uint64)
+        self.file_to_struct = np.arange(n_atoms, dtype=np.int64)
 
     @property
     def free(self) -> np.ndarray:
@@ -126,6 +151,7 @@ class Structure:
         p.names = list(self.names)
         p.mass = self.mass.copy()
         p.atom_ids = self.atom_ids.copy()
+        p.file_to_struct = self.file_to_struct.copy()
         return p
 
     def ids_or_sequential(self) -> np.ndarray:
@@ -222,6 +248,9 @@ class Structure:
             else:
                 p._free[i] = tuple(0.0 if flag else 1.0 for flag in fixed)
         order = structure_order(p.atom_ids)
+        file_to_struct = np.empty(n, dtype=np.int64)
+        file_to_struct[order] = np.arange(n, dtype=np.int64)
+        p.file_to_struct = file_to_struct
         if not np.array_equal(order, np.arange(n)):
             p.r = p.r[order]
             p.free = p.free[order]
