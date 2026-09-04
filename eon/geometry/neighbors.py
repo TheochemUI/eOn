@@ -95,6 +95,46 @@ def neighbor_list_vectors(
     return out
 
 
+def neighbor_list_linkcell(
+    p: StructureLike,
+    cutoff: float,
+    k: int | None = None,
+) -> List[List[int]]:
+    """Neighbor list via :func:`linkcell.knearest`, filtered to *cutoff*.
+
+    Production :func:`neighbor_list` stays on vesin. This path exists so
+    the two kernels can be compared on the same Structure.
+    """
+    import linkcell
+
+    r, box = _positions_box(p)
+    n = r.shape[0]
+    if n == 0:
+        return []
+    if cutoff <= 0 or n == 1:
+        return [[] for _ in range(n)]
+    kk = n - 1 if k is None else int(k)
+    if kk < 1:
+        return [[] for _ in range(n)]
+    xyz = np.ascontiguousarray(r, dtype=np.float64)
+    cell = np.ascontiguousarray(box, dtype=np.float64)
+    nn, d2 = linkcell.knearest(xyz, cell, kk)
+    nn = np.from_dlpack(nn)
+    d2 = np.from_dlpack(d2)
+    cut2 = float(cutoff) * float(cutoff)
+    out: List[List[int]] = []
+    for i in range(n):
+        neigh = []
+        for j in range(kk):
+            idx = int(nn[i, j])
+            if idx < 0 or idx == i:
+                continue
+            if float(d2[i, j]) <= cut2:
+                neigh.append(idx)
+        out.append(sorted(set(neigh)))
+    return out
+
+
 def coordination_numbers(
     p: StructureLike, cutoff: float, brute: bool = False
 ) -> List[int]:
