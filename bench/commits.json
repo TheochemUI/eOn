@@ -122,8 +122,8 @@
     "7798": "ci: install lcov from archive.ubuntu.com, gfortran from pixi",
     "7799": "ci: install lcov with pixi, drop apt from fortran coverage",
     "7800": "Merge pull request #402 from HaoZeke/docs/book-doxy-crosslink",
-    "7805": "docs: render antics credit in the Shibuya footer",
-    "7806": "Merge pull request #404 from HaoZeke/docs/antics-shibuya-footer"
+    "7804": "docs: render antics credit in the Shibuya footer",
+    "7805": "Merge pull request #404 from HaoZeke/docs/antics-shibuya-footer"
   },
   "dcbade17ecc8386a4ee5804354b4994c8ba1d6d8": "update lammps webpage",
   "292bc143343709b10fb7ed150ae5bb493748b289": "gitig: Update",
