@@ -1,0 +1,7 @@
+{
+    "cpu": "gha",
+    "machine": "github-actions",
+    "os": "Linux",
+    "ram": "0",
+    "version": 1
+}
