@@ -336,19 +336,19 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00330">330</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  332</span>                                      {</div>
-<div class="line"><span class="lineno">  333</span>  <span class="keywordtype">double</span> f2 = f * f;</div>
-<div class="line"><span class="lineno">  334</span>  <span class="keywordtype">double</span> f3 = f2 * f;</div>
-<div class="line"><span class="lineno">  335</span> </div>
-<div class="line"><span class="lineno">  336</span>  <span class="comment">// Hermite basis functions</span></div>
-<div class="line"><span class="lineno">  337</span>  <span class="keywordtype">double</span> h00 = 2 * f3 - 3 * f2 + 1;</div>
-<div class="line"><span class="lineno">  338</span>  <span class="keywordtype">double</span> h10 = f3 - 2 * f2 + f;</div>
-<div class="line"><span class="lineno">  339</span>  <span class="keywordtype">double</span> h01 = -2 * f3 + 3 * f2;</div>
-<div class="line"><span class="lineno">  340</span>  <span class="keywordtype">double</span> h11 = f3 - f2;</div>
-<div class="line"><span class="lineno">  341</span> </div>
-<div class="line"><span class="lineno">  342</span>  <span class="keywordflow">return</span> h00 * P0 + h10 * T0 + h01 * P1 + h11 * T1;</div>
-<div class="line"><span class="lineno">  343</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00329">329</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  331</span>                                      {</div>
+<div class="line"><span class="lineno">  332</span>  <span class="keywordtype">double</span> f2 = f * f;</div>
+<div class="line"><span class="lineno">  333</span>  <span class="keywordtype">double</span> f3 = f2 * f;</div>
+<div class="line"><span class="lineno">  334</span> </div>
+<div class="line"><span class="lineno">  335</span>  <span class="comment">// Hermite basis functions</span></div>
+<div class="line"><span class="lineno">  336</span>  <span class="keywordtype">double</span> h00 = 2 * f3 - 3 * f2 + 1;</div>
+<div class="line"><span class="lineno">  337</span>  <span class="keywordtype">double</span> h10 = f3 - 2 * f2 + f;</div>
+<div class="line"><span class="lineno">  338</span>  <span class="keywordtype">double</span> h01 = -2 * f3 + 3 * f2;</div>
+<div class="line"><span class="lineno">  339</span>  <span class="keywordtype">double</span> h11 = f3 - f2;</div>
+<div class="line"><span class="lineno">  340</span> </div>
+<div class="line"><span class="lineno">  341</span>  <span class="keywordflow">return</span> h00 * P0 + h10 * T0 + h01 * P1 + h11 * T1;</div>
+<div class="line"><span class="lineno">  342</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -474,51 +474,51 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00162">162</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  164</span>                                                                               {</div>
-<div class="line"><span class="lineno">  165</span>  <span class="keyword">auto</span> <a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a> = <a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>();</div>
-<div class="line"><span class="lineno">  166</span>  QUILL_LOG_INFO(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>, <span class="stringliteral">&quot;Generating initial path using Collective IDPP-NEB...&quot;</span>);</div>
-<div class="line"><span class="lineno">  167</span> </div>
-<div class="line"><span class="lineno">  168</span>  std::vector&lt;Matter&gt; path = <a class="code hl_function" href="#a881c5c5ee2e64aa21ddb092e55ecf42a">linearPath</a>(initImg, finalImg, nimgs);</div>
-<div class="line"><span class="lineno">  169</span> </div>
-<div class="line"><span class="lineno">  170</span>  <span class="comment">// 1. Base Objective</span></div>
-<div class="line"><span class="lineno">  171</span>  std::shared_ptr&lt;ObjectiveFunction&gt; idpp_objf =</div>
-<div class="line"><span class="lineno">  172</span>      std::make_shared&lt;CollectiveIDPPObjectiveFunction&gt;(path, params);</div>
-<div class="line"><span class="lineno">  173</span> </div>
-<div class="line"><span class="lineno">  174</span>  <span class="comment">// 2. Optional ZBL Wrapper</span></div>
-<div class="line"><span class="lineno">  175</span>  <span class="keywordflow">if</span> (use_zbl) {</div>
-<div class="line"><span class="lineno">  176</span>    QUILL_LOG_INFO(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>, <span class="stringliteral">&quot;Enabling ZBL repulsive penalty for IDPP...&quot;</span>);</div>
-<div class="line"><span class="lineno">  177</span>    <span class="keyword">auto</span> zbl_pot = <a class="code hl_function" href="#a78b6ee8c903f3dd4b5a60195717efa92">createZBLPotential</a>();</div>
-<div class="line"><span class="lineno">  178</span>    <span class="comment">// Wrap the IDPP objective with ZBL repulsion (weight = 1.0)</span></div>
-<div class="line"><span class="lineno">  179</span>    idpp_objf = std::make_shared&lt;ZBLRepulsiveIDPPObjective&gt;(idpp_objf, zbl_pot,</div>
-<div class="line"><span class="lineno">  180</span>                                                            path, params, 1.0);</div>
-<div class="line"><span class="lineno">  181</span>  }</div>
-<div class="line"><span class="lineno">  182</span> </div>
-<div class="line"><span class="lineno">  183</span>  <span class="keyword">auto</span> optim = <a class="code hl_function" href="namespaceeonc_1_1helpers_1_1create.html#a5b0011df69b04b52916bd7150ab60fc4">eonc::helpers::create::mkOptim</a>(</div>
-<div class="line"><span class="lineno">  184</span>      idpp_objf, params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t.html#a363ee7a2ad150268bc4567c76aa225f3">initialization</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t_1_1path__initialization__t.html#a93a213d134cb0bfd59d03cbe6daae4b4">opt_method</a>, params);</div>
-<div class="line"><span class="lineno">  185</span> </div>
-<div class="line"><span class="lineno">  186</span>  <span class="keywordtype">int</span> maxSteps = params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t.html#a363ee7a2ad150268bc4567c76aa225f3">initialization</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t_1_1path__initialization__t.html#a1f26cff64e925ef6c76532f4e7721a87">max_iterations</a>;</div>
-<div class="line"><span class="lineno">  187</span>  <span class="keywordtype">int</span> currentStep = 0;</div>
-<div class="line"><span class="lineno">  188</span>  <span class="keywordtype">int</span> checkInterval = 40;</div>
-<div class="line"><span class="lineno">  189</span> </div>
-<div class="line"><span class="lineno">  190</span>  <span class="keywordflow">while</span> (currentStep &lt; maxSteps) {</div>
-<div class="line"><span class="lineno">  191</span>    optim-&gt;run(checkInterval, params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#af4fcd22b349db9419c51039f62290c33">max_move</a>);</div>
-<div class="line"><span class="lineno">  192</span>    currentStep += checkInterval;</div>
-<div class="line"><span class="lineno">  193</span> </div>
-<div class="line"><span class="lineno">  194</span>    <span class="keywordflow">if</span> (idpp_objf-&gt;isConverged()) {</div>
-<div class="line"><span class="lineno">  195</span>      QUILL_LOG_INFO(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>,</div>
-<div class="line"><span class="lineno">  196</span>                     <span class="stringliteral">&quot;IDPP-NEB converged after {} steps. Max Residual: {:.4f}&quot;</span>,</div>
-<div class="line"><span class="lineno">  197</span>                     currentStep, idpp_objf-&gt;getConvergence());</div>
-<div class="line"><span class="lineno">  198</span>      <span class="keywordflow">return</span> path;</div>
-<div class="line"><span class="lineno">  199</span>    }</div>
-<div class="line"><span class="lineno">  200</span>  }</div>
-<div class="line"><span class="lineno">  201</span> </div>
-<div class="line"><span class="lineno">  202</span>  QUILL_LOG_WARNING(log,</div>
-<div class="line"><span class="lineno">  203</span>                    <span class="stringliteral">&quot;IDPP-NEB reached max_iterations ({}) without full &quot;</span></div>
-<div class="line"><span class="lineno">  204</span>                    <span class="stringliteral">&quot;convergence. Residual: {:.4f}&quot;</span>,</div>
-<div class="line"><span class="lineno">  205</span>                    maxSteps, idpp_objf-&gt;getConvergence());</div>
-<div class="line"><span class="lineno">  206</span>  <span class="keywordflow">return</span> path;</div>
-<div class="line"><span class="lineno">  207</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00161">161</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  163</span>                                                                               {</div>
+<div class="line"><span class="lineno">  164</span>  <span class="keyword">auto</span> <a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a> = <a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>();</div>
+<div class="line"><span class="lineno">  165</span>  QUILL_LOG_INFO(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>, <span class="stringliteral">&quot;Generating initial path using Collective IDPP-NEB...&quot;</span>);</div>
+<div class="line"><span class="lineno">  166</span> </div>
+<div class="line"><span class="lineno">  167</span>  std::vector&lt;Matter&gt; path = <a class="code hl_function" href="#a881c5c5ee2e64aa21ddb092e55ecf42a">linearPath</a>(initImg, finalImg, nimgs);</div>
+<div class="line"><span class="lineno">  168</span> </div>
+<div class="line"><span class="lineno">  169</span>  <span class="comment">// 1. Base Objective</span></div>
+<div class="line"><span class="lineno">  170</span>  std::shared_ptr&lt;ObjectiveFunction&gt; idpp_objf =</div>
+<div class="line"><span class="lineno">  171</span>      std::make_shared&lt;CollectiveIDPPObjectiveFunction&gt;(path, params);</div>
+<div class="line"><span class="lineno">  172</span> </div>
+<div class="line"><span class="lineno">  173</span>  <span class="comment">// 2. Optional ZBL Wrapper</span></div>
+<div class="line"><span class="lineno">  174</span>  <span class="keywordflow">if</span> (use_zbl) {</div>
+<div class="line"><span class="lineno">  175</span>    QUILL_LOG_INFO(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>, <span class="stringliteral">&quot;Enabling ZBL repulsive penalty for IDPP...&quot;</span>);</div>
+<div class="line"><span class="lineno">  176</span>    <span class="keyword">auto</span> zbl_pot = <a class="code hl_function" href="#a78b6ee8c903f3dd4b5a60195717efa92">createZBLPotential</a>();</div>
+<div class="line"><span class="lineno">  177</span>    <span class="comment">// Wrap the IDPP objective with ZBL repulsion (weight = 1.0)</span></div>
+<div class="line"><span class="lineno">  178</span>    idpp_objf = std::make_shared&lt;ZBLRepulsiveIDPPObjective&gt;(idpp_objf, zbl_pot,</div>
+<div class="line"><span class="lineno">  179</span>                                                            path, params, 1.0);</div>
+<div class="line"><span class="lineno">  180</span>  }</div>
+<div class="line"><span class="lineno">  181</span> </div>
+<div class="line"><span class="lineno">  182</span>  <span class="keyword">auto</span> optim = <a class="code hl_function" href="namespaceeonc_1_1helpers_1_1create.html#a5b0011df69b04b52916bd7150ab60fc4">eonc::helpers::create::mkOptim</a>(</div>
+<div class="line"><span class="lineno">  183</span>      idpp_objf, params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t.html#a363ee7a2ad150268bc4567c76aa225f3">initialization</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t_1_1path__initialization__t.html#a93a213d134cb0bfd59d03cbe6daae4b4">opt_method</a>, params);</div>
+<div class="line"><span class="lineno">  184</span> </div>
+<div class="line"><span class="lineno">  185</span>  <span class="keywordtype">int</span> maxSteps = params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t.html#a363ee7a2ad150268bc4567c76aa225f3">initialization</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t_1_1path__initialization__t.html#a1f26cff64e925ef6c76532f4e7721a87">max_iterations</a>;</div>
+<div class="line"><span class="lineno">  186</span>  <span class="keywordtype">int</span> currentStep = 0;</div>
+<div class="line"><span class="lineno">  187</span>  <span class="keywordtype">int</span> checkInterval = 40;</div>
+<div class="line"><span class="lineno">  188</span> </div>
+<div class="line"><span class="lineno">  189</span>  <span class="keywordflow">while</span> (currentStep &lt; maxSteps) {</div>
+<div class="line"><span class="lineno">  190</span>    optim-&gt;run(checkInterval, params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">optimizer_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1optimizer__options__t.html#af4fcd22b349db9419c51039f62290c33">max_move</a>);</div>
+<div class="line"><span class="lineno">  191</span>    currentStep += checkInterval;</div>
+<div class="line"><span class="lineno">  192</span> </div>
+<div class="line"><span class="lineno">  193</span>    <span class="keywordflow">if</span> (idpp_objf-&gt;isConverged()) {</div>
+<div class="line"><span class="lineno">  194</span>      QUILL_LOG_INFO(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>,</div>
+<div class="line"><span class="lineno">  195</span>                     <span class="stringliteral">&quot;IDPP-NEB converged after {} steps. Max Residual: {:.4f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  196</span>                     currentStep, idpp_objf-&gt;getConvergence());</div>
+<div class="line"><span class="lineno">  197</span>      <span class="keywordflow">return</span> path;</div>
+<div class="line"><span class="lineno">  198</span>    }</div>
+<div class="line"><span class="lineno">  199</span>  }</div>
+<div class="line"><span class="lineno">  200</span> </div>
+<div class="line"><span class="lineno">  201</span>  QUILL_LOG_WARNING(log,</div>
+<div class="line"><span class="lineno">  202</span>                    <span class="stringliteral">&quot;IDPP-NEB reached max_iterations ({}) without full &quot;</span></div>
+<div class="line"><span class="lineno">  203</span>                    <span class="stringliteral">&quot;convergence. Residual: {:.4f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  204</span>                    maxSteps, idpp_objf-&gt;getConvergence());</div>
+<div class="line"><span class="lineno">  205</span>  <span class="keywordflow">return</span> path;</div>
+<div class="line"><span class="lineno">  206</span>}</div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_a1c3ba2cdc8f797e5ab2d8961720fe896"><div class="ttname"><a href="classeonc_1_1Parameters.html#a1c3ba2cdc8f797e5ab2d8961720fe896">eonc::Parameters::optimizer_options</a></div><div class="ttdeci">struct eonc::Parameters::optimizer_options_t optimizer_options</div></div>
 <div class="ttc" id="aclasseonc_1_1Parameters_html_a40bad5f66d7bb2ccfca684f8ecf850c2"><div class="ttname"><a href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">eonc::Parameters::neb_options</a></div><div class="ttdeci">struct eonc::Parameters::neb_options_t neb_options</div></div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_1_1create_html_a5b0011df69b04b52916bd7150ab60fc4"><div class="ttname"><a href="namespaceeonc_1_1helpers_1_1create.html#a5b0011df69b04b52916bd7150ab60fc4">eonc::helpers::create::mkOptim</a></div><div class="ttdeci">std::unique_ptr&lt; Optimizer &gt; mkOptim(std::shared_ptr&lt; ObjectiveFunction &gt; a_objf, OptType a_otype, const Parameters &amp;a_params)</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8cpp_source.html#l00021">Optimizer.cpp:21</a></div></div>
@@ -616,13 +616,12 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  151</span>                    nimgs, xi, residual);</div>
 <div class="line"><span class="lineno">  152</span> </div>
 <div class="line"><span class="lineno">  153</span>    <span class="comment">// Explicitly sync positions back to the path vector just to be safe</span></div>
-<div class="line"><span class="lineno">  154</span>    path[i].setPositions(AtomMatrix::Map(idpp_objf-&gt;getPositions().data(),</div>
-<div class="line"><span class="lineno">  155</span>                                         path[i].numberOfAtoms(), 3));</div>
-<div class="line"><span class="lineno">  156</span>  }</div>
-<div class="line"><span class="lineno">  157</span> </div>
-<div class="line"><span class="lineno">  158</span>  QUILL_LOG_INFO(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>, <span class="stringliteral">&quot;IDPP path generation complete.&quot;</span>);</div>
-<div class="line"><span class="lineno">  159</span>  <span class="keywordflow">return</span> path;</div>
-<div class="line"><span class="lineno">  160</span>}</div>
+<div class="line"><span class="lineno">  154</span>    path[i].setPositionsFreeV(idpp_objf-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  155</span>  }</div>
+<div class="line"><span class="lineno">  156</span> </div>
+<div class="line"><span class="lineno">  157</span>  QUILL_LOG_INFO(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>, <span class="stringliteral">&quot;IDPP path generation complete.&quot;</span>);</div>
+<div class="line"><span class="lineno">  158</span>  <span class="keywordflow">return</span> path;</div>
+<div class="line"><span class="lineno">  159</span>}</div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_1_1neb__paths_html_a8fb55b1197c5fe4ae02c25c722d6c7dd"><div class="ttname"><a href="#a8fb55b1197c5fe4ae02c25c722d6c7dd">eonc::helpers::neb_paths::getDistanceMatrix</a></div><div class="ttdeci">MatrixXd getDistanceMatrix(const Matter &amp;m)</div><div class="ttdef"><b>Definition</b> <a href="NEBInitialPaths_8cpp_source.html#l00088">NEBInitialPaths.cpp:88</a></div></div>
 <div class="ttc" id="astructeonc_1_1Parameters_1_1neb__options__t_1_1path__initialization__t_html_a3cef85f653fac108450a7d5c933f0074"><div class="ttname"><a href="structeonc_1_1Parameters_1_1neb__options__t_1_1path__initialization__t.html#a3cef85f653fac108450a7d5c933f0074">eonc::Parameters::neb_options_t::path_initialization_t::max_move</a></div><div class="ttdeci">double max_move</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00521">Parameters.h:521</a></div></div>
 <div class="ttc" id="astructeonc_1_1Parameters_1_1neb__options__t_html_ae7b08846f6e7024d864f56d52d3fa0a7"><div class="ttname"><a href="structeonc_1_1Parameters_1_1neb__options__t.html#ae7b08846f6e7024d864f56d52d3fa0a7">eonc::Parameters::neb_options_t::opt_method</a></div><div class="ttdeci">OptType opt_method</div><div class="ttdef"><b>Definition</b> <a href="Parameters_8h_source.html#l00470">Parameters.h:470</a></div></div>
@@ -653,16 +652,17 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00210">210</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  210</span>                                                                           {</div>
-<div class="line"><span class="lineno">  211</span>  <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> newImg(A);</div>
-<div class="line"><span class="lineno">  212</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posA = A.<a class="code hl_function" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>();</div>
-<div class="line"><span class="lineno">  213</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posB = B.<a class="code hl_function" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>();</div>
-<div class="line"><span class="lineno">  214</span>  <span class="comment">// Use PBC-aware interpolation</span></div>
-<div class="line"><span class="lineno">  215</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff = A.<a class="code hl_function" href="classeonc_1_1Matter.html#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(posB - posA);</div>
-<div class="line"><span class="lineno">  216</span>  newImg.setPositions(posA + fraction * diff);</div>
-<div class="line"><span class="lineno">  217</span>  <span class="keywordflow">return</span> newImg;</div>
-<div class="line"><span class="lineno">  218</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00209">209</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  209</span>                                                                           {</div>
+<div class="line"><span class="lineno">  210</span>  <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a> newImg(A);</div>
+<div class="line"><span class="lineno">  211</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posA = A.<a class="code hl_function" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>();</div>
+<div class="line"><span class="lineno">  212</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posB = B.<a class="code hl_function" href="classeonc_1_1Matter.html#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>();</div>
+<div class="line"><span class="lineno">  213</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff = A.<a class="code hl_function" href="classeonc_1_1Matter.html#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(posB - posA);</div>
+<div class="line"><span class="lineno">  214</span>  diff = diff.array() * A.<a class="code hl_function" href="classeonc_1_1Matter.html#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
+<div class="line"><span class="lineno">  215</span>  newImg.setPositions(posA + fraction * diff);</div>
+<div class="line"><span class="lineno">  216</span>  <span class="keywordflow">return</span> newImg;</div>
+<div class="line"><span class="lineno">  217</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a42c2c5ca606659d564e05f09ba452601"><div class="ttname"><a href="classeonc_1_1Matter.html#a42c2c5ca606659d564e05f09ba452601">eonc::Matter::getFree</a></div><div class="ttdeci">AtomMatrix getFree() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00580">Matter.cpp:580</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -698,7 +698,7 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">   33</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posInitial = all_images_on_path.front().getPositions();</div>
 <div class="line"><span class="lineno">   34</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> posFinal = all_images_on_path.back().getPositions();</div>
 <div class="line"><span class="lineno">   35</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> imageSep = initImg.<a class="code hl_function" href="classeonc_1_1Matter.html#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(posFinal - posInitial) / (nimgs + 1);</div>
-<div class="line"><span class="lineno">   36</span>  <span class="comment">// Only the ones which are not the front and back</span></div>
+<div class="line"><span class="lineno">   36</span>  imageSep = imageSep.array() * initImg.<a class="code hl_function" href="classeonc_1_1Matter.html#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
 <div class="line"><span class="lineno">   37</span>  <span class="keywordflow">for</span> (<span class="keyword">auto</span> it{std::next(all_images_on_path.begin())};</div>
 <div class="line"><span class="lineno">   38</span>       it != std::prev(all_images_on_path.end()); ++it) {</div>
 <div class="line"><span class="lineno">   39</span>    *it = <a class="code hl_class" href="classeonc_1_1Matter.html">Matter</a>(initImg);</div>
@@ -777,84 +777,84 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00345">345</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  346</span>                                                     {</div>
-<div class="line"><span class="lineno">  347</span>  <span class="keywordflow">if</span> (densePath.size() == targetCount + 2)</div>
-<div class="line"><span class="lineno">  348</span>    <span class="keywordflow">return</span> densePath;</div>
-<div class="line"><span class="lineno">  349</span> </div>
-<div class="line"><span class="lineno">  350</span>  <span class="keywordtype">size_t</span> n = densePath.size();</div>
-<div class="line"><span class="lineno">  351</span> </div>
-<div class="line"><span class="lineno">  352</span>  <span class="comment">// Calculate cumulative arc length along the path</span></div>
-<div class="line"><span class="lineno">  353</span>  std::vector&lt;double&gt; arcLength(n, 0.0);</div>
-<div class="line"><span class="lineno">  354</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; n; ++i) {</div>
-<div class="line"><span class="lineno">  355</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff = densePath[i].pbc(densePath[i].getPositions() -</div>
-<div class="line"><span class="lineno">  356</span>                                       densePath[i - 1].getPositions());</div>
-<div class="line"><span class="lineno">  357</span>    arcLength[i] = arcLength[i - 1] + diff.norm();</div>
-<div class="line"><span class="lineno">  358</span>  }</div>
-<div class="line"><span class="lineno">  359</span>  <span class="keywordtype">double</span> totalLength = arcLength.back();</div>
-<div class="line"><span class="lineno">  360</span> </div>
-<div class="line"><span class="lineno">  361</span>  <span class="comment">// Calculate tangents for cubic interpolation</span></div>
-<div class="line"><span class="lineno">  362</span>  std::vector&lt;AtomMatrix&gt; tangents(n);</div>
-<div class="line"><span class="lineno">  363</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; n; ++i) {</div>
-<div class="line"><span class="lineno">  364</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> T;</div>
-<div class="line"><span class="lineno">  365</span>    <span class="keywordflow">if</span> (i == 0) {</div>
-<div class="line"><span class="lineno">  366</span>      T = densePath[i].pbc(densePath[i + 1].getPositions() -</div>
-<div class="line"><span class="lineno">  367</span>                           densePath[i].getPositions());</div>
-<div class="line"><span class="lineno">  368</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (i == n - 1) {</div>
-<div class="line"><span class="lineno">  369</span>      T = densePath[i].pbc(densePath[i].getPositions() -</div>
-<div class="line"><span class="lineno">  370</span>                           densePath[i - 1].getPositions());</div>
-<div class="line"><span class="lineno">  371</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  372</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dNext = densePath[i].pbc(densePath[i + 1].getPositions() -</div>
-<div class="line"><span class="lineno">  373</span>                                          densePath[i].getPositions());</div>
-<div class="line"><span class="lineno">  374</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dPrev = densePath[i].pbc(densePath[i].getPositions() -</div>
-<div class="line"><span class="lineno">  375</span>                                          densePath[i - 1].getPositions());</div>
-<div class="line"><span class="lineno">  376</span>      T = 0.5 * (dNext + dPrev);</div>
-<div class="line"><span class="lineno">  377</span>    }</div>
-<div class="line"><span class="lineno">  378</span>    <span class="comment">// Scale tangent by local segment length for proper spline parameterization</span></div>
-<div class="line"><span class="lineno">  379</span>    <span class="keywordflow">if</span> (i &gt; 0 &amp;&amp; i &lt; n - 1) {</div>
-<div class="line"><span class="lineno">  380</span>      <span class="keywordtype">double</span> localScale = (arcLength[i + 1] - arcLength[i - 1]) / 2.0;</div>
-<div class="line"><span class="lineno">  381</span>      T = T.normalized() * localScale;</div>
-<div class="line"><span class="lineno">  382</span>    }</div>
-<div class="line"><span class="lineno">  383</span>    tangents[i] = T;</div>
-<div class="line"><span class="lineno">  384</span>  }</div>
-<div class="line"><span class="lineno">  385</span> </div>
-<div class="line"><span class="lineno">  386</span>  std::vector&lt;Matter&gt; resampled;</div>
-<div class="line"><span class="lineno">  387</span>  resampled.reserve(targetCount + 2);</div>
-<div class="line"><span class="lineno">  388</span>  resampled.push_back(densePath.front());</div>
-<div class="line"><span class="lineno">  389</span> </div>
-<div class="line"><span class="lineno">  390</span>  <span class="comment">// Place new images at equal arc-length intervals</span></div>
-<div class="line"><span class="lineno">  391</span>  <span class="keywordtype">double</span> segmentLength = totalLength / (targetCount + 1);</div>
-<div class="line"><span class="lineno">  392</span> </div>
-<div class="line"><span class="lineno">  393</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt;= targetCount; ++i) {</div>
-<div class="line"><span class="lineno">  394</span>    <span class="keywordtype">double</span> targetArc = i * segmentLength;</div>
-<div class="line"><span class="lineno">  395</span> </div>
-<div class="line"><span class="lineno">  396</span>    <span class="comment">// Find the segment containing this arc length</span></div>
-<div class="line"><span class="lineno">  397</span>    <span class="keywordtype">size_t</span> lowIdx = 0;</div>
-<div class="line"><span class="lineno">  398</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 1; j &lt; n; ++j) {</div>
-<div class="line"><span class="lineno">  399</span>      <span class="keywordflow">if</span> (arcLength[j] &gt;= targetArc) {</div>
-<div class="line"><span class="lineno">  400</span>        lowIdx = j - 1;</div>
-<div class="line"><span class="lineno">  401</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  402</span>      }</div>
-<div class="line"><span class="lineno">  403</span>    }</div>
-<div class="line"><span class="lineno">  404</span>    <span class="keywordtype">size_t</span> highIdx = lowIdx + 1;</div>
-<div class="line"><span class="lineno">  405</span> </div>
-<div class="line"><span class="lineno">  406</span>    <span class="comment">// Interpolation parameter within this segment</span></div>
-<div class="line"><span class="lineno">  407</span>    <span class="keywordtype">double</span> segmentArc = arcLength[highIdx] - arcLength[lowIdx];</div>
-<div class="line"><span class="lineno">  408</span>    <span class="keywordtype">double</span> f = (segmentArc &gt; 1e-10)</div>
-<div class="line"><span class="lineno">  409</span>                   ? (targetArc - arcLength[lowIdx]) / segmentArc</div>
-<div class="line"><span class="lineno">  410</span>                   : 0.0;</div>
-<div class="line"><span class="lineno">  411</span> </div>
-<div class="line"><span class="lineno">  412</span>    Matter newImg(densePath[0]);</div>
-<div class="line"><span class="lineno">  413</span>    newImg.setPositions(<a class="code hl_function" href="#a056c7b9e05eb6de75f8b18a3d257c2e1">cubicInterpolate</a>(</div>
-<div class="line"><span class="lineno">  414</span>        densePath[lowIdx].getPositions(), tangents[lowIdx],</div>
-<div class="line"><span class="lineno">  415</span>        densePath[highIdx].getPositions(), tangents[highIdx], f));</div>
-<div class="line"><span class="lineno">  416</span>    resampled.push_back(newImg);</div>
-<div class="line"><span class="lineno">  417</span>  }</div>
-<div class="line"><span class="lineno">  418</span> </div>
-<div class="line"><span class="lineno">  419</span>  resampled.push_back(densePath.back());</div>
-<div class="line"><span class="lineno">  420</span>  <span class="keywordflow">return</span> resampled;</div>
-<div class="line"><span class="lineno">  421</span>}</div>
-<div class="ttc" id="anamespaceeonc_1_1helpers_1_1neb__paths_html_a056c7b9e05eb6de75f8b18a3d257c2e1"><div class="ttname"><a href="#a056c7b9e05eb6de75f8b18a3d257c2e1">eonc::helpers::neb_paths::cubicInterpolate</a></div><div class="ttdeci">AtomMatrix cubicInterpolate(const AtomMatrix &amp;P0, const AtomMatrix &amp;T0, const AtomMatrix &amp;P1, const AtomMatrix &amp;T1, double f)</div><div class="ttdoc">Interpolates positions using a cubic Hermite spline.</div><div class="ttdef"><b>Definition</b> <a href="NEBInitialPaths_8cpp_source.html#l00330">NEBInitialPaths.cpp:330</a></div></div>
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00344">344</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  345</span>                                                     {</div>
+<div class="line"><span class="lineno">  346</span>  <span class="keywordflow">if</span> (densePath.size() == targetCount + 2)</div>
+<div class="line"><span class="lineno">  347</span>    <span class="keywordflow">return</span> densePath;</div>
+<div class="line"><span class="lineno">  348</span> </div>
+<div class="line"><span class="lineno">  349</span>  <span class="keywordtype">size_t</span> n = densePath.size();</div>
+<div class="line"><span class="lineno">  350</span> </div>
+<div class="line"><span class="lineno">  351</span>  <span class="comment">// Calculate cumulative arc length along the path</span></div>
+<div class="line"><span class="lineno">  352</span>  std::vector&lt;double&gt; arcLength(n, 0.0);</div>
+<div class="line"><span class="lineno">  353</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; n; ++i) {</div>
+<div class="line"><span class="lineno">  354</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff = densePath[i].pbc(densePath[i].getPositions() -</div>
+<div class="line"><span class="lineno">  355</span>                                       densePath[i - 1].getPositions());</div>
+<div class="line"><span class="lineno">  356</span>    arcLength[i] = arcLength[i - 1] + diff.norm();</div>
+<div class="line"><span class="lineno">  357</span>  }</div>
+<div class="line"><span class="lineno">  358</span>  <span class="keywordtype">double</span> totalLength = arcLength.back();</div>
+<div class="line"><span class="lineno">  359</span> </div>
+<div class="line"><span class="lineno">  360</span>  <span class="comment">// Calculate tangents for cubic interpolation</span></div>
+<div class="line"><span class="lineno">  361</span>  std::vector&lt;AtomMatrix&gt; tangents(n);</div>
+<div class="line"><span class="lineno">  362</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; n; ++i) {</div>
+<div class="line"><span class="lineno">  363</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> T;</div>
+<div class="line"><span class="lineno">  364</span>    <span class="keywordflow">if</span> (i == 0) {</div>
+<div class="line"><span class="lineno">  365</span>      T = densePath[i].pbc(densePath[i + 1].getPositions() -</div>
+<div class="line"><span class="lineno">  366</span>                           densePath[i].getPositions());</div>
+<div class="line"><span class="lineno">  367</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (i == n - 1) {</div>
+<div class="line"><span class="lineno">  368</span>      T = densePath[i].pbc(densePath[i].getPositions() -</div>
+<div class="line"><span class="lineno">  369</span>                           densePath[i - 1].getPositions());</div>
+<div class="line"><span class="lineno">  370</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  371</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dNext = densePath[i].pbc(densePath[i + 1].getPositions() -</div>
+<div class="line"><span class="lineno">  372</span>                                          densePath[i].getPositions());</div>
+<div class="line"><span class="lineno">  373</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dPrev = densePath[i].pbc(densePath[i].getPositions() -</div>
+<div class="line"><span class="lineno">  374</span>                                          densePath[i - 1].getPositions());</div>
+<div class="line"><span class="lineno">  375</span>      T = 0.5 * (dNext + dPrev);</div>
+<div class="line"><span class="lineno">  376</span>    }</div>
+<div class="line"><span class="lineno">  377</span>    <span class="comment">// Scale tangent by local segment length for proper spline parameterization</span></div>
+<div class="line"><span class="lineno">  378</span>    <span class="keywordflow">if</span> (i &gt; 0 &amp;&amp; i &lt; n - 1) {</div>
+<div class="line"><span class="lineno">  379</span>      <span class="keywordtype">double</span> localScale = (arcLength[i + 1] - arcLength[i - 1]) / 2.0;</div>
+<div class="line"><span class="lineno">  380</span>      T = T.normalized() * localScale;</div>
+<div class="line"><span class="lineno">  381</span>    }</div>
+<div class="line"><span class="lineno">  382</span>    tangents[i] = T;</div>
+<div class="line"><span class="lineno">  383</span>  }</div>
+<div class="line"><span class="lineno">  384</span> </div>
+<div class="line"><span class="lineno">  385</span>  std::vector&lt;Matter&gt; resampled;</div>
+<div class="line"><span class="lineno">  386</span>  resampled.reserve(targetCount + 2);</div>
+<div class="line"><span class="lineno">  387</span>  resampled.push_back(densePath.front());</div>
+<div class="line"><span class="lineno">  388</span> </div>
+<div class="line"><span class="lineno">  389</span>  <span class="comment">// Place new images at equal arc-length intervals</span></div>
+<div class="line"><span class="lineno">  390</span>  <span class="keywordtype">double</span> segmentLength = totalLength / (targetCount + 1);</div>
+<div class="line"><span class="lineno">  391</span> </div>
+<div class="line"><span class="lineno">  392</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt;= targetCount; ++i) {</div>
+<div class="line"><span class="lineno">  393</span>    <span class="keywordtype">double</span> targetArc = i * segmentLength;</div>
+<div class="line"><span class="lineno">  394</span> </div>
+<div class="line"><span class="lineno">  395</span>    <span class="comment">// Find the segment containing this arc length</span></div>
+<div class="line"><span class="lineno">  396</span>    <span class="keywordtype">size_t</span> lowIdx = 0;</div>
+<div class="line"><span class="lineno">  397</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 1; j &lt; n; ++j) {</div>
+<div class="line"><span class="lineno">  398</span>      <span class="keywordflow">if</span> (arcLength[j] &gt;= targetArc) {</div>
+<div class="line"><span class="lineno">  399</span>        lowIdx = j - 1;</div>
+<div class="line"><span class="lineno">  400</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  401</span>      }</div>
+<div class="line"><span class="lineno">  402</span>    }</div>
+<div class="line"><span class="lineno">  403</span>    <span class="keywordtype">size_t</span> highIdx = lowIdx + 1;</div>
+<div class="line"><span class="lineno">  404</span> </div>
+<div class="line"><span class="lineno">  405</span>    <span class="comment">// Interpolation parameter within this segment</span></div>
+<div class="line"><span class="lineno">  406</span>    <span class="keywordtype">double</span> segmentArc = arcLength[highIdx] - arcLength[lowIdx];</div>
+<div class="line"><span class="lineno">  407</span>    <span class="keywordtype">double</span> f = (segmentArc &gt; 1e-10)</div>
+<div class="line"><span class="lineno">  408</span>                   ? (targetArc - arcLength[lowIdx]) / segmentArc</div>
+<div class="line"><span class="lineno">  409</span>                   : 0.0;</div>
+<div class="line"><span class="lineno">  410</span> </div>
+<div class="line"><span class="lineno">  411</span>    Matter newImg(densePath[0]);</div>
+<div class="line"><span class="lineno">  412</span>    newImg.setPositions(<a class="code hl_function" href="#a056c7b9e05eb6de75f8b18a3d257c2e1">cubicInterpolate</a>(</div>
+<div class="line"><span class="lineno">  413</span>        densePath[lowIdx].getPositions(), tangents[lowIdx],</div>
+<div class="line"><span class="lineno">  414</span>        densePath[highIdx].getPositions(), tangents[highIdx], f));</div>
+<div class="line"><span class="lineno">  415</span>    resampled.push_back(newImg);</div>
+<div class="line"><span class="lineno">  416</span>  }</div>
+<div class="line"><span class="lineno">  417</span> </div>
+<div class="line"><span class="lineno">  418</span>  resampled.push_back(densePath.back());</div>
+<div class="line"><span class="lineno">  419</span>  <span class="keywordflow">return</span> resampled;</div>
+<div class="line"><span class="lineno">  420</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_1_1neb__paths_html_a056c7b9e05eb6de75f8b18a3d257c2e1"><div class="ttname"><a href="#a056c7b9e05eb6de75f8b18a3d257c2e1">eonc::helpers::neb_paths::cubicInterpolate</a></div><div class="ttdeci">AtomMatrix cubicInterpolate(const AtomMatrix &amp;P0, const AtomMatrix &amp;T0, const AtomMatrix &amp;P1, const AtomMatrix &amp;T1, double f)</div><div class="ttdoc">Interpolates positions using a cubic Hermite spline.</div><div class="ttdef"><b>Definition</b> <a href="NEBInitialPaths_8cpp_source.html#l00329">NEBInitialPaths.cpp:329</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -882,71 +882,71 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00423">423</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  423</span>                                                              {</div>
-<div class="line"><span class="lineno">  424</span>  <span class="keywordtype">size_t</span> n = path.size();</div>
-<div class="line"><span class="lineno">  425</span>  <span class="keywordflow">if</span> (n &lt; 3)</div>
-<div class="line"><span class="lineno">  426</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  427</span> </div>
-<div class="line"><span class="lineno">  428</span>  <span class="comment">// Calculate cumulative arc length</span></div>
-<div class="line"><span class="lineno">  429</span>  std::vector&lt;double&gt; arcLength(n, 0.0);</div>
-<div class="line"><span class="lineno">  430</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; n; ++i) {</div>
-<div class="line"><span class="lineno">  431</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff =</div>
-<div class="line"><span class="lineno">  432</span>        path[i]-&gt;pbc(path[i]-&gt;getPositions() - path[i - 1]-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  433</span>    arcLength[i] = arcLength[i - 1] + diff.norm();</div>
-<div class="line"><span class="lineno">  434</span>  }</div>
-<div class="line"><span class="lineno">  435</span>  <span class="keywordtype">double</span> totalLength = arcLength.back();</div>
-<div class="line"><span class="lineno">  436</span>  <span class="keywordflow">if</span> (totalLength &lt; 1e-12)</div>
-<div class="line"><span class="lineno">  437</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  438</span> </div>
-<div class="line"><span class="lineno">  439</span>  <span class="comment">// Tangents for cubic interpolation</span></div>
-<div class="line"><span class="lineno">  440</span>  std::vector&lt;AtomMatrix&gt; tangents(n);</div>
-<div class="line"><span class="lineno">  441</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; n; ++i) {</div>
-<div class="line"><span class="lineno">  442</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> T;</div>
-<div class="line"><span class="lineno">  443</span>    <span class="keywordflow">if</span> (i == 0) {</div>
-<div class="line"><span class="lineno">  444</span>      T = path[i]-&gt;pbc(path[i + 1]-&gt;getPositions() - path[i]-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  445</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (i == n - 1) {</div>
-<div class="line"><span class="lineno">  446</span>      T = path[i]-&gt;pbc(path[i]-&gt;getPositions() - path[i - 1]-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  447</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  448</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dN =</div>
-<div class="line"><span class="lineno">  449</span>          path[i]-&gt;pbc(path[i + 1]-&gt;getPositions() - path[i]-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  450</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dP =</div>
-<div class="line"><span class="lineno">  451</span>          path[i]-&gt;pbc(path[i]-&gt;getPositions() - path[i - 1]-&gt;getPositions());</div>
-<div class="line"><span class="lineno">  452</span>      T = 0.5 * (dN + dP);</div>
-<div class="line"><span class="lineno">  453</span>    }</div>
-<div class="line"><span class="lineno">  454</span>    <span class="keywordflow">if</span> (i &gt; 0 &amp;&amp; i &lt; n - 1) {</div>
-<div class="line"><span class="lineno">  455</span>      <span class="keywordtype">double</span> localScale = (arcLength[i + 1] - arcLength[i - 1]) / 2.0;</div>
-<div class="line"><span class="lineno">  456</span>      T = T.normalized() * localScale;</div>
-<div class="line"><span class="lineno">  457</span>    }</div>
-<div class="line"><span class="lineno">  458</span>    tangents[i] = T;</div>
-<div class="line"><span class="lineno">  459</span>  }</div>
-<div class="line"><span class="lineno">  460</span> </div>
-<div class="line"><span class="lineno">  461</span>  <span class="comment">// Store original positions for interpolation source</span></div>
-<div class="line"><span class="lineno">  462</span>  std::vector&lt;AtomMatrix&gt; origPos(n);</div>
-<div class="line"><span class="lineno">  463</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; n; ++i)</div>
-<div class="line"><span class="lineno">  464</span>    origPos[i] = path[i]-&gt;getPositions();</div>
-<div class="line"><span class="lineno">  465</span> </div>
-<div class="line"><span class="lineno">  466</span>  <span class="comment">// Redistribute interior images at equal arc-length intervals (in-place)</span></div>
-<div class="line"><span class="lineno">  467</span>  <span class="keywordtype">size_t</span> nInterior = n - 2;</div>
-<div class="line"><span class="lineno">  468</span>  <span class="keywordtype">double</span> segLen = totalLength / (nInterior + 1);</div>
-<div class="line"><span class="lineno">  469</span> </div>
-<div class="line"><span class="lineno">  470</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt;= nInterior; ++i) {</div>
-<div class="line"><span class="lineno">  471</span>    <span class="keywordtype">double</span> targetArc = i * segLen;</div>
-<div class="line"><span class="lineno">  472</span>    <span class="keywordtype">size_t</span> lo = 0;</div>
-<div class="line"><span class="lineno">  473</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 1; j &lt; n; ++j) {</div>
-<div class="line"><span class="lineno">  474</span>      <span class="keywordflow">if</span> (arcLength[j] &gt;= targetArc) {</div>
-<div class="line"><span class="lineno">  475</span>        lo = j - 1;</div>
-<div class="line"><span class="lineno">  476</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  477</span>      }</div>
-<div class="line"><span class="lineno">  478</span>    }</div>
-<div class="line"><span class="lineno">  479</span>    <span class="keywordtype">size_t</span> hi = lo + 1;</div>
-<div class="line"><span class="lineno">  480</span>    <span class="keywordtype">double</span> sArc = arcLength[hi] - arcLength[lo];</div>
-<div class="line"><span class="lineno">  481</span>    <span class="keywordtype">double</span> f = (sArc &gt; 1e-10) ? (targetArc - arcLength[lo]) / sArc : 0.0;</div>
-<div class="line"><span class="lineno">  482</span> </div>
-<div class="line"><span class="lineno">  483</span>    path[i]-&gt;setPositions(<a class="code hl_function" href="#a056c7b9e05eb6de75f8b18a3d257c2e1">cubicInterpolate</a>(origPos[lo], tangents[lo],</div>
-<div class="line"><span class="lineno">  484</span>                                           origPos[hi], tangents[hi], f));</div>
-<div class="line"><span class="lineno">  485</span>  }</div>
-<div class="line"><span class="lineno">  486</span>}</div>
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00422">422</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  422</span>                                                              {</div>
+<div class="line"><span class="lineno">  423</span>  <span class="keywordtype">size_t</span> n = path.size();</div>
+<div class="line"><span class="lineno">  424</span>  <span class="keywordflow">if</span> (n &lt; 3)</div>
+<div class="line"><span class="lineno">  425</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  426</span> </div>
+<div class="line"><span class="lineno">  427</span>  <span class="comment">// Calculate cumulative arc length</span></div>
+<div class="line"><span class="lineno">  428</span>  std::vector&lt;double&gt; arcLength(n, 0.0);</div>
+<div class="line"><span class="lineno">  429</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; n; ++i) {</div>
+<div class="line"><span class="lineno">  430</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> diff =</div>
+<div class="line"><span class="lineno">  431</span>        path[i]-&gt;pbc(path[i]-&gt;getPositions() - path[i - 1]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  432</span>    arcLength[i] = arcLength[i - 1] + diff.norm();</div>
+<div class="line"><span class="lineno">  433</span>  }</div>
+<div class="line"><span class="lineno">  434</span>  <span class="keywordtype">double</span> totalLength = arcLength.back();</div>
+<div class="line"><span class="lineno">  435</span>  <span class="keywordflow">if</span> (totalLength &lt; 1e-12)</div>
+<div class="line"><span class="lineno">  436</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  437</span> </div>
+<div class="line"><span class="lineno">  438</span>  <span class="comment">// Tangents for cubic interpolation</span></div>
+<div class="line"><span class="lineno">  439</span>  std::vector&lt;AtomMatrix&gt; tangents(n);</div>
+<div class="line"><span class="lineno">  440</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; n; ++i) {</div>
+<div class="line"><span class="lineno">  441</span>    <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> T;</div>
+<div class="line"><span class="lineno">  442</span>    <span class="keywordflow">if</span> (i == 0) {</div>
+<div class="line"><span class="lineno">  443</span>      T = path[i]-&gt;pbc(path[i + 1]-&gt;getPositions() - path[i]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  444</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (i == n - 1) {</div>
+<div class="line"><span class="lineno">  445</span>      T = path[i]-&gt;pbc(path[i]-&gt;getPositions() - path[i - 1]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  446</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  447</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dN =</div>
+<div class="line"><span class="lineno">  448</span>          path[i]-&gt;pbc(path[i + 1]-&gt;getPositions() - path[i]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  449</span>      <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> dP =</div>
+<div class="line"><span class="lineno">  450</span>          path[i]-&gt;pbc(path[i]-&gt;getPositions() - path[i - 1]-&gt;getPositions());</div>
+<div class="line"><span class="lineno">  451</span>      T = 0.5 * (dN + dP);</div>
+<div class="line"><span class="lineno">  452</span>    }</div>
+<div class="line"><span class="lineno">  453</span>    <span class="keywordflow">if</span> (i &gt; 0 &amp;&amp; i &lt; n - 1) {</div>
+<div class="line"><span class="lineno">  454</span>      <span class="keywordtype">double</span> localScale = (arcLength[i + 1] - arcLength[i - 1]) / 2.0;</div>
+<div class="line"><span class="lineno">  455</span>      T = T.normalized() * localScale;</div>
+<div class="line"><span class="lineno">  456</span>    }</div>
+<div class="line"><span class="lineno">  457</span>    tangents[i] = T;</div>
+<div class="line"><span class="lineno">  458</span>  }</div>
+<div class="line"><span class="lineno">  459</span> </div>
+<div class="line"><span class="lineno">  460</span>  <span class="comment">// Store original positions for interpolation source</span></div>
+<div class="line"><span class="lineno">  461</span>  std::vector&lt;AtomMatrix&gt; origPos(n);</div>
+<div class="line"><span class="lineno">  462</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; n; ++i)</div>
+<div class="line"><span class="lineno">  463</span>    origPos[i] = path[i]-&gt;getPositions();</div>
+<div class="line"><span class="lineno">  464</span> </div>
+<div class="line"><span class="lineno">  465</span>  <span class="comment">// Redistribute interior images at equal arc-length intervals (in-place)</span></div>
+<div class="line"><span class="lineno">  466</span>  <span class="keywordtype">size_t</span> nInterior = n - 2;</div>
+<div class="line"><span class="lineno">  467</span>  <span class="keywordtype">double</span> segLen = totalLength / (nInterior + 1);</div>
+<div class="line"><span class="lineno">  468</span> </div>
+<div class="line"><span class="lineno">  469</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt;= nInterior; ++i) {</div>
+<div class="line"><span class="lineno">  470</span>    <span class="keywordtype">double</span> targetArc = i * segLen;</div>
+<div class="line"><span class="lineno">  471</span>    <span class="keywordtype">size_t</span> lo = 0;</div>
+<div class="line"><span class="lineno">  472</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 1; j &lt; n; ++j) {</div>
+<div class="line"><span class="lineno">  473</span>      <span class="keywordflow">if</span> (arcLength[j] &gt;= targetArc) {</div>
+<div class="line"><span class="lineno">  474</span>        lo = j - 1;</div>
+<div class="line"><span class="lineno">  475</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  476</span>      }</div>
+<div class="line"><span class="lineno">  477</span>    }</div>
+<div class="line"><span class="lineno">  478</span>    <span class="keywordtype">size_t</span> hi = lo + 1;</div>
+<div class="line"><span class="lineno">  479</span>    <span class="keywordtype">double</span> sArc = arcLength[hi] - arcLength[lo];</div>
+<div class="line"><span class="lineno">  480</span>    <span class="keywordtype">double</span> f = (sArc &gt; 1e-10) ? (targetArc - arcLength[lo]) / sArc : 0.0;</div>
+<div class="line"><span class="lineno">  481</span> </div>
+<div class="line"><span class="lineno">  482</span>    path[i]-&gt;setPositions(<a class="code hl_function" href="#a056c7b9e05eb6de75f8b18a3d257c2e1">cubicInterpolate</a>(origPos[lo], tangents[lo],</div>
+<div class="line"><span class="lineno">  483</span>                                           origPos[hi], tangents[hi], f));</div>
+<div class="line"><span class="lineno">  484</span>  }</div>
+<div class="line"><span class="lineno">  485</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -984,116 +984,116 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00220">220</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  222</span>                                            {</div>
-<div class="line"><span class="lineno">  223</span> </div>
-<div class="line"><span class="lineno">  224</span>  <span class="keyword">auto</span> <a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a> = <a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>();</div>
-<div class="line"><span class="lineno">  225</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;init = params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t.html#a363ee7a2ad150268bc4567c76aa225f3">initialization</a>;</div>
-<div class="line"><span class="lineno">  226</span>  QUILL_LOG_INFO(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>,</div>
-<div class="line"><span class="lineno">  227</span>                 <span class="stringliteral">&quot;Generating initial path using S-IDPP{} ({} images, &quot;</span></div>
-<div class="line"><span class="lineno">  228</span>                 <span class="stringliteral">&quot;alpha={:.2f}, frontier_tol={:.4f})...&quot;</span>,</div>
-<div class="line"><span class="lineno">  229</span>                 use_zbl ? <span class="stringliteral">&quot;-ZBL&quot;</span> : <span class="stringliteral">&quot;&quot;</span>, target_nimgs, init.sidpp_alpha,</div>
-<div class="line"><span class="lineno">  230</span>                 init.sidpp_frontier_tol);</div>
-<div class="line"><span class="lineno">  231</span> </div>
-<div class="line"><span class="lineno">  232</span>  <span class="comment">// 1. Start with endpoints [Reactant, Product]</span></div>
-<div class="line"><span class="lineno">  233</span>  std::vector&lt;Matter&gt; path;</div>
-<div class="line"><span class="lineno">  234</span>  path.push_back(initImg);</div>
-<div class="line"><span class="lineno">  235</span>  path.push_back(finalImg);</div>
-<div class="line"><span class="lineno">  236</span> </div>
-<div class="line"><span class="lineno">  237</span>  std::shared_ptr&lt;Potential&gt; zbl_pot = <span class="keyword">nullptr</span>;</div>
-<div class="line"><span class="lineno">  238</span>  <span class="keywordflow">if</span> (use_zbl) {</div>
-<div class="line"><span class="lineno">  239</span>    zbl_pot = <a class="code hl_function" href="#a78b6ee8c903f3dd4b5a60195717efa92">createZBLPotential</a>();</div>
-<div class="line"><span class="lineno">  240</span>  }</div>
-<div class="line"><span class="lineno">  241</span> </div>
-<div class="line"><span class="lineno">  242</span>  <span class="comment">// Track frontier counts: nLeft images from reactant, nRight from product</span></div>
-<div class="line"><span class="lineno">  243</span>  <span class="keywordtype">int</span> nLeft = 0;</div>
-<div class="line"><span class="lineno">  244</span>  <span class="keywordtype">int</span> nRight = 0;</div>
-<div class="line"><span class="lineno">  245</span>  <span class="keywordtype">int</span> nIntermediate = 0;</div>
-<div class="line"><span class="lineno">  246</span>  <span class="keywordtype">bool</span> addToLeft = <span class="keyword">true</span>; <span class="comment">// Alternate L/R, starting with left</span></div>
-<div class="line"><span class="lineno">  247</span> </div>
-<div class="line"><span class="lineno">  248</span>  <span class="comment">// Helper: create IDPP objective with optional ZBL wrapping</span></div>
-<div class="line"><span class="lineno">  249</span>  <span class="keyword">auto</span> makeIDPP = [&amp;]() -&gt; std::shared_ptr&lt;ObjectiveFunction&gt; {</div>
-<div class="line"><span class="lineno">  250</span>    <span class="keyword">auto</span> objf = std::make_shared&lt;CollectiveIDPPObjectiveFunction&gt;(path, params);</div>
-<div class="line"><span class="lineno">  251</span>    <span class="keywordflow">if</span> (use_zbl &amp;&amp; zbl_pot) {</div>
-<div class="line"><span class="lineno">  252</span>      <span class="keywordflow">return</span> std::make_shared&lt;ZBLRepulsiveIDPPObjective&gt;(objf, zbl_pot, path,</div>
-<div class="line"><span class="lineno">  253</span>                                                         params, 1.0);</div>
-<div class="line"><span class="lineno">  254</span>    }</div>
-<div class="line"><span class="lineno">  255</span>    <span class="keywordflow">return</span> objf;</div>
-<div class="line"><span class="lineno">  256</span>  };</div>
-<div class="line"><span class="lineno">  257</span> </div>
-<div class="line"><span class="lineno">  258</span>  <span class="comment">// Helper: relax current path on IDPP surface</span></div>
-<div class="line"><span class="lineno">  259</span>  <span class="keyword">auto</span> relaxPath = [&amp;](<span class="keywordtype">int</span> maxSteps) -&gt; <span class="keywordtype">double</span> {</div>
-<div class="line"><span class="lineno">  260</span>    <span class="keyword">auto</span> objf = makeIDPP();</div>
-<div class="line"><span class="lineno">  261</span>    <span class="keyword">auto</span> optim = <a class="code hl_function" href="namespaceeonc_1_1helpers_1_1create.html#a5b0011df69b04b52916bd7150ab60fc4">eonc::helpers::create::mkOptim</a>(objf, init.opt_method, params);</div>
-<div class="line"><span class="lineno">  262</span>    <span class="keywordtype">int</span> step = 0;</div>
-<div class="line"><span class="lineno">  263</span>    <span class="keywordflow">while</span> (step &lt; maxSteps) {</div>
-<div class="line"><span class="lineno">  264</span>      optim-&gt;run(5, init.max_move);</div>
-<div class="line"><span class="lineno">  265</span>      step += 5;</div>
-<div class="line"><span class="lineno">  266</span>      <span class="keywordflow">if</span> (objf-&gt;isConverged())</div>
-<div class="line"><span class="lineno">  267</span>        <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  268</span>    }</div>
-<div class="line"><span class="lineno">  269</span>    <span class="keywordflow">return</span> objf-&gt;getConvergence();</div>
-<div class="line"><span class="lineno">  270</span>  };</div>
-<div class="line"><span class="lineno">  271</span> </div>
-<div class="line"><span class="lineno">  272</span>  <span class="comment">// 2. Sequential growth loop: alternate adding images from L and R</span></div>
-<div class="line"><span class="lineno">  273</span>  <span class="keywordflow">while</span> (nIntermediate &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(target_nimgs)) {</div>
-<div class="line"><span class="lineno">  274</span> </div>
-<div class="line"><span class="lineno">  275</span>    <span class="keywordflow">if</span> (addToLeft &amp;&amp; nIntermediate &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(target_nimgs)) {</div>
-<div class="line"><span class="lineno">  276</span>      <span class="comment">// Add to left (reactant) frontier</span></div>
-<div class="line"><span class="lineno">  277</span>      Matter &amp;frontier = path[nLeft];</div>
-<div class="line"><span class="lineno">  278</span>      Matter &amp;next = path[nLeft + 1];</div>
-<div class="line"><span class="lineno">  279</span>      Matter newImg = <a class="code hl_function" href="#a2a6dea80431322a416c54ae728b401ee">interpolateImage</a>(frontier, next, init.sidpp_alpha);</div>
-<div class="line"><span class="lineno">  280</span>      path.insert(path.begin() + nLeft + 1, newImg);</div>
-<div class="line"><span class="lineno">  281</span>      nLeft++;</div>
-<div class="line"><span class="lineno">  282</span>      nIntermediate++;</div>
-<div class="line"><span class="lineno">  283</span>      QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;S-IDPP: +L frontier (nL={}, nR={}, total={})&quot;</span>,</div>
-<div class="line"><span class="lineno">  284</span>                      nLeft, nRight, nIntermediate);</div>
-<div class="line"><span class="lineno">  285</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (nIntermediate &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(target_nimgs)) {</div>
-<div class="line"><span class="lineno">  286</span>      <span class="comment">// Add to right (product) frontier</span></div>
-<div class="line"><span class="lineno">  287</span>      <span class="keywordtype">int</span> rightIdx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(path.size()) - 1 - nRight;</div>
-<div class="line"><span class="lineno">  288</span>      Matter &amp;frontier = path[rightIdx];</div>
-<div class="line"><span class="lineno">  289</span>      Matter &amp;prev = path[rightIdx - 1];</div>
-<div class="line"><span class="lineno">  290</span>      Matter newImg = <a class="code hl_function" href="#a2a6dea80431322a416c54ae728b401ee">interpolateImage</a>(frontier, prev, init.sidpp_alpha);</div>
-<div class="line"><span class="lineno">  291</span>      path.insert(path.begin() + rightIdx, newImg);</div>
-<div class="line"><span class="lineno">  292</span>      nRight++;</div>
-<div class="line"><span class="lineno">  293</span>      nIntermediate++;</div>
-<div class="line"><span class="lineno">  294</span>      QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;S-IDPP: +R frontier (nL={}, nR={}, total={})&quot;</span>,</div>
-<div class="line"><span class="lineno">  295</span>                      nLeft, nRight, nIntermediate);</div>
-<div class="line"><span class="lineno">  296</span>    }</div>
-<div class="line"><span class="lineno">  297</span>    addToLeft = !addToLeft; <span class="comment">// Alternate sides</span></div>
-<div class="line"><span class="lineno">  298</span> </div>
-<div class="line"><span class="lineno">  299</span>    <span class="comment">// Optimize current path on IDPP surface</span></div>
-<div class="line"><span class="lineno">  300</span>    <span class="keywordtype">double</span> residual = relaxPath(init.nsteps);</div>
-<div class="line"><span class="lineno">  301</span> </div>
-<div class="line"><span class="lineno">  302</span>    <span class="comment">// Frontier convergence gating: if not converged, keep relaxing</span></div>
-<div class="line"><span class="lineno">  303</span>    <span class="comment">// before adding more images (up to max_iterations total)</span></div>
-<div class="line"><span class="lineno">  304</span>    <span class="keywordflow">if</span> (residual &gt; init.sidpp_frontier_tol) {</div>
-<div class="line"><span class="lineno">  305</span>      <span class="keywordtype">double</span> residual2 = relaxPath(init.max_iterations - init.nsteps);</div>
-<div class="line"><span class="lineno">  306</span>      QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;S-IDPP: Extended relaxation {:.4f} -&gt; {:.4f}&quot;</span>,</div>
-<div class="line"><span class="lineno">  307</span>                      residual, residual2);</div>
-<div class="line"><span class="lineno">  308</span>      residual = residual2;</div>
-<div class="line"><span class="lineno">  309</span>    }</div>
-<div class="line"><span class="lineno">  310</span> </div>
-<div class="line"><span class="lineno">  311</span>    QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;S-IDPP: {} images | Residual: {:.4f}&quot;</span>, nIntermediate,</div>
-<div class="line"><span class="lineno">  312</span>                    residual);</div>
-<div class="line"><span class="lineno">  313</span>  }</div>
-<div class="line"><span class="lineno">  314</span> </div>
-<div class="line"><span class="lineno">  315</span>  <span class="comment">// 3. Reparameterize: redistribute images evenly along arc length</span></div>
-<div class="line"><span class="lineno">  316</span>  <span class="keywordflow">if</span> (init.sidpp_reparam &amp;&amp; path.size() &gt; 3) {</div>
-<div class="line"><span class="lineno">  317</span>    QUILL_LOG_INFO(log, <span class="stringliteral">&quot;S-IDPP: Reparameterizing {} images along arc length&quot;</span>,</div>
-<div class="line"><span class="lineno">  318</span>                   path.size() - 2);</div>
-<div class="line"><span class="lineno">  319</span>    path = <a class="code hl_function" href="#a228cf26acf7d7d5deb0f43d3d6634049">resamplePath</a>(path, target_nimgs);</div>
-<div class="line"><span class="lineno">  320</span>  }</div>
-<div class="line"><span class="lineno">  321</span> </div>
-<div class="line"><span class="lineno">  322</span>  <span class="comment">// 4. Final relaxation of the complete path</span></div>
-<div class="line"><span class="lineno">  323</span>  QUILL_LOG_INFO(log, <span class="stringliteral">&quot;S-IDPP: Final relaxation of full path...&quot;</span>);</div>
-<div class="line"><span class="lineno">  324</span>  <span class="keywordtype">double</span> finalResidual = relaxPath(init.max_iterations);</div>
-<div class="line"><span class="lineno">  325</span>  QUILL_LOG_INFO(log, <span class="stringliteral">&quot;S-IDPP: Final residual: {:.4f}&quot;</span>, finalResidual);</div>
-<div class="line"><span class="lineno">  326</span> </div>
-<div class="line"><span class="lineno">  327</span>  <span class="keywordflow">return</span> path;</div>
-<div class="line"><span class="lineno">  328</span>}</div>
-<div class="ttc" id="anamespaceeonc_1_1helpers_1_1neb__paths_html_a228cf26acf7d7d5deb0f43d3d6634049"><div class="ttname"><a href="#a228cf26acf7d7d5deb0f43d3d6634049">eonc::helpers::neb_paths::resamplePath</a></div><div class="ttdeci">std::vector&lt; Matter &gt; resamplePath(const std::vector&lt; Matter &gt; &amp;densePath, size_t targetCount)</div><div class="ttdef"><b>Definition</b> <a href="NEBInitialPaths_8cpp_source.html#l00345">NEBInitialPaths.cpp:345</a></div></div>
-<div class="ttc" id="anamespaceeonc_1_1helpers_1_1neb__paths_html_a2a6dea80431322a416c54ae728b401ee"><div class="ttname"><a href="#a2a6dea80431322a416c54ae728b401ee">eonc::helpers::neb_paths::interpolateImage</a></div><div class="ttdeci">Matter interpolateImage(const Matter &amp;A, const Matter &amp;B, double fraction)</div><div class="ttdef"><b>Definition</b> <a href="NEBInitialPaths_8cpp_source.html#l00210">NEBInitialPaths.cpp:210</a></div></div>
+<p class="definition">Definition at line <a class="el" href="NEBInitialPaths_8cpp_source.html#l00219">219</a> of file <a class="el" href="NEBInitialPaths_8cpp_source.html">NEBInitialPaths.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  221</span>                                            {</div>
+<div class="line"><span class="lineno">  222</span> </div>
+<div class="line"><span class="lineno">  223</span>  <span class="keyword">auto</span> <a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a> = <a class="code hl_function" href="namespaceeonc_1_1log.html#a4e7c8b5e4189cf657384f1c4bbf14dab">eonc::log::get</a>();</div>
+<div class="line"><span class="lineno">  224</span>  <span class="keyword">const</span> <span class="keyword">auto</span> &amp;init = params.<a class="code hl_variable" href="classeonc_1_1Parameters.html#a40bad5f66d7bb2ccfca684f8ecf850c2">neb_options</a>.<a class="code hl_variable" href="structeonc_1_1Parameters_1_1neb__options__t.html#a363ee7a2ad150268bc4567c76aa225f3">initialization</a>;</div>
+<div class="line"><span class="lineno">  225</span>  QUILL_LOG_INFO(<a class="code hl_namespace" href="namespaceeonc_1_1log.html">log</a>,</div>
+<div class="line"><span class="lineno">  226</span>                 <span class="stringliteral">&quot;Generating initial path using S-IDPP{} ({} images, &quot;</span></div>
+<div class="line"><span class="lineno">  227</span>                 <span class="stringliteral">&quot;alpha={:.2f}, frontier_tol={:.4f})...&quot;</span>,</div>
+<div class="line"><span class="lineno">  228</span>                 use_zbl ? <span class="stringliteral">&quot;-ZBL&quot;</span> : <span class="stringliteral">&quot;&quot;</span>, target_nimgs, init.sidpp_alpha,</div>
+<div class="line"><span class="lineno">  229</span>                 init.sidpp_frontier_tol);</div>
+<div class="line"><span class="lineno">  230</span> </div>
+<div class="line"><span class="lineno">  231</span>  <span class="comment">// 1. Start with endpoints [Reactant, Product]</span></div>
+<div class="line"><span class="lineno">  232</span>  std::vector&lt;Matter&gt; path;</div>
+<div class="line"><span class="lineno">  233</span>  path.push_back(initImg);</div>
+<div class="line"><span class="lineno">  234</span>  path.push_back(finalImg);</div>
+<div class="line"><span class="lineno">  235</span> </div>
+<div class="line"><span class="lineno">  236</span>  std::shared_ptr&lt;Potential&gt; zbl_pot = <span class="keyword">nullptr</span>;</div>
+<div class="line"><span class="lineno">  237</span>  <span class="keywordflow">if</span> (use_zbl) {</div>
+<div class="line"><span class="lineno">  238</span>    zbl_pot = <a class="code hl_function" href="#a78b6ee8c903f3dd4b5a60195717efa92">createZBLPotential</a>();</div>
+<div class="line"><span class="lineno">  239</span>  }</div>
+<div class="line"><span class="lineno">  240</span> </div>
+<div class="line"><span class="lineno">  241</span>  <span class="comment">// Track frontier counts: nLeft images from reactant, nRight from product</span></div>
+<div class="line"><span class="lineno">  242</span>  <span class="keywordtype">int</span> nLeft = 0;</div>
+<div class="line"><span class="lineno">  243</span>  <span class="keywordtype">int</span> nRight = 0;</div>
+<div class="line"><span class="lineno">  244</span>  <span class="keywordtype">int</span> nIntermediate = 0;</div>
+<div class="line"><span class="lineno">  245</span>  <span class="keywordtype">bool</span> addToLeft = <span class="keyword">true</span>; <span class="comment">// Alternate L/R, starting with left</span></div>
+<div class="line"><span class="lineno">  246</span> </div>
+<div class="line"><span class="lineno">  247</span>  <span class="comment">// Helper: create IDPP objective with optional ZBL wrapping</span></div>
+<div class="line"><span class="lineno">  248</span>  <span class="keyword">auto</span> makeIDPP = [&amp;]() -&gt; std::shared_ptr&lt;ObjectiveFunction&gt; {</div>
+<div class="line"><span class="lineno">  249</span>    <span class="keyword">auto</span> objf = std::make_shared&lt;CollectiveIDPPObjectiveFunction&gt;(path, params);</div>
+<div class="line"><span class="lineno">  250</span>    <span class="keywordflow">if</span> (use_zbl &amp;&amp; zbl_pot) {</div>
+<div class="line"><span class="lineno">  251</span>      <span class="keywordflow">return</span> std::make_shared&lt;ZBLRepulsiveIDPPObjective&gt;(objf, zbl_pot, path,</div>
+<div class="line"><span class="lineno">  252</span>                                                         params, 1.0);</div>
+<div class="line"><span class="lineno">  253</span>    }</div>
+<div class="line"><span class="lineno">  254</span>    <span class="keywordflow">return</span> objf;</div>
+<div class="line"><span class="lineno">  255</span>  };</div>
+<div class="line"><span class="lineno">  256</span> </div>
+<div class="line"><span class="lineno">  257</span>  <span class="comment">// Helper: relax current path on IDPP surface</span></div>
+<div class="line"><span class="lineno">  258</span>  <span class="keyword">auto</span> relaxPath = [&amp;](<span class="keywordtype">int</span> maxSteps) -&gt; <span class="keywordtype">double</span> {</div>
+<div class="line"><span class="lineno">  259</span>    <span class="keyword">auto</span> objf = makeIDPP();</div>
+<div class="line"><span class="lineno">  260</span>    <span class="keyword">auto</span> optim = <a class="code hl_function" href="namespaceeonc_1_1helpers_1_1create.html#a5b0011df69b04b52916bd7150ab60fc4">eonc::helpers::create::mkOptim</a>(objf, init.opt_method, params);</div>
+<div class="line"><span class="lineno">  261</span>    <span class="keywordtype">int</span> step = 0;</div>
+<div class="line"><span class="lineno">  262</span>    <span class="keywordflow">while</span> (step &lt; maxSteps) {</div>
+<div class="line"><span class="lineno">  263</span>      optim-&gt;run(5, init.max_move);</div>
+<div class="line"><span class="lineno">  264</span>      step += 5;</div>
+<div class="line"><span class="lineno">  265</span>      <span class="keywordflow">if</span> (objf-&gt;isConverged())</div>
+<div class="line"><span class="lineno">  266</span>        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  267</span>    }</div>
+<div class="line"><span class="lineno">  268</span>    <span class="keywordflow">return</span> objf-&gt;getConvergence();</div>
+<div class="line"><span class="lineno">  269</span>  };</div>
+<div class="line"><span class="lineno">  270</span> </div>
+<div class="line"><span class="lineno">  271</span>  <span class="comment">// 2. Sequential growth loop: alternate adding images from L and R</span></div>
+<div class="line"><span class="lineno">  272</span>  <span class="keywordflow">while</span> (nIntermediate &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(target_nimgs)) {</div>
+<div class="line"><span class="lineno">  273</span> </div>
+<div class="line"><span class="lineno">  274</span>    <span class="keywordflow">if</span> (addToLeft &amp;&amp; nIntermediate &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(target_nimgs)) {</div>
+<div class="line"><span class="lineno">  275</span>      <span class="comment">// Add to left (reactant) frontier</span></div>
+<div class="line"><span class="lineno">  276</span>      Matter &amp;frontier = path[nLeft];</div>
+<div class="line"><span class="lineno">  277</span>      Matter &amp;next = path[nLeft + 1];</div>
+<div class="line"><span class="lineno">  278</span>      Matter newImg = <a class="code hl_function" href="#a2a6dea80431322a416c54ae728b401ee">interpolateImage</a>(frontier, next, init.sidpp_alpha);</div>
+<div class="line"><span class="lineno">  279</span>      path.insert(path.begin() + nLeft + 1, newImg);</div>
+<div class="line"><span class="lineno">  280</span>      nLeft++;</div>
+<div class="line"><span class="lineno">  281</span>      nIntermediate++;</div>
+<div class="line"><span class="lineno">  282</span>      QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;S-IDPP: +L frontier (nL={}, nR={}, total={})&quot;</span>,</div>
+<div class="line"><span class="lineno">  283</span>                      nLeft, nRight, nIntermediate);</div>
+<div class="line"><span class="lineno">  284</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (nIntermediate &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(target_nimgs)) {</div>
+<div class="line"><span class="lineno">  285</span>      <span class="comment">// Add to right (product) frontier</span></div>
+<div class="line"><span class="lineno">  286</span>      <span class="keywordtype">int</span> rightIdx = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(path.size()) - 1 - nRight;</div>
+<div class="line"><span class="lineno">  287</span>      Matter &amp;frontier = path[rightIdx];</div>
+<div class="line"><span class="lineno">  288</span>      Matter &amp;prev = path[rightIdx - 1];</div>
+<div class="line"><span class="lineno">  289</span>      Matter newImg = <a class="code hl_function" href="#a2a6dea80431322a416c54ae728b401ee">interpolateImage</a>(frontier, prev, init.sidpp_alpha);</div>
+<div class="line"><span class="lineno">  290</span>      path.insert(path.begin() + rightIdx, newImg);</div>
+<div class="line"><span class="lineno">  291</span>      nRight++;</div>
+<div class="line"><span class="lineno">  292</span>      nIntermediate++;</div>
+<div class="line"><span class="lineno">  293</span>      QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;S-IDPP: +R frontier (nL={}, nR={}, total={})&quot;</span>,</div>
+<div class="line"><span class="lineno">  294</span>                      nLeft, nRight, nIntermediate);</div>
+<div class="line"><span class="lineno">  295</span>    }</div>
+<div class="line"><span class="lineno">  296</span>    addToLeft = !addToLeft; <span class="comment">// Alternate sides</span></div>
+<div class="line"><span class="lineno">  297</span> </div>
+<div class="line"><span class="lineno">  298</span>    <span class="comment">// Optimize current path on IDPP surface</span></div>
+<div class="line"><span class="lineno">  299</span>    <span class="keywordtype">double</span> residual = relaxPath(init.nsteps);</div>
+<div class="line"><span class="lineno">  300</span> </div>
+<div class="line"><span class="lineno">  301</span>    <span class="comment">// Frontier convergence gating: if not converged, keep relaxing</span></div>
+<div class="line"><span class="lineno">  302</span>    <span class="comment">// before adding more images (up to max_iterations total)</span></div>
+<div class="line"><span class="lineno">  303</span>    <span class="keywordflow">if</span> (residual &gt; init.sidpp_frontier_tol) {</div>
+<div class="line"><span class="lineno">  304</span>      <span class="keywordtype">double</span> residual2 = relaxPath(init.max_iterations - init.nsteps);</div>
+<div class="line"><span class="lineno">  305</span>      QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;S-IDPP: Extended relaxation {:.4f} -&gt; {:.4f}&quot;</span>,</div>
+<div class="line"><span class="lineno">  306</span>                      residual, residual2);</div>
+<div class="line"><span class="lineno">  307</span>      residual = residual2;</div>
+<div class="line"><span class="lineno">  308</span>    }</div>
+<div class="line"><span class="lineno">  309</span> </div>
+<div class="line"><span class="lineno">  310</span>    QUILL_LOG_DEBUG(log, <span class="stringliteral">&quot;S-IDPP: {} images | Residual: {:.4f}&quot;</span>, nIntermediate,</div>
+<div class="line"><span class="lineno">  311</span>                    residual);</div>
+<div class="line"><span class="lineno">  312</span>  }</div>
+<div class="line"><span class="lineno">  313</span> </div>
+<div class="line"><span class="lineno">  314</span>  <span class="comment">// 3. Reparameterize: redistribute images evenly along arc length</span></div>
+<div class="line"><span class="lineno">  315</span>  <span class="keywordflow">if</span> (init.sidpp_reparam &amp;&amp; path.size() &gt; 3) {</div>
+<div class="line"><span class="lineno">  316</span>    QUILL_LOG_INFO(log, <span class="stringliteral">&quot;S-IDPP: Reparameterizing {} images along arc length&quot;</span>,</div>
+<div class="line"><span class="lineno">  317</span>                   path.size() - 2);</div>
+<div class="line"><span class="lineno">  318</span>    path = <a class="code hl_function" href="#a228cf26acf7d7d5deb0f43d3d6634049">resamplePath</a>(path, target_nimgs);</div>
+<div class="line"><span class="lineno">  319</span>  }</div>
+<div class="line"><span class="lineno">  320</span> </div>
+<div class="line"><span class="lineno">  321</span>  <span class="comment">// 4. Final relaxation of the complete path</span></div>
+<div class="line"><span class="lineno">  322</span>  QUILL_LOG_INFO(log, <span class="stringliteral">&quot;S-IDPP: Final relaxation of full path...&quot;</span>);</div>
+<div class="line"><span class="lineno">  323</span>  <span class="keywordtype">double</span> finalResidual = relaxPath(init.max_iterations);</div>
+<div class="line"><span class="lineno">  324</span>  QUILL_LOG_INFO(log, <span class="stringliteral">&quot;S-IDPP: Final residual: {:.4f}&quot;</span>, finalResidual);</div>
+<div class="line"><span class="lineno">  325</span> </div>
+<div class="line"><span class="lineno">  326</span>  <span class="keywordflow">return</span> path;</div>
+<div class="line"><span class="lineno">  327</span>}</div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_1_1neb__paths_html_a228cf26acf7d7d5deb0f43d3d6634049"><div class="ttname"><a href="#a228cf26acf7d7d5deb0f43d3d6634049">eonc::helpers::neb_paths::resamplePath</a></div><div class="ttdeci">std::vector&lt; Matter &gt; resamplePath(const std::vector&lt; Matter &gt; &amp;densePath, size_t targetCount)</div><div class="ttdef"><b>Definition</b> <a href="NEBInitialPaths_8cpp_source.html#l00344">NEBInitialPaths.cpp:344</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1helpers_1_1neb__paths_html_a2a6dea80431322a416c54ae728b401ee"><div class="ttname"><a href="#a2a6dea80431322a416c54ae728b401ee">eonc::helpers::neb_paths::interpolateImage</a></div><div class="ttdeci">Matter interpolateImage(const Matter &amp;A, const Matter &amp;B, double fraction)</div><div class="ttdef"><b>Definition</b> <a href="NEBInitialPaths_8cpp_source.html#l00209">NEBInitialPaths.cpp:209</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

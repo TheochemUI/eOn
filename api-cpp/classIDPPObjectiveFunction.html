@@ -320,7 +320,7 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   36</span>    <span class="keywordtype">int</span> natoms = <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;numberOfAtoms();</div>
 <div class="line"><span class="lineno">   37</span>  }</div>
 <div class="ttc" id="aclassIDPPObjectiveFunction_html_a2f358146ed2841134ceaa71f0f662403"><div class="ttname"><a href="#a2f358146ed2841134ceaa71f0f662403">IDPPObjectiveFunction::matter</a></div><div class="ttdeci">std::shared_ptr&lt; Matter &gt; matter</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8hpp_source.html#l00025">IDPPObjectiveFunction.hpp:25</a></div></div>
-<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html_a138b5bef7c6a592ea262b09a27a1a169"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html#a138b5bef7c6a592ea262b09a27a1a169">eonc::IDPPObjectiveFunction::d_target</a></div><div class="ttdeci">MatrixXd d_target</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8hpp_source.html#l00076">IDPPObjectiveFunction.hpp:76</a></div></div>
+<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html_a138b5bef7c6a592ea262b09a27a1a169"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html#a138b5bef7c6a592ea262b09a27a1a169">eonc::IDPPObjectiveFunction::d_target</a></div><div class="ttdeci">MatrixXd d_target</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8hpp_source.html#l00074">IDPPObjectiveFunction.hpp:74</a></div></div>
 <div class="ttc" id="aclasseonc_1_1ObjectiveFunction_html_a7539f6688c5b9e68654bf0a8762e8c34"><div class="ttname"><a href="classeonc_1_1ObjectiveFunction.html#a7539f6688c5b9e68654bf0a8762e8c34">eonc::ObjectiveFunction::ObjectiveFunction</a></div><div class="ttdeci">ObjectiveFunction(const Parameters &amp;paramsPassed)</div><div class="ttdef"><b>Definition</b> <a href="ObjectiveFunction_8h_source.html#l00023">ObjectiveFunction.h:23</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -351,8 +351,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#ae183480aed0570a0187cabe81bd11ffb">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00058">58</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   58</span>{ <span class="keywordflow">return</span> 3 * <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;numberOfAtoms(); }</div>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00054">54</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   54</span>                                  {</div>
+<div class="line"><span class="lineno">   55</span>    <span class="keywordflow">return</span> 3 * <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;numberOfFreeAtoms());</div>
+<div class="line"><span class="lineno">   56</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -385,10 +387,10 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#a71d9f4b931fccd6ae74a054a92ab1fa9">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00071">71</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   71</span>                                                                     {</div>
-<div class="line"><span class="lineno">   72</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;pbcV(a - b);</div>
-<div class="line"><span class="lineno">   73</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00069">69</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   69</span>                                                                     {</div>
+<div class="line"><span class="lineno">   70</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;pbcV(a - b);</div>
+<div class="line"><span class="lineno">   71</span>  }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -417,13 +419,13 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#adb5aa05d56bdb3f5eca741688f4f4e2d">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00064">64</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   64</span>                                   {</div>
-<div class="line"><span class="lineno">   65</span>    <span class="comment">// Return max force component or norm depending on preference</span></div>
-<div class="line"><span class="lineno">   66</span>    <span class="comment">// Using norm here for simplicity in path generation</span></div>
-<div class="line"><span class="lineno">   67</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeonc_1_1IDPPObjectiveFunction.html#abe8e4e80bbdd4d3cd903eaee50419a44">getGradient</a>().norm();</div>
-<div class="line"><span class="lineno">   68</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html_abe8e4e80bbdd4d3cd903eaee50419a44"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html#abe8e4e80bbdd4d3cd903eaee50419a44">eonc::IDPPObjectiveFunction::getGradient</a></div><div class="ttdeci">VectorXd getGradient(bool fdstep=false) override</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8cpp_source.html#l00045">IDPPObjectiveFunction.cpp:45</a></div></div>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00062">62</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   62</span>                                   {</div>
+<div class="line"><span class="lineno">   63</span>    <span class="comment">// Return max force component or norm depending on preference</span></div>
+<div class="line"><span class="lineno">   64</span>    <span class="comment">// Using norm here for simplicity in path generation</span></div>
+<div class="line"><span class="lineno">   65</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeonc_1_1IDPPObjectiveFunction.html#abe8e4e80bbdd4d3cd903eaee50419a44">getGradient</a>().norm();</div>
+<div class="line"><span class="lineno">   66</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html_abe8e4e80bbdd4d3cd903eaee50419a44"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html#abe8e4e80bbdd4d3cd903eaee50419a44">eonc::IDPPObjectiveFunction::getGradient</a></div><div class="ttdeci">VectorXd getGradient(bool fdstep=false) override</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8cpp_source.html#l00059">IDPPObjectiveFunction.cpp:59</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -452,33 +454,33 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#ac33d8c01a468c94e97e46add563a21c2">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8cpp_source.html#l00018">18</a> of file <a class="el" href="IDPPObjectiveFunction_8cpp_source.html">IDPPObjectiveFunction.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   18</span>                                        {</div>
-<div class="line"><span class="lineno">   19</span>  <span class="keywordtype">double</span> energy = 0.0;</div>
-<div class="line"><span class="lineno">   20</span>  <span class="keywordtype">int</span> natoms = <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;numberOfAtoms();</div>
-<div class="line"><span class="lineno">   21</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;getPositions();</div>
-<div class="line"><span class="lineno">   22</span> </div>
-<div class="line"><span class="lineno">   23</span>  <span class="comment">// Loop over unique pairs</span></div>
-<div class="line"><span class="lineno">   24</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; natoms; ++i) {</div>
-<div class="line"><span class="lineno">   25</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = i + 1; j &lt; natoms; ++j) {</div>
-<div class="line"><span class="lineno">   26</span>      <span class="comment">// Respect PBC</span></div>
-<div class="line"><span class="lineno">   27</span>      <span class="keywordtype">double</span> r = <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;pbc(pos.row(i) - pos.row(j)).norm();</div>
-<div class="line"><span class="lineno">   28</span> </div>
-<div class="line"><span class="lineno">   29</span>      <span class="comment">// Weight function w = 1 / r^4</span></div>
-<div class="line"><span class="lineno">   30</span>      <span class="comment">// Avoid division by zero if atoms overlap perfectly (unlikely in IDPP but</span></div>
-<div class="line"><span class="lineno">   31</span>      <span class="comment">// possible)</span></div>
-<div class="line"><span class="lineno">   32</span>      <span class="keywordflow">if</span> (r &lt; 1e-4)</div>
-<div class="line"><span class="lineno">   33</span>        r = 1e-4;</div>
-<div class="line"><span class="lineno">   34</span> </div>
-<div class="line"><span class="lineno">   35</span>      <span class="keywordtype">double</span> diff = r - <a class="code hl_variable" href="classeonc_1_1IDPPObjectiveFunction.html#a138b5bef7c6a592ea262b09a27a1a169">d_target</a>(i, j);</div>
-<div class="line"><span class="lineno">   36</span>      <span class="keywordtype">double</span> r2 = r * r;</div>
-<div class="line"><span class="lineno">   37</span>      <span class="keywordtype">double</span> weight = 1.0 / (r2 * r2); <span class="comment">// 1/r^4</span></div>
-<div class="line"><span class="lineno">   38</span> </div>
-<div class="line"><span class="lineno">   39</span>      energy += 0.5 * weight * diff * diff;</div>
-<div class="line"><span class="lineno">   40</span>    }</div>
-<div class="line"><span class="lineno">   41</span>  }</div>
-<div class="line"><span class="lineno">   42</span>  <span class="keywordflow">return</span> energy;</div>
-<div class="line"><span class="lineno">   43</span>}</div>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8cpp_source.html#l00032">32</a> of file <a class="el" href="IDPPObjectiveFunction_8cpp_source.html">IDPPObjectiveFunction.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   32</span>                                        {</div>
+<div class="line"><span class="lineno">   33</span>  <span class="keywordtype">double</span> energy = 0.0;</div>
+<div class="line"><span class="lineno">   34</span>  <span class="keywordtype">int</span> natoms = <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;numberOfAtoms();</div>
+<div class="line"><span class="lineno">   35</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">   36</span> </div>
+<div class="line"><span class="lineno">   37</span>  <span class="comment">// Loop over unique pairs</span></div>
+<div class="line"><span class="lineno">   38</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; natoms; ++i) {</div>
+<div class="line"><span class="lineno">   39</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = i + 1; j &lt; natoms; ++j) {</div>
+<div class="line"><span class="lineno">   40</span>      <span class="comment">// Respect PBC</span></div>
+<div class="line"><span class="lineno">   41</span>      <span class="keywordtype">double</span> r = <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;pbc(pos.row(i) - pos.row(j)).norm();</div>
+<div class="line"><span class="lineno">   42</span> </div>
+<div class="line"><span class="lineno">   43</span>      <span class="comment">// Weight function w = 1 / r^4</span></div>
+<div class="line"><span class="lineno">   44</span>      <span class="comment">// Avoid division by zero if atoms overlap perfectly (unlikely in IDPP but</span></div>
+<div class="line"><span class="lineno">   45</span>      <span class="comment">// possible)</span></div>
+<div class="line"><span class="lineno">   46</span>      <span class="keywordflow">if</span> (r &lt; 1e-4)</div>
+<div class="line"><span class="lineno">   47</span>        r = 1e-4;</div>
+<div class="line"><span class="lineno">   48</span> </div>
+<div class="line"><span class="lineno">   49</span>      <span class="keywordtype">double</span> diff = r - <a class="code hl_variable" href="classeonc_1_1IDPPObjectiveFunction.html#a138b5bef7c6a592ea262b09a27a1a169">d_target</a>(i, j);</div>
+<div class="line"><span class="lineno">   50</span>      <span class="keywordtype">double</span> r2 = r * r;</div>
+<div class="line"><span class="lineno">   51</span>      <span class="keywordtype">double</span> weight = 1.0 / (r2 * r2); <span class="comment">// 1/r^4</span></div>
+<div class="line"><span class="lineno">   52</span> </div>
+<div class="line"><span class="lineno">   53</span>      energy += 0.5 * weight * diff * diff;</div>
+<div class="line"><span class="lineno">   54</span>    }</div>
+<div class="line"><span class="lineno">   55</span>  }</div>
+<div class="line"><span class="lineno">   56</span>  <span class="keywordflow">return</span> energy;</div>
+<div class="line"><span class="lineno">   57</span>}</div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -508,45 +510,44 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#a2cde804855ed7d58658f912636254352">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8cpp_source.html#l00045">45</a> of file <a class="el" href="IDPPObjectiveFunction_8cpp_source.html">IDPPObjectiveFunction.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   45</span>                                                       {</div>
-<div class="line"><span class="lineno">   46</span>  <span class="keywordtype">int</span> natoms = <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;numberOfAtoms();</div>
-<div class="line"><span class="lineno">   47</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;getPositions();</div>
-<div class="line"><span class="lineno">   48</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forces = AtomMatrix::Zero(natoms, 3);</div>
-<div class="line"><span class="lineno">   49</span> </div>
-<div class="line"><span class="lineno">   50</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; natoms; ++i) {</div>
-<div class="line"><span class="lineno">   51</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = i + 1; j &lt; natoms; ++j) {</div>
-<div class="line"><span class="lineno">   52</span>      <span class="comment">// Vector pointing from j to i</span></div>
-<div class="line"><span class="lineno">   53</span>      Eigen::RowVector3d dr_vec = <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;pbc(pos.row(i) - pos.row(j));</div>
-<div class="line"><span class="lineno">   54</span>      <span class="keywordtype">double</span> r = dr_vec.norm();</div>
-<div class="line"><span class="lineno">   55</span> </div>
-<div class="line"><span class="lineno">   56</span>      <span class="keywordflow">if</span> (r &lt; 1e-4)</div>
-<div class="line"><span class="lineno">   57</span>        r = 1e-4;</div>
-<div class="line"><span class="lineno">   58</span> </div>
-<div class="line"><span class="lineno">   59</span>      <span class="keywordtype">double</span> diff = r - <a class="code hl_variable" href="classeonc_1_1IDPPObjectiveFunction.html#a138b5bef7c6a592ea262b09a27a1a169">d_target</a>(i, j);</div>
-<div class="line"><span class="lineno">   60</span>      <span class="keywordtype">double</span> r2 = r * r;</div>
-<div class="line"><span class="lineno">   61</span>      <span class="keywordtype">double</span> r5 = r2 * r2 * r;</div>
-<div class="line"><span class="lineno">   62</span> </div>
-<div class="line"><span class="lineno">   63</span>      <span class="comment">// Derivative of E_pair = 0.5 * (1/r^4) * (r - d_target)^2</span></div>
-<div class="line"><span class="lineno">   64</span>      <span class="comment">// dE/dr = (r - d_target)/r^4 - 2(r - d_target)^2 / r^5</span></div>
-<div class="line"><span class="lineno">   65</span>      <span class="comment">// Simplified: (r - d_target) * (1 - 2(r - d_target)/r) / r^4</span></div>
-<div class="line"><span class="lineno">   66</span> </div>
-<div class="line"><span class="lineno">   67</span>      <span class="keywordtype">double</span> r4 = r2 * r2;</div>
-<div class="line"><span class="lineno">   68</span>      <span class="keywordtype">double</span> dEdr = (diff * (1.0 - 2.0 * diff / r)) / r4;</div>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8cpp_source.html#l00059">59</a> of file <a class="el" href="IDPPObjectiveFunction_8cpp_source.html">IDPPObjectiveFunction.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   59</span>                                                       {</div>
+<div class="line"><span class="lineno">   60</span>  <span class="keywordtype">int</span> natoms = <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;numberOfAtoms();</div>
+<div class="line"><span class="lineno">   61</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> pos = <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;getPositions();</div>
+<div class="line"><span class="lineno">   62</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forces = AtomMatrix::Zero(natoms, 3);</div>
+<div class="line"><span class="lineno">   63</span> </div>
+<div class="line"><span class="lineno">   64</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; natoms; ++i) {</div>
+<div class="line"><span class="lineno">   65</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = i + 1; j &lt; natoms; ++j) {</div>
+<div class="line"><span class="lineno">   66</span>      <span class="comment">// Vector pointing from j to i</span></div>
+<div class="line"><span class="lineno">   67</span>      Eigen::RowVector3d dr_vec = <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;pbc(pos.row(i) - pos.row(j));</div>
+<div class="line"><span class="lineno">   68</span>      <span class="keywordtype">double</span> r = dr_vec.norm();</div>
 <div class="line"><span class="lineno">   69</span> </div>
-<div class="line"><span class="lineno">   70</span>      <span class="comment">// Force contribution: F = -dE/dr * (dr_vec / r)</span></div>
-<div class="line"><span class="lineno">   71</span>      Eigen::RowVector3d f_contribution = -dEdr * (dr_vec / r);</div>
+<div class="line"><span class="lineno">   70</span>      <span class="keywordflow">if</span> (r &lt; 1e-4)</div>
+<div class="line"><span class="lineno">   71</span>        r = 1e-4;</div>
 <div class="line"><span class="lineno">   72</span> </div>
-<div class="line"><span class="lineno">   73</span>      forces.row(i) += f_contribution;</div>
-<div class="line"><span class="lineno">   74</span>      forces.row(j) -= f_contribution; <span class="comment">// Newton&#39;s 3rd law</span></div>
-<div class="line"><span class="lineno">   75</span>    }</div>
-<div class="line"><span class="lineno">   76</span>  }</div>
-<div class="line"><span class="lineno">   77</span> </div>
-<div class="line"><span class="lineno">   78</span>  <span class="comment">// Convert N x 3 matrix to 3N vector and return negative gradient (force)</span></div>
-<div class="line"><span class="lineno">   79</span>  <span class="comment">// BUT getGradient expects the Gradient (positive derivative), so we return</span></div>
-<div class="line"><span class="lineno">   80</span>  <span class="comment">// -Forces Actually, typical eOn getGradient returns dV/dx.</span></div>
-<div class="line"><span class="lineno">   81</span>  <span class="keywordflow">return</span> VectorXd::Map(forces.data(), 3 * natoms) * -1.0;</div>
-<div class="line"><span class="lineno">   82</span>}</div>
+<div class="line"><span class="lineno">   73</span>      <span class="keywordtype">double</span> diff = r - <a class="code hl_variable" href="classeonc_1_1IDPPObjectiveFunction.html#a138b5bef7c6a592ea262b09a27a1a169">d_target</a>(i, j);</div>
+<div class="line"><span class="lineno">   74</span>      <span class="keywordtype">double</span> r2 = r * r;</div>
+<div class="line"><span class="lineno">   75</span>      <span class="keywordtype">double</span> r5 = r2 * r2 * r;</div>
+<div class="line"><span class="lineno">   76</span> </div>
+<div class="line"><span class="lineno">   77</span>      <span class="comment">// Derivative of E_pair = 0.5 * (1/r^4) * (r - d_target)^2</span></div>
+<div class="line"><span class="lineno">   78</span>      <span class="comment">// dE/dr = (r - d_target)/r^4 - 2(r - d_target)^2 / r^5</span></div>
+<div class="line"><span class="lineno">   79</span>      <span class="comment">// Simplified: (r - d_target) * (1 - 2(r - d_target)/r) / r^4</span></div>
+<div class="line"><span class="lineno">   80</span> </div>
+<div class="line"><span class="lineno">   81</span>      <span class="keywordtype">double</span> r4 = r2 * r2;</div>
+<div class="line"><span class="lineno">   82</span>      <span class="keywordtype">double</span> dEdr = (diff * (1.0 - 2.0 * diff / r)) / r4;</div>
+<div class="line"><span class="lineno">   83</span> </div>
+<div class="line"><span class="lineno">   84</span>      <span class="comment">// Force contribution: F = -dE/dr * (dr_vec / r)</span></div>
+<div class="line"><span class="lineno">   85</span>      Eigen::RowVector3d f_contribution = -dEdr * (dr_vec / r);</div>
+<div class="line"><span class="lineno">   86</span> </div>
+<div class="line"><span class="lineno">   87</span>      forces.row(i) += f_contribution;</div>
+<div class="line"><span class="lineno">   88</span>      forces.row(j) -= f_contribution; <span class="comment">// Newton&#39;s 3rd law</span></div>
+<div class="line"><span class="lineno">   89</span>    }</div>
+<div class="line"><span class="lineno">   90</span>  }</div>
+<div class="line"><span class="lineno">   91</span> </div>
+<div class="line"><span class="lineno">   92</span>  <span class="comment">// dV/dx on free atoms only. Frozen rows stay in `forces` for Newton&#39;s</span></div>
+<div class="line"><span class="lineno">   93</span>  <span class="comment">// third law during the pair loop, then are dropped.</span></div>
+<div class="line"><span class="lineno">   94</span>  <span class="keywordflow">return</span> packFree(*<a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>, forces) * -1.0;</div>
+<div class="line"><span class="lineno">   95</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -576,11 +577,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#aa06776d23dd7b6ffa23db1555d657261">eonc::ObjectiveFunction</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00052">52</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   52</span>                                   {</div>
-<div class="line"><span class="lineno">   53</span>    <span class="comment">// Map Matter positions to 3N vector</span></div>
-<div class="line"><span class="lineno">   54</span>    <span class="keywordflow">return</span> VectorXd::Map(<a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;getPositions().data(),</div>
-<div class="line"><span class="lineno">   55</span>                         3 * <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;numberOfAtoms());</div>
-<div class="line"><span class="lineno">   56</span>  }</div>
+<div class="fragment"><div class="line"><span class="lineno">   52</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;getPositionsFreeV(); }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -609,11 +606,11 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#a90d7874f2d2686d628c9d6057f841925">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00060">60</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   60</span>                              {</div>
-<div class="line"><span class="lineno">   61</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeonc_1_1IDPPObjectiveFunction.html#a5da0083f895fd849c7a970af605c7ea8">getConvergence</a>() &lt; <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.neb_options.initialization.force_tolerance;</div>
-<div class="line"><span class="lineno">   62</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html_a5da0083f895fd849c7a970af605c7ea8"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html#a5da0083f895fd849c7a970af605c7ea8">eonc::IDPPObjectiveFunction::getConvergence</a></div><div class="ttdeci">double getConvergence() override</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8hpp_source.html#l00064">IDPPObjectiveFunction.hpp:64</a></div></div>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00058">58</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   58</span>                              {</div>
+<div class="line"><span class="lineno">   59</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeonc_1_1IDPPObjectiveFunction.html#a5da0083f895fd849c7a970af605c7ea8">getConvergence</a>() &lt; <a class="code hl_variable" href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">params</a>.neb_options.initialization.force_tolerance;</div>
+<div class="line"><span class="lineno">   60</span>  }</div>
+<div class="ttc" id="aclasseonc_1_1IDPPObjectiveFunction_html_a5da0083f895fd849c7a970af605c7ea8"><div class="ttname"><a href="classeonc_1_1IDPPObjectiveFunction.html#a5da0083f895fd849c7a970af605c7ea8">eonc::IDPPObjectiveFunction::getConvergence</a></div><div class="ttdeci">double getConvergence() override</div><div class="ttdef"><b>Definition</b> <a href="IDPPObjectiveFunction_8hpp_source.html#l00062">IDPPObjectiveFunction.hpp:62</a></div></div>
 <div class="ttc" id="aclasseonc_1_1ObjectiveFunction_html_a9d74eea28a1c17f36202adff592ca871"><div class="ttname"><a href="classeonc_1_1ObjectiveFunction.html#a9d74eea28a1c17f36202adff592ca871">eonc::ObjectiveFunction::params</a></div><div class="ttdeci">const Parameters &amp; params</div><div class="ttdef"><b>Definition</b> <a href="ObjectiveFunction_8h_source.html#l00020">ObjectiveFunction.h:20</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -643,10 +640,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classeonc_1_1ObjectiveFunction.html#ab285e512e05c11a1438a93d72a0ec527">eonc::ObjectiveFunction</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00047">47</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   47</span>                                                {</div>
-<div class="line"><span class="lineno">   48</span>    <span class="comment">// Map 3N vector back to Matter</span></div>
-<div class="line"><span class="lineno">   49</span>    <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;setPositions(AtomMatrix::Map(x.data(), <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;numberOfAtoms(), 3));</div>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00048">48</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   48</span>                                                {</div>
+<div class="line"><span class="lineno">   49</span>    <a class="code hl_variable" href="#a2f358146ed2841134ceaa71f0f662403">matter</a>-&gt;setPositionsFreeV(x);</div>
 <div class="line"><span class="lineno">   50</span>  }</div>
 </div><!-- fragment -->
 </div>
@@ -672,7 +668,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00076">76</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="IDPPObjectiveFunction_8hpp_source.html#l00074">74</a> of file <a class="el" href="IDPPObjectiveFunction_8hpp_source.html">IDPPObjectiveFunction.hpp</a>.</p>
 
 </div>
 </div>
