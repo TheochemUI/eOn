@@ -14,6 +14,7 @@ var searchData=
   ['eonmtaconfig_11',['EonMtaConfig',['../structEonMtaConfig.html',1,'']]],
   ['eonmtapot_12',['EonMtaPot',['../structEonMtaPot.html',1,'']]],
   ['exception_13',['Exception',['../classException.html',1,'']]],
-  ['extpot_14',['ExtPot',['../classExtPot.html',1,'']]],
-  ['extremaresult_15',['ExtremaResult',['../structeonc_1_1neb_1_1ExtremaResult.html',1,'eonc::neb']]]
+  ['expr_5foptions_5ft_14',['expr_options_t',['../structeonc_1_1Parameters_1_1expr__options__t.html',1,'eonc::Parameters::expr_options_t'],['../structParameters_1_1expr__options__t.html',1,'Parameters::expr_options_t']]],
+  ['extpot_15',['ExtPot',['../classExtPot.html',1,'']]],
+  ['extremaresult_16',['ExtremaResult',['../structeonc_1_1neb_1_1ExtremaResult.html',1,'eonc::neb']]]
 ];

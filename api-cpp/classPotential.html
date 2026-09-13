@@ -600,19 +600,19 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Potential_8cpp_source.html#l00102">102</a> of file <a class="el" href="Potential_8cpp_source.html">Potential.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  104</span>                                                                      {</div>
-<div class="line"><span class="lineno">  105</span>  <span class="keywordtype">double</span> energy{std::numeric_limits&lt;double&gt;::infinity()};</div>
-<div class="line"><span class="lineno">  106</span>  <span class="keywordtype">long</span> nAtoms = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(pos.rows());</div>
-<div class="line"><span class="lineno">  107</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forces{MatrixXd::Zero(nAtoms, 3)};</div>
-<div class="line"><span class="lineno">  108</span>  <span class="keywordtype">double</span> var{0}; <span class="comment">// no variance for true potentials</span></div>
-<div class="line"><span class="lineno">  109</span>  this-&gt;<a class="code hl_function" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">force</a>(nAtoms, pos.data(), atmnrs.data(), forces.data(), &amp;energy, &amp;var,</div>
-<div class="line"><span class="lineno">  110</span>              box.data());</div>
-<div class="line"><span class="lineno">  111</span>  <a class="code hl_variable" href="#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a>++;</div>
-<div class="line"><span class="lineno">  112</span>  <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a7fa50cef22325357f44654437e9876b3">on_force_call</a>(<a class="code hl_variable" href="#ac102f249b890f52d06d96feff8f2047a">ptype</a>);</div>
-<div class="line"><span class="lineno">  113</span> </div>
-<div class="line"><span class="lineno">  114</span>  <span class="keywordflow">return</span> std::make_tuple(energy, forces);</div>
-<div class="line"><span class="lineno">  115</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Potential_8cpp_source.html#l00117">117</a> of file <a class="el" href="Potential_8cpp_source.html">Potential.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  119</span>                                                                      {</div>
+<div class="line"><span class="lineno">  120</span>  <span class="keywordtype">double</span> energy{std::numeric_limits&lt;double&gt;::infinity()};</div>
+<div class="line"><span class="lineno">  121</span>  <span class="keywordtype">long</span> nAtoms = <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(pos.rows());</div>
+<div class="line"><span class="lineno">  122</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> forces{MatrixXd::Zero(nAtoms, 3)};</div>
+<div class="line"><span class="lineno">  123</span>  <span class="keywordtype">double</span> var{0}; <span class="comment">// no variance for true potentials</span></div>
+<div class="line"><span class="lineno">  124</span>  this-&gt;<a class="code hl_function" href="classeonc_1_1Potential.html#a51a8f3110935f320fe1bfca4efa3bbb3">force</a>(nAtoms, pos.data(), atmnrs.data(), forces.data(), &amp;energy, &amp;var,</div>
+<div class="line"><span class="lineno">  125</span>              box.data());</div>
+<div class="line"><span class="lineno">  126</span>  <a class="code hl_variable" href="#a2ae7cca425e3d69d2825c58d1c7704eb">forceCallCounter</a>++;</div>
+<div class="line"><span class="lineno">  127</span>  <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a7fa50cef22325357f44654437e9876b3">on_force_call</a>(<a class="code hl_variable" href="#ac102f249b890f52d06d96feff8f2047a">ptype</a>);</div>
+<div class="line"><span class="lineno">  128</span> </div>
+<div class="line"><span class="lineno">  129</span>  <span class="keywordflow">return</span> std::make_tuple(energy, forces);</div>
+<div class="line"><span class="lineno">  130</span>}</div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
 </div><!-- fragment -->
 </div>

@@ -52,6 +52,8 @@ var hierarchy =
     [ "Parameters::debug_options_t", "structParameters_1_1debug__options__t.html", null ],
     [ "eonc::Parameters::gpr_dimer_options_t::debug_params_t", "structeonc_1_1Parameters_1_1gpr__dimer__options__t_1_1debug__params__t.html", null ],
     [ "Parameters::gpr_dimer_options_t::debug_params_t", "structParameters_1_1gpr__dimer__options__t_1_1debug__params__t.html", null ],
+    [ "eonc::Parameters::dftd_options_t", "structeonc_1_1Parameters_1_1dftd__options__t.html", null ],
+    [ "Parameters::dftd_options_t", "structParameters_1_1dftd__options__t.html", null ],
     [ "eonc::Parameters::dimer_options_t", "structeonc_1_1Parameters_1_1dimer__options__t.html", null ],
     [ "Parameters::dimer_options_t", "structParameters_1_1dimer__options__t.html", null ],
     [ "eonc::DimerRotationResult", "structeonc_1_1DimerRotationResult.html", null ],
@@ -87,6 +89,8 @@ var hierarchy =
         [ "eonc::DimerModeLostException", "classeonc_1_1DimerModeLostException.html", null ]
       ] ]
     ] ],
+    [ "eonc::Parameters::expr_options_t", "structeonc_1_1Parameters_1_1expr__options__t.html", null ],
+    [ "Parameters::expr_options_t", "structParameters_1_1expr__options__t.html", null ],
     [ "eonc::neb::ExtremaResult", "structeonc_1_1neb_1_1ExtremaResult.html", null ],
     [ "eonc::log::FileScoped", "structeonc_1_1log_1_1FileScoped.html", null ],
     [ "eonc::ForceCallTimer", "classeonc_1_1ForceCallTimer.html", null ],
@@ -215,6 +219,8 @@ var hierarchy =
     [ "Parameters::monte_carlo_options_t", "structParameters_1_1monte__carlo__options__t.html", null ],
     [ "eonc::MonteCarlo", "classeonc_1_1MonteCarlo.html", null ],
     [ "MonteCarlo", "classMonteCarlo.html", null ],
+    [ "eonc::Parameters::mopac_options_t", "structeonc_1_1Parameters_1_1mopac__options__t.html", null ],
+    [ "Parameters::mopac_options_t", "structParameters_1_1mopac__options__t.html", null ],
     [ "eonc::Parameters::neb_options_t", "structeonc_1_1Parameters_1_1neb__options__t.html", null ],
     [ "Parameters::neb_options_t", "structParameters_1_1neb__options__t.html", null ],
     [ "eonc::neb::NEB_Projection", "structeonc_1_1neb_1_1NEB__Projection.html", null ],

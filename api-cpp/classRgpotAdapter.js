@@ -2,6 +2,7 @@ var classRgpotAdapter =
 [
     [ "RgpotAdapter", "classRgpotAdapter.html#a3e0dd9ff8f6686c48ebd193ca7abbe20", null ],
     [ "RgpotAdapter", "classRgpotAdapter.html#a56dbace66a1ffd21f4d484a5106d118c", null ],
+    [ "RgpotAdapter", "classRgpotAdapter.html#aecc76861b49d9bad0c2ed34655c0e3a0", null ],
     [ "force", "classRgpotAdapter.html#a350328b66270a821ccb8e1d764d7e5d1", null ],
     [ "forceBatch", "classRgpotAdapter.html#ae5c9470c08c2505cc3d9f557e014b9eb", null ],
     [ "isThreadSafe", "classRgpotAdapter.html#a055a5f208ff16306b35632596a161674", null ],

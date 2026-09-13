@@ -17,5 +17,6 @@ var searchData=
   ['monte_5fcarlo_5foptions_5ft_14',['monte_carlo_options_t',['../structeonc_1_1Parameters_1_1monte__carlo__options__t.html',1,'eonc::Parameters::monte_carlo_options_t'],['../structParameters_1_1monte__carlo__options__t.html',1,'Parameters::monte_carlo_options_t']]],
   ['montecarlo_15',['MonteCarlo',['../classeonc_1_1MonteCarlo.html',1,'eonc::MonteCarlo'],['../classMonteCarlo.html',1,'MonteCarlo']]],
   ['montecarlojob_16',['MonteCarloJob',['../classeonc_1_1MonteCarloJob.html',1,'eonc::MonteCarloJob'],['../classMonteCarloJob.html',1,'MonteCarloJob']]],
-  ['mpipot_17',['MPIPot',['../classMPIPot.html',1,'']]]
+  ['mopac_5foptions_5ft_17',['mopac_options_t',['../structeonc_1_1Parameters_1_1mopac__options__t.html',1,'eonc::Parameters::mopac_options_t'],['../structParameters_1_1mopac__options__t.html',1,'Parameters::mopac_options_t']]],
+  ['mpipot_18',['MPIPot',['../classMPIPot.html',1,'']]]
 ];

@@ -297,7 +297,8 @@ data-aria-dark="Switch to auto color mode">
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#idpp-honors-frozen-atoms">IDPP honors frozen atoms</a></li>
 <li><a class="reference internal" href="#pyeonclient-optimizer">pyeonclient optimizer</a></li>
-<li><a class="reference internal" href="#rgpot-3-1">rgpot 3.1</a></li>
+<li><a class="reference internal" href="#rgpot-3-2">rgpot 3.2</a></li>
+<li><a class="reference internal" href="#geometry-minimage-linkcell">Geometry (minimage / linkcell)</a></li>
 <li><a class="reference internal" href="#ase-matter-python-surface">ASE / Matter python surface</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/TheochemUI/eOn"
@@ -409,11 +410,19 @@ Frozen sites next to a mover stay put.</p>
 <p><code class="docutils literal notranslate"><span class="pre">Parameters</span></code> exposes <code class="docutils literal notranslate"><span class="pre">opt_method</span></code>, <code class="docutils literal notranslate"><span class="pre">neb_opt_method</span></code>,
 <code class="docutils literal notranslate"><span class="pre">refine_opt_method</span></code>, and <code class="docutils literal notranslate"><span class="pre">refine_threshold</span></code>.</p>
 </section>
-<section id="rgpot-3-1">
-<h2>rgpot 3.1<a class="headerlink" href="#rgpot-3-1" title="Link to this heading">¶</a></h2>
-<p>Wrap pin is <strong>v3.1.2</strong>. <code class="docutils literal notranslate"><span class="pre">potential</span> <span class="pre">=</span> <span class="pre">dftd3</span></code> / <code class="docutils literal notranslate"><span class="pre">dftd4</span></code> and
-<code class="docutils literal notranslate"><span class="pre">potential</span> <span class="pre">=</span> <span class="pre">expr</span></code> with <code class="docutils literal notranslate"><span class="pre">[ExprPot]</span></code> terms (<code class="docutils literal notranslate"><span class="pre">0.5*lj</span> <span class="pre">+</span> <span class="pre">d3</span></code>). D3/D4
-wraps stay off on Windows, where MSVC rustc rejects those wrap flags.</p>
+<section id="rgpot-3-2">
+<h2>rgpot 3.2<a class="headerlink" href="#rgpot-3-2" title="Link to this heading">¶</a></h2>
+<p>Wrap pin is <strong>v3.2.0</strong>. <code class="docutils literal notranslate"><span class="pre">potential</span> <span class="pre">=</span> <span class="pre">dftd3</span></code> / <code class="docutils literal notranslate"><span class="pre">dftd4</span></code>,
+<code class="docutils literal notranslate"><span class="pre">potential</span> <span class="pre">=</span> <span class="pre">expr</span></code> with <code class="docutils literal notranslate"><span class="pre">[ExprPot]</span></code> terms (<code class="docutils literal notranslate"><span class="pre">0.5*lj</span> <span class="pre">+</span> <span class="pre">d3</span></code>), and
+<code class="docutils literal notranslate"><span class="pre">potential</span> <span class="pre">=</span> <span class="pre">mopac</span></code> (libmopacc, default AM1). D3/D4 wraps stay off on
+Windows, where MSVC rustc rejects those wrap flags.</p>
+</section>
+<section id="geometry-minimage-linkcell">
+<h2>Geometry (minimage / linkcell)<a class="headerlink" href="#geometry-minimage-linkcell" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code> uses minimage when that extra is installed.
+<code class="docutils literal notranslate"><span class="pre">neighbor_list</span></code> stays vesin. <code class="docutils literal notranslate"><span class="pre">neighbor_list_linkcell</span></code> is the check
+path against <code class="docutils literal notranslate"><span class="pre">linkcell.knearest</span></code>. See
+<a class="reference internal" href="../../user_guide/neighbor_lists.html"><span class="std std-doc">Neighbor lists</span></a>.</p>
 </section>
 <section id="ase-matter-python-surface">
 <h2>ASE / Matter python surface<a class="headerlink" href="#ase-matter-python-surface" title="Link to this heading">¶</a></h2>

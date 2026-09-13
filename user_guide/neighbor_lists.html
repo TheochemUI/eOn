@@ -296,7 +296,11 @@ data-aria-dark="Switch to auto color mode">
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#layers">Layers</a></li>
-<li><a class="reference internal" href="#python">Python</a></li>
+<li><a class="reference internal" href="#python">Python</a><ul>
+<li><a class="reference internal" href="#minimage">minimage</a></li>
+<li><a class="reference internal" href="#linkcell">linkcell</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#c">C++</a></li>
 <li><a class="reference internal" href="#asv-benchmarks">ASV benchmarks</a><ul>
 <li><a class="reference internal" href="#ci">CI</a></li>
@@ -441,11 +445,35 @@ owns that step. New pair finding goes through vesin.</p>
 </section>
 <section id="python">
 <h2>Python<a class="headerlink" href="#python" title="Link to this heading">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">neighbor_list</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">neighbor_list</span><span class="p">,</span> <span class="n">neighbor_list_linkcell</span><span class="p">,</span> <span class="n">pbc</span>
 </span><span data-line="2"><span class="n">nl</span> <span class="o">=</span> <span class="n">neighbor_list</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>
 </span></pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">brute=True</span></code> exists for API compatibility. The algorithm is always vesin.</p>
+<p><code class="docutils literal notranslate"><span class="pre">brute=True</span></code> exists for API compatibility. The production algorithm is
+always vesin.</p>
+<section id="minimage">
+<h3>minimage<a class="headerlink" href="#minimage" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">eon.geometry.pbc</span></code> applies the minimum-image wrap. When
+<a class="reference external" href="https://github.com/HaoZeke/minimage">minimage</a> is installed it uses
+<code class="docutils literal notranslate"><span class="pre">minimage.Cell.from_vesin</span></code> (the same wrap <a class="reference external" href="https://github.com/HaoZeke/linkcell">linkcell</a>
+uses). Without that extra the numpy path (<code class="docutils literal notranslate"><span class="pre">pbc_eon_legacy</span></code>) runs.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">pbc</span>
+</span><span data-line="2"><span class="n">dr</span> <span class="o">=</span> <span class="n">pbc</span><span class="p">(</span><span class="n">r_j</span> <span class="o">-</span> <span class="n">r_i</span><span class="p">,</span> <span class="n">box</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="linkcell">
+<h3>linkcell<a class="headerlink" href="#linkcell" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">neighbor_list_linkcell</span></code> is the check path. It builds
+<code class="docutils literal notranslate"><span class="pre">linkcell.knearest</span></code> (which itself uses minimage) and compares pair
+sets to vesin. Production <code class="docutils literal notranslate"><span class="pre">neighbor_list</span></code> does not call it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">eon.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">neighbor_list_linkcell</span>
+</span><span data-line="2"><span class="n">pairs</span> <span class="o">=</span> <span class="n">neighbor_list_linkcell</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">box</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>Install extras: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">minimage</span> <span class="pre">linkcell</span></code>. Tests skip when those
+packages are missing.</p>
+</section>
 </section>
 <section id="c">
 <h2>C++<a class="headerlink" href="#c" title="Link to this heading">¶</a></h2>

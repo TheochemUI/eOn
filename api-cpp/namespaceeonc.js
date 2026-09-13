@@ -246,7 +246,11 @@ var namespaceeonc =
       [ "METATOMIC", "namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a2da9f88c4946c305ed6794006f56e8f3", null ],
       [ "ZBL", "namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a4d8812dbb1bc41c2d4af4a9967bff7a7", null ],
       [ "SocketNWChem", "namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ae0fe01490c362129ccb544c5c3dc57f1", null ],
-      [ "RGPOT", "namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a483ab577e2e85e858725c5ee67d8b470", null ]
+      [ "RGPOT", "namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a483ab577e2e85e858725c5ee67d8b470", null ],
+      [ "DFTD3", "namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a1d9d62f79e81d70138c9c91862c8c5bc", null ],
+      [ "DFTD4", "namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a10c4a15815e8ceed76db91208e4a0cea", null ],
+      [ "EXPR", "namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2ab0cd8af157ed30eaa1980da18b07a38d", null ],
+      [ "MOPAC", "namespaceeonc.html#a175de7946a44a0ade4cdbc0c762661d2a1115dd3b162b19bd382b0f99af799c82", null ]
     ] ],
     [ "RunStatus", "namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459", [
       [ "GOOD", "namespaceeonc.html#a848a1af56249f0cafd872ca8b59fc459a45802158e78dd9584161629098018fe8", null ],
