@@ -114,15 +114,18 @@ TEST_CASE_METHOD(EpiCentersFixture,
 }
 
 TEST_CASE_METHOD(EpiCentersFixture,
-                 "listedAtomEpiCenter lone -1 picks a free atom",
+                 "listedAtomEpiCenter lone -1 is every free atom",
                  "[EpiCenters][listedAtomEpiCenter]") {
   std::vector<long> atomList = {-1};
-  for (int trial = 0; trial < 50; ++trial) {
+  std::set<long> selected;
+  for (int trial = 0; trial < 200; ++trial) {
     long idx = eonc::EpiCenters::listedAtomEpiCenter(matter.get(), atomList);
     REQUIRE(idx >= 0);
     REQUIRE(idx < matter->numberOfAtoms());
     REQUIRE_FALSE(matter->getFixed(idx));
+    selected.insert(idx);
   }
+  REQUIRE(selected.size() >= 2);
 }
 
 TEST_CASE_METHOD(EpiCentersFixture,

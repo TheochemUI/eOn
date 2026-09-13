@@ -486,6 +486,8 @@ class ListedAtoms(Displace):
         # post-sort hit and never remaps the rest of a mixed list.
         free = self.reactant.atom_is_free()
         listed = self.config.disp_listed_atoms
+        if listed == -1:
+            listed = [-1]
         # -1 is the documented "all free atoms" sentinel (akmc-al).
         if listed == [-1]:
             self.listed_atoms = [i for i in range(len(free)) if free[i]]

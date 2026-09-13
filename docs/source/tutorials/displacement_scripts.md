@@ -212,5 +212,6 @@ displace_atom_list = 0, 1, 2
 ```
 
 In this mode the client reads `displace_atom_list` directly from the INI config
-and uses those atoms as epicenter candidates. Use this for simple cases
-where server-side scripting is unnecessary.
+and remaps those CON file-order rows through the load-time `atom_id` sort,
+then keeps free atoms. Lone `-1` means every free atom. Use this for simple
+cases where server-side scripting is unnecessary.

@@ -56,6 +56,23 @@ def test_listed_atoms_minus_one_means_all_free():
     assert len(la.listed_atoms) >= 1
 
 
+def test_listed_atoms_scalar_minus_one_means_all_free():
+    import readcon
+
+    frame = readcon.ConFrame(
+        cell=(10.0, 10.0, 10.0),
+        angles=(90.0, 90.0, 90.0),
+        atoms=[
+            readcon.Atom("Cu", 0.0, 0.0, 0.0, [False, False, False], 0, 63.5),
+            readcon.Atom("Cu", 1.0, 0.0, 0.0, [True, True, True], 1, 63.5),
+        ],
+    )
+    p = Structure.from_conframe(frame)
+    cfg = SimpleNamespace(disp_listed_atoms=-1, random_mode=False)
+    la = ListedAtoms(p, config=cfg)
+    assert la.listed_atoms == [i for i, ok in enumerate(p.atom_is_free()) if ok]
+
+
 def test_listed_atoms_mixed_file_rows_all_remap():
     import readcon
 

@@ -1067,11 +1067,13 @@ class SaddleSearchConfig(BaseModel):
     )
     displace_atom_list: Union[str, list[int]] = Field(
         default="0",
-        description="CON file-order rows to use as displacement epicenters, separated by commas. "
-        "A lone -1 means every free atom. A mixed list does not treat -1 as "
-        "the last atom or as a wrap. "
-        "When displace_atom_kmc_state_script is set, this list is populated dynamically "
-        "per AKMC state from the script's output.",
+        description="CON file-order rows (the order atoms appear in the .con) used as "
+        "displacement epicenters, comma-separated. After load, Structure/Matter "
+        "sort unique atom_ids; the list is remapped through that sort. "
+        "Lone -1 means every free atom. A mixed list does not treat -1 as "
+        "the last atom or as a wrap. Example: 0, 1, 2 is the first three "
+        "file rows. When displace_atom_kmc_state_script is set, this list is "
+        "populated dynamically per AKMC state from the script's output.",
     )
     displace_atom_kmc_state_script: str = Field(
         default="",
