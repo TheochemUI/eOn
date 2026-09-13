@@ -139,6 +139,7 @@ std::string lower_copy(std::string s) {
 }
 
 #ifdef RGPOT_HAS_EXPR
+#ifdef RGPOT_HAS_DFTD3
 rgpot::D3Damping d3_damping_from_params(const Parameters &params) {
   rgpot::D3Damping damp = rgpot::D3Damping::BJ;
   if (lower_copy(params.dftd_options.d3_damping) == "zero") {
@@ -146,6 +147,7 @@ rgpot::D3Damping d3_damping_from_params(const Parameters &params) {
   }
   return damp;
 }
+#endif
 
 std::unique_ptr<rgpot::PotentialBase> make_expr_term(const std::string &raw,
                                                      const Parameters &params) {
