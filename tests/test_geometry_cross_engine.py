@@ -23,9 +23,12 @@ from geometry_oracles import (  # noqa: E402
 minimage = pytest.importorskip("minimage")
 linkcell = pytest.importorskip("linkcell")
 
-from eon.geometry.neighbors import neighbor_list, neighbor_list_linkcell
-from eon.geometry.pbc import pbc
-from eon.structure import Structure
+from eon.geometry.neighbors import (  # noqa: E402
+    neighbor_list,
+    neighbor_list_linkcell,
+)
+from eon.geometry.pbc import pbc  # noqa: E402
+from eon.structure import Structure  # noqa: E402
 
 
 def _ortho_box(lx=10.0, ly=11.0, lz=12.0) -> np.ndarray:
