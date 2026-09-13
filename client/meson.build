@@ -422,8 +422,8 @@ if not _rgpot_pkg.found()
         # engines stay runtime dlopen; do not force fat metatomic/xtb link
         'with_xtb': false,
         'with_metatomic': false,
-        # rgpot 3.1 Expr always. D3/D4 wraps pass gcc-style rustc flags
-        # that MSVC rustc rejects (Only -Werror is supported).
+        # rgpot 3.1 Expr (Lepton wrap). D3/D4 wraps pull s-dftd3/dftd4
+        # tests into meson test and break isolated wheel builds.
         'with_expr': true,
         # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H are
         # Fortran kernels inside librgpot.
@@ -431,9 +431,6 @@ if not _rgpot_pkg.found()
     }
     if get_option('with_rgpot') or get_option('with_serve')
         rgpot_opts += {'with_rpc': true}
-    endif
-    if host_machine.system() != 'windows'
-        rgpot_opts += {'with_dftd3': true, 'with_dftd4': true}
     endif
     _rgpot_proj = subproject('rgpot', default_options: rgpot_opts)
 endif
