@@ -188,6 +188,12 @@ int load_ini(INIReader &ini, Parameters &params) {
     params.dftd_options.d4_charge =
         ini.GetReal("D4Pot", "charge", params.dftd_options.d4_charge);
   }
+  if (params.potential_options.potential == PotType::EXPR) {
+    params.expr_options.expression =
+        ini.Get("ExprPot", "expression", params.expr_options.expression);
+    params.expr_options.terms =
+        ini.Get("ExprPot", "terms", params.expr_options.terms);
+  }
   // [SocketNWChemPot]
   if (params.potential_options.potential == PotType::SocketNWChem) {
     params.socket_nwchem_options.host =

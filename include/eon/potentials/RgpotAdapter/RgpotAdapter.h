@@ -30,13 +30,15 @@ public:
   /// or other immovable state, so the adapter never copies or moves them.
   template <class Cfg>
   RgpotAdapter(PotType ptype, const Parameters &params, const Cfg &cfg)
-      : Potential(ptype, params),
-        pot_(cfg) {}
+      : Potential(ptype, params), pot_(cfg) {}
 
   /// Kernels with no configuration surface default-construct in place.
   RgpotAdapter(PotType ptype, const Parameters &params)
-      : Potential(ptype, params),
-        pot_() {}
+      : Potential(ptype, params), pot_() {}
+
+  /// Take a pre-built kernel (ExprPot and other move-only constructors).
+  RgpotAdapter(PotType ptype, const Parameters &params, RPot &&kernel)
+      : Potential(ptype, params), pot_(std::move(kernel)) {}
 
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override {

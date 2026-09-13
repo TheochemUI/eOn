@@ -33,3 +33,12 @@ def test_dftd_pot_types_and_params():
     assert params.potential == pyec.PotType.DFTD3
     assert params.dftd_functional == "pbe"
     assert params.d3_damping == "bj"
+
+
+def test_expr_pot_lj_plus_morse():
+    params = pyec.Parameters()
+    params.potential = pyec.PotType.EXPR
+    params.expr_expression = "0.5*lj + morse"
+    params.expr_terms = "lj,morse"
+    pot = pyec.make_potential(params.potential, params)
+    assert pot is not None

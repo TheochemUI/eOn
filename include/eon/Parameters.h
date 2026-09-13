@@ -121,6 +121,12 @@ public:
     double d4_charge{0.0};
   } dftd_options;
 
+  // [ExprPot]: rgpot 3.1 Lepton algebra over named child kernels.
+  struct expr_options_t {
+    std::string expression;
+    std::string terms;
+  } expr_options;
+
   // [SocketNWChemPot] //
   struct socket_nwchem_options_t {
     std::string host{"127.0.0.1"};

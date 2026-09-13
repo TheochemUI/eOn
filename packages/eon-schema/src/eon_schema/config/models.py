@@ -598,7 +598,8 @@ class PotentialConfig(BaseModel):
      - ``dftd4``: Grimme DFT-D4 via rgpot 3.1 dftd4 (``[D4Pot]``).
      - ``edip``: Environment-Dependent Interatomic Potential, for carbon.
      - ``emt``: Effective medium theory, for metals.
-     - ``expr``: rgpot ExprPot algebra (requires ``-Dwith_expr``; factory pending).
+     - ``expr``: rgpot ExprPot algebra over named terms (``[ExprPot]``
+       expression and comma-separated terms: lj, morse, zbl, d3, d4).
      - ``ext_pot``: External potential with system call interface.
      - ``fehe``: Potential for iron-hydrogen systems.
      - ``gpr``: Gaussian process regression potential.

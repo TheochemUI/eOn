@@ -67,6 +67,20 @@ void bind_parameters(nb::module_ &m) {
           [](const eonc::Parameters &s) { return s.dftd_options.d4_charge; },
           [](eonc::Parameters &s, double v) { s.dftd_options.d4_charge = v; })
       .def_prop_rw(
+          "expr_expression",
+          [](const eonc::Parameters &s) { return s.expr_options.expression; },
+          [](eonc::Parameters &s, const std::string &v) {
+            s.expr_options.expression = v;
+          },
+          "Lepton expression over named terms, e.g. 0.5*lj + d3")
+      .def_prop_rw(
+          "expr_terms",
+          [](const eonc::Parameters &s) { return s.expr_options.terms; },
+          [](eonc::Parameters &s, const std::string &v) {
+            s.expr_options.terms = v;
+          },
+          "Comma-separated term names matching the expression")
+      .def_prop_rw(
           "temperature",
           [](const eonc::Parameters &s) { return s.main_options.temperature; },
           [](eonc::Parameters &s, double t) { s.main_options.temperature = t; })
