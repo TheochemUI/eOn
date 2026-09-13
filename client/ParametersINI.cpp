@@ -174,6 +174,20 @@ int load_ini(INIReader &ini, Parameters &params) {
           "Switching function must begin before the global cutoff!");
     }
   }
+  // [D3Pot] / [D4Pot]: rgpot 3.1 Grimme DFT-D
+  if (params.potential_options.potential == PotType::DFTD3 ||
+      params.potential_options.potential == PotType::DFTD4) {
+    params.dftd_options.functional = ini.Get(
+        "D3Pot", "functional",
+        ini.Get("D4Pot", "functional", params.dftd_options.functional));
+    params.dftd_options.atm = ini.GetBoolean(
+        "D3Pot", "atm",
+        ini.GetBoolean("D4Pot", "atm", params.dftd_options.atm));
+    params.dftd_options.d3_damping =
+        ini.Get("D3Pot", "damping", params.dftd_options.d3_damping);
+    params.dftd_options.d4_charge =
+        ini.GetReal("D4Pot", "charge", params.dftd_options.d4_charge);
+  }
   // [SocketNWChemPot]
   if (params.potential_options.potential == PotType::SocketNWChem) {
     params.socket_nwchem_options.host =

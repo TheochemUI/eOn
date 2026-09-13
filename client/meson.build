@@ -422,6 +422,10 @@ if not _rgpot_pkg.found()
         # engines stay runtime dlopen; do not force fat metatomic/xtb link
         'with_xtb': false,
         'with_metatomic': false,
+        # rgpot 3.1: in-process D3/D4/Expr from meson wraps (no conda prefix).
+        'with_dftd3': true,
+        'with_dftd4': true,
+        'with_expr': true,
         # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H are
         # Fortran kernels inside librgpot.
         'with_fortran_pots': 'enabled',

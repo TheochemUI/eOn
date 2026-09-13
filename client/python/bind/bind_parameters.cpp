@@ -44,6 +44,31 @@ void bind_parameters(nb::module_ &m) {
             s.potential_options.potential = p;
           })
       .def_prop_rw(
+          "dftd_functional",
+          [](const eonc::Parameters &s) {
+            return s.dftd_options.functional;
+          },
+          [](eonc::Parameters &s, const std::string &v) {
+            s.dftd_options.functional = v;
+          },
+          "s-dftd3 / dftd4 method key (default pbe)")
+      .def_prop_rw(
+          "dftd_atm",
+          [](const eonc::Parameters &s) { return s.dftd_options.atm; },
+          [](eonc::Parameters &s, bool v) { s.dftd_options.atm = v; },
+          "Axilrod-Teller-Muto three-body term")
+      .def_prop_rw(
+          "d3_damping",
+          [](const eonc::Parameters &s) { return s.dftd_options.d3_damping; },
+          [](eonc::Parameters &s, const std::string &v) {
+            s.dftd_options.d3_damping = v;
+          },
+          "bj | zero")
+      .def_prop_rw(
+          "d4_charge",
+          [](const eonc::Parameters &s) { return s.dftd_options.d4_charge; },
+          [](eonc::Parameters &s, double v) { s.dftd_options.d4_charge = v; })
+      .def_prop_rw(
           "temperature",
           [](const eonc::Parameters &s) { return s.main_options.temperature; },
           [](eonc::Parameters &s, double t) { s.main_options.temperature = t; })

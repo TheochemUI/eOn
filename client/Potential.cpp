@@ -10,9 +10,11 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/EonLogger.h"
+#include <cctype>
 #include <csignal>
 #include <ctime>
 #include <limits>
+#include <string>
 #include <utility>
 
 #include "eon/HelperFunctions.h"
@@ -35,6 +37,12 @@
 #include "rgpot/LennardJones/LJPot.hpp"
 #include "rgpot/Morse/MorsePot.hpp"
 #include "rgpot/ZBL/ZBLPot.hpp"
+#ifdef RGPOT_HAS_DFTD3
+#include "rgpot/D3Pot/D3Pot.hpp"
+#endif
+#ifdef RGPOT_HAS_DFTD4
+#include "rgpot/D4Pot/D4Pot.hpp"
+#endif
 #include "rgpot/fortran/FortranPots.hpp"
 #ifndef IS_WINDOWS
 #include "eon/potentials/SocketNWChem/SocketNWChemPot.h"
@@ -269,6 +277,34 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 #ifdef WITH_METATOMIC
   case PotType::METATOMIC: {
     return (std::make_shared<MetatomicPotential>(params));
+    break;
+  }
+#endif
+#ifdef RGPOT_HAS_DFTD3
+  case PotType::DFTD3: {
+    rgpot::D3Damping damp = rgpot::D3Damping::BJ;
+    std::string dname = params.dftd_options.d3_damping;
+    for (char &c : dname) {
+      c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    }
+    if (dname == "zero") {
+      damp = rgpot::D3Damping::Zero;
+    }
+    return makeRgpot<rgpot::D3Pot>(
+        PotType::DFTD3, params,
+        rgpot::D3Config{.damping = damp,
+                        .functional = params.dftd_options.functional,
+                        .atm = params.dftd_options.atm});
+    break;
+  }
+#endif
+#ifdef RGPOT_HAS_DFTD4
+  case PotType::DFTD4: {
+    return makeRgpot<rgpot::D4Pot>(
+        PotType::DFTD4, params,
+        rgpot::D4Config{.functional = params.dftd_options.functional,
+                        .charge = params.dftd_options.d4_charge,
+                        .atm = params.dftd_options.atm});
     break;
   }
 #endif

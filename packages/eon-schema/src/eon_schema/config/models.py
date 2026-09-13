@@ -553,9 +553,12 @@ class PotentialConfig(BaseModel):
         "ase_orca",
         "catlearn",
         "cuh2",
+        "dftd3",
+        "dftd4",
         "eam_al",
         "edip",
         "emt",
+        "expr",
         "ext_pot",
         "fehe",
         "gpr",
@@ -591,8 +594,11 @@ class PotentialConfig(BaseModel):
      - ``ase_orca``: ASE interface for ORCA quantum chemistry package.
      - ``cuh2``: Potential for copper hydride systems.
      - ``eam_al``: Embedded atom method parameterized for aluminum.
+     - ``dftd3``: Grimme DFT-D3 via rgpot 3.1 s-dftd3 (``[D3Pot]``).
+     - ``dftd4``: Grimme DFT-D4 via rgpot 3.1 dftd4 (``[D4Pot]``).
      - ``edip``: Environment-Dependent Interatomic Potential, for carbon.
      - ``emt``: Effective medium theory, for metals.
+     - ``expr``: rgpot ExprPot algebra (requires ``-Dwith_expr``; factory pending).
      - ``ext_pot``: External potential with system call interface.
      - ``fehe``: Potential for iron-hydrogen systems.
      - ``gpr``: Gaussian process regression potential.

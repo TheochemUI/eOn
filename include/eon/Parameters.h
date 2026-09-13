@@ -113,6 +113,14 @@ public:
     double cut_global{2.5};
   } zbl_options;
 
+  // [D3Pot] / [D4Pot]: rgpot 3.1 in-process Grimme DFT-D (s-dftd3 / dftd4).
+  struct dftd_options_t {
+    std::string functional{"pbe"};
+    bool atm{true};
+    std::string d3_damping{"bj"};
+    double d4_charge{0.0};
+  } dftd_options;
+
   // [SocketNWChemPot] //
   struct socket_nwchem_options_t {
     std::string host{"127.0.0.1"};
