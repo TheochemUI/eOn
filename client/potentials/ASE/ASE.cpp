@@ -74,6 +74,7 @@ ASE::ASE(const Parameters &a_params)
 void ASE::force(long nAtoms, const double *R, const int *atomicNrs, double *F,
                 double *U, double *variance, const double *box) {
   variance = nullptr;
+  py::gil_scoped_acquire gil;
   try {
     // TODO(rg): This is easier on the type system if Eigen::Map is used like in
     // ASE_ORCA convert arrays to Numpy arrays
