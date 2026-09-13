@@ -1,5 +1,6 @@
-[wrap-file]
-directory = potentials-schema-1.15.1
-source_url = https://github.com/OmniPotentRPC/potentials-schema/archive/refs/tags/v1.15.1.tar.gz
-source_filename = potentials-schema-1.15.1.tar.gz
-source_hash = 8913fb509dacbc90d8bdaf6b0bba63f06e8c668256fcf9adb48dc73dfe807935
+[wrap-git]
+directory = potentials-schema
+url = https://github.com/OmniPotentRPC/potentials-schema.git
+revision = e825c207886b336b4b9c1197e968f184c1b2eb47
+# Same pin rgpot 3.2.0 uses. schema-sync compares vendored Potentials.capnp
+# to this wrap.
