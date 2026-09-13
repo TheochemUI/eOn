@@ -10,7 +10,7 @@ license = {text = "BSD-3-Clause"}
 requires-python = ">=3.12"
 dependencies = [
     "numpy>=1.26.4",
-    "readcon>=0.14.5",
+    "readcon>=0.14.9",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -42,11 +42,11 @@ metatomic = [
     # Engines from rgpot cover torch 2.7+ (same floor as rgpot multi-ABI).
     # rgpot>=2.5.2 engines match vesin 0.6 VesinOptions (skin/n_threads).
     "torch>=2.7",
-    "rgpot>=2.5.2",
+    "rgpot>=3.1.2",
     "metatensor>=0.1.0",
     "metatensor-torch>=0.6.0",
-    "metatomic-torch>=0.1.0",
-    "vesin>=0.6.0",
+    "metatomic-torch>=0.1.15",
+    "vesin>=0.6.1",
 ]
 # Cookbook-ish helper stack (config writing lives in rgpycrumbs).
 # No conda-forge eOn / eonclient required.

@@ -405,7 +405,7 @@ _deps += dl_dep
 _rgpot_proj = []
 _rgpot_pkg = dependency(
     'rgpot',
-    version: '>=3.0.0',
+    version: '>=3.1.2',
     method: 'pkg-config',
     required: false,
     allow_fallback: false,
@@ -1179,7 +1179,7 @@ _linkto += potentials
 # ConFileIO needs 0.13+ (clone, bulk set_*_from_flat, compression_from_extension).
 readcon_dep = dependency(
     'readcon-core',
-    version: '>=0.14.2',
+    version: '>=0.14.10',
     method: 'pkg-config',
     required: false,
 )
@@ -1187,7 +1187,7 @@ readcon_order_srcs = []
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
-        version: '>=0.14.2',
+        version: '>=0.14.10',
         default_options: {
             'with_tests': false,
             'with_examples': false,
