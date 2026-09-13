@@ -45,9 +45,7 @@ void bind_parameters(nb::module_ &m) {
           })
       .def_prop_rw(
           "dftd_functional",
-          [](const eonc::Parameters &s) {
-            return s.dftd_options.functional;
-          },
+          [](const eonc::Parameters &s) { return s.dftd_options.functional; },
           [](eonc::Parameters &s, const std::string &v) {
             s.dftd_options.functional = v;
           },

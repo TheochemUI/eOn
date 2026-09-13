@@ -721,17 +721,17 @@ public:
   struct oh_tst_options_t {
     std::string reactant_filename{"pos.con"};
     std::string product_filename{"product.con"};
-    double time_step{1.0};       // fs, constrained sampling dynamics
-    long equil_steps{200};       // per-plane equilibration steps
-    long sample_steps{800};      // per-plane averaging steps
-    long max_planes{200};        // plane-progression iterations
-    double plane_mass{50.0};     // m_s, inertia of the s coordinate
-    double alpha_rot{50.0};      // rotational inertia of the normal
-    double plane_time_step{0.1}; // Verlet step for (s, n) updates
-    double ds_max{0.1};          // A, clamp on per-iteration plane moves
-    double dtheta_max{0.05};     // rad, clamp on per-iteration rotations
-    double force_tol{0.005};     // eV/A convergence on plane force
-    double s_init{0.05};         // starting fraction along the guideline
+    double time_step{1.0};         // fs, constrained sampling dynamics
+    long equil_steps{200};         // per-plane equilibration steps
+    long sample_steps{800};        // per-plane averaging steps
+    long max_planes{200};          // plane-progression iterations
+    double plane_mass{50.0};       // m_s, inertia of the s coordinate
+    double alpha_rot{50.0};        // rotational inertia of the normal
+    double plane_time_step{0.1};   // Verlet step for (s, n) updates
+    double ds_max{0.1};            // A, clamp on per-iteration plane moves
+    double dtheta_max{0.05};       // rad, clamp on per-iteration rotations
+    double force_tol{0.005};       // eV/A convergence on plane force
+    double s_init{0.05};           // starting fraction along the guideline
     long reactant_md_steps{20000}; // unconstrained reactant trajectory
     double max_delta_a{10.0};      // eV, divergence guard on the work
     // Thermostat for the plane-constrained and reactant sampling:
@@ -754,7 +754,6 @@ public:
     bool pmf_scan{false};
     long scan_planes{40}; // uniform planes across the guideline
   } oh_tst_options;
-
 };
 
 } // namespace eonc
