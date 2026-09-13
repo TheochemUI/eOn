@@ -90,7 +90,7 @@ jobs:
         shell: pixi run bash -e {0}
         run: |
           # with_tests defaults true; catch compile/link failures in unit tests.
-          meson test -C bbdir --print-errorlogs
+          meson test -C bbdir --suite eon --print-errorlogs
 
       - name: Run Catch2 unit tests [windows]
         if: runner.os == 'Windows'
@@ -159,7 +159,7 @@ jobs:
           unset LDFLAGS CFLAGS CXXFLAGS FCFLAGS || true
           export CC=cl CXX=cl
           export AR=lib
-          meson test -C bbdir --print-errorlogs
+          meson test -C bbdir --suite eon --print-errorlogs
 
       - name: Run Python tests
         if: runner.os != 'Windows'

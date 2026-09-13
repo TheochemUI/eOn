@@ -405,7 +405,7 @@ _deps += dl_dep
 _rgpot_proj = []
 _rgpot_pkg = dependency(
     'rgpot',
-    version: '>=3.0.0',
+    version: '>=3.2.0',
     method: 'pkg-config',
     required: false,
     allow_fallback: false,
@@ -422,6 +422,9 @@ if not _rgpot_pkg.found()
         # engines stay runtime dlopen; do not force fat metatomic/xtb link
         'with_xtb': false,
         'with_metatomic': false,
+        # rgpot 3.1 Expr (Lepton wrap). D3/D4 wraps pull s-dftd3/dftd4
+        # tests into meson test and break isolated wheel builds.
+        'with_expr': true,
         # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H are
         # Fortran kernels inside librgpot.
         'with_fortran_pots': 'enabled',
@@ -430,6 +433,14 @@ if not _rgpot_pkg.found()
         rgpot_opts += {'with_rpc': true}
     endif
     _rgpot_proj = subproject('rgpot', default_options: rgpot_opts)
+    # Wrap-built librgpot is not installed (rgpot install: not
+    # is_subproject; CI uses --skip-subprojects). eonclient's rpath
+    # looks in prefix/lib for librgpot.3.dylib.
+    meson.add_install_script(
+        find_program(meson.project_source_root() / 'scripts' / 'install_wrap_rgpot.py'),
+        _rgpot_proj.get_variable('rgpot').full_path(),
+        get_option('libdir'),
+    )
 endif
 
 # vesin: single neighbor-list backend for classical pots + Metatomic.
@@ -1179,7 +1190,7 @@ _linkto += potentials
 # ConFileIO needs 0.13+ (clone, bulk set_*_from_flat, compression_from_extension).
 readcon_dep = dependency(
     'readcon-core',
-    version: '>=0.14.2',
+    version: '>=0.14.10',
     method: 'pkg-config',
     required: false,
 )
@@ -1187,7 +1198,7 @@ readcon_order_srcs = []
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
-        version: '>=0.14.2',
+        version: '>=0.14.10',
         default_options: {
             'with_tests': false,
             'with_examples': false,

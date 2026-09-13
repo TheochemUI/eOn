@@ -113,6 +113,28 @@ public:
     double cut_global{2.5};
   } zbl_options;
 
+  // [D3Pot] / [D4Pot]: rgpot 3.1 in-process Grimme DFT-D (s-dftd3 / dftd4).
+  struct dftd_options_t {
+    std::string functional{"pbe"};
+    bool atm{true};
+    std::string d3_damping{"bj"};
+    double d4_charge{0.0};
+  } dftd_options;
+
+  // [ExprPot]: rgpot 3.1 Lepton algebra over named child kernels.
+  struct expr_options_t {
+    std::string expression;
+    std::string terms;
+  } expr_options;
+
+  // [MOPACPot]: rgpot 3.2 MOPACPot (libmopacc, default AM1).
+  struct mopac_options_t {
+    int charge{0};
+    int spin{0};
+    int model{4};
+    std::string engine_path;
+  } mopac_options;
+
   // [SocketNWChemPot] //
   struct socket_nwchem_options_t {
     std::string host{"127.0.0.1"};
@@ -713,17 +735,17 @@ public:
   struct oh_tst_options_t {
     std::string reactant_filename{"pos.con"};
     std::string product_filename{"product.con"};
-    double time_step{1.0};       // fs, constrained sampling dynamics
-    long equil_steps{200};       // per-plane equilibration steps
-    long sample_steps{800};      // per-plane averaging steps
-    long max_planes{200};        // plane-progression iterations
-    double plane_mass{50.0};     // m_s, inertia of the s coordinate
-    double alpha_rot{50.0};      // rotational inertia of the normal
-    double plane_time_step{0.1}; // Verlet step for (s, n) updates
-    double ds_max{0.1};          // A, clamp on per-iteration plane moves
-    double dtheta_max{0.05};     // rad, clamp on per-iteration rotations
-    double force_tol{0.005};     // eV/A convergence on plane force
-    double s_init{0.05};         // starting fraction along the guideline
+    double time_step{1.0};         // fs, constrained sampling dynamics
+    long equil_steps{200};         // per-plane equilibration steps
+    long sample_steps{800};        // per-plane averaging steps
+    long max_planes{200};          // plane-progression iterations
+    double plane_mass{50.0};       // m_s, inertia of the s coordinate
+    double alpha_rot{50.0};        // rotational inertia of the normal
+    double plane_time_step{0.1};   // Verlet step for (s, n) updates
+    double ds_max{0.1};            // A, clamp on per-iteration plane moves
+    double dtheta_max{0.05};       // rad, clamp on per-iteration rotations
+    double force_tol{0.005};       // eV/A convergence on plane force
+    double s_init{0.05};           // starting fraction along the guideline
     long reactant_md_steps{20000}; // unconstrained reactant trajectory
     double max_delta_a{10.0};      // eV, divergence guard on the work
     // Thermostat for the plane-constrained and reactant sampling:
@@ -746,7 +768,6 @@ public:
     bool pmf_scan{false};
     long scan_planes{40}; // uniform planes across the guideline
   } oh_tst_options;
-
 };
 
 } // namespace eonc

@@ -553,9 +553,12 @@ class PotentialConfig(BaseModel):
         "ase_orca",
         "catlearn",
         "cuh2",
+        "dftd3",
+        "dftd4",
         "eam_al",
         "edip",
         "emt",
+        "expr",
         "ext_pot",
         "fehe",
         "gpr",
@@ -564,6 +567,7 @@ class PotentialConfig(BaseModel):
         "lj",
         "ljcluster",
         "metatomic",
+        "mopac",
         "morse_pt",
         "mpi",
         "rgpot",
@@ -591,8 +595,12 @@ class PotentialConfig(BaseModel):
      - ``ase_orca``: ASE interface for ORCA quantum chemistry package.
      - ``cuh2``: Potential for copper hydride systems.
      - ``eam_al``: Embedded atom method parameterized for aluminum.
+     - ``dftd3``: Grimme DFT-D3 via rgpot 3.1 s-dftd3 (``[D3Pot]``).
+     - ``dftd4``: Grimme DFT-D4 via rgpot 3.1 dftd4 (``[D4Pot]``).
      - ``edip``: Environment-Dependent Interatomic Potential, for carbon.
      - ``emt``: Effective medium theory, for metals.
+     - ``expr``: rgpot ExprPot algebra over named terms (``[ExprPot]``
+       expression and comma-separated terms: lj, morse, zbl, d3, d4).
      - ``ext_pot``: External potential with system call interface.
      - ``fehe``: Potential for iron-hydrogen systems.
      - ``gpr``: Gaussian process regression potential.
@@ -600,6 +608,7 @@ class PotentialConfig(BaseModel):
      - ``lenosky_si``: Lenosky potential, for silicon.
      - ``lj``: Lennard-Jones potential in reduced units (served by rgpot).
      - ``ljcluster``: Lennard-Jones cluster potential (served by rgpot).
+     - ``mopac``: rgpot 3.2 MOPACPot (libmopacc, default AM1; ``[MOPACPot]``).
      - ``morse_pt``: Morse potential for platinum (served by rgpot).
      - ``mpi``: Communicate with an MPI process to calculate energy and forces.
      - ``rgpot``: In-process rgpot backends (NWChem / CPMD / metatomic / xTB via dlopen).

@@ -76,6 +76,22 @@ Morse_Pt
 ZBL
 : Ziegler-Biersack-Littmark screened nuclear repulsion, served by `rgpot`.
 
+```{versionadded} 3.2.1
+DFTD3 / DFTD4
+: Grimme DFT-D via rgpot 3.2 (`potential = dftd3` / `dftd4`,
+  `[D3Pot]` / `[D4Pot]`). Enable the wraps at meson configure time
+  (`-Dwith_dftd3=true`).
+
+EXPR
+: rgpot ExprPot. `potential = expr` with `[ExprPot]` `expression` and
+  comma-separated `terms` (`0.5*lj + d3`). Terms: `lj`, `ljcluster`,
+  `morse`, `zbl`, `d3`/`dftd3`, `d4`/`dftd4`, `mopac`.
+
+MOPAC
+: rgpot 3.2 MOPACPot (libmopacc). `potential = mopac`, `[MOPACPot]`
+  `charge`, `spin`, `model` (4 is AM1), `engine_path`.
+```
+
 Lenosky_Si {cite:p}`pot-lenoskyHighlyOptimizedEmpirical2000`
 : Lenosky potential, for silicon.
 

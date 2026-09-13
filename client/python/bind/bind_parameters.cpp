@@ -44,6 +44,63 @@ void bind_parameters(nb::module_ &m) {
             s.potential_options.potential = p;
           })
       .def_prop_rw(
+          "dftd_functional",
+          [](const eonc::Parameters &s) { return s.dftd_options.functional; },
+          [](eonc::Parameters &s, const std::string &v) {
+            s.dftd_options.functional = v;
+          },
+          "s-dftd3 / dftd4 method key (default pbe)")
+      .def_prop_rw(
+          "dftd_atm",
+          [](const eonc::Parameters &s) { return s.dftd_options.atm; },
+          [](eonc::Parameters &s, bool v) { s.dftd_options.atm = v; },
+          "Axilrod-Teller-Muto three-body term")
+      .def_prop_rw(
+          "d3_damping",
+          [](const eonc::Parameters &s) { return s.dftd_options.d3_damping; },
+          [](eonc::Parameters &s, const std::string &v) {
+            s.dftd_options.d3_damping = v;
+          },
+          "bj | zero")
+      .def_prop_rw(
+          "d4_charge",
+          [](const eonc::Parameters &s) { return s.dftd_options.d4_charge; },
+          [](eonc::Parameters &s, double v) { s.dftd_options.d4_charge = v; })
+      .def_prop_rw(
+          "expr_expression",
+          [](const eonc::Parameters &s) { return s.expr_options.expression; },
+          [](eonc::Parameters &s, const std::string &v) {
+            s.expr_options.expression = v;
+          },
+          "Lepton expression over named terms, e.g. 0.5*lj + d3")
+      .def_prop_rw(
+          "expr_terms",
+          [](const eonc::Parameters &s) { return s.expr_options.terms; },
+          [](eonc::Parameters &s, const std::string &v) {
+            s.expr_options.terms = v;
+          },
+          "Comma-separated term names matching the expression")
+      .def_prop_rw(
+          "mopac_charge",
+          [](const eonc::Parameters &s) { return s.mopac_options.charge; },
+          [](eonc::Parameters &s, int v) { s.mopac_options.charge = v; })
+      .def_prop_rw(
+          "mopac_spin",
+          [](const eonc::Parameters &s) { return s.mopac_options.spin; },
+          [](eonc::Parameters &s, int v) { s.mopac_options.spin = v; })
+      .def_prop_rw(
+          "mopac_model",
+          [](const eonc::Parameters &s) { return s.mopac_options.model; },
+          [](eonc::Parameters &s, int v) { s.mopac_options.model = v; },
+          "OpenMOPAC model id (4 is AM1)")
+      .def_prop_rw(
+          "mopac_engine_path",
+          [](const eonc::Parameters &s) { return s.mopac_options.engine_path; },
+          [](eonc::Parameters &s, const std::string &v) {
+            s.mopac_options.engine_path = v;
+          },
+          "libmopacc path; empty uses default search")
+      .def_prop_rw(
           "temperature",
           [](const eonc::Parameters &s) { return s.main_options.temperature; },
           [](eonc::Parameters &s, double t) { s.main_options.temperature = t; })

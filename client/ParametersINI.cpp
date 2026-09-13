@@ -174,6 +174,36 @@ int load_ini(INIReader &ini, Parameters &params) {
           "Switching function must begin before the global cutoff!");
     }
   }
+  // [D3Pot] / [D4Pot]: rgpot 3.1 Grimme DFT-D
+  if (params.potential_options.potential == PotType::DFTD3 ||
+      params.potential_options.potential == PotType::DFTD4) {
+    params.dftd_options.functional =
+        ini.Get("D3Pot", "functional",
+                ini.Get("D4Pot", "functional", params.dftd_options.functional));
+    params.dftd_options.atm =
+        ini.GetBoolean("D3Pot", "atm",
+                       ini.GetBoolean("D4Pot", "atm", params.dftd_options.atm));
+    params.dftd_options.d3_damping =
+        ini.Get("D3Pot", "damping", params.dftd_options.d3_damping);
+    params.dftd_options.d4_charge =
+        ini.GetReal("D4Pot", "charge", params.dftd_options.d4_charge);
+  }
+  if (params.potential_options.potential == PotType::EXPR) {
+    params.expr_options.expression =
+        ini.Get("ExprPot", "expression", params.expr_options.expression);
+    params.expr_options.terms =
+        ini.Get("ExprPot", "terms", params.expr_options.terms);
+  }
+  if (params.potential_options.potential == PotType::MOPAC) {
+    params.mopac_options.charge = static_cast<int>(
+        ini.GetInteger("MOPACPot", "charge", params.mopac_options.charge));
+    params.mopac_options.spin = static_cast<int>(
+        ini.GetInteger("MOPACPot", "spin", params.mopac_options.spin));
+    params.mopac_options.model = static_cast<int>(
+        ini.GetInteger("MOPACPot", "model", params.mopac_options.model));
+    params.mopac_options.engine_path =
+        ini.Get("MOPACPot", "engine_path", params.mopac_options.engine_path);
+  }
   // [SocketNWChemPot]
   if (params.potential_options.potential == PotType::SocketNWChem) {
     params.socket_nwchem_options.host =

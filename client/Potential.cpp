@@ -10,10 +10,15 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/EonLogger.h"
+#include <cctype>
 #include <csignal>
 #include <ctime>
 #include <limits>
+#include <memory>
+#include <stdexcept>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "eon/HelperFunctions.h"
 #include "eon/Parameters.h"
@@ -35,6 +40,16 @@
 #include "rgpot/LennardJones/LJPot.hpp"
 #include "rgpot/Morse/MorsePot.hpp"
 #include "rgpot/ZBL/ZBLPot.hpp"
+#ifdef RGPOT_HAS_DFTD3
+#include "rgpot/D3Pot/D3Pot.hpp"
+#endif
+#ifdef RGPOT_HAS_DFTD4
+#include "rgpot/D4Pot/D4Pot.hpp"
+#endif
+#ifdef RGPOT_HAS_EXPR
+#include "rgpot/ExprPot/ExprPot.hpp"
+#endif
+#include "rgpot/MOPACPot/MOPACPot.hpp"
 #include "rgpot/fortran/FortranPots.hpp"
 #ifndef IS_WINDOWS
 #include "eon/potentials/SocketNWChem/SocketNWChemPot.h"
@@ -115,6 +130,112 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix &pos,
 }
 
 namespace eonc::helpers {
+namespace {
+
+std::string lower_copy(std::string s) {
+  for (char &c : s) {
+    c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+  }
+  return s;
+}
+
+#ifdef RGPOT_HAS_EXPR
+#ifdef RGPOT_HAS_DFTD3
+rgpot::D3Damping d3_damping_from_params(const Parameters &params) {
+  rgpot::D3Damping damp = rgpot::D3Damping::BJ;
+  if (lower_copy(params.dftd_options.d3_damping) == "zero") {
+    damp = rgpot::D3Damping::Zero;
+  }
+  return damp;
+}
+#endif
+
+std::unique_ptr<rgpot::PotentialBase> make_expr_term(const std::string &raw,
+                                                     const Parameters &params) {
+  const std::string name = lower_copy(raw);
+  if (name == "lj") {
+    return std::make_unique<rgpot::LJPot>(rgpot::LJConfig{});
+  }
+  if (name == "ljcluster") {
+    return std::make_unique<rgpot::LJClusterPot>(rgpot::LJClusterConfig{});
+  }
+  if (name == "morse" || name == "morse_pt") {
+    return std::make_unique<rgpot::MorsePot>(rgpot::MorseConfig{});
+  }
+  if (name == "zbl") {
+    return std::make_unique<rgpot::ZBLPot>(rgpot::ZBLConfig{
+        .cut_inner = params.zbl_options.cut_inner,
+        .cut_global = params.zbl_options.cut_global,
+    });
+  }
+#ifdef RGPOT_HAS_DFTD3
+  if (name == "d3" || name == "dftd3") {
+    return std::make_unique<rgpot::D3Pot>(rgpot::D3Config{
+        .damping = d3_damping_from_params(params),
+        .functional = params.dftd_options.functional,
+        .atm = params.dftd_options.atm,
+    });
+  }
+#endif
+#ifdef RGPOT_HAS_DFTD4
+  if (name == "d4" || name == "dftd4") {
+    return std::make_unique<rgpot::D4Pot>(rgpot::D4Config{
+        .functional = params.dftd_options.functional,
+        .charge = params.dftd_options.d4_charge,
+        .atm = params.dftd_options.atm,
+    });
+  }
+#endif
+  if (name == "mopac") {
+    return std::make_unique<rgpot::MOPACPot>(rgpot::MOPACPot::Config{
+        .charge = params.mopac_options.charge,
+        .spin = params.mopac_options.spin,
+        .model = params.mopac_options.model,
+        .engine_path = params.mopac_options.engine_path,
+    });
+  }
+  throw std::runtime_error(
+      "ExprPot unknown term '" + raw +
+      "' (lj, ljcluster, morse, zbl, d3/dftd3, d4/dftd4, mopac)");
+}
+
+std::vector<rgpot::ExprPot::Term> parse_expr_terms(const Parameters &params) {
+  std::vector<rgpot::ExprPot::Term> terms;
+  std::string buf = params.expr_options.terms;
+  std::string token;
+  auto flush = [&]() {
+    while (!token.empty() &&
+           std::isspace(static_cast<unsigned char>(token.front()))) {
+      token.erase(token.begin());
+    }
+    while (!token.empty() &&
+           std::isspace(static_cast<unsigned char>(token.back()))) {
+      token.pop_back();
+    }
+    if (!token.empty()) {
+      terms.emplace_back(token, make_expr_term(token, params));
+      token.clear();
+    }
+  };
+  for (char c : buf) {
+    if (c == ',') {
+      flush();
+    } else {
+      token.push_back(c);
+    }
+  }
+  flush();
+  if (terms.empty()) {
+    throw std::runtime_error(
+        "ExprPot needs [ExprPot] terms (comma-separated names used in "
+        "expression)");
+  }
+  return terms;
+}
+#endif
+
+} // namespace
+
 std::shared_ptr<Potential> makePotential(const Parameters &params) {
   // Inject config-file path before any potential constructor runs
   PluginLoader::instance().add_config_paths(
@@ -272,6 +393,34 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
 #endif
+#ifdef RGPOT_HAS_DFTD3
+  case PotType::DFTD3: {
+    rgpot::D3Damping damp = rgpot::D3Damping::BJ;
+    std::string dname = params.dftd_options.d3_damping;
+    for (char &c : dname) {
+      c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    }
+    if (dname == "zero") {
+      damp = rgpot::D3Damping::Zero;
+    }
+    return makeRgpot<rgpot::D3Pot>(
+        PotType::DFTD3, params,
+        rgpot::D3Config{.damping = damp,
+                        .functional = params.dftd_options.functional,
+                        .atm = params.dftd_options.atm});
+    break;
+  }
+#endif
+#ifdef RGPOT_HAS_DFTD4
+  case PotType::DFTD4: {
+    return makeRgpot<rgpot::D4Pot>(
+        PotType::DFTD4, params,
+        rgpot::D4Config{.functional = params.dftd_options.functional,
+                        .charge = params.dftd_options.d4_charge,
+                        .atm = params.dftd_options.atm});
+    break;
+  }
+#endif
   case PotType::ZBL: {
     return makeRgpot<rgpot::ZBLPot>(
         PotType::ZBL, params,
@@ -290,6 +439,30 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 #ifdef WITH_RGPOT
   case PotType::RGPOT: {
     return (std::make_shared<RgpotPot>(params));
+    break;
+  }
+#endif
+  case PotType::MOPAC: {
+    return makeRgpot<rgpot::MOPACPot>(
+        PotType::MOPAC, params,
+        rgpot::MOPACPot::Config{
+            .charge = params.mopac_options.charge,
+            .spin = params.mopac_options.spin,
+            .model = params.mopac_options.model,
+            .engine_path = params.mopac_options.engine_path,
+        });
+    break;
+  }
+#ifdef RGPOT_HAS_EXPR
+  case PotType::EXPR: {
+    if (params.expr_options.expression.empty()) {
+      throw std::runtime_error(
+          "ExprPot needs [ExprPot] expression, e.g. 0.5*lj + d3");
+    }
+    rgpot::ExprPot expr(params.expr_options.expression,
+                        parse_expr_terms(params));
+    return std::make_shared<RgpotAdapter<rgpot::ExprPot>>(PotType::EXPR, params,
+                                                          std::move(expr));
     break;
   }
 #endif

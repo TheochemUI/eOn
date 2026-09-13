@@ -9,8 +9,8 @@ myst:
 
 Patch on `v3.2.0`. IDPP path init keeps frozen atoms fixed
 (TheochemUI/eOn#410). pyeonclient can set `opt_method`,
-`neb_opt_method`, and refine (#406). rgpot wrap is **v3.1.2** with
-D3/D4 and ExprPot composition. ASE `from_ase` applies PBC before wrap.
+`neb_opt_method`, and refine (#406). rgpot wrap is **v3.2.0** with
+D3/D4, ExprPot, and MOPACPot. ASE `from_ase` applies PBC before wrap.
 
 ```{toctree}
 :maxdepth: 2
