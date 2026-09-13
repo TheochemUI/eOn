@@ -723,9 +723,7 @@ class RgpotPot(BaseModel):
     theory: str = Field(
         default="scf", description="Theory level for the NWChem backend."
     )
-    scf_type: str = Field(
-        default="rhf", description="SCF type for the NWChem backend."
-    )
+    scf_type: str = Field(default="rhf", description="SCF type for the NWChem backend.")
     functional: str = Field(
         default="BLYP", description="XC functional for the CPMD backend."
     )
@@ -775,9 +773,7 @@ class RgpotPot(BaseModel):
         default="GFN2xTB",
         description="XTB paramset when backend=xtb.",
     )
-    accuracy: float = Field(
-        default=1.0, description="XTB accuracy when backend=xtb."
-    )
+    accuracy: float = Field(default=1.0, description="XTB accuracy when backend=xtb.")
     electronic_temperature: float = Field(
         default=300.0,
         description="XTB electronic temperature (K) when backend=xtb.",
@@ -785,9 +781,7 @@ class RgpotPot(BaseModel):
     max_iterations: int = Field(
         default=250, description="XTB max iterations when backend=xtb."
     )
-    uhf: int = Field(
-        default=0, description="XTB unpaired electrons when backend=xtb."
-    )
+    uhf: int = Field(default=0, description="XTB unpaired electrons when backend=xtb.")
     engine_root: str = Field(
         default="", description="Engine installation root (NWCHEM_ROOT / CPMD_ROOT)."
     )
@@ -1003,9 +997,9 @@ class SaddleSearchConfig(BaseModel):
         relaxation internally. ``direction.dat`` is optional and only biases
         the initial push when present.
     """
-    min_mode_method: Literal[
-        "dimer", "lanczos", "davidson", "gprdimer", "artn"
-    ] = Field(default="dimer", description="Min-mode method to use.")
+    min_mode_method: Literal["dimer", "lanczos", "davidson", "gprdimer", "artn"] = (
+        Field(default="dimer", description="Min-mode method to use.")
+    )
     """
     Options:
      - ``dimer``: Use the dimer min-mode method from :cite:t:`ss-henkelmanDimerMethodFinding1999`
@@ -1126,8 +1120,7 @@ class SaddleSearchConfig(BaseModel):
         description="When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered converged onto a saddle point.",
     )
     max_iterations: int = Field(
-        default=1000,
-        description="The maximum number of translation steps to be taken."
+        default=1000, description="The maximum number of translation steps to be taken."
     )
     nonlocal_count_abort: int = Field(
         default=0,
@@ -1257,6 +1250,7 @@ class SaddleSearchConfig(BaseModel):
         default=30,
         description="The minimum number of active atoms for confining the positive region of the PES, undocumented.",
     )
+
 
 class KDBConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
