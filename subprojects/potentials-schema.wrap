@@ -2,5 +2,6 @@
 directory = potentials-schema
 url = https://github.com/OmniPotentRPC/potentials-schema.git
 revision = e825c207886b336b4b9c1197e968f184c1b2eb47
-# Same pin rgpot 3.2.0 uses. schema-sync compares vendored Potentials.capnp
-# to this wrap.
+# Overlay rgpot 3.2.0's vendored Potentials.capnp (schema-sync compares
+# those files to this wrap).
+patch_directory = potentials-schema
