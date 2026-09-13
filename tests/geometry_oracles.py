@@ -57,15 +57,15 @@ def lammps_triclinic_wrap(
     H columns are ``(xprd,0,0)``, ``(xy,yprd,0)``, ``(xz,yz,zprd)``.
     Wrap each lamda component to ``[-0.5, 0.5)``, then ``H @ lamda``.
     """
-    h = np.array(
-        [[xprd, xy, xz], [0.0, yprd, yz], [0.0, 0.0, zprd]], dtype=float
-    )
+    h = np.array([[xprd, xy, xz], [0.0, yprd, yz], [0.0, 0.0, zprd]], dtype=float)
     lamda = np.linalg.solve(h, np.asarray(diff, dtype=float))
     lamda = lamda - np.floor(lamda + 0.5)
     return h @ lamda
 
 
-def gromacs_pbc_dx(x1: np.ndarray, x2: np.ndarray, box_vectors: np.ndarray) -> np.ndarray:
+def gromacs_pbc_dx(
+    x1: np.ndarray, x2: np.ndarray, box_vectors: np.ndarray
+) -> np.ndarray:
     """GROMACS ``pbc_dx`` triclinic walk (box vector ``d`` is row ``d``).
 
     From the last dimension to the first, subtract or add the whole

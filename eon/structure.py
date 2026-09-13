@@ -10,7 +10,7 @@ aselite-era mini-Atoms type without requiring ASE.
 
 from __future__ import annotations
 
-from typing import List, Optional, Sequence, Union
+from typing import List, Optional, Sequence
 
 import numpy as np
 import readcon

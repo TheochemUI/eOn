@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-import numpy as np
 
 from eon.displace import ListedAtoms
 from eon.structure import Structure, file_rows_to_structure_rows

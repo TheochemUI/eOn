@@ -34,9 +34,7 @@ def _ortho_box(lx=10.0, ly=11.0, lz=12.0) -> np.ndarray:
 
 def _sheared_rows() -> np.ndarray:
     # a=(10,0,0), b=(5, 5*sqrt(3), 0), c=(0,0,10) — 60 deg in xy.
-    return np.array(
-        [[10.0, 0.0, 0.0], [5.0, 8.660254037844386, 0.0], [0.0, 0.0, 10.0]]
-    )
+    return np.array([[10.0, 0.0, 0.0], [5.0, 8.660254037844386, 0.0], [0.0, 0.0, 10.0]])
 
 
 @pytest.mark.parametrize(
@@ -58,9 +56,7 @@ def test_ortho_minimage_matches_eon_lammps_gromacs(diff):
     np.testing.assert_allclose(
         got, lammps_ortho_wrap(diff, 10.0, 11.0, 12.0), atol=1e-12
     )
-    np.testing.assert_allclose(
-        got, gromacs_pbc_dx(diff, np.zeros(3), box), atol=1e-12
-    )
+    np.testing.assert_allclose(got, gromacs_pbc_dx(diff, np.zeros(3), box), atol=1e-12)
     np.testing.assert_allclose(pbc(diff, box), got, atol=1e-12)
 
 
@@ -121,6 +117,10 @@ def test_linkcell_wrap_pair_matches_vesin():
     vesin = neighbor_list(p, 1.0)
     lc = neighbor_list_linkcell(p, 1.0)
     assert vesin == lc == [[1], [0]]
-    assert abs(float(minimage.Cell.ortho(10, 10, 10).dist2(
-        [0.2, 0, 0], [9.4, 0, 0]
-    )) - 0.64) < 1e-12
+    assert (
+        abs(
+            float(minimage.Cell.ortho(10, 10, 10).dist2([0.2, 0, 0], [9.4, 0, 0]))
+            - 0.64
+        )
+        < 1e-12
+    )

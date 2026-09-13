@@ -38,7 +38,9 @@ def pbc(r, box, ibox: Optional[np.ndarray] = None) -> np.ndarray:
 
         cell = minimage.Cell.from_vesin(box.tolist())
         if r.ndim == 1:
-            return np.asarray(cell.displacement([0.0, 0.0, 0.0], r.tolist()), dtype=float)
+            return np.asarray(
+                cell.displacement([0.0, 0.0, 0.0], r.tolist()), dtype=float
+            )
         out = np.empty_like(r, dtype=float)
         zero = [0.0, 0.0, 0.0]
         for i, row in enumerate(np.atleast_2d(r)):

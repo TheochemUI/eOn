@@ -88,9 +88,8 @@ void LammpsLoader::ensure_loaded() {
   m_last_error.clear();
 
   if (!lib_file_visible(lammps_lib_names())) {
-    m_last_error =
-        "liblammps.so not visible on LD_LIBRARY_PATH / cwd "
-        "(liblammps_pot.so is the eOn plugin, not LAMMPS)";
+    m_last_error = "liblammps.so not visible on LD_LIBRARY_PATH / cwd "
+                   "(liblammps_pot.so is the eOn plugin, not LAMMPS)";
     return;
   }
 
@@ -120,9 +119,8 @@ void LammpsLoader::ensure_loaded() {
   if (!open_no_mpi || !close || !command || !file || !scatter_atoms ||
       !extract_variable) {
     std::cerr << "[LAMMPS] Library loaded but missing required symbols\n";
-    m_last_error =
-        "opened a liblammps* but lammps_open_no_mpi is missing "
-        "(plugin or ABI mismatch, not the LAMMPS C library)";
+    m_last_error = "opened a liblammps* but lammps_open_no_mpi is missing "
+                   "(plugin or ABI mismatch, not the LAMMPS C library)";
     dynlib::close(m_handle);
     m_handle = {};
     return;
