@@ -43,19 +43,17 @@ public:
   // IDPP Gradient
   VectorXd getGradient(bool fdstep = false) override;
 
-  // Standard Interface Plumbing
+  // Free-atom DOF only. Full-3N writes let nearby movers drag frozen atoms
+  // (TheochemUI/eOn#410). Same contract as MatterObjectiveFunction.
   void setPositions(const VectorXd &x) override {
-    // Map 3N vector back to Matter
-    matter->setPositions(AtomMatrix::Map(x.data(), matter->numberOfAtoms(), 3));
+    matter->setPositionsFreeV(x);
   }
 
-  VectorXd getPositions() override {
-    // Map Matter positions to 3N vector
-    return VectorXd::Map(matter->getPositions().data(),
-                         3 * matter->numberOfAtoms());
-  }
+  VectorXd getPositions() override { return matter->getPositionsFreeV(); }
 
-  int degreesOfFreedom() override { return 3 * matter->numberOfAtoms(); }
+  int degreesOfFreedom() override {
+    return 3 * static_cast<int>(matter->numberOfFreeAtoms());
+  }
 
   bool isConverged() override {
     return getConvergence() < params.neb_options.initialization.force_tolerance;
@@ -94,30 +92,29 @@ public:
 
   VectorXd getGradient(bool fdstep = false) override;
 
-  // Plumbing to map the entire path (all images) to one vector
   void setPositions(const VectorXd &x) override {
-    int atoms = path[0].numberOfAtoms();
-    // Skip endpoints (0 and N+1)
+    const int nfree = static_cast<int>(path[0].numberOfFreeAtoms());
+    const int seg = 3 * nfree;
     for (size_t i = 1; i < path.size() - 1; ++i) {
-      path[i].setPositions(AtomMatrix::Map(
-          x.segment(3 * atoms * (i - 1), 3 * atoms).data(), atoms, 3));
+      path[i].setPositionsFreeV(x.segment(seg * static_cast<int>(i - 1), seg));
     }
   }
 
   VectorXd getPositions() override {
-    int atoms = path[0].numberOfAtoms();
-    int n_free_images = path.size() - 2;
-    VectorXd pos(3 * atoms * n_free_images);
-
+    const int nfree = static_cast<int>(path[0].numberOfFreeAtoms());
+    const int seg = 3 * nfree;
+    const int n_free_images = static_cast<int>(path.size()) - 2;
+    VectorXd pos(seg * n_free_images);
     for (size_t i = 1; i < path.size() - 1; ++i) {
-      pos.segment(3 * atoms * (i - 1), 3 * atoms) =
-          VectorXd::Map(path[i].getPositions().data(), 3 * atoms);
+      pos.segment(seg * static_cast<int>(i - 1), seg) =
+          path[i].getPositionsFreeV();
     }
     return pos;
   }
 
   int degreesOfFreedom() override {
-    return 3 * path[0].numberOfAtoms() * (path.size() - 2);
+    return 3 * static_cast<int>(path[0].numberOfFreeAtoms()) *
+           (static_cast<int>(path.size()) - 2);
   }
 
   // Check convergence of the IDPP-NEB
@@ -172,22 +169,26 @@ public:
     int n_images = path.size();
     int atoms_per_image = path[0].numberOfAtoms();
 
-    // ZBL calculation loop
-    for (int i = 1; i < n_images - 1; ++i) { // Skip endpoints
+    const int nfree = static_cast<int>(path[0].numberOfFreeAtoms());
+    const int seg = 3 * nfree;
+    for (int i = 1; i < n_images - 1; ++i) {
       AtomMatrix forces = MatrixXd::Zero(atoms_per_image, 3);
       double energy = 0;
 
-      // Calculate ZBL forces for this image
       zbl_pot->force(atoms_per_image, path[i].getPositions().data(),
                      path[i].getAtomicNrs().data(), forces.data(), &energy,
                      nullptr, path[i].getCell().data());
 
-      int segment_start = (i - 1) * 3 * atoms_per_image;
-      VectorXd zbl_grad_vec = VectorXd::Map(forces.data(), 3 * atoms_per_image);
-
-      // Add repulsive push (negate force to get gradient)
-      grad.segment(segment_start, 3 * atoms_per_image) -=
-          (zbl_grad_vec * zbl_weight);
+      VectorXd zbl_free(seg);
+      long k = 0;
+      for (int a = 0; a < atoms_per_image; ++a) {
+        if (!path[i].getFixed(a)) {
+          zbl_free[k++] = forces(a, 0);
+          zbl_free[k++] = forces(a, 1);
+          zbl_free[k++] = forces(a, 2);
+        }
+      }
+      grad.segment((i - 1) * seg, seg) -= (zbl_free * zbl_weight);
     }
 
     return grad;

@@ -15,6 +15,20 @@
 #include <algorithm>
 #include <cmath>
 
+namespace {
+VectorXd packFree(const Matter &m, const AtomMatrix &forces) {
+  const long nfree = m.numberOfFreeAtoms();
+  AtomMatrix freeF(nfree, 3);
+  long k = 0;
+  for (long i = 0; i < m.numberOfAtoms(); ++i) {
+    if (!m.getFixed(i)) {
+      freeF.row(k++) = forces.row(i);
+    }
+  }
+  return VectorXd(VectorXd::Map(freeF.data(), 3 * nfree));
+}
+} // namespace
+
 double IDPPObjectiveFunction::getEnergy() {
   double energy = 0.0;
   int natoms = matter->numberOfAtoms();
@@ -75,10 +89,9 @@ VectorXd IDPPObjectiveFunction::getGradient(bool fdstep) {
     }
   }
 
-  // Convert N x 3 matrix to 3N vector and return negative gradient (force)
-  // BUT getGradient expects the Gradient (positive derivative), so we return
-  // -Forces Actually, typical eOn getGradient returns dV/dx.
-  return VectorXd::Map(forces.data(), 3 * natoms) * -1.0;
+  // dV/dx on free atoms only. Frozen rows stay in `forces` for Newton's
+  // third law during the pair loop, then are dropped.
+  return packFree(*matter, forces) * -1.0;
 }
 
 MatrixXd CollectiveIDPPObjectiveFunction::getDistanceMatrix(const Matter &m) {
@@ -123,8 +136,8 @@ CollectiveIDPPObjectiveFunction::getIDPPForces(const Matter &m,
 
 VectorXd CollectiveIDPPObjectiveFunction::getGradient(bool fdstep) {
   int nImgs = path.size() - 2; // Exclude fixed endpoints
-  int natoms = path[0].numberOfAtoms();
-  VectorXd totalGradient(3 * natoms * nImgs);
+  int nfree = static_cast<int>(path[0].numberOfFreeAtoms());
+  VectorXd totalGradient(3 * nfree * nImgs);
   double maxForce = 0.0;
 
   // 1. Compute Raw IDPP Forces and Tangents
@@ -162,12 +175,10 @@ VectorXd CollectiveIDPPObjectiveFunction::getGradient(bool fdstep) {
     double distPrev = path[i].distanceTo(path[i - 1]);
     AtomMatrix f_spring = k * (distNext - distPrev) * t;
 
-    // Total NEB Force
     AtomMatrix f_neb = f_perp + f_spring;
 
-    // Store as Gradient (-Force)
-    totalGradient.segment(3 * natoms * (i - 1), 3 * natoms) =
-        VectorXd::Map(f_neb.data(), 3 * natoms) * -1.0;
+    totalGradient.segment(3 * nfree * static_cast<int>(i - 1), 3 * nfree) =
+        packFree(path[i], f_neb) * -1.0;
 
     // Tracking convergence
     maxForce = std::max(maxForce, f_neb.template lpNorm<Eigen::Infinity>());
