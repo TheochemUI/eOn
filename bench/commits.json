@@ -123,7 +123,11 @@
     "7799": "ci: install lcov with pixi, drop apt from fortran coverage",
     "7800": "Merge pull request #402 from HaoZeke/docs/book-doxy-crosslink",
     "7804": "docs: render antics credit in the Shibuya footer",
-    "7805": "Merge pull request #404 from HaoZeke/docs/antics-shibuya-footer"
+    "7805": "Merge pull request #404 from HaoZeke/docs/antics-shibuya-footer",
+    "7810": "test(neb): IDPP frozen atoms and pyeonclient optimizer methods",
+    "7811": "fix(neb): keep frozen atoms fixed during IDPP path init",
+    "7812": "feat(pyeonclient): expose opt_method, neb_opt_method, and refine",
+    "7813": "Merge pull request #412 from HaoZeke/fix/idpp-honor-fixed"
   },
   "dcbade17ecc8386a4ee5804354b4994c8ba1d6d8": "update lammps webpage",
   "292bc143343709b10fb7ed150ae5bb493748b289": "gitig: Update",
@@ -248,5 +252,9 @@
   "173a510845de5e0d599c39715d849b5e89ae2b49": "ci: install lcov with pixi, drop apt from fortran coverage",
   "99f90f2511ef6324b479b2d5783bea5eaf2c44bb": "Merge pull request #402 from HaoZeke/docs/book-doxy-crosslink",
   "8bdbacb6394955e61b10121efbc5597268a7a8f9": "docs: render antics credit in the Shibuya footer",
-  "93bd2a49fbb50e970b7f370c3369d7e350af9d7c": "Merge pull request #404 from HaoZeke/docs/antics-shibuya-footer"
+  "93bd2a49fbb50e970b7f370c3369d7e350af9d7c": "Merge pull request #404 from HaoZeke/docs/antics-shibuya-footer",
+  "a37a538b59324d573c50a88ea6b092f0d30ac8a6": "test(neb): IDPP frozen atoms and pyeonclient optimizer methods",
+  "ae2580ec9524ee4a175cf3c7a6f30abd9ac06598": "fix(neb): keep frozen atoms fixed during IDPP path init",
+  "3f7820515bcc31393e9c88441672518186cc0608": "feat(pyeonclient): expose opt_method, neb_opt_method, and refine",
+  "5f9ac1fc23b11f5c8901234aabf3c38da16b44af": "Merge pull request #412 from HaoZeke/fix/idpp-honor-fixed"
 }
