@@ -33,7 +33,7 @@ std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
   AtomMatrix posInitial = all_images_on_path.front().getPositions();
   AtomMatrix posFinal = all_images_on_path.back().getPositions();
   AtomMatrix imageSep = initImg.pbc(posFinal - posInitial) / (nimgs + 1);
-  // Only the ones which are not the front and back
+  imageSep = imageSep.array() * initImg.getFree().array();
   for (auto it{std::next(all_images_on_path.begin())};
        it != std::prev(all_images_on_path.end()); ++it) {
     *it = Matter(initImg);
@@ -151,8 +151,7 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
                     nimgs, xi, residual);
 
     // Explicitly sync positions back to the path vector just to be safe
-    path[i].setPositions(AtomMatrix::Map(idpp_objf->getPositions().data(),
-                                         path[i].numberOfAtoms(), 3));
+    path[i].setPositionsFreeV(idpp_objf->getPositions());
   }
 
   QUILL_LOG_INFO(log, "IDPP path generation complete.");
@@ -211,8 +210,8 @@ Matter interpolateImage(const Matter &A, const Matter &B, double fraction) {
   Matter newImg(A);
   AtomMatrix posA = A.getPositions();
   AtomMatrix posB = B.getPositions();
-  // Use PBC-aware interpolation
   AtomMatrix diff = A.pbc(posB - posA);
+  diff = diff.array() * A.getFree().array();
   newImg.setPositions(posA + fraction * diff);
   return newImg;
 }
