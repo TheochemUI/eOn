@@ -32,6 +32,16 @@ def test_positions_view_shares_storage():
     assert a.__array_interface__["data"][0] == b.__array_interface__["data"][0]
 
 
+def test_positions_view_is_not_writeable():
+    m, pot, params = _lj_h2()
+    a = m.positions
+    assert not a.flags["WRITEABLE"]
+    with pytest.raises((ValueError, TypeError)):
+        a += 0.1
+    m.positions = np.array(a, copy=True) + 0.1
+    assert m.needs_force_update
+
+
 def test_bulk_set_positions_invalidates():
     m, pot, params = _lj_h2()
     _ = float(m.potential_energy)

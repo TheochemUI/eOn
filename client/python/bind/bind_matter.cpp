@@ -43,7 +43,8 @@ void bind_matter(nb::module_ &m) {
       .def_prop_rw(
           "positions",
           [](Matter &self) {
-            return view_n3(matter_positions_ptr(self), self.numberOfAtoms());
+            return view_n3_readonly(matter_positions_ptr(self),
+                                    self.numberOfAtoms());
           },
           [](Matter &self, const NpF64 &arr) {
             matter_set_positions_buf(self,
@@ -55,8 +56,9 @@ void bind_matter(nb::module_ &m) {
           "The view keeps this Matter alive but not the buffer: resize(), "
           "con2matter() and convel2matter() reallocate, and a view taken "
           "before one of those is dangling afterwards. Take np.array(...) of "
-          "it to outlive a reallocation; assign through the property (or "
-          "in place) to write.")
+          "it to outlive a reallocation; assign through the property "
+          "(m.positions = arr) to write. The view is not writeable so "
+          "in-place += cannot skip setPositions.")
       .def_prop_ro(
           "positions_free",
           [](const Matter &self) {

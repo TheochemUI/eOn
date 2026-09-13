@@ -217,6 +217,19 @@ void bind_ase(nb::module_ &m) {
         if (nb::len(cons) > 0) {
           atoms.attr("set_constraint")(cons);
         }
+        try {
+          const double energy = matter.getPotentialEnergy();
+          AtomMatrix F = matter.getForces();
+          nb::object forces = np.attr("array")(
+              nb::cast(view_n3(F.data(), n), nb::rv_policy::copy),
+              nb::arg("dtype") = "float64", nb::arg("copy") = true);
+          auto SPC = ase.attr("calculators")
+                         .attr("singlepoint")
+                         .attr("SinglePointCalculator");
+          atoms.attr("calc") = SPC(atoms, nb::arg("energy") = energy,
+                                   nb::arg("forces") = forces);
+        } catch (...) {
+        }
         return atoms;
       },
       nb::arg("matter"), nb::arg("pbc") = nb::none(),
