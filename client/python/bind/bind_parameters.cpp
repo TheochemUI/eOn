@@ -149,6 +149,31 @@ void bind_parameters(nb::module_ &m) {
             }
           },
           "norm | max_atom | max_component")
+      .def_prop_rw(
+          "opt_method",
+          [](const eonc::Parameters &s) { return s.optimizer_options.method; },
+          [](eonc::Parameters &s, eonc::OptType v) {
+            s.optimizer_options.method = v;
+          },
+          "Minimization / default job optimizer (CG, LBFGS, FIRE, QM, SD)")
+      .def_prop_rw(
+          "refine_opt_method",
+          [](const eonc::Parameters &s) {
+            return s.optimizer_options.refine.method;
+          },
+          [](eonc::Parameters &s, eonc::OptType v) {
+            s.optimizer_options.refine.method = v;
+          },
+          "Switch optimizer when force drops below refine_threshold; "
+          "OptType.None_ disables")
+      .def_prop_rw(
+          "refine_threshold",
+          [](const eonc::Parameters &s) {
+            return s.optimizer_options.refine.threshold;
+          },
+          [](eonc::Parameters &s, double v) {
+            s.optimizer_options.refine.threshold = v;
+          })
       // --- Debug ---
       .def_prop_rw(
           "write_movies",
@@ -208,6 +233,13 @@ void bind_parameters(nb::module_ &m) {
             return static_cast<long>(s.neb_options.max_iterations);
           },
           [](eonc::Parameters &s, long v) { s.neb_options.max_iterations = v; })
+      .def_prop_rw(
+          "neb_opt_method",
+          [](const eonc::Parameters &s) { return s.neb_options.opt_method; },
+          [](eonc::Parameters &s, eonc::OptType v) {
+            s.neb_options.opt_method = v;
+          },
+          "NEB band optimizer (independent of opt_method)")
       .def_prop_rw(
           "neb_force_tolerance",
           [](const eonc::Parameters &s) {
