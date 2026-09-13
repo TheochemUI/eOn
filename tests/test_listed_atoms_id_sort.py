@@ -33,3 +33,20 @@ def test_listed_atoms_remaps_file_order_when_raw_rows_are_frozen():
     cfg = SimpleNamespace(disp_listed_atoms=[0, 1], random_mode=False)
     la = ListedAtoms(p, config=cfg)
     assert la.listed_atoms == [2, 3]
+
+
+def test_listed_atoms_minus_one_means_all_free():
+    import readcon
+
+    frame = readcon.ConFrame(
+        cell=(10.0, 10.0, 10.0),
+        angles=(90.0, 90.0, 90.0),
+        atoms=[
+            readcon.Atom("Cu", 0.0, 0.0, 0.0, [False, False, False], 0, 63.5),
+            readcon.Atom("Cu", 1.0, 0.0, 0.0, [True, True, True], 1, 63.5),
+        ],
+    )
+    p = Structure.from_conframe(frame)
+    cfg = SimpleNamespace(disp_listed_atoms=[-1], random_mode=False)
+    la = ListedAtoms(p, config=cfg)
+    assert la.listed_atoms == [1]

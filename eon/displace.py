@@ -485,7 +485,11 @@ class ListedAtoms(Displace):
         # list is all frozen after the sort, remap and try again.
         free = self.reactant.atom_is_free()
         listed = self.config.disp_listed_atoms
-        self.listed_atoms = [i for i in listed if 0 <= i < len(free) and free[i]]
+        # -1 is the documented "all free atoms" sentinel (akmc-al).
+        if listed == [-1]:
+            self.listed_atoms = [i for i in range(len(free)) if free[i]]
+        else:
+            self.listed_atoms = [i for i in listed if 0 <= i < len(free) and free[i]]
         if len(self.listed_atoms) == 0 and listed:
             f2s = getattr(self.reactant, "file_to_struct", None)
             if f2s is not None:
