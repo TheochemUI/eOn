@@ -49,4 +49,6 @@ def test_listed_atoms_minus_one_means_all_free():
     p = Structure.from_conframe(frame)
     cfg = SimpleNamespace(disp_listed_atoms=[-1], random_mode=False)
     la = ListedAtoms(p, config=cfg)
-    assert la.listed_atoms == [1]
+    free = [i for i, ok in enumerate(p.atom_is_free()) if ok]
+    assert la.listed_atoms == free
+    assert len(la.listed_atoms) >= 1
