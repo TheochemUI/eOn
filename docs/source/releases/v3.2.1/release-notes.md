@@ -13,12 +13,19 @@ Frozen sites next to a mover stay put.
 `Parameters` exposes `opt_method`, `neb_opt_method`,
 `refine_opt_method`, and `refine_threshold`.
 
-## rgpot 3.1
+## rgpot 3.2
 
 Wrap pin is **v3.2.0**. `potential = dftd3` / `dftd4`,
 `potential = expr` with `[ExprPot]` terms (`0.5*lj + d3`), and
 `potential = mopac` (libmopacc, default AM1). D3/D4 wraps stay off on
 Windows, where MSVC rustc rejects those wrap flags.
+
+## Geometry (minimage / linkcell)
+
+`eon.geometry.pbc` uses minimage when that extra is installed.
+`neighbor_list` stays vesin. `neighbor_list_linkcell` is the check
+path against `linkcell.knearest`. See
+[Neighbor lists](../../user_guide/neighbor_lists.md).
 
 ## ASE / Matter python surface
 
