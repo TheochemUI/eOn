@@ -16,9 +16,12 @@ and fail to find relevant transitions.
 
 eOn has two ways to target displacements at the reactive atoms:
 
-1. **Static atom list** (`displace_atom_list`): a fixed set of atom indices
-   written directly in `config.ini`. Best when the active atoms are known in
-   advance and don't change between AKMC states.
+1. **Static atom list** (`displace_atom_list`): a fixed set of atom
+   indices written directly in `config.ini`. The numbers are CON
+   **file-order** rows (the order atoms appear in the `.con`). After
+   load, `Structure` sorts unique `atom_id`s; `ListedAtoms` remaps
+   the file-order list through that sort when the raw rows are all
+   frozen. Prefer this over guessing Structure rows.
 
 2. **Dynamic script** (`displace_atom_kmc_state_script`): a Python script
    that is executed once per new AKMC state. The script receives the current
@@ -191,8 +194,10 @@ displace_radius = 3.0
 displace_magnitude = 0.01
 ```
 
-This displaces atoms 0, 1, and 2 (plus their neighbours within 3 Å) on every
-saddle search. It is suitable for small molecules, known defect sites, or any
+This displaces file-order atoms 0, 1, and 2 (plus their neighbours
+within 3 Å) on every saddle search. Those are the first three rows in
+the `.con`, not necessarily `atom_id` 0, 1, 2 after the load-time
+sort. It is suitable for small molecules, known defect sites, or any
 situation where the active region is fixed.
 
 ## Client-Side `listed_atoms`

@@ -37,14 +37,8 @@ def box_to_length_angle(box) -> tuple[np.ndarray, np.ndarray]:
     lengths[2] = np.linalg.norm(box[2, :])
     angles = np.zeros(3, dtype=float)
     # alpha = angle(b, c), beta = angle(a, c), gamma = angle(a, b)
-    angles[0] = np.arccos(
-        np.dot(box[1, :] / lengths[1], box[2, :] / lengths[2])
-    )
-    angles[1] = np.arccos(
-        np.dot(box[0, :] / lengths[0], box[2, :] / lengths[2])
-    )
-    angles[2] = np.arccos(
-        np.dot(box[0, :] / lengths[0], box[1, :] / lengths[1])
-    )
+    angles[0] = np.arccos(np.dot(box[1, :] / lengths[1], box[2, :] / lengths[2]))
+    angles[1] = np.arccos(np.dot(box[0, :] / lengths[0], box[2, :] / lengths[2]))
+    angles[2] = np.arccos(np.dot(box[0, :] / lengths[0], box[1, :] / lengths[1]))
     angles *= 180.0 / np.pi
     return lengths, angles

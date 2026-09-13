@@ -1318,6 +1318,7 @@ Saddle Search:
         displace_atom_list:
             kind: string
             default: 0
+            # File-order rows. ``-1`` means every free atom.
 
         displace_type_list:
             kind: string
