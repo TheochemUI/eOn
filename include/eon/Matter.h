@@ -304,6 +304,18 @@ public:
     atomIndex(atom) = index;
   }
 
+  /// Map a CON file-order row onto the Matter row after matter_order.
+  /// Identity when the Matter was not loaded from a .con, or the ids
+  /// were already ascending.
+  [[nodiscard]] long mapFileRow(long file_row) const {
+    if (file_row < 0 || file_row >= nAtoms ||
+        fileToMatter.size() != static_cast<size_t>(nAtoms)) {
+      return file_row;
+    }
+    return fileToMatter[static_cast<size_t>(file_row)];
+  }
+  void setFileToMatter(std::vector<long> map) { fileToMatter = std::move(map); }
+
   /// CON header lines (indices 0..4); public for I/O / bindings.
   [[nodiscard]] const std::array<std::string, 5> &getHeaderCon() const {
     return headerCon;
@@ -374,6 +386,7 @@ private:
   AtomMatrix isFixed; // Nx3; 1.0 if that axis is fixed, 0.0 if free
   Eigen::Matrix<std::int64_t, Eigen::Dynamic, 1>
       atomIndex; // original atom index from .con column 5
+  std::vector<long> fileToMatter; // CON file row -> Matter row
   mutable AtomMatrix freeMask; // cached Nx3 mask (1.0 for free, 0.0 for fixed)
   mutable AtomMatrix maskedForces;      // cached forces with fixed atoms zeroed
   mutable std::vector<int> freeIndices; // cached indices of free atoms

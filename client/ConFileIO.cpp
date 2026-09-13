@@ -667,6 +667,11 @@ IoStatus con2matter(Matter &m, const readcon::ConFrame &frame,
     // Undo the species grouping the .con format imposes, so an index into
     // Matter addresses the same atom as the matching row of mode.dat.
     const std::vector<size_t> order = matter_order(atoms);
+    std::vector<long> file_to_matter(static_cast<size_t>(n));
+    for (Eigen::Index i = 0; i < n; ++i) {
+      file_to_matter[order[static_cast<size_t>(i)]] = static_cast<long>(i);
+    }
+    m.setFileToMatter(std::move(file_to_matter));
 
     AtomMatrix positions = AtomMatrix::Zero(n, 3);
     AtomMatrix forces = AtomMatrix::Zero(n, 3);

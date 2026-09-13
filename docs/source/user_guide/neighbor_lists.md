@@ -51,7 +51,7 @@ sets to vesin. Production `neighbor_list` does not call it.
 
 ```python
 from eon.geometry import neighbor_list_linkcell
-pairs = neighbor_list_linkcell(positions, box, cutoff=4.0)
+pairs = neighbor_list_linkcell(structure, cutoff=4.0)
 ```
 
 Install extras: `pip install minimage linkcell`. Tests skip when those

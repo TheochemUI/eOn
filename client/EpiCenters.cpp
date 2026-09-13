@@ -12,9 +12,9 @@
 #include "eon/EpiCenters.h"
 #include "eon/HelperFunctions.h"
 
-#include <cassert>
 #include <climits>
 #include <memory>
+#include <stdexcept>
 #include <vector>
 
 using namespace eonc::helpers;
@@ -220,14 +220,29 @@ void eonc::EpiCenters::coordinationLessOrEqual(bool *result,
 long eonc::EpiCenters::listedAtomEpiCenter(const Matter *matter,
                                            const std::vector<long> &atomList) {
   long nAtoms = matter->numberOfAtoms();
-  // Filter to only free atoms from the provided list
   std::vector<long> freeAtoms;
-  for (long idx : atomList) {
-    if (idx >= 0 && idx < nAtoms && !matter->getFixed(idx)) {
-      freeAtoms.push_back(idx);
+  // Lone -1 is every free atom (akmc-al / ListedAtoms). A mixed list
+  // still treats negatives as out of range.
+  if (atomList.size() == 1 && atomList[0] == -1) {
+    for (long i = 0; i < nAtoms; ++i) {
+      if (!matter->getFixed(i)) {
+        freeAtoms.push_back(i);
+      }
+    }
+  } else {
+    for (long idx : atomList) {
+      if (idx < 0 || idx >= nAtoms) {
+        continue;
+      }
+      const long row = matter->mapFileRow(idx);
+      if (row >= 0 && row < nAtoms && !matter->getFixed(row)) {
+        freeAtoms.push_back(row);
+      }
     }
   }
-  assert(!freeAtoms.empty());
+  if (freeAtoms.empty()) {
+    throw std::runtime_error("Listed atoms are all frozen");
+  }
   long pick =
       static_cast<long>(randomDouble(static_cast<long>(freeAtoms.size() - 1)));
   return freeAtoms[pick];

@@ -19,9 +19,9 @@ eOn has two ways to target displacements at the reactive atoms:
 1. **Static atom list** (`displace_atom_list`): a fixed set of atom
    indices written directly in `config.ini`. The numbers are CON
    **file-order** rows (the order atoms appear in the `.con`). After
-   load, `Structure` sorts unique `atom_id`s; `ListedAtoms` remaps
-   the file-order list through that sort when the raw rows are all
-   frozen. Prefer this over guessing Structure rows.
+   load, `Structure` sorts unique `atom_id`s; `ListedAtoms` always
+   remaps the file-order list through that sort, then keeps free
+   atoms. Prefer this over guessing Structure rows.
 
 2. **Dynamic script** (`displace_atom_kmc_state_script`): a Python script
    that is executed once per new AKMC state. The script receives the current

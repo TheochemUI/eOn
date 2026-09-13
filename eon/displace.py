@@ -480,17 +480,16 @@ class ListedAtoms(Displace):
         Displace.__init__(self, reactant, std_dev, radius, hole_epicenters, config)
 
         self.displace_all = displace_all
-        # disp_listed_atoms are CON file-order rows in the docs
-        # (0, 1, 2). Structure rows are atom_id order. If the file-order
-        # list is all frozen after the sort, remap and try again.
+        # disp_listed_atoms are CON file-order rows (0, 1, 2). Structure
+        # rows are atom_id order. Always remap first: a first-pass that
+        # treats the numbers as Structure rows keeps a coincidentally-free
+        # post-sort hit and never remaps the rest of a mixed list.
         free = self.reactant.atom_is_free()
         listed = self.config.disp_listed_atoms
         # -1 is the documented "all free atoms" sentinel (akmc-al).
         if listed == [-1]:
             self.listed_atoms = [i for i in range(len(free)) if free[i]]
         else:
-            self.listed_atoms = [i for i in listed if 0 <= i < len(free) and free[i]]
-        if len(self.listed_atoms) == 0 and listed:
             f2s = getattr(self.reactant, "file_to_struct", None)
             if f2s is not None:
                 remapped = [int(f2s[i]) for i in listed if 0 <= int(i) < len(f2s)]
@@ -499,7 +498,7 @@ class ListedAtoms(Displace):
 
                 remapped = file_rows_to_structure_rows(self.reactant.atom_ids, listed)
             self.listed_atoms = [i for i in remapped if 0 <= i < len(free) and free[i]]
-            if self.listed_atoms:
+            if remapped != [int(i) for i in listed] and self.listed_atoms:
                 logger.debug(
                     "Listed atoms remapped through atom_id sort: %s -> %s",
                     listed,

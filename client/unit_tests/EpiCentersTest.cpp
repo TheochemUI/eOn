@@ -113,6 +113,43 @@ TEST_CASE_METHOD(EpiCentersFixture,
   }
 }
 
+TEST_CASE_METHOD(EpiCentersFixture,
+                 "listedAtomEpiCenter lone -1 picks a free atom",
+                 "[EpiCenters][listedAtomEpiCenter]") {
+  std::vector<long> atomList = {-1};
+  for (int trial = 0; trial < 50; ++trial) {
+    long idx = eonc::EpiCenters::listedAtomEpiCenter(matter.get(), atomList);
+    REQUIRE(idx >= 0);
+    REQUIRE(idx < matter->numberOfAtoms());
+    REQUIRE_FALSE(matter->getFixed(idx));
+  }
+}
+
+TEST_CASE_METHOD(EpiCentersFixture,
+                 "listedAtomEpiCenter empty list throws",
+                 "[EpiCenters][listedAtomEpiCenter]") {
+  REQUIRE_THROWS_WITH(eonc::EpiCenters::listedAtomEpiCenter(matter.get(), {}),
+                      Catch::Matchers::ContainsSubstring("all frozen"));
+}
+
+TEST_CASE_METHOD(EpiCentersFixture,
+                 "listedAtomEpiCenter remaps file-order through fileToMatter",
+                 "[EpiCenters][listedAtomEpiCenter]") {
+  const long n = matter->numberOfAtoms();
+  REQUIRE(n > 7);
+  // File row 0 -> frozen Matter 7; file row 7 -> free Matter 0.
+  std::vector<long> map(static_cast<size_t>(n));
+  for (long i = 0; i < n; ++i) {
+    map[static_cast<size_t>(i)] = i;
+  }
+  map[0] = 7;
+  map[7] = 0;
+  matter->setFileToMatter(map);
+  REQUIRE(eonc::EpiCenters::listedAtomEpiCenter(matter.get(), {7}) == 0);
+  REQUIRE_THROWS_WITH(eonc::EpiCenters::listedAtomEpiCenter(matter.get(), {0}),
+                      Catch::Matchers::ContainsSubstring("all frozen"));
+}
+
 // ---------------------------------------------------------------------------
 // Parameters parsing tests: displace_atom_list and displace_type validation
 // ---------------------------------------------------------------------------

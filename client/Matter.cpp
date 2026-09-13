@@ -35,6 +35,7 @@ const Matter &Matter::operator=(const Matter &matter) {
   atomicNrs = matter.atomicNrs;
   isFixed = matter.isFixed;
   atomIndex = matter.atomIndex;
+  fileToMatter = matter.fileToMatter;
   cell = matter.cell;
   cellInverse = matter.cellInverse;
   velocities = matter.velocities;
@@ -97,6 +98,7 @@ Matter &Matter::operator=(Matter &&other) noexcept {
   atomicNrs = std::move(other.atomicNrs);
   isFixed = std::move(other.isFixed);
   atomIndex = std::move(other.atomIndex);
+  fileToMatter = std::move(other.fileToMatter);
   freeMask = std::move(other.freeMask);
   maskedForces = std::move(other.maskedForces);
   freeIndices = std::move(other.freeIndices);
@@ -199,8 +201,11 @@ void Matter::resize(const long int length) {
   isFixed.setZero();
 
   atomIndex.resize(length);
-  for (long i = 0; i < length; i++)
+  fileToMatter.resize(static_cast<size_t>(length));
+  for (long i = 0; i < length; i++) {
     atomIndex(i) = static_cast<std::int64_t>(i); // default: sequential
+    fileToMatter[static_cast<size_t>(i)] = i;
+  }
   recomputePotential = true;
   recomputeMaskedForces = true;
   recomputeFreeMask = true;

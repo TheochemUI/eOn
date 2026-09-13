@@ -63,12 +63,23 @@ TEST_CASE("LammpsLoader: require_loaded is consistent with is_loaded",
     REQUIRE_NOTHROW(loader.require_loaded());
     REQUIRE(loader.is_loaded());
     REQUIRE(loader.open_no_mpi != nullptr);
+    REQUIRE(loader.last_error().empty());
   } else {
-    // Absent from disk: the loader refuses by name and stays unloaded.
-    REQUIRE_THROWS_WITH(loader.require_loaded(),
-                        Catch::Matchers::ContainsSubstring("liblammps"));
-    REQUIRE_FALSE(loader.is_loaded());
-    REQUIRE(loader.open_no_mpi == nullptr);
+    // available() is cwd / LD_LIBRARY_PATH only. dlopen of the soname
+    // may still succeed via ld.so.cache. A hard miss must name a class.
+    try {
+      loader.require_loaded();
+      REQUIRE(loader.is_loaded());
+      REQUIRE(loader.open_no_mpi != nullptr);
+      REQUIRE(loader.last_error().empty());
+    } catch (const std::runtime_error &err) {
+      const std::string what{err.what()};
+      REQUIRE_THAT(what, Catch::Matchers::ContainsSubstring("liblammps"));
+      REQUIRE_THAT(what, Catch::Matchers::ContainsSubstring(loader.last_error()));
+      REQUIRE_FALSE(loader.last_error().empty());
+      REQUIRE_FALSE(loader.is_loaded());
+      REQUIRE(loader.open_no_mpi == nullptr);
+    }
   }
 }
 

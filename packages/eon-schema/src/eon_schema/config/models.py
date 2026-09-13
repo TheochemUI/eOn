@@ -1073,8 +1073,9 @@ class SaddleSearchConfig(BaseModel):
     )
     displace_atom_list: Union[str, list[int]] = Field(
         default="0",
-        description="0-based atom indices to use as displacement epicenters, separated by commas. "
-        "Example: 10, 20, -1 would be atoms 10, 20, and the last atom. "
+        description="CON file-order rows to use as displacement epicenters, separated by commas. "
+        "A lone -1 means every free atom. A mixed list does not treat -1 as "
+        "the last atom or as a wrap. "
         "When displace_atom_kmc_state_script is set, this list is populated dynamically "
         "per AKMC state from the script's output.",
     )

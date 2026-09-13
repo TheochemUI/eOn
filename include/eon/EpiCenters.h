@@ -36,7 +36,8 @@ long lastAtom(const Matter *matter);
 // index of a random atom that is free
 long randomFreeAtomEpiCenter(const Matter *matter);
 
-// index of a random free atom from a user-provided list
+// index of a random free atom from a user-provided CON file-order list.
+// Lone {-1} means every free atom. Mixed negatives stay out of range.
 long listedAtomEpiCenter(const Matter *matter,
                          const std::vector<long> &atomList);
 

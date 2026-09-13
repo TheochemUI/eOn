@@ -87,16 +87,19 @@ void LammpsLoader::ensure_loaded() {
   m_tried = true;
   m_last_error.clear();
 
-  if (!lib_file_visible(lammps_lib_names())) {
-    m_last_error = "liblammps.so not visible on LD_LIBRARY_PATH / cwd "
-                   "(liblammps_pot.so is the eOn plugin, not LAMMPS)";
-    return;
-  }
-
+  // Always dlopen the soname. lib_file_visible only walks cwd and
+  // LD_LIBRARY_PATH; the dynamic linker also searches ld.so.cache and
+  // the default lib dirs. Gating on visibility skipped a distro so.
   m_handle = dynlib::openFirst(lammps_lib_names());
   if (!m_handle) {
     const std::string dle = dynlib::error();
-    m_last_error = "liblammps.so is visible but dlopen failed";
+    if (!lib_file_visible(lammps_lib_names())) {
+      m_last_error = "liblammps.so not visible on LD_LIBRARY_PATH / cwd "
+                     "and dlopen of the soname failed "
+                     "(liblammps_pot.so is the eOn plugin, not LAMMPS)";
+    } else {
+      m_last_error = "liblammps.so is visible but dlopen failed";
+    }
     if (!dle.empty()) {
       m_last_error += ": " + dle;
     }
