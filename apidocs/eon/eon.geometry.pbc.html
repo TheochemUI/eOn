@@ -299,6 +299,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#api">API</a><ul>
 <li><a class="reference internal" href="#eon.geometry.pbc.pbc"><code class="docutils literal notranslate"><span class="pre">pbc()</span></code></a></li>
+<li><a class="reference internal" href="#eon.geometry.pbc.pbc_eon_legacy"><code class="docutils literal notranslate"><span class="pre">pbc_eon_legacy()</span></code></a></li>
 <li><a class="reference internal" href="#eon.geometry.pbc.per_atom_norm"><code class="docutils literal notranslate"><span class="pre">per_atom_norm()</span></code></a></li>
 <li><a class="reference internal" href="#eon.geometry.pbc.per_atom_norm_gen"><code class="docutils literal notranslate"><span class="pre">per_atom_norm_gen()</span></code></a></li>
 </ul>
@@ -381,10 +382,13 @@ data-aria-dark="Switch to auto color mode">
 <tr class="row-odd"><td><p><a class="reference internal" href="#eon.geometry.pbc.pbc" title="eon.geometry.pbc.pbc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pbc</span></code></a></p></td>
 <td><p>Minimum-image convention for displacement(s).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#eon.geometry.pbc.per_atom_norm" title="eon.geometry.pbc.per_atom_norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">per_atom_norm</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.geometry.pbc.pbc_eon_legacy" title="eon.geometry.pbc.pbc_eon_legacy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pbc_eon_legacy</span></code></a></p></td>
+<td><p>eOn numpy wrap. Kept so tests can compare it to minimage.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eon.geometry.pbc.per_atom_norm" title="eon.geometry.pbc.per_atom_norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">per_atom_norm</span></code></a></p></td>
 <td><p>Per-row Euclidean norm after PBC (shape <code class="docutils literal notranslate"><span class="pre">(N,)</span></code>).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#eon.geometry.pbc.per_atom_norm_gen" title="eon.geometry.pbc.per_atom_norm_gen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">per_atom_norm_gen</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#eon.geometry.pbc.per_atom_norm_gen" title="eon.geometry.pbc.per_atom_norm_gen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">per_atom_norm_gen</span></code></a></p></td>
 <td><p>Yield per-row norms after PBC (legacy generator API).</p></td>
 </tr>
 </tbody>
@@ -397,6 +401,9 @@ data-aria-dark="Switch to auto color mode">
 <dt class="sig sig-object py" id="eon.geometry.pbc.pbc">
 <span class="sig-prename descclassname"><span class="pre">eon.geometry.pbc.</span></span><span class="sig-name descname"><span class="pre">pbc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ibox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../_modules/eon/geometry/pbc.html#pbc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.geometry.pbc.pbc" title="Link to this definition">¶</a></dt>
 <dd><p>Minimum-image convention for displacement(s).</p>
+<p>The kernel is :mod:<code class="docutils literal notranslate"><span class="pre">minimage</span></code> (same wrap linkcell uses). The numpy
+path remains as :func:<code class="docutils literal notranslate"><span class="pre">pbc_eon_legacy</span></code> for the eOn/GROMACS/LAMMPS
+agreement tests.</p>
 <p class="rubric" id="id1">Parameters</p>
 <p>r : (3,) or (N, 3)
 Displacement vector(s).
@@ -404,6 +411,12 @@ box : (3, 3)
 Cell matrix (rows = lattice vectors).
 ibox : (3, 3), optional
 Inverse of <em>box</em>; computed if omitted.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="eon.geometry.pbc.pbc_eon_legacy">
+<span class="sig-prename descclassname"><span class="pre">eon.geometry.pbc.</span></span><span class="sig-name descname"><span class="pre">pbc_eon_legacy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ibox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="../../_modules/eon/geometry/pbc.html#pbc_eon_legacy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eon.geometry.pbc.pbc_eon_legacy" title="Link to this definition">¶</a></dt>
+<dd><p>eOn numpy wrap. Kept so tests can compare it to minimage.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -539,7 +552,7 @@ Inverse of <em>box</em>; computed if omitted.</p>
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=4f6ddb47"></script>
+      <script src="../../_static/documentation_options.js?v=eb155f5e"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

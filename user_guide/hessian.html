@@ -451,9 +451,9 @@ column; a successful run removes the checkpoint.</p>
 </span></pre></div>
 </div>
 <p>The output <code class="docutils literal notranslate"><span class="pre">results.dat</span></code> records force-call counts; <code class="docutils literal notranslate"><span class="pre">hessian.dat</span></code> contains the
-mass-weighted matrix when <code class="docutils literal notranslate"><span class="pre">quiet</span> <span class="pre">=</span> <span class="pre">false</span></code>. Eigenvalues (squared frequencies)
-are obtained by diagonalizing the symmetrized matrix (ColMajor eigen solve in
-the client).</p>
+mass-weighted matrix. <code class="docutils literal notranslate"><span class="pre">[Main]</span> <span class="pre">quiet</span> <span class="pre">=</span> <span class="pre">true</span></code> suppresses the write log line only.
+Eigenvalues (squared frequencies) are obtained by diagonalizing the symmetrized
+matrix (ColMajor eigen solve in the client).</p>
 </section>
 <section id="free-fixed-versus-active-phva">
 <h2>Free/fixed versus active (PHVA)<a class="headerlink" href="#free-fixed-versus-active-phva" title="Link to this heading">¶</a></h2>
@@ -606,7 +606,7 @@ rather than (3 N_\mathrm{free}):</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=4f6ddb47"></script>
+      <script src="../_static/documentation_options.js?v=eb155f5e"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

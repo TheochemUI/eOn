@@ -540,14 +540,14 @@ remain valid alternatives.</p>
 </dl>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.CommunicatorConfig.cancel_job">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cancel_job</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cancel_job.sh'</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.cancel_job" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cancel_job</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cancel_job.sh'</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.cancel_job" title="Link to this definition">¶</a></dt>
 <dd><p>Takes a single argument, the JobID.</p>
 <p>Name of the script that cancels a job for the cluster communicator.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.CommunicatorConfig.client_path">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">client_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'eonclient'</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.client_path" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">client_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'eonclient'</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.client_path" title="Link to this definition">¶</a></dt>
 <dd><p>If only a name and not a path is given, <code class="docutils literal notranslate"><span class="pre">eOn</span></code> looks for the binary in the
 same directory as the configuration file. If not found there, it searches
 through the directories in the <code class="docutils literal notranslate"><span class="pre">$PATH</span></code> environment variable.</p>
@@ -556,7 +556,7 @@ through the directories in the <code class="docutils literal notranslate"><span 
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.CommunicatorConfig.jobs_per_bundle">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">jobs_per_bundle</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.jobs_per_bundle" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">jobs_per_bundle</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.jobs_per_bundle" title="Link to this definition">¶</a></dt>
 <dd><p>In <code class="docutils literal notranslate"><span class="pre">eOn</span></code>, a job is defined as a task that the <code class="docutils literal notranslate"><span class="pre">eonclient</span></code> executes, such
 as a process search or a parallel replica run. Sometimes it makes sense to
 run more than one of the same type of job at a time.</p>
@@ -569,7 +569,7 @@ minimization) can be run at the same time.</p>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.CommunicatorConfig.max_jobs">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_jobs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.max_jobs" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">max_jobs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.max_jobs" title="Link to this definition">¶</a></dt>
 <dd><p>For communicators with queues (<code class="docutils literal notranslate"><span class="pre">cluster</span></code>), no more jobs will be queued if
 the number of jobs queued and in progress equals or exceeds this number. A
 default of 0 means unlimited.</p>
@@ -578,13 +578,13 @@ default of 0 means unlimited.</p>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.CommunicatorConfig.name_prefix">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">name_prefix</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'eon'</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.name_prefix" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">name_prefix</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'eon'</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.name_prefix" title="Link to this definition">¶</a></dt>
 <dd><p>Prefix added to job names to make them identifiable by the user for the cluster communicator.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.CommunicatorConfig.num_jobs">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">num_jobs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.num_jobs" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">num_jobs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.num_jobs" title="Link to this definition">¶</a></dt>
 <dd><p>The meaning of this variable changes depending on the communicator type. For
 <code class="docutils literal notranslate"><span class="pre">local</span></code>, it is the number of jobs run every time the program is invoked. For
 <code class="docutils literal notranslate"><span class="pre">cluster</span></code>, it is the desired sum of the queued and running jobs.</p>
@@ -593,26 +593,26 @@ default of 0 means unlimited.</p>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.CommunicatorConfig.number_of_CPUs">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">number_of_CPUs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.number_of_CPUs" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">number_of_CPUs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.number_of_CPUs" title="Link to this definition">¶</a></dt>
 <dd><p>Number of jobs that will run simultaneously for the local communicator.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.CommunicatorConfig.queued_jobs">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">queued_jobs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'queued_jobs.sh'</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.queued_jobs" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">queued_jobs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'queued_jobs.sh'</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.queued_jobs" title="Link to this definition">¶</a></dt>
 <dd><p>This may return more than just <code class="docutils literal notranslate"><span class="pre">eOn</span></code> jobs.</p>
 <p>Name of the script that returns the job IDs of all the running and queued jobs for the cluster communicator.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.CommunicatorConfig.script_path">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">script_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'./'</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.script_path" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">script_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'./'</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.script_path" title="Link to this definition">¶</a></dt>
 <dd><p>Path to the user-defined scripts for submitting jobs to the communicator for the cluster communicator.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.CommunicatorConfig.submit_job">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">submit_job</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'submit_job.sh'</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.submit_job" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">submit_job</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'submit_job.sh'</span></span><a class="headerlink" href="#eon.schema.CommunicatorConfig.submit_job" title="Link to this definition">¶</a></dt>
 <dd><p>It takes two command line arguments. The first is the name of the job. This
 is not required for <code class="docutils literal notranslate"><span class="pre">eOn</span></code> use, but is highly recommended so that users can
 identify which job is which. The second argument is the working directory.
@@ -818,7 +818,7 @@ Currently only AKMC is supported. Example MPI communicator run:</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=4f6ddb47"></script>
+      <script src="../_static/documentation_options.js?v=eb155f5e"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

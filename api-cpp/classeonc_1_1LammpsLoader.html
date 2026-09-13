@@ -255,6 +255,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aee7d41cf84533ce9338f7ebc06304b19"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if liblammps was successfully dlopened and the C ABI resolved.  <br /></td></tr>
 <tr class="memitem:a1586ae65e5db2287e173cf287e573e6a" id="r_a1586ae65e5db2287e173cf287e573e6a"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a1586ae65e5db2287e173cf287e573e6a">available</a> () const</td></tr>
 <tr class="memdesc:a1586ae65e5db2287e173cf287e573e6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Filesystem probe: a candidate liblammps file is visible without dlopen, so LAMMPS static initializers (the banner) do not run.  <br /></td></tr>
+<tr class="memitem:a9ea826c31074398720a9b54981816f4a" id="r_a9ea826c31074398720a9b54981816f4a"><td class="memItemLeft">const std::string &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a9ea826c31074398720a9b54981816f4a">last_error</a> () const noexcept</td></tr>
+<tr class="memdesc:a9ea826c31074398720a9b54981816f4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Why the last <a class="el" href="#ad051404779d30e2e2ffc51a4bfd0fa7b">ensure_loaded()</a> failed. Empty if unused or loaded.  <br /></td></tr>
 <tr class="memitem:a21f37a53a4b81e8aee6d4fe571e48dcc" id="r_a21f37a53a4b81e8aee6d4fe571e48dcc"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a21f37a53a4b81e8aee6d4fe571e48dcc">require_loaded</a> ()</td></tr>
 <tr class="memdesc:a21f37a53a4b81e8aee6d4fe571e48dcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load on first use, then throw if liblammps is not available.  <br /></td></tr>
 <tr class="memitem:a4ffcb6a3a01d9cf76e3f2ac376599785" id="r_a4ffcb6a3a01d9cf76e3f2ac376599785"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a4ffcb6a3a01d9cf76e3f2ac376599785">LammpsLoader</a> (const LammpsLoader &amp;)=delete</td></tr>
@@ -288,6 +290,7 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a99db7acfa05c390ef00337eb5c05faac" id="r_a99db7acfa05c390ef00337eb5c05faac"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a99db7acfa05c390ef00337eb5c05faac">m_loaded</a> {false}</td></tr>
 <tr class="memitem:aeadbba19cbbbee3dbfd4c1c775a0c66e" id="r_aeadbba19cbbbee3dbfd4c1c775a0c66e"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aeadbba19cbbbee3dbfd4c1c775a0c66e">m_tried</a> {false}</td></tr>
 <tr class="memitem:ad786b8ef70444a38b875dc627f3aedea" id="r_ad786b8ef70444a38b875dc627f3aedea"><td class="memItemLeft"><a class="el" href="namespaceeonc_1_1dynlib.html#a77fed09f5c75a2dc000c73773884df69">dynlib::Handle</a>&#160;</td><td class="memItemRight"><a class="el" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a> {}</td></tr>
+<tr class="memitem:ab4ad15d10981235bf4a7bc7c51ce59d5" id="r_ab4ad15d10981235bf4a7bc7c51ce59d5"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#ab4ad15d10981235bf4a7bc7c51ce59d5">m_last_error</a> {}</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -463,9 +466,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LammpsLoader_8cpp_source.html#l00118">118</a> of file <a class="el" href="LammpsLoader_8cpp_source.html">LammpsLoader.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  118</span>{ <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">dynlib::close</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>); }</div>
-<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_ad786b8ef70444a38b875dc627f3aedea"><div class="ttname"><a href="#ad786b8ef70444a38b875dc627f3aedea">eonc::LammpsLoader::m_handle</a></div><div class="ttdeci">dynlib::Handle m_handle</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8h_source.html#l00082">LammpsLoader.h:82</a></div></div>
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8cpp_source.html#l00132">132</a> of file <a class="el" href="LammpsLoader_8cpp_source.html">LammpsLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  132</span>{ <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">dynlib::close</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>); }</div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_ad786b8ef70444a38b875dc627f3aedea"><div class="ttname"><a href="#ad786b8ef70444a38b875dc627f3aedea">eonc::LammpsLoader::m_handle</a></div><div class="ttdeci">dynlib::Handle m_handle</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8h_source.html#l00087">LammpsLoader.h:87</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1dynlib_html_aaaf1d7f945f57fb1f9303e58ae88d832"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">eonc::dynlib::close</a></div><div class="ttdeci">void close(Handle h) noexcept</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00077">DynLib.h:77</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -496,10 +499,10 @@ Private Attributes</h2></td></tr>
 
 <p>Filesystem probe: a candidate liblammps file is visible without dlopen, so LAMMPS static initializers (the banner) do not run. </p>
 
-<p class="definition">Definition at line <a class="el" href="LammpsLoader_8cpp_source.html#l00120">120</a> of file <a class="el" href="LammpsLoader_8cpp_source.html">LammpsLoader.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  120</span>                                   {</div>
-<div class="line"><span class="lineno">  121</span>  <span class="keywordflow">return</span> lib_file_visible(lammps_lib_names());</div>
-<div class="line"><span class="lineno">  122</span>}</div>
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8cpp_source.html#l00134">134</a> of file <a class="el" href="LammpsLoader_8cpp_source.html">LammpsLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  134</span>                                   {</div>
+<div class="line"><span class="lineno">  135</span>  <span class="keywordflow">return</span> lib_file_visible(lammps_lib_names());</div>
+<div class="line"><span class="lineno">  136</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -531,43 +534,59 @@ Private Attributes</h2></td></tr>
 <div class="line"><span class="lineno">   85</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aeadbba19cbbbee3dbfd4c1c775a0c66e">m_tried</a>)</div>
 <div class="line"><span class="lineno">   86</span>    <span class="keywordflow">return</span>;</div>
 <div class="line"><span class="lineno">   87</span>  <a class="code hl_variable" href="#aeadbba19cbbbee3dbfd4c1c775a0c66e">m_tried</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">   88</span> </div>
-<div class="line"><span class="lineno">   89</span>  <a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a> = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#af0a3b79a576b2173c2e8f7e65fd5ccbc">dynlib::openFirst</a>(lammps_lib_names());</div>
-<div class="line"><span class="lineno">   90</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>) {</div>
-<div class="line"><span class="lineno">   91</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">   92</span>  }</div>
-<div class="line"><span class="lineno">   93</span> </div>
-<div class="line"><span class="lineno">   94</span>  <a class="code hl_variable" href="#a31d80b4d677653fd2c56b01a6f72896f">open_no_mpi</a> = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;open_no_mpi_fn&gt;</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>, <span class="stringliteral">&quot;lammps_open_no_mpi&quot;</span>);</div>
-<div class="line"><span class="lineno">   95</span>  <a class="code hl_variable" href="#ac7e3d027d196d639d26c8e36e83377f7">close</a> = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;close_fn&gt;</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>, <span class="stringliteral">&quot;lammps_close&quot;</span>);</div>
-<div class="line"><span class="lineno">   96</span>  <a class="code hl_variable" href="#a68fa685304f474e1519b293e970f0615">command</a> = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;command_fn&gt;</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>, <span class="stringliteral">&quot;lammps_command&quot;</span>);</div>
-<div class="line"><span class="lineno">   97</span>  <a class="code hl_variable" href="#a5e6b6cddffcecdc68de934a58577adeb">file</a> = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;file_fn&gt;</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>, <span class="stringliteral">&quot;lammps_file&quot;</span>);</div>
-<div class="line"><span class="lineno">   98</span>  <a class="code hl_variable" href="#a14583691ef3b85326c7e9d9676bd2ac0">scatter_atoms</a> =</div>
-<div class="line"><span class="lineno">   99</span>      <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;scatter_atoms_fn&gt;</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>, <span class="stringliteral">&quot;lammps_scatter_atoms&quot;</span>);</div>
-<div class="line"><span class="lineno">  100</span>  <a class="code hl_variable" href="#ae501ef7bead3d35eccda26e3335a4fd2">extract_variable</a> =</div>
-<div class="line"><span class="lineno">  101</span>      <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;extract_var_fn&gt;</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>, <span class="stringliteral">&quot;lammps_extract_variable&quot;</span>);</div>
-<div class="line"><span class="lineno">  102</span> </div>
-<div class="line"><span class="lineno">  103</span><span class="preprocessor">#ifdef EONMPI</span></div>
-<div class="line"><span class="lineno">  104</span>  open_mpi = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;open_mpi_fn&gt;</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>, <span class="stringliteral">&quot;lammps_open&quot;</span>);</div>
-<div class="line"><span class="lineno">  105</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  106</span> </div>
-<div class="line"><span class="lineno">  107</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a31d80b4d677653fd2c56b01a6f72896f">open_no_mpi</a> || !<a class="code hl_variable" href="#ac7e3d027d196d639d26c8e36e83377f7">close</a> || !<a class="code hl_variable" href="#a68fa685304f474e1519b293e970f0615">command</a> || !<a class="code hl_variable" href="#a5e6b6cddffcecdc68de934a58577adeb">file</a> || !<a class="code hl_variable" href="#a14583691ef3b85326c7e9d9676bd2ac0">scatter_atoms</a> ||</div>
-<div class="line"><span class="lineno">  108</span>      !<a class="code hl_variable" href="#ae501ef7bead3d35eccda26e3335a4fd2">extract_variable</a>) {</div>
-<div class="line"><span class="lineno">  109</span>    std::cerr &lt;&lt; <span class="stringliteral">&quot;[LAMMPS] Library loaded but missing required symbols\n&quot;</span>;</div>
-<div class="line"><span class="lineno">  110</span>    <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">dynlib::close</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>);</div>
-<div class="line"><span class="lineno">  111</span>    <a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a> = {};</div>
-<div class="line"><span class="lineno">  112</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  113</span>  }</div>
+<div class="line"><span class="lineno">   88</span>  <a class="code hl_variable" href="#ab4ad15d10981235bf4a7bc7c51ce59d5">m_last_error</a>.clear();</div>
+<div class="line"><span class="lineno">   89</span> </div>
+<div class="line"><span class="lineno">   90</span>  <span class="keywordflow">if</span> (!lib_file_visible(lammps_lib_names())) {</div>
+<div class="line"><span class="lineno">   91</span>    <a class="code hl_variable" href="#ab4ad15d10981235bf4a7bc7c51ce59d5">m_last_error</a> = <span class="stringliteral">&quot;liblammps.so not visible on LD_LIBRARY_PATH / cwd &quot;</span></div>
+<div class="line"><span class="lineno">   92</span>                   <span class="stringliteral">&quot;(liblammps_pot.so is the eOn plugin, not LAMMPS)&quot;</span>;</div>
+<div class="line"><span class="lineno">   93</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   94</span>  }</div>
+<div class="line"><span class="lineno">   95</span> </div>
+<div class="line"><span class="lineno">   96</span>  <a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a> = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#af0a3b79a576b2173c2e8f7e65fd5ccbc">dynlib::openFirst</a>(lammps_lib_names());</div>
+<div class="line"><span class="lineno">   97</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>) {</div>
+<div class="line"><span class="lineno">   98</span>    <span class="keyword">const</span> std::string dle = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">dynlib::error</a>();</div>
+<div class="line"><span class="lineno">   99</span>    <a class="code hl_variable" href="#ab4ad15d10981235bf4a7bc7c51ce59d5">m_last_error</a> = <span class="stringliteral">&quot;liblammps.so is visible but dlopen failed&quot;</span>;</div>
+<div class="line"><span class="lineno">  100</span>    <span class="keywordflow">if</span> (!dle.empty()) {</div>
+<div class="line"><span class="lineno">  101</span>      <a class="code hl_variable" href="#ab4ad15d10981235bf4a7bc7c51ce59d5">m_last_error</a> += <span class="stringliteral">&quot;: &quot;</span> + dle;</div>
+<div class="line"><span class="lineno">  102</span>    }</div>
+<div class="line"><span class="lineno">  103</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  104</span>  }</div>
+<div class="line"><span class="lineno">  105</span> </div>
+<div class="line"><span class="lineno">  106</span>  <a class="code hl_variable" href="#a31d80b4d677653fd2c56b01a6f72896f">open_no_mpi</a> = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;open_no_mpi_fn&gt;</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>, <span class="stringliteral">&quot;lammps_open_no_mpi&quot;</span>);</div>
+<div class="line"><span class="lineno">  107</span>  <a class="code hl_variable" href="#ac7e3d027d196d639d26c8e36e83377f7">close</a> = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;close_fn&gt;</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>, <span class="stringliteral">&quot;lammps_close&quot;</span>);</div>
+<div class="line"><span class="lineno">  108</span>  <a class="code hl_variable" href="#a68fa685304f474e1519b293e970f0615">command</a> = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;command_fn&gt;</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>, <span class="stringliteral">&quot;lammps_command&quot;</span>);</div>
+<div class="line"><span class="lineno">  109</span>  <a class="code hl_variable" href="#a5e6b6cddffcecdc68de934a58577adeb">file</a> = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;file_fn&gt;</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>, <span class="stringliteral">&quot;lammps_file&quot;</span>);</div>
+<div class="line"><span class="lineno">  110</span>  <a class="code hl_variable" href="#a14583691ef3b85326c7e9d9676bd2ac0">scatter_atoms</a> =</div>
+<div class="line"><span class="lineno">  111</span>      <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;scatter_atoms_fn&gt;</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>, <span class="stringliteral">&quot;lammps_scatter_atoms&quot;</span>);</div>
+<div class="line"><span class="lineno">  112</span>  <a class="code hl_variable" href="#ae501ef7bead3d35eccda26e3335a4fd2">extract_variable</a> =</div>
+<div class="line"><span class="lineno">  113</span>      <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;extract_var_fn&gt;</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>, <span class="stringliteral">&quot;lammps_extract_variable&quot;</span>);</div>
 <div class="line"><span class="lineno">  114</span> </div>
-<div class="line"><span class="lineno">  115</span>  <a class="code hl_variable" href="#a99db7acfa05c390ef00337eb5c05faac">m_loaded</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  116</span>}</div>
+<div class="line"><span class="lineno">  115</span><span class="preprocessor">#ifdef EONMPI</span></div>
+<div class="line"><span class="lineno">  116</span>  open_mpi = <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">dynlib::loadSym&lt;open_mpi_fn&gt;</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>, <span class="stringliteral">&quot;lammps_open&quot;</span>);</div>
+<div class="line"><span class="lineno">  117</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  118</span> </div>
+<div class="line"><span class="lineno">  119</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a31d80b4d677653fd2c56b01a6f72896f">open_no_mpi</a> || !<a class="code hl_variable" href="#ac7e3d027d196d639d26c8e36e83377f7">close</a> || !<a class="code hl_variable" href="#a68fa685304f474e1519b293e970f0615">command</a> || !<a class="code hl_variable" href="#a5e6b6cddffcecdc68de934a58577adeb">file</a> || !<a class="code hl_variable" href="#a14583691ef3b85326c7e9d9676bd2ac0">scatter_atoms</a> ||</div>
+<div class="line"><span class="lineno">  120</span>      !<a class="code hl_variable" href="#ae501ef7bead3d35eccda26e3335a4fd2">extract_variable</a>) {</div>
+<div class="line"><span class="lineno">  121</span>    std::cerr &lt;&lt; <span class="stringliteral">&quot;[LAMMPS] Library loaded but missing required symbols\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  122</span>    <a class="code hl_variable" href="#ab4ad15d10981235bf4a7bc7c51ce59d5">m_last_error</a> = <span class="stringliteral">&quot;opened a liblammps* but lammps_open_no_mpi is missing &quot;</span></div>
+<div class="line"><span class="lineno">  123</span>                   <span class="stringliteral">&quot;(plugin or ABI mismatch, not the LAMMPS C library)&quot;</span>;</div>
+<div class="line"><span class="lineno">  124</span>    <a class="code hl_function" href="namespaceeonc_1_1dynlib.html#aaaf1d7f945f57fb1f9303e58ae88d832">dynlib::close</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>);</div>
+<div class="line"><span class="lineno">  125</span>    <a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a> = {};</div>
+<div class="line"><span class="lineno">  126</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  127</span>  }</div>
+<div class="line"><span class="lineno">  128</span> </div>
+<div class="line"><span class="lineno">  129</span>  <a class="code hl_variable" href="#a99db7acfa05c390ef00337eb5c05faac">m_loaded</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  130</span>}</div>
 <div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a14583691ef3b85326c7e9d9676bd2ac0"><div class="ttname"><a href="#a14583691ef3b85326c7e9d9676bd2ac0">eonc::LammpsLoader::scatter_atoms</a></div><div class="ttdeci">scatter_atoms_fn scatter_atoms</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8h_source.html#l00055">LammpsLoader.h:55</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a31d80b4d677653fd2c56b01a6f72896f"><div class="ttname"><a href="#a31d80b4d677653fd2c56b01a6f72896f">eonc::LammpsLoader::open_no_mpi</a></div><div class="ttdeci">open_no_mpi_fn open_no_mpi</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8h_source.html#l00051">LammpsLoader.h:51</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a5e6b6cddffcecdc68de934a58577adeb"><div class="ttname"><a href="#a5e6b6cddffcecdc68de934a58577adeb">eonc::LammpsLoader::file</a></div><div class="ttdeci">file_fn file</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8h_source.html#l00054">LammpsLoader.h:54</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a68fa685304f474e1519b293e970f0615"><div class="ttname"><a href="#a68fa685304f474e1519b293e970f0615">eonc::LammpsLoader::command</a></div><div class="ttdeci">command_fn command</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8h_source.html#l00053">LammpsLoader.h:53</a></div></div>
-<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a99db7acfa05c390ef00337eb5c05faac"><div class="ttname"><a href="#a99db7acfa05c390ef00337eb5c05faac">eonc::LammpsLoader::m_loaded</a></div><div class="ttdeci">bool m_loaded</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8h_source.html#l00080">LammpsLoader.h:80</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_a99db7acfa05c390ef00337eb5c05faac"><div class="ttname"><a href="#a99db7acfa05c390ef00337eb5c05faac">eonc::LammpsLoader::m_loaded</a></div><div class="ttdeci">bool m_loaded</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8h_source.html#l00085">LammpsLoader.h:85</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_ab4ad15d10981235bf4a7bc7c51ce59d5"><div class="ttname"><a href="#ab4ad15d10981235bf4a7bc7c51ce59d5">eonc::LammpsLoader::m_last_error</a></div><div class="ttdeci">std::string m_last_error</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8h_source.html#l00088">LammpsLoader.h:88</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LammpsLoader_html_ac7e3d027d196d639d26c8e36e83377f7"><div class="ttname"><a href="#ac7e3d027d196d639d26c8e36e83377f7">eonc::LammpsLoader::close</a></div><div class="ttdeci">close_fn close</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8h_source.html#l00052">LammpsLoader.h:52</a></div></div>
 <div class="ttc" id="aclasseonc_1_1LammpsLoader_html_ae501ef7bead3d35eccda26e3335a4fd2"><div class="ttname"><a href="#ae501ef7bead3d35eccda26e3335a4fd2">eonc::LammpsLoader::extract_variable</a></div><div class="ttdeci">extract_var_fn extract_variable</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8h_source.html#l00056">LammpsLoader.h:56</a></div></div>
-<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_aeadbba19cbbbee3dbfd4c1c775a0c66e"><div class="ttname"><a href="#aeadbba19cbbbee3dbfd4c1c775a0c66e">eonc::LammpsLoader::m_tried</a></div><div class="ttdeci">bool m_tried</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8h_source.html#l00081">LammpsLoader.h:81</a></div></div>
+<div class="ttc" id="aclasseonc_1_1LammpsLoader_html_aeadbba19cbbbee3dbfd4c1c775a0c66e"><div class="ttname"><a href="#aeadbba19cbbbee3dbfd4c1c775a0c66e">eonc::LammpsLoader::m_tried</a></div><div class="ttdeci">bool m_tried</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8h_source.html#l00086">LammpsLoader.h:86</a></div></div>
+<div class="ttc" id="anamespaceeonc_1_1dynlib_html_a793e2f7806f01afcc170a5b8054f4e6f"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a793e2f7806f01afcc170a5b8054f4e6f">eonc::dynlib::error</a></div><div class="ttdeci">std::string error()</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00082">DynLib.h:82</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1dynlib_html_aef33f6c06053a92bd50e4aca3a326b58"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#aef33f6c06053a92bd50e4aca3a326b58">eonc::dynlib::loadSym</a></div><div class="ttdeci">Fn loadSym(Handle h, const char *name) noexcept</div><div class="ttdoc">Load a symbol and cast to a function pointer type.</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00099">DynLib.h:99</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1dynlib_html_af0a3b79a576b2173c2e8f7e65fd5ccbc"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#af0a3b79a576b2173c2e8f7e65fd5ccbc">eonc::dynlib::openFirst</a></div><div class="ttdeci">Handle openFirst(const char *const names[]) noexcept</div><div class="ttdoc">Try a list of library names in order, return first successful handle.</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00089">DynLib.h:89</a></div></div>
 </div><!-- fragment -->
@@ -637,6 +656,38 @@ Private Attributes</h2></td></tr>
 </div><!-- fragment -->
 </div>
 </div>
+<a id="a9ea826c31074398720a9b54981816f4a" name="a9ea826c31074398720a9b54981816f4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ea826c31074398720a9b54981816f4a">&#9670;&#160;</a></span>last_error()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eonc::LammpsLoader::last_error </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel nodiscard">nodiscard</span><span class="mlabel noexcept">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Why the last <a class="el" href="#ad051404779d30e2e2ffc51a4bfd0fa7b">ensure_loaded()</a> failed. Empty if unused or loaded. </p>
+
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00069">69</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   69</span>                                                             {</div>
+<div class="line"><span class="lineno">   70</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#ab4ad15d10981235bf4a7bc7c51ce59d5">m_last_error</a>;</div>
+<div class="line"><span class="lineno">   71</span>  }</div>
+</div><!-- fragment -->
+</div>
+</div>
 <a id="a5cc4c3ae1a59d4161c5b7a1aaac835bb" name="a5cc4c3ae1a59d4161c5b7a1aaac835bb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5cc4c3ae1a59d4161c5b7a1aaac835bb">&#9670;&#160;</a></span>load_sym()</h2>
 
@@ -664,10 +715,10 @@ template&lt;typename Fn&gt; </div>
 
 <p>Try to load a symbol; returns nullptr on failure. </p>
 
-<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00085">85</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   85</span>                                                       {</div>
-<div class="line"><span class="lineno">   86</span>    <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>Fn<span class="keyword">&gt;</span>(<a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a37bed29f19bcf42ee7abe5dff7bb1820">dynlib::sym</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>, name));</div>
-<div class="line"><span class="lineno">   87</span>  }</div>
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00091">91</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   91</span>                                                       {</div>
+<div class="line"><span class="lineno">   92</span>    <span class="keywordflow">return</span> <span class="keyword">reinterpret_cast&lt;</span>Fn<span class="keyword">&gt;</span>(<a class="code hl_function" href="namespaceeonc_1_1dynlib.html#a37bed29f19bcf42ee7abe5dff7bb1820">dynlib::sym</a>(<a class="code hl_variable" href="#ad786b8ef70444a38b875dc627f3aedea">m_handle</a>, name));</div>
+<div class="line"><span class="lineno">   93</span>  }</div>
 <div class="ttc" id="anamespaceeonc_1_1dynlib_html_a37bed29f19bcf42ee7abe5dff7bb1820"><div class="ttname"><a href="namespaceeonc_1_1dynlib.html#a37bed29f19bcf42ee7abe5dff7bb1820">eonc::dynlib::sym</a></div><div class="ttdeci">void * sym(Handle h, const char *name) noexcept</div><div class="ttdef"><b>Definition</b> <a href="DynLib_8h_source.html#l00075">DynLib.h:75</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -714,17 +765,22 @@ template&lt;typename Fn&gt; </div>
 
 <p>Load on first use, then throw if liblammps is not available. </p>
 
-<p class="definition">Definition at line <a class="el" href="LammpsLoader_8cpp_source.html#l00124">124</a> of file <a class="el" href="LammpsLoader_8cpp_source.html">LammpsLoader.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  124</span>                                  {</div>
-<div class="line"><span class="lineno">  125</span>  <a class="code hl_function" href="#ad051404779d30e2e2ffc51a4bfd0fa7b">ensure_loaded</a>();</div>
-<div class="line"><span class="lineno">  126</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a99db7acfa05c390ef00337eb5c05faac">m_loaded</a>) {</div>
-<div class="line"><span class="lineno">  127</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  128</span>        <span class="stringliteral">&quot;LAMMPS potential requested but liblammps not found.\n&quot;</span></div>
-<div class="line"><span class="lineno">  129</span>        <span class="stringliteral">&quot;Install via: conda install -c conda-forge lammps\n&quot;</span></div>
-<div class="line"><span class="lineno">  130</span>        <span class="stringliteral">&quot;Or ensure liblammps is in your library search path &quot;</span></div>
-<div class="line"><span class="lineno">  131</span>        <span class="stringliteral">&quot;(LD_LIBRARY_PATH / DYLD_LIBRARY_PATH / PATH).&quot;</span>);</div>
-<div class="line"><span class="lineno">  132</span>  }</div>
-<div class="line"><span class="lineno">  133</span>}</div>
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8cpp_source.html#l00138">138</a> of file <a class="el" href="LammpsLoader_8cpp_source.html">LammpsLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  138</span>                                  {</div>
+<div class="line"><span class="lineno">  139</span>  <a class="code hl_function" href="#ad051404779d30e2e2ffc51a4bfd0fa7b">ensure_loaded</a>();</div>
+<div class="line"><span class="lineno">  140</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a99db7acfa05c390ef00337eb5c05faac">m_loaded</a>) {</div>
+<div class="line"><span class="lineno">  141</span>    std::string msg =</div>
+<div class="line"><span class="lineno">  142</span>        <span class="stringliteral">&quot;LAMMPS potential requested but liblammps is not usable.\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  143</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#ab4ad15d10981235bf4a7bc7c51ce59d5">m_last_error</a>.empty()) {</div>
+<div class="line"><span class="lineno">  144</span>      msg += <a class="code hl_variable" href="#ab4ad15d10981235bf4a7bc7c51ce59d5">m_last_error</a>;</div>
+<div class="line"><span class="lineno">  145</span>      msg += <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><span class="lineno">  146</span>    }</div>
+<div class="line"><span class="lineno">  147</span>    msg += <span class="stringliteral">&quot;Need a real liblammps.so with lammps_open_no_mpi, built for &quot;</span></div>
+<div class="line"><span class="lineno">  148</span>           <span class="stringliteral">&quot;this glibc. conda-forge latest may need a newer libc than &quot;</span></div>
+<div class="line"><span class="lineno">  149</span>           <span class="stringliteral">&quot;the host. liblammps_pot.so is the eOn plugin, not LAMMPS.&quot;</span>;</div>
+<div class="line"><span class="lineno">  150</span>    <span class="keywordflow">throw</span> std::runtime_error(msg);</div>
+<div class="line"><span class="lineno">  151</span>  }</div>
+<div class="line"><span class="lineno">  152</span>}</div>
 <div class="ttc" id="aclasseonc_1_1LammpsLoader_html_ad051404779d30e2e2ffc51a4bfd0fa7b"><div class="ttname"><a href="#ad051404779d30e2e2ffc51a4bfd0fa7b">eonc::LammpsLoader::ensure_loaded</a></div><div class="ttdeci">void ensure_loaded()</div><div class="ttdef"><b>Definition</b> <a href="LammpsLoader_8cpp_source.html#l00084">LammpsLoader.cpp:84</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -818,8 +874,33 @@ template&lt;typename Fn&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00082">82</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   82</span>{};</div>
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00087">87</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   87</span>{};</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ab4ad15d10981235bf4a7bc7c51ce59d5" name="ab4ad15d10981235bf4a7bc7c51ce59d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4ad15d10981235bf4a7bc7c51ce59d5">&#9670;&#160;</a></span>m_last_error</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eonc::LammpsLoader::m_last_error {}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00088">88</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   88</span>{};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -843,8 +924,8 @@ template&lt;typename Fn&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00080">80</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   80</span>{<span class="keyword">false</span>};</div>
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00085">85</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   85</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -868,8 +949,8 @@ template&lt;typename Fn&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00081">81</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   81</span>{<span class="keyword">false</span>};</div>
+<p class="definition">Definition at line <a class="el" href="LammpsLoader_8h_source.html#l00086">86</a> of file <a class="el" href="LammpsLoader_8h_source.html">LammpsLoader.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   86</span>{<span class="keyword">false</span>};</div>
 </div><!-- fragment -->
 </div>
 </div>

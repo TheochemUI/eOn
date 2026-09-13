@@ -475,10 +475,10 @@ Private Attributes</h2></td></tr>
 <div class="line"><span class="lineno">  238</span> </div>
 <div class="line"><span class="lineno">  239</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#aa73caf8e6ff50efc9c4539307a4e9870">parameters</a>.main_options.quiet) {</div>
 <div class="line"><span class="lineno">  240</span>    QUILL_LOG_DEBUG(<a class="code hl_variable" href="#a1392881d52a5f2beb5b62612245e5205">log</a>, <span class="stringliteral">&quot;[Hessian] writing hessian\n&quot;</span>);</div>
-<div class="line"><span class="lineno">  241</span>    std::ofstream hessfile;</div>
-<div class="line"><span class="lineno">  242</span>    hessfile.open(<span class="stringliteral">&quot;hessian.dat&quot;</span>);</div>
-<div class="line"><span class="lineno">  243</span>    hessfile &lt;&lt; <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>;</div>
-<div class="line"><span class="lineno">  244</span>    hessfile.close();</div>
+<div class="line"><span class="lineno">  241</span>  }</div>
+<div class="line"><span class="lineno">  242</span>  {</div>
+<div class="line"><span class="lineno">  243</span>    std::ofstream hessfile(<span class="stringliteral">&quot;hessian.dat&quot;</span>);</div>
+<div class="line"><span class="lineno">  244</span>    hessfile &lt;&lt; <a class="code hl_variable" href="#acf831eb7b79fc751f052821994d9450f">hessian</a>;</div>
 <div class="line"><span class="lineno">  245</span>  }</div>
 <div class="line"><span class="lineno">  246</span> </div>
 <div class="line"><span class="lineno">  247</span>  <span class="comment">// Completed run: remove checkpoint so a later job does not resume stale cols</span></div>

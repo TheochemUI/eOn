@@ -413,9 +413,12 @@ random selection wastes effort: most saddle searches start far from the action
 and fail to find relevant transitions.</p>
 <p>eOn has two ways to target displacements at the reactive atoms:</p>
 <ol class="arabic simple">
-<li><p><strong>Static atom list</strong> (<code class="docutils literal notranslate"><span class="pre">displace_atom_list</span></code>): a fixed set of atom indices
-written directly in <code class="docutils literal notranslate"><span class="pre">config.ini</span></code>. Best when the active atoms are known in
-advance and don’t change between AKMC states.</p></li>
+<li><p><strong>Static atom list</strong> (<code class="docutils literal notranslate"><span class="pre">displace_atom_list</span></code>): a fixed set of atom
+indices written directly in <code class="docutils literal notranslate"><span class="pre">config.ini</span></code>. The numbers are CON
+<strong>file-order</strong> rows (the order atoms appear in the <code class="docutils literal notranslate"><span class="pre">.con</span></code>). After
+load, <code class="docutils literal notranslate"><span class="pre">Structure</span></code> sorts unique <code class="docutils literal notranslate"><span class="pre">atom_id</span></code>s; <code class="docutils literal notranslate"><span class="pre">ListedAtoms</span></code> remaps
+the file-order list through that sort when the raw rows are all
+frozen. Prefer this over guessing Structure rows.</p></li>
 <li><p><strong>Dynamic script</strong> (<code class="docutils literal notranslate"><span class="pre">displace_atom_kmc_state_script</span></code>): a Python script
 that is executed once per new AKMC state. The script receives the current
 geometry, analyses it, and returns the indices of atoms that should be
@@ -588,8 +591,10 @@ between states, a static <code class="docutils literal notranslate"><span class=
 </span></pre></div>
 </div>
 </div>
-<p>This displaces atoms 0, 1, and 2 (plus their neighbours within 3 Å) on every
-saddle search. It is suitable for small molecules, known defect sites, or any
+<p>This displaces file-order atoms 0, 1, and 2 (plus their neighbours
+within 3 Å) on every saddle search. Those are the first three rows in
+the <code class="docutils literal notranslate"><span class="pre">.con</span></code>, not necessarily <code class="docutils literal notranslate"><span class="pre">atom_id</span></code> 0, 1, 2 after the load-time
+sort. It is suitable for small molecules, known defect sites, or any
 situation where the active region is fixed.</p>
 </section>
 <section id="client-side-listed-atoms">
@@ -724,7 +729,7 @@ where server-side scripting is unnecessary.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=4f6ddb47"></script>
+      <script src="../_static/documentation_options.js?v=eb155f5e"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
