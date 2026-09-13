@@ -1065,21 +1065,24 @@ class SaddleSearchConfig(BaseModel):
         default=0.0,
         description="Relative probability to displace with an epicenter listed in displace_atom_list.",
     )
-    displace_atom_list: Union[str, list[int]] = Field(
+    displace_atom_list: Union[str, list[int], int] = Field(
         default="0",
         description="CON file-order rows (the order atoms appear in the .con) used as "
         "displacement epicenters, comma-separated. After load, Structure/Matter "
         "sort unique atom_ids; the list is remapped through that sort. "
-        "Lone -1 means every free atom. A mixed list does not treat -1 as "
-        "the last atom or as a wrap. Example: 0, 1, 2 is the first three "
-        "file rows. When displace_atom_kmc_state_script is set, this list is "
-        "populated dynamically per AKMC state from the script's output.",
+        'Lone -1 (int, [-1], or "-1") means every free atom. A mixed list '
+        "does not treat -1 as the last atom or as a wrap. Example: 0, 1, 2 "
+        "is the first three file rows. When displace_atom_kmc_state_script is "
+        "set, the script prints Structure-row indices of the temp .con "
+        "(atom_id order); those are not remapped as original file-order.",
     )
     displace_atom_kmc_state_script: str = Field(
         default="",
         description="Path to a Python script that determines which atoms to displace. "
-        "The script receives the path to a .con file as its sole positional argument "
-        "and must print a comma-separated list of 0-based atom indices to stdout. "
+        "The script receives a temp .con written by savecon(Structure) (atom_id / "
+        "Structure order) and must print a comma-separated list of 0-based Structure-row "
+        "indices of that file to stdout. Those indices are not remapped as original "
+        "user .con file-order. "
         "It is executed once per new AKMC state; the result is cached in state.info. "
         "The path can be relative (resolved against the eOn root directory) or absolute. "
         "See the displacement scripts tutorial for worked examples.",
@@ -1146,7 +1149,8 @@ class SaddleSearchConfig(BaseModel):
         "'last_atom': the last atom in the configuration. "
         "'least_coordinated': the atom with the fewest neighbours. "
         "'not_fcc_hcp_coordinated': an atom whose local structure is neither FCC nor HCP. "
-        "'listed_atoms': an atom from displace_atom_list (parsed from config, no server displacement file needed). "
+        "'listed_atoms': pick a free atom from displace_atom_list and apply "
+        "a client-side radius/magnitude displacement (no server displacement file). "
         "'load': read a displacement vector from a file written by the server.",
     )
     stdev_translation: float = Field(

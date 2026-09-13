@@ -480,10 +480,16 @@ class ListedAtoms(Displace):
         Displace.__init__(self, reactant, std_dev, radius, hole_epicenters, config)
 
         self.displace_all = displace_all
-        # disp_listed_atoms are CON file-order rows (0, 1, 2). Structure
-        # rows are atom_id order. Always remap first: a first-pass that
-        # treats the numbers as Structure rows keeps a coincidentally-free
-        # post-sort hit and never remaps the rest of a mixed list.
+        # Static INI disp_listed_atoms are CON file-order rows (0, 1, 2).
+        # Structure rows are atom_id order. Always remap those first: a
+        # first-pass that treats the numbers as Structure rows keeps a
+        # coincidentally-free post-sort hit and never remaps the rest of
+        # a mixed list.
+        #
+        # displace_atom_kmc_state_script sees savecon(Structure), which
+        # writes atom_id / Structure order. Its printed indices are
+        # already Structure rows; remapping them as original file-order
+        # sends the wrong atoms (eOn-4dm9).
         free = self.reactant.atom_is_free()
         listed = self.config.disp_listed_atoms
         if listed == -1:
@@ -491,6 +497,10 @@ class ListedAtoms(Displace):
         # -1 is the documented "all free atoms" sentinel (akmc-al).
         if listed == [-1]:
             self.listed_atoms = [i for i in range(len(free)) if free[i]]
+        elif getattr(self.config, "disp_listed_from_script", False):
+            self.listed_atoms = [
+                int(i) for i in listed if 0 <= int(i) < len(free) and free[int(i)]
+            ]
         else:
             f2s = getattr(self.reactant, "file_to_struct", None)
             if f2s is not None:

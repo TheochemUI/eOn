@@ -69,6 +69,7 @@ std::vector<std::string> ProcessSearchJob::run() {
   barriersValues[0] = barriersValues[1] = 0;
   prefactorsValues[0] = prefactorsValues[1] = 0;
 
+  AtomMatrix mode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
   if (params.saddle_search_options.method == "min_mode" ||
       params.saddle_search_options.method == "basin_hopping" ||
       params.saddle_search_options.method == "bgsd") {
@@ -84,6 +85,9 @@ std::vector<std::string> ProcessSearchJob::run() {
         exit(1);
       }
       *min1 = *min2 = *initial;
+    } else if (eonc::helpers::applyClientDisplacement(*saddle, *initial, params,
+                                                      &mode)) {
+      *min1 = *min2 = *initial;
     } else {
       *saddle = *min1 = *min2 = *initial;
     }
@@ -92,7 +96,6 @@ std::vector<std::string> ProcessSearchJob::run() {
     *saddle = *min1 = *min2 = *initial;
   }
 
-  AtomMatrix mode;
   const bool useARTnAsMinMode =
       params.saddle_search_options.method == "min_mode" &&
       params.saddle_search_options.minmode_method == "artn";

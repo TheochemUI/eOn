@@ -11,9 +11,11 @@
 */
 #include "eon/HelperFunctions.h"
 #include "eon/EonLogger.h"
+#include "eon/EpiCenters.h"
 #include "eon/GeometryAnalysis.h"
 #include "eon/ObjectiveFunction.h"
 #include "eon/Optimizer.h"
+#include "eon/Parameters.h"
 #include "eon/SafeMath.h"
 
 #include <cassert>
@@ -27,6 +29,7 @@
 #include <memory>
 #include <sstream>
 #include <stdexcept>
+#include <utility>
 
 #ifndef _WIN32
 #include <sys/resource.h>
@@ -194,6 +197,65 @@ bool eonc::helpers::loadOrSynthesizeDisplacement(
   EONC_LOG_INFO("Synthesized displacement from pos.con + scale {:.6g} * unit "
                 "mode in {} (missing {})",
                 scale, modePath, displacementPath);
+  return true;
+}
+
+bool eonc::helpers::applyClientDisplacement(Matter &target,
+                                            const Matter &initial,
+                                            const Parameters &params,
+                                            AtomMatrix *modeOut) {
+  using namespace eonc::EpiCenters;
+  const auto &opt = params.saddle_search_options;
+  const std::string &dtype = opt.displace_type;
+  if (dtype == DISP_LOAD) {
+    return false;
+  }
+
+  long epicenter = -1;
+  const double cutoff = params.structure_comparison_options.neighbor_cutoff;
+  if (dtype == DISP_LISTED_ATOMS) {
+    epicenter = listedAtomEpiCenter(&initial, opt.displace_atom_list);
+  } else if (dtype == DISP_RANDOM) {
+    epicenter = randomFreeAtomEpiCenter(&initial);
+  } else if (dtype == DISP_LAST_ATOM) {
+    epicenter = lastAtom(&initial);
+  } else if (dtype == DISP_MIN_COORDINATED) {
+    epicenter = minCoordinatedEpiCenter(&initial, cutoff);
+  } else if (dtype == DISP_NOT_FCC_OR_HCP) {
+    epicenter = cnaEpiCenter(&initial, cutoff);
+  } else {
+    return false;
+  }
+
+  target = initial;
+  const long n = initial.numberOfAtoms();
+  const double radius = opt.displace_radius;
+  const double mag = opt.displace_magnitude;
+  AtomMatrix pos = initial.getPositionsCopy();
+  AtomMatrix mode = AtomMatrix::Zero(n, 3);
+  for (long i = 0; i < n; ++i) {
+    if (initial.getFixed(i)) {
+      continue;
+    }
+    const double dist = (i == epicenter) ? 0.0 : initial.distance(epicenter, i);
+    if (dist <= radius) {
+      for (int a = 0; a < 3; ++a) {
+        mode(i, a) = gaussRandom(0.0, mag);
+      }
+    }
+  }
+  const double norm = mode.norm();
+  if (norm > 0.0) {
+    pos += mode;
+    mode /= norm;
+  } else if (epicenter >= 0 && epicenter < n && !initial.getFixed(epicenter)) {
+    mode(epicenter, 0) = 1.0;
+    pos(epicenter, 0) += mag;
+  }
+  target.setPositions(pos);
+  if (modeOut != nullptr) {
+    *modeOut = std::move(mode);
+  }
   return true;
 }
 

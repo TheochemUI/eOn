@@ -112,6 +112,8 @@ class MinModeExplorer(Explorer):
             atom_list_str = str(self.state.info.get("Saddle Search", "displace_atom_list", ""))
             if atom_list_str:
                 self.config.disp_listed_atoms = utl.parse_atom_list_str(atom_list_str)
+                # Script saw savecon(Structure); do not remap as file-order.
+                self.config.disp_listed_from_script = True
                 # Ensure the listed-atom displacement method is active
                 if self.config.displace_listed_atom_weight == 0.0:
                     self.config.displace_listed_atom_weight = 1.0

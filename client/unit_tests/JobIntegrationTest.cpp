@@ -449,6 +449,39 @@ max_energy = 10.0
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
+                 "SaddleSearchJob listed_atoms displaces without load files",
+                 "[job][saddle_search][listed_atoms][integration]") {
+  EON_REQUIRE_TEST_DATA("../saddle_search");
+  std::filesystem::remove(workdir / "displacement.con");
+  std::filesystem::remove(workdir / "direction.dat");
+  writeConfig(R"(
+[Main]
+job = saddle_search
+random_seed = 706253457
+
+[Potential]
+potential = morse_pt
+
+[Optimizer]
+converged_force = 0.001
+max_iterations = 1
+
+[Saddle Search]
+client_displace_type = listed_atoms
+displace_atom_list = 0
+displace_radius = 0.0
+displace_magnitude = 0.05
+min_mode_method = dimer
+max_iterations = 1
+max_energy = 10.0
+)");
+
+  auto results = runJob();
+  REQUIRE(results.count("termination_reason") > 0);
+  REQUIRE(std::filesystem::exists(workdir / "saddle.con"));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
                  "SaddleSearchJob Lanczos matches SVN on Morse Pt",
                  "[job][saddle_search][lanczos][integration]") {
   EON_REQUIRE_TEST_DATA("../saddle_search");

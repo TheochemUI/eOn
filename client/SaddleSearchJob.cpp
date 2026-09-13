@@ -51,6 +51,7 @@ std::vector<std::string> SaddleSearchJob::run() {
 
   const bool standaloneARTn = params.saddle_search_options.method == "artn";
 
+  AtomMatrix mode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
   if (!standaloneARTn && params.saddle_search_options.displace_type ==
                              eonc::EpiCenters::DISP_LOAD) {
     // Load displacement.con, or synthesize from pos.con + direction.dat (#79).
@@ -61,15 +62,14 @@ std::vector<std::string> SaddleSearchJob::run() {
                         displacementFilename, modeFilename);
       throw std::runtime_error("missing displacement.con and direction.dat");
     }
+    if (std::filesystem::exists(modeFilename)) {
+      mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
+    }
+  } else if (!standaloneARTn && eonc::helpers::applyClientDisplacement(
+                                    *saddle, *initial, params, &mode)) {
+    // listed_atoms / random / last_atom / least_coordinated / not_fcc_hcp
   } else {
     *saddle = *initial;
-  }
-
-  AtomMatrix mode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
-  const bool canLoadMode =
-      params.saddle_search_options.displace_type == eonc::EpiCenters::DISP_LOAD;
-  if (canLoadMode && std::filesystem::exists(modeFilename)) {
-    mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
   }
 
   const bool useStandaloneARTn = params.saddle_search_options.method == "artn";

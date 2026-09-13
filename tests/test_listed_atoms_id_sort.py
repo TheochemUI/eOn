@@ -96,6 +96,53 @@ def test_listed_atoms_mixed_file_rows_all_remap():
     assert la.listed_atoms == [2, 3]
 
 
+def test_listed_atoms_script_indices_are_structure_rows():
+    import readcon
+
+    # File: free id=100, frozen id=0. After sort, Structure row 0 is
+    # frozen and row 1 is free. A kmc script that analyzed
+    # savecon(Structure) prints [1] for the free atom. Remapping that
+    # as original file-order would send it to the frozen atom.
+    frame = readcon.ConFrame(
+        cell=(10.0, 10.0, 10.0),
+        angles=(90.0, 90.0, 90.0),
+        atoms=[
+            readcon.Atom("Cu", 0.0, 0.0, 0.0, [False, False, False], 100, 63.5),
+            readcon.Atom("Cu", 1.0, 0.0, 0.0, [True, True, True], 0, 63.5),
+        ],
+    )
+    p = Structure.from_conframe(frame)
+    assert list(p.atom_ids) == [0, 100]
+    cfg = SimpleNamespace(
+        disp_listed_atoms=[1],
+        random_mode=False,
+        disp_listed_from_script=True,
+    )
+    la = ListedAtoms(p, config=cfg)
+    assert la.listed_atoms == [1]
+
+
+def test_listed_atoms_script_frozen_structure_row_raises():
+    import readcon
+
+    frame = readcon.ConFrame(
+        cell=(10.0, 10.0, 10.0),
+        angles=(90.0, 90.0, 90.0),
+        atoms=[
+            readcon.Atom("Cu", 0.0, 0.0, 0.0, [False, False, False], 100, 63.5),
+            readcon.Atom("Cu", 1.0, 0.0, 0.0, [True, True, True], 0, 63.5),
+        ],
+    )
+    p = Structure.from_conframe(frame)
+    cfg = SimpleNamespace(
+        disp_listed_atoms=[0],
+        random_mode=False,
+        disp_listed_from_script=True,
+    )
+    with pytest.raises(DisplaceError, match="all frozen"):
+        ListedAtoms(p, config=cfg)
+
+
 def test_listed_atoms_frozen_file_row_does_not_take_other_free():
     import readcon
 

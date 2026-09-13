@@ -13,6 +13,7 @@
 #include "Eigen.h"
 #include "GeometryAnalysis.h"
 #include "Matter.h"
+#include "Parameters.h"
 #include "RandomNumbers.h"
 #include <optional>
 #include <string>
@@ -74,6 +75,14 @@ AtomMatrix loadMode(std::string filename, int nAtoms);
 bool loadOrSynthesizeDisplacement(Matter &target, const Matter &initial,
                                   const std::string &displacementPath,
                                   const std::string &modePath, double scale);
+// Client-side epicenter kick for listed_atoms / random / last_atom /
+// least_coordinated / not_fcc_hcp_coordinated. Copies initial into
+// target, displaces free atoms within displace_radius of the picked
+// epicenter by a Gaussian of stddev displace_magnitude, and writes the
+// unit mode when modeOut is non-null. Returns false for displace_type
+// load (caller uses loadOrSynthesizeDisplacement) or an unknown type.
+bool applyClientDisplacement(Matter &target, const Matter &initial,
+                             const Parameters &params, AtomMatrix *modeOut);
 /// Write a mode; constrained axes are emitted as 0.
 void saveMode(FILE *modeFile, std::shared_ptr<Matter> matter, AtomMatrix mode);
 void saveMode(const std::string &filename, std::shared_ptr<Matter> matter,

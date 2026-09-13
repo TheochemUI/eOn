@@ -129,7 +129,34 @@ TEST_CASE_METHOD(EpiCentersFixture,
 }
 
 TEST_CASE_METHOD(EpiCentersFixture,
-                 "listedAtomEpiCenter empty list throws",
+                 "listedAtomEpiCenter two-atom list hits both ids",
+                 "[EpiCenters][listedAtomEpiCenter]") {
+  // size-1 pick always returned the first of a two-free-atom list.
+  std::vector<long> atomList = {0, 2};
+  std::set<long> selected;
+  for (int trial = 0; trial < 400; ++trial) {
+    long idx = eonc::EpiCenters::listedAtomEpiCenter(matter.get(), atomList);
+    REQUIRE((idx == 0 || idx == 2));
+    selected.insert(idx);
+  }
+  REQUIRE(selected.size() == 2);
+  REQUIRE(selected.count(0) == 1);
+  REQUIRE(selected.count(2) == 1);
+}
+
+TEST_CASE_METHOD(EpiCentersFixture,
+                 "listedAtomEpiCenter lone -1 can pick the last free atom",
+                 "[EpiCenters][listedAtomEpiCenter]") {
+  std::set<long> selected;
+  for (int trial = 0; trial < 400; ++trial) {
+    long idx = eonc::EpiCenters::listedAtomEpiCenter(matter.get(), {-1});
+    REQUIRE_FALSE(matter->getFixed(idx));
+    selected.insert(idx);
+  }
+  REQUIRE(selected.count(6) == 1);
+}
+
+TEST_CASE_METHOD(EpiCentersFixture, "listedAtomEpiCenter empty list throws",
                  "[EpiCenters][listedAtomEpiCenter]") {
   REQUIRE_THROWS_WITH(eonc::EpiCenters::listedAtomEpiCenter(matter.get(), {}),
                       Catch::Matchers::ContainsSubstring("all frozen"));
@@ -352,6 +379,19 @@ TEST_CASE("randomFreeAtomEpiCenter returns a free atom",
   REQUIRE(idx >= 0);
   REQUIRE(idx < matter->numberOfAtoms());
   REQUIRE(!matter->getFixed(idx));
+}
+
+TEST_CASE_METHOD(EpiCentersFixture,
+                 "randomFreeAtomEpiCenter can pick the last free atom",
+                 "[EpiCenters][random]") {
+  // numberOfFreeAtoms()-1 plus randomDouble([0,n)) never reached index 6.
+  std::set<long> selected;
+  for (int trial = 0; trial < 400; ++trial) {
+    long idx = eonc::EpiCenters::randomFreeAtomEpiCenter(matter.get());
+    REQUIRE_FALSE(matter->getFixed(idx));
+    selected.insert(idx);
+  }
+  REQUIRE(selected.count(6) == 1);
 }
 
 TEST_CASE("lastAtom returns last atom index", "[epicenters][last_atom]") {

@@ -94,7 +94,7 @@ long eonc::EpiCenters::randomFreeAtomEpiCenter(const Matter *matter) {
   long nAtoms = matter->numberOfAtoms();
   long indexEpiCenter = -2;
 
-  long freeCount = matter->numberOfFreeAtoms() - 1;
+  long freeCount = matter->numberOfFreeAtoms();
   long pick = static_cast<long>(randomDouble(freeCount));
 
   for (long i = 0; i < nAtoms; i++) {
@@ -243,8 +243,9 @@ long eonc::EpiCenters::listedAtomEpiCenter(const Matter *matter,
   if (freeAtoms.empty()) {
     throw std::runtime_error("Listed atoms are all frozen");
   }
+  // randomDouble(N) is [0, N); size-1 dropped the last listed / last free atom.
   long pick =
-      static_cast<long>(randomDouble(static_cast<long>(freeAtoms.size() - 1)));
+      static_cast<long>(randomDouble(static_cast<long>(freeAtoms.size())));
   return freeAtoms[pick];
 }
 

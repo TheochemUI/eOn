@@ -16,6 +16,7 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Eigen.h"
+#include "eon/EpiCenters.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
@@ -102,6 +103,54 @@ TEST_CASE("HelperFunctions: randomInt(lo, hi) respects bounds", "[helpers]") {
     REQUIRE(r >= 1);
     REQUIRE(r <= 4);
   }
+}
+
+TEST_CASE("SaddleSearchJob listed_atoms moves a free atom",
+          "[helpers][job][listed_atoms]") {
+  // SaddleSearchJob / ProcessSearchJob call applyClientDisplacement
+  // when client_displace_type = listed_atoms.
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  params.saddle_search_options.displace_type =
+      std::string(eonc::EpiCenters::DISP_LISTED_ATOMS);
+  params.saddle_search_options.displace_atom_list = {0};
+  params.saddle_search_options.displace_radius = 0.0;
+  params.saddle_search_options.displace_magnitude = 0.2;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter initial(pot, params);
+  initial.resize(2);
+  AtomMatrix pos(2, 3);
+  pos << 0.0, 0.0, 0.0, 5.0, 0.0, 0.0;
+  initial.setPositions(pos);
+  initial.setFixed(1, 1);
+  Matrix3d cell = Matrix3d::Identity() * 20.0;
+  initial.setCell(cell);
+
+  Matter target(pot, params);
+  AtomMatrix mode;
+  REQUIRE(
+      eonc::helpers::applyClientDisplacement(target, initial, params, &mode));
+  const AtomMatrix delta = target.getPositions() - initial.getPositions();
+  REQUIRE(delta.row(0).norm() > 0.0);
+  REQUIRE(delta.row(1).norm() == Catch::Approx(0.0));
+  REQUIRE_FALSE(initial.getFixed(0));
+}
+
+TEST_CASE("applyClientDisplacement load type is a no-op",
+          "[helpers][listed_atoms]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  params.saddle_search_options.displace_type =
+      std::string(eonc::EpiCenters::DISP_LOAD);
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter initial(pot, params);
+  initial.resize(1);
+  AtomMatrix pos(1, 3);
+  pos << 0.0, 0.0, 0.0;
+  initial.setPositions(pos);
+  Matter target(pot, params);
+  REQUIRE_FALSE(
+      eonc::helpers::applyClientDisplacement(target, initial, params, nullptr));
 }
 
 TEST_CASE("HelperFunctions: gaussRandom() produces finite values",

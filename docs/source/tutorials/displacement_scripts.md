@@ -24,17 +24,21 @@ eOn has two ways to target displacements at the reactive atoms:
    atoms. Prefer this over guessing Structure rows.
 
 2. **Dynamic script** (`displace_atom_kmc_state_script`): a Python script
-   that is executed once per new AKMC state. The script receives the current
-   geometry, analyses it, and returns the indices of atoms that should be
-   displaced. Best when the active region moves (e.g. a migrating vacancy).
+   that is executed once per new AKMC state. The script receives a temp
+   `.con` written from the in-memory `Structure` (`atom_id` order) and
+   must print 0-based **Structure-row** indices of that file. Those
+   indices are not remapped as original user-file order. Best when the
+   active region moves (e.g. a migrating vacancy).
 
 ## Script interface
 
 A displacement script must satisfy these rules:
 
 - It receives the path to a `.con` file as its **sole positional argument**.
-- It must print a **comma-separated list of 0-based atom indices** to
-  **stdout** (e.g. `3, 7, 12, 45`).
+  That file is `savecon` of the in-memory `Structure` (`atom_id` order).
+- It must print a **comma-separated list of 0-based Structure-row indices**
+  of that temp file to **stdout** (e.g. `3, 7, 12, 45`). Those indices are
+  not remapped as the original user `.con` file-order.
 - All other output (logging, warnings, progress bars) must go to **stderr**.
   Anything on stdout that is not a valid index list will cause a parse error.
 - The script is run **once per new AKMC state**; the result is cached in
@@ -213,5 +217,8 @@ displace_atom_list = 0, 1, 2
 
 In this mode the client reads `displace_atom_list` directly from the INI config
 and remaps those CON file-order rows through the load-time `atom_id` sort,
-then keeps free atoms. Lone `-1` means every free atom. Use this for simple
-cases where server-side scripting is unnecessary.
+then keeps free atoms. Lone `-1` means every free atom. The C++
+`SaddleSearchJob` / `ProcessSearchJob` path calls `listedAtomEpiCenter`
+and applies a `displace_radius` / `displace_magnitude` kick; `random`,
+`last_atom`, and `least_coordinated` use the same helper. Use this for
+simple cases where server-side scripting is unnecessary.
