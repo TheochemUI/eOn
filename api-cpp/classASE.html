@@ -462,29 +462,30 @@ Additional Inherited Members</h2></td></tr>
 <div class="line"><span class="lineno">   74</span>void ASE::force(long nAtoms, const double *R, const int *atomicNrs, double *F,</div>
 <div class="line"><span class="lineno">   75</span>                double *U, double *variance, const double *box) {</div>
 <div class="line"><span class="lineno">   76</span>  variance = nullptr;</div>
-<div class="line"><span class="lineno">   77</span>  try {</div>
-<div class="line"><span class="lineno">   78</span>    <span class="comment">// TODO(rg): This is easier on the type system if Eigen::Map is used like in</span></div>
-<div class="line"><span class="lineno">   79</span>    <span class="comment">// ASE_ORCA convert arrays to Numpy arrays</span></div>
-<div class="line"><span class="lineno">   80</span>    std::vector&lt;size_t&gt; R_shape = {<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nAtoms), 3};</div>
-<div class="line"><span class="lineno">   81</span>    py::array_t&lt;double&gt; R_np(R_shape, R);</div>
-<div class="line"><span class="lineno">   82</span>    py::array_t&lt;int&gt; atomicNrs_np(nAtoms, atomicNrs);</div>
-<div class="line"><span class="lineno">   83</span>    py::array_t&lt;double&gt; box_np({3, 3}, box);</div>
-<div class="line"><span class="lineno">   84</span> </div>
-<div class="line"><span class="lineno">   85</span>    <span class="comment">// get energy and forces (in this order) from Python</span></div>
-<div class="line"><span class="lineno">   86</span>    std::tuple&lt;double, py::array_t&lt;double&gt;&gt; py_result =</div>
-<div class="line"><span class="lineno">   87</span>        <a class="code hl_variable" href="#ab2b826f3e99150d32a20e9eddc77801e">_calculate</a>(R_np, atomicNrs_np, box_np, <a class="code hl_variable" href="#a43439499be69e26cde587dfb73932825">calculator</a>)</div>
-<div class="line"><span class="lineno">   88</span>            .cast&lt;std::tuple&lt;double, py::array_t&lt;double&gt;&gt;&gt;();</div>
-<div class="line"><span class="lineno">   89</span> </div>
-<div class="line"><span class="lineno">   90</span>    <span class="comment">// copy the results to the output arrays</span></div>
-<div class="line"><span class="lineno">   91</span>    *U = std::get&lt;0&gt;(py_result);</div>
-<div class="line"><span class="lineno">   92</span>    py::array_t&lt;double&gt; forces = std::get&lt;1&gt;(py_result);</div>
-<div class="line"><span class="lineno">   93</span>    <span class="keyword">auto</span> buffer = forces.request();</div>
-<div class="line"><span class="lineno">   94</span>    <span class="keywordtype">double</span> *ptr = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(buffer.ptr);</div>
-<div class="line"><span class="lineno">   95</span>    std::copy(ptr, ptr + buffer.size, F);</div>
-<div class="line"><span class="lineno">   96</span> </div>
-<div class="line"><span class="lineno">   97</span>  } <span class="keywordflow">catch</span> (py::error_already_set &amp;e) {</div>
-<div class="line"><span class="lineno">   98</span>    fprintf(stderr, <span class="stringliteral">&quot;ASE calculator: Python error: %s\n&quot;</span>, e.what());</div>
-<div class="line"><span class="lineno">   99</span>    <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;ASE calculator Python error: &quot;</span>) +</div>
+<div class="line"><span class="lineno">   77</span>  py::gil_scoped_acquire gil;</div>
+<div class="line"><span class="lineno">   78</span>  try {</div>
+<div class="line"><span class="lineno">   79</span>    <span class="comment">// TODO(rg): This is easier on the type system if Eigen::Map is used like in</span></div>
+<div class="line"><span class="lineno">   80</span>    <span class="comment">// ASE_ORCA convert arrays to Numpy arrays</span></div>
+<div class="line"><span class="lineno">   81</span>    std::vector&lt;size_t&gt; R_shape = {<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nAtoms), 3};</div>
+<div class="line"><span class="lineno">   82</span>    py::array_t&lt;double&gt; R_np(R_shape, R);</div>
+<div class="line"><span class="lineno">   83</span>    py::array_t&lt;int&gt; atomicNrs_np(nAtoms, atomicNrs);</div>
+<div class="line"><span class="lineno">   84</span>    py::array_t&lt;double&gt; box_np({3, 3}, box);</div>
+<div class="line"><span class="lineno">   85</span> </div>
+<div class="line"><span class="lineno">   86</span>    <span class="comment">// get energy and forces (in this order) from Python</span></div>
+<div class="line"><span class="lineno">   87</span>    std::tuple&lt;double, py::array_t&lt;double&gt;&gt; py_result =</div>
+<div class="line"><span class="lineno">   88</span>        <a class="code hl_variable" href="#ab2b826f3e99150d32a20e9eddc77801e">_calculate</a>(R_np, atomicNrs_np, box_np, <a class="code hl_variable" href="#a43439499be69e26cde587dfb73932825">calculator</a>)</div>
+<div class="line"><span class="lineno">   89</span>            .cast&lt;std::tuple&lt;double, py::array_t&lt;double&gt;&gt;&gt;();</div>
+<div class="line"><span class="lineno">   90</span> </div>
+<div class="line"><span class="lineno">   91</span>    <span class="comment">// copy the results to the output arrays</span></div>
+<div class="line"><span class="lineno">   92</span>    *U = std::get&lt;0&gt;(py_result);</div>
+<div class="line"><span class="lineno">   93</span>    py::array_t&lt;double&gt; forces = std::get&lt;1&gt;(py_result);</div>
+<div class="line"><span class="lineno">   94</span>    <span class="keyword">auto</span> buffer = forces.request();</div>
+<div class="line"><span class="lineno">   95</span>    <span class="keywordtype">double</span> *ptr = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(buffer.ptr);</div>
+<div class="line"><span class="lineno">   96</span>    std::copy(ptr, ptr + buffer.size, F);</div>
+<div class="line"><span class="lineno">   97</span> </div>
+<div class="line"><span class="lineno">   98</span>  } <span class="keywordflow">catch</span> (py::error_already_set &amp;e) {</div>
+<div class="line"><span class="lineno">   99</span>    fprintf(stderr, <span class="stringliteral">&quot;ASE calculator: Python error: %s\n&quot;</span>, e.what());</div>
+<div class="line"><span class="lineno">  100</span>    <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;ASE calculator Python error: &quot;</span>) +</div>
 <div class="ttc" id="aclassASE_html_a85554da4750d7dbdfad87abdd76ec530"><div class="ttname"><a href="#a85554da4750d7dbdfad87abdd76ec530">ASE::ASE</a></div><div class="ttdeci">ASE(const Parameters &amp;a_params)</div><div class="ttdef"><b>Definition</b> <a href="ASE_8cpp_source.html#l00026">ASE.cpp:26</a></div></div>
 </div><!-- fragment -->
 </div>

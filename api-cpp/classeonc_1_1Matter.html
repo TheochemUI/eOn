@@ -583,18 +583,18 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00543">543</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  543</span>                                   {</div>
-<div class="line"><span class="lineno">  544</span>  <a class="code hl_function" href="#aa8feb78cd6d46aed293cd6b907f92299">assertIsolatedMoleculeLayoutSafe</a>();</div>
-<div class="line"><span class="lineno">  545</span>  <span class="comment">// Unset / singular cell (default after Matter construct is Zero) — do not</span></div>
-<div class="line"><span class="lineno">  546</span>  <span class="comment">// wipe coordinates; callers set the cell before wrapping makes sense.</span></div>
-<div class="line"><span class="lineno">  547</span>  <span class="keywordflow">if</span> (std::abs(<a class="code hl_variable" href="#ab9bc346506f7b77b0fe0dbbec22b32cf">cell</a>.determinant()) &lt; 1e-30) {</div>
-<div class="line"><span class="lineno">  548</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  549</span>  }</div>
-<div class="line"><span class="lineno">  550</span>  <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a> =</div>
-<div class="line"><span class="lineno">  551</span>      <a class="code hl_function" href="namespaceeonc_1_1pbc.html#abad2bfe4d09d881af9d6df88063455cf">eonc::pbc::applyPositions</a>(<a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>, <a class="code hl_variable" href="#ab9bc346506f7b77b0fe0dbbec22b32cf">cell</a>, <a class="code hl_variable" href="#abf29de5c9adf2c789c5b2ed448448e7d">cellInverse</a>, <a class="code hl_variable" href="#a2365242b8fa8d2e3eef8b4047d531938">pbcConvention</a>);</div>
-<div class="line"><span class="lineno">  552</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_aa8feb78cd6d46aed293cd6b907f92299"><div class="ttname"><a href="#aa8feb78cd6d46aed293cd6b907f92299">eonc::Matter::assertIsolatedMoleculeLayoutSafe</a></div><div class="ttdeci">void assertIsolatedMoleculeLayoutSafe() const</div><div class="ttdoc">Throw if pot forbids PBC (isolated molecular QM backends, issue #188).</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00486">Matter.cpp:486</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00545">545</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  545</span>                                   {</div>
+<div class="line"><span class="lineno">  546</span>  <a class="code hl_function" href="#aa8feb78cd6d46aed293cd6b907f92299">assertIsolatedMoleculeLayoutSafe</a>();</div>
+<div class="line"><span class="lineno">  547</span>  <span class="comment">// Unset / singular cell (default after Matter construct is Zero) — do not</span></div>
+<div class="line"><span class="lineno">  548</span>  <span class="comment">// wipe coordinates; callers set the cell before wrapping makes sense.</span></div>
+<div class="line"><span class="lineno">  549</span>  <span class="keywordflow">if</span> (std::abs(<a class="code hl_variable" href="#ab9bc346506f7b77b0fe0dbbec22b32cf">cell</a>.determinant()) &lt; 1e-30) {</div>
+<div class="line"><span class="lineno">  550</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  551</span>  }</div>
+<div class="line"><span class="lineno">  552</span>  <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a> =</div>
+<div class="line"><span class="lineno">  553</span>      <a class="code hl_function" href="namespaceeonc_1_1pbc.html#abad2bfe4d09d881af9d6df88063455cf">eonc::pbc::applyPositions</a>(<a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>, <a class="code hl_variable" href="#ab9bc346506f7b77b0fe0dbbec22b32cf">cell</a>, <a class="code hl_variable" href="#abf29de5c9adf2c789c5b2ed448448e7d">cellInverse</a>, <a class="code hl_variable" href="#a2365242b8fa8d2e3eef8b4047d531938">pbcConvention</a>);</div>
+<div class="line"><span class="lineno">  554</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_aa8feb78cd6d46aed293cd6b907f92299"><div class="ttname"><a href="#aa8feb78cd6d46aed293cd6b907f92299">eonc::Matter::assertIsolatedMoleculeLayoutSafe</a></div><div class="ttdeci">void assertIsolatedMoleculeLayoutSafe() const</div><div class="ttdoc">Throw if pot forbids PBC (isolated molecular QM backends, issue #188).</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00488">Matter.cpp:488</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1pbc_html_abad2bfe4d09d881af9d6df88063455cf"><div class="ttname"><a href="namespaceeonc_1_1pbc.html#abad2bfe4d09d881af9d6df88063455cf">eonc::pbc::applyPositions</a></div><div class="ttdeci">AtomMatrix applyPositions(const AtomMatrix &amp;coords, const Matrix3d &amp;cell, const Matrix3d &amp;cellInverse, PbcConvention convention)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00066">Matter.h:66</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -684,7 +684,7 @@ Friends</h2></td></tr>
 <div class="line"><span class="lineno">  329</span>      <a class="code hl_function" href="#a8c114b053047b48613893cdb90b1e194">applyPeriodicBoundary</a>();</div>
 <div class="line"><span class="lineno">  330</span>    }</div>
 <div class="line"><span class="lineno">  331</span>  }</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a8c114b053047b48613893cdb90b1e194"><div class="ttname"><a href="#a8c114b053047b48613893cdb90b1e194">eonc::Matter::applyPeriodicBoundary</a></div><div class="ttdeci">void applyPeriodicBoundary()</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00543">Matter.cpp:543</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a8c114b053047b48613893cdb90b1e194"><div class="ttname"><a href="#a8c114b053047b48613893cdb90b1e194">eonc::Matter::applyPeriodicBoundary</a></div><div class="ttdeci">void applyPeriodicBoundary()</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00545">Matter.cpp:545</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -713,18 +713,18 @@ Friends</h2></td></tr>
 
 <p>Throw if pot forbids PBC (isolated molecular QM backends, issue #188). </p>
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00486">486</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  486</span>                                                    {</div>
-<div class="line"><span class="lineno">  487</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a> || !<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>-&gt;requiresIsolatedMoleculeLayout()) {</div>
-<div class="line"><span class="lineno">  488</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  489</span>  }</div>
-<div class="line"><span class="lineno">  490</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aaf6a7b6df1641c0e351abefb3bf5f6bd">usePeriodicBoundaries</a>) {</div>
-<div class="line"><span class="lineno">  491</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  492</span>        <span class="stringliteral">&quot;Potential requires an isolated (non-periodic) molecular layout &quot;</span></div>
-<div class="line"><span class="lineno">  493</span>        <span class="stringliteral">&quot;(NWChem/ORCA-class). Disable periodic boundaries before optimizing; &quot;</span></div>
-<div class="line"><span class="lineno">  494</span>        <span class="stringliteral">&quot;PBC wraps can tear non-centered molecules (issue #188).&quot;</span>);</div>
-<div class="line"><span class="lineno">  495</span>  }</div>
-<div class="line"><span class="lineno">  496</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00488">488</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  488</span>                                                    {</div>
+<div class="line"><span class="lineno">  489</span>  <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a> || !<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>-&gt;requiresIsolatedMoleculeLayout()) {</div>
+<div class="line"><span class="lineno">  490</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  491</span>  }</div>
+<div class="line"><span class="lineno">  492</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aaf6a7b6df1641c0e351abefb3bf5f6bd">usePeriodicBoundaries</a>) {</div>
+<div class="line"><span class="lineno">  493</span>    <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  494</span>        <span class="stringliteral">&quot;Potential requires an isolated (non-periodic) molecular layout &quot;</span></div>
+<div class="line"><span class="lineno">  495</span>        <span class="stringliteral">&quot;(NWChem/ORCA-class). Disable periodic boundaries before optimizing; &quot;</span></div>
+<div class="line"><span class="lineno">  496</span>        <span class="stringliteral">&quot;PBC wraps can tear non-centered molecules (issue #188).&quot;</span>);</div>
+<div class="line"><span class="lineno">  497</span>  }</div>
+<div class="line"><span class="lineno">  498</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -797,7 +797,7 @@ Friends</h2></td></tr>
 <div class="line"><span class="lineno">  146</span>    <span class="keywordflow">return</span> (<a class="code hl_variable" href="#a0b75416d04641e08a829552bcb34dca3">structComp</a>.distance_difference) &gt; <a class="code hl_function" href="#ae6b71cd2e17f5a1979a4b7d8632a44fe">perAtomNorm</a>(matter);</div>
 <div class="line"><span class="lineno">  147</span>  }</div>
 <div class="line"><span class="lineno">  148</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a125a4e2f91291a42888a92bce0757a6f"><div class="ttname"><a href="#a125a4e2f91291a42888a92bce0757a6f">eonc::Matter::numberOfFixedAtoms</a></div><div class="ttdeci">long int numberOfFixedAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00465">Matter.cpp:465</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a125a4e2f91291a42888a92bce0757a6f"><div class="ttname"><a href="#a125a4e2f91291a42888a92bce0757a6f">eonc::Matter::numberOfFixedAtoms</a></div><div class="ttdeci">long int numberOfFixedAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00467">Matter.cpp:467</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Matter_html_a6d270e335854296565eaa5ba015753b5"><div class="ttname"><a href="#a6d270e335854296565eaa5ba015753b5">eonc::Matter::numberOfAtoms</a></div><div class="ttdeci">long int numberOfAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00209">Matter.cpp:209</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Matter_html_ae6b71cd2e17f5a1979a4b7d8632a44fe"><div class="ttname"><a href="#ae6b71cd2e17f5a1979a4b7d8632a44fe">eonc::Matter::perAtomNorm</a></div><div class="ttdeci">double perAtomNorm(const Matter &amp;matter)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00160">Matter.cpp:160</a></div></div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_html_a704c765dbb774211d874a7f432c83d1e"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a704c765dbb774211d874a7f432c83d1e">eonc::helpers::rotationMatch</a></div><div class="ttdeci">bool rotationMatch(const Matter &amp;m1, const Matter &amp;m2, const double max_diff)</div><div class="ttdef"><b>Definition</b> <a href="GeometryAnalysis_8cpp_source.html#l00022">GeometryAnalysis.cpp:84</a></div></div>
@@ -830,51 +830,51 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00498">498</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  498</span>                                    {</div>
-<div class="line"><span class="lineno">  499</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a94d412b1be09524d9d598dede472e25c">recomputePotential</a>) {</div>
-<div class="line"><span class="lineno">  500</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>) {</div>
-<div class="line"><span class="lineno">  501</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
-<div class="line"><span class="lineno">  502</span>          <span class="stringliteral">&quot;Matter::computePotential called without a potential&quot;</span>);</div>
-<div class="line"><span class="lineno">  503</span>    }</div>
-<div class="line"><span class="lineno">  504</span>    <a class="code hl_function" href="#aa8feb78cd6d46aed293cd6b907f92299">assertIsolatedMoleculeLayoutSafe</a>();</div>
-<div class="line"><span class="lineno">  505</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>-&gt;isSurrogate()) {</div>
-<div class="line"><span class="lineno">  506</span>      <span class="comment">// Surrogate potential case: uses free-atom subset interface</span></div>
-<div class="line"><span class="lineno">  507</span>      <span class="keyword">auto</span> surrogatePotential =</div>
-<div class="line"><span class="lineno">  508</span>          <span class="keyword">static_cast&lt;</span>SurrogatePotential *<span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>.get());</div>
-<div class="line"><span class="lineno">  509</span>      <span class="keyword">auto</span> [freePE, freeForces, vari] = surrogatePotential-&gt;get_ef_var(</div>
-<div class="line"><span class="lineno">  510</span>          this-&gt;<a class="code hl_function" href="#a73fde5b1c2df94e368e2f785101ebfc1">getPositionsFree</a>(), this-&gt;<a class="code hl_function" href="#ac74baec03c3e226e9d63814132c73d69">getAtomicNrsFree</a>(), <a class="code hl_variable" href="#ab9bc346506f7b77b0fe0dbbec22b32cf">cell</a>);</div>
-<div class="line"><span class="lineno">  511</span>      this-&gt;<a class="code hl_variable" href="#a006dfbc2f8e6976a0a3fe529b7fe6c05">potentialEnergy</a> = freePE;</div>
-<div class="line"><span class="lineno">  512</span>      this-&gt;<a class="code hl_variable" href="#ae176c4b4d49e5281dc4e53f60ed1ad47">energyVariance</a> = vari;</div>
-<div class="line"><span class="lineno">  513</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx{0}, jdx{0}; idx &lt; <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>; idx++) {</div>
-<div class="line"><span class="lineno">  514</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="#afe2636574f8f27addf59661ecc77f910">getFixed</a>(idx)) {</div>
-<div class="line"><span class="lineno">  515</span>          <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a>.row(idx) = freeForces.row(jdx);</div>
-<div class="line"><span class="lineno">  516</span>          jdx++;</div>
-<div class="line"><span class="lineno">  517</span>        }</div>
-<div class="line"><span class="lineno">  518</span>      }</div>
-<div class="line"><span class="lineno">  519</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  520</span>      <span class="comment">// Hot path: call force() directly into member storage.</span></div>
-<div class="line"><span class="lineno">  521</span>      <span class="comment">// No intermediate allocation, no tuple, no copy.</span></div>
-<div class="line"><span class="lineno">  522</span>      <span class="keywordtype">double</span> var{0};</div>
-<div class="line"><span class="lineno">  523</span>      <a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>-&gt;force(<a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>, <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>.data(), <a class="code hl_variable" href="#a3fc176e8560265e0afa67e62edf4255b">atomicNrs</a>.data(),</div>
-<div class="line"><span class="lineno">  524</span>                       <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a>.data(), &amp;<a class="code hl_variable" href="#a006dfbc2f8e6976a0a3fe529b7fe6c05">potentialEnergy</a>, &amp;var, <a class="code hl_variable" href="#ab9bc346506f7b77b0fe0dbbec22b32cf">cell</a>.data());</div>
-<div class="line"><span class="lineno">  525</span>      <a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>-&gt;forceCallCounter++;</div>
-<div class="line"><span class="lineno">  526</span>      <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a7fa50cef22325357f44654437e9876b3">on_force_call</a>(<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>-&gt;getType());</div>
-<div class="line"><span class="lineno">  527</span>    }</div>
-<div class="line"><span class="lineno">  528</span>    <a class="code hl_variable" href="#a76942fe65d2f8ee60e1d2884cd38b958">forceCalls</a> = <a class="code hl_variable" href="#a76942fe65d2f8ee60e1d2884cd38b958">forceCalls</a> + 1;</div>
-<div class="line"><span class="lineno">  529</span>    <a class="code hl_variable" href="#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  530</span> </div>
-<div class="line"><span class="lineno">  531</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>.maxCoeff() &lt; 0.5 &amp;&amp; <a class="code hl_variable" href="#a58f5e1f746e363570a818161de3e140f">removeNetForce</a>) {</div>
-<div class="line"><span class="lineno">  532</span>      Vector3d tempForce = <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a>.colwise().sum() / <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>;</div>
-<div class="line"><span class="lineno">  533</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> <span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>; i++) {</div>
-<div class="line"><span class="lineno">  534</span>        <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a>.row(i) -= tempForce.transpose();</div>
-<div class="line"><span class="lineno">  535</span>      }</div>
-<div class="line"><span class="lineno">  536</span>    }</div>
-<div class="line"><span class="lineno">  537</span>  }</div>
-<div class="line"><span class="lineno">  538</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a73fde5b1c2df94e368e2f785101ebfc1"><div class="ttname"><a href="#a73fde5b1c2df94e368e2f785101ebfc1">eonc::Matter::getPositionsFree</a></div><div class="ttdeci">AtomMatrix getPositionsFree() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00244">Matter.cpp:244</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_ac74baec03c3e226e9d63814132c73d69"><div class="ttname"><a href="#ac74baec03c3e226e9d63814132c73d69">eonc::Matter::getAtomicNrsFree</a></div><div class="ttdeci">VectorXi getAtomicNrsFree() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00253">Matter.cpp:253</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_afe2636574f8f27addf59661ecc77f910"><div class="ttname"><a href="#afe2636574f8f27addf59661ecc77f910">eonc::Matter::getFixed</a></div><div class="ttdeci">int getFixed(long int atom) const</div><div class="ttdoc">1 if every Cartesian axis of the atom is fixed, else 0.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00402">Matter.cpp:402</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00500">500</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  500</span>                                    {</div>
+<div class="line"><span class="lineno">  501</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a94d412b1be09524d9d598dede472e25c">recomputePotential</a>) {</div>
+<div class="line"><span class="lineno">  502</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>) {</div>
+<div class="line"><span class="lineno">  503</span>      <span class="keywordflow">throw</span> std::runtime_error(</div>
+<div class="line"><span class="lineno">  504</span>          <span class="stringliteral">&quot;Matter::computePotential called without a potential&quot;</span>);</div>
+<div class="line"><span class="lineno">  505</span>    }</div>
+<div class="line"><span class="lineno">  506</span>    <a class="code hl_function" href="#aa8feb78cd6d46aed293cd6b907f92299">assertIsolatedMoleculeLayoutSafe</a>();</div>
+<div class="line"><span class="lineno">  507</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>-&gt;isSurrogate()) {</div>
+<div class="line"><span class="lineno">  508</span>      <span class="comment">// Surrogate potential case: uses free-atom subset interface</span></div>
+<div class="line"><span class="lineno">  509</span>      <span class="keyword">auto</span> surrogatePotential =</div>
+<div class="line"><span class="lineno">  510</span>          <span class="keyword">static_cast&lt;</span>SurrogatePotential *<span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>.get());</div>
+<div class="line"><span class="lineno">  511</span>      <span class="keyword">auto</span> [freePE, freeForces, vari] = surrogatePotential-&gt;get_ef_var(</div>
+<div class="line"><span class="lineno">  512</span>          this-&gt;<a class="code hl_function" href="#a73fde5b1c2df94e368e2f785101ebfc1">getPositionsFree</a>(), this-&gt;<a class="code hl_function" href="#ac74baec03c3e226e9d63814132c73d69">getAtomicNrsFree</a>(), <a class="code hl_variable" href="#ab9bc346506f7b77b0fe0dbbec22b32cf">cell</a>);</div>
+<div class="line"><span class="lineno">  513</span>      this-&gt;<a class="code hl_variable" href="#a006dfbc2f8e6976a0a3fe529b7fe6c05">potentialEnergy</a> = freePE;</div>
+<div class="line"><span class="lineno">  514</span>      this-&gt;<a class="code hl_variable" href="#ae176c4b4d49e5281dc4e53f60ed1ad47">energyVariance</a> = vari;</div>
+<div class="line"><span class="lineno">  515</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> idx{0}, jdx{0}; idx &lt; <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>; idx++) {</div>
+<div class="line"><span class="lineno">  516</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="#afe2636574f8f27addf59661ecc77f910">getFixed</a>(idx)) {</div>
+<div class="line"><span class="lineno">  517</span>          <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a>.row(idx) = freeForces.row(jdx);</div>
+<div class="line"><span class="lineno">  518</span>          jdx++;</div>
+<div class="line"><span class="lineno">  519</span>        }</div>
+<div class="line"><span class="lineno">  520</span>      }</div>
+<div class="line"><span class="lineno">  521</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  522</span>      <span class="comment">// Hot path: call force() directly into member storage.</span></div>
+<div class="line"><span class="lineno">  523</span>      <span class="comment">// No intermediate allocation, no tuple, no copy.</span></div>
+<div class="line"><span class="lineno">  524</span>      <span class="keywordtype">double</span> var{0};</div>
+<div class="line"><span class="lineno">  525</span>      <a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>-&gt;force(<a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>, <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>.data(), <a class="code hl_variable" href="#a3fc176e8560265e0afa67e62edf4255b">atomicNrs</a>.data(),</div>
+<div class="line"><span class="lineno">  526</span>                       <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a>.data(), &amp;<a class="code hl_variable" href="#a006dfbc2f8e6976a0a3fe529b7fe6c05">potentialEnergy</a>, &amp;var, <a class="code hl_variable" href="#ab9bc346506f7b77b0fe0dbbec22b32cf">cell</a>.data());</div>
+<div class="line"><span class="lineno">  527</span>      <a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>-&gt;forceCallCounter++;</div>
+<div class="line"><span class="lineno">  528</span>      <a class="code hl_function" href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">PotRegistry::get</a>().<a class="code hl_function" href="classeonc_1_1PotRegistry.html#a7fa50cef22325357f44654437e9876b3">on_force_call</a>(<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>-&gt;getType());</div>
+<div class="line"><span class="lineno">  529</span>    }</div>
+<div class="line"><span class="lineno">  530</span>    <a class="code hl_variable" href="#a76942fe65d2f8ee60e1d2884cd38b958">forceCalls</a> = <a class="code hl_variable" href="#a76942fe65d2f8ee60e1d2884cd38b958">forceCalls</a> + 1;</div>
+<div class="line"><span class="lineno">  531</span>    <a class="code hl_variable" href="#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  532</span> </div>
+<div class="line"><span class="lineno">  533</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>.maxCoeff() &lt; 0.5 &amp;&amp; <a class="code hl_variable" href="#a58f5e1f746e363570a818161de3e140f">removeNetForce</a>) {</div>
+<div class="line"><span class="lineno">  534</span>      Vector3d tempForce = <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a>.colwise().sum() / <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>;</div>
+<div class="line"><span class="lineno">  535</span>      <span class="keywordflow">for</span> (<span class="keywordtype">long</span> <span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>; i++) {</div>
+<div class="line"><span class="lineno">  536</span>        <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a>.row(i) -= tempForce.transpose();</div>
+<div class="line"><span class="lineno">  537</span>      }</div>
+<div class="line"><span class="lineno">  538</span>    }</div>
+<div class="line"><span class="lineno">  539</span>  }</div>
+<div class="line"><span class="lineno">  540</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a73fde5b1c2df94e368e2f785101ebfc1"><div class="ttname"><a href="#a73fde5b1c2df94e368e2f785101ebfc1">eonc::Matter::getPositionsFree</a></div><div class="ttdeci">AtomMatrix getPositionsFree() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00246">Matter.cpp:246</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_ac74baec03c3e226e9d63814132c73d69"><div class="ttname"><a href="#ac74baec03c3e226e9d63814132c73d69">eonc::Matter::getAtomicNrsFree</a></div><div class="ttdeci">VectorXi getAtomicNrsFree() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00255">Matter.cpp:255</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_afe2636574f8f27addf59661ecc77f910"><div class="ttname"><a href="#afe2636574f8f27addf59661ecc77f910">eonc::Matter::getFixed</a></div><div class="ttdeci">int getFixed(long int atom) const</div><div class="ttdoc">1 if every Cartesian axis of the atom is fixed, else 0.</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00404">Matter.cpp:404</a></div></div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a5d307a4845d9c0d6d16031a5a637e23b"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a5d307a4845d9c0d6d16031a5a637e23b">eonc::PotRegistry::get</a></div><div class="ttdeci">static PotRegistry &amp; get() noexcept</div><div class="ttdoc">Process-lifetime singleton.</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00050">PotRegistry.cpp:50</a></div></div>
 <div class="ttc" id="aclasseonc_1_1PotRegistry_html_a7fa50cef22325357f44654437e9876b3"><div class="ttname"><a href="classeonc_1_1PotRegistry.html#a7fa50cef22325357f44654437e9876b3">eonc::PotRegistry::on_force_call</a></div><div class="ttdeci">void on_force_call(PotType t) noexcept</div><div class="ttdef"><b>Definition</b> <a href="PotRegistry_8cpp_source.html#l00088">PotRegistry.cpp:88</a></div></div>
 </div><!-- fragment -->
@@ -995,12 +995,12 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00376">376</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  376</span>                                                              {</div>
-<div class="line"><span class="lineno">  377</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(<a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>.row(index) - matter.<a class="code hl_function" href="#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>().row(index)).norm();</div>
-<div class="line"><span class="lineno">  378</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00378">378</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  378</span>                                                              {</div>
+<div class="line"><span class="lineno">  379</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(<a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>.row(index) - matter.<a class="code hl_function" href="#af4c79f27fe60b4dbd397064faf3f1f78">getPositions</a>().row(index)).norm();</div>
+<div class="line"><span class="lineno">  380</span>}</div>
 <div class="ttc" id="aclasseonc_1_1Matter_html_a5fe171bc21bf698aa9589fc66a118b7a"><div class="ttname"><a href="#a5fe171bc21bf698aa9589fc66a118b7a">eonc::Matter::pbc</a></div><div class="ttdeci">AtomMatrix pbc(const AtomMatrix &amp;diff) const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00163">Matter.h:163</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_af4c79f27fe60b4dbd397064faf3f1f78"><div class="ttname"><a href="#af4c79f27fe60b4dbd397064faf3f1f78">eonc::Matter::getPositions</a></div><div class="ttdeci">const AtomMatrix &amp; getPositions() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00236">Matter.cpp:236</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_af4c79f27fe60b4dbd397064faf3f1f78"><div class="ttname"><a href="#af4c79f27fe60b4dbd397064faf3f1f78">eonc::Matter::getPositions</a></div><div class="ttdeci">const AtomMatrix &amp; getPositions() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00238">Matter.cpp:238</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1023,10 +1023,10 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00360">360</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  360</span>                                                      {</div>
-<div class="line"><span class="lineno">  361</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(<a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>.row(index1) - <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>.row(index2)).norm();</div>
-<div class="line"><span class="lineno">  362</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00362">362</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  362</span>                                                      {</div>
+<div class="line"><span class="lineno">  363</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(<a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>.row(index1) - <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>.row(index2)).norm();</div>
+<div class="line"><span class="lineno">  364</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1098,21 +1098,21 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00612">612</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  612</span>                                    {</div>
-<div class="line"><span class="lineno">  613</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> totF = <a class="code hl_function" href="#a48cee072b3bab26b5e045d02fbd83860">getForces</a>() + <a class="code hl_function" href="#af63f40bcd9ea9744e15216afc359412f">getBiasForces</a>();</div>
-<div class="line"><span class="lineno">  614</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> ret = totF.array() * <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
-<div class="line"><span class="lineno">  615</span>  <span class="comment">// Single reciprocal mass computation, replicated across 3 columns</span></div>
-<div class="line"><span class="lineno">  616</span>  <span class="keyword">auto</span> invMass = <a class="code hl_variable" href="#a322f9a95ee0c89b2c627a42f4209e14f">masses</a>.array().inverse();</div>
-<div class="line"><span class="lineno">  617</span>  ret.col(0).array() *= invMass;</div>
-<div class="line"><span class="lineno">  618</span>  ret.col(1).array() *= invMass;</div>
-<div class="line"><span class="lineno">  619</span>  ret.col(2).array() *= invMass;</div>
-<div class="line"><span class="lineno">  620</span>  <span class="keywordflow">return</span> ret;</div>
-<div class="line"><span class="lineno">  621</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00615">615</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  615</span>                                    {</div>
+<div class="line"><span class="lineno">  616</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> totF = <a class="code hl_function" href="#a48cee072b3bab26b5e045d02fbd83860">getForces</a>() + <a class="code hl_function" href="#af63f40bcd9ea9744e15216afc359412f">getBiasForces</a>();</div>
+<div class="line"><span class="lineno">  617</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> ret = totF.array() * <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
+<div class="line"><span class="lineno">  618</span>  <span class="comment">// Single reciprocal mass computation, replicated across 3 columns</span></div>
+<div class="line"><span class="lineno">  619</span>  <span class="keyword">auto</span> invMass = <a class="code hl_variable" href="#a322f9a95ee0c89b2c627a42f4209e14f">masses</a>.array().inverse();</div>
+<div class="line"><span class="lineno">  620</span>  ret.col(0).array() *= invMass;</div>
+<div class="line"><span class="lineno">  621</span>  ret.col(1).array() *= invMass;</div>
+<div class="line"><span class="lineno">  622</span>  ret.col(2).array() *= invMass;</div>
+<div class="line"><span class="lineno">  623</span>  <span class="keywordflow">return</span> ret;</div>
+<div class="line"><span class="lineno">  624</span>}</div>
 <div class="ttc" id="aEigen_8h_html_aea209ab15a3a73f26fa44267131921dd"><div class="ttname"><a href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a></div><div class="ttdeci">Eigen::Matrix&lt; double, Eigen::Dynamic, 3, eOnStorageOrder &gt; AtomMatrix</div><div class="ttdef"><b>Definition</b> <a href="Eigen_8h_source.html#l00037">Eigen.h:37</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a42c2c5ca606659d564e05f09ba452601"><div class="ttname"><a href="#a42c2c5ca606659d564e05f09ba452601">eonc::Matter::getFree</a></div><div class="ttdeci">AtomMatrix getFree() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00580">Matter.cpp:580</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a48cee072b3bab26b5e045d02fbd83860"><div class="ttname"><a href="#a48cee072b3bab26b5e045d02fbd83860">eonc::Matter::getForces</a></div><div class="ttdeci">const AtomMatrix &amp; getForces() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00324">Matter.cpp:324</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_af63f40bcd9ea9744e15216afc359412f"><div class="ttname"><a href="#af63f40bcd9ea9744e15216afc359412f">eonc::Matter::getBiasForces</a></div><div class="ttdeci">AtomMatrix getBiasForces()</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00305">Matter.cpp:305</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a42c2c5ca606659d564e05f09ba452601"><div class="ttname"><a href="#a42c2c5ca606659d564e05f09ba452601">eonc::Matter::getFree</a></div><div class="ttdeci">AtomMatrix getFree() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00582">Matter.cpp:582</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a48cee072b3bab26b5e045d02fbd83860"><div class="ttname"><a href="#a48cee072b3bab26b5e045d02fbd83860">eonc::Matter::getForces</a></div><div class="ttdeci">const AtomMatrix &amp; getForces() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00326">Matter.cpp:326</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_af63f40bcd9ea9744e15216afc359412f"><div class="ttname"><a href="#af63f40bcd9ea9744e15216afc359412f">eonc::Matter::getBiasForces</a></div><div class="ttdeci">AtomMatrix getBiasForces()</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00307">Matter.cpp:307</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1131,10 +1131,10 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00392">392</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  392</span>                                                 {</div>
-<div class="line"><span class="lineno">  393</span>  <span class="keywordflow">return</span> (<a class="code hl_variable" href="#a3fc176e8560265e0afa67e62edf4255b">atomicNrs</a>[indexAtom]);</div>
-<div class="line"><span class="lineno">  394</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00394">394</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  394</span>                                                 {</div>
+<div class="line"><span class="lineno">  395</span>  <span class="keywordflow">return</span> (<a class="code hl_variable" href="#a3fc176e8560265e0afa67e62edf4255b">atomicNrs</a>[indexAtom]);</div>
+<div class="line"><span class="lineno">  396</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1153,8 +1153,8 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00569">569</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  569</span>{ <span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="#a3fc176e8560265e0afa67e62edf4255b">atomicNrs</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00571">571</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  571</span>{ <span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="#a3fc176e8560265e0afa67e62edf4255b">atomicNrs</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1173,11 +1173,11 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00253">253</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  253</span>                                        {</div>
-<div class="line"><span class="lineno">  254</span>  <span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="#a3fc176e8560265e0afa67e62edf4255b">atomicNrs</a>.array() * <a class="code hl_function" href="#a109c73418bd3c7f9642acb67081db14d">getFreeV</a>().cast&lt;<span class="keywordtype">int</span>&gt;().array();</div>
-<div class="line"><span class="lineno">  255</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a109c73418bd3c7f9642acb67081db14d"><div class="ttname"><a href="#a109c73418bd3c7f9642acb67081db14d">eonc::Matter::getFreeV</a></div><div class="ttdeci">VectorXd getFreeV() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00596">Matter.cpp:596</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00255">255</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  255</span>                                        {</div>
+<div class="line"><span class="lineno">  256</span>  <span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="#a3fc176e8560265e0afa67e62edf4255b">atomicNrs</a>.array() * <a class="code hl_function" href="#a109c73418bd3c7f9642acb67081db14d">getFreeV</a>().cast&lt;<span class="keywordtype">int</span>&gt;().array();</div>
+<div class="line"><span class="lineno">  257</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a109c73418bd3c7f9642acb67081db14d"><div class="ttname"><a href="#a109c73418bd3c7f9642acb67081db14d">eonc::Matter::getFreeV</a></div><div class="ttdeci">VectorXd getFreeV() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00598">Matter.cpp:598</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1230,15 +1230,15 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00305">305</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  305</span>                                 {</div>
-<div class="line"><span class="lineno">  306</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a64cda196ae6018764cc382677d341489">biasPotential</a> != <span class="keyword">nullptr</span>) {</div>
-<div class="line"><span class="lineno">  307</span>    <span class="comment">// Evaluate the current bias only. The MD job advances the bond-boost</span></div>
-<div class="line"><span class="lineno">  308</span>    <span class="comment">// schedule once per step via BondBoost::advance().</span></div>
-<div class="line"><span class="lineno">  309</span>    <a class="code hl_variable" href="#a64cda196ae6018764cc382677d341489">biasPotential</a>-&gt;boost();</div>
-<div class="line"><span class="lineno">  310</span>  }</div>
-<div class="line"><span class="lineno">  311</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#af219c82b036170bc1d41fc460861d0b0">biasForces</a>.array() * <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
-<div class="line"><span class="lineno">  312</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00307">307</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  307</span>                                 {</div>
+<div class="line"><span class="lineno">  308</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a64cda196ae6018764cc382677d341489">biasPotential</a> != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><span class="lineno">  309</span>    <span class="comment">// Evaluate the current bias only. The MD job advances the bond-boost</span></div>
+<div class="line"><span class="lineno">  310</span>    <span class="comment">// schedule once per step via BondBoost::advance().</span></div>
+<div class="line"><span class="lineno">  311</span>    <a class="code hl_variable" href="#a64cda196ae6018764cc382677d341489">biasPotential</a>-&gt;boost();</div>
+<div class="line"><span class="lineno">  312</span>  }</div>
+<div class="line"><span class="lineno">  313</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#af219c82b036170bc1d41fc460861d0b0">biasForces</a>.array() * <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
+<div class="line"><span class="lineno">  314</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1277,8 +1277,8 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00663">663</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  663</span>{ <span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="#ae176c4b4d49e5281dc4e53f60ed1ad47">energyVariance</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00666">666</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  666</span>{ <span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="#ae176c4b4d49e5281dc4e53f60ed1ad47">energyVariance</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1299,13 +1299,13 @@ Friends</h2></td></tr>
 
 <p>1 if every Cartesian axis of the atom is fixed, else 0. </p>
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00402">402</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  402</span>                                             {</div>
-<div class="line"><span class="lineno">  403</span>  <span class="keywordflow">return</span> (<a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 0) &gt; 0.5 &amp;&amp; <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 1) &gt; 0.5 &amp;&amp;</div>
-<div class="line"><span class="lineno">  404</span>          <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 2) &gt; 0.5)</div>
-<div class="line"><span class="lineno">  405</span>             ? 1</div>
-<div class="line"><span class="lineno">  406</span>             : 0;</div>
-<div class="line"><span class="lineno">  407</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00404">404</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  404</span>                                             {</div>
+<div class="line"><span class="lineno">  405</span>  <span class="keywordflow">return</span> (<a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 0) &gt; 0.5 &amp;&amp; <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 1) &gt; 0.5 &amp;&amp;</div>
+<div class="line"><span class="lineno">  406</span>          <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 2) &gt; 0.5)</div>
+<div class="line"><span class="lineno">  407</span>             ? 1</div>
+<div class="line"><span class="lineno">  408</span>             : 0;</div>
+<div class="line"><span class="lineno">  409</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1330,10 +1330,10 @@ Friends</h2></td></tr>
 
 <p>1 if this atom's axis is fixed, else 0. axis is 0=x, 1=y, 2=z. </p>
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00409">409</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  409</span>                                                       {</div>
-<div class="line"><span class="lineno">  410</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, axis) &gt; 0.5 ? 1 : 0;</div>
-<div class="line"><span class="lineno">  411</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00411">411</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  411</span>                                                       {</div>
+<div class="line"><span class="lineno">  412</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, axis) &gt; 0.5 ? 1 : 0;</div>
+<div class="line"><span class="lineno">  413</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1362,11 +1362,11 @@ Friends</h2></td></tr>
 
 <p>Per-axis CON column-4 mask (bit0=x, bit1=y, bit2=z). </p>
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00413">413</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  413</span>                                                               {</div>
-<div class="line"><span class="lineno">  414</span>  <span class="keywordflow">return</span> {<a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 0) &gt; 0.5, <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 1) &gt; 0.5,</div>
-<div class="line"><span class="lineno">  415</span>          <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 2) &gt; 0.5};</div>
-<div class="line"><span class="lineno">  416</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00415">415</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  415</span>                                                               {</div>
+<div class="line"><span class="lineno">  416</span>  <span class="keywordflow">return</span> {<a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 0) &gt; 0.5, <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 1) &gt; 0.5,</div>
+<div class="line"><span class="lineno">  417</span>          <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 2) &gt; 0.5};</div>
+<div class="line"><span class="lineno">  418</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1385,8 +1385,8 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00479">479</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  479</span>{ <span class="keywordflow">return</span> (<a class="code hl_variable" href="#a76942fe65d2f8ee60e1d2884cd38b958">forceCalls</a>); }</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00481">481</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  481</span>{ <span class="keywordflow">return</span> (<a class="code hl_variable" href="#a76942fe65d2f8ee60e1d2884cd38b958">forceCalls</a>); }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1405,18 +1405,18 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00324">324</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  324</span>                                          {</div>
-<div class="line"><span class="lineno">  325</span>  <a class="code hl_function" href="#a3bc576b16fb424940848c0eafb2f1d64">computePotential</a>();</div>
-<div class="line"><span class="lineno">  326</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a>) {</div>
-<div class="line"><span class="lineno">  327</span>    <span class="comment">// Use the cached freeMask (Nx3, 1.0 for free / 0.0 for fixed) to zero</span></div>
-<div class="line"><span class="lineno">  328</span>    <span class="comment">// fixed-atom forces in a single vectorized Eigen operation.</span></div>
-<div class="line"><span class="lineno">  329</span>    <a class="code hl_variable" href="#aeb2dfebfe956179a0eb3b9362bd1c1c6">maskedForces</a> = <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a>.array() * <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
-<div class="line"><span class="lineno">  330</span>    <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  331</span>  }</div>
-<div class="line"><span class="lineno">  332</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#aeb2dfebfe956179a0eb3b9362bd1c1c6">maskedForces</a>;</div>
-<div class="line"><span class="lineno">  333</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a3bc576b16fb424940848c0eafb2f1d64"><div class="ttname"><a href="#a3bc576b16fb424940848c0eafb2f1d64">eonc::Matter::computePotential</a></div><div class="ttdeci">void computePotential() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00498">Matter.cpp:498</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00326">326</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  326</span>                                          {</div>
+<div class="line"><span class="lineno">  327</span>  <a class="code hl_function" href="#a3bc576b16fb424940848c0eafb2f1d64">computePotential</a>();</div>
+<div class="line"><span class="lineno">  328</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a>) {</div>
+<div class="line"><span class="lineno">  329</span>    <span class="comment">// Use the cached freeMask (Nx3, 1.0 for free / 0.0 for fixed) to zero</span></div>
+<div class="line"><span class="lineno">  330</span>    <span class="comment">// fixed-atom forces in a single vectorized Eigen operation.</span></div>
+<div class="line"><span class="lineno">  331</span>    <a class="code hl_variable" href="#aeb2dfebfe956179a0eb3b9362bd1c1c6">maskedForces</a> = <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a>.array() * <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
+<div class="line"><span class="lineno">  332</span>    <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  333</span>  }</div>
+<div class="line"><span class="lineno">  334</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#aeb2dfebfe956179a0eb3b9362bd1c1c6">maskedForces</a>;</div>
+<div class="line"><span class="lineno">  335</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a3bc576b16fb424940848c0eafb2f1d64"><div class="ttname"><a href="#a3bc576b16fb424940848c0eafb2f1d64">eonc::Matter::computePotential</a></div><div class="ttdeci">void computePotential() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00500">Matter.cpp:500</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Matter_html_a5164aab0299da8bebd1f5c203bad021e"><div class="ttname"><a href="#a5164aab0299da8bebd1f5c203bad021e">eonc::Matter::recomputeMaskedForces</a></div><div class="ttdeci">bool recomputeMaskedForces</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00381">Matter.h:381</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Matter_html_aeb2dfebfe956179a0eb3b9362bd1c1c6"><div class="ttname"><a href="#aeb2dfebfe956179a0eb3b9362bd1c1c6">eonc::Matter::maskedForces</a></div><div class="ttdeci">AtomMatrix maskedForces</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00378">Matter.h:378</a></div></div>
 </div><!-- fragment -->
@@ -1437,16 +1437,16 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00344">344</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  344</span>                                       {</div>
-<div class="line"><span class="lineno">  345</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> allForces = <a class="code hl_function" href="#a48cee072b3bab26b5e045d02fbd83860">getForces</a>();</div>
-<div class="line"><span class="lineno">  346</span>  <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>(); <span class="comment">// ensure freeIndices is up to date (mutable cache)</span></div>
-<div class="line"><span class="lineno">  347</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> ret(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>.size()), 3);</div>
-<div class="line"><span class="lineno">  348</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; <a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>.size(); j++) {</div>
-<div class="line"><span class="lineno">  349</span>    ret.row(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(j)) = allForces.row(<a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>[j]);</div>
-<div class="line"><span class="lineno">  350</span>  }</div>
-<div class="line"><span class="lineno">  351</span>  <span class="keywordflow">return</span> ret;</div>
-<div class="line"><span class="lineno">  352</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00346">346</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  346</span>                                       {</div>
+<div class="line"><span class="lineno">  347</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> allForces = <a class="code hl_function" href="#a48cee072b3bab26b5e045d02fbd83860">getForces</a>();</div>
+<div class="line"><span class="lineno">  348</span>  <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>(); <span class="comment">// ensure freeIndices is up to date (mutable cache)</span></div>
+<div class="line"><span class="lineno">  349</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> ret(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>.size()), 3);</div>
+<div class="line"><span class="lineno">  350</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; <a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>.size(); j++) {</div>
+<div class="line"><span class="lineno">  351</span>    ret.row(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(j)) = allForces.row(<a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>[j]);</div>
+<div class="line"><span class="lineno">  352</span>  }</div>
+<div class="line"><span class="lineno">  353</span>  <span class="keywordflow">return</span> ret;</div>
+<div class="line"><span class="lineno">  354</span>}</div>
 <div class="ttc" id="aclasseonc_1_1Matter_html_a3ef83ca6aaf1d2a56d73dac3b131aa45"><div class="ttname"><a href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">eonc::Matter::freeIndices</a></div><div class="ttdeci">std::vector&lt; int &gt; freeIndices</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00379">Matter.h:379</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -1466,13 +1466,13 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00354">354</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  354</span>                                      {</div>
-<div class="line"><span class="lineno">  355</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> freeForces = <a class="code hl_function" href="#ae72c60ebf1da59f6877eb7238f412f9a">getForcesFree</a>();</div>
-<div class="line"><span class="lineno">  356</span>  <span class="keywordflow">return</span> VectorXd::Map(freeForces.data(), 3 * <a class="code hl_function" href="#acf7568f3207c071f206a8db116ed03c1">numberOfFreeAtoms</a>());</div>
-<div class="line"><span class="lineno">  357</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_acf7568f3207c071f206a8db116ed03c1"><div class="ttname"><a href="#acf7568f3207c071f206a8db116ed03c1">eonc::Matter::numberOfFreeAtoms</a></div><div class="ttdeci">long int numberOfFreeAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00475">Matter.cpp:475</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_ae72c60ebf1da59f6877eb7238f412f9a"><div class="ttname"><a href="#ae72c60ebf1da59f6877eb7238f412f9a">eonc::Matter::getForcesFree</a></div><div class="ttdeci">AtomMatrix getForcesFree() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00344">Matter.cpp:344</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00356">356</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  356</span>                                      {</div>
+<div class="line"><span class="lineno">  357</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> freeForces = <a class="code hl_function" href="#ae72c60ebf1da59f6877eb7238f412f9a">getForcesFree</a>();</div>
+<div class="line"><span class="lineno">  358</span>  <span class="keywordflow">return</span> VectorXd::Map(freeForces.data(), 3 * <a class="code hl_function" href="#acf7568f3207c071f206a8db116ed03c1">numberOfFreeAtoms</a>());</div>
+<div class="line"><span class="lineno">  359</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_acf7568f3207c071f206a8db116ed03c1"><div class="ttname"><a href="#acf7568f3207c071f206a8db116ed03c1">eonc::Matter::numberOfFreeAtoms</a></div><div class="ttdeci">long int numberOfFreeAtoms() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00477">Matter.cpp:477</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_ae72c60ebf1da59f6877eb7238f412f9a"><div class="ttname"><a href="#ae72c60ebf1da59f6877eb7238f412f9a">eonc::Matter::getForcesFree</a></div><div class="ttdeci">AtomMatrix getForcesFree() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00346">Matter.cpp:346</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1491,11 +1491,11 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00335">335</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  335</span>                                             {</div>
-<div class="line"><span class="lineno">  336</span>  <a class="code hl_function" href="#a3bc576b16fb424940848c0eafb2f1d64">computePotential</a>();</div>
-<div class="line"><span class="lineno">  337</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a>;</div>
-<div class="line"><span class="lineno">  338</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00337">337</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  337</span>                                             {</div>
+<div class="line"><span class="lineno">  338</span>  <a class="code hl_function" href="#a3bc576b16fb424940848c0eafb2f1d64">computePotential</a>();</div>
+<div class="line"><span class="lineno">  339</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a>;</div>
+<div class="line"><span class="lineno">  340</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1514,10 +1514,10 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00340">340</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  340</span>                                  {</div>
-<div class="line"><span class="lineno">  341</span>  <span class="keywordflow">return</span> VectorXd::Map(<a class="code hl_function" href="#a48cee072b3bab26b5e045d02fbd83860">getForces</a>().data(), 3 * <a class="code hl_function" href="#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>());</div>
-<div class="line"><span class="lineno">  342</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00342">342</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  342</span>                                  {</div>
+<div class="line"><span class="lineno">  343</span>  <span class="keywordflow">return</span> VectorXd::Map(<a class="code hl_function" href="#a48cee072b3bab26b5e045d02fbd83860">getForces</a>().data(), 3 * <a class="code hl_function" href="#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>());</div>
+<div class="line"><span class="lineno">  344</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1536,22 +1536,22 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00580">580</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  580</span>                                 {</div>
-<div class="line"><span class="lineno">  581</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a1775e0e0a39c045c4311afa84c812062">recomputeFreeMask</a>) {</div>
-<div class="line"><span class="lineno">  582</span>    <a class="code hl_variable" href="#a84f5529b0194cd2cfbadfdf4f87ce4b1">freeMask</a>.resize(<a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>, 3);</div>
-<div class="line"><span class="lineno">  583</span>    <a class="code hl_variable" href="#a84f5529b0194cd2cfbadfdf4f87ce4b1">freeMask</a> = 1.0 - <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>.array();</div>
-<div class="line"><span class="lineno">  584</span>    <a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>.clear();</div>
-<div class="line"><span class="lineno">  585</span>    <a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>.reserve(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>));</div>
-<div class="line"><span class="lineno">  586</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>; i++) {</div>
-<div class="line"><span class="lineno">  587</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a84f5529b0194cd2cfbadfdf4f87ce4b1">freeMask</a>.row(i).sum() &gt; 0.5) {</div>
-<div class="line"><span class="lineno">  588</span>        <a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>.push_back(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(i));</div>
-<div class="line"><span class="lineno">  589</span>      }</div>
-<div class="line"><span class="lineno">  590</span>    }</div>
-<div class="line"><span class="lineno">  591</span>    <a class="code hl_variable" href="#a1775e0e0a39c045c4311afa84c812062">recomputeFreeMask</a> = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  592</span>  }</div>
-<div class="line"><span class="lineno">  593</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a84f5529b0194cd2cfbadfdf4f87ce4b1">freeMask</a>;</div>
-<div class="line"><span class="lineno">  594</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00582">582</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  582</span>                                 {</div>
+<div class="line"><span class="lineno">  583</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a1775e0e0a39c045c4311afa84c812062">recomputeFreeMask</a>) {</div>
+<div class="line"><span class="lineno">  584</span>    <a class="code hl_variable" href="#a84f5529b0194cd2cfbadfdf4f87ce4b1">freeMask</a>.resize(<a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>, 3);</div>
+<div class="line"><span class="lineno">  585</span>    <a class="code hl_variable" href="#a84f5529b0194cd2cfbadfdf4f87ce4b1">freeMask</a> = 1.0 - <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>.array();</div>
+<div class="line"><span class="lineno">  586</span>    <a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>.clear();</div>
+<div class="line"><span class="lineno">  587</span>    <a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>.reserve(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>));</div>
+<div class="line"><span class="lineno">  588</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>; i++) {</div>
+<div class="line"><span class="lineno">  589</span>      <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a84f5529b0194cd2cfbadfdf4f87ce4b1">freeMask</a>.row(i).sum() &gt; 0.5) {</div>
+<div class="line"><span class="lineno">  590</span>        <a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>.push_back(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(i));</div>
+<div class="line"><span class="lineno">  591</span>      }</div>
+<div class="line"><span class="lineno">  592</span>    }</div>
+<div class="line"><span class="lineno">  593</span>    <a class="code hl_variable" href="#a1775e0e0a39c045c4311afa84c812062">recomputeFreeMask</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  594</span>  }</div>
+<div class="line"><span class="lineno">  595</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a84f5529b0194cd2cfbadfdf4f87ce4b1">freeMask</a>;</div>
+<div class="line"><span class="lineno">  596</span>}</div>
 <div class="ttc" id="aclasseonc_1_1Matter_html_a1775e0e0a39c045c4311afa84c812062"><div class="ttname"><a href="#a1775e0e0a39c045c4311afa84c812062">eonc::Matter::recomputeFreeMask</a></div><div class="ttdeci">bool recomputeFreeMask</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00380">Matter.h:380</a></div></div>
 <div class="ttc" id="aclasseonc_1_1Matter_html_a84f5529b0194cd2cfbadfdf4f87ce4b1"><div class="ttname"><a href="#a84f5529b0194cd2cfbadfdf4f87ce4b1">eonc::Matter::freeMask</a></div><div class="ttdeci">AtomMatrix freeMask</div><div class="ttdef"><b>Definition</b> <a href="Matter_8h_source.html#l00377">Matter.h:377</a></div></div>
 </div><!-- fragment -->
@@ -1572,10 +1572,10 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00596">596</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  596</span>                                {</div>
-<div class="line"><span class="lineno">  597</span>  <span class="keywordflow">return</span> VectorXd::Map(<a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().data(), 3 * <a class="code hl_function" href="#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>());</div>
-<div class="line"><span class="lineno">  598</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00598">598</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  598</span>                                {</div>
+<div class="line"><span class="lineno">  599</span>  <span class="keywordflow">return</span> VectorXd::Map(<a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().data(), 3 * <a class="code hl_function" href="#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>());</div>
+<div class="line"><span class="lineno">  600</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1627,13 +1627,13 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00454">454</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  454</span>                                      {</div>
-<div class="line"><span class="lineno">  455</span>  <span class="comment">// 0.5 * sum(mass_i * |v_i,free|^2); a constrained axis does not contribute.</span></div>
-<div class="line"><span class="lineno">  456</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> vfree = <a class="code hl_variable" href="#a4cf3e65a663f6fe1059deb9735f1ede5">velocities</a>.array() * <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
-<div class="line"><span class="lineno">  457</span>  Eigen::VectorXd speed2 = vfree.rowwise().squaredNorm();</div>
-<div class="line"><span class="lineno">  458</span>  <span class="keywordflow">return</span> 0.5 * (<a class="code hl_variable" href="#a322f9a95ee0c89b2c627a42f4209e14f">masses</a>.array() * speed2.array()).sum();</div>
-<div class="line"><span class="lineno">  459</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00456">456</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  456</span>                                      {</div>
+<div class="line"><span class="lineno">  457</span>  <span class="comment">// 0.5 * sum(mass_i * |v_i,free|^2); a constrained axis does not contribute.</span></div>
+<div class="line"><span class="lineno">  458</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> vfree = <a class="code hl_variable" href="#a4cf3e65a663f6fe1059deb9735f1ede5">velocities</a>.array() * <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
+<div class="line"><span class="lineno">  459</span>  Eigen::VectorXd speed2 = vfree.rowwise().squaredNorm();</div>
+<div class="line"><span class="lineno">  460</span>  <span class="keywordflow">return</span> 0.5 * (<a class="code hl_variable" href="#a322f9a95ee0c89b2c627a42f4209e14f">masses</a>.array() * speed2.array()).sum();</div>
+<div class="line"><span class="lineno">  461</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1652,8 +1652,8 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00380">380</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  380</span>{ <span class="keywordflow">return</span> (<a class="code hl_variable" href="#a322f9a95ee0c89b2c627a42f4209e14f">masses</a>[indexAtom]); }</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00382">382</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  382</span>{ <span class="keywordflow">return</span> (<a class="code hl_variable" href="#a322f9a95ee0c89b2c627a42f4209e14f">masses</a>[indexAtom]); }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1672,8 +1672,8 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00623">623</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  623</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a322f9a95ee0c89b2c627a42f4209e14f">masses</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00626">626</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  626</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#a322f9a95ee0c89b2c627a42f4209e14f">masses</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1692,12 +1692,12 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00461">461</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  461</span>                                         {</div>
-<div class="line"><span class="lineno">  462</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a0f627d29055314e02df9c51bdc05e53f">getPotentialEnergy</a>() + <a class="code hl_function" href="#ae9aecd3182f017d726f7fdf40200da3e">getKineticEnergy</a>();</div>
-<div class="line"><span class="lineno">  463</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a0f627d29055314e02df9c51bdc05e53f"><div class="ttname"><a href="#a0f627d29055314e02df9c51bdc05e53f">eonc::Matter::getPotentialEnergy</a></div><div class="ttdeci">double getPotentialEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00446">Matter.cpp:446</a></div></div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_ae9aecd3182f017d726f7fdf40200da3e"><div class="ttname"><a href="#ae9aecd3182f017d726f7fdf40200da3e">eonc::Matter::getKineticEnergy</a></div><div class="ttdeci">double getKineticEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00454">Matter.cpp:454</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00463">463</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  463</span>                                         {</div>
+<div class="line"><span class="lineno">  464</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a0f627d29055314e02df9c51bdc05e53f">getPotentialEnergy</a>() + <a class="code hl_function" href="#ae9aecd3182f017d726f7fdf40200da3e">getKineticEnergy</a>();</div>
+<div class="line"><span class="lineno">  465</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a0f627d29055314e02df9c51bdc05e53f"><div class="ttname"><a href="#a0f627d29055314e02df9c51bdc05e53f">eonc::Matter::getPotentialEnergy</a></div><div class="ttdeci">double getPotentialEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00448">Matter.cpp:448</a></div></div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_ae9aecd3182f017d726f7fdf40200da3e"><div class="ttname"><a href="#ae9aecd3182f017d726f7fdf40200da3e">eonc::Matter::getKineticEnergy</a></div><div class="ttdeci">double getKineticEnergy() const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00456">Matter.cpp:456</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1778,10 +1778,10 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00218">218</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  218</span>                                                             {</div>
-<div class="line"><span class="lineno">  219</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>(indexAtom, axis);</div>
-<div class="line"><span class="lineno">  220</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00220">220</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  220</span>                                                             {</div>
+<div class="line"><span class="lineno">  221</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>(indexAtom, axis);</div>
+<div class="line"><span class="lineno">  222</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1800,8 +1800,8 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00236">236</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  236</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00238">238</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  238</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1820,8 +1820,8 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00238">238</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  238</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00240">240</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  240</span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1840,15 +1840,15 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00244">244</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  244</span>                                          {</div>
-<div class="line"><span class="lineno">  245</span>  <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>(); <span class="comment">// ensure freeIndices is up to date</span></div>
-<div class="line"><span class="lineno">  246</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> ret(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>.size()), 3);</div>
-<div class="line"><span class="lineno">  247</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; <a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>.size(); j++) {</div>
-<div class="line"><span class="lineno">  248</span>    ret.row(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(j)) = <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>.row(<a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>[j]);</div>
-<div class="line"><span class="lineno">  249</span>  }</div>
-<div class="line"><span class="lineno">  250</span>  <span class="keywordflow">return</span> ret;</div>
-<div class="line"><span class="lineno">  251</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00246">246</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  246</span>                                          {</div>
+<div class="line"><span class="lineno">  247</span>  <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>(); <span class="comment">// ensure freeIndices is up to date</span></div>
+<div class="line"><span class="lineno">  248</span>  <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> ret(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>.size()), 3);</div>
+<div class="line"><span class="lineno">  249</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; <a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>.size(); j++) {</div>
+<div class="line"><span class="lineno">  250</span>    ret.row(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(j)) = <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>.row(<a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>[j]);</div>
+<div class="line"><span class="lineno">  251</span>  }</div>
+<div class="line"><span class="lineno">  252</span>  <span class="keywordflow">return</span> ret;</div>
+<div class="line"><span class="lineno">  253</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1867,10 +1867,10 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00268">268</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  268</span>                                         {</div>
-<div class="line"><span class="lineno">  269</span>  <span class="keywordflow">return</span> VectorXd::Map(<a class="code hl_function" href="#a73fde5b1c2df94e368e2f785101ebfc1">getPositionsFree</a>().data(), 3 * <a class="code hl_function" href="#acf7568f3207c071f206a8db116ed03c1">numberOfFreeAtoms</a>());</div>
-<div class="line"><span class="lineno">  270</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00270">270</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  270</span>                                         {</div>
+<div class="line"><span class="lineno">  271</span>  <span class="keywordflow">return</span> VectorXd::Map(<a class="code hl_function" href="#a73fde5b1c2df94e368e2f785101ebfc1">getPositionsFree</a>().data(), 3 * <a class="code hl_function" href="#acf7568f3207c071f206a8db116ed03c1">numberOfFreeAtoms</a>());</div>
+<div class="line"><span class="lineno">  272</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1889,10 +1889,10 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00240">240</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  240</span>                                     {</div>
-<div class="line"><span class="lineno">  241</span>  <span class="keywordflow">return</span> VectorXd::Map(<a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>.data(), 3 * <a class="code hl_function" href="#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>());</div>
-<div class="line"><span class="lineno">  242</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00242">242</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  242</span>                                     {</div>
+<div class="line"><span class="lineno">  243</span>  <span class="keywordflow">return</span> VectorXd::Map(<a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>.data(), 3 * <a class="code hl_function" href="#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>());</div>
+<div class="line"><span class="lineno">  244</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1911,8 +1911,8 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00671">671</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  671</span>{ <span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>; }</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00674">674</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  674</span>{ <span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>; }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1931,10 +1931,10 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00659">659</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  659</span>                                       {</div>
-<div class="line"><span class="lineno">  660</span>  <span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>-&gt;forceCallCounter;</div>
-<div class="line"><span class="lineno">  661</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00662">662</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  662</span>                                       {</div>
+<div class="line"><span class="lineno">  663</span>  <span class="keywordflow">return</span> this-&gt;<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>-&gt;forceCallCounter;</div>
+<div class="line"><span class="lineno">  664</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1953,14 +1953,14 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00446">446</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  446</span>                                        {</div>
-<div class="line"><span class="lineno">  447</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a> &gt; 0) {</div>
-<div class="line"><span class="lineno">  448</span>    <a class="code hl_function" href="#a3bc576b16fb424940848c0eafb2f1d64">computePotential</a>();</div>
-<div class="line"><span class="lineno">  449</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a006dfbc2f8e6976a0a3fe529b7fe6c05">potentialEnergy</a>;</div>
-<div class="line"><span class="lineno">  450</span>  } <span class="keywordflow">else</span></div>
-<div class="line"><span class="lineno">  451</span>    <span class="keywordflow">return</span> 0.0;</div>
-<div class="line"><span class="lineno">  452</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00448">448</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  448</span>                                        {</div>
+<div class="line"><span class="lineno">  449</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a> &gt; 0) {</div>
+<div class="line"><span class="lineno">  450</span>    <a class="code hl_function" href="#a3bc576b16fb424940848c0eafb2f1d64">computePotential</a>();</div>
+<div class="line"><span class="lineno">  451</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="#a006dfbc2f8e6976a0a3fe529b7fe6c05">potentialEnergy</a>;</div>
+<div class="line"><span class="lineno">  452</span>  } <span class="keywordflow">else</span></div>
+<div class="line"><span class="lineno">  453</span>    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><span class="lineno">  454</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1979,10 +1979,10 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00600">600</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  600</span>                                       {</div>
-<div class="line"><span class="lineno">  601</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a4cf3e65a663f6fe1059deb9735f1ede5">velocities</a>.array() * <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
-<div class="line"><span class="lineno">  602</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00602">602</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  602</span>                                       {</div>
+<div class="line"><span class="lineno">  603</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a4cf3e65a663f6fe1059deb9735f1ede5">velocities</a>.array() * <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
+<div class="line"><span class="lineno">  604</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2139,22 +2139,22 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00554">554</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  554</span>                              {</div>
-<div class="line"><span class="lineno">  555</span>  <span class="comment">// Ensures that the forces are up to date</span></div>
-<div class="line"><span class="lineno">  556</span>  <a class="code hl_function" href="#a3bc576b16fb424940848c0eafb2f1d64">computePotential</a>();</div>
-<div class="line"><span class="lineno">  557</span> </div>
-<div class="line"><span class="lineno">  558</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;f = <a class="code hl_function" href="#a48cee072b3bab26b5e045d02fbd83860">getForces</a>();</div>
-<div class="line"><span class="lineno">  559</span>  <span class="keywordtype">double</span> <a class="code hl_function" href="#a4a8fbf93d473d8f1d1995fafa587c000">maxForce</a> = 0.0;</div>
-<div class="line"><span class="lineno">  560</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>; i++) {</div>
-<div class="line"><span class="lineno">  561</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="#afe2636574f8f27addf59661ecc77f910">getFixed</a>(i)) {</div>
-<div class="line"><span class="lineno">  562</span>      <span class="keywordflow">continue</span>;</div>
-<div class="line"><span class="lineno">  563</span>    }</div>
-<div class="line"><span class="lineno">  564</span>    <a class="code hl_function" href="#a4a8fbf93d473d8f1d1995fafa587c000">maxForce</a> = std::max(f.row(i).norm(), <a class="code hl_function" href="#a4a8fbf93d473d8f1d1995fafa587c000">maxForce</a>);</div>
-<div class="line"><span class="lineno">  565</span>  }</div>
-<div class="line"><span class="lineno">  566</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a4a8fbf93d473d8f1d1995fafa587c000">maxForce</a>;</div>
-<div class="line"><span class="lineno">  567</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a4a8fbf93d473d8f1d1995fafa587c000"><div class="ttname"><a href="#a4a8fbf93d473d8f1d1995fafa587c000">eonc::Matter::maxForce</a></div><div class="ttdeci">double maxForce(void) const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00554">Matter.cpp:554</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00556">556</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  556</span>                              {</div>
+<div class="line"><span class="lineno">  557</span>  <span class="comment">// Ensures that the forces are up to date</span></div>
+<div class="line"><span class="lineno">  558</span>  <a class="code hl_function" href="#a3bc576b16fb424940848c0eafb2f1d64">computePotential</a>();</div>
+<div class="line"><span class="lineno">  559</span> </div>
+<div class="line"><span class="lineno">  560</span>  <span class="keyword">const</span> <a class="code hl_typedef" href="Eigen_8h.html#aea209ab15a3a73f26fa44267131921dd">AtomMatrix</a> &amp;f = <a class="code hl_function" href="#a48cee072b3bab26b5e045d02fbd83860">getForces</a>();</div>
+<div class="line"><span class="lineno">  561</span>  <span class="keywordtype">double</span> <a class="code hl_function" href="#a4a8fbf93d473d8f1d1995fafa587c000">maxForce</a> = 0.0;</div>
+<div class="line"><span class="lineno">  562</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>; i++) {</div>
+<div class="line"><span class="lineno">  563</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="#afe2636574f8f27addf59661ecc77f910">getFixed</a>(i)) {</div>
+<div class="line"><span class="lineno">  564</span>      <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">  565</span>    }</div>
+<div class="line"><span class="lineno">  566</span>    <a class="code hl_function" href="#a4a8fbf93d473d8f1d1995fafa587c000">maxForce</a> = std::max(f.row(i).norm(), <a class="code hl_function" href="#a4a8fbf93d473d8f1d1995fafa587c000">maxForce</a>);</div>
+<div class="line"><span class="lineno">  567</span>  }</div>
+<div class="line"><span class="lineno">  568</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="#a4a8fbf93d473d8f1d1995fafa587c000">maxForce</a>;</div>
+<div class="line"><span class="lineno">  569</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a4a8fbf93d473d8f1d1995fafa587c000"><div class="ttname"><a href="#a4a8fbf93d473d8f1d1995fafa587c000">eonc::Matter::maxForce</a></div><div class="ttdeci">double maxForce(void) const</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00556">Matter.cpp:556</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2256,16 +2256,16 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00465">465</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  465</span>                                          {</div>
-<div class="line"><span class="lineno">  466</span>  <span class="keywordtype">long</span> n = 0;</div>
-<div class="line"><span class="lineno">  467</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>; ++i) {</div>
-<div class="line"><span class="lineno">  468</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="#afe2636574f8f27addf59661ecc77f910">getFixed</a>(i)) {</div>
-<div class="line"><span class="lineno">  469</span>      ++n;</div>
-<div class="line"><span class="lineno">  470</span>    }</div>
-<div class="line"><span class="lineno">  471</span>  }</div>
-<div class="line"><span class="lineno">  472</span>  <span class="keywordflow">return</span> n;</div>
-<div class="line"><span class="lineno">  473</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00467">467</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  467</span>                                          {</div>
+<div class="line"><span class="lineno">  468</span>  <span class="keywordtype">long</span> n = 0;</div>
+<div class="line"><span class="lineno">  469</span>  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>; ++i) {</div>
+<div class="line"><span class="lineno">  470</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="#afe2636574f8f27addf59661ecc77f910">getFixed</a>(i)) {</div>
+<div class="line"><span class="lineno">  471</span>      ++n;</div>
+<div class="line"><span class="lineno">  472</span>    }</div>
+<div class="line"><span class="lineno">  473</span>  }</div>
+<div class="line"><span class="lineno">  474</span>  <span class="keywordflow">return</span> n;</div>
+<div class="line"><span class="lineno">  475</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2284,10 +2284,10 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00475">475</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  475</span>                                         {</div>
-<div class="line"><span class="lineno">  476</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a> - <a class="code hl_function" href="#a125a4e2f91291a42888a92bce0757a6f">numberOfFixedAtoms</a>();</div>
-<div class="line"><span class="lineno">  477</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00477">477</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  477</span>                                         {</div>
+<div class="line"><span class="lineno">  478</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a> - <a class="code hl_function" href="#a125a4e2f91291a42888a92bce0757a6f">numberOfFixedAtoms</a>();</div>
+<div class="line"><span class="lineno">  479</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2513,14 +2513,14 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00366">366</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  366</span>                                                                 {</div>
-<div class="line"><span class="lineno">  367</span>  Matrix&lt;double, 1, 3&gt; ret;</div>
-<div class="line"><span class="lineno">  368</span>  ret.setZero();</div>
-<div class="line"><span class="lineno">  369</span>  ret(0, axis) = <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>(index1, axis) - <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>(index2, axis);</div>
-<div class="line"><span class="lineno">  370</span>  ret = <a class="code hl_function" href="#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(ret);</div>
-<div class="line"><span class="lineno">  371</span>  <span class="keywordflow">return</span> ret(0, axis);</div>
-<div class="line"><span class="lineno">  372</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00368">368</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  368</span>                                                                 {</div>
+<div class="line"><span class="lineno">  369</span>  Matrix&lt;double, 1, 3&gt; ret;</div>
+<div class="line"><span class="lineno">  370</span>  ret.setZero();</div>
+<div class="line"><span class="lineno">  371</span>  ret(0, axis) = <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>(index1, axis) - <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>(index2, axis);</div>
+<div class="line"><span class="lineno">  372</span>  ret = <a class="code hl_function" href="#a5fe171bc21bf698aa9589fc66a118b7a">pbc</a>(ret);</div>
+<div class="line"><span class="lineno">  373</span>  <span class="keywordflow">return</span> ret(0, axis);</div>
+<div class="line"><span class="lineno">  374</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2594,15 +2594,15 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00257">257</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  259</span>                                           {</div>
-<div class="line"><span class="lineno">  260</span>  <span class="keywordflow">if</span> (retainMovieFrames) {</div>
-<div class="line"><span class="lineno">  261</span>    <a class="code hl_variable" href="#a34a601b54aac55bdde187ad3d97c5e41">movie_frames_</a>.clear();</div>
-<div class="line"><span class="lineno">  262</span>  }</div>
-<div class="line"><span class="lineno">  263</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a38213bf26f2c23fc607d83982238545c">eonc::helpers::relaxMatter</a>(</div>
-<div class="line"><span class="lineno">  264</span>      *<span class="keyword">this</span>, *<a class="code hl_variable" href="#a5821bbfdfc09d67cf89f039a84a2f8e6">parameters</a>, quiet, writeMovie, checkpoint, prefixMovie,</div>
-<div class="line"><span class="lineno">  265</span>      prefixCheckpoint, retainMovieFrames ? &amp;<a class="code hl_variable" href="#a34a601b54aac55bdde187ad3d97c5e41">movie_frames_</a> : <span class="keyword">nullptr</span>);</div>
-<div class="line"><span class="lineno">  266</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00259">259</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  261</span>                                           {</div>
+<div class="line"><span class="lineno">  262</span>  <span class="keywordflow">if</span> (retainMovieFrames) {</div>
+<div class="line"><span class="lineno">  263</span>    <a class="code hl_variable" href="#a34a601b54aac55bdde187ad3d97c5e41">movie_frames_</a>.clear();</div>
+<div class="line"><span class="lineno">  264</span>  }</div>
+<div class="line"><span class="lineno">  265</span>  <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeonc_1_1helpers.html#a38213bf26f2c23fc607d83982238545c">eonc::helpers::relaxMatter</a>(</div>
+<div class="line"><span class="lineno">  266</span>      *<span class="keyword">this</span>, *<a class="code hl_variable" href="#a5821bbfdfc09d67cf89f039a84a2f8e6">parameters</a>, quiet, writeMovie, checkpoint, prefixMovie,</div>
+<div class="line"><span class="lineno">  267</span>      prefixCheckpoint, retainMovieFrames ? &amp;<a class="code hl_variable" href="#a34a601b54aac55bdde187ad3d97c5e41">movie_frames_</a> : <span class="keyword">nullptr</span>);</div>
+<div class="line"><span class="lineno">  268</span>}</div>
 <div class="ttc" id="anamespaceeonc_1_1helpers_html_a38213bf26f2c23fc607d83982238545c"><div class="ttname"><a href="namespaceeonc_1_1helpers.html#a38213bf26f2c23fc607d83982238545c">eonc::helpers::relaxMatter</a></div><div class="ttdeci">bool relaxMatter(Matter &amp;matter, const Parameters &amp;params, bool quiet=false, bool writeMovie=false, bool checkpoint=false, std::string prefixMovie=std::string(), std::string prefixCheckpoint=std::string(), std::vector&lt; readcon::ConFrame &gt; *outFrames=nullptr)</div><div class="ttdef"><b>Definition</b> <a href="HelperFunctions_8cpp_source.html#l00314">HelperFunctions.cpp:314</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -2622,11 +2622,11 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00481">481</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  481</span>                             {</div>
-<div class="line"><span class="lineno">  482</span>  <a class="code hl_variable" href="#a76942fe65d2f8ee60e1d2884cd38b958">forceCalls</a> = 0;</div>
-<div class="line"><span class="lineno">  483</span>  <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  484</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00483">483</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  483</span>                             {</div>
+<div class="line"><span class="lineno">  484</span>  <a class="code hl_variable" href="#a76942fe65d2f8ee60e1d2884cd38b958">forceCalls</a> = 0;</div>
+<div class="line"><span class="lineno">  485</span>  <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  486</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2703,12 +2703,12 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00396">396</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  396</span>                                                          {</div>
-<div class="line"><span class="lineno">  397</span>  <a class="code hl_variable" href="#a3fc176e8560265e0afa67e62edf4255b">atomicNrs</a>[indexAtom] = atomicNr;</div>
-<div class="line"><span class="lineno">  398</span>  <a class="code hl_variable" href="#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  399</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  400</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00398">398</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  398</span>                                                          {</div>
+<div class="line"><span class="lineno">  399</span>  <a class="code hl_variable" href="#a3fc176e8560265e0afa67e62edf4255b">atomicNrs</a>[indexAtom] = atomicNr;</div>
+<div class="line"><span class="lineno">  400</span>  <a class="code hl_variable" href="#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  401</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  402</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2727,15 +2727,15 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00571">571</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  571</span>                                                {</div>
-<div class="line"><span class="lineno">  572</span>  <span class="keywordflow">if</span> (atmnrs.size() != this-&gt;nAtoms) {</div>
-<div class="line"><span class="lineno">  573</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><span class="lineno">  574</span>        <span class="stringliteral">&quot;Vector of atomic numbers not equal to the number of atoms&quot;</span>);</div>
-<div class="line"><span class="lineno">  575</span>  } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  576</span>    this-&gt;<a class="code hl_variable" href="#a3fc176e8560265e0afa67e62edf4255b">atomicNrs</a> = atmnrs;</div>
-<div class="line"><span class="lineno">  577</span>  }</div>
-<div class="line"><span class="lineno">  578</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00573">573</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  573</span>                                                {</div>
+<div class="line"><span class="lineno">  574</span>  <span class="keywordflow">if</span> (atmnrs.size() != this-&gt;nAtoms) {</div>
+<div class="line"><span class="lineno">  575</span>    <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><span class="lineno">  576</span>        <span class="stringliteral">&quot;Vector of atomic numbers not equal to the number of atoms&quot;</span>);</div>
+<div class="line"><span class="lineno">  577</span>  } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  578</span>    this-&gt;<a class="code hl_variable" href="#a3fc176e8560265e0afa67e62edf4255b">atomicNrs</a> = atmnrs;</div>
+<div class="line"><span class="lineno">  579</span>  }</div>
+<div class="line"><span class="lineno">  580</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2788,10 +2788,10 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00318">318</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  318</span>                                               {</div>
-<div class="line"><span class="lineno">  319</span>  <a class="code hl_variable" href="#af219c82b036170bc1d41fc460861d0b0">biasForces</a> = bf.array() * <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
-<div class="line"><span class="lineno">  320</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00320">320</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  320</span>                                               {</div>
+<div class="line"><span class="lineno">  321</span>  <a class="code hl_variable" href="#af219c82b036170bc1d41fc460861d0b0">biasForces</a> = bf.array() * <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
+<div class="line"><span class="lineno">  322</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2810,10 +2810,10 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00314">314</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  314</span>                                                  {</div>
-<div class="line"><span class="lineno">  315</span>  <a class="code hl_variable" href="#a64cda196ae6018764cc382677d341489">biasPotential</a> = bondBoost;</div>
-<div class="line"><span class="lineno">  316</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00316">316</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  316</span>                                                  {</div>
+<div class="line"><span class="lineno">  317</span>  <a class="code hl_variable" href="#a64cda196ae6018764cc382677d341489">biasPotential</a> = bondBoost;</div>
+<div class="line"><span class="lineno">  318</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2836,7 +2836,9 @@ Friends</h2></td></tr>
 <div class="fragment"><div class="line"><span class="lineno">  213</span>                                            {</div>
 <div class="line"><span class="lineno">  214</span>  <a class="code hl_variable" href="#ab9bc346506f7b77b0fe0dbbec22b32cf">cell</a> = newCell;</div>
 <div class="line"><span class="lineno">  215</span>  <a class="code hl_variable" href="#abf29de5c9adf2c789c5b2ed448448e7d">cellInverse</a> = <a class="code hl_variable" href="#ab9bc346506f7b77b0fe0dbbec22b32cf">cell</a>.inverse();</div>
-<div class="line"><span class="lineno">  216</span>}</div>
+<div class="line"><span class="lineno">  216</span>  <a class="code hl_variable" href="#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  217</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  218</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2861,22 +2863,22 @@ Friends</h2></td></tr>
 
 <p>Set energy/variance from external batched evaluation and mark forces as up-to-date (recomputePotential = false). </p>
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00643">643</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  643</span>                                                                {</div>
-<div class="line"><span class="lineno">  644</span>  <a class="code hl_variable" href="#a006dfbc2f8e6976a0a3fe529b7fe6c05">potentialEnergy</a> = energy;</div>
-<div class="line"><span class="lineno">  645</span>  <a class="code hl_variable" href="#ae176c4b4d49e5281dc4e53f60ed1ad47">energyVariance</a> = variance;</div>
-<div class="line"><span class="lineno">  646</span>  <a class="code hl_variable" href="#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  647</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  648</span>  <a class="code hl_variable" href="#a76942fe65d2f8ee60e1d2884cd38b958">forceCalls</a>++;</div>
-<div class="line"><span class="lineno">  649</span> </div>
-<div class="line"><span class="lineno">  650</span>  <span class="comment">// Apply the same net force removal as computePotential()</span></div>
-<div class="line"><span class="lineno">  651</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>.maxCoeff() &lt; 0.5 &amp;&amp; <a class="code hl_variable" href="#a58f5e1f746e363570a818161de3e140f">removeNetForce</a>) {</div>
-<div class="line"><span class="lineno">  652</span>    Vector3d tempForce = <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a>.colwise().sum() / <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>;</div>
-<div class="line"><span class="lineno">  653</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> <span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>; i++) {</div>
-<div class="line"><span class="lineno">  654</span>      <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a>.row(i) -= tempForce.transpose();</div>
-<div class="line"><span class="lineno">  655</span>    }</div>
-<div class="line"><span class="lineno">  656</span>  }</div>
-<div class="line"><span class="lineno">  657</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00646">646</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  646</span>                                                                {</div>
+<div class="line"><span class="lineno">  647</span>  <a class="code hl_variable" href="#a006dfbc2f8e6976a0a3fe529b7fe6c05">potentialEnergy</a> = energy;</div>
+<div class="line"><span class="lineno">  648</span>  <a class="code hl_variable" href="#ae176c4b4d49e5281dc4e53f60ed1ad47">energyVariance</a> = variance;</div>
+<div class="line"><span class="lineno">  649</span>  <a class="code hl_variable" href="#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  650</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  651</span>  <a class="code hl_variable" href="#a76942fe65d2f8ee60e1d2884cd38b958">forceCalls</a>++;</div>
+<div class="line"><span class="lineno">  652</span> </div>
+<div class="line"><span class="lineno">  653</span>  <span class="comment">// Apply the same net force removal as computePotential()</span></div>
+<div class="line"><span class="lineno">  654</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>.maxCoeff() &lt; 0.5 &amp;&amp; <a class="code hl_variable" href="#a58f5e1f746e363570a818161de3e140f">removeNetForce</a>) {</div>
+<div class="line"><span class="lineno">  655</span>    Vector3d tempForce = <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a>.colwise().sum() / <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>;</div>
+<div class="line"><span class="lineno">  656</span>    <span class="keywordflow">for</span> (<span class="keywordtype">long</span> <span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>; i++) {</div>
+<div class="line"><span class="lineno">  657</span>      <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a>.row(i) -= tempForce.transpose();</div>
+<div class="line"><span class="lineno">  658</span>    }</div>
+<div class="line"><span class="lineno">  659</span>  }</div>
+<div class="line"><span class="lineno">  660</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2906,12 +2908,12 @@ Friends</h2></td></tr>
 
 <p>Set one Cartesian axis. axis is 0=x, 1=y, 2=z. </p>
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00427">427</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  427</span>                                                                      {</div>
-<div class="line"><span class="lineno">  428</span>  <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, axis) = isFixed_passed ? 1.0 : 0.0;</div>
-<div class="line"><span class="lineno">  429</span>  <a class="code hl_variable" href="#a1775e0e0a39c045c4311afa84c812062">recomputeFreeMask</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  430</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  431</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00429">429</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  429</span>                                                                      {</div>
+<div class="line"><span class="lineno">  430</span>  <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, axis) = isFixed_passed ? 1.0 : 0.0;</div>
+<div class="line"><span class="lineno">  431</span>  <a class="code hl_variable" href="#a1775e0e0a39c045c4311afa84c812062">recomputeFreeMask</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  432</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  433</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2936,15 +2938,15 @@ Friends</h2></td></tr>
 
 <p>Broadcast a whole-atom flag onto all three axes. </p>
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00418">418</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  418</span>                                                            {</div>
-<div class="line"><span class="lineno">  419</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> v = isFixed_passed ? 1.0 : 0.0;</div>
-<div class="line"><span class="lineno">  420</span>  <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 0) = v;</div>
-<div class="line"><span class="lineno">  421</span>  <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 1) = v;</div>
-<div class="line"><span class="lineno">  422</span>  <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 2) = v;</div>
-<div class="line"><span class="lineno">  423</span>  <a class="code hl_variable" href="#a1775e0e0a39c045c4311afa84c812062">recomputeFreeMask</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  424</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  425</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00420">420</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  420</span>                                                            {</div>
+<div class="line"><span class="lineno">  421</span>  <span class="keyword">const</span> <span class="keywordtype">double</span> v = isFixed_passed ? 1.0 : 0.0;</div>
+<div class="line"><span class="lineno">  422</span>  <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 0) = v;</div>
+<div class="line"><span class="lineno">  423</span>  <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 1) = v;</div>
+<div class="line"><span class="lineno">  424</span>  <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 2) = v;</div>
+<div class="line"><span class="lineno">  425</span>  <a class="code hl_variable" href="#a1775e0e0a39c045c4311afa84c812062">recomputeFreeMask</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  426</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  427</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2967,14 +2969,14 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00433">433</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  433</span>                                                                    {</div>
-<div class="line"><span class="lineno">  434</span>  <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 0) = mask[0] ? 1.0 : 0.0;</div>
-<div class="line"><span class="lineno">  435</span>  <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 1) = mask[1] ? 1.0 : 0.0;</div>
-<div class="line"><span class="lineno">  436</span>  <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 2) = mask[2] ? 1.0 : 0.0;</div>
-<div class="line"><span class="lineno">  437</span>  <a class="code hl_variable" href="#a1775e0e0a39c045c4311afa84c812062">recomputeFreeMask</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  438</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  439</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00435">435</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  435</span>                                                                    {</div>
+<div class="line"><span class="lineno">  436</span>  <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 0) = mask[0] ? 1.0 : 0.0;</div>
+<div class="line"><span class="lineno">  437</span>  <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 1) = mask[1] ? 1.0 : 0.0;</div>
+<div class="line"><span class="lineno">  438</span>  <a class="code hl_variable" href="#ab05ecd045a03152a267ceaff6534654d">isFixed</a>(indexAtom, 2) = mask[2] ? 1.0 : 0.0;</div>
+<div class="line"><span class="lineno">  439</span>  <a class="code hl_variable" href="#a1775e0e0a39c045c4311afa84c812062">recomputeFreeMask</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  440</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  441</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -2993,10 +2995,11 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00608">608</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  608</span>                                          {</div>
-<div class="line"><span class="lineno">  609</span>  <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a> = f.array() * <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
-<div class="line"><span class="lineno">  610</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00610">610</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  610</span>                                          {</div>
+<div class="line"><span class="lineno">  611</span>  <a class="code hl_variable" href="#a8bdadf93e454cfd261d3e3f823797e42">forces</a> = f.array() * <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
+<div class="line"><span class="lineno">  612</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  613</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -3083,10 +3086,10 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00382">382</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  382</span>                                                    {</div>
-<div class="line"><span class="lineno">  383</span>  <a class="code hl_variable" href="#a322f9a95ee0c89b2c627a42f4209e14f">masses</a>[indexAtom] = mass;</div>
-<div class="line"><span class="lineno">  384</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00384">384</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  384</span>                                                    {</div>
+<div class="line"><span class="lineno">  385</span>  <a class="code hl_variable" href="#a322f9a95ee0c89b2c627a42f4209e14f">masses</a>[indexAtom] = mass;</div>
+<div class="line"><span class="lineno">  386</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -3105,12 +3108,12 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00386">386</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  386</span>                                               {</div>
-<div class="line"><span class="lineno">  387</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>; i++) {</div>
-<div class="line"><span class="lineno">  388</span>    <a class="code hl_variable" href="#a322f9a95ee0c89b2c627a42f4209e14f">masses</a>[i] = massesIn[i];</div>
-<div class="line"><span class="lineno">  389</span>  }</div>
-<div class="line"><span class="lineno">  390</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00388">388</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  388</span>                                               {</div>
+<div class="line"><span class="lineno">  389</span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="#a5b3d230cdbbaeed4b4f3f4868c575a4f">nAtoms</a>; i++) {</div>
+<div class="line"><span class="lineno">  390</span>    <a class="code hl_variable" href="#a322f9a95ee0c89b2c627a42f4209e14f">masses</a>[i] = massesIn[i];</div>
+<div class="line"><span class="lineno">  391</span>  }</div>
+<div class="line"><span class="lineno">  392</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -3200,15 +3203,15 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00222">222</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  222</span>                                                                      {</div>
-<div class="line"><span class="lineno">  223</span>  <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>(indexAtom, axis) = position;</div>
-<div class="line"><span class="lineno">  224</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aaf6a7b6df1641c0e351abefb3bf5f6bd">usePeriodicBoundaries</a>) {</div>
-<div class="line"><span class="lineno">  225</span>    <a class="code hl_function" href="#a8c114b053047b48613893cdb90b1e194">applyPeriodicBoundary</a>();</div>
-<div class="line"><span class="lineno">  226</span>  }</div>
-<div class="line"><span class="lineno">  227</span>  <a class="code hl_variable" href="#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  228</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  229</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00224">224</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  224</span>                                                                      {</div>
+<div class="line"><span class="lineno">  225</span>  <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>(indexAtom, axis) = position;</div>
+<div class="line"><span class="lineno">  226</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aaf6a7b6df1641c0e351abefb3bf5f6bd">usePeriodicBoundaries</a>) {</div>
+<div class="line"><span class="lineno">  227</span>    <a class="code hl_function" href="#a8c114b053047b48613893cdb90b1e194">applyPeriodicBoundary</a>();</div>
+<div class="line"><span class="lineno">  228</span>  }</div>
+<div class="line"><span class="lineno">  229</span>  <a class="code hl_variable" href="#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  230</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  231</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -3227,15 +3230,15 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00273">273</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  273</span>                                               {</div>
-<div class="line"><span class="lineno">  274</span>  <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a> = pos;</div>
-<div class="line"><span class="lineno">  275</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aaf6a7b6df1641c0e351abefb3bf5f6bd">usePeriodicBoundaries</a>) {</div>
-<div class="line"><span class="lineno">  276</span>    <a class="code hl_function" href="#a8c114b053047b48613893cdb90b1e194">applyPeriodicBoundary</a>();</div>
-<div class="line"><span class="lineno">  277</span>  }</div>
-<div class="line"><span class="lineno">  278</span>  <a class="code hl_variable" href="#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  279</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  280</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00275">275</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  275</span>                                               {</div>
+<div class="line"><span class="lineno">  276</span>  <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a> = pos;</div>
+<div class="line"><span class="lineno">  277</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aaf6a7b6df1641c0e351abefb3bf5f6bd">usePeriodicBoundaries</a>) {</div>
+<div class="line"><span class="lineno">  278</span>    <a class="code hl_function" href="#a8c114b053047b48613893cdb90b1e194">applyPeriodicBoundary</a>();</div>
+<div class="line"><span class="lineno">  279</span>  }</div>
+<div class="line"><span class="lineno">  280</span>  <a class="code hl_variable" href="#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  281</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  282</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -3254,20 +3257,20 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00287">287</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  287</span>                                                   {</div>
-<div class="line"><span class="lineno">  288</span>  <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>(); <span class="comment">// ensure freeIndices is up to date</span></div>
-<div class="line"><span class="lineno">  289</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; <a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>.size(); j++) {</div>
-<div class="line"><span class="lineno">  290</span>    <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>.row(<a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>[j]) = pos.row(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(j));</div>
-<div class="line"><span class="lineno">  291</span>  }</div>
-<div class="line"><span class="lineno">  292</span>  <span class="comment">// Optimizers write free-atom coords only (TIP4P/SPCE and any PBC pot).</span></div>
-<div class="line"><span class="lineno">  293</span>  <span class="comment">// Match setPositions: wrap the full configuration when PBC is on (#171).</span></div>
-<div class="line"><span class="lineno">  294</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aaf6a7b6df1641c0e351abefb3bf5f6bd">usePeriodicBoundaries</a>) {</div>
-<div class="line"><span class="lineno">  295</span>    <a class="code hl_function" href="#a8c114b053047b48613893cdb90b1e194">applyPeriodicBoundary</a>();</div>
-<div class="line"><span class="lineno">  296</span>  }</div>
-<div class="line"><span class="lineno">  297</span>  <a class="code hl_variable" href="#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  298</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  299</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00289">289</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  289</span>                                                   {</div>
+<div class="line"><span class="lineno">  290</span>  <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>(); <span class="comment">// ensure freeIndices is up to date</span></div>
+<div class="line"><span class="lineno">  291</span>  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; <a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>.size(); j++) {</div>
+<div class="line"><span class="lineno">  292</span>    <a class="code hl_variable" href="#af8290bf4afd79fd95fbd50e79d265eb0">positions</a>.row(<a class="code hl_variable" href="#a3ef83ca6aaf1d2a56d73dac3b131aa45">freeIndices</a>[j]) = pos.row(<span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(j));</div>
+<div class="line"><span class="lineno">  293</span>  }</div>
+<div class="line"><span class="lineno">  294</span>  <span class="comment">// Optimizers write free-atom coords only (TIP4P/SPCE and any PBC pot).</span></div>
+<div class="line"><span class="lineno">  295</span>  <span class="comment">// Match setPositions: wrap the full configuration when PBC is on (#171).</span></div>
+<div class="line"><span class="lineno">  296</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#aaf6a7b6df1641c0e351abefb3bf5f6bd">usePeriodicBoundaries</a>) {</div>
+<div class="line"><span class="lineno">  297</span>    <a class="code hl_function" href="#a8c114b053047b48613893cdb90b1e194">applyPeriodicBoundary</a>();</div>
+<div class="line"><span class="lineno">  298</span>  }</div>
+<div class="line"><span class="lineno">  299</span>  <a class="code hl_variable" href="#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  300</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  301</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -3286,11 +3289,11 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00301">301</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  301</span>                                                  {</div>
-<div class="line"><span class="lineno">  302</span>  <a class="code hl_function" href="#a7eaf0ffdfbf7eaff092d6088b8895c2d">setPositionsFree</a>(AtomMatrix::Map(pos.data(), <a class="code hl_function" href="#acf7568f3207c071f206a8db116ed03c1">numberOfFreeAtoms</a>(), 3));</div>
-<div class="line"><span class="lineno">  303</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_a7eaf0ffdfbf7eaff092d6088b8895c2d"><div class="ttname"><a href="#a7eaf0ffdfbf7eaff092d6088b8895c2d">eonc::Matter::setPositionsFree</a></div><div class="ttdeci">void setPositionsFree(const AtomMatrix &amp;pos)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00287">Matter.cpp:287</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00303">303</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  303</span>                                                  {</div>
+<div class="line"><span class="lineno">  304</span>  <a class="code hl_function" href="#a7eaf0ffdfbf7eaff092d6088b8895c2d">setPositionsFree</a>(AtomMatrix::Map(pos.data(), <a class="code hl_function" href="#acf7568f3207c071f206a8db116ed03c1">numberOfFreeAtoms</a>(), 3));</div>
+<div class="line"><span class="lineno">  305</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_a7eaf0ffdfbf7eaff092d6088b8895c2d"><div class="ttname"><a href="#a7eaf0ffdfbf7eaff092d6088b8895c2d">eonc::Matter::setPositionsFree</a></div><div class="ttdeci">void setPositionsFree(const AtomMatrix &amp;pos)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00289">Matter.cpp:289</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -3309,11 +3312,11 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00283">283</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  283</span>                                              {</div>
-<div class="line"><span class="lineno">  284</span>  <a class="code hl_function" href="#ae81d805ef12ff7ce616ddaf2c8da2990">setPositions</a>(AtomMatrix::Map(pos.data(), <a class="code hl_function" href="#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>(), 3));</div>
-<div class="line"><span class="lineno">  285</span>}</div>
-<div class="ttc" id="aclasseonc_1_1Matter_html_ae81d805ef12ff7ce616ddaf2c8da2990"><div class="ttname"><a href="#ae81d805ef12ff7ce616ddaf2c8da2990">eonc::Matter::setPositions</a></div><div class="ttdeci">void setPositions(const AtomMatrix &amp;pos)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00273">Matter.cpp:273</a></div></div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00285">285</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  285</span>                                              {</div>
+<div class="line"><span class="lineno">  286</span>  <a class="code hl_function" href="#ae81d805ef12ff7ce616ddaf2c8da2990">setPositions</a>(AtomMatrix::Map(pos.data(), <a class="code hl_function" href="#a6d270e335854296565eaa5ba015753b5">numberOfAtoms</a>(), 3));</div>
+<div class="line"><span class="lineno">  287</span>}</div>
+<div class="ttc" id="aclasseonc_1_1Matter_html_ae81d805ef12ff7ce616ddaf2c8da2990"><div class="ttname"><a href="#ae81d805ef12ff7ce616ddaf2c8da2990">eonc::Matter::setPositions</a></div><div class="ttdeci">void setPositions(const AtomMatrix &amp;pos)</div><div class="ttdef"><b>Definition</b> <a href="Matter_8cpp_source.html#l00275">Matter.cpp:275</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -3332,24 +3335,24 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00625">625</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  625</span>                                                      {</div>
-<div class="line"><span class="lineno">  626</span>  this-&gt;<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a> = pot;</div>
-<div class="line"><span class="lineno">  627</span>  <span class="comment">// Molecular QM backends (NWChem/ORCA) must not use PBC wraps (#188). Auto-off</span></div>
-<div class="line"><span class="lineno">  628</span>  <span class="comment">// with a hard fail if code later forces PBC while this pot is attached.</span></div>
-<div class="line"><span class="lineno">  629</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a> &amp;&amp; <a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>-&gt;requiresIsolatedMoleculeLayout() &amp;&amp;</div>
-<div class="line"><span class="lineno">  630</span>      <a class="code hl_variable" href="#aaf6a7b6df1641c0e351abefb3bf5f6bd">usePeriodicBoundaries</a>) {</div>
-<div class="line"><span class="lineno">  631</span>    <a class="code hl_variable" href="#aaf6a7b6df1641c0e351abefb3bf5f6bd">usePeriodicBoundaries</a> = <span class="keyword">false</span>;</div>
-<div class="line"><span class="lineno">  632</span>    <span class="comment">// Use EONC_LOG_* (not bare QUILL_LOG_* with eonc::log::get() as arg): the</span></div>
-<div class="line"><span class="lineno">  633</span>    <span class="comment">// quill macros expand logger-&gt;… and choke on a call expression as the first</span></div>
-<div class="line"><span class="lineno">  634</span>    <span class="comment">// macro argument on some GCC versions (CI: expected primary-expression).</span></div>
-<div class="line"><span class="lineno">  635</span>    <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(</div>
-<div class="line"><span class="lineno">  636</span>        <span class="stringliteral">&quot;Disabled PBC for isolated-molecule potential (NWChem/ORCA-class); &quot;</span></div>
-<div class="line"><span class="lineno">  637</span>        <span class="stringliteral">&quot;re-enabling PBC will throw (issue #188)&quot;</span>);</div>
-<div class="line"><span class="lineno">  638</span>  }</div>
-<div class="line"><span class="lineno">  639</span>  <a class="code hl_variable" href="#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  640</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
-<div class="line"><span class="lineno">  641</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00628">628</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  628</span>                                                      {</div>
+<div class="line"><span class="lineno">  629</span>  this-&gt;<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a> = pot;</div>
+<div class="line"><span class="lineno">  630</span>  <span class="comment">// Molecular QM backends (NWChem/ORCA) must not use PBC wraps (#188). Auto-off</span></div>
+<div class="line"><span class="lineno">  631</span>  <span class="comment">// with a hard fail if code later forces PBC while this pot is attached.</span></div>
+<div class="line"><span class="lineno">  632</span>  <span class="keywordflow">if</span> (<a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a> &amp;&amp; <a class="code hl_variable" href="#a606ed724f40629b85d76d449226bc10b">potential</a>-&gt;requiresIsolatedMoleculeLayout() &amp;&amp;</div>
+<div class="line"><span class="lineno">  633</span>      <a class="code hl_variable" href="#aaf6a7b6df1641c0e351abefb3bf5f6bd">usePeriodicBoundaries</a>) {</div>
+<div class="line"><span class="lineno">  634</span>    <a class="code hl_variable" href="#aaf6a7b6df1641c0e351abefb3bf5f6bd">usePeriodicBoundaries</a> = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  635</span>    <span class="comment">// Use EONC_LOG_* (not bare QUILL_LOG_* with eonc::log::get() as arg): the</span></div>
+<div class="line"><span class="lineno">  636</span>    <span class="comment">// quill macros expand logger-&gt;… and choke on a call expression as the first</span></div>
+<div class="line"><span class="lineno">  637</span>    <span class="comment">// macro argument on some GCC versions (CI: expected primary-expression).</span></div>
+<div class="line"><span class="lineno">  638</span>    <a class="code hl_define" href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a>(</div>
+<div class="line"><span class="lineno">  639</span>        <span class="stringliteral">&quot;Disabled PBC for isolated-molecule potential (NWChem/ORCA-class); &quot;</span></div>
+<div class="line"><span class="lineno">  640</span>        <span class="stringliteral">&quot;re-enabling PBC will throw (issue #188)&quot;</span>);</div>
+<div class="line"><span class="lineno">  641</span>  }</div>
+<div class="line"><span class="lineno">  642</span>  <a class="code hl_variable" href="#a94d412b1be09524d9d598dede472e25c">recomputePotential</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  643</span>  <a class="code hl_variable" href="#a5164aab0299da8bebd1f5c203bad021e">recomputeMaskedForces</a> = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  644</span>}</div>
 <div class="ttc" id="aEonLogger_8h_html_a85fddaf0620c36ee3fcf865df53a9327"><div class="ttname"><a href="EonLogger_8h.html#a85fddaf0620c36ee3fcf865df53a9327">EONC_LOG_WARNING</a></div><div class="ttdeci">#define EONC_LOG_WARNING(...)</div><div class="ttdef"><b>Definition</b> <a href="EonLogger_8h_source.html#l00256">EonLogger.h:256</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -3369,10 +3372,10 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00604">604</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  604</span>                                              {</div>
-<div class="line"><span class="lineno">  605</span>  <a class="code hl_variable" href="#a4cf3e65a663f6fe1059deb9735f1ede5">velocities</a> = v.array() * <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
-<div class="line"><span class="lineno">  606</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00606">606</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  606</span>                                              {</div>
+<div class="line"><span class="lineno">  607</span>  <a class="code hl_variable" href="#a4cf3e65a663f6fe1059deb9735f1ede5">velocities</a> = v.array() * <a class="code hl_function" href="#a42c2c5ca606659d564e05f09ba452601">getFree</a>().array();</div>
+<div class="line"><span class="lineno">  608</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -3400,10 +3403,10 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00231">231</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  231</span>                                                                 {</div>
-<div class="line"><span class="lineno">  232</span>  <a class="code hl_variable" href="#a4cf3e65a663f6fe1059deb9735f1ede5">velocities</a>(indexAtom, axis) = vel;</div>
-<div class="line"><span class="lineno">  233</span>}</div>
+<p class="definition">Definition at line <a class="el" href="Matter_8cpp_source.html#l00233">233</a> of file <a class="el" href="Matter_8cpp_source.html">Matter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  233</span>                                                                 {</div>
+<div class="line"><span class="lineno">  234</span>  <a class="code hl_variable" href="#a4cf3e65a663f6fe1059deb9735f1ede5">velocities</a>(indexAtom, axis) = vel;</div>
+<div class="line"><span class="lineno">  235</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>

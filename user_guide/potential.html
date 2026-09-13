@@ -211,6 +211,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1 _expand"><a class="reference internal" href="../releases/index.html">Releases</a><ul>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/changelog.html">Changelog</a></li>
+<li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.2.1/index.html">[v3.2.1] - 2026-09-13</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../releases/v3.2.1/release-notes.html">eOn 3.2.1</a></li>
+</ul>
+</li>
 <li class="toctree-l2 _expand"><a class="reference internal" href="../releases/v3.2.0/index.html">[v3.2.0] - 2026-08-16</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../releases/v3.2.0/release-notes.html">eOn 3.2.0</a></li>
 </ul>
@@ -298,12 +302,14 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li><a class="reference internal" href="#configuration">Configuration</a><ul>
 <li><a class="reference internal" href="#eon.schema.PotentialConfig"><code class="docutils literal notranslate"><span class="pre">PotentialConfig</span></code></a><ul>
+<li><a class="reference internal" href="#eon.schema.PotentialConfig.emt_rasmussen"><code class="docutils literal notranslate">emt_rasmussen</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.PotentialConfig.ext_pot_path"><code class="docutils literal notranslate">ext_pot_path</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.PotentialConfig.lammps_logging"><code class="docutils literal notranslate">lammps_logging</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.PotentialConfig.lammps_threads"><code class="docutils literal notranslate">lammps_threads</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.PotentialConfig.log_potential"><code class="docutils literal notranslate">log_potential</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.PotentialConfig.mpi_poll_period"><code class="docutils literal notranslate">mpi_poll_period</span></code></a></li>
 <li><a class="reference internal" href="#eon.schema.PotentialConfig.potential"><code class="docutils literal notranslate">potential</span></code></a></li>
+<li><a class="reference internal" href="#eon.schema.PotentialConfig.potentials_path"><code class="docutils literal notranslate">potentials_path</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -634,55 +640,83 @@ saddle / NEB Morse fixtures.</p>
 </span><span data-line="31"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Type of potential to execute.&quot;</span><span class="p">,</span>
 </span><span data-line="32"><span class="w">         </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 </span><span data-line="33"><span class="w">            </span><span class="s2">&quot;ams&quot;</span><span class="p">,</span>
-</span><span data-line="34"><span class="w">            </span><span class="s2">&quot;ams_io&quot;</span><span class="p">,</span>
-</span><span data-line="35"><span class="w">            </span><span class="s2">&quot;ase_nwcem&quot;</span><span class="p">,</span>
+</span><span data-line="34"><span class="w">            </span><span class="s2">&quot;ase_pot&quot;</span><span class="p">,</span>
+</span><span data-line="35"><span class="w">            </span><span class="s2">&quot;ams_io&quot;</span><span class="p">,</span>
 </span><span data-line="36"><span class="w">            </span><span class="s2">&quot;ase_nwchem&quot;</span><span class="p">,</span>
 </span><span data-line="37"><span class="w">            </span><span class="s2">&quot;ase_orca&quot;</span><span class="p">,</span>
-</span><span data-line="38"><span class="w">            </span><span class="s2">&quot;cuh2&quot;</span><span class="p">,</span>
-</span><span data-line="39"><span class="w">            </span><span class="s2">&quot;eam_al&quot;</span><span class="p">,</span>
-</span><span data-line="40"><span class="w">            </span><span class="s2">&quot;edip&quot;</span><span class="p">,</span>
-</span><span data-line="41"><span class="w">            </span><span class="s2">&quot;emt&quot;</span><span class="p">,</span>
-</span><span data-line="42"><span class="w">            </span><span class="s2">&quot;ext_pot&quot;</span><span class="p">,</span>
-</span><span data-line="43"><span class="w">            </span><span class="s2">&quot;fehe&quot;</span><span class="p">,</span>
-</span><span data-line="44"><span class="w">            </span><span class="s2">&quot;gpr&quot;</span><span class="p">,</span>
-</span><span data-line="45"><span class="w">            </span><span class="s2">&quot;lammps&quot;</span><span class="p">,</span>
-</span><span data-line="46"><span class="w">            </span><span class="s2">&quot;lenosky_si&quot;</span><span class="p">,</span>
-</span><span data-line="47"><span class="w">            </span><span class="s2">&quot;lj&quot;</span><span class="p">,</span>
-</span><span data-line="48"><span class="w">            </span><span class="s2">&quot;ljcluster&quot;</span><span class="p">,</span>
-</span><span data-line="49"><span class="w">            </span><span class="s2">&quot;metatomic&quot;</span><span class="p">,</span>
-</span><span data-line="50"><span class="w">            </span><span class="s2">&quot;morse_pt&quot;</span><span class="p">,</span>
-</span><span data-line="51"><span class="w">            </span><span class="s2">&quot;mpi&quot;</span><span class="p">,</span>
-</span><span data-line="52"><span class="w">            </span><span class="s2">&quot;rgpot&quot;</span><span class="p">,</span>
-</span><span data-line="53"><span class="w">            </span><span class="s2">&quot;socket_nwchem&quot;</span><span class="p">,</span>
-</span><span data-line="54"><span class="w">            </span><span class="s2">&quot;spce&quot;</span><span class="p">,</span>
-</span><span data-line="55"><span class="w">            </span><span class="s2">&quot;sw_si&quot;</span><span class="p">,</span>
-</span><span data-line="56"><span class="w">            </span><span class="s2">&quot;tersoff_si&quot;</span><span class="p">,</span>
-</span><span data-line="57"><span class="w">            </span><span class="s2">&quot;tip4p&quot;</span><span class="p">,</span>
-</span><span data-line="58"><span class="w">            </span><span class="s2">&quot;tip4p_h&quot;</span><span class="p">,</span>
-</span><span data-line="59"><span class="w">            </span><span class="s2">&quot;tip4p_pt&quot;</span><span class="p">,</span>
-</span><span data-line="60"><span class="w">            </span><span class="s2">&quot;unknown&quot;</span><span class="p">,</span>
-</span><span data-line="61"><span class="w">            </span><span class="s2">&quot;vasp&quot;</span><span class="p">,</span>
-</span><span data-line="62"><span class="w">            </span><span class="s2">&quot;xtb&quot;</span><span class="p">,</span>
-</span><span data-line="63"><span class="w">            </span><span class="s2">&quot;zbl&quot;</span>
-</span><span data-line="64"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="65"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Potential&quot;</span><span class="p">,</span>
-</span><span data-line="66"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
-</span><span data-line="67"><span class="w">      </span><span class="p">},</span>
-</span><span data-line="68"><span class="w">      </span><span class="nt">&quot;log_potential&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span data-line="69"><span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span data-line="70"><span class="w">            </span><span class="p">{</span>
-</span><span data-line="71"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
-</span><span data-line="72"><span class="w">            </span><span class="p">},</span>
-</span><span data-line="73"><span class="w">            </span><span class="p">{</span>
-</span><span data-line="74"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
-</span><span data-line="75"><span class="w">            </span><span class="p">}</span>
-</span><span data-line="76"><span class="w">         </span><span class="p">],</span>
-</span><span data-line="77"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-</span><span data-line="78"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If true, write timing information about each force call to client.log.&quot;</span><span class="p">,</span>
-</span><span data-line="79"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Log Potential&quot;</span>
-</span><span data-line="80"><span class="w">      </span><span class="p">}</span>
-</span><span data-line="81"><span class="w">   </span><span class="p">}</span>
-</span><span data-line="82"><span class="p">}</span>
+</span><span data-line="38"><span class="w">            </span><span class="s2">&quot;catlearn&quot;</span><span class="p">,</span>
+</span><span data-line="39"><span class="w">            </span><span class="s2">&quot;cuh2&quot;</span><span class="p">,</span>
+</span><span data-line="40"><span class="w">            </span><span class="s2">&quot;eam_al&quot;</span><span class="p">,</span>
+</span><span data-line="41"><span class="w">            </span><span class="s2">&quot;edip&quot;</span><span class="p">,</span>
+</span><span data-line="42"><span class="w">            </span><span class="s2">&quot;emt&quot;</span><span class="p">,</span>
+</span><span data-line="43"><span class="w">            </span><span class="s2">&quot;ext_pot&quot;</span><span class="p">,</span>
+</span><span data-line="44"><span class="w">            </span><span class="s2">&quot;fehe&quot;</span><span class="p">,</span>
+</span><span data-line="45"><span class="w">            </span><span class="s2">&quot;gpr&quot;</span><span class="p">,</span>
+</span><span data-line="46"><span class="w">            </span><span class="s2">&quot;lammps&quot;</span><span class="p">,</span>
+</span><span data-line="47"><span class="w">            </span><span class="s2">&quot;lenosky_si&quot;</span><span class="p">,</span>
+</span><span data-line="48"><span class="w">            </span><span class="s2">&quot;lj&quot;</span><span class="p">,</span>
+</span><span data-line="49"><span class="w">            </span><span class="s2">&quot;ljcluster&quot;</span><span class="p">,</span>
+</span><span data-line="50"><span class="w">            </span><span class="s2">&quot;metatomic&quot;</span><span class="p">,</span>
+</span><span data-line="51"><span class="w">            </span><span class="s2">&quot;morse_pt&quot;</span><span class="p">,</span>
+</span><span data-line="52"><span class="w">            </span><span class="s2">&quot;mpi&quot;</span><span class="p">,</span>
+</span><span data-line="53"><span class="w">            </span><span class="s2">&quot;rgpot&quot;</span><span class="p">,</span>
+</span><span data-line="54"><span class="w">            </span><span class="s2">&quot;socketnwchem&quot;</span><span class="p">,</span>
+</span><span data-line="55"><span class="w">            </span><span class="s2">&quot;SocketNWChem&quot;</span><span class="p">,</span>
+</span><span data-line="56"><span class="w">            </span><span class="s2">&quot;spce&quot;</span><span class="p">,</span>
+</span><span data-line="57"><span class="w">            </span><span class="s2">&quot;sw_si&quot;</span><span class="p">,</span>
+</span><span data-line="58"><span class="w">            </span><span class="s2">&quot;tersoff_si&quot;</span><span class="p">,</span>
+</span><span data-line="59"><span class="w">            </span><span class="s2">&quot;tip4p&quot;</span><span class="p">,</span>
+</span><span data-line="60"><span class="w">            </span><span class="s2">&quot;tip4p_h&quot;</span><span class="p">,</span>
+</span><span data-line="61"><span class="w">            </span><span class="s2">&quot;tip4p_pt&quot;</span><span class="p">,</span>
+</span><span data-line="62"><span class="w">            </span><span class="s2">&quot;unknown&quot;</span><span class="p">,</span>
+</span><span data-line="63"><span class="w">            </span><span class="s2">&quot;vasp&quot;</span><span class="p">,</span>
+</span><span data-line="64"><span class="w">            </span><span class="s2">&quot;xtb&quot;</span><span class="p">,</span>
+</span><span data-line="65"><span class="w">            </span><span class="s2">&quot;zbl&quot;</span>
+</span><span data-line="66"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="67"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Potential&quot;</span><span class="p">,</span>
+</span><span data-line="68"><span class="w">         </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="69"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="70"><span class="w">      </span><span class="nt">&quot;emt_rasmussen&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="71"><span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="72"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="73"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="74"><span class="w">            </span><span class="p">},</span>
+</span><span data-line="75"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="76"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+</span><span data-line="77"><span class="w">            </span><span class="p">}</span>
+</span><span data-line="78"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="79"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span data-line="80"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Use the Rasmussen EMT parameterization.&quot;</span><span class="p">,</span>
+</span><span data-line="81"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Emt Rasmussen&quot;</span>
+</span><span data-line="82"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="83"><span class="w">      </span><span class="nt">&quot;potentials_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="84"><span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="85"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="86"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+</span><span data-line="87"><span class="w">            </span><span class="p">},</span>
+</span><span data-line="88"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="89"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+</span><span data-line="90"><span class="w">            </span><span class="p">}</span>
+</span><span data-line="91"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="92"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+</span><span data-line="93"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Directory of extra potential data files.&quot;</span><span class="p">,</span>
+</span><span data-line="94"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Potentials Path&quot;</span>
+</span><span data-line="95"><span class="w">      </span><span class="p">},</span>
+</span><span data-line="96"><span class="w">      </span><span class="nt">&quot;log_potential&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span data-line="97"><span class="w">         </span><span class="nt">&quot;anyOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span data-line="98"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="99"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span>
+</span><span data-line="100"><span class="w">            </span><span class="p">},</span>
+</span><span data-line="101"><span class="w">            </span><span class="p">{</span>
+</span><span data-line="102"><span class="w">               </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+</span><span data-line="103"><span class="w">            </span><span class="p">}</span>
+</span><span data-line="104"><span class="w">         </span><span class="p">],</span>
+</span><span data-line="105"><span class="w">         </span><span class="nt">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+</span><span data-line="106"><span class="w">         </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;If true, write timing information about each force call to client.log.&quot;</span><span class="p">,</span>
+</span><span data-line="107"><span class="w">         </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Log Potential&quot;</span>
+</span><span data-line="108"><span class="w">      </span><span class="p">}</span>
+</span><span data-line="109"><span class="w">   </span><span class="p">}</span>
+</span><span data-line="110"><span class="p">}</span>
 </span></pre></div>
 </div>
 </details></p><dl class="field-list simple">
@@ -693,15 +727,23 @@ saddle / NEB Morse fixtures.</p>
 </dd>
 <dt class="field-even">Fields<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">emt_rasmussen</span> <span class="pre">(bool</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ext_pot_path</span> <span class="pre">(str)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lammps_logging</span> <span class="pre">(bool)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lammps_threads</span> <span class="pre">(int)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_potential</span> <span class="pre">(bool</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mpi_poll_period</span> <span class="pre">(float)</span></code></p></li>
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">potential</span> <span class="pre">(Literal['ams',</span> <span class="pre">'ams_io',</span> <span class="pre">'ase_nwcem',</span> <span class="pre">'ase_nwchem',</span> <span class="pre">'ase_orca',</span> <span class="pre">'cuh2',</span> <span class="pre">'eam_al',</span> <span class="pre">'edip',</span> <span class="pre">'emt',</span> <span class="pre">'ext_pot',</span> <span class="pre">'fehe',</span> <span class="pre">'gpr',</span> <span class="pre">'lammps',</span> <span class="pre">'lenosky_si',</span> <span class="pre">'lj',</span> <span class="pre">'ljcluster',</span> <span class="pre">'metatomic',</span> <span class="pre">'morse_pt',</span> <span class="pre">'mpi',</span> <span class="pre">'rgpot',</span> <span class="pre">'socket_nwchem',</span> <span class="pre">'spce',</span> <span class="pre">'sw_si',</span> <span class="pre">'tersoff_si',</span> <span class="pre">'tip4p',</span> <span class="pre">'tip4p_h',</span> <span class="pre">'tip4p_pt',</span> <span class="pre">'unknown',</span> <span class="pre">'vasp',</span> <span class="pre">'xtb',</span> <span class="pre">'zbl'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">potential</span> <span class="pre">(Literal['ams',</span> <span class="pre">'ase_pot',</span> <span class="pre">'ams_io',</span> <span class="pre">'ase_nwchem',</span> <span class="pre">'ase_orca',</span> <span class="pre">'catlearn',</span> <span class="pre">'cuh2',</span> <span class="pre">'eam_al',</span> <span class="pre">'edip',</span> <span class="pre">'emt',</span> <span class="pre">'ext_pot',</span> <span class="pre">'fehe',</span> <span class="pre">'gpr',</span> <span class="pre">'lammps',</span> <span class="pre">'lenosky_si',</span> <span class="pre">'lj',</span> <span class="pre">'ljcluster',</span> <span class="pre">'metatomic',</span> <span class="pre">'morse_pt',</span> <span class="pre">'mpi',</span> <span class="pre">'rgpot',</span> <span class="pre">'socketnwchem',</span> <span class="pre">'SocketNWChem',</span> <span class="pre">'spce',</span> <span class="pre">'sw_si',</span> <span class="pre">'tersoff_si',</span> <span class="pre">'tip4p',</span> <span class="pre">'tip4p_h',</span> <span class="pre">'tip4p_pt',</span> <span class="pre">'unknown',</span> <span class="pre">'vasp',</span> <span class="pre">'xtb',</span> <span class="pre">'zbl'])</span></code></p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">potentials_path</span> <span class="pre">(str</span> <span class="pre">|</span> <span class="pre">None)</span></code></p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PotentialConfig.emt_rasmussen">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">emt_rasmussen</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#eon.schema.PotentialConfig.emt_rasmussen" title="Link to this definition">¶</a></dt>
+<dd><p>Use the Rasmussen EMT parameterization.</p>
+</dd></dl>
+
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.PotentialConfig.ext_pot_path">
 <span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ext_pot_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ext_pot'</span></span><a class="headerlink" href="#eon.schema.PotentialConfig.ext_pot_path" title="Link to this definition">¶</a></dt>
@@ -734,7 +776,7 @@ saddle / NEB Morse fixtures.</p>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="eon.schema.PotentialConfig.potential">
-<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">potential</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'ams'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ams_io'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ase_nwcem'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ase_nwchem'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ase_orca'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cuh2'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'eam_al'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'edip'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'emt'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ext_pot'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fehe'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gpr'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lammps'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lenosky_si'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lj'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ljcluster'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'metatomic'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'morse_pt'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'mpi'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rgpot'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'socket_nwchem'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'spce'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sw_si'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'tersoff_si'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'tip4p'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'tip4p_h'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'tip4p_pt'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'unknown'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'vasp'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'xtb'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'zbl'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lj'</span></span><a class="headerlink" href="#eon.schema.PotentialConfig.potential" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">potential</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'ams'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ase_pot'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ams_io'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ase_nwchem'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ase_orca'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'catlearn'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cuh2'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'eam_al'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'edip'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'emt'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ext_pot'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fehe'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gpr'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lammps'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lenosky_si'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lj'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ljcluster'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'metatomic'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'morse_pt'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'mpi'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rgpot'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'socketnwchem'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'SocketNWChem'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'spce'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sw_si'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'tersoff_si'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'tip4p'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'tip4p_h'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'tip4p_pt'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'unknown'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'vasp'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'xtb'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'zbl'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lj'</span></span><a class="headerlink" href="#eon.schema.PotentialConfig.potential" title="Link to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Options:</dt><dd><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">ams</span></code>: Amsterdam Modeling Suite potential.</p></li>
@@ -769,6 +811,12 @@ saddle / NEB Morse fixtures.</p>
 </dd>
 </dl>
 <p>Type of potential to execute.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="eon.schema.PotentialConfig.potentials_path">
+<span class="property"><span class="pre">field</span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">potentials_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#eon.schema.PotentialConfig.potentials_path" title="Link to this definition">¶</a></dt>
+<dd><p>Directory of extra potential data files.</p>
 </dd></dl>
 
 </dd></dl>

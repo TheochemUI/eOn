@@ -307,40 +307,41 @@ document.addEventListener('DOMContentLoaded',() => { initNavTree('ASE_8cpp_sourc
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="keywordtype">void</span> <a class="code hl_function" href="classASE.html#a76e329778602bb3421e16cacce8a4fbe">ASE::force</a>(<span class="keywordtype">long</span> nAtoms, <span class="keyword">const</span> <span class="keywordtype">double</span> *R, <span class="keyword">const</span> <span class="keywordtype">int</span> *atomicNrs, <span class="keywordtype">double</span> *F,</div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                <span class="keywordtype">double</span> *U, <span class="keywordtype">double</span> *variance, <span class="keyword">const</span> <span class="keywordtype">double</span> *box) {</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>  variance = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="comment">// TODO(rg): This is easier on the type system if Eigen::Map is used like in</span></div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="comment">// ASE_ORCA convert arrays to Numpy arrays</span></div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    std::vector&lt;size_t&gt; R_shape = {<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nAtoms), 3};</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    py::array_t&lt;double&gt; R_np(R_shape, R);</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    py::array_t&lt;int&gt; atomicNrs_np(nAtoms, atomicNrs);</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    py::array_t&lt;double&gt; box_np({3, 3}, box);</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="comment">// get energy and forces (in this order) from Python</span></div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    std::tuple&lt;double, py::array_t&lt;double&gt;&gt; py_result =</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <a class="code hl_variable" href="classASE.html#ab2b826f3e99150d32a20e9eddc77801e">_calculate</a>(R_np, atomicNrs_np, box_np, <a class="code hl_variable" href="classASE.html#a43439499be69e26cde587dfb73932825">calculator</a>)</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            .cast&lt;std::tuple&lt;double, py::array_t&lt;double&gt;&gt;&gt;();</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="comment">// copy the results to the output arrays</span></div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    *U = std::get&lt;0&gt;(py_result);</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    py::array_t&lt;double&gt; forces = std::get&lt;1&gt;(py_result);</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keyword">auto</span> buffer = forces.request();</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">double</span> *ptr = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(buffer.ptr);</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    std::copy(ptr, ptr + buffer.size, F);</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>  } <span class="keywordflow">catch</span> (py::error_already_set &amp;e) {</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    fprintf(stderr, <span class="stringliteral">&quot;ASE calculator: Python error: %s\n&quot;</span>, e.what());</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;ASE calculator Python error: &quot;</span>) +</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  py::gil_scoped_acquire gil;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="comment">// TODO(rg): This is easier on the type system if Eigen::Map is used like in</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="comment">// ASE_ORCA convert arrays to Numpy arrays</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    std::vector&lt;size_t&gt; R_shape = {<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(nAtoms), 3};</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    py::array_t&lt;double&gt; R_np(R_shape, R);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    py::array_t&lt;int&gt; atomicNrs_np(nAtoms, atomicNrs);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    py::array_t&lt;double&gt; box_np({3, 3}, box);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="comment">// get energy and forces (in this order) from Python</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    std::tuple&lt;double, py::array_t&lt;double&gt;&gt; py_result =</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <a class="code hl_variable" href="classASE.html#ab2b826f3e99150d32a20e9eddc77801e">_calculate</a>(R_np, atomicNrs_np, box_np, <a class="code hl_variable" href="classASE.html#a43439499be69e26cde587dfb73932825">calculator</a>)</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            .cast&lt;std::tuple&lt;double, py::array_t&lt;double&gt;&gt;&gt;();</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="comment">// copy the results to the output arrays</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    *U = std::get&lt;0&gt;(py_result);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    py::array_t&lt;double&gt; forces = std::get&lt;1&gt;(py_result);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">auto</span> buffer = forces.request();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">double</span> *ptr = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span> *<span class="keyword">&gt;</span>(buffer.ptr);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    std::copy(ptr, ptr + buffer.size, F);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>  } <span class="keywordflow">catch</span> (py::error_already_set &amp;e) {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    fprintf(stderr, <span class="stringliteral">&quot;ASE calculator: Python error: %s\n&quot;</span>, e.what());</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;ASE calculator Python error: &quot;</span>) +</div>
 </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                             e.what());</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    fprintf(stderr, <span class="stringliteral">&quot;ASE calculator: C++ exception: %s\n&quot;</span>, e.what());</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;ASE calculator C++ exception: &quot;</span>) +</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                             e.what());</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>  }</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>  <a class="code hl_variable" href="classASE.html#aafc2c1607f256fb7d54562879fe9d8e8">counter</a>++;</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>  <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                             e.what());</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>  } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception &amp;e) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    fprintf(stderr, <span class="stringliteral">&quot;ASE calculator: C++ exception: %s\n&quot;</span>, e.what());</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">throw</span> std::runtime_error(std::string(<span class="stringliteral">&quot;ASE calculator C++ exception: &quot;</span>) +</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                             e.what());</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>  <a class="code hl_variable" href="classASE.html#aafc2c1607f256fb7d54562879fe9d8e8">counter</a>++;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>  <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>}</div>
 <div class="ttc" id="aASE_8h_html"><div class="ttname"><a href="ASE_8h.html">ASE.h</a></div></div>
 <div class="ttc" id="aPyGuard_8h_html"><div class="ttname"><a href="PyGuard_8h.html">PyGuard.h</a></div></div>
 <div class="ttc" id="aclassASE_html_a43439499be69e26cde587dfb73932825"><div class="ttname"><a href="classASE.html#a43439499be69e26cde587dfb73932825">ASE::calculator</a></div><div class="ttdeci">py::object calculator</div><div class="ttdef"><b>Definition</b> <a href="ASE_8h_source.html#l00024">ASE.h:24</a></div></div>
