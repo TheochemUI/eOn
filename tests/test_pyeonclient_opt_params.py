@@ -42,3 +42,12 @@ def test_expr_pot_lj_plus_morse():
     params.expr_terms = "lj,morse"
     pot = pyec.make_potential(params.potential, params)
     assert pot is not None
+
+
+def test_mopac_pot_type_and_params():
+    params = pyec.Parameters()
+    params.potential = pyec.PotType.MOPAC
+    params.mopac_model = 4
+    params.mopac_charge = 0
+    assert params.potential == pyec.PotType.MOPAC
+    assert params.mopac_model == 4

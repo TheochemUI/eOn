@@ -194,6 +194,16 @@ int load_ini(INIReader &ini, Parameters &params) {
     params.expr_options.terms =
         ini.Get("ExprPot", "terms", params.expr_options.terms);
   }
+  if (params.potential_options.potential == PotType::MOPAC) {
+    params.mopac_options.charge = static_cast<int>(
+        ini.GetInteger("MOPACPot", "charge", params.mopac_options.charge));
+    params.mopac_options.spin = static_cast<int>(
+        ini.GetInteger("MOPACPot", "spin", params.mopac_options.spin));
+    params.mopac_options.model = static_cast<int>(
+        ini.GetInteger("MOPACPot", "model", params.mopac_options.model));
+    params.mopac_options.engine_path =
+        ini.Get("MOPACPot", "engine_path", params.mopac_options.engine_path);
+  }
   // [SocketNWChemPot]
   if (params.potential_options.potential == PotType::SocketNWChem) {
     params.socket_nwchem_options.host =

@@ -127,6 +127,14 @@ public:
     std::string terms;
   } expr_options;
 
+  // [MOPACPot]: rgpot 3.2 MOPACPot (libmopacc, default AM1).
+  struct mopac_options_t {
+    int charge{0};
+    int spin{0};
+    int model{4};
+    std::string engine_path;
+  } mopac_options;
+
   // [SocketNWChemPot] //
   struct socket_nwchem_options_t {
     std::string host{"127.0.0.1"};

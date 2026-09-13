@@ -71,7 +71,8 @@ void bind_enums(nb::module_ &m) {
       .value("RGPOT", eonc::PotType::RGPOT)
       .value("DFTD3", eonc::PotType::DFTD3)
       .value("DFTD4", eonc::PotType::DFTD4)
-      .value("EXPR", eonc::PotType::EXPR);
+      .value("EXPR", eonc::PotType::EXPR)
+      .value("MOPAC", eonc::PotType::MOPAC);
 
   m.def(
       "pot_type_from_name",

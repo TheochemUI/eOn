@@ -1,7 +1,6 @@
 [wrap-git]
 directory = rgpot
 url = https://github.com/OmniPotentRPC/rgpot.git
-# Latest release. ForceBatch / forceBatchImpl shipped on main and are in
-# this tag. Do not track a deleted feature branch.
-revision = v3.1.2
+# rgpot 3.2.0 ships MOPACPot (libmopacc, AM1 default) plus ForceBatch.
+revision = v3.2.0
 depth = 1

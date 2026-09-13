@@ -567,6 +567,7 @@ class PotentialConfig(BaseModel):
         "lj",
         "ljcluster",
         "metatomic",
+        "mopac",
         "morse_pt",
         "mpi",
         "rgpot",
@@ -607,6 +608,7 @@ class PotentialConfig(BaseModel):
      - ``lenosky_si``: Lenosky potential, for silicon.
      - ``lj``: Lennard-Jones potential in reduced units (served by rgpot).
      - ``ljcluster``: Lennard-Jones cluster potential (served by rgpot).
+     - ``mopac``: rgpot 3.2 MOPACPot (libmopacc, default AM1; ``[MOPACPot]``).
      - ``morse_pt``: Morse potential for platinum (served by rgpot).
      - ``mpi``: Communicate with an MPI process to calculate energy and forces.
      - ``rgpot``: In-process rgpot backends (NWChem / CPMD / metatomic / xTB via dlopen).

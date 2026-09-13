@@ -42,7 +42,7 @@ metatomic = [
     # Engines from rgpot cover torch 2.7+ (same floor as rgpot multi-ABI).
     # rgpot>=2.5.2 engines match vesin 0.6 VesinOptions (skin/n_threads).
     "torch>=2.7",
-    "rgpot>=3.1.2",
+    "rgpot>=3.2.0",
     "metatensor>=0.1.0",
     "metatensor-torch>=0.6.0",
     "metatomic-torch>=0.1.15",

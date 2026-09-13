@@ -49,6 +49,7 @@
 #ifdef RGPOT_HAS_EXPR
 #include "rgpot/ExprPot/ExprPot.hpp"
 #endif
+#include "rgpot/MOPACPot/MOPACPot.hpp"
 #include "rgpot/fortran/FortranPots.hpp"
 #ifndef IS_WINDOWS
 #include "eon/potentials/SocketNWChem/SocketNWChemPot.h"
@@ -185,8 +186,17 @@ std::unique_ptr<rgpot::PotentialBase> make_expr_term(const std::string &raw,
     });
   }
 #endif
-  throw std::runtime_error("ExprPot unknown term '" + raw +
-                           "' (lj, ljcluster, morse, zbl, d3/dftd3, d4/dftd4)");
+  if (name == "mopac") {
+    return std::make_unique<rgpot::MOPACPot>(rgpot::MOPACPot::Config{
+        .charge = params.mopac_options.charge,
+        .spin = params.mopac_options.spin,
+        .model = params.mopac_options.model,
+        .engine_path = params.mopac_options.engine_path,
+    });
+  }
+  throw std::runtime_error(
+      "ExprPot unknown term '" + raw +
+      "' (lj, ljcluster, morse, zbl, d3/dftd3, d4/dftd4, mopac)");
 }
 
 std::vector<rgpot::ExprPot::Term> parse_expr_terms(const Parameters &params) {
@@ -432,6 +442,17 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
 #endif
+  case PotType::MOPAC: {
+    return makeRgpot<rgpot::MOPACPot>(
+        PotType::MOPAC, params,
+        rgpot::MOPACPot::Config{
+            .charge = params.mopac_options.charge,
+            .spin = params.mopac_options.spin,
+            .model = params.mopac_options.model,
+            .engine_path = params.mopac_options.engine_path,
+        });
+    break;
+  }
 #ifdef RGPOT_HAS_EXPR
   case PotType::EXPR: {
     if (params.expr_options.expression.empty()) {

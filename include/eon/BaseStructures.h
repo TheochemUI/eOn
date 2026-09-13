@@ -70,7 +70,8 @@ enum class PotType {
   RGPOT,
   DFTD3,
   DFTD4,
-  EXPR
+  EXPR,
+  MOPAC
 };
 
 enum class JobType {

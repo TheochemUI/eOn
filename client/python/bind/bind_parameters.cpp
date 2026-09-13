@@ -81,6 +81,26 @@ void bind_parameters(nb::module_ &m) {
           },
           "Comma-separated term names matching the expression")
       .def_prop_rw(
+          "mopac_charge",
+          [](const eonc::Parameters &s) { return s.mopac_options.charge; },
+          [](eonc::Parameters &s, int v) { s.mopac_options.charge = v; })
+      .def_prop_rw(
+          "mopac_spin",
+          [](const eonc::Parameters &s) { return s.mopac_options.spin; },
+          [](eonc::Parameters &s, int v) { s.mopac_options.spin = v; })
+      .def_prop_rw(
+          "mopac_model",
+          [](const eonc::Parameters &s) { return s.mopac_options.model; },
+          [](eonc::Parameters &s, int v) { s.mopac_options.model = v; },
+          "OpenMOPAC model id (4 is AM1)")
+      .def_prop_rw(
+          "mopac_engine_path",
+          [](const eonc::Parameters &s) { return s.mopac_options.engine_path; },
+          [](eonc::Parameters &s, const std::string &v) {
+            s.mopac_options.engine_path = v;
+          },
+          "libmopacc path; empty uses default search")
+      .def_prop_rw(
           "temperature",
           [](const eonc::Parameters &s) { return s.main_options.temperature; },
           [](eonc::Parameters &s, double t) { s.main_options.temperature = t; })
