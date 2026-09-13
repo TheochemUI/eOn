@@ -15,9 +15,10 @@ Frozen sites next to a mover stay put.
 
 ## rgpot 3.1
 
-Wrap pin is **v3.1.2**. `potential = dftd3` / `dftd4` and
-`potential = expr` with `[ExprPot]` terms (`0.5*lj + d3`). D3/D4
-wraps stay off on Windows, where MSVC rustc rejects those wrap flags.
+Wrap pin is **v3.2.0**. `potential = dftd3` / `dftd4`,
+`potential = expr` with `[ExprPot]` terms (`0.5*lj + d3`), and
+`potential = mopac` (libmopacc, default AM1). D3/D4 wraps stay off on
+Windows, where MSVC rustc rejects those wrap flags.
 
 ## ASE / Matter python surface
 
