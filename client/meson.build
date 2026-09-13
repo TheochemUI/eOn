@@ -433,6 +433,14 @@ if not _rgpot_pkg.found()
         rgpot_opts += {'with_rpc': true}
     endif
     _rgpot_proj = subproject('rgpot', default_options: rgpot_opts)
+    # Wrap-built librgpot is not installed (rgpot install: not
+    # is_subproject; CI uses --skip-subprojects). eonclient's rpath
+    # looks in prefix/lib for librgpot.3.dylib.
+    meson.add_install_script(
+        find_program(meson.project_source_root() / 'scripts' / 'install_wrap_rgpot.py'),
+        _rgpot_proj.get_variable('rgpot').full_path(),
+        get_option('libdir'),
+    )
 endif
 
 # vesin: single neighbor-list backend for classical pots + Metatomic.
