@@ -17,10 +17,13 @@ def main() -> int:
     src = Path(sys.argv[1])
     libdir = Path(os.environ["MESON_INSTALL_DESTDIR_PREFIX"]) / sys.argv[2]
     libdir.mkdir(parents=True, exist_ok=True)
-    parent = src.parent
+    # meson library.full_path() can be the .dylib.p object dir.
+    parent = src.parent if src.is_dir() else src.parent
     copied = 0
     for path in parent.iterdir():
         name = path.name
+        if path.is_dir():
+            continue
         if not (
             name.startswith("librgpot")
             or name.startswith("rgpot.")
