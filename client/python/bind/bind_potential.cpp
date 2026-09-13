@@ -407,6 +407,9 @@ void bind_potential(nb::module_ &m) {
       .def("requires_isolated_molecule_layout",
            &eonc::Potential::requiresIsolatedMoleculeLayout)
       .def("is_thread_safe", &eonc::Potential::isThreadSafe)
+      .def("is_shared_instance_thread_safe",
+           &eonc::Potential::isSharedInstanceThreadSafe)
+      .def("needs_per_image_instance", &eonc::Potential::needsPerImageInstance)
       .def(
           "get_ef",
           [](eonc::Potential &self,

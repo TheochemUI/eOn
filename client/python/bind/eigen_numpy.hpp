@@ -37,6 +37,15 @@ view_n3(const double *data, long n) {
   return view_n3(const_cast<double *>(data), n);
 }
 
+/// Zero-copy (n,3) view that cannot be written in place (assignment
+/// through the property is the only write path that dirties caches).
+inline nb::object view_n3_readonly(const double *data, long n) {
+  auto arr = view_n3(const_cast<double *>(data), n);
+  nb::object o = nb::cast(arr);
+  o.attr("flags").attr("writeable") = false;
+  return o;
+}
+
 inline nb::ndarray<nb::numpy, double, nb::c_contig, nb::device::cpu>
 view_33(double *data) {
   return nb::ndarray<nb::numpy, double, nb::c_contig, nb::device::cpu>(

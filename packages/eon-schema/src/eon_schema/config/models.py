@@ -547,11 +547,11 @@ class PotentialConfig(BaseModel):
     )
     potential: Literal[
         "ams",
+        "ase_pot",
         "ams_io",
-        # ase_nwcem is the historical misspelling; both spellings are accepted.
-        "ase_nwcem",
         "ase_nwchem",
         "ase_orca",
+        "catlearn",
         "cuh2",
         "eam_al",
         "edip",
@@ -567,7 +567,8 @@ class PotentialConfig(BaseModel):
         "morse_pt",
         "mpi",
         "rgpot",
-        "socket_nwchem",
+        "socketnwchem",
+        "SocketNWChem",
         "spce",
         "sw_si",
         "tersoff_si",
@@ -613,6 +614,14 @@ class PotentialConfig(BaseModel):
      - ``xtb``: Extended Tight Binding model.
      - ``zbl``: Ziegler-Biersack-Littmark screened nuclear repulsion (served by rgpot).
     """
+    emt_rasmussen: Optional[bool] = Field(
+        default=False,
+        description="Use the Rasmussen EMT parameterization.",
+    )
+    potentials_path: Optional[str] = Field(
+        default=None,
+        description="Directory of extra potential data files.",
+    )
     log_potential: Optional[bool] = Field(
         default=None,
         description="If true, write timing information about each force call to client.log.",

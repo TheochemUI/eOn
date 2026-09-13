@@ -213,6 +213,8 @@ Matrix3d Matter::getCell() const { return cell; }
 void Matter::setCell(const Matrix3d &newCell) {
   cell = newCell;
   cellInverse = cell.inverse();
+  recomputePotential = true;
+  recomputeMaskedForces = true;
 }
 
 double Matter::getPosition(long int indexAtom, int axis) const {
@@ -607,6 +609,7 @@ void Matter::setVelocities(const AtomMatrix &v) {
 
 void Matter::setForces(const AtomMatrix &f) {
   forces = f.array() * getFree().array();
+  recomputeMaskedForces = true;
 }
 
 AtomMatrix Matter::getAccelerations() {

@@ -432,8 +432,10 @@ void bind_neb(nb::module_ &m) {
                                                          params, pot);
       }
       eonc::NudgedElasticBand::NEBStatus st;
-      {
+      if (pot->isThreadSafe()) {
         nb::gil_scoped_release release;
+        st = band->compute();
+      } else {
         st = band->compute();
       }
       return st;
@@ -452,9 +454,14 @@ void bind_neb(nb::module_ &m) {
              const eonc::Parameters &params,
              std::shared_ptr<eonc::Potential> pot,
              const std::string &accelerant) {
-            nb::gil_scoped_release release;
-            new (self) PyNEB(std::move(initial), std::move(final_state), params,
-                             std::move(pot), accelerant);
+            if (pot && pot->isThreadSafe()) {
+              nb::gil_scoped_release release;
+              new (self) PyNEB(std::move(initial), std::move(final_state),
+                               params, std::move(pot), accelerant);
+            } else {
+              new (self) PyNEB(std::move(initial), std::move(final_state),
+                               params, std::move(pot), accelerant);
+            }
           },
           nb::arg("initial"), nb::arg("final"), nb::arg("parameters"),
           nb::arg("potential"), nb::arg("accelerant") = "",

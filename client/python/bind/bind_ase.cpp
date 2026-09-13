@@ -83,6 +83,15 @@ void bind_ase(nb::module_ &m) {
 
         auto matter = std::make_shared<Matter>(pot, params);
         matter->resize(n);
+        bool periodic = false;
+        try {
+          nb::object any =
+              np.attr("any")(np.attr("asarray")(atoms.attr("pbc")));
+          periodic = nb::cast<bool>(any);
+        } catch (...) {
+          periodic = true;
+        }
+        matter->setPeriodic(periodic);
         matter_set_cell_buf(*matter, f64_ptr(cell));
         matter_set_positions_buf(*matter, f64_ptr(pos), n);
         matter_set_masses_buf(*matter, f64_ptr(mass), n);
@@ -113,6 +122,18 @@ void bind_ase(nb::module_ &m) {
               matter->setFixedMask(i, cur);
               continue;
             }
+            // Only FixAtoms. FixBondLengths and FixedLine also have
+            // get_indices() and must not fully freeze those atoms.
+            std::string cname;
+            try {
+              cname =
+                  nb::cast<std::string>(c.attr("__class__").attr("__name__"));
+            } catch (...) {
+              continue;
+            }
+            if (cname != "FixAtoms") {
+              continue;
+            }
             if (!nb::hasattr(c, "get_indices")) {
               continue;
             }
@@ -133,15 +154,6 @@ void bind_ase(nb::module_ &m) {
         } catch (const nb::cast_error &) {
         }
 
-        bool periodic = false;
-        try {
-          nb::object any =
-              np.attr("any")(np.attr("asarray")(atoms.attr("pbc")));
-          periodic = nb::cast<bool>(any);
-        } catch (...) {
-          periodic = true;
-        }
-        matter->setPeriodic(periodic);
         return matter;
       },
       nb::arg("atoms"), nb::arg("potential"), nb::arg("parameters"),
@@ -204,6 +216,19 @@ void bind_ase(nb::module_ &m) {
         }
         if (nb::len(cons) > 0) {
           atoms.attr("set_constraint")(cons);
+        }
+        try {
+          const double energy = matter.getPotentialEnergy();
+          AtomMatrix F = matter.getForces();
+          nb::object forces = np.attr("array")(
+              nb::cast(view_n3(F.data(), n), nb::rv_policy::copy),
+              nb::arg("dtype") = "float64", nb::arg("copy") = true);
+          auto SPC = ase.attr("calculators")
+                         .attr("singlepoint")
+                         .attr("SinglePointCalculator");
+          atoms.attr("calc") = SPC(atoms, nb::arg("energy") = energy,
+                                   nb::arg("forces") = forces);
+        } catch (...) {
         }
         return atoms;
       },
