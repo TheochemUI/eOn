@@ -50,9 +50,10 @@ Examples:
 - **MetatomicPotential**: PyTorch model has internal caches. Same instance
   needs a mutex; separate instances run independently. Returns
   `needsPerImageInstance() = true`.
-- **XTBPot**: Fortran library has per-instance state (`xtb_TEnvironment`,
-  `xtb_TCalculator`). Same instance is not thread-safe; separate instances
-  are independent. Returns `needsPerImageInstance() = true`.
+- **XTBPot**: `isThreadSafe() = false` and `needsPerImageInstance() = false`.
+  `restart.f90` uses global Fortran unit numbers; two XTB environments
+  in one process collide. Parallel NEB with XTB stays serial until
+  upstream fixes unit management.
 
 When `needsPerImageInstance()` is `true`, NEB creates N+2 potential
 instances (one per image) at construction time. The parallel force
@@ -63,9 +64,9 @@ evaluation then proceeds lock-free.
 | `isThreadSafe()` | `needsPerImageInstance()` | Behavior | Examples |
 |:-:|:-:|:--|:--|
 | `true` | `false` | Shared instance, parallel threads | LJ, Morse, LJCluster, EMT |
-| `false` | `true` | Per-image instances, parallel threads | XTB, ASE, metatomic |
+| `false` | `true` | Per-image instances, parallel threads | ASE, CatLearn |
 | `true` | `true` | Per-image instances, parallel threads | MetatomicPotential (mutex fallback) |
-| `false` | `false` | Sequential evaluation | SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, TIP4P-H |
+| `false` | `false` | Sequential evaluation | XTB (`restart.f90` units), SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, TIP4P-H |
 
 ### Where the answers come from
 
