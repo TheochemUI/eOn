@@ -95,9 +95,118 @@ def job_result_scalars_from_results_dat(text: str) -> Dict[str, Any]:
     return out
 
 
+_SNAKE_TO_WIRE = {
+    "job_id": "jobId",
+    "job_type": "jobType",
+    "status_code": "statusCode",
+    "status_text": "statusText",
+    "potential_type": "potentialType",
+    "random_seed": "randomSeed",
+    "potential_energy": "potentialEnergy",
+    "potential_energy_saddle": "potentialEnergySaddle",
+    "potential_energy_reactant": "potentialEnergyReactant",
+    "potential_energy_product": "potentialEnergyProduct",
+    "barrier_reactant_to_product": "barrierReactantToProduct",
+    "barrier_product_to_reactant": "barrierProductToReactant",
+    "prefactor_reactant_to_product": "prefactorReactantToProduct",
+    "prefactor_product_to_reactant": "prefactorProductToReactant",
+    "displacement_saddle_distance": "displacementSaddleDistance",
+    "simulation_time": "simulationTime",
+    "md_temperature": "mdTemperature",
+    "has_dynamics": "hasDynamics",
+    "wall_time_seconds": "wallTimeSeconds",
+    "user_time_seconds": "userTimeSeconds",
+    "system_time_seconds": "systemTimeSeconds",
+    "client_version": "clientVersion",
+}
+_WIRE_TO_SNAKE = {v: k for k, v in _SNAKE_TO_WIRE.items()}
+
+
+def job_result_to_wire(data: Mapping[str, Any]) -> Dict[str, Any]:
+    """CamelCase dict matching JobResult field names."""
+    wire: Dict[str, Any] = {}
+    for key, val in data.items():
+        if key == "force_calls" and isinstance(val, Mapping):
+            wire["forceCalls"] = {
+                "total": int(val.get("total", 0)),
+                "minimization": int(val.get("minimization", 0)),
+                "saddle": int(val.get("saddle", 0)),
+                "prefactors": int(val.get("prefactors", 0)),
+                "neb": int(val.get("neb", 0)),
+            }
+            continue
+        dest = _SNAKE_TO_WIRE.get(key, key)
+        wire[dest] = val
+    return wire
+
+
+def job_result_from_wire(data: Mapping[str, Any]) -> Dict[str, Any]:
+    """Snake_case dict matching job_result_scalars_from_results_dat."""
+    out: Dict[str, Any] = {}
+    for key, val in data.items():
+        if key == "forceCalls" and isinstance(val, Mapping):
+            out["force_calls"] = {
+                "total": int(val.get("total", 0)),
+                "minimization": int(val.get("minimization", 0)),
+                "saddle": int(val.get("saddle", 0)),
+                "prefactors": int(val.get("prefactors", 0)),
+                "neb": int(val.get("neb", 0)),
+            }
+            continue
+        dest = _WIRE_TO_SNAKE.get(key, key)
+        out[dest] = val
+    return out
+
+
+def job_result_dumps(data: Mapping[str, Any]) -> bytes:
+    """Encode a JobResult dict. Uses pycapnp when installed, else JSON."""
+    wire = job_result_to_wire(data)
+    try:
+        import capnp  # type: ignore
+    except ImportError:
+        import json
+
+        return json.dumps(wire, separators=(",", ":")).encode("utf-8")
+    schema = capnp.load(str(job_result_capnp_path()))
+    msg = schema.JobResult.new_message()
+    for key, val in wire.items():
+        if key == "forceCalls" and isinstance(val, Mapping):
+            fc = msg.forceCalls
+            for sub, sval in val.items():
+                if hasattr(fc, sub):
+                    setattr(fc, sub, sval)
+            continue
+        if hasattr(msg, key):
+            try:
+                setattr(msg, key, val)
+            except Exception:
+                pass
+    return msg.to_bytes_packed()
+
+
+def job_result_loads(blob: bytes) -> Dict[str, Any]:
+    """Decode bytes from job_result_dumps."""
+    if blob[:1] == b"{":
+        import json
+
+        return job_result_from_wire(json.loads(blob.decode("utf-8")))
+    try:
+        import capnp  # type: ignore
+    except ImportError as exc:
+        raise ValueError("packed JobResult needs pycapnp") from exc
+    schema = capnp.load(str(job_result_capnp_path()))
+    msg = schema.JobResult.from_bytes_packed(blob)
+    wire = msg.to_dict()
+    return job_result_from_wire(wire)
+
+
 __all__ = [
     "job_result_capnp_path",
     "results_dat_to_dict",
     "dict_to_results_dat",
     "job_result_scalars_from_results_dat",
+    "job_result_to_wire",
+    "job_result_from_wire",
+    "job_result_dumps",
+    "job_result_loads",
 ]
