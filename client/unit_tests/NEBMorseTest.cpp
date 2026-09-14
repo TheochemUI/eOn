@@ -12,6 +12,7 @@
 
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/IDPPObjectiveFunction.hpp"
 #include "eon/NEBInitialPaths.hpp"
 #include "eon/NudgedElasticBand.h"
 #include "eon/PotRegistry.h"
@@ -671,6 +672,42 @@ TEST_CASE_METHOD(NEBLJFixture, "IDPP collective initialization",
   for (long i = 1; i <= neb->numImages; i++) {
     REQUIRE(neb->path[i]->getPositions().allFinite());
   }
+}
+
+TEST_CASE("Collective IDPP lastMaxForce ignores frozen atoms",
+          "[neb][idpp_collective][lyqe]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  params.neb_options.spring.constant = 0.0;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+
+  auto makeImage = [&](double xFree) {
+    Matter m(pot, params);
+    m.resize(3);
+    m.setAtomicNr(0, 1);
+    m.setAtomicNr(1, 1);
+    m.setAtomicNr(2, 1);
+    AtomMatrix p(3, 3);
+    p << xFree, 0.0, 0.0, -2.0, 0.0, 0.0, 10.0, 0.0, 0.0;
+    m.setPositions(p);
+    m.setCell(Matrix3d::Identity() * 40.0);
+    m.setPeriodic(false);
+    m.setFixed(1, true);
+    m.setFixed(2, true);
+    return m;
+  };
+
+  // Midpoint is not the linear interpolation of the free atom, so the
+  // two frozen neighbours carry large uncancelled pair residuals.
+  Matter reactant = makeImage(0.0);
+  Matter mid = makeImage(0.5);
+  Matter product = makeImage(4.0);
+  std::vector<Matter> path{reactant, mid, product};
+  CollectiveIDPPObjectiveFunction of(path, params);
+  VectorXd g = of.getGradient();
+  REQUIRE(g.size() == 3);
+  REQUIRE(of.getConvergence() ==
+          Catch::Approx(g.lpNorm<Eigen::Infinity>()).margin(1e-12));
 }
 
 TEST_CASE_METHOD(NEBLJFixture, "NEB with OCINEB hybrid dimer",
