@@ -81,9 +81,9 @@ struct JobResultEnvelope {
     }
   }
 
-  static JobResultEnvelope
-  fromMinimization(RunStatus status, PotType pot, std::uint64_t fcalls,
-                   bool hasE, double energy) {
+  static JobResultEnvelope fromMinimization(RunStatus status, PotType pot,
+                                            std::uint64_t fcalls, bool hasE,
+                                            double energy) {
     JobResultEnvelope e;
     e.job_type = "minimization";
     e.status_code = static_cast<int>(status);
