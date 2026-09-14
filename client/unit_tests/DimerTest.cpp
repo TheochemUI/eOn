@@ -205,6 +205,16 @@ TEST_CASE_METHOD(DimerFixture,
   REQUIRE_THROWS_WITH(eonc::buildEigenmodeStrategy(matter, params, pot),
                       Catch::Matchers::ContainsSubstring("with_gprd"));
 }
+#else
+TEST_CASE_METHOD(DimerFixture,
+                 "gprdimer constructs AtomicGPDimer in place",
+                 "[eigenmode][strategy][gprdimer][m9q]") {
+  params.saddle_search_options.minmode_method =
+      LowestEigenmode::MINMODE_GPRDIMER;
+  auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
+  REQUIRE(strategy != nullptr);
+  REQUIRE(std::holds_alternative<AtomicGPDimer>(*strategy));
+}
 #endif
 
 // --- asImprovedDimer tests ---
