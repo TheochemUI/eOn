@@ -46,11 +46,11 @@ void singlePoint(std::unique_ptr<Matter> matter) {
 
 void minimize(std::unique_ptr<Matter> matter, const std::string &confileout) {
   matter->relax(false, false);
-  if (!confileout.empty()) {
-    std::cout << "Saving relaxed structure to " << confileout << std::endl;
-  } else {
+  if (confileout.empty()) {
     std::cout << "No output file specified, not saving" << std::endl;
+    return;
   }
+  std::cout << "Saving relaxed structure to " << confileout << std::endl;
   if (!eonc::io::io_ok(matter->matter2con(confileout))) {
     std::cerr << "Failed to write " << confileout << std::endl;
   }
