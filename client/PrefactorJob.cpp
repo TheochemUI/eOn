@@ -10,9 +10,11 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/PrefactorJob.h"
+#include "eon/BaseStructures.h"
 #include "eon/EonLogger.h"
 #include "eon/HelperFunctions.h"
 #include "eon/Hessian.h"
+#include "eon/JobResult.h"
 #include "eon/Matter.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
@@ -33,8 +35,7 @@ std::vector<std::string> PrefactorJob::run() {
   std::vector<std::string> returnFiles;
   VectorXd freqs;
 
-  std::string reactantFilename =
-      eonc::helpers::getRelevantFile("reactant.con");
+  std::string reactantFilename = eonc::helpers::getRelevantFile("reactant.con");
   std::string saddleFilename = eonc::helpers::getRelevantFile("saddle.con");
   std::string productFilename = eonc::helpers::getRelevantFile("product.con");
 
@@ -113,26 +114,20 @@ std::vector<std::string> PrefactorJob::run() {
   returnFiles.push_back(results_file);
   returnFiles.push_back(freq_file);
 
-  std::ofstream outResults(results_file, std::ios::binary);
   std::ofstream outFreq(freq_file, std::ios::binary);
 
-  if (outResults) {
-    outResults << std::format("{} termination_reason\n", failed ? 1 : 0);
-    outResults << std::format("{} termination_reason_text\n",
-                              failed ? "fail" : "good");
-    outResults << "prefactor job_type\n";
-    outResults << std::format("{} good\n", failed ? "false" : "true");
-    outResults << std::format("{} force_calls\n",
-                              PotRegistry::get().total_force_calls());
-    outResults << std::format("{} total_force_calls\n",
-                              PotRegistry::get().total_force_calls());
-    if (!failed) {
-      outResults << std::format("{:.12e} prefactor_reactant_to_product\n",
-                                pref1);
-      outResults << std::format("{:.12e} prefactor_product_to_reactant\n",
-                                pref2);
-    }
+  auto env = JobResultEnvelope::fromMinimization(
+      failed ? RunStatus::FAIL_POTENTIAL_FAILED : RunStatus::GOOD,
+      params.potential_options.potential,
+      PotRegistry::get().total_force_calls(), false, 0.0);
+  env.job_type = "prefactor";
+  env.tags.emplace_back("good", failed ? "false" : "true");
+  env.extras.emplace_back("force_calls", static_cast<double>(env.force_calls));
+  if (!failed) {
+    env.extras.emplace_back("prefactor_reactant_to_product", pref1);
+    env.extras.emplace_back("prefactor_product_to_reactant", pref2);
   }
+  env.writeResultsDat(results_file);
 
   if (outFreq && !failed) {
     for (int i = 0; i < freqs.size(); i++) {

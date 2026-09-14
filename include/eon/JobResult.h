@@ -45,6 +45,7 @@ struct JobResultEnvelope {
   bool has_reactant{false};
   bool has_product{false};
   std::vector<std::pair<std::string, double>> extras;
+  std::vector<std::pair<std::string, std::string>> tags;
 
   std::string toString() const {
     std::ostringstream out;
@@ -79,6 +80,9 @@ struct JobResultEnvelope {
     }
     for (const auto &kv : extras) {
       out << std::format("{:.12e} {}\n", kv.second, kv.first);
+    }
+    for (const auto &kv : tags) {
+      out << kv.second << " " << kv.first << "\n";
     }
     return out.str();
   }

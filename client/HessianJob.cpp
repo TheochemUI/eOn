@@ -13,11 +13,11 @@
 #include "eon/BaseStructures.h"
 #include "eon/EonLogger.h"
 #include "eon/Hessian.h"
+#include "eon/JobResult.h"
 #include "eon/Matter.h"
 #include "eon/MobileAtoms.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
-#include "magic_enum/magic_enum.hpp"
 
 #include <filesystem>
 #include <format>
@@ -53,19 +53,14 @@ std::vector<std::string> HessianJob::run(void) {
   std::string results_file("results.dat");
   returnFiles.push_back(results_file);
 
-  std::ofstream out(results_file, std::ios::binary);
-  if (out) {
-    const auto status =
-        freqs_ok ? RunStatus::GOOD : RunStatus::FAIL_POTENTIAL_FAILED;
-    out << std::format("{} termination_reason\n", static_cast<int>(status));
-    out << std::format("{} termination_reason_text\n",
-                       magic_enum::enum_name<RunStatus>(status));
-    out << "hessian job_type\n";
-    out << std::format("{} force_calls\n",
-                       PotRegistry::get().total_force_calls());
-    out << std::format("{} total_force_calls\n",
-                       PotRegistry::get().total_force_calls());
-  }
+  const auto status =
+      freqs_ok ? RunStatus::GOOD : RunStatus::FAIL_POTENTIAL_FAILED;
+  auto env = JobResultEnvelope::fromMinimization(
+      status, params.potential_options.potential,
+      PotRegistry::get().total_force_calls(), false, 0.0);
+  env.job_type = "hessian";
+  env.extras.emplace_back("force_calls", static_cast<double>(env.force_calls));
+  env.writeResultsDat(results_file);
   if (std::filesystem::exists("hessian.dat")) {
     returnFiles.push_back("hessian.dat");
   }
