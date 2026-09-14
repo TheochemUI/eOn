@@ -11,19 +11,15 @@ pyec = pytest.importorskip("pyeonclient")
 
 MODEL = os.environ.get("EON_PET_MAD_MODEL", "").strip()
 ENGINE = os.environ.get("RGPOT_METATOMIC_ENGINE", "").strip()
-COOK = Path(
-    os.environ.get(
-        "EON_PET_NEB_ROOT",
-        "/home/rgoswami/Git/Github/epfl/pixi_envs/atomistic-cookbook/"
-        "atomistic-cookbook/examples/eon-pet-neb",
-    )
-)
+_COOK_ROOT = os.environ.get("EON_PET_NEB_ROOT", "").strip()
+COOK = Path(_COOK_ROOT) if _COOK_ROOT else None
 
 need = (
     not MODEL
     or not Path(MODEL).is_file()
     or not ENGINE
     or not Path(ENGINE).is_file()
+    or COOK is None
     or not (COOK / "min_reactant" / "pos.con").is_file()
 )
 

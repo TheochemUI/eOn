@@ -11,13 +11,8 @@ import pytest
 pyec = pytest.importorskip("pyeonclient")
 
 MODEL = os.environ.get("EON_PET_MAD_MODEL", "").strip()
-COOK_ROOT = Path(
-    os.environ.get(
-        "EON_PET_NEB_ROOT",
-        "/home/rgoswami/Git/Github/epfl/pixi_envs/atomistic-cookbook/"
-        "atomistic-cookbook/examples/eon-pet-neb",
-    )
-)
+_COOK_ROOT = os.environ.get("EON_PET_NEB_ROOT", "").strip()
+COOK_ROOT = Path(_COOK_ROOT) if _COOK_ROOT else None
 
 
 def test_neb_symbols_bound():
@@ -61,8 +56,11 @@ def test_neb_linear_path_lj():
 
 
 @pytest.mark.skipif(
-    not MODEL or not Path(MODEL).is_file() or not (COOK_ROOT / "idppPath.dat").is_file(),
-    reason="needs PET-MAD model + cookbook path files",
+    not MODEL
+    or not Path(MODEL).is_file()
+    or COOK_ROOT is None
+    or not (COOK_ROOT / "idppPath.dat").is_file(),
+    reason="set EON_PET_MAD_MODEL and EON_PET_NEB_ROOT for cookbook NEB",
 )
 def test_neb_compute_cookbook_metatomic(tmp_path):
     """Full energy-weighted CI+OCI NEB via NudgedElasticBand.compute (not Job)."""
