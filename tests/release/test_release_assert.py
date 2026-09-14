@@ -202,10 +202,11 @@ def test_nickel_gha_sources_exist_and_match_generated_header():
         REPO / ".github" / "workflows" / "towncrier.yml",
     ):
         assert yml.is_file(), yml
-        head = yml.read_text(encoding="utf-8")[:400]
-        # nickel export does not always embed comments; ensure non-empty workflow
-        assert "name:" in head or head.lstrip().startswith("name")
-        assert "jobs:" in yml.read_text(encoding="utf-8")
+        text = yml.read_text(encoding="utf-8")
+        # nickel export may put `name:` after `jobs:`; the first 400 bytes
+        # of release.yml start with --- / concurrency.
+        assert "name:" in text
+        assert "jobs:" in text
 
 
 def test_gen_sh_mentions_nickel_export():

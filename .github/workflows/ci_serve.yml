@@ -3,6 +3,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 on: [push, pull_request]
+permissions:
+  contents: read
 jobs:
   build_serve:
     runs-on: ${{ matrix.os }}

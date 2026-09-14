@@ -13,6 +13,8 @@ on:
       - "client/GPRHelpers.*"
       - "client/meson.build"
       - "meson_options.txt"
+permissions:
+  contents: read
 jobs:
   # Fork PRs do not receive SUBMODULE_PRIVATE. A single job that exits 0
   # after skip reports Success. Split so the integration job is Skipped

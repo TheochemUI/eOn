@@ -5,6 +5,8 @@ concurrency:
 on:
   pull_request:
     branches: [main]
+permissions:
+  contents: read
 jobs:
   benchmark:
     strategy:
