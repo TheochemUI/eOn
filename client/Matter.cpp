@@ -194,6 +194,11 @@ void Matter::resize(const long int length) {
   if (length < 0) {
     throw std::invalid_argument("Matter::resize: negative atom count");
   }
+  // Same-N resize still zeros coordinates. Keep .con column-5 ids and
+  // the file-order map so a later matter2con does not stamp 1..N.
+  const bool keepAtomIds =
+      (length == nAtoms && atomIndex.size() == length &&
+       fileToMatter.size() == static_cast<size_t>(length));
   // Zero is a real size: leaving nAtoms at the old value there sends
   // setMasses and every other nAtoms loop off the end of an empty array.
   nAtoms = length;
@@ -218,11 +223,13 @@ void Matter::resize(const long int length) {
   isFixed.resize(length, 3);
   isFixed.setZero();
 
-  atomIndex.resize(length);
-  fileToMatter.resize(static_cast<size_t>(length));
-  for (long i = 0; i < length; i++) {
-    atomIndex(i) = static_cast<std::int64_t>(i); // default: sequential
-    fileToMatter[static_cast<size_t>(i)] = i;
+  if (!keepAtomIds) {
+    atomIndex.resize(length);
+    fileToMatter.resize(static_cast<size_t>(length));
+    for (long i = 0; i < length; i++) {
+      atomIndex(i) = static_cast<std::int64_t>(i); // default: sequential
+      fileToMatter[static_cast<size_t>(i)] = i;
+    }
   }
   recomputePotential = true;
   recomputeMaskedForces = true;

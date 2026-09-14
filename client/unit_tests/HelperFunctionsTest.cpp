@@ -111,6 +111,39 @@ TEST_CASE("HelperFunctions: loadOrSynthesizeDisplacement from mode (#189/#79)",
   std::filesystem::remove(tmp);
 }
 
+TEST_CASE("loadOrSynthesizeDisplacement keeps reactant atom ids",
+          "[helpers][displacement][mtxr]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter initial(pot, params);
+  REQUIRE(eonc::io::io_ok(initial.con2matter(std::string("reactant.con"))));
+  const long nAtoms = initial.numberOfAtoms();
+  for (long i = 0; i < nAtoms; ++i) {
+    initial.setAtomIndex(i, 700 + i);
+  }
+  const auto disp = std::filesystem::temp_directory_path() /
+                    "eon_disp_mtxr.con";
+  Matter written(pot, params);
+  written = initial;
+  REQUIRE(eonc::io::io_ok(written.matter2con(disp.string())));
+  // Rewrite with sequential ids so the load path cannot cheat off the file.
+  Matter sequential(pot, params);
+  REQUIRE(eonc::io::io_ok(sequential.con2matter(disp.string())));
+  for (long i = 0; i < nAtoms; ++i) {
+    sequential.setAtomIndex(i, i);
+  }
+  REQUIRE(eonc::io::io_ok(sequential.matter2con(disp.string())));
+
+  Matter target(pot, params);
+  REQUIRE(eonc::helpers::loadOrSynthesizeDisplacement(
+      target, initial, disp.string(), "missing_mode.dat", 0.1));
+  for (long i = 0; i < nAtoms; ++i) {
+    REQUIRE(target.getAtomIndex(i) == 700 + i);
+  }
+  std::filesystem::remove(disp);
+}
+
 TEST_CASE("HelperFunctions: randomDouble(max) respects upper bound",
           "[helpers]") {
   double r = eonc::helpers::randomDouble(5.0);
