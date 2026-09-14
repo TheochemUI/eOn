@@ -135,7 +135,7 @@ print(ok, matter.potential_energy, matter.max_force)
 
 ```{code-block} python
 params.dimer_rotations_max = 10
-params.dimer_opt_method = "cg"            # cg | lbfgs | sd
+params.dimer_opt_method = pyec.OptType.CG  # CG | LBFGS | SD
 
 direction = np.random.default_rng(0).normal(size=matter.positions.shape)
 # Default method is "improved"

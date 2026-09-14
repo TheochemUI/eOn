@@ -237,7 +237,8 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << std::endl;
   os << "dimerMaxIterations: " << params.dimer_options.max_iterations
      << std::endl;
-  os << "dimerOptMethod: " << params.dimer_options.opt_method << std::endl;
+  os << "dimerOptMethod: "
+     << magic_enum::enum_name(params.dimer_options.opt_method) << std::endl;
   os << "dimerRotationsMax: " << params.dimer_options.rotations_max
      << std::endl;
   os << "dimerRotationsMin: " << params.dimer_options.rotations_min

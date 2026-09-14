@@ -25,10 +25,6 @@
 #include "eon/EonLogger.h"
 using namespace eonc::helpers;
 
-const char ImprovedDimer::OPT_SD[] = "sd";
-const char ImprovedDimer::OPT_CG[] = "cg";
-const char ImprovedDimer::OPT_LBFGS[] = "lbfgs";
-
 ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
                              const Parameters &params,
                              std::shared_ptr<Potential> pot)
@@ -45,7 +41,7 @@ ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
   tau.setZero();
   totalForceCalls = 0;
 
-  if (params.dimer_options.opt_method == OPT_CG) {
+  if (params.dimer_options.opt_method == OptType::CG) {
     init_cg = true;
   }
 }
@@ -122,13 +118,13 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     return;
   }
 
-  if (params.dimer_options.opt_method == OPT_LBFGS) {
+  if (params.dimer_options.opt_method == OptType::LBFGS) {
     s.clear();
     y.clear();
     rho.clear();
     init_lbfgs = true;
   }
-  if (params.dimer_options.opt_method == OPT_CG) {
+  if (params.dimer_options.opt_method == OptType::CG) {
     init_cg = true;
   }
 
@@ -229,10 +225,10 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     statsTorque = eonc::safemath::safe_div(F_R.norm(), delta * 2.0, 0.0);
 
     // Determine step direction theta via selected optimizer
-    if (params.dimer_options.opt_method == OPT_SD) {
+    if (params.dimer_options.opt_method == OptType::SD) {
       theta = eonc::safemath::safe_normalized(F_R);
 
-    } else if (params.dimer_options.opt_method == OPT_CG) {
+    } else if (params.dimer_options.opt_method == OptType::CG) {
       if (init_cg) {
         init_cg = false;
         gamma = 0.0;
@@ -253,7 +249,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       eonc::safemath::safe_normalize_inplace(theta);
       F_R_Old = F_R;
 
-    } else if (params.dimer_options.opt_method == OPT_LBFGS) {
+    } else if (params.dimer_options.opt_method == OptType::LBFGS) {
       if (!init_lbfgs) {
         VectorXd s0 = tau - tau_Old;
         s.push_back(s0);

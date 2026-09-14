@@ -20,6 +20,9 @@ def test_opt_method_and_refine_roundtrip():
     assert params.neb_opt_method == pyec.OptType.FIRE
     params.refine_opt_method = pyec.OptType.None_
     assert params.refine_opt_method == pyec.OptType.None_
+    assert params.dimer_opt_method == pyec.OptType.CG
+    params.dimer_opt_method = pyec.OptType.LBFGS
+    assert params.dimer_opt_method == pyec.OptType.LBFGS
 
 
 def test_dftd_pot_types_and_params():

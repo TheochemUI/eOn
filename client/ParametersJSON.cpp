@@ -143,7 +143,7 @@ json to_json(const Parameters &p) {
       {"improved", p.dimer_options.improved},
       {"converged_angle", p.dimer_options.converged_angle},
       {"max_iterations", p.dimer_options.max_iterations},
-      {"opt_method", p.dimer_options.opt_method},
+      {"opt_method", enum_to_json(p.dimer_options.opt_method)},
       {"rotation_backend", enum_to_json(p.dimer_options.rotation_backend)},
       {"lor_residual_tol", p.dimer_options.lor_residual_tol},
   };
@@ -344,7 +344,9 @@ void from_json(const json &j, Parameters &p) {
     JSON_OPT(s, "improved", p.dimer_options.improved);
     JSON_OPT(s, "converged_angle", p.dimer_options.converged_angle);
     JSON_OPT(s, "max_iterations", p.dimer_options.max_iterations);
-    JSON_OPT(s, "opt_method", p.dimer_options.opt_method);
+    if (s.contains("opt_method"))
+      p.dimer_options.opt_method =
+          enum_from_json(s.at("opt_method"), p.dimer_options.opt_method);
     if (s.contains("rotation_backend"))
       p.dimer_options.rotation_backend = enum_from_json(
           s.at("rotation_backend"), p.dimer_options.rotation_backend);

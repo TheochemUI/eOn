@@ -484,8 +484,13 @@ int load_ini(INIReader &ini, Parameters &params) {
       "Dimer", "converged_angle", params.dimer_options.converged_angle);
   params.dimer_options.max_iterations = ini.GetInteger(
       "Dimer", "max_iterations", params.dimer_options.max_iterations);
-  params.dimer_options.opt_method = toLowerCase(
-      ini.Get("Dimer", "opt_method", params.dimer_options.opt_method));
+  if (auto dimerOpt = magic_enum::enum_cast<OptType>(
+          ini.Get("Dimer", "opt_method", "cg"),
+          magic_enum::case_insensitive);
+      dimerOpt && *dimerOpt != OptType::Unknown &&
+      *dimerOpt != OptType::None) {
+    params.dimer_options.opt_method = *dimerOpt;
+  }
   params.dimer_options.rotations_min = ini.GetInteger(
       "Dimer", "rotations_min", params.dimer_options.rotations_min);
   params.dimer_options.rotations_max = ini.GetInteger(

@@ -29,14 +29,6 @@ private:
   bool hasFixedReference = false;
 
 public:
-  // Optimization for the dimer
-  //    static const string OPT_SD;
-  //    static const string OPT_CG;
-  //    static const string OPT_LBFGS;
-  static const char OPT_SD[];
-  static const char OPT_CG[];
-  static const char OPT_LBFGS[];
-
   ImprovedDimer(std::shared_ptr<Matter> matter, const Parameters &params,
                 std::shared_ptr<Potential> pot);
   ~ImprovedDimer() = default;
