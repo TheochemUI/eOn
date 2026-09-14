@@ -13,6 +13,7 @@
 #include "eon/Bundling.h"
 #include "eon/EonLogger.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>
@@ -31,7 +32,7 @@ int getBundleSize() {
   for (const auto &entry : fs::directory_iterator(".")) {
     std::string name = entry.path().filename().string();
 
-    if (name[0] == '.') {
+    if (name.empty() || name[0] == '.') {
       continue;
     }
 
@@ -83,7 +84,7 @@ std::vector<std::string> unbundle(int number) {
   for (const auto &entry : fs::directory_iterator(".")) {
     std::string originalFilename = entry.path().filename().string();
 
-    if (originalFilename[0] == '.') {
+    if (originalFilename.empty() || originalFilename[0] == '.') {
       continue;
     }
 
@@ -105,12 +106,15 @@ std::vector<std::string> unbundle(int number) {
     }
 
     std::string numstr = originalFilename.substr(upos + 1, dpos - upos - 1);
-    if (!numstr.empty() &&
-        std::isdigit(static_cast<unsigned char>(numstr[0]))) {
-      int bundleNumber = std::atoi(numstr.c_str());
-      if (bundleNumber != number) {
-        continue;
-      }
+    if (numstr.empty() ||
+        !std::all_of(numstr.begin(), numstr.end(), [](unsigned char c) {
+          return std::isdigit(c);
+        })) {
+      continue;
+    }
+    const int bundleNumber = std::atoi(numstr.c_str());
+    if (bundleNumber != number) {
+      continue;
     }
 
     std::string baseName = originalFilename.substr(0, upos);
