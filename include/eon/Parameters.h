@@ -381,6 +381,8 @@ public:
     std::string path;
     std::string nproc{"1"};
     std::string simpleinput;
+    int charge{0};
+    int multiplicity{1};
   } ase_orca_options;
 
   // [ASE_NWCHEM] //
