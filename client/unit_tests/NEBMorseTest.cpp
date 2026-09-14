@@ -15,6 +15,7 @@
 #include "eon/IDPPObjectiveFunction.hpp"
 #include "eon/NEBInitialPaths.hpp"
 #include "eon/NudgedElasticBand.h"
+#include "eon/PotCapabilities.h"
 #include "eon/PotRegistry.h"
 #include <fstream>
 #include <stdexcept>
@@ -412,6 +413,8 @@ TEST_CASE("Potential isThreadSafe defaults to true",
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   REQUIRE(pot->isThreadSafe() == true);
   REQUIRE(pot->isSharedInstanceThreadSafe() == true);
+  REQUIRE(eonc::potIsThreadSafe(*pot));
+  REQUIRE(eonc::potAllowsSharedInstance(*pot));
 }
 
 TEST_CASE("Potential thread_safe=false forces serial sharing",

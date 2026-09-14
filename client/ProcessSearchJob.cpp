@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/ProcessSearchJob.h"
+#include "eon/PotCapabilities.h"
 #ifdef WITH_ARTN
 #include "eon/ARTnSaddleSearch.h"
 #endif
@@ -272,8 +273,8 @@ int ProcessSearchJob::doProcessSearch() {
   long fc1_before = min1->getPotentialCalls();
   long fc2_before = min2->getPotentialCalls();
 
-  bool canParallel =
-      pot->isSharedInstanceThreadSafe() || pot->needsPerImageInstance();
+  bool canParallel = eonc::potAllowsSharedInstance(*pot) ||
+                     pot->needsPerImageInstance();
   if (params.main_options.parallel && canParallel) {
     std::thread t1([&] {
       converged1 =

@@ -13,6 +13,7 @@
 // An attempt to keep to the variable names in their 2008 paper has been made.
 
 #include "eon/ImprovedDimer.h"
+#include "eon/PotCapabilities.h"
 #include "eon/DimerRotationDispatch.h"
 #include "eon/HelperFunctions.h"
 #include "eon/LowestEigenmode.h"
@@ -153,8 +154,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   // Else fall back to thread-parallel when the potential is thread-safe or
   // wants per-image instances. Otherwise sequential.
   VectorXd g0, g1;
-  bool canParallel =
-      pot->isSharedInstanceThreadSafe() || pot->needsPerImageInstance();
+  bool canParallel = eonc::potAllowsSharedInstance(*pot) ||
+                     pot->needsPerImageInstance();
   if (pot->supportsBatchEvaluation()) {
     long n = x0->numberOfAtoms();
     bool x0dirty = x0->needsForceUpdate();
