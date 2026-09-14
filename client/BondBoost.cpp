@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <ranges>
 #include <cmath>
 #include <stdexcept>
 #include <string>
@@ -43,10 +44,9 @@ void BondBoost::initialize() {
   const std::string &balString =
       parameters.hyperdynamics_options.boost_atom_list;
   std::string lowered = balString;
-  std::transform(lowered.begin(), lowered.end(), lowered.begin(),
-                 [](unsigned char c) {
-                   return static_cast<char>(std::tolower(c));
-                 });
+  std::ranges::transform(lowered, lowered.begin(), [](unsigned char c) {
+    return static_cast<char>(std::tolower(c));
+  });
 
   BAList.clear();
   if (lowered.empty() || lowered == "all") {
