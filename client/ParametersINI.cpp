@@ -543,6 +543,10 @@ int load_ini(INIReader &ini, Parameters &params) {
     params.ase_orca_options.nproc = ini.Get("ASE_ORCA", "nproc", "1");
     params.ase_orca_options.simpleinput =
         ini.Get("ASE_ORCA", "simpleinput", "");
+    params.ase_orca_options.charge =
+        static_cast<int>(ini.GetInteger("ASE_ORCA", "charge", 0));
+    params.ase_orca_options.multiplicity =
+        static_cast<int>(ini.GetInteger("ASE_ORCA", "multiplicity", 1));
   }
   // [ASE_NWCHEM]
   if (ini.HasSection("ASE_NWCHEM")) {

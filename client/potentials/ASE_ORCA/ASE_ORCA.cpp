@@ -55,9 +55,6 @@ std::filesystem::path makeAseWorkDir(const char *prefix) {
 
 } // namespace
 
-// XXX: This always assumes that charge is 0, mult is 1
-// ASE default ----------------------------^ ---------^
-// See also: https://gitlab.com/ase/ase/-/issues/1357
 ASEOrcaPot::ASEOrcaPot(const Parameters &a_params)
     : Potential(PotType::ASE_ORCA, a_params) {
   eonc::ensure_interpreter();
@@ -126,7 +123,8 @@ void ASEOrcaPot::force(long nAtoms, const double *R, const int *atomicNrs,
     Eigen::VectorXi atmnmrs =
         Eigen::Map<Eigen::VectorXi>(const_cast<int *>(atomicNrs), nAtoms);
     py::object atoms = this->ase.attr("Atoms")(
-        "symbols"_a = atmnmrs, "positions"_a = positions, "cell"_a = boxx);
+        "symbols"_a = atmnmrs, "positions"_a = positions, "cell"_a = boxx,
+        "charge"_a = params.ase_orca_options.charge);
     atoms.attr("set_calculator")(this->calc);
     atoms.attr("set_pbc")(std::tuple<bool, bool, bool>(true, true, true));
     double py_e = py::cast<double>(atoms.attr("get_potential_energy")());
