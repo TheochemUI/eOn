@@ -15,6 +15,9 @@ def test_job_result_capnp_exists():
     assert "struct JobRequest" in text
     assert "positions" in text
     assert "statusCode" in text
+    assert "enum TerminationCode" in text
+    assert "dimerRestoredBest @21" in text
+    assert "termination @30" in text
 
 
 def test_results_dat_roundtrip_scalars():
