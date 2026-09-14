@@ -240,16 +240,19 @@ void GlobalOptimizationJob::acceptRejectNPEW(Matter &matter_cur,
 void GlobalOptimizationJob::acceptRejectBoltzmann(Matter &matter_cur,
                                                   Matter &matter_hop) {
   double eTrial = matter_hop.getPotentialEnergy();
-  double eCurrent = matter_hop.getPotentialEnergy();
+  double eCurrent = matter_cur.getPotentialEnergy();
 
   double deltaE = eTrial - eCurrent;
-  double kB = 8.6173324e-5;
+  const double kB = params.constants.kB;
+  const double T = params.main_options.temperature;
 
   double p;
   if (deltaE <= 0.0) {
     p = 1.0;
+  } else if (!(T > 0.0) || !(kB > 0.0)) {
+    p = 0.0;
   } else {
-    p = std::exp(-deltaE / params.main_options.temperature * kB);
+    p = std::exp(-deltaE / (kB * T));
   }
 
   if (randomDouble(1.0) < p) {
@@ -398,9 +401,17 @@ void GlobalOptimizationJob::velopt(Matter &matter) {
   }
   matter.setVelocities(vat);
   long nFreeCoords = matter.numberOfFreeAtoms() * 3;
+  if (nFreeCoords <= 0) {
+    throw std::invalid_argument(
+        "GlobalOptimizationJob::velopt: no free atoms");
+  }
   double kinE = matter.getKineticEnergy();
   double kB = params.constants.kB;
   double kinT = (2.0 * kinE / nFreeCoords / kB);
+  if (!(kinT > 0.0)) {
+    throw std::runtime_error(
+        "GlobalOptimizationJob::velopt: zero kinetic temperature");
+  }
   double temperature = (2.0 * ekin / kB);
   matter.setVelocities(vat * std::sqrt(temperature / kinT));
 }

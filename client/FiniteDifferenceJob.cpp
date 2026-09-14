@@ -24,9 +24,10 @@ using namespace eonc::helpers;
 
 std::vector<std::string> FiniteDifferenceJob::run(void) {
   auto reactant = std::make_unique<Matter>(pot, params);
-  if (!eonc::io::io_ok(reactant->con2matter("pos.con"))) {
-    EONC_LOG_CRITICAL("Failed to load pos.con");
-    throw std::runtime_error("failed to load pos.con");
+  const std::string posFile = eonc::helpers::getRelevantFile("pos.con");
+  if (!eonc::io::io_ok(reactant->con2matter(posFile))) {
+    EONC_LOG_CRITICAL("Failed to load {}", posFile);
+    throw std::runtime_error("failed to load " + posFile);
   }
   AtomMatrix posA = reactant->getPositions();
 
@@ -34,14 +35,15 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
 
   AtomMatrix forceA = reactant->getForces();
 
+  const double cutoff = params.structure_comparison_options.neighbor_cutoff;
   long epicenter = eonc::EpiCenters::minCoordinatedEpiCenter(
-      reactant.get(), params.structure_comparison_options.neighbor_cutoff);
+      reactant.get(), cutoff);
   AtomMatrix displacement;
   displacement.resize(reactant->numberOfAtoms(), 3);
   displacement.setZero();
   printf("displacing atoms:");
   for (int i = 0; i < reactant->numberOfAtoms(); i++) {
-    if (reactant->distance(epicenter, i) <= 3.3) {
+    if (reactant->distance(epicenter, i) <= cutoff) {
       printf(" %i", i);
       for (int j = 0; j < 3; j++) {
         if (!reactant->getFixed(i)) {
@@ -51,7 +53,12 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
     }
   }
   printf("\n");
-  displacement.normalize();
+  const double dispNorm = displacement.norm();
+  if (!(dispNorm > 0.0)) {
+    throw std::runtime_error(
+        "FiniteDifferenceJob: no free atoms in the epicenter neighborhood");
+  }
+  displacement /= dispNorm;
 
   std::ofstream results("results.dat");
   results << "0 termination_reason\n";

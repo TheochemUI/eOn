@@ -11,6 +11,7 @@
 */
 #include "eon/PointJob.h"
 #include "eon/BaseStructures.h"
+#include "eon/HelperFunctions.h"
 #include "eon/Matter.h"
 #include "eon/PotRegistry.h"
 #include "magic_enum/magic_enum.hpp"
@@ -22,7 +23,7 @@
 
 std::vector<std::string> PointJob::run() {
   std::vector<std::string> returnFiles;
-  std::string posInFilename("pos.con");
+  std::string posInFilename = eonc::helpers::getRelevantFile("pos.con");
   std::string resultsFilename("results.dat");
 
   auto pos = std::make_unique<Matter>(pot, params);

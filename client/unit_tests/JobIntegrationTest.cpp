@@ -796,21 +796,11 @@ andersen_alpha = 1.0
   std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
                              std::filesystem::copy_options::overwrite_existing);
 
-  // DynamicsJob does not write results.dat, just final.con
-  auto oldDir = std::filesystem::current_path();
-  std::filesystem::current_path(workdir);
-
-  params = std::make_unique<Parameters>();
-  params->load("config.ini");
-
-  auto job = eonc::helpers::makeJob(std::move(params));
-  job->run();
-
-  std::filesystem::current_path(oldDir);
-
-  // Verify final.con was produced
+  auto results = runJob();
   REQUIRE(std::filesystem::exists(workdir / "final.con"));
-  // Verify final.con has content (atoms moved)
+  REQUIRE(results["job_type"] == "dynamics");
+  REQUIRE(results.count("potential_energy") > 0);
+  REQUIRE(std::isfinite(std::stod(results["potential_energy"])));
   auto fsize = std::filesystem::file_size(workdir / "final.con");
   REQUIRE(fsize > 100);
 }
