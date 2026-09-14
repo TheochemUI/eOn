@@ -11,6 +11,8 @@
 */
 #include "eon/NEBSpringForce.h"
 
+#include <stdexcept>
+
 namespace eonc::neb {
 
 // --- UniformSpring ---
@@ -30,6 +32,10 @@ UniformSpring::compute(long i, const AtomMatrix &tangent, double distNext,
 
 SpringResult WeightedSpring::compute(long i, const AtomMatrix &tangent,
                                      double distNext, double distPrev) const {
+  if (i < 1 || static_cast<size_t>(i) >= springConstants.size()) {
+    throw std::invalid_argument(
+        "WeightedSpring::compute: image index out of range");
+  }
   double kspNext = springConstants[i];
   double kspPrev = springConstants[i - 1];
 

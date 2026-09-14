@@ -372,7 +372,8 @@ bool eonc::geometry::identical(const Matter &m1, const Matter &m2,
   AtomMatrix r1 = m1.getPositions();
   AtomMatrix r2 = m2.getPositions();
 
-  std::set<int> matched;
+  std::set<int> matchedLeft;
+  std::set<int> usedRight;
   double tolerance = distanceDifference;
 
   if (r1.rows() != r2.rows()) {
@@ -383,27 +384,30 @@ bool eonc::geometry::identical(const Matter &m1, const Matter &m2,
   for (int i = 0; i < N; i++) {
     if (std::fabs((m1.pbc(r1.row(i) - r2.row(i))).norm()) < tolerance &&
         m1.getAtomicNr(i) == m2.getAtomicNr(i)) {
-      matched.insert(i);
+      matchedLeft.insert(i);
+      usedRight.insert(i);
     }
   }
 
   for (int j = 0; j < N; j++) {
 
-    if (matched.count(j) == 1)
+    if (matchedLeft.count(j) == 1)
       continue;
 
     for (int k = 0; k < N; k++) {
-      if (matched.count(j) == 1)
-        break;
+      if (usedRight.count(k) == 1)
+        continue;
 
       if (std::fabs((m1.pbc(r1.row(j) - r2.row(k))).norm()) < tolerance &&
           m1.getAtomicNr(j) == m2.getAtomicNr(k)) {
-        matched.insert(j);
+        matchedLeft.insert(j);
+        usedRight.insert(k);
+        break;
       }
     }
   }
 
-  if (matched.size() == static_cast<unsigned>(N)) {
+  if (matchedLeft.size() == static_cast<unsigned>(N)) {
     return true;
   } else {
     return false;

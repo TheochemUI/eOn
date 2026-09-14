@@ -40,6 +40,10 @@ IRACompare::MatchResult IRACompare::match(const Matter &m1, const Matter &m2,
 
   const int nat1 = m1.numberOfAtoms();
   const int nat2 = m2.numberOfAtoms();
+  if (nat1 <= 0 || nat2 <= 0) {
+    result.error = -1;
+    return result;
+  }
 
   // Prepare type arrays
   std::vector<int> typ1(nat1), typ2(nat2);
@@ -134,6 +138,10 @@ IRACompare::MatchResult IRACompare::matchPBC(const Matter &m1, const Matter &m2,
 
   const int nat1 = m1.numberOfAtoms();
   const int nat2 = m2.numberOfAtoms();
+  if (nat1 <= 0 || nat2 <= 0) {
+    result.error = -1;
+    return result;
+  }
 
   std::vector<int> typ1(nat1), typ2(nat2);
   auto nrs1 = m1.getAtomicNrs();

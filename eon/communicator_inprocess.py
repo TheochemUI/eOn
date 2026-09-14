@@ -147,6 +147,32 @@ def _results_dat(status: int, energy: float, force_calls: int, job_type: str) ->
     )
 
 
+class _LazyCon:
+    """CON text only if a caller reads it (eOn-uwvr)."""
+
+    def __init__(self, structure):
+        self._structure = structure
+        self._text: str | None = None
+
+    def _materialize(self) -> str:
+        if self._text is None:
+            import eon.fileio as fio
+
+            buf = StringIO()
+            fio.savecon(buf, self._structure)
+            self._text = buf.getvalue()
+        return self._text
+
+    def getvalue(self) -> str:
+        return self._materialize()
+
+    def seek(self, *args, **kwargs):
+        return 0
+
+    def read(self, *args, **kwargs) -> str:
+        return self._materialize()
+
+
 class LocalInProcess(Communicator):
     """Run client work in-process via Matter (nanobind), not a subprocess."""
 
@@ -195,12 +221,6 @@ class LocalInProcess(Communicator):
             matter = payload["matter"]
             out = matter_to_structure(matter)
 
-            import eon.fileio as fio
-
-            min_io = StringIO()
-            fio.savecon(min_io, out)
-            min_io.seek(0)
-
             energy = float(payload["energy"])
             fcalls = int(payload["force_calls"])
             status = int(payload["status"])
@@ -211,7 +231,8 @@ class LocalInProcess(Communicator):
                 "id": jid,
                 "number": 0,
                 "name": str(jid),
-                "min.con": min_io,
+                "_structure": out,
+                "min.con": _LazyCon(out),
                 "results.dat": results,
                 "_matter": matter,
                 "_structure": out,

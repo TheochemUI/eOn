@@ -60,7 +60,7 @@ int NEBObjectiveFunction::degreesOfFreedom() {
 bool NEBObjectiveFunction::isUncertain() {
   double maxMaxUnc = std::numeric_limits<double>::lowest();
   double currentMaxUnc{0};
-  for (long idx = 0; idx <= neb->numImages; idx++) {
+  for (long idx = 0; idx <= neb->numImages + 1; idx++) {
     currentMaxUnc = neb->path[idx]->getEnergyVariance();
     if (currentMaxUnc > maxMaxUnc) {
       maxMaxUnc = currentMaxUnc;
