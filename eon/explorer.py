@@ -676,8 +676,6 @@ class ProcessSearch:
 
     def process_result(self, result):
         results_dat = io.parse_results(result['results.dat'])
-        #XXX: can remove this line now
-        result['results.dat'].seek(0)
         job_type = results_dat['job_type']
         termination_code = results_dat['termination_reason']
 
