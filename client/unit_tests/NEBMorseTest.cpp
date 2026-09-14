@@ -400,6 +400,12 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB with single image does not crash",
 
 // --- Potential thread safety tests ---
 
+TEST_CASE("NEB match_endpoints is off by default", "[neb][srlq]") {
+  Parameters params;
+  REQUIRE_FALSE(params.neb_options.match_endpoints);
+  REQUIRE(params.neb_options.match_method == "ira");
+}
+
 TEST_CASE("NEB writes MMF peak seeds by default", "[neb][xr04]") {
   Parameters params;
   REQUIRE(params.neb_options.mmf_peaks.enabled);

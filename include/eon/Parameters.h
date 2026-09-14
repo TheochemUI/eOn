@@ -502,6 +502,10 @@ public:
       bool enabled{true};
       double tolerance{0.05};
     } mmf_peaks;
+    /// Permute+rotate the reactant onto the product before interpolation.
+    bool match_endpoints{false};
+    /// "ira" uses IRACompare. "hungarian" is accepted and falls back to ira.
+    std::string match_method{"ira"};
 
     struct spring_options_t {
       double constant{5.0};

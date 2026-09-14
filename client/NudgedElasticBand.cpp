@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/NudgedElasticBand.h"
+#include "eon/IRACompare.h"
 #include "eon/PotCapabilities.h"
 #include "eon/BaseStructures.h"
 #include "eon/EigenmodeStrategy.h"
@@ -46,6 +47,24 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
           [&]() {
             auto &init_opt = parametersPassed.neb_options.initialization;
             const size_t base_count = parametersPassed.neb_options.image_count;
+            if (parametersPassed.neb_options.match_endpoints) {
+              auto aligned = eonc::IRACompare::alignReactantToProduct(
+                  *initialPassed, *finalPassed, 1.0);
+              auto *log = eonc::log::get();
+              if (aligned.error != 0) {
+                QUILL_LOG_WARNING(
+                    log,
+                    "match_endpoints: IRA align failed (error {}), "
+                    "interpolating the input order",
+                    aligned.error);
+              } else {
+                QUILL_LOG_INFO(
+                    log,
+                    "match_endpoints: Hausdorff {:.4f} A after IRA "
+                    "permute+rotate of the reactant",
+                    aligned.hausdorffDistance);
+              }
+            }
 
             // Apply oversampling factor if flag exists
             const size_t relax_count =

@@ -306,4 +306,45 @@ IRACompare::findSymmetry(const Matter &m, double threshold, bool prescreenIh) {
   return result;
 }
 
+IRACompare::MatchResult
+IRACompare::alignReactantToProduct(Matter &reactant, const Matter &product,
+                                   double distThreshold) {
+  MatchResult result = match(reactant, product, distThreshold);
+  if (result.error != 0) {
+    return result;
+  }
+  const long n = reactant.numberOfAtoms();
+  if (n != product.numberOfAtoms() ||
+      static_cast<long>(result.permutation.size()) != n) {
+    result.error = -2;
+    return result;
+  }
+  AtomMatrix pos = reactant.getPositionsCopy();
+  for (long i = 0; i < n; ++i) {
+    Eigen::Vector3d p = pos.row(i);
+    pos.row(i) = (result.rotation * p + result.translation).transpose();
+  }
+  bool oneBased = false;
+  for (int idx : result.permutation) {
+    if (idx == n) {
+      oneBased = true;
+      break;
+    }
+  }
+  AtomMatrix reordered = pos;
+  for (long i = 0; i < n; ++i) {
+    int src = result.permutation[static_cast<size_t>(i)];
+    if (oneBased) {
+      --src;
+    }
+    if (src < 0 || src >= n) {
+      result.error = -3;
+      return result;
+    }
+    reordered.row(i) = pos.row(src);
+  }
+  reactant.setPositions(reordered);
+  return result;
+}
+
 } // namespace eonc

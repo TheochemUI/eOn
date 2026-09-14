@@ -53,6 +53,12 @@ public:
   /// Find all symmetry operations of a structure (SOFI algorithm).
   static SymmetryResult findSymmetry(const Matter &m, double threshold,
                                      bool prescreenIh = true);
+
+  /// Rigid-align + permute reactant onto product. Returns the match
+  /// (error != 0 means reactant was left unchanged).
+  static MatchResult alignReactantToProduct(Matter &reactant,
+                                            const Matter &product,
+                                            double distThreshold);
 };
 
 } // namespace eonc

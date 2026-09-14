@@ -466,6 +466,15 @@ void bind_parameters(nb::module_ &m) {
           [](eonc::Parameters &s, bool v) {
             s.neb_options.mmf_peaks.enabled = v;
           })
+      .def_prop_rw(
+          "neb_match_endpoints",
+          [](const eonc::Parameters &s) {
+            return s.neb_options.match_endpoints;
+          },
+          [](eonc::Parameters &s, bool v) {
+            s.neb_options.match_endpoints = v;
+          },
+          "IRA permute+rotate reactant onto product before NEB interpolation")
       // --- RgpotPot (incl. backend=metatomic → libmetatomic_engine) ---
       .def_prop_rw(
           "rgpot_backend",

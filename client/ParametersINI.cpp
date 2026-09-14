@@ -868,6 +868,11 @@ int load_ini(INIReader &ini, Parameters &params) {
   params.neb_options.mmf_peaks.tolerance =
       ini.GetReal(neb_section, "mmf_peak_tolerance",
                   params.neb_options.mmf_peaks.tolerance);
+  params.neb_options.match_endpoints = ini.GetBoolean(
+      neb_section, "match_endpoints", params.neb_options.match_endpoints);
+  params.neb_options.match_method =
+      toLowerCase(ini.Get(neb_section, "match_method",
+                          params.neb_options.match_method));
 
   params.neb_options.spring.constant =
       ini.GetReal(neb_section, "spring", params.neb_options.spring.constant);
