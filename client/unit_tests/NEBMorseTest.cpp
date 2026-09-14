@@ -14,6 +14,7 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/IDPPObjectiveFunction.hpp"
 #include "eon/NEBInitialPaths.hpp"
+#include "eon/api.h"
 #include "eon/NudgedElasticBand.h"
 #include "eon/PotCapabilities.h"
 #include "eon/PotRegistry.h"
