@@ -140,4 +140,27 @@ struct JobResult {
   clientVersion @29 :Text;
   # Typed copy of statusCode. statusCode stays the results.dat integer.
   termination @30 :TerminationCode = good;
+  # Per-job payload. Shared scalars stay above; do not move them into
+  # the union (wire ordinals are API).
+  body :union {
+    unset @31 :Void;
+    minimization @32 :MinimizationBody;
+    neb @33 :NEBBody;
+    processSearch @34 :ProcessSearchBody;
+  }
+}
+
+struct MinimizationBody {
+  steps @0 :UInt32 = 0;
+  converged @1 :Bool = false;
+}
+
+struct NEBBody {
+  nImages @0 :UInt32 = 0;
+  nExtrema @1 :Int32 = 0;
+  climbingImage @2 :Int32 = -1;
+}
+
+struct ProcessSearchBody {
+  saddleStatus @0 :TerminationCode = good;
 }
