@@ -22,6 +22,10 @@
 int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
                                    Matter *saddle, Matter *min2, double &pref1,
                                    double &pref2) {
+  if (!min1 || !saddle || !min2) {
+    EONC_LOG_ERROR("[Prefactor] null Matter");
+    return -1;
+  }
   VectorXd min1Freqs, saddleFreqs, min2Freqs;
 
   // determine which atoms moved in the process

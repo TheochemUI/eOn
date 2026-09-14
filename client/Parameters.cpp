@@ -82,13 +82,30 @@ int Parameters::load(std::string filename) {
 }
 
 int Parameters::load(FILE *file) {
-  // Legacy FILE* overload: read into string buffer, use INIReader buffer ctor
-  fseek(file, 0, SEEK_END);
-  long size = ftell(file);
-  fseek(file, 0, SEEK_SET);
+  if (!file) {
+    EONC_LOG_ERROR("Can't load INI from a null FILE*");
+    return 1;
+  }
+  if (fseek(file, 0, SEEK_END) != 0) {
+    EONC_LOG_ERROR("Can't seek INI FILE*");
+    return 1;
+  }
+  const long size = ftell(file);
+  if (size < 0) {
+    EONC_LOG_ERROR("Can't tell INI FILE* size");
+    return 1;
+  }
+  if (fseek(file, 0, SEEK_SET) != 0) {
+    EONC_LOG_ERROR("Can't rewind INI FILE*");
+    return 1;
+  }
 
-  std::string buffer(size, '\0');
-  fread(buffer.data(), 1, size, file);
+  std::string buffer(static_cast<size_t>(size), '\0');
+  if (fread(buffer.data(), 1, static_cast<size_t>(size), file) !=
+      static_cast<size_t>(size)) {
+    EONC_LOG_ERROR("Couldn't read the ini file from FILE*");
+    return 1;
+  }
 
   INIReader ini(buffer.c_str(), buffer.size());
   if (ini.ParseError() < 0) {

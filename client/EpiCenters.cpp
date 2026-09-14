@@ -239,6 +239,9 @@ long eonc::EpiCenters::listedAtomEpiCenter(const Matter *matter,
 
 long eonc::EpiCenters::minCoordination(const Matter *matter,
                                        double neighborCutoff) {
+  if (!matter) {
+    throw std::invalid_argument("EpiCenters: null Matter");
+  }
   long nAtoms = matter->numberOfAtoms();
   std::vector<long> coordinationVal(nAtoms);
 
