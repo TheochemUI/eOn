@@ -27,5 +27,3 @@ public:
 };
 
 } // namespace eonc
-
-using eonc::DynamicsJob;

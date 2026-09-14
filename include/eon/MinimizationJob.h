@@ -32,5 +32,3 @@ private:
 };
 
 } // namespace eonc
-
-using eonc::MinimizationJob;
