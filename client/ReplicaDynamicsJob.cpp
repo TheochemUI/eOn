@@ -125,9 +125,13 @@ long ReplicaDynamicsJob::refine(
 }
 
 void ReplicaDynamicsJob::dephase() {
+  const double dt = params.dynamics_options.time_step;
+  if (!(dt > 0.0)) {
+    throw std::invalid_argument(
+        "ReplicaDynamicsJob::dephase: time_step must be positive");
+  }
   long DephaseSteps =
-      static_cast<long>(params.parallel_replica_options.dephase_time /
-                        params.dynamics_options.time_step);
+      static_cast<long>(params.parallel_replica_options.dephase_time / dt);
   Dynamics dephaseDynamics(current.get(), params);
   QUILL_LOG_DEBUG(log, "Dephasing for {:.2f} fs",
                   params.parallel_replica_options.dephase_time *
