@@ -22,8 +22,6 @@
 #include <fstream>
 #include <stdexcept>
 
-using namespace eonc::helpers;
-
 std::vector<std::string> FiniteDifferenceJob::run(void) {
   auto reactant = std::make_unique<Matter>(pot, params);
   const std::string posFile = eonc::helpers::getRelevantFile("pos.con");
@@ -49,7 +47,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
       printf(" %i", i);
       for (int j = 0; j < 3; j++) {
         if (!reactant->getFixed(i)) {
-          displacement(i, j) = randomDouble(1.0);
+          displacement(i, j) = eonc::rng::randomDouble(1.0);
         }
       }
     }

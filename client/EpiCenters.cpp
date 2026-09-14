@@ -17,15 +17,13 @@
 #include <stdexcept>
 #include <vector>
 
-using namespace eonc::helpers;
-
 namespace {
 long pickFromHits(const std::vector<long> &hits, const char *what) {
   if (hits.empty()) {
     throw std::runtime_error(what);
   }
   const long pick =
-      static_cast<long>(randomDouble(static_cast<long>(hits.size())));
+      static_cast<long>(eonc::rng::randomDouble(static_cast<long>(hits.size())));
   return hits[static_cast<size_t>(pick)];
 }
 } // namespace
@@ -231,9 +229,9 @@ long eonc::EpiCenters::listedAtomEpiCenter(const Matter *matter,
   if (freeAtoms.empty()) {
     throw std::runtime_error("Listed atoms are all frozen");
   }
-  // randomDouble(N) is [0, N); size-1 dropped the last listed / last free atom.
+  // eonc::rng::randomDouble(N) is [0, N); size-1 dropped the last listed / last free atom.
   long pick =
-      static_cast<long>(randomDouble(static_cast<long>(freeAtoms.size())));
+      static_cast<long>(eonc::rng::randomDouble(static_cast<long>(freeAtoms.size())));
   return freeAtoms[pick];
 }
 

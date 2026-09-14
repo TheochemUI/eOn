@@ -33,7 +33,6 @@
 #include <numeric>
 #include <vector>
 #endif
-using namespace eonc::helpers;
 namespace fs = std::filesystem;
 
 // Nudged Elastic Band definitions

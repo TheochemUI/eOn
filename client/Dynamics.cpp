@@ -15,8 +15,6 @@
 #include <cmath>
 #include <stdexcept>
 
-using namespace eonc::helpers;
-
 const char Dynamics::ANDERSEN[] = "andersen";
 const char Dynamics::NOSE_HOOVER[] = "nose_hoover";
 const char Dynamics::LANGEVIN[] = "langevin";
@@ -154,12 +152,12 @@ void Dynamics::andersenCollision() {
   auto mass = matter->getMasses();
 
   for (long i = 0; i < nAtoms; i++) {
-    if (randomDouble() < pCol && !matter->getFixed(i)) {
+    if (eonc::rng::randomDouble() < pCol && !matter->getFixed(i)) {
       for (int j = 0; j < 3; j++) {
         double vOld = velocity(i, j);
         const double vNew =
             (mass[i] > 0.0 && kB > 0.0 && temperature > 0.0)
-                ? std::sqrt(kB * temperature / mass[i]) * gaussRandom(0.0, 1.0)
+                ? std::sqrt(kB * temperature / mass[i]) * eonc::rng::gaussRandom(0.0, 1.0)
                 : 0.0;
         velocity(i, j) = std::sqrt(1.0 - alpha * alpha) * vOld + alpha * vNew;
       }
@@ -177,7 +175,7 @@ void Dynamics::setThermalVelocity() {
       for (int j = 0; j < 3; j++) {
         velocity(i, j) =
             (mass[i] > 0.0 && kB > 0.0 && temperature > 0.0)
-                ? std::sqrt(kB * temperature / mass[i]) * gaussRandom(0.0, 1.0)
+                ? std::sqrt(kB * temperature / mass[i]) * eonc::rng::gaussRandom(0.0, 1.0)
                 : 0.0;
       }
     }
@@ -266,7 +264,7 @@ void Dynamics::langevinVerlet() {
     if (!matter->getFixed(i)) {
       for (int j = 0; j < 3; j++) {
         noise(i, j) = std::sqrt(4.0 * gamma * kB * temperature / dt / mass[i]) *
-                      gaussRandom(0.0, 1.0);
+                      eonc::rng::gaussRandom(0.0, 1.0);
       }
     }
   }
@@ -283,7 +281,7 @@ void Dynamics::langevinVerlet() {
     if (!matter->getFixed(i)) {
       for (int j = 0; j < 3; j++) {
         noise(i, j) = std::sqrt(4.0 * gamma * kB * temperature / dt / mass[i]) *
-                      gaussRandom(0.0, 1.0);
+                      eonc::rng::gaussRandom(0.0, 1.0);
       }
     }
   }

@@ -28,8 +28,6 @@
 #include <stdexcept>
 #include <string>
 
-using namespace eonc::helpers;
-
 class MinModeObjectiveFunction : public ObjectiveFunction {
 private:
   std::shared_ptr<Matter> matter;
@@ -354,7 +352,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       if (!firstIteration) {
 
         if (params.saddle_search_options.nonlocal_count_abort != 0) {
-          long nm = numAtomsMoved(
+          long nm = eonc::geometry::numAtomsMoved(
               initialPosition - matter->getPositions(),
               params.saddle_search_options.nonlocal_distance_abort);
           if (nm >= params.saddle_search_options.nonlocal_count_abort) {
@@ -408,7 +406,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
 
       // Melander, Laasonen, Jonsson, JCTC 11(3), 1055-1062, 2015
       if (params.saddle_search_options.remove_rotation) {
-        rotationRemove(pos, matter);
+        eonc::geometry::rotationRemove(pos, matter);
       }
       double stepSize = (matter->pbc(matter->getPositions() - pos)).norm();
 

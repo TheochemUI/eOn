@@ -18,8 +18,6 @@
 #include <cmath>
 #include <thread>
 
-using namespace eonc::helpers;
-
 Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
@@ -168,7 +166,7 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce) {
   // Optional rotation removal (Melander, Laasonen, Jonsson, JCTC 2015)
   if (params.dimer_options.remove_rotation) {
     matterDimer->setPositions(posDimer);
-    rotationRemove(matterCenter, matterDimer);
+    eonc::geometry::rotationRemove(matterCenter, matterDimer);
     posDimer = matterDimer->getPositions();
     direction = matterCenter->pbc(posDimer - posCenter);
     eonc::safemath::safe_normalize_inplace(direction);

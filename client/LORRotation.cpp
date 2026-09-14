@@ -24,8 +24,6 @@
 #include <cmath>
 #include <limits>
 
-using namespace eonc::helpers;
-
 LORRotation::LORRotation(std::shared_ptr<Matter> matter,
                          const Parameters &params,
                          std::shared_ptr<Potential> pot)
