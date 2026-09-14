@@ -134,6 +134,7 @@ json to_json(const Parameters &p) {
   j["Nudged Elastic Band"]["climbing_image"] = {
       {"enabled", p.neb_options.climbing_image.enabled},
       {"converged_only", p.neb_options.climbing_image.converged_only},
+      {"band_slack", p.neb_options.climbing_image.band_slack},
   };
 
   // [Dimer]
@@ -332,6 +333,7 @@ void from_json(const json &j, Parameters &p) {
       JSON_OPT(ci, "enabled", p.neb_options.climbing_image.enabled);
       JSON_OPT(ci, "converged_only",
                p.neb_options.climbing_image.converged_only);
+      JSON_OPT(ci, "band_slack", p.neb_options.climbing_image.band_slack);
     }
   }
 

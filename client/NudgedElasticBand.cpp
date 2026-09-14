@@ -139,6 +139,10 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
       params.optimizer_options.convergence_metric, "[Nudged Elastic Band]");
   this->status = NEBStatus::INIT;
   numImages = params.neb_options.image_count;
+  if (initPath.size() != static_cast<size_t>(numImages + 2)) {
+    throw std::invalid_argument(
+        "NEB: initPath.size() must be image_count + 2");
+  }
   atoms = initPath.front().numberOfAtoms();
 
   // Common initialization logic
@@ -439,36 +443,50 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
 double NudgedElasticBand::convergenceForce() {
   if (movedAfterForceCall)
     updateForces();
-  double fmax = 0;
 
-  // Determine which images to check for convergence
-  bool ciOnly = params.neb_options.climbing_image.converged_only &&
-                ci_enabled_ && climbingImage != 0;
-  long iStart = ciOnly ? climbingImage : 1;
-  long iEnd = ciOnly ? climbingImage : numImages;
-
-  for (long i = iStart; i <= iEnd; i++) {
+  auto imageForce = [&](long i) -> double {
     if (params.optimizer_options.convergence_metric == "norm") {
-      fmax = std::max(fmax, projectedForce[i]->norm());
-    } else if (params.optimizer_options.convergence_metric == "max_atom") {
+      return projectedForce[i]->norm();
+    }
+    if (params.optimizer_options.convergence_metric == "max_atom") {
+      double f = 0;
       for (int j = 0; j < path[0]->numberOfAtoms(); j++) {
         if (path[0]->getFixed(j))
           continue;
-        fmax = std::max(fmax, projectedForce[i]->row(j).norm());
+        f = std::max(f, projectedForce[i]->row(j).norm());
       }
-    } else if (params.optimizer_options.convergence_metric == "max_component") {
-      fmax = std::max(fmax, projectedForce[i]->cwiseAbs().maxCoeff());
-    } else {
-      log = eonc::log::traceback();
-      QUILL_LOG_CRITICAL(
-          log, "[Nudged Elastic Band] unknown opt_convergence_metric: {}",
-          params.optimizer_options.convergence_metric);
-      throw std::invalid_argument(
-          std::format("[Nudged Elastic Band] unknown convergence_metric: {}",
-                      params.optimizer_options.convergence_metric));
+      return f;
     }
+    if (params.optimizer_options.convergence_metric == "max_component") {
+      return projectedForce[i]->cwiseAbs().maxCoeff();
+    }
+    log = eonc::log::traceback();
+    QUILL_LOG_CRITICAL(
+        log, "[Nudged Elastic Band] unknown opt_convergence_metric: {}",
+        params.optimizer_options.convergence_metric);
+    throw std::invalid_argument(
+        std::format("[Nudged Elastic Band] unknown convergence_metric: {}",
+                    params.optimizer_options.convergence_metric));
+  };
+
+  double bandMax = 0;
+  for (long i = 1; i <= numImages; ++i) {
+    bandMax = std::max(bandMax, imageForce(i));
   }
-  return fmax;
+
+  const bool ciOnly = params.neb_options.climbing_image.converged_only &&
+                      ci_enabled_ && climbingImage != 0;
+  if (!ciOnly) {
+    return bandMax;
+  }
+
+  const double ciForce = imageForce(climbingImage);
+  const double slack = params.neb_options.climbing_image.band_slack;
+  const double tol = params.neb_options.force_tolerance;
+  if (slack > 0.0 && bandMax > slack * tol) {
+    return bandMax;
+  }
+  return ciForce;
 }
 
 // Update the forces, do the projections, and add spring forces

@@ -81,9 +81,14 @@ int load_ini(INIReader &ini, Parameters &params) {
 
   // [Potential] //
 
+  std::string potTok = ini.Get("Potential", "potential", "");
+  // Schema / old configs: ase_nwcem is ASE_NWCHEM; socket_nwchem is
+  // SocketNWChem (magic_enum already matches the latter).
+  if (potTok == "ase_nwcem" || potTok == "ASE_NWCEM") {
+    potTok = "ase_nwchem";
+  }
   params.potential_options.potential =
-      magic_enum::enum_cast<PotType>(ini.Get("Potential", "potential", ""),
-                                     magic_enum::case_insensitive)
+      magic_enum::enum_cast<PotType>(potTok, magic_enum::case_insensitive)
           .value_or(PotType::UNKNOWN);
   params.potential_options.MPIPollPeriod = ini.GetReal(
       "Potential", "mpi_poll_period", params.potential_options.MPIPollPeriod);
@@ -890,6 +895,9 @@ int load_ini(INIReader &ini, Parameters &params) {
   params.neb_options.climbing_image.converged_only =
       ini.GetBoolean(neb_section, "climbing_image_converged_only",
                      params.neb_options.climbing_image.converged_only);
+  params.neb_options.climbing_image.band_slack = ini.GetReal(
+      neb_section, "climbing_image_band_slack",
+      params.neb_options.climbing_image.band_slack);
   params.neb_options.climbing_image.use_old_tangent =
       ini.GetBoolean(neb_section, "old_tangent",
                      params.neb_options.climbing_image.use_old_tangent);

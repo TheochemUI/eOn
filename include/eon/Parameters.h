@@ -521,6 +521,10 @@ public:
     struct climbing_image_options_t {
       bool enabled{true};
       bool converged_only{true};
+      /// When converged_only is on, the rest of the band may still be
+      /// this many times the force tolerance. Larger than that, the
+      /// job is not converged (SIDPP degenerate CI, eOn-bghy).
+      double band_slack{10.0};
       bool use_old_tangent{false};
       double trigger_force{std::numeric_limits<double>::infinity()};
       double trigger_factor{0.0};

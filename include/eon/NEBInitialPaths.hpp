@@ -65,6 +65,12 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
                               size_t target_nimgs, const Parameters &params,
                               bool use_zbl = false);
 
+/// Adjacent images closer than min_sep (RMSD, PBC) are a collapsed path.
+/// SIDPP + resample can emit bit-identical intermediates; those starve
+/// climbing_image_converged_only (eOn-bghy).
+void ensureDistinctAdjacentImages(const std::vector<Matter> &path,
+                                  double min_sep);
+
 // Helper to insert an image linearly between two others
 Matter interpolateImage(const Matter &A, const Matter &B, double fraction);
 // Helper to construct ZBL potentials

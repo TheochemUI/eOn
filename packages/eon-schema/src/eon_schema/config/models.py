@@ -1736,7 +1736,18 @@ class NudgedElasticBandConfig(BaseModel):
     )
     neb_climbing_image_converged_only: bool = Field(
         default=True,
-        description="Indicates if only the climbing image converged is used.",
+        description=(
+            "If true, NEB convergence compares the climbing image to the force "
+            "tolerance, but only after the rest of the band is within "
+            "climbing_image_band_slack times that tolerance."
+        ),
+    )
+    neb_climbing_image_band_slack: float = Field(
+        default=10.0,
+        description=(
+            "When climbing_image_converged_only is true, reject convergence if "
+            "any non-CI image exceeds this multiple of the force tolerance."
+        ),
     )
     neb_doubly_nudged: bool = Field(
         default=False, description="Indicates if the doubly nudged method is used."

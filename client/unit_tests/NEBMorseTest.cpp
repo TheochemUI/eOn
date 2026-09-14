@@ -12,9 +12,11 @@
 
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/NEBInitialPaths.hpp"
 #include "eon/NudgedElasticBand.h"
 #include "eon/PotRegistry.h"
 #include <fstream>
+#include <stdexcept>
 #include <thread>
 #include <vector>
 
@@ -66,6 +68,13 @@ protected:
 };
 
 // --- Construction tests ---
+
+TEST_CASE_METHOD(NEBLJFixture, "NEB path constructor rejects a short path",
+                 "[neb][construction][lk6g]") {
+  std::vector<Matter> shortPath{*reactant, *product};
+  REQUIRE_THROWS_AS(NudgedElasticBand(shortPath, params, pot),
+                    std::invalid_argument);
+}
 
 TEST_CASE_METHOD(NEBLJFixture, "NEB construction and basic state",
                  "[neb][construction]") {
@@ -612,6 +621,29 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB compute converges or hits max iterations",
 
   REQUIRE((status == NudgedElasticBand::NEBStatus::GOOD ||
            status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS));
+}
+
+TEST_CASE_METHOD(NEBLJFixture,
+                 "converged_only does not ignore a hot band",
+                 "[neb][converged_only][bghy]") {
+  params.neb_options.climbing_image.enabled = true;
+  params.neb_options.climbing_image.converged_only = true;
+  params.neb_options.climbing_image.band_slack = 10.0;
+  params.neb_options.force_tolerance = 0.01;
+  auto neb = makeNEB();
+  neb->updateForces();
+  neb->setCIEnabled(true);
+  neb->climbingImage = 1;
+  REQUIRE(neb->convergenceForce() >
+          10.0 * params.neb_options.force_tolerance);
+}
+
+TEST_CASE_METHOD(NEBLJFixture, "SIDPP rejects a collapsed adjacent pair",
+                 "[neb][sidpp][bghy]") {
+  std::vector<Matter> path{*reactant, *reactant, *product};
+  REQUIRE_THROWS_AS(
+      eonc::helpers::neb_paths::ensureDistinctAdjacentImages(path, 1e-6),
+      std::runtime_error);
 }
 
 TEST_CASE_METHOD(NEBLJFixture, "SIDPP initialization produces valid path",

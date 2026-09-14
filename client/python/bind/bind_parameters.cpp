@@ -346,6 +346,14 @@ void bind_parameters(nb::module_ &m) {
             s.neb_options.climbing_image.converged_only = v;
           })
       .def_prop_rw(
+          "neb_climbing_band_slack",
+          [](const eonc::Parameters &s) {
+            return s.neb_options.climbing_image.band_slack;
+          },
+          [](eonc::Parameters &s, double v) {
+            s.neb_options.climbing_image.band_slack = v;
+          })
+      .def_prop_rw(
           "neb_ci_after",
           [](const eonc::Parameters &s) {
             return s.neb_options.climbing_image.trigger_force;

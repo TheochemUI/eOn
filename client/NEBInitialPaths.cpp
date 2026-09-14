@@ -3,10 +3,12 @@
 #include "eon/IDPPObjectiveFunction.hpp"
 #include "eon/Optimizer.h"
 #include "eon/Parameters.h"
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <memory>
 #include <span>
+#include <stdexcept>
 #include <vector>
 
 #include "eon/EonLogger.h"
@@ -323,7 +325,28 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
   double finalResidual = relaxPath(init.max_iterations);
   QUILL_LOG_INFO(log, "S-IDPP: Final residual: {:.4f}", finalResidual);
 
+  ensureDistinctAdjacentImages(path, 1.0e-6);
   return path;
+}
+
+void ensureDistinctAdjacentImages(const std::vector<Matter> &path,
+                                  double min_sep) {
+  if (path.size() < 2) {
+    return;
+  }
+  if (!(min_sep > 0.0)) {
+    throw std::invalid_argument(
+        "NEB path: min adjacent image separation must be positive");
+  }
+  for (size_t i = 1; i < path.size(); ++i) {
+    const AtomMatrix diff = path[i].pbc(path[i].getPositions() -
+                                        path[i - 1].getPositions());
+    const double d = diff.norm();
+    if (!(d > min_sep) || !std::isfinite(d)) {
+      throw std::runtime_error(
+          "NEB path: adjacent images are degenerate (SIDPP collapse)");
+    }
+  }
 }
 
 AtomMatrix cubicInterpolate(const AtomMatrix &P0, const AtomMatrix &T0,

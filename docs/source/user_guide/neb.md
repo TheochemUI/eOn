@@ -76,6 +76,21 @@ Following (dimer) search on the climbing image after it stabilizes, using
 hessian eigenmode alignment to refine the saddle point to higher accuracy
 without additional NEB iterations. Enable with `ci_mmf = true`.
 
+`climbing_image_converged_only` (default true) compares the climbing image
+to `converged_force`. That is not a band-wide certificate: a SIDPP path
+that lands two images on the same point can put the climber on a
+stationary artifact while the rest of the band is still at 2 eV/Å.
+`climbing_image_band_slack` (default 10) refuses that report. The job is
+not converged while any image exceeds slack times the tolerance. SIDPP
+itself throws if adjacent images collapse below \(10^{-6}\) Å.
+
+```{code-block} ini
+[Nudged Elastic Band]
+climbing_image_method = true
+climbing_image_converged_only = true
+climbing_image_band_slack = 10.0
+```
+
 ### Parallel evaluation
 
 When compiled with TBB (`-Dwith_parallel_neb=true`) or nvc++
