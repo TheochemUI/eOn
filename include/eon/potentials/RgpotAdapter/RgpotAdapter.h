@@ -10,6 +10,7 @@
 #pragma once
 
 #include <memory>
+#include <stdexcept>
 #include <vector>
 
 #include "eon/Potential.h"
@@ -30,15 +31,21 @@ public:
   /// or other immovable state, so the adapter never copies or moves them.
   template <class Cfg>
   RgpotAdapter(PotType ptype, const Parameters &params, const Cfg &cfg)
-      : Potential(ptype, params), pot_(cfg) {}
+      : Potential(ptype, params), pot_(cfg) {
+    validateCaps();
+  }
 
   /// Kernels with no configuration surface default-construct in place.
   RgpotAdapter(PotType ptype, const Parameters &params)
-      : Potential(ptype, params), pot_() {}
+      : Potential(ptype, params), pot_() {
+    validateCaps();
+  }
 
   /// Take a pre-built kernel (ExprPot and other move-only constructors).
   RgpotAdapter(PotType ptype, const Parameters &params, RPot &&kernel)
-      : Potential(ptype, params), pot_(std::move(kernel)) {}
+      : Potential(ptype, params), pot_(std::move(kernel)) {
+    validateCaps();
+  }
 
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override {
@@ -108,6 +115,17 @@ public:
   [[nodiscard]] const RPot &kernel() const noexcept { return pot_; }
 
 private:
+  void validateCaps() const {
+    const auto caps = pot_.caps();
+    using R = rgpot::Reentrancy;
+    if (caps.reentrancy != R::SharedInstance &&
+        caps.reentrancy != R::PerInstance &&
+        caps.reentrancy != R::ProcessSerial) {
+      throw std::runtime_error(
+          "rgpot kernel advertised an unknown reentrancy");
+    }
+  }
+
   RPot pot_;
 };
 
