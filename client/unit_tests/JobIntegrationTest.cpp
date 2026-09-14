@@ -127,10 +127,12 @@ protected:
       return false;
     }
     for (auto &entry : fs::directory_iterator(src)) {
-      if (entry.is_regular_file()) {
-        fs::copy_file(entry.path(), workdir / entry.path().filename(),
-                      fs::copy_options::overwrite_existing);
+      std::error_code ec;
+      if (!entry.is_regular_file(ec) || ec) {
+        continue;
       }
+      fs::copy_file(entry.path(), workdir / entry.path().filename(),
+                    fs::copy_options::overwrite_existing, ec);
     }
     return true;
   }

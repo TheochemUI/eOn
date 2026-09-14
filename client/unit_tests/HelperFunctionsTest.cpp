@@ -87,9 +87,10 @@ TEST_CASE("HelperFunctions: loadOrSynthesizeDisplacement from mode (#189/#79)",
   const long nAtoms = initial.numberOfAtoms();
   REQUIRE(nAtoms > 0);
 
-  const std::string modePath = "test_mode_for_synth.dat";
+  const auto tmp = std::filesystem::temp_directory_path() /
+                   "eon_mode_for_synth.dat";
   {
-    FILE *f = fopen(modePath.c_str(), "w");
+    FILE *f = fopen(tmp.c_str(), "w");
     REQUIRE(f != nullptr);
     for (long i = 0; i < nAtoms; ++i) {
       if (initial.getFixed(i)) {
@@ -104,10 +105,10 @@ TEST_CASE("HelperFunctions: loadOrSynthesizeDisplacement from mode (#189/#79)",
   const double scale = 0.1;
   AtomMatrix before = initial.getPositionsCopy();
   REQUIRE(eonc::helpers::loadOrSynthesizeDisplacement(
-      target, initial, "missing_displacement.con", modePath, scale));
+      target, initial, "missing_displacement.con", tmp.string(), scale));
   // At least one free atom should move from the synthesized mode
   REQUIRE((target.getPositions() - before).norm() > 1e-6);
-  std::remove(modePath.c_str());
+  std::filesystem::remove(tmp);
 }
 
 TEST_CASE("HelperFunctions: randomDouble(max) respects upper bound",
