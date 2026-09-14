@@ -168,12 +168,61 @@ std::vector<std::string> ProcessSearchJob::run() {
     throw std::runtime_error("unknown saddle_search.method");
   }
 
+  (void)runPrepared();
+  return returnFiles;
+}
+
+std::shared_ptr<Matter>
+ProcessSearchJob::runFromMatter(std::shared_ptr<Matter> seed) {
+  if (!seed) {
+    throw std::runtime_error("ProcessSearchJob::runFromMatter: null Matter");
+  }
+  initial = seed;
+  initial->setPotential(pot);
+  auto min2Pot = (pot->needsPerImageInstance() && params.main_options.parallel)
+                     ? eonc::helpers::makePotential(params)
+                     : pot;
+  displacement = std::make_shared<Matter>(pot, params);
+  saddle = std::make_shared<Matter>(pot, params);
+  min1 = std::make_shared<Matter>(pot, params);
+  min2 = std::make_shared<Matter>(min2Pot, params);
+  AtomMatrix mode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
+  if (!eonc::helpers::applyClientDisplacement(*saddle, *initial, params,
+                                              &mode)) {
+    *saddle = *initial;
+  }
+  *displacement = *saddle;
+  *min1 = *min2 = *initial;
+  min2->setPotential(min2Pot);
+  if (params.saddle_search_options.method == "min_mode") {
+    saddleSearch = std::make_unique<MinModeSaddleSearch>(
+        saddle, mode, initial->getPotentialEnergy(), params, pot);
+  } else if (params.saddle_search_options.method == "basin_hopping") {
+    saddleSearch =
+        std::make_unique<BasinHoppingSaddleSearch>(min1, saddle, pot, params);
+  } else if (params.saddle_search_options.method == "dynamics") {
+    saddleSearch = std::make_unique<DynamicsSaddleSearch>(saddle, params);
+  } else if (params.saddle_search_options.method == "bgsd") {
+    saddleSearch = std::make_unique<BiasedGradientSquaredDescent>(
+        saddle, initial->getPotentialEnergy(), params);
+  } else {
+    throw std::runtime_error(
+        "ProcessSearchJob::runFromMatter: unsupported saddle_search.method");
+  }
+  return runPrepared();
+}
+
+std::shared_ptr<Matter> ProcessSearchJob::runPrepared() {
+  if (!saddleSearch) {
+    throw std::runtime_error("unknown saddle_search.method");
+  }
+
   int status = doProcessSearch();
 
   printEndState(status);
   saveData(status);
 
-  return returnFiles;
+  return min2 ? min2 : saddle;
 }
 
 int ProcessSearchJob::doProcessSearch() {

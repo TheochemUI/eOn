@@ -54,9 +54,13 @@ public:
   //! Saddle Search Job Deconstructor
   ~SaddleSearchJob(void) = default;
   //! Kicks off the Saddle Search
-  std::vector<std::string> run(void);
+  std::vector<std::string> run(void) override;
+  /// In-process entry: seed reactant Matter, no pos.con (eOn-gbkb).
+  std::shared_ptr<Matter>
+  runFromMatter(std::shared_ptr<Matter> seed);
 
 private:
+  std::shared_ptr<Matter> runPrepared(const AtomMatrix &mode);
   //! Runs the correct saddle search; also checks if the run was successful
   int doSaddleSearch();
   //! Logs the run status and makes sure the run was successful

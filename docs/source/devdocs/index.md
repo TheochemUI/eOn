@@ -19,6 +19,7 @@ Pull requests and documentation contributions are all highly appreciated.
 testing
 benchmarks
 parallel-potentials
+in-process
 docbuild
 svn
 svn-migration

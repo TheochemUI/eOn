@@ -57,9 +57,13 @@ public:
   ~ProcessSearchJob() = default;
   //! Kicks off the Process Search
   std::vector<std::string> run(void) override;
+  /// In-process entry: seed reactant Matter, no pos.con (eOn-gbkb).
+  std::shared_ptr<Matter>
+  runFromMatter(std::shared_ptr<Matter> seed);
 
 private:
   eonc::log::Scoped log;
+  std::shared_ptr<Matter> runPrepared();
   //! Runs the correct saddle search; also checks if the run was successful
   int doProcessSearch(void);
   //! Logs the run status and makes sure the run was successful

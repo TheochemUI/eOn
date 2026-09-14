@@ -76,6 +76,30 @@ std::vector<std::string> SaddleSearchJob::run() {
     mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
   }
 
+  (void)runPrepared(mode);
+  return returnFiles;
+}
+
+std::shared_ptr<Matter>
+SaddleSearchJob::runFromMatter(std::shared_ptr<Matter> seed) {
+  if (!seed) {
+    throw std::runtime_error("SaddleSearchJob::runFromMatter: null Matter");
+  }
+  initial = seed;
+  initial->setPotential(pot);
+  displacement = std::make_shared<Matter>(pot, params);
+  saddle = std::make_shared<Matter>(pot, params);
+  AtomMatrix mode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
+  if (!eonc::helpers::applyClientDisplacement(*saddle, *initial, params,
+                                              &mode)) {
+    *saddle = *initial;
+  }
+  *displacement = *saddle;
+  return runPrepared(mode);
+}
+
+std::shared_ptr<Matter>
+SaddleSearchJob::runPrepared(const AtomMatrix &mode) {
   const bool useStandaloneARTn = params.saddle_search_options.method == "artn";
   const bool useARTnAsMinMode =
       params.saddle_search_options.method == "min_mode" &&
@@ -107,7 +131,7 @@ std::vector<std::string> SaddleSearchJob::run() {
   printEndState(status);
   saveData(status);
 
-  return returnFiles;
+  return saddle;
 }
 
 int SaddleSearchJob::doSaddleSearch() {

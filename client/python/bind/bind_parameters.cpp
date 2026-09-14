@@ -150,6 +150,14 @@ void bind_parameters(nb::module_ &m) {
           })
       // --- Potential ---
       .def_prop_rw(
+          "emt_rasmussen",
+          [](const eonc::Parameters &s) {
+            return s.potential_options.EMTRasmussen;
+          },
+          [](eonc::Parameters &s, bool v) {
+            s.potential_options.EMTRasmussen = v;
+          })
+      .def_prop_rw(
           "potentials_path",
           [](const eonc::Parameters &s) {
             return s.potential_options.potentialsPath;

@@ -78,6 +78,16 @@ public:
   /// separate instances would enable true parallelism.
   [[nodiscard]] virtual bool isThreadSafe() const noexcept { return true; }
 
+  /// How the pot is executed (eOn-12x7). Combine with bitwise or.
+  enum class PotLayout : unsigned {
+    InProcess = 1u << 0,
+    NeedsWorkingDirectory = 1u << 1,
+    Subprocess = 1u << 2,
+  };
+  [[nodiscard]] virtual unsigned layoutFlags() const noexcept {
+    return static_cast<unsigned>(PotLayout::InProcess);
+  }
+
   /// Conservative gate for sharing one Potential instance across threads.
   /// Defaults to isThreadSafe(); backends whose state lives outside the
   /// wrapper instance (global/common-block Fortran entry points) override

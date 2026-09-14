@@ -32,6 +32,11 @@ public:
   [[nodiscard]] bool needsPerImageInstance() const noexcept override {
     return true;
   }
+  [[nodiscard]] unsigned layoutFlags() const noexcept override {
+    return static_cast<unsigned>(Potential::PotLayout::Subprocess) |
+           static_cast<unsigned>(
+               Potential::PotLayout::NeedsWorkingDirectory);
+  }
 
 private:
   void passToSystem(long N, const double *R, const int *atomicNrs,
