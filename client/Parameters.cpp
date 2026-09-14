@@ -130,6 +130,15 @@ int Parameters::load(FILE *file) {
   return error;
 }
 
+int Parameters::load_ini_text(const std::string &ini_text) {
+  INIReader ini(ini_text.c_str(), ini_text.size());
+  if (ini.ParseError() < 0) {
+    EONC_LOG_ERROR("Couldn't parse INI from memory");
+    return 1;
+  }
+  return eonc::config::load_ini(ini, *this);
+}
+
 int Parameters::load_json(const std::string &json_str) {
   return eonc::config::load_json(json_str, *this);
 }

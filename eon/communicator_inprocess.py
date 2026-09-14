@@ -47,16 +47,20 @@ def _params_from_invariants(pc, invariants: dict) -> Any:
             text = content.read()
         else:
             text = str(content)
-        # write temp for Parameters.load
-        import tempfile
+        if hasattr(params, "load_ini_text"):
+            params.load_ini_text(text)
+        else:
+            import tempfile
 
-        with tempfile.NamedTemporaryFile("w", suffix=".ini", delete=False) as fh:
-            fh.write(text)
-            path = fh.name
-        try:
-            params.load(path)
-        finally:
-            os.unlink(path)
+            with tempfile.NamedTemporaryFile(
+                "w", suffix=".ini", delete=False
+            ) as fh:
+                fh.write(text)
+                path = fh.name
+            try:
+                params.load(path)
+            finally:
+                os.unlink(path)
         return params
     params.potential = pc.PotType.LJ
     params.quiet = True

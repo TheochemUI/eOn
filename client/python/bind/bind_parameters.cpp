@@ -24,6 +24,13 @@ void bind_parameters(nb::module_ &m) {
           },
           nb::arg("path"))
       .def(
+          "load_ini_text",
+          [](eonc::Parameters &self, const std::string &ini_text) {
+            if (self.load_ini_text(ini_text))
+              throw std::runtime_error("Parameters.load_ini_text failed");
+          },
+          nb::arg("ini_text"))
+      .def(
           "load_json",
           [](eonc::Parameters &self, const std::string &json_str) {
             if (self.load_json(json_str))
