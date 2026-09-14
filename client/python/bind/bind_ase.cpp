@@ -241,6 +241,12 @@ void bind_ase(nb::module_ &m) {
         if (nb::len(cons) > 0) {
           atoms.attr("set_constraint")(cons);
         }
+        nb::list ids;
+        for (long i = 0; i < n; ++i) {
+          ids.append(matter.getAtomIndex(i));
+        }
+        atoms.attr("set_array")("id", np.attr("asarray")(
+                                          ids, nb::arg("dtype") = "int64"));
         try {
           const double energy = matter.getPotentialEnergy();
           AtomMatrix F = matter.getForces();

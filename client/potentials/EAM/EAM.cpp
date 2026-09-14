@@ -19,6 +19,7 @@
 #include <climits>
 #include <cmath>
 #include <cstring>
+#include <stdexcept>
 #include <vector>
 
 void EAM::cleanMemory() {
@@ -34,6 +35,10 @@ void EAM::force(long N, const double *R, const int *atomicNrs, double *F,
   std::array<long, 3> cell_length;
 
   for (long i = 0; i < 3; i++) {
+    if (!(box[i] > 0.0) || !(rc_[i] > 0.0)) {
+      throw std::invalid_argument(
+          "EAM::force: box diagonal and cutoff must be positive");
+    }
     num_axis[i] = static_cast<long>(box[i] / rc_[i]) + 1;
   }
   for (long i = 0; i < 3; i++) {
