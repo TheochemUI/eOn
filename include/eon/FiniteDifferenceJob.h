@@ -24,5 +24,3 @@ public:
 };
 
 } // namespace eonc
-
-using eonc::FiniteDifferenceJob;
