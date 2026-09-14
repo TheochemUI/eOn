@@ -6,6 +6,7 @@ ira_gitinfo.h
 **/ira_gitinfo.h
 eon/version.py
 .asv/
+.cargo/
 /docs/source/apidocs/
 # /
 /*.tmp
