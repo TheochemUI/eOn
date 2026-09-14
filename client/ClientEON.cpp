@@ -406,15 +406,13 @@ static int eonClientMain(int argc, char **argv) {
 
     printSystemInfo();
 
-    // XXX(rg): Be more gentle here
     bool bundlingEnabled = false;
-    int bundleSize = -1; // eonc::getBundleSize();
-    if (bundleSize == 0) {
-      bundleSize = 1;
-    } else if (bundleSize == -1) {
-      // Not using bundling
+    int bundleSize = eonc::getBundleSize();
+    if (bundleSize <= 0) {
       bundleSize = 1;
       bundlingEnabled = false;
+    } else {
+      bundlingEnabled = true;
     }
 
     std::vector<std::string> bundledFilenames;
@@ -458,6 +456,7 @@ static int eonClientMain(int argc, char **argv) {
       } catch (int e) {
         QUILL_LOG_CRITICAL(logger, "[ERROR] job exited on error {}", e);
         logger->flush_log();
+        return EXIT_FAILURE;
       } catch (const std::exception &e) {
         QUILL_LOG_CRITICAL(logger, "[ERROR] unhandled exception: {}", e.what());
         logger->flush_log();
