@@ -17,6 +17,7 @@
 #include <cstring>
 #include <map>
 #include <set>
+#include <stdexcept>
 #include <unordered_map>
 
 gpr::InputParameters
@@ -98,6 +99,9 @@ void copyAtomMatrixToCoord(const AtomMatrix &src, gpr::Coord &dst) {
 
 // FIXME: Take in the active / inactive pairs / atomtypes
 gpr::AtomsConfiguration eonc::helpers::eon_matter_to_atmconf(Matter *matter) {
+  if (!matter) {
+    throw std::invalid_argument("eon_matter_to_atmconf: null Matter");
+  }
   gpr::AtomsConfiguration atoms_config;
   aux::ProblemSetUp problem_setup;
   gpr::Index_t number_of_mov_atoms;
@@ -191,12 +195,7 @@ gpr::AtomsConfiguration eonc::helpers::eon_matter_to_atmconf(Matter *matter) {
     //!> End case where we have both nonzero moving and nonzero frozen atoms
   } else {
     if (number_of_mov_atoms == 0) {
-      //!> Sometimes, nothing happens
-      QUILL_LOG_CRITICAL(
-          eonc::log::get(),
-          " You need to have atoms move!!!\nIn stillness there is only "
-          "death\n");
-      std::exit(1);
+      throw std::runtime_error("eon_matter_to_atmconf: no moving atoms");
     }
     //!> Now we will consider the case when everything is moving
     //! Everything is almost exactly the same, only we don't have frozen atoms
