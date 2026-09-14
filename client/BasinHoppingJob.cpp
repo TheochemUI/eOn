@@ -17,11 +17,14 @@
 #include <stdexcept>
 #include <string>
 
+#include "eon/BaseStructures.h"
 #include "eon/BasinHoppingJob.h"
 #include "eon/Dynamics.h"
 #include "eon/HelperFunctions.h"
+#include "eon/JobResult.h"
 #include "eon/ObjectiveFunction.h"
 #include "eon/Optimizer.h"
+#include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 
 using namespace eonc::helpers;
@@ -290,36 +293,29 @@ std::vector<std::string> BasinHoppingJob::run() {
   }
 
   {
-    std::ofstream out(resultsFilename, std::ios::binary);
-    if (!out) {
-      QUILL_LOG_CRITICAL(log, "Failed to open {}", resultsFilename);
-      throw std::runtime_error("failed to open " + resultsFilename);
-    }
-    out << std::format("{} termination_reason\n", 0);
-    out << "GOOD termination_reason_text\n";
-    out << "basin_hopping job_type\n";
-    out << std::format("{:.12e} minimum_energy\n", minimumEnergy);
-    out << std::format("{} random_seed\n", params.main_options.randomSeed);
+    auto env = JobResultEnvelope::fromMinimization(
+        RunStatus::GOOD, params.potential_options.potential,
+        PotRegistry::get().total_force_calls(), true, minimumEnergy);
+    env.job_type = "basin_hopping";
+    env.random_seed = params.main_options.randomSeed;
+    env.extras.emplace_back("minimum_energy", minimumEnergy);
     const double nsteps_ratio = params.basin_hopping_options.steps;
-    out << std::format("{:.3f} acceptance_ratio\n",
-                       nsteps_ratio ? totalAccept / nsteps_ratio : 0.0);
+    env.extras.emplace_back("acceptance_ratio",
+                            nsteps_ratio ? totalAccept / nsteps_ratio : 0.0);
     if (params.basin_hopping_options.swap_probability > 0) {
-      out << std::format(
-          "{:.3f} swap_acceptance_ratio\n",
+      env.extras.emplace_back(
+          "swap_acceptance_ratio",
           swap_count ? swap_accept / static_cast<double>(swap_count) : 0.0);
     }
-    out << std::format("{} total_normal_displacement_steps\n",
-                       disp_count - jump_count -
-                           params.basin_hopping_options.quenching_steps);
-    out << std::format("{} total_jump_steps\n", jump_count);
-    out << std::format("{} total_swap_steps\n", swap_count);
-    out << std::format("{} total_force_calls\n",
-                       PotRegistry::get().total_force_calls());
-    out.close();
-    if (!out) {
-      QUILL_LOG_CRITICAL(log, "Failed to write {}", resultsFilename);
-      throw std::runtime_error("failed to write " + resultsFilename);
-    }
+    env.extras.emplace_back(
+        "total_normal_displacement_steps",
+        static_cast<double>(disp_count - jump_count -
+                            params.basin_hopping_options.quenching_steps));
+    env.extras.emplace_back("total_jump_steps",
+                            static_cast<double>(jump_count));
+    env.extras.emplace_back("total_swap_steps",
+                            static_cast<double>(swap_count));
+    env.writeResultsDat(resultsFilename);
     returnFiles.push_back(resultsFilename);
   }
 
