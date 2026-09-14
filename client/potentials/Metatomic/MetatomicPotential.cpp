@@ -196,6 +196,14 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
     QUILL_LOG_INFO(
         m_log, "[MetatomicPotential] Per-call random SO(3) rotation enabled");
   }
+  if ((this->random_rotation_ || this->n_symmetry_rotations_ > 0) &&
+      params.main_options.randomSeed > 0) {
+    torch::manual_seed(static_cast<uint64_t>(params.main_options.randomSeed));
+    QUILL_LOG_INFO(m_log,
+                   "[MetatomicPotential] torch RNG seeded from "
+                   "main.randomSeed={}",
+                   params.main_options.randomSeed);
+  }
 
   if (!outputs.contains(this->energy_key_)) {
     QUILL_LOG_ERROR(
@@ -490,10 +498,23 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
                           .toCustomClass<metatensor_torch::TensorMapHolder>();
         auto nc_block =
             metatensor_torch::TensorMapHolder::block_by_id(nc_map, 0);
-        forces_tensor = nc_block->values()
-                            .reshape({nAtoms, 3})
-                            .to(torch::kCPU)
-                            .to(torch::kFloat64);
+        auto nc_vals = nc_block->values();
+        if (nc_vals.numel() != nAtoms * 3) {
+          throw std::runtime_error("[MetatomicPotential] NC force block has " +
+                                   std::to_string(nc_vals.numel()) +
+                                   " values, expected " +
+                                   std::to_string(nAtoms * 3));
+        }
+        auto nc_samples = nc_block->samples();
+        if (nc_samples->size() > 0 && nc_samples->names().size() > 1) {
+          auto atom_col = nc_samples->column("atom").to(torch::kCPU);
+          if (atom_col.size(0) != nAtoms) {
+            throw std::runtime_error(
+                "[MetatomicPotential] NC force samples atom count mismatch");
+          }
+        }
+        forces_tensor =
+            nc_vals.reshape({nAtoms, 3}).to(torch::kCPU).to(torch::kFloat64);
       } else {
         energy_tensor.backward(torch::ones_like(energy_tensor));
         auto positions_grad = system->positions().grad();
