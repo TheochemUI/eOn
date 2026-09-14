@@ -753,7 +753,7 @@ class Water(Displace):
             if not re.search("^H", name):
                 break
         # For water assume that all the hydrogen are listed first, then all the oxygen
-        self.n_water = i / 2
+        self.n_water = i // 2
         if len(molecule_list) == 0:
             molecule_list = list(range(self.n_water))
         self.molecule_list = molecule_list
