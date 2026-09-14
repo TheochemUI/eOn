@@ -18,6 +18,10 @@ def test_job_result_capnp_exists():
     assert "enum TerminationCode" in text
     assert "dimerRestoredBest @21" in text
     assert "termination @30" in text
+    assert "body :union" in text
+    assert "struct MinimizationBody" in text
+    assert "struct NEBBody" in text
+    assert "struct ProcessSearchBody" in text
 
 
 def test_results_dat_roundtrip_scalars():
