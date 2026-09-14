@@ -11,6 +11,19 @@ eOn supports parallel force evaluation in NEB, Dimer/ImprovedDimer, and
 ProcessSearchJob. The threading model uses `std::thread` with per-image
 potential ownership.
 
+## Thread-safe interface
+
+`Potential` and `Matter` are not internally synchronized except where a
+mutex is documented (Metatomic inference lock). The contract is:
+
+- After `makePotential`, the pot is used from one thread unless
+  `isThreadSafe()` is true.
+- `Matter` is not shared across threads. Parallel NEB uses one Matter
+  (or one pot instance) per image.
+- `layoutFlags()` says whether the pot is in-process, needs cwd, or is a
+  subprocess. Do not share a `NeedsWorkingDirectory` pot across threads
+  that would race on cwd.
+
 ## Threading model
 
 Two virtual methods on `Potential` control the behavior:
