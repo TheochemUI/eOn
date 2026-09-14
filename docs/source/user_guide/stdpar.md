@@ -19,8 +19,13 @@ behind `-DEON_PARALLEL_NEB`. Two ways to turn that on:
 configure fails rather than passing a flag the linker will reject.
 
 ```bash
-CXX=nvc++ meson setup build-stdpar -Dstdpar=gpu
+CXX=nvc++ meson setup build-stdpar -Dstdpar=gpu -Db_pie=false
 ```
+
+nvc++ 23.7 does not implement Meson's `b_pie`. Leave it off. Meson 1.12
+still errors (`Language C++ does not support position-independent
+executable`) after the summary; 1.10.1 writes the ninja file. The login-node
+probe also needs `libatomic.so.1` from GCCcore on `LD_LIBRARY_PATH`.
 
 The default GPU arch list is `cc80,cc90` (A100 and H100, the Snellius/Elja
 pair). Override with `-Dstdpar_gpu_cc=cc90` or `-Dstdpar_gpu_cc=native` to
@@ -54,3 +59,7 @@ site toolchain facts. They do not change eOn's meson options.
 
 Build the nvc++ tree on a login node that has headers. Do not compile on a
 compute node that lacks `features.h`.
+
+On Elja the login-node probe also needs `libatomic.so.1` from GCCcore on
+`LD_LIBRARY_PATH`. `nvc++` 23.7 identifies to Meson as `nvidia_hpc`. Without
+that library, Meson reports that nvc++ executables are not runnable.

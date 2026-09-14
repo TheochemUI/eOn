@@ -422,9 +422,6 @@ if not _rgpot_pkg.found()
         # engines stay runtime dlopen; do not force fat metatomic/xtb link
         'with_xtb': false,
         'with_metatomic': false,
-        # rgpot 3.1 Expr (Lepton wrap). D3/D4 wraps pull s-dftd3/dftd4
-        # tests into meson test and break isolated wheel builds.
-        'with_expr': true,
         # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H are
         # Fortran kernels inside librgpot.
         'with_fortran_pots': 'enabled',
