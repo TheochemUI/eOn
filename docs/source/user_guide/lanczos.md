@@ -53,10 +53,13 @@ more efficient (fewer force calls) while the Dimer fails less often and
 integrates with GP acceleration:
 
 - **Lanczos**: 1 gradient evaluation per iteration. Fewer total force calls.
-  Natural for large systems. Integrates with OCINEB climbing image refinement.
+  Natural for large systems and stiff EAM / Tersoff metals (Henkelman 2003;
+  Olsen 2004). Integrates with OCINEB climbing-image refinement. If
+  `rotations_max` on a dimer search is saturating without a mode, switch here.
 - **Improved Dimer**: 2 evaluations per iteration (finite difference). More
   force calls but integrates with the [AtomicGPDimer](project:dimer.md) for
-  GP-accelerated searches.
+  GP-accelerated searches. Prefer this for tight defects where a short dimer
+  stays in the basin.
 - **ARTn**: Push-based exploration. Finds different saddles than
   gradient-following methods. See [ARTn](project:artn.md).
 

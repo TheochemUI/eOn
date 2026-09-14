@@ -20,6 +20,7 @@ testing
 benchmarks
 parallel-potentials
 in-process
+abi-surface
 docbuild
 svn
 svn-migration

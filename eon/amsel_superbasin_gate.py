@@ -136,9 +136,21 @@ def discover_decide_for_superbasin(
         )
     except Exception as exc:
         logger.warning("amsel discover_decide_status failed: %s", exc)
+        policy = str(getattr(config, "amsel_on_error", "fallback_single") or "fallback_single")
+        if policy == "raise":
+            raise
+        if policy == "unavailable_mcamc":
+            return {
+                "available": False,
+                "status": "unavailable",
+                "primary_transient": None,
+                "raw": None,
+                "reason": f"{type(exc).__name__}: {exc}",
+            }
+        # fallback_single: do not look like a successful AMSEl skip
         return {
             "available": True,
-            "status": "unavailable",
+            "status": "fallback_single",
             "primary_transient": None,
             "raw": None,
             "reason": f"{type(exc).__name__}: {exc}",
@@ -171,7 +183,12 @@ def apply_gate_to_superbasin(
     Returns the status string for logging.
     """
     status = str(decision.get("status", "unavailable"))
-    if not decision.get("available") or status in ("unavailable", "accepted", "retightened"):
+    if not decision.get("available") or status in (
+        "unavailable",
+        "accepted",
+        "retightened",
+        "fallback_single",
+    ):
         return status
     if status == "split_required":
         primary = decision.get("primary_transient") or []
