@@ -28,6 +28,9 @@ const char Hyperdynamics::BOND_BOOST[] = "bond_boost";
 BondBoost::BondBoost(Matter *matt, const Parameters &params)
     : matter{matt},
       parameters{params} {
+  if (!matter) {
+    throw std::invalid_argument("BondBoost: null Matter");
+  }
   nAtoms = matter->numberOfAtoms();
 }
 
@@ -146,6 +149,9 @@ double BondBoost::Booststeps() {
   const double QRR = parameters.hyperdynamics_options.qrr;
   const double PRR = parameters.hyperdynamics_options.prr;
   const double DVMAX = parameters.hyperdynamics_options.dvmax;
+  if (nBBs <= 0 || !(QRR > 0.0)) {
+    return 0.0;
+  }
   const double nBBsD = static_cast<double>(nBBs);
 
   AtomMatrix addForces(nBBs, 3);
@@ -161,7 +167,12 @@ double BondBoost::Booststeps() {
   // Compute strain parameters and find maximum
   double epsrMax = 0.0;
   for (long i = 0; i < nBBs; i++) {
-    Epsr_Q[i] = (CBBLList(i, 0) - EBBLList(i, 0)) / EBBLList(i, 0) / QRR;
+    const double eq = EBBLList(i, 0);
+    if (!(eq > 0.0)) {
+      Epsr_Q[i] = 0.0;
+      continue;
+    }
+    Epsr_Q[i] = (CBBLList(i, 0) - eq) / eq / QRR;
     if (std::abs(Epsr_Q[i]) >= epsrMax) {
       epsrMax = std::abs(Epsr_Q[i]);
     }
@@ -204,6 +215,9 @@ double BondBoost::Booststeps() {
     long a1 = BBAList[2 * i];
     long a2 = BBAList[2 * i + 1];
     double R = CBBLList(i, 0);
+    if (!(R > 0.0) || !(EBBLList(i, 0) > 0.0)) {
+      continue;
+    }
 
     for (int j = 0; j < 3; j++) {
       double rij = matter->pdistance(a1, a2, j);

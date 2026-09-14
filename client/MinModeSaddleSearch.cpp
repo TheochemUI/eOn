@@ -83,8 +83,13 @@ public:
       } else if (params.saddle_search_options.confine_positive.enabled) {
         if (params.saddle_search_options.confine_positive.bowl_breakout) {
           AtomMatrix forceTemp = matter->getForces();
-          int nBowlActive =
-              params.saddle_search_options.confine_positive.bowl_active;
+          const long nAtoms = matter->numberOfAtoms();
+          int nBowlActive = static_cast<int>(std::min<long>(
+              params.saddle_search_options.confine_positive.bowl_active,
+              nAtoms));
+          if (nBowlActive <= 0) {
+            force.setZero();
+          } else {
           std::vector<int> indices_max(nBowlActive);
 
           // Find the nBowlActive atoms with largest forces
@@ -105,6 +110,7 @@ public:
             forceTemp.row(indices_max[j]) = -proj.row(indices_max[j]);
           }
           force = forceTemp;
+          }
         } else {
           int sufficientForce = 0;
           double minForce =
