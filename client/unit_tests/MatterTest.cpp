@@ -15,6 +15,7 @@
 #include "eon/MonteCarlo.h"
 #include "eon/Parameters.h"
 #include "eon/Prefactor.h"
+#include <cmath>
 #include <filesystem>
 #include <memory>
 
@@ -110,6 +111,35 @@ TEST_CASE("Copy constructor preserves positions, cell, and atomic numbers",
   REQUIRE(m2.getPositions().isApprox(m1->getPositions(), 1e-12));
   REQUIRE(m2.getCell().isApprox(m1->getCell(), 1e-12));
   REQUIRE(m2.getAtomicNrs() == m1->getAtomicNrs());
+}
+
+TEST_CASE("removeNetForce is skipped for a single free atom",
+          "[MatterTest][zjri]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  params.main_options.removeNetForce = true;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter one(pot, params);
+  one.resize(1);
+  one.setAtomicNr(0, 18);
+  AtomMatrix p1(1, 3);
+  p1 << 0.1, 0.0, 0.0;
+  one.setPositions(p1);
+  one.setPeriodic(false);
+  REQUIRE_NOTHROW(one.getForces());
+  REQUIRE(std::isfinite(one.getForces().norm()));
+
+  Matter pair(pot, params);
+  pair.resize(2);
+  pair.setAtomicNr(0, 18);
+  pair.setAtomicNr(1, 18);
+  AtomMatrix p2(2, 3);
+  p2 << 0.0, 0.0, 0.0, 2.5, 0.0, 0.0;
+  pair.setPositions(p2);
+  pair.setPeriodic(false);
+  AtomMatrix Fp = pair.getForces();
+  REQUIRE(Fp.row(0).norm() > 0.0);
+  REQUIRE(Fp.row(1).norm() > 0.0);
 }
 
 TEST_CASE("setPositions marks forces stale", "[MatterTest][force_cache]") {
@@ -402,7 +432,8 @@ TEST_CASE("MonteCarlo uses caller args and leaves fixed atoms still",
   REQUIRE((after - before).norm() < 1e-6);
 }
 
-TEST_CASE("movedAtomsPct skips atoms fixed in min1", "[MatterTest][prefactor]") {
+TEST_CASE("movedAtomsPct skips atoms fixed in min1",
+          "[MatterTest][prefactor]") {
   auto [min1, params] = makeLJCluster();
   auto pot = min1->getPotential();
   auto saddle = std::make_shared<Matter>(pot, params);
@@ -417,9 +448,8 @@ TEST_CASE("movedAtomsPct skips atoms fixed in min1", "[MatterTest][prefactor]") 
   saddle->setPositions(pos);
   params.prefactor_options.filter_fraction = 1.0;
   params.prefactor_options.within_radius = 0.0;
-  VectorXi moved =
-      eonc::Prefactor::movedAtomsPct(params, min1.get(), saddle.get(),
-                                     min2.get());
+  VectorXi moved = eonc::Prefactor::movedAtomsPct(params, min1.get(),
+                                                  saddle.get(), min2.get());
   for (int i = 0; i < moved.size(); ++i) {
     REQUIRE(moved[i] != 0);
   }
