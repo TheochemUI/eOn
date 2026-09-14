@@ -11,6 +11,7 @@
 */
 #include "eon/DynamicsSaddleSearch.h"
 #include "eon/BondBoost.h"
+#include "eon/SafeMath.h"
 #include "eon/Dynamics.h"
 #include "eon/EigenmodeStrategy.h"
 #include "eon/MinModeSaddleSearch.h"
@@ -263,7 +264,7 @@ int DynamicsSaddleSearch::run() {
                                    saddle->getPositions());
               mode = saddle->pbc(neb.path[extremumImage + 1]->getPositions() -
                                  saddle->getPositions());
-              mode.normalize();
+              eonc::safemath::safe_normalize_inplace(mode);
               eonc::eigenmodeCompute(*minModeMethod, saddle, mode);
               double ev = eonc::eigenmodeGetEigenvalue(*minModeMethod);
               QUILL_LOG_DEBUG(log, "extrema #{} has eigenvalue {:.8f}",
@@ -291,7 +292,7 @@ int DynamicsSaddleSearch::run() {
             saddle->setPositions(interpDist * bandDir + saddle->getPositions());
             mode = saddle->pbc(neb.path[extremumImage + 1]->getPositions() -
                                saddle->getPositions());
-            mode.normalize();
+            eonc::safemath::safe_normalize_inplace(mode);
           } else {
             QUILL_LOG_DEBUG(
                 log, "no maxima found, using max energy non-endpoint image");
@@ -303,7 +304,7 @@ int DynamicsSaddleSearch::run() {
                 *saddle = *neb.path[img];
                 mode = saddle->pbc(neb.path[img + 1]->getPositions() -
                                    saddle->getPositions());
-                mode.normalize();
+                eonc::safemath::safe_normalize_inplace(mode);
               }
             }
             if (maxEnergy <= reactant->getPotentialEnergy()) {

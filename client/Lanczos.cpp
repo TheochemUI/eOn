@@ -130,7 +130,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
       ewOld = ew;
 
       evEst = Q.block(0, 0, size, i + 1) * evT;
-      evEst.normalize();
+      eonc::safemath::safe_normalize_inplace(evEst);
       statsAngle = eonc::safemath::safe_acos(std::fabs(evEst.dot(evOldEst))) *
                    (180 / eonc::helpers::pi);
       statsTorque = ewAbsRelErr;

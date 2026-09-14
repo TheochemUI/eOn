@@ -11,6 +11,7 @@
 */
 #include "eon/NudgedElasticBand.h"
 #include "eon/BaseStructures.h"
+#include "eon/SafeMath.h"
 #include "eon/EigenmodeStrategy.h"
 #include "eon/IDPPObjectiveFunction.hpp"
 #include "eon/IRACompare.h"
@@ -299,7 +300,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
       } else {
         maxTang = *tangent[maxEnergyImage];
       }
-      maxTang.normalize();
+      eonc::safemath::safe_normalize_inplace(maxTang);
       auto maxImageMetadata = eonc::io::ConFrameMetadata{};
       maxImageMetadata.frame_index = static_cast<uint64_t>(maxEnergyImage);
       maxImageMetadata.energy = path[maxEnergyImage]->getPotentialEnergy();
