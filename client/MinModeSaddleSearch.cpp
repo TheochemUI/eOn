@@ -310,6 +310,9 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
           QUILL_LOG_WARNING(log, "Failed to write climb movie frame {}",
                             climbLabel);
         }
+        eonc::helpers::saveMode(
+            std::format("mode_{:03}.dat", frameIndex), matter,
+            eonc::eigenmodeGetEigenvector(*minModeMethod));
       }
 
       if (params.debug_options.write_deprecated_outs) {

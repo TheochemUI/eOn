@@ -15,6 +15,7 @@
 #include "eon/Matter.h"
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/Parameters.h"
+#include <filesystem>
 
 namespace tests {
 
@@ -106,6 +107,31 @@ TEST_CASE_METHOD(SaddleSearchFixture,
 
   // Should hit max iterations or some non-GOOD status
   REQUIRE(status != MinModeSaddleSearch::STATUS_GOOD);
+}
+
+TEST_CASE_METHOD(SaddleSearchFixture,
+                 "write_movies writes per-iteration mode files",
+                 "[saddle_search][ra6]") {
+  namespace fs = std::filesystem;
+  params.debug_options.write_movies = true;
+  params.saddle_search_options.max_iterations = 2;
+  params.saddle_search_options.converged_force = 1e-10;
+
+  const auto tmp = fs::temp_directory_path() / "eon_ra6_modes";
+  fs::create_directories(tmp);
+  const auto old = fs::current_path();
+  fs::current_path(tmp);
+
+  long nAtoms = matter->numberOfAtoms();
+  AtomMatrix mode = AtomMatrix::Random(nAtoms, 3);
+  mode.normalize();
+  MinModeSaddleSearch search(matter, mode, matter->getPotentialEnergy(),
+                             params, pot);
+  search.run();
+
+  REQUIRE(fs::exists("mode_000.dat"));
+  fs::current_path(old);
+  fs::remove_all(tmp);
 }
 
 // Issue #20: unfeasible / unconverged climb must not report STATUS_GOOD.
