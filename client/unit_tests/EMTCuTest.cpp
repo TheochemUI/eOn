@@ -66,4 +66,12 @@ TEST_CASE("EMT minimization converges on Cu FCC", "[pot][emt][cu]") {
   REQUIRE(e_after <= e_before + 1e-10);
 }
 
+TEST_CASE("EMT opts out of shared-instance threading",
+          "[pot][emt][cu][thread_safety][gjg]") {
+  Parameters params;
+  params.potential_options.potential = PotType::EMT;
+  auto pot = eonc::helpers::makePotential(params);
+  REQUIRE_FALSE(pot->isSharedInstanceThreadSafe());
+}
+
 } /* namespace tests */

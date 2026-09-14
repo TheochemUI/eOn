@@ -71,6 +71,9 @@ public:
     int LAMMPSThreads{0};
     bool EMTRasmussen{false};
     bool LogPotential{false};
+    /// When false, NEB/dimer/process_search never share one Potential across
+    /// threads, even if the backend reports isThreadSafe().
+    bool thread_safe{true};
     std::string extPotPath{"./ext_pot"};
     std::string potentialsPath{
         ""}; // colon-separated dirs for Fortran potential .so files

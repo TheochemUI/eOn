@@ -180,6 +180,15 @@ void bind_parameters(nb::module_ &m) {
           [](eonc::Parameters &s, const std::string &v) {
             s.potential_options.extPotPath = v;
           })
+      .def_prop_rw(
+          "pot_thread_safe",
+          [](const eonc::Parameters &s) {
+            return s.potential_options.thread_safe;
+          },
+          [](eonc::Parameters &s, bool v) {
+            s.potential_options.thread_safe = v;
+          },
+          "When false, NEB/dimer never share one Potential across threads")
       // --- Optimizer ---
       .def_prop_rw(
           "opt_max_iterations",
