@@ -96,11 +96,8 @@ class SuperbasinScheme:
                 self.superbasins.remove(sb)
         new_sb_states = list(new_sb_states)
 
-        # self.states.connect_states(new_sb_states) #XXX:This should ensure detailed balance
-        # However, it will likely be very slow. We should be able to do without it.
-        # Also, if confidence is changed and new processes are found, the superbasin
-        # will ignore these new processes.
         self.states.connect_state_sets(start_states, end_states)
+        self.states.connect_states(new_sb_states)
 
         self.superbasins.append(
             superbasin.Superbasin(self.path, self.next_sb_num,

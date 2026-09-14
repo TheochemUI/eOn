@@ -151,5 +151,10 @@ public:
                   const double *const *boxes) override;
 
 private:
+  void forceBatchNative(long nSystems, long nAtoms,
+                        const double *const *positions,
+                        const int *const *atomicNrs, double *const *forces,
+                        double *energies, double *variances,
+                        const double *const *boxes);
   mutable std::mutex inference_mutex_;
 };

@@ -275,11 +275,14 @@ class Communicator:
                     results[index][key] = filedata
                     results[index]['number'] = index
 
-            # XXX: UGLY: We need a way to check if there are no results.
-            if not any([ filename.startswith('results') for filename in list(results[0].keys())]):
-                logger.warning("Failed to find a result.dat file for %s",results[0]['name'])
-                results = []
-            yield results
+            kept = []
+            for slot in results:
+                if any(str(k).startswith('results') for k in slot):
+                    kept.append(slot)
+                else:
+                    logger.warning("Failed to find a results.dat file for %s slot %s",
+                                   slot.get('name'), slot.get('number'))
+            yield kept
 
     def make_bundles(self, data, invariants):
         '''This method is a generator that bundles together multiple jobs into a single job.
