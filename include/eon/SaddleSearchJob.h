@@ -49,15 +49,13 @@ public:
    * \param *params defined by the config.init file
    */
   SaddleSearchJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)),
-        fCallsSaddle{0} {}
+      : Job(std::move(parameters)), fCallsSaddle{0} {}
   //! Saddle Search Job Deconstructor
   ~SaddleSearchJob(void) = default;
   //! Kicks off the Saddle Search
   std::vector<std::string> run(void) override;
   /// In-process entry: seed reactant Matter, no pos.con (eOn-gbkb).
-  std::shared_ptr<Matter>
-  runFromMatter(std::shared_ptr<Matter> seed);
+  std::shared_ptr<Matter> runFromMatter(std::shared_ptr<Matter> seed);
 
 private:
   std::shared_ptr<Matter> runPrepared(const AtomMatrix &mode);

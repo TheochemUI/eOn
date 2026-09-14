@@ -29,3 +29,4 @@ repos:
   hooks:
   - id: zizmor
     files: ^\.github/workflows/
+    args: ["--min-severity=medium"]

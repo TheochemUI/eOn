@@ -98,8 +98,7 @@ SaddleSearchJob::runFromMatter(std::shared_ptr<Matter> seed) {
   return runPrepared(mode);
 }
 
-std::shared_ptr<Matter>
-SaddleSearchJob::runPrepared(const AtomMatrix &mode) {
+std::shared_ptr<Matter> SaddleSearchJob::runPrepared(const AtomMatrix &mode) {
   const bool useStandaloneARTn = params.saddle_search_options.method == "artn";
   const bool useARTnAsMinMode =
       params.saddle_search_options.method == "min_mode" &&

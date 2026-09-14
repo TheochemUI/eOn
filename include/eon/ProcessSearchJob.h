@@ -49,17 +49,14 @@ public:
    * \param *params defined by the config.init file
    */
   ProcessSearchJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)),
-        fCallsSaddle{0},
-        fCallsMin{0},
+      : Job(std::move(parameters)), fCallsSaddle{0}, fCallsMin{0},
         fCallsPrefactors{0} {}
   //! Process Search job De-constructor
   ~ProcessSearchJob() = default;
   //! Kicks off the Process Search
   std::vector<std::string> run(void) override;
   /// In-process entry: seed reactant Matter, no pos.con (eOn-gbkb).
-  std::shared_ptr<Matter>
-  runFromMatter(std::shared_ptr<Matter> seed);
+  std::shared_ptr<Matter> runFromMatter(std::shared_ptr<Matter> seed);
 
 private:
   eonc::log::Scoped log;

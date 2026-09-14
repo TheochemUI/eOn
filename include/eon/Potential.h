@@ -33,14 +33,11 @@ public:
 
   // Main Constructor (no Parameters dependency)
   explicit Potential(PotType a_ptype)
-      : ptype{a_ptype},
-        m_registry_id{PotRegistry::get().on_created(a_ptype)},
-        m_created_at{PotRegistry::Clock::now()},
-        forceCallCounter{0} {}
+      : ptype{a_ptype}, m_registry_id{PotRegistry::get().on_created(a_ptype)},
+        m_created_at{PotRegistry::Clock::now()}, forceCallCounter{0} {}
 
   // Convenience constructor from Parameters (for backward compat)
-  Potential(PotType a_ptype, const Parameters &)
-      : Potential(a_ptype) {}
+  Potential(PotType a_ptype, const Parameters &) : Potential(a_ptype) {}
 
   Potential(const Parameters &a_params)
       : Potential(a_params.potential_options.potential) {}

@@ -34,8 +34,7 @@ public:
   }
   [[nodiscard]] unsigned layoutFlags() const noexcept override {
     return static_cast<unsigned>(Potential::PotLayout::Subprocess) |
-           static_cast<unsigned>(
-               Potential::PotLayout::NeedsWorkingDirectory);
+           static_cast<unsigned>(Potential::PotLayout::NeedsWorkingDirectory);
   }
 
 private:
