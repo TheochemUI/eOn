@@ -63,6 +63,7 @@ nickel = ">=1.9.0,<2"
 gen-gha = { cmd = "bash ci/gha/gen.sh", description = "Export release/prepare/towncrier workflows from ci/gha/*.ncl" }
 gha-drift = { cmd = "bash ci/gha/check-drift.sh", description = "Fail if committed .github/workflows release trio diverges from Nickel" }
 nickel-fmt = { cmd = "bash ci/gha/format.sh", description = "nickel format ci/gha/*.ncl and lib/*.ncl" }
+zizmor = { cmd = "uvx zizmor@1.30.1 .github", description = "Static analysis for GitHub Actions / Dependabot / pre-commit" }
 
 [environments]
 cigen = { features = ["cigen"] }
