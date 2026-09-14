@@ -15,6 +15,7 @@
 #include "eon/Matter.h"
 #include "eon/ObjectiveFunction.h"
 #include "eon/Optimizer.h"
+#include "eon/SafeMath.h"
 #include "eon/SaddleSearchMethod.h"
 
 #include <cassert>
@@ -156,7 +157,7 @@ int BiasedGradientSquaredDescent::run() {
       };
     }
   }
-  eigenvector.normalize();
+  eonc::safemath::safe_normalize_inplace(eigenvector);
   eonc::eigenmodeCompute(*minModeMethod, saddle, eigenvector);
   eigenvector = eonc::eigenmodeGetEigenvector(*minModeMethod);
   eigenvalue = eonc::eigenmodeGetEigenvalue(*minModeMethod);

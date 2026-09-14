@@ -18,6 +18,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstring>
+#include <stdexcept>
 
 #include "subprojects/gpr_optim/gpr/AtomicDimer.h"
 #include "subprojects/gpr_optim/gpr/auxiliary/ProblemSetUp.h"
@@ -44,6 +45,9 @@ AtomicGPDimer::AtomicGPDimer(std::shared_ptr<Matter> matter,
                              const Parameters &params,
                              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
+  if (!matter) {
+    throw std::invalid_argument("AtomicGPDimer: null Matter");
+  }
   matterCenter = std::make_shared<Matter>(pot, params);
   *matterCenter = *matter;
   p = eonc::helpers::eon_parameters_to_gpr(params);
@@ -103,6 +107,9 @@ AtomMatrix AtomicGPDimer::getEigenvector() {
   const gpr::Coord &orient = atomic_dimer.getFinalOrientation();
   const long nFree = matterCenter->numberOfFreeAtoms();
   const long nAtoms = matterCenter->numberOfAtoms();
+  if (nFree <= 0 || orient.size() != 3 * nFree) {
+    return AtomMatrix::Zero(nAtoms, 3);
+  }
   AtomMatrix freeMode =
       Eigen::Map<const AtomMatrix>(orient.data(), nFree, 3);
   if (nFree == nAtoms) {
