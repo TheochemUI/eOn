@@ -424,9 +424,22 @@ class MPI(Communicator):
     def get_number_in_progress(self):
         return int(os.environ['EON_NUMBER_OF_CLIENTS'])
 
+    def stop_clients(self):
+        """Send STOPCAR to every ready client rank (ClientEON exits on that path)."""
+        n = 0
+        for rank in self.client_ranks:
+            if not self.comm.Iprobe(rank, tag=1):
+                continue
+            tmp = numpy.empty(1, dtype='i')
+            self.comm.Recv(tmp, source=rank, tag=1)
+            buf = array('b')
+            buf.frombytes(b'STOPCAR\0')
+            self.comm.Send(buf, rank)
+            n += 1
+        return n
+
     def cancel_state(self, state):
-        #XXX: how to support this...
-        return 0
+        return self.stop_clients()
 
 
 class Local(Communicator):

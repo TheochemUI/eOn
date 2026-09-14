@@ -106,7 +106,6 @@ def akmc(config: ConfigClass = None, steps=0):
         # explore the state with the lowest confidence.
         if sb:
             explore_state = sb.get_lowest_confidence_state()
-            previous_state = explore_state # TODO: perhaps there is a better value for previous_state?
         else:
             explore_state = current_state
     else:
@@ -635,12 +634,9 @@ def main(config: ConfigClass = None):
                     steps >= config.akmc_max_kmc_steps):
                     break
                 wait()
-            # In MPI mode we need to signal exit to all processes.
-            # TODO: This is the sledgehammer method, it would be cleaner to
-            #       communicate to all clients that they should exit.
             if config.comm_type == 'mpi':
-                from mpi4py import MPI
-                MPI.COMM_WORLD.Abort(0)
+                comm = communicator.get_communicator(config)
+                comm.stop_clients()
         else:
             akmc(config)
     else:
