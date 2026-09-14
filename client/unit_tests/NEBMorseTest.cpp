@@ -404,6 +404,16 @@ TEST_CASE("Potential isThreadSafe defaults to true",
   Parameters params;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   REQUIRE(pot->isThreadSafe() == true);
+  REQUIRE(pot->isSharedInstanceThreadSafe() == true);
+}
+
+TEST_CASE("Potential thread_safe=false forces serial sharing",
+          "[potential][thread_safety][gjg]") {
+  Parameters params;
+  params.potential_options.thread_safe = false;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  REQUIRE(pot->isThreadSafe() == true);
+  REQUIRE(pot->isSharedInstanceThreadSafe() == false);
 }
 
 TEST_CASE("Potential forceCallCounter is atomic",

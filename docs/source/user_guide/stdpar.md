@@ -39,7 +39,10 @@ omit `-gpu=`. That is the same lesson as QMCPACK `QMC_GPU_ARCHS=sm_80;sm_90`,
 written in nvc++'s flag language.
 
 `parallel = true` in `config.ini` still fans out with one `std::thread` per
-image when `EON_PARALLEL_NEB` is off.
+image when `EON_PARALLEL_NEB` is off. Set `[Potential] thread_safe = false`
+to keep one shared Potential serial (EAM cell lists, EMT ASAP objects,
+Metatomic, ExtPot, SocketNWChem, and XTB already refuse shared-instance
+threading).
 
 ## What stays on the host
 

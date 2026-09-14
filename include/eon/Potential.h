@@ -27,6 +27,7 @@ protected:
 private:
   uint64_t m_registry_id;
   PotRegistry::TimePoint m_created_at;
+  bool force_serial_{false};
 
 public:
   std::atomic<size_t> forceCallCounter;
@@ -37,10 +38,13 @@ public:
         m_created_at{PotRegistry::Clock::now()}, forceCallCounter{0} {}
 
   // Convenience constructor from Parameters (for backward compat)
-  Potential(PotType a_ptype, const Parameters &) : Potential(a_ptype) {}
+  Potential(PotType a_ptype, const Parameters &p)
+      : Potential(a_ptype) {
+    force_serial_ = !p.potential_options.thread_safe;
+  }
 
   Potential(const Parameters &a_params)
-      : Potential(a_params.potential_options.potential) {}
+      : Potential(a_params.potential_options.potential, a_params) {}
 
   virtual ~Potential() {
     PotRegistry::get().on_destroyed(m_registry_id, ptype, forceCallCounter,
@@ -90,6 +94,8 @@ public:
   /// wrapper instance (global/common-block Fortran entry points) override
   /// this to false on their own classes.
   [[nodiscard]] virtual bool isSharedInstanceThreadSafe() const noexcept {
+    if (force_serial_)
+      return false;
     return isThreadSafe();
   }
 

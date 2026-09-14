@@ -36,6 +36,11 @@ public:
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *fullbox) override;
 
+  /// Cell lists live on the instance; two threads cannot share one EAM.
+  [[nodiscard]] bool isSharedInstanceThreadSafe() const noexcept override {
+    return false;
+  }
+
 private:
   struct element_parameters {
     const int Z;                // Atomic number

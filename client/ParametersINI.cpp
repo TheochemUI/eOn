@@ -111,6 +111,8 @@ int load_ini(INIReader &ini, Parameters &params) {
   }
   params.potential_options.LogPotential = ini.GetBoolean(
       "Potential", "log_potential", params.potential_options.LogPotential);
+  params.potential_options.thread_safe = ini.GetBoolean(
+      "Potential", "thread_safe", params.potential_options.thread_safe);
 
   // [AMS]
   if (params.potential_options.potential == PotType::AMS) {

@@ -47,4 +47,9 @@ public:
   // To satify interface
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
+
+  /// ASAP Atoms/EMT objects are mutated in force(); do not share one instance.
+  [[nodiscard]] bool isSharedInstanceThreadSafe() const noexcept override {
+    return false;
+  }
 };
