@@ -246,17 +246,17 @@ MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
   return targets;
 }
 std::vector<Matter> getMidSlice(const std::vector<Matter> &matobjs) {
-  // Used to get the initial data slice, endpoints and the midpoint
-  std::vector<Matter> res;
-  res.reserve(3);
-  res.push_back(matobjs.front());
-  // BUG: THIS ISN'T THE MIDDLE!!!!
-  // XXX: Why does this have to be in the same order?
-  // front mid back doesn't work
-  // front back mid works
-  res.push_back(matobjs.back());
-  res.push_back(matobjs[((matobjs.size() - 2) * 2.0 / 3.0) + 1]);
-  return res;
+  // Initial GP slice: endpoints plus one interior sample. CatLearn
+  // training is order-sensitive (front, back, interior). The interior
+  // index is two-thirds along the movable images, not n/2.
+  if (matobjs.size() < 3) {
+    throw std::invalid_argument(
+        "getMidSlice: need at least three images");
+  }
+  const std::size_t n = matobjs.size();
+  const std::size_t twoThirds =
+      static_cast<std::size_t>(((n - 2) * 2.0 / 3.0) + 1.0);
+  return {matobjs.front(), matobjs.back(), matobjs[twoThirds]};
 }
 Eigen::VectorXd make_target(Matter &m1, std::shared_ptr<Potential> true_pot) {
   const auto ncols = (m1.numberOfFreeAtoms() * 3) + 1;
@@ -296,28 +296,27 @@ getNewDataPoint(const std::vector<std::shared_ptr<Matter>> &matobjs,
 }
 bool accuratePES(std::vector<std::shared_ptr<Matter>> &matobjs,
                  std::shared_ptr<Potential> true_pot) {
+  if (matobjs.empty()) {
+    throw std::invalid_argument("accuratePES: empty path");
+  }
   Eigen::VectorXd predEnergies{Eigen::VectorXd::Zero(matobjs.size())};
   Eigen::VectorXd trueEnergies{Eigen::VectorXd::Zero(matobjs.size())};
-  Eigen::VectorXd accuracy{Eigen::VectorXd::Zero(matobjs.size())};
   for (auto idx{0}; idx < predEnergies.size(); idx++) {
+    auto incoming = matobjs[idx]->getPotential();
     predEnergies[idx] = matobjs[idx]->getPotentialEnergy();
     matobjs[idx]->setPotential(true_pot);
     trueEnergies[idx] = matobjs[idx]->getPotentialEnergy();
-
-    accuracy[idx] = std::sqrt(predEnergies[idx] * predEnergies[idx] -
-                              trueEnergies[idx] * trueEnergies[idx]);
+    matobjs[idx]->setPotential(incoming);
   }
   Eigen::VectorXd difference = predEnergies - trueEnergies;
-  auto mae = difference.array()
-                 .abs()
-                 .maxCoeff(); //.squaredNorm() / predEnergies.size();
+  const auto maxAbs = difference.array().abs().maxCoeff();
   std::ostringstream oss;
   oss << "predicted\n"
       << predEnergies << "\ntrue\n"
       << trueEnergies << "\ndifference\n"
-      << difference << "\n MAE: " << mae;
+      << difference << "\n maxAbs: " << maxAbs;
   EONC_LOG_TRACE("{}", oss.str());
-  return mae < 0.05;
+  return maxAbs < 0.05;
 }
 } // namespace eonc::helpers::surrogate
 
