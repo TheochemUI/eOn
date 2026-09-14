@@ -33,7 +33,7 @@
 #include "eon/EonLogger.h"
 
 std::vector<std::string> ProcessSearchJob::run() {
-  std::string reactantFilename("pos.con");
+  std::string reactantFilename = eonc::helpers::getRelevantFile("pos.con");
   std::string displacementFilename("displacement.con");
   std::string modeFilename("direction.dat");
   size_t fctmp{0};
@@ -55,7 +55,7 @@ std::vector<std::string> ProcessSearchJob::run() {
 
   if (!eonc::io::io_ok(initial->con2matter(reactantFilename))) {
     EONC_LOG_CRITICAL("Failed to load {}", reactantFilename);
-    exit(1);
+    throw std::runtime_error("failed to load " + reactantFilename);
   }
 
   if (params.process_search_options.minimize_first) {
@@ -303,13 +303,18 @@ int ProcessSearchJob::doProcessSearch() {
     return MinModeSaddleSearch::STATUS_BAD_MINIMA;
   }
 
-  if (!(initial->compare(*min1)) && initial->compare(*min2)) {
+  auto sameAs = [](const Matter &a, const Matter &b) {
+    Matter probe(a);
+    return probe.compare(b);
+  };
+
+  if (!sameAs(*initial, *min1) && sameAs(*initial, *min2)) {
     matterTemp = *min1;
     *min1 = *min2;
     *min2 = matterTemp;
   }
 
-  if (!initial->compare(*min1)) {
+  if (!sameAs(*initial, *min1)) {
     // Report how far off the endpoint landed. Whether the minimisation
     // stopped just outside the state-identity tolerance or relaxed into a
     // different state entirely calls for opposite fixes, and the status
@@ -334,7 +339,7 @@ int ProcessSearchJob::doProcessSearch() {
     return MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED;
   }
 
-  if (initial->compare(*min2)) {
+  if (sameAs(*initial, *min2)) {
     QUILL_LOG_DEBUG(log, "both minima are the initial state");
     return MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED;
   }

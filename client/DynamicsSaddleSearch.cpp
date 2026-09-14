@@ -19,6 +19,7 @@
 #include <cmath>
 #include <filesystem>
 #include <limits>
+#include <stdexcept>
 
 int DynamicsSaddleSearch::run() {
   std::vector<std::shared_ptr<Matter>> mdSnapshots;
@@ -41,10 +42,13 @@ int DynamicsSaddleSearch::run() {
   dyn.setTemperature(params.saddle_search_options.dynamics.temperature);
   dyn.setThermalVelocity();
 
-  int dephaseSteps =
-      static_cast<int>(std::floor(params.parallel_replica_options.dephase_time /
-                                      params.dynamics_options.time_step +
-                                  0.5));
+  const double dt = params.dynamics_options.time_step;
+  if (!(dt > 0.0)) {
+    throw std::invalid_argument(
+        "DynamicsSaddleSearch: time_step must be positive");
+  }
+  int dephaseSteps = static_cast<int>(
+      std::floor(params.parallel_replica_options.dephase_time / dt + 0.5));
 
   while (true) {
 

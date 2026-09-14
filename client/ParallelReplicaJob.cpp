@@ -280,10 +280,13 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
 void ParallelReplicaJob::dephase(Matter &trajectory) {
   Dynamics dynamics(&trajectory, params);
 
-  int dephaseSteps =
-      static_cast<int>(std::floor(params.parallel_replica_options.dephase_time /
-                                      params.dynamics_options.time_step +
-                                  0.5));
+  const double dt = params.dynamics_options.time_step;
+  if (!(dt > 0.0)) {
+    throw std::invalid_argument(
+        "ParallelReplicaJob::dephase: time_step must be positive");
+  }
+  int dephaseSteps = static_cast<int>(
+      std::floor(params.parallel_replica_options.dephase_time / dt + 0.5));
   if (dephaseSteps < 1)
     dephaseSteps = 1;
   const long maxLoops =

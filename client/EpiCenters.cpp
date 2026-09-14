@@ -32,6 +32,9 @@ long pickFromHits(const std::vector<long> &hits, const char *what) {
 
 long eonc::EpiCenters::cnaEpiCenter(const Matter *matter,
                                     double neighborCutoff) {
+  if (!matter) {
+    throw std::invalid_argument("EpiCenters: null Matter");
+  }
   const long nAtoms = matter->numberOfAtoms();
   std::vector<long> cnaList(static_cast<size_t>(nAtoms));
   cna(cnaList.data(), matter, neighborCutoff);
@@ -48,6 +51,9 @@ long eonc::EpiCenters::cnaEpiCenter(const Matter *matter,
 
 long eonc::EpiCenters::minCoordinatedEpiCenter(const Matter *matter,
                                                double neighborCutoff) {
+  if (!matter) {
+    throw std::invalid_argument("EpiCenters: null Matter");
+  }
   const long nAtoms = matter->numberOfAtoms();
   auto minCoordinatedList = std::make_unique<bool[]>(static_cast<size_t>(nAtoms));
   const long minCoordinationVal = minCoordination(matter, neighborCutoff);
@@ -65,6 +71,9 @@ long eonc::EpiCenters::minCoordinatedEpiCenter(const Matter *matter,
 }
 
 long eonc::EpiCenters::lastAtom(const Matter *matter) {
+  if (!matter) {
+    throw std::invalid_argument("EpiCenters: null Matter");
+  }
   const long nAtoms = matter->numberOfAtoms();
   if (nAtoms <= 0) {
     throw std::runtime_error("EpiCenters: lastAtom on empty Matter");
@@ -73,6 +82,9 @@ long eonc::EpiCenters::lastAtom(const Matter *matter) {
 }
 
 long eonc::EpiCenters::randomFreeAtomEpiCenter(const Matter *matter) {
+  if (!matter) {
+    throw std::invalid_argument("EpiCenters: null Matter");
+  }
   const long nAtoms = matter->numberOfAtoms();
   std::vector<long> hits;
   hits.reserve(static_cast<size_t>(nAtoms));
@@ -192,6 +204,9 @@ void eonc::EpiCenters::coordinationLessOrEqual(bool *result,
 
 long eonc::EpiCenters::listedAtomEpiCenter(const Matter *matter,
                                            const std::vector<long> &atomList) {
+  if (!matter) {
+    throw std::invalid_argument("EpiCenters: null Matter");
+  }
   long nAtoms = matter->numberOfAtoms();
   std::vector<long> freeAtoms;
   // Lone -1 is every free atom (akmc-al / ListedAtoms). A mixed list
@@ -224,6 +239,9 @@ long eonc::EpiCenters::listedAtomEpiCenter(const Matter *matter,
 
 long eonc::EpiCenters::minCoordination(const Matter *matter,
                                        double neighborCutoff) {
+  if (!matter) {
+    throw std::invalid_argument("EpiCenters: null Matter");
+  }
   long nAtoms = matter->numberOfAtoms();
   std::vector<long> coordinationVal(nAtoms);
 

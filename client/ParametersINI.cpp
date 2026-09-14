@@ -967,8 +967,13 @@ int load_ini(INIReader &ini, Parameters &params) {
       ini.GetReal("Dynamics", "time", params.dynamics_options.time_input);
   params.dynamics_options.time =
       params.dynamics_options.time_input / params.constants.timeUnit;
-  params.dynamics_options.steps = static_cast<long>(std::floor(
-      params.dynamics_options.time / params.dynamics_options.time_step + 0.5));
+  if (params.dynamics_options.time_step > 0.0) {
+    params.dynamics_options.steps = static_cast<long>(std::floor(
+        params.dynamics_options.time / params.dynamics_options.time_step +
+        0.5));
+  } else {
+    params.dynamics_options.steps = 0;
+  }
   params.thermostat_options.kind =
       toLowerCase(ini.Get("Dynamics", "thermostat", "andersen"));
   params.thermostat_options.andersen_alpha = ini.GetReal(
@@ -1381,8 +1386,13 @@ void validate_and_link(Parameters &params) {
   params.dynamics_options.time_step =
       params.dynamics_options.time_step_input / tu;
   params.dynamics_options.time = params.dynamics_options.time_input / tu;
-  params.dynamics_options.steps = static_cast<long>(std::floor(
-      params.dynamics_options.time / params.dynamics_options.time_step + 0.5));
+  if (params.dynamics_options.time_step > 0.0) {
+    params.dynamics_options.steps = static_cast<long>(std::floor(
+        params.dynamics_options.time / params.dynamics_options.time_step +
+        0.5));
+  } else {
+    params.dynamics_options.steps = 0;
+  }
 
   params.thermostat_options.langevin_friction =
       params.thermostat_options.langevin_friction_input * tu;
