@@ -327,6 +327,9 @@ class LocalInProcess(Communicator):
             }
             if payload.get("saddle") is not None:
                 rec["_saddle"] = payload["saddle"]
+                rec["saddle.con"] = _LazyCon(
+                    matter_to_structure(payload["saddle"])
+                )
             self._finished.append(rec)
             logger.info(
                 "inprocess job %s type=%s status=%s E=%.6f fcalls=%s",

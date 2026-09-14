@@ -70,6 +70,11 @@ def test_inprocess_minimize_job(tmp_path):
     [
         ("[Main]\njob = point\n[Potential]\npotential = lj\n", "point"),
         ("[Main]\njob = hessian\n[Potential]\npotential = lj\n", "hessian"),
+        (
+            "[Main]\njob = process_search\n[Potential]\npotential = lj\n"
+            "[Saddle Search]\nmax_iterations = 2\n",
+            "process_search",
+        ),
     ],
 )
 def test_inprocess_job_type_matrix(tmp_path, job_ini, expect):
