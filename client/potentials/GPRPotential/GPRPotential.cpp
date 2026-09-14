@@ -14,6 +14,8 @@
 #include "subprojects/gprdimer/gpr/auxiliary/AdditionalFunctionality.h"
 #include "subprojects/gprdimer/structures/Structures.h"
 
+#include <stdexcept>
+
 namespace {
 
 const char *elementArray[] = {
@@ -89,6 +91,8 @@ void GPRPotential::force(long N, const double *R, const int *atomicNrs,
     F[3 * i + 2] = observation.G[3 * i + 2];
   }
 
-  // FIXME: Test conversion, E should only have one element here
+  if (observation.E.size() < 1) {
+    throw std::runtime_error("GPRPotential: empty energy from GPR model");
+  }
   *U = observation.E[0];
 }
