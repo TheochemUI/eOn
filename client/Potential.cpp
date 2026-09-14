@@ -72,10 +72,6 @@
 
 #include "eon/potentials/LAMMPS/LAMMPSPot.h"
 
-// TODO: This should be guarded by WITH_FORTRAN as well
-#ifdef CUH2_POT
-#endif
-
 #ifndef _WIN32
 #ifdef WITH_VASP
 #include "eon/potentials/VASP/VASP.h"
