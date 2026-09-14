@@ -125,27 +125,12 @@ class AseCalcPotential final : public eonc::Potential {
     atoms_.attr("calc") = calc_;
   }
 
-  /// Point ASE positions array at Matter storage (zero-copy when ASE allows).
+  /// Do not alias ASE arrays onto Matter storage. ASE writes in place
+  /// and would skip setPositions, leaving energy/forces stale (eOn-wmfb).
   bool try_share_positions(eonc::Matter &m) {
-    try {
-      nb::object pos_view =
-          view_f64(matter_positions_ptr(m),
-                   static_cast<size_t>(m.numberOfAtoms()), size_t{3});
-      // Direct arrays dict install — np.asarray on a view does not copy.
-      atoms_.attr("arrays").attr("__setitem__")("positions", pos_view);
-      // Sanity: must still look like (n,3)
-      nb::object p = atoms_.attr("positions");
-      auto sh = nb::cast<nb::tuple>(p.attr("shape"));
-      if (nb::len(sh) != 2 || nb::cast<long>(sh[0]) != m.numberOfAtoms()) {
-        shared_positions_ = false;
-        return false;
-      }
-      shared_positions_ = true;
-      return true;
-    } catch (...) {
-      shared_positions_ = false;
-      return false;
-    }
+    (void)m;
+    shared_positions_ = false;
+    return false;
   }
 
   static void copy_forces_out(nb::object forces_obj, long nAtoms, double *F) {

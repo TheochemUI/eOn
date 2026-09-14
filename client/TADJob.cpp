@@ -231,7 +231,11 @@ int TADJob::dynamics() {
     newStateFlag = false;
   }
 
-  *product = *finalState;
+  if (newStateFlag && finalState && finalState->numberOfAtoms() > 0) {
+    *product = *finalState;
+  } else if (current) {
+    *product = *current;
+  }
 
   if (newStateFlag) {
     return 1;

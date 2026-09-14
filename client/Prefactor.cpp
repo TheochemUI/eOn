@@ -34,7 +34,10 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
     atoms = movedAtoms(parameters, min1, saddle, min2);
   }
 
-  assert(atoms.rows() > 0);
+  if (atoms.size() == 0) {
+    EONC_LOG_ERROR("[Prefactor] no moved atoms");
+    return -1;
+  }
 
   // calculate min1 frequencies
   Hessian hessian(parameters, min1);
