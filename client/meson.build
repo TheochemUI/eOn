@@ -13,6 +13,10 @@ fs = import('fs')
 add_languages('c', required: true)
 cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
+# PGI/nvc++ cannot link_whole a static inih into a shared eonclib.
+if cppc.get_id() in ['nvidia_hpc', 'pgi'] and get_option('default_library') == 'shared'
+    error('nvc++ PGI linker has no link_whole; configure with -Ddefault_library=static')
+endif
 
 # eOn compiles no Fortran of its own: the kernels live in librgpot. The
 # language is still detected rather than required, because a wrap build
@@ -365,7 +369,14 @@ _deps += nlohmann_json_dep
 
 # Highway SIMD (optional, for vectorized potentials)
 hwy_dep = dependency('libhwy', required: false)
-if not hwy_dep.found() and host_machine.system() != 'windows'
+# cmake.subproject imports hwy_list_targets. Meson PGICompiler (nvc++)
+# has no get_pie_args, so that exe dies ninja-write (eOn-jqgs).
+_cxx_id = cppc.get_id()
+if (
+    not hwy_dep.found()
+    and host_machine.system() != 'windows'
+    and _cxx_id not in ['nvidia_hpc', 'pgi']
+)
     # cmake subproject produces .a archives that MSVC link.exe cannot read
     message('Highway: system libhwy not found, trying cmake subproject...')
     hwy_opts = cmake.subproject_options()
@@ -619,6 +630,7 @@ eonclib_sources = [
     'ReplicaExchangeJob.cpp',
     'BondBoost.cpp',
     'Job.cpp',
+    'TestJob.cpp',
     'OHTSTJob.cpp',
     'GleThermostat.cpp',
     'GlobalOptimization.cpp',
@@ -1380,6 +1392,7 @@ ec = executable(
     link_args: _linkargs,
     build_rpath: ':'.join(_runtime_rpath),
     install_rpath: ':'.join(_runtime_rpath),
+    pie: false,
     # Standalone pyeonclient wheels only need the extension + shared libs.
     install: get_option('install_eon_server'),
 )

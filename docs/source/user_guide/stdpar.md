@@ -19,13 +19,19 @@ behind `-DEON_PARALLEL_NEB`. Two ways to turn that on:
 configure fails rather than passing a flag the linker will reject.
 
 ```bash
-CXX=nvc++ meson setup build-stdpar -Dstdpar=gpu -Db_pie=false
+CXX=nvc++ meson setup /tmp/eon-stdpar \
+  -Dstdpar=gpu -Dstdpar_gpu_cc=cc80,cc90 \
+  -Db_pie=false -Ddefault_library=static
 ```
 
-nvc++ 23.7 does not implement Meson's `b_pie`. Leave it off. Meson 1.12
-still errors (`Language C++ does not support position-independent
-executable`) after the summary; 1.10.1 writes the ninja file. The login-node
-probe also needs `libatomic.so.1` from GCCcore on `LD_LIBRARY_PATH`.
+nvc++ 23.7 does not implement Meson's `b_pie`. Leave it off. Meson's
+PGICompiler has `get_pic_args` and no `get_pie_args`, so Highway's
+`hwy_list_targets` dies writing ninja. eOn skips the cmake Highway wrap
+on `nvidia_hpc`/`pgi`. The PGI linker also has no `link_whole`, so the
+configure must be `-Ddefault_library=static`. The login-node probe needs
+`libatomic.so.1` from GCCcore on `LD_LIBRARY_PATH`. Put the build dir on
+a local disk: NFS home on Elja stamps files ~100 s in the future and
+Meson then refuses `coredata.dat`.
 
 The default GPU arch list is `cc80,cc90` (A100 and H100, the Snellius/Elja
 pair). Override with `-Dstdpar_gpu_cc=cc90` or `-Dstdpar_gpu_cc=native` to
