@@ -19,6 +19,8 @@
 #include "eon/SafeMath.h"
 
 #include <cassert>
+#include <cerrno>
+#include <chrono>
 #include <cmath>
 #include <cstring>
 #include <ctime>
@@ -46,10 +48,11 @@ AtomMatrix eonc::helpers::makeOrthogonal(const AtomMatrix v1,
 }
 
 void eonc::helpers::getTime(double *real, double *user, double *sys) {
-  // Wall-clock time via C++11 chrono (portable)
   using namespace std::chrono;
   auto now = steady_clock::now();
-  *real = duration<double>(now.time_since_epoch()).count();
+  if (real) {
+    *real = duration<double>(now.time_since_epoch()).count();
+  }
 
 #ifdef _WIN32
   if (user)
@@ -77,24 +80,18 @@ bool eonc::helpers::existsFile(string filename) {
 }
 
 string eonc::helpers::getRelevantFile(string filename) {
-  string filenameRelevant;
-  string filenamePrefix;
-  string filenamePostfix;
-
-  // check if the _cp version of the file is present
-  int i = filename.rfind(".");
-  filenamePrefix.assign(filename, 0, i);
-  filenamePostfix.assign(filename, i, filename.size());
-  filenameRelevant = filenamePrefix + "_cp" + filenamePostfix;
+  const auto dot = filename.rfind('.');
+  const string prefix =
+      (dot == string::npos) ? filename : filename.substr(0, dot);
+  const string postfix = (dot == string::npos) ? string{} : filename.substr(dot);
+  string filenameRelevant = prefix + "_cp" + postfix;
   if (existsFile(filenameRelevant)) {
     return filenameRelevant;
   }
-  // check if the _in version of the file is present
-  filenameRelevant = filenamePrefix + "_in" + filenamePostfix;
+  filenameRelevant = prefix + "_in" + postfix;
   if (existsFile(filenameRelevant)) {
     return filenameRelevant;
   }
-  // otherwise return original filename
   return filename;
 }
 

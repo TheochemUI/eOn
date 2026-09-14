@@ -1550,11 +1550,12 @@ steps = 5
 // generic LJ clusters). Needs proper metallic test system on cosmolab.
 
 TEST_CASE_METHOD(JobIntegrationFixture,
-                 "StructureComparisonJob runs without crash",
+                 "StructureComparisonJob matches identical structures",
                  "[job][structure_comparison][integration]") {
   EON_REQUIRE_TEST_DATA("../Pt_Heptamer_FrozenLayers");
-  // StructureComparison needs matter1.con
   std::filesystem::copy_file(workdir / "pos.con", workdir / "matter1.con",
+                             std::filesystem::copy_options::overwrite_existing);
+  std::filesystem::copy_file(workdir / "pos.con", workdir / "matter2.con",
                              std::filesystem::copy_options::overwrite_existing);
   writeConfig(R"(
 [Main]
@@ -1569,15 +1570,12 @@ distance_difference = 0.1
 energy_difference = 0.01
 )");
 
-  // StructureComparisonJob is minimal; just verify it doesn't crash
-  auto oldDir = std::filesystem::current_path();
-  std::filesystem::current_path(workdir);
-  auto p = std::make_unique<Parameters>();
-  p->load("config.ini");
-  auto job = eonc::helpers::makeJob(std::move(p));
-  job->run();
-  std::filesystem::current_path(oldDir);
-  REQUIRE(true);
+  auto results = runJob();
+  REQUIRE(results["match"] == "1");
+  REQUIRE(std::stod(results["distance"]) == Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(std::stod(results["per_atom_norm"]) ==
+          Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(results.count("energy_abs_diff") > 0);
 }
 
 // ---------------------------------------------------------------------------

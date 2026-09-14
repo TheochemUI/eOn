@@ -45,6 +45,20 @@ ReplicaExchangeJob::runFromMatter(std::shared_ptr<Matter> initial) {
   pos = initial;
   pos->setPotential(pot);
 
+  auto &rex = params.replica_exchange_options;
+  if (rex.replicas < 1) {
+    throw std::invalid_argument(
+        "ReplicaExchangeJob: replica_exchange.replicas must be >= 1");
+  }
+  if (rex.temperature_low <= 0.0) {
+    rex.temperature_low = params.main_options.temperature > 0.0
+                              ? params.main_options.temperature
+                              : 300.0;
+  }
+  if (rex.temperature_high <= rex.temperature_low) {
+    rex.temperature_high = rex.temperature_low * 1.5;
+  }
+
   long samplingSteps =
       static_cast<long>(params.replica_exchange_options.sampling_time /
                             params.dynamics_options.time_step +

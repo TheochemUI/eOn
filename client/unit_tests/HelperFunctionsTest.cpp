@@ -25,6 +25,8 @@
 #include <atomic>
 #include <cmath>
 #include <cstdio>
+#include <filesystem>
+#include <fstream>
 #include <stdexcept>
 #include <string>
 #include <thread>
@@ -33,6 +35,21 @@
 namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
+
+TEST_CASE("getRelevantFile accepts a name with no extension", "[helpers]") {
+  namespace fs = std::filesystem;
+  const auto dir = fs::temp_directory_path() / "eon_relevant_file";
+  fs::create_directories(dir);
+  const auto old = fs::current_path();
+  fs::current_path(dir);
+  REQUIRE(eonc::helpers::getRelevantFile("config") == "config");
+  {
+    std::ofstream{dir / "config_cp"};
+  }
+  REQUIRE(eonc::helpers::getRelevantFile("config") == "config_cp");
+  fs::current_path(old);
+  fs::remove_all(dir);
+}
 
 TEST_CASE("HelperFunctions: random() returns value in [0,1)", "[helpers]") {
   double r = eonc::helpers::random();

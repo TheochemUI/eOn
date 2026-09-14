@@ -242,7 +242,16 @@ bool Hessian::calculate() {
   }
   {
     std::ofstream hessfile("hessian.dat");
+    if (!hessfile) {
+      QUILL_LOG_ERROR(log, "[Hessian] failed to open hessian.dat");
+      return false;
+    }
     hessfile << hessian;
+    hessfile.close();
+    if (!hessfile) {
+      QUILL_LOG_ERROR(log, "[Hessian] failed to write hessian.dat");
+      return false;
+    }
   }
 
   // Completed run: remove checkpoint so a later job does not resume stale cols
