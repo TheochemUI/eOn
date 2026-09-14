@@ -341,9 +341,6 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
         "[MetatomicPotential] `atomicNrs` must be provided.");
   }
 
-  const long n_avg = this->n_symmetry_rotations_ > 0
-                         ? this->n_symmetry_rotations_
-                         : (this->random_rotation_ ? 1 : 1);
   const bool use_rotation =
       this->random_rotation_ || this->n_symmetry_rotations_ > 0;
   // n_symmetry_rotations averages; random_rotation alone is one rotated eval
@@ -538,7 +535,6 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
   *energy = energy_acc * inv_n;
   forces_acc = forces_acc * inv_n;
   (void)variance_set;
-  (void)n_avg;
 
   std::memcpy(forces, forces_acc.contiguous().data_ptr<double>(),
               nAtoms * 3 * sizeof(double));
