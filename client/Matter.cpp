@@ -20,6 +20,20 @@
 #include <cmath>
 #include <memory>
 #include <stdexcept>
+#include <string>
+
+namespace {
+void checkAtom(long nAtoms, long indexAtom, const char *fn) {
+  if (indexAtom < 0 || indexAtom >= nAtoms) {
+    throw std::out_of_range(std::string(fn) + ": atom index out of range");
+  }
+}
+void checkAxis(int axis, const char *fn) {
+  if (axis < 0 || axis > 2) {
+    throw std::out_of_range(std::string(fn) + ": axis out of range");
+  }
+}
+} // namespace
 
 Matter::Matter(const Matter &matter) { operator=(matter); }
 
@@ -227,10 +241,14 @@ void Matter::setCell(const Matrix3d &newCell) {
 }
 
 double Matter::getPosition(long int indexAtom, int axis) const {
+  checkAtom(nAtoms, indexAtom, "Matter::getPosition");
+  checkAxis(axis, "Matter::getPosition");
   return positions(indexAtom, axis);
 }
 
 void Matter::setPosition(long int indexAtom, int axis, double position) {
+  checkAtom(nAtoms, indexAtom, "Matter::setPosition");
+  checkAxis(axis, "Matter::setPosition");
   positions(indexAtom, axis) = position;
   if (usePeriodicBoundaries) {
     applyPeriodicBoundary();
@@ -240,6 +258,8 @@ void Matter::setPosition(long int indexAtom, int axis, double position) {
 }
 
 void Matter::setVelocity(long int indexAtom, int axis, double vel) {
+  checkAtom(nAtoms, indexAtom, "Matter::setVelocity");
+  checkAxis(axis, "Matter::setVelocity");
   velocities(indexAtom, axis) = vel;
 }
 
@@ -377,12 +397,17 @@ VectorXd Matter::getForcesFreeV() const {
 
 // return distance between the atoms with index1 and index2
 double Matter::distance(long index1, long index2) const {
+  checkAtom(nAtoms, index1, "Matter::distance");
+  checkAtom(nAtoms, index2, "Matter::distance");
   return pbc(positions.row(index1) - positions.row(index2)).norm();
 }
 
 // return projected distance between the atoms with index1 and index2 on asix
 // (0-x,1-y,2-z)
 double Matter::pdistance(long index1, long index2, int axis) const {
+  checkAtom(nAtoms, index1, "Matter::pdistance");
+  checkAtom(nAtoms, index2, "Matter::pdistance");
+  checkAxis(axis, "Matter::pdistance");
   Matrix<double, 1, 3> ret;
   ret.setZero();
   ret(0, axis) = positions(index1, axis) - positions(index2, axis);
@@ -393,12 +418,18 @@ double Matter::pdistance(long index1, long index2, int axis) const {
 // return the distance atom with index has moved between the current Matter
 // object and the Matter object passed as argument
 double Matter::distance(const Matter &matter, long index) const {
+  checkAtom(nAtoms, index, "Matter::distance");
+  checkAtom(matter.nAtoms, index, "Matter::distance");
   return pbc(positions.row(index) - matter.getPositions().row(index)).norm();
 }
 
-double Matter::getMass(long int indexAtom) const { return (masses[indexAtom]); }
+double Matter::getMass(long int indexAtom) const {
+  checkAtom(nAtoms, indexAtom, "Matter::getMass");
+  return (masses[indexAtom]);
+}
 
 void Matter::setMass(long int indexAtom, double mass) {
+  checkAtom(nAtoms, indexAtom, "Matter::setMass");
   masses[indexAtom] = mass;
 }
 
@@ -420,6 +451,7 @@ void Matter::setAtomicNr(long int indexAtom, long atomicNr) {
 }
 
 int Matter::getFixed(long int indexAtom) const {
+  checkAtom(nAtoms, indexAtom, "Matter::getFixed");
   return (isFixed(indexAtom, 0) > 0.5 && isFixed(indexAtom, 1) > 0.5 &&
           isFixed(indexAtom, 2) > 0.5)
              ? 1
@@ -427,15 +459,19 @@ int Matter::getFixed(long int indexAtom) const {
 }
 
 int Matter::getFixed(long int indexAtom, int axis) const {
+  checkAtom(nAtoms, indexAtom, "Matter::getFixed");
+  checkAxis(axis, "Matter::getFixed");
   return isFixed(indexAtom, axis) > 0.5 ? 1 : 0;
 }
 
 std::array<bool, 3> Matter::getFixedMask(long int indexAtom) const {
+  checkAtom(nAtoms, indexAtom, "Matter::getFixedMask");
   return {isFixed(indexAtom, 0) > 0.5, isFixed(indexAtom, 1) > 0.5,
           isFixed(indexAtom, 2) > 0.5};
 }
 
 void Matter::setFixed(long int indexAtom, int isFixed_passed) {
+  checkAtom(nAtoms, indexAtom, "Matter::setFixed");
   const double v = isFixed_passed ? 1.0 : 0.0;
   isFixed(indexAtom, 0) = v;
   isFixed(indexAtom, 1) = v;
@@ -445,12 +481,15 @@ void Matter::setFixed(long int indexAtom, int isFixed_passed) {
 }
 
 void Matter::setFixed(long int indexAtom, int axis, int isFixed_passed) {
+  checkAtom(nAtoms, indexAtom, "Matter::setFixed");
+  checkAxis(axis, "Matter::setFixed");
   isFixed(indexAtom, axis) = isFixed_passed ? 1.0 : 0.0;
   recomputeFreeMask = true;
   recomputeMaskedForces = true;
 }
 
 void Matter::setFixedMask(long int indexAtom, std::array<bool, 3> mask) {
+  checkAtom(nAtoms, indexAtom, "Matter::setFixedMask");
   isFixed(indexAtom, 0) = mask[0] ? 1.0 : 0.0;
   isFixed(indexAtom, 1) = mask[1] ? 1.0 : 0.0;
   isFixed(indexAtom, 2) = mask[2] ? 1.0 : 0.0;
