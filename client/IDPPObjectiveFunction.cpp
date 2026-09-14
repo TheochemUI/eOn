@@ -180,11 +180,13 @@ VectorXd CollectiveIDPPObjectiveFunction::getGradient(bool fdstep) {
 
     AtomMatrix f_neb = f_perp + f_spring;
 
+    VectorXd freeForce = packFree(path[i], f_neb);
     totalGradient.segment(3 * nfree * static_cast<int>(i - 1), 3 * nfree) =
-        packFree(path[i], f_neb) * -1.0;
+        freeForce * -1.0;
 
-    // Tracking convergence
-    maxForce = std::max(maxForce, f_neb.template lpNorm<Eigen::Infinity>());
+    // Free-atom residuals only. Frozen pair rows stay in f_neb for
+    // Newton's third law and must not pin lastMaxForce.
+    maxForce = std::max(maxForce, freeForce.lpNorm<Eigen::Infinity>());
   }
 
   lastMaxForce = maxForce;
