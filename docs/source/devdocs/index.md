@@ -21,6 +21,7 @@ benchmarks
 parallel-potentials
 in-process
 abi-surface
+rgpot-migration
 docbuild
 svn
 svn-migration

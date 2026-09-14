@@ -62,6 +62,8 @@ RgpotPot::RgpotPot(const Parameters &p)
       opt.engine_path = e;
     else if (const char *e = std::getenv("RGPOT_NWCHEMC_ENGINE"))
       opt.engine_path = e;
+    else if (const char *e = std::getenv("RGPOT_NWCHEM_ENGINE"))
+      opt.engine_path = e;
   } else if (backend_lc.rfind("cpmd", 0) == 0) {
     if (const char *e = std::getenv("CPMDC_LIBRARY"))
       opt.engine_path = e;
