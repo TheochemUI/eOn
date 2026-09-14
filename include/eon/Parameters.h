@@ -33,6 +33,7 @@ public:
   Parameters(const Parameters &) = default;
   int load(std::string filename);
   int load(FILE *file);
+  int load_ini_text(const std::string &ini_text);
   int load_json(const std::string &json_str);
   std::string to_json() const;
 

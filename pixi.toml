@@ -177,8 +177,8 @@ sphinxcontrib-spelling = "*"
 autodoc-pydantic = "*"
 sphinx-autodoc2 = "*"
 # Plot stack: 1:1 (s,d) landscapes, full NEB strips, titled min plots (plt-min/plt-neb).
-rgpycrumbs = { version = ">=1.9.9,<2", extras = ["analysis"] }
-chemparseplot = { version = ">=1.9.7,<2", extras = ["neb", "plot"] }
+rgpycrumbs = ">=1.10.4,<2"
+chemparseplot = { version = ">=1.9.17,<2", extras = ["neb", "plot"] }
 adjustText = "*"
 
 [feature.docs.tasks.fetch-doxyyoda]
