@@ -23,8 +23,6 @@
 #include <algorithm>
 #include <cmath>
 
-using namespace eonc::helpers;
-
 std::vector<std::string> GlobalOptimizationJob::run() {
   // int status;
   GlobalOptimization globopt = GlobalOptimization(params);
@@ -255,7 +253,7 @@ void GlobalOptimizationJob::acceptRejectBoltzmann(Matter &matter_cur,
     p = std::exp(-deltaE / (kB * T));
   }
 
-  if (randomDouble(1.0) < p) {
+  if (eonc::rng::randomDouble(1.0) < p) {
     decisionResult = "accepted";
   } else {
     decisionResult = "rejected";
@@ -297,10 +295,10 @@ void GlobalOptimizationJob::randomMove(Matter &matter) {
       for (int j = 0; j < 3; j++) {
         if (params.basin_hopping_options.displacement_distribution ==
             "uniform") {
-          displacement(i, j) = randomDouble(2 * disp) - disp;
+          displacement(i, j) = eonc::rng::randomDouble(2 * disp) - disp;
         } else if (params.basin_hopping_options.displacement_distribution ==
                    "gaussian") {
-          displacement(i, j) = gaussRandom(0.0, disp);
+          displacement(i, j) = eonc::rng::gaussRandom(0.0, disp);
         } else {
           log = eonc::log::traceback();
           QUILL_LOG_CRITICAL(log, "Unknown displacement_distribution");
@@ -379,9 +377,9 @@ void GlobalOptimizationJob::velopt(Matter &matter) {
   vtot[1] = 0.0;
   vtot[2] = 0.0;
   for (iat = 0; iat < matter.numberOfAtoms(); iat++) {
-    tt1 = randomDouble();
-    tt2 = randomDouble();
-    tt3 = randomDouble();
+    tt1 = eonc::rng::randomDouble();
+    tt2 = eonc::rng::randomDouble();
+    tt3 = eonc::rng::randomDouble();
     vat(iat, 0) = (tt1 - 0.5) * 2.0;
     vat(iat, 1) = (tt2 - 0.5) * 2.0;
     vat(iat, 2) = (tt3 - 0.5) * 2.0;

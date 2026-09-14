@@ -27,8 +27,6 @@
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 
-using namespace eonc::helpers;
-
 std::vector<std::string> BasinHoppingJob::run() {
   bool swapMove;
   double swap_accept = 0.0;
@@ -40,7 +38,7 @@ std::vector<std::string> BasinHoppingJob::run() {
   std::unique_ptr<Matter> minTrial = std::make_unique<Matter>(pot, params);
   std::unique_ptr<Matter> swapTrial = std::make_unique<Matter>(pot, params);
 
-  std::string conFilename = getRelevantFile(params.main_options.conFilename);
+  std::string conFilename = eonc::helpers::getRelevantFile(params.main_options.conFilename);
   if (!eonc::io::io_ok(current->con2matter(conFilename))) {
     QUILL_LOG_CRITICAL(log, "Failed to load {}", conFilename);
     throw std::runtime_error("failed to load " + conFilename);
@@ -76,7 +74,7 @@ std::vector<std::string> BasinHoppingJob::run() {
     randomPositions *= current->getCell();
     current->setPositionsFree(randomPositions);
 
-    pushApart(current, params.basin_hopping_options.push_apart_distance);
+    eonc::geometry::pushApart(current, params.basin_hopping_options.push_apart_distance);
   }
 
   *trial = *current;
@@ -106,7 +104,7 @@ std::vector<std::string> BasinHoppingJob::run() {
   for (int step = 0; step < nsteps; step++) {
 
     // Swap or displace
-    if (randomDouble(1.0) < params.basin_hopping_options.swap_probability &&
+    if (eonc::rng::randomDouble(1.0) < params.basin_hopping_options.swap_probability &&
         step < params.basin_hopping_options.steps) {
       *swapTrial = *current;
       randomSwap(swapTrial.get());
@@ -118,7 +116,7 @@ std::vector<std::string> BasinHoppingJob::run() {
 
       trial->setPositions(current->getPositions() + displacement);
       swapMove = false;
-      pushApart(trial, params.basin_hopping_options.push_apart_distance);
+      eonc::geometry::pushApart(trial, params.basin_hopping_options.push_apart_distance);
 
       *minTrial = *trial;
     }
@@ -149,7 +147,7 @@ std::vector<std::string> BasinHoppingJob::run() {
     }
 
     bool accepted = false;
-    if (randomDouble(1.0) < p) {
+    if (eonc::rng::randomDouble(1.0) < p) {
       accepted = true;
       if (params.basin_hopping_options.significant_structure) {
         *current = *minTrial;
@@ -255,7 +253,7 @@ std::vector<std::string> BasinHoppingJob::run() {
         jump = displaceRandom(curDisplacement);
         current->setPositions(current->getPositions() + jump);
         if (params.basin_hopping_options.significant_structure) {
-          pushApart(current, params.basin_hopping_options.push_apart_distance);
+          eonc::geometry::pushApart(current, params.basin_hopping_options.push_apart_distance);
           current->relax(true);
         }
         currentEnergy = current->getPotentialEnergy();
@@ -340,7 +338,7 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
   int num = trial->numberOfAtoms();
   int m = 0;
   if (params.basin_hopping_options.single_atom_displace) {
-    m = randomInt(0, trial->numberOfAtoms() - 1);
+    m = eonc::rng::randomInt(0, trial->numberOfAtoms() - 1);
     num = m + 1;
   }
 
@@ -373,10 +371,10 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
       for (int j = 0; j < 3; j++) {
         if (params.basin_hopping_options.displacement_distribution ==
             "uniform") {
-          displacement(i, j) = randomDouble(2 * disp) - disp;
+          displacement(i, j) = eonc::rng::randomDouble(2 * disp) - disp;
         } else if (params.basin_hopping_options.displacement_distribution ==
                    "gaussian") {
-          displacement(i, j) = gaussRandom(0.0, disp);
+          displacement(i, j) = eonc::rng::gaussRandom(0.0, disp);
         } else {
           log = eonc::log::traceback();
           QUILL_LOG_CRITICAL(log, "Unknown displacement_distribution\n");
@@ -397,29 +395,29 @@ void BasinHoppingJob::randomSwap(Matter *matter) {
 
   long ela;
   long elb;
-  long ia = randomInt(0, Elements.size() - 1);
+  long ia = eonc::rng::randomInt(0, Elements.size() - 1);
   ela = Elements.at(ia);
   Elements.erase(Elements.begin() + ia);
 
-  long ib = randomInt(0, Elements.size() - 1);
+  long ib = eonc::rng::randomInt(0, Elements.size() - 1);
   elb = Elements.at(ib);
 
   int changera = 0;
   int changerb = 0;
 
-  changera = randomInt(0, matter->numberOfAtoms() - 1);
+  changera = eonc::rng::randomInt(0, matter->numberOfAtoms() - 1);
   int guard = 0;
   while ((matter->getAtomicNr(changera) != ela || matter->getFixed(changera)) &&
          guard < 10000) {
-    changera = randomInt(0, matter->numberOfAtoms() - 1);
+    changera = eonc::rng::randomInt(0, matter->numberOfAtoms() - 1);
     guard++;
   }
-  changerb = randomInt(0, matter->numberOfAtoms() - 1);
+  changerb = eonc::rng::randomInt(0, matter->numberOfAtoms() - 1);
   guard = 0;
   while ((matter->getAtomicNr(changerb) != elb || matter->getFixed(changerb) ||
           changerb == changera) &&
          guard < 10000) {
-    changerb = randomInt(0, matter->numberOfAtoms() - 1);
+    changerb = eonc::rng::randomInt(0, matter->numberOfAtoms() - 1);
     guard++;
   }
   if (matter->getAtomicNr(changera) != ela || matter->getFixed(changera) ||

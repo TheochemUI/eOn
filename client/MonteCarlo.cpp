@@ -14,8 +14,6 @@
 #include <cmath>
 #include <stdexcept>
 
-using namespace eonc::helpers;
-
 void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
   if (numSteps <= 0) {
     throw std::invalid_argument("MonteCarlo: steps must be positive");
@@ -46,7 +44,7 @@ void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
         continue;
       }
       for (int j = 0; j < 3; ++j) {
-        trial(i, j) += gaussRandom(0.0, stepSize);
+        trial(i, j) += eonc::rng::gaussRandom(0.0, stepSize);
       }
     }
     matter->setPositions(trial);
@@ -55,7 +53,7 @@ void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
     bool accept = de <= 0.0;
     if (!accept) {
       const double arg = -de / (kB * temperature);
-      accept = (arg >= -50.0) && (randomDouble() < std::exp(arg));
+      accept = (arg >= -50.0) && (eonc::rng::randomDouble() < std::exp(arg));
     }
     if (accept) {
       ++accepts;

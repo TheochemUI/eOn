@@ -23,8 +23,6 @@
 #include <thread>
 
 #include "eon/EonLogger.h"
-using namespace eonc::helpers;
-
 ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
                              const Parameters &params,
                              std::shared_ptr<Potential> pot)
@@ -141,7 +139,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
   // Melander, Laasonen, Jonsson, JCTC 11(3), 1055-1062, 2015
   if (params.dimer_options.remove_rotation) {
-    rotationRemove(AtomMatrix::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
+    eonc::geometry::rotationRemove(AtomMatrix::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
     x1_r = x1->getPositionsV();
     tau = x1->pbcV(x1_r - x0_r);
     eonc::safemath::safe_normalize_inplace(tau);
@@ -370,7 +368,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       // Melander, Laasonen, Jonsson, JCTC 11(3), 1055-1062, 2015
       if (params.dimer_options.remove_rotation) {
         x1->setPositionsV(x1_r);
-        rotationRemove(AtomMatrix::Map(x0_r.data(), x0->numberOfAtoms(), 3),
+        eonc::geometry::rotationRemove(AtomMatrix::Map(x0_r.data(), x0->numberOfAtoms(), 3),
                        x1);
         x1_r = x1->getPositionsV();
         tau = x1_r - x0_r;
