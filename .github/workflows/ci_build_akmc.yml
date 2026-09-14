@@ -38,7 +38,8 @@ jobs:
         if: runner.os != 'Windows'
         shell: pixi run bash -e {0}
         run: |
-          meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release
+          meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release \
+            -Dwith_pyeonclient=true
           meson install --skip-subprojects -C bbdir
 
       - name: Activate MSVC (Windows)

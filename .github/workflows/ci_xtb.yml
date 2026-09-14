@@ -15,7 +15,7 @@ jobs:
         # TODO(rg): Handle the windows-2022 later, issues linking fmt
         # TODO(rg): Handle the aarch64 macos later too
         # TODO(rg): Macos 12 seems to hang a lot, macos-12
-        os: [ubuntu-22.04]
+        os: [ubuntu-22.04, windows-2022]
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
