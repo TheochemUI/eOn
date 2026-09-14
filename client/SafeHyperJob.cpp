@@ -101,7 +101,11 @@ int SafeHyperJob::dynamics() {
       boostPotential = bondBoost.boost();
       QUILL_LOG_TRACE_L1(log, "step= {} , boost = {:.5f}", step,
                          boostPotential);
-      boost = std::exp(boostPotential / kB / Temp);
+      if (Temp > 0.0 && kB > 0.0) {
+        boost = std::exp(boostPotential / kB / Temp);
+      } else {
+        boost = 1.0;
+      }
       if (boost > 1.0) {
         sumboost += boost;
         nBoost++;
@@ -161,7 +165,8 @@ int SafeHyperJob::dynamics() {
             newStateStep - StateCheckInterval + refineStep * RecordInterval;
         transitionTime_current = timeBuffer[static_cast<size_t>(refineStep)];
         transitionPot = biasBuffer[static_cast<size_t>(refineStep)];
-        *current = *mdBuffer[static_cast<size_t>(refineStep - 1)];
+        const long prev = refineStep > 0 ? refineStep - 1 : 0;
+        *current = *mdBuffer[static_cast<size_t>(prev)];
       } else {
         refineStep = 0;
         transitionTime_current = time;
@@ -170,7 +175,9 @@ int SafeHyperJob::dynamics() {
       transitionTime = transitionTime_current - transitionTime_pre;
       transitionTime_pre = transitionTime_current;
       correctedTime =
-          transitionTime * std::exp((-1) * transitionPot / kB / Temp);
+          (Temp > 0.0 && kB > 0.0)
+              ? transitionTime * std::exp((-1) * transitionPot / kB / Temp)
+              : transitionTime;
       sumCorrectedTime += correctedTime;
       if (nState == 1) {
         firstTransitionTime = transitionTime;

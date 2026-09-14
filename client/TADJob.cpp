@@ -159,7 +159,8 @@ int TADJob::dynamics() {
             newStateStep - StateCheckInterval + refineStep * RecordInterval;
         transitionTime_current = timeBuffer[static_cast<size_t>(refineStep)];
         *crossing = *mdBuffer[static_cast<size_t>(refineStep)];
-        *current = *mdBuffer[static_cast<size_t>(refineStep - 1)];
+        const long prev = refineStep > 0 ? refineStep - 1 : 0;
+        *current = *mdBuffer[static_cast<size_t>(prev)];
       } else {
         *crossing = *current;
         transitionTime_current = time;
