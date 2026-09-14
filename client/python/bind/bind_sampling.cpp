@@ -11,6 +11,7 @@
 #include "eon/ParallelReplicaJob.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
+#include "eon/ProcessSearchJob.h"
 #include "eon/ReplicaExchangeJob.h"
 #include "eon/SafeHyperJob.h"
 #include "eon/TADJob.h"
@@ -373,6 +374,28 @@ void bind_sampling(nb::module_ &m) {
       .def_prop_ro("status", [](const PyProcessSearch &s) {
         return static_cast<MinModeSaddleSearch::Status>(s.status);
       });
+
+  nb::class_<ProcessSearchJob>(m, "ProcessSearchJob",
+                               "Full C++ process-search job. run_from_matter "
+                               "fills min1/min2/saddle/prefactors.")
+      .def(nb::init<std::shared_ptr<Potential>, const Parameters &>(),
+           nb::arg("potential"), nb::arg("parameters"), nb::keep_alive<1, 2>())
+      .def(
+          "run_from_matter",
+          [](ProcessSearchJob &self, std::shared_ptr<Matter> seed) {
+            nb::gil_scoped_release release;
+            return self.runFromMatter(std::move(seed));
+          },
+          nb::arg("matter"),
+          "Run the job on an in-memory Matter. Returns product (min2).")
+      .def_prop_ro("min1", &ProcessSearchJob::getMin1)
+      .def_prop_ro("min2", &ProcessSearchJob::getMin2)
+      .def_prop_ro("saddle", &ProcessSearchJob::getSaddle)
+      .def_prop_ro("initial", &ProcessSearchJob::getInitial)
+      .def_prop_ro("prefactor_forward", &ProcessSearchJob::prefactorForward)
+      .def_prop_ro("prefactor_reverse", &ProcessSearchJob::prefactorReverse)
+      .def_prop_ro("barrier_forward", &ProcessSearchJob::barrierForward)
+      .def_prop_ro("barrier_reverse", &ProcessSearchJob::barrierReverse);
 
   // --- Structure helpers (predicates; neither argument is modified) ---
   m.def(
