@@ -630,6 +630,7 @@ eonclib_sources = [
     'ReplicaExchangeJob.cpp',
     'BondBoost.cpp',
     'Job.cpp',
+    'JobRegistry.cpp',
     'TestJob.cpp',
     'OHTSTJob.cpp',
     'GleThermostat.cpp',
