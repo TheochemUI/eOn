@@ -13,47 +13,57 @@
 
 #include <cmath>
 
+namespace {
+struct Ran2State {
+  long seed{-1};
+  long seed2{123456789};
+  long iy{0};
+  long iv[eonc::NTAB]{};
+};
+
+// Parallel replica exchange (and any other std::thread MD) used to race on
+// the process-wide ran2 tables. Each C++ thread owns a stream.
+thread_local Ran2State tls;
+} // namespace
+
 double eonc::rng::random(long newSeed) {
-  static long seed = -1;
+  auto &st = tls;
   if (newSeed) {
-    seed = -newSeed;
+    st.seed = -newSeed;
   }
   int j;
   long k;
-  static long seed2 = 123456789;
-  static long iy = 0;
-  static long iv[NTAB];
   double temp;
-  if (seed <= 0) {
-    if (-(seed) < 1)
-      seed = 3;
+  if (st.seed <= 0) {
+    if (-(st.seed) < 1)
+      st.seed = 3;
     else
-      seed = -(seed);
-    seed2 = (seed);
+      st.seed = -(st.seed);
+    st.seed2 = (st.seed);
     for (j = NTAB + 7; j >= 0; j--) {
-      k = (seed) / IQ1;
-      seed = IA1 * (seed - k * IQ1) - k * IR1;
-      if (seed < 0)
-        seed += IM1;
+      k = (st.seed) / IQ1;
+      st.seed = IA1 * (st.seed - k * IQ1) - k * IR1;
+      if (st.seed < 0)
+        st.seed += IM1;
       if (j < NTAB)
-        iv[j] = seed;
+        st.iv[j] = st.seed;
     }
-    iy = iv[0];
+    st.iy = st.iv[0];
   }
-  k = (seed) / IQ1;
-  seed = IA1 * (seed - k * IQ1) - k * IR1;
-  if (seed < 0)
-    seed += IM1;
-  k = seed2 / IQ2;
-  seed2 = IA2 * (seed2 - k * IQ2) - k * IR2;
-  if (seed2 < 0)
-    seed2 += IM2;
-  j = int(iy / NDIV);
-  iy = iv[j] - seed2;
-  iv[j] = seed;
-  if (iy < 1)
-    iy += IMM1;
-  if ((temp = double(AM * iy)) > RNMX)
+  k = (st.seed) / IQ1;
+  st.seed = IA1 * (st.seed - k * IQ1) - k * IR1;
+  if (st.seed < 0)
+    st.seed += IM1;
+  k = st.seed2 / IQ2;
+  st.seed2 = IA2 * (st.seed2 - k * IQ2) - k * IR2;
+  if (st.seed2 < 0)
+    st.seed2 += IM2;
+  j = int(st.iy / NDIV);
+  st.iy = st.iv[j] - st.seed2;
+  st.iv[j] = st.seed;
+  if (st.iy < 1)
+    st.iy += IMM1;
+  if ((temp = double(AM * st.iy)) > RNMX)
     return RNMX;
   else
     return temp;

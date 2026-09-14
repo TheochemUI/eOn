@@ -155,6 +155,9 @@ bool Matter::compare(const Matter &matter, bool indistinguishable) {
 
 // Returns the distance to the given matter object.
 double Matter::distanceTo(const Matter &matter) {
+  if (matter.numberOfAtoms() != nAtoms) {
+    throw std::invalid_argument("Matter::distanceTo: size mismatch");
+  }
   return pbc(positions - matter.positions).norm();
 }
 
@@ -258,7 +261,12 @@ AtomMatrix Matter::getPositionsFree() const {
 }
 
 VectorXi Matter::getAtomicNrsFree() const {
-  return this->atomicNrs.array() * getFreeV().cast<int>().array();
+  getFree();
+  VectorXi ret(static_cast<Eigen::Index>(freeIndices.size()));
+  for (size_t j = 0; j < freeIndices.size(); j++) {
+    ret[static_cast<Eigen::Index>(j)] = atomicNrs[freeIndices[j]];
+  }
+  return ret;
 }
 
 bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
@@ -278,6 +286,9 @@ VectorXd Matter::getPositionsFreeV() const {
 
 // update Matter with the new positions of the free atoms given in array 'pos'
 void Matter::setPositions(const AtomMatrix &pos) {
+  if (pos.rows() != nAtoms) {
+    throw std::invalid_argument("Matter::setPositions: row count mismatch");
+  }
   positions = pos;
   if (usePeriodicBoundaries) {
     applyPeriodicBoundary();
@@ -391,9 +402,10 @@ void Matter::setMass(long int indexAtom, double mass) {
 }
 
 void Matter::setMasses(const VectorXd &massesIn) {
-  for (int i = 0; i < nAtoms; i++) {
-    masses[i] = massesIn[i];
+  if (massesIn.size() != nAtoms) {
+    throw std::invalid_argument("Matter::setMasses: size mismatch");
   }
+  masses = massesIn;
 }
 
 long Matter::getAtomicNr(long int indexAtom) const {
@@ -581,6 +593,8 @@ void Matter::setAtomicNrs(const VectorXi &atmnrs) {
         "Vector of atomic numbers not equal to the number of atoms");
   } else {
     this->atomicNrs = atmnrs;
+    recomputePotential = true;
+    recomputeMaskedForces = true;
   }
 }
 

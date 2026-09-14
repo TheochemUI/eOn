@@ -63,16 +63,13 @@ int TADJob::dynamics() {
   delta = params.tad_options.confidence;
   minmu = params.tad_options.min_prefactor;
   factor = std::log(1.0 / delta) / minmu;
-  StateCheckInterval =
-      static_cast<long>(params.parallel_replica_options.state_check_interval /
-                        params.dynamics_options.time_step);
-  RecordInterval =
-      static_cast<long>(params.parallel_replica_options.record_interval /
-                        params.dynamics_options.time_step);
+  const auto clock = prdClock();
+  StateCheckInterval = clock.state_check;
+  RecordInterval = clock.record;
   Temp = params.main_options.temperature;
   newStateFlag = metaStateFlag = false;
 
-  mdBufferLength = static_cast<long>(StateCheckInterval / RecordInterval);
+  mdBufferLength = clock.buffer;
   std::vector<std::shared_ptr<Matter>> mdBuffer(mdBufferLength);
   for (long i = 0; i < mdBufferLength; i++) {
     mdBuffer[i] = std::make_shared<Matter>(pot, params);
@@ -148,15 +145,25 @@ int TADJob::dynamics() {
 
     if (transitionFlag) {
       QUILL_LOG_TRACE_L1(log, "Refining transition time.");
-      {
+      const bool can_refine =
+          params.parallel_replica_options.refine_transition && nRecord >= 2;
+      if (can_refine) {
         eonc::ForceCallTimer timer(refineFCalls);
         refineStep = refine(mdBuffer, reactant.get());
+      } else {
+        refineStep = 0;
       }
 
-      transitionStep =
-          newStateStep - StateCheckInterval + refineStep * RecordInterval;
-      transitionTime_current = timeBuffer[refineStep];
-      *crossing = *mdBuffer[refineStep];
+      if (can_refine) {
+        transitionStep =
+            newStateStep - StateCheckInterval + refineStep * RecordInterval;
+        transitionTime_current = timeBuffer[static_cast<size_t>(refineStep)];
+        *crossing = *mdBuffer[static_cast<size_t>(refineStep)];
+        *current = *mdBuffer[static_cast<size_t>(refineStep - 1)];
+      } else {
+        *crossing = *current;
+        transitionTime_current = time;
+      }
       transitionTime = transitionTime_current - transitionTime_previous;
       transitionTime_previous = transitionTime_current;
       barrier = crossing->getPotentialEnergy() - reactant->getPotentialEnergy();
@@ -164,8 +171,6 @@ int TADJob::dynamics() {
       correctionFactor = std::exp(barrier / kB * (1.0 / lowT - 1.0 / highT));
       correctedTime = transitionTime * correctionFactor;
       sumSimulatedTime += transitionTime;
-
-      *current = *mdBuffer[refineStep - 1];
       velocity = current->getVelocities();
       velocity = velocity * (-1);
       current->setVelocities(velocity);

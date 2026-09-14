@@ -20,6 +20,7 @@
 #include "eon/SafeMath.h"
 #include "eon/eonExceptions.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <format>
 #include <fstream>
@@ -108,8 +109,13 @@ public:
           int sufficientForce = 0;
           double minForce =
               params.saddle_search_options.confine_positive.min_force;
+          const long maxBoostTries = std::max(
+              3 * matter->numberOfAtoms(),
+              params.saddle_search_options.confine_positive.min_active);
+          long boostTries = 0;
           while (sufficientForce <
-                 params.saddle_search_options.confine_positive.min_active) {
+                     params.saddle_search_options.confine_positive.min_active &&
+                 boostTries < maxBoostTries) {
             sufficientForce = 0;
             force = matter->getForces();
             for (long i = 0; i < matter->numberOfAtoms(); i++) {
@@ -126,6 +132,7 @@ public:
             }
             minForce *=
                 params.saddle_search_options.confine_positive.scale_ratio;
+            boostTries++;
           }
         }
       } else {
@@ -153,7 +160,7 @@ public:
     } else if (params.optimizer_options.convergence_metric == "max_atom") {
       return matter->maxForce();
     } else if (params.optimizer_options.convergence_metric == "max_component") {
-      return matter->getForces().maxCoeff();
+      return matter->getForces().cwiseAbs().maxCoeff();
     } else {
       EONC_LOG_CRITICAL("[MinModeSaddleSearch] unknown convergence metric: {}",
                         params.optimizer_options.convergence_metric);
@@ -227,7 +234,8 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
     if (eonc::eigenmodeGetEigenvalue(*minModeMethod) > 0) {
       QUILL_LOG_DEBUG(log, "GPR eigenvalue: {}",
                       eonc::eigenmodeGetEigenvalue(*minModeMethod));
-      return STATUS_NONNEGATIVE_ABORT;
+      status = STATUS_NONNEGATIVE_ABORT;
+      return status;
     }
     if (getEigenvalue() > 0.0 && status == STATUS_GOOD) {
       QUILL_LOG_DEBUG(log, "[MinModeSaddleSearch] eigenvalue not negative");
@@ -324,7 +332,8 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       if (eonc::eigenmodeGetEigenvalue(*minModeMethod) > 0) {
         QUILL_LOG_DEBUG(log, "Nonnegative eigenvalue: {}",
                         eonc::eigenmodeGetEigenvalue(*minModeMethod));
-        return STATUS_NONNEGATIVE_ABORT;
+        status = STATUS_NONNEGATIVE_ABORT;
+        return status;
       }
     }
 
@@ -469,6 +478,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       QUILL_LOG_DEBUG(log, "[MinModeSaddleSearch] eigenvalue not negative");
       status = STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
     }
+    forcecalls = eonc::eigenmodeTotalForceCalls(*minModeMethod);
   }
 
   return status;

@@ -44,8 +44,10 @@ std::vector<std::string> HessianJob::run(void) {
   const VectorXi mobile =
       eonc::resolveMobileAtoms(matter.get(), params.hessian_options.phva_atoms);
   const bool no_mobile = mobile.size() == 0;
+  bool freqs_ok = false;
   if (!no_mobile) {
-    hessian.getFreqs(matter.get(), mobile);
+    const VectorXd freqs = hessian.getFreqs(matter.get(), mobile);
+    freqs_ok = freqs.size() > 0;
   }
 
   std::string results_file("results.dat");
@@ -54,7 +56,7 @@ std::vector<std::string> HessianJob::run(void) {
   std::ofstream out(results_file, std::ios::binary);
   if (out) {
     const auto status =
-        no_mobile ? RunStatus::FAIL_MAX_ITERATIONS : RunStatus::GOOD;
+        freqs_ok ? RunStatus::GOOD : RunStatus::FAIL_POTENTIAL_FAILED;
     out << std::format("{} termination_reason\n", static_cast<int>(status));
     out << std::format("{} termination_reason_text\n",
                        magic_enum::enum_name<RunStatus>(status));

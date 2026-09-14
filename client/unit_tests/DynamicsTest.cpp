@@ -148,6 +148,20 @@ TEST_CASE_METHOD(DynamicsFixture,
 
   double E = matter->getPotentialEnergy();
   REQUIRE(std::isfinite(E));
+  REQUIRE(std::isfinite(matter->getKineticEnergy()));
+  REQUIRE(matter->getKineticEnergy() > 0.0);
+}
+
+TEST_CASE_METHOD(DynamicsFixture, "Dynamics run with steps=0 does not move",
+                 "[dynamics][steps]") {
+  params.dynamics_options.steps = 0;
+  AtomMatrix before = matter->getPositions();
+  Dynamics dyn(matter, params);
+  dyn.setTemperature(300.0);
+  dyn.setThermalVelocity();
+  dyn.run();
+  AtomMatrix after = matter->getPositions();
+  REQUIRE((after - before).norm() == Catch::Approx(0.0).margin(1e-15));
 }
 
 TEST_CASE_METHOD(DynamicsFixture,

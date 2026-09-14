@@ -222,7 +222,7 @@ MatrixXd get_targets(std::vector<Matter> &matobjs,
     matobjs[idx].setPotential(true_pot);
     targets.row(idx)[0] = matobjs[idx].getPotentialEnergy();
     targets.block(idx, 1, 1, ncols - 1) =
-        matobjs[idx].getForcesFree().array() * -1;
+        matobjs[idx].getForcesFreeV().array() * -1;
   }
   std::ostringstream oss;
   oss << targets;
@@ -238,7 +238,7 @@ MatrixXd get_targets(std::vector<std::shared_ptr<Matter>> &matobjs,
     matobjs[idx]->setPotential(true_pot);
     targets.row(idx)[0] = matobjs[idx]->getPotentialEnergy();
     targets.block(idx, 1, 1, ncols - 1) =
-        matobjs[idx]->getForcesFree().array() * -1;
+        matobjs[idx]->getForcesFreeV().array() * -1;
   }
   std::ostringstream oss;
   oss << targets;
@@ -270,6 +270,10 @@ Eigen::VectorXd make_target(Matter &m1, std::shared_ptr<Potential> true_pot) {
 }
 std::pair<double, Eigen::VectorXd::Index>
 getMaxUncertainty(const std::vector<std::shared_ptr<Matter>> &matobjs) {
+  if (matobjs.size() < 3) {
+    throw std::invalid_argument(
+        "getMaxUncertainty: need at least three images");
+  }
   Eigen::VectorXd pathUncertainty{Eigen::VectorXd::Zero(matobjs.size() - 2)};
   for (auto idx{0}; idx < pathUncertainty.size(); idx++) {
     pathUncertainty[idx] = matobjs[idx + 1]->getEnergyVariance();

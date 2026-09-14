@@ -78,6 +78,10 @@ public:
   void langevinVerlet();
 
 private:
+  /// One Martyna-Klein-Tuckerman chain half-step. G2 is always
+  /// (Q1 vxi1^2 - kT) / Q2.
+  void nhcChainHalfStep(AtomMatrix &vel, double &kinE);
+
   long nAtoms{0}, nFreeCoords{0};
 
   Matter *matter;

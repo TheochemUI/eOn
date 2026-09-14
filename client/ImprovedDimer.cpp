@@ -128,6 +128,9 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     rho.clear();
     init_lbfgs = true;
   }
+  if (params.dimer_options.opt_method == OPT_CG) {
+    init_cg = true;
+  }
 
   VectorXd x1_rp, x1_r, tau_prime, tau_Old, g1_prime;
   double phi_tol =
@@ -144,9 +147,10 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   if (params.dimer_options.remove_rotation) {
     rotationRemove(AtomMatrix::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
     x1_r = x1->getPositionsV();
-    tau = x1_r - x0_r;
+    tau = x1->pbcV(x1_r - x0_r);
     eonc::safemath::safe_normalize_inplace(tau);
     x1_r = x0_r + tau * delta;
+    x1->setPositionsV(x1_r);
   }
 
   // Calculate gradients on x0 and x1.

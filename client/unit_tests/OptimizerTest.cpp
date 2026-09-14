@@ -21,6 +21,7 @@
 #include "eon/Quickmin.h"
 #include "eon/SteepestDescent.h"
 
+#include <cmath>
 #include <stdexcept>
 #include <string>
 
@@ -207,6 +208,24 @@ TEST_CASE("Quickmin optimizer reduces energy on quadratic",
   // Quickmin should at least reduce energy, even if it doesn't converge
   // tightly on a simple quadratic (it's designed for MD, not optimization)
   REQUIRE(E_final < E_init);
+}
+
+TEST_CASE("Quickmin zero-force step stays finite", "[optimizer][quickmin]") {
+  auto params = makeOptParams();
+  auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
+  objf->setPositions(VectorXd::Zero(2));
+  Quickmin opt(objf, params);
+  REQUIRE(opt.step(params.optimizer_options.max_move) == 1);
+  REQUIRE(objf->getPositions().norm() == Catch::Approx(0.0).margin(1e-15));
+}
+
+TEST_CASE("FIRE zero-force step stays finite", "[optimizer][fire]") {
+  auto params = makeOptParams();
+  auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
+  objf->setPositions(VectorXd::Zero(2));
+  FIRE opt(objf, params);
+  REQUIRE_NOTHROW(opt.step(params.optimizer_options.max_move));
+  REQUIRE(std::isfinite(objf->getPositions().norm()));
 }
 
 TEST_CASE("SteepestDescent optimizer converges on quadratic",

@@ -71,23 +71,57 @@ bool ReplicaDynamicsJob::checkState(Matter *curr, Matter *react) {
   return !tmp.compare(*react);
 }
 
+ReplicaDynamicsJob::PrdClock ReplicaDynamicsJob::prdClock() const {
+  const double dt = params.dynamics_options.time_step;
+  auto to_steps = [&](double interval) -> long {
+    if (!(dt > 0.0) || !(interval > 0.0)) {
+      return 1;
+    }
+    const long n = static_cast<long>(interval / dt);
+    return n < 1 ? 1 : n;
+  };
+  PrdClock c;
+  c.state_check = to_steps(params.parallel_replica_options.state_check_interval);
+  c.record = to_steps(params.parallel_replica_options.record_interval);
+  if (c.record > c.state_check) {
+    c.record = c.state_check;
+  }
+  c.buffer = c.state_check / c.record;
+  if (c.buffer < 1) {
+    c.buffer = 1;
+  }
+  return c;
+}
+
 long ReplicaDynamicsJob::refine(
     const std::vector<std::shared_ptr<Matter>> &buff, Matter *react) {
   QUILL_LOG_TRACE_L1(log, "Refining transition time.");
+  const long n = static_cast<long>(buff.size());
+  if (n <= 1) {
+    throw std::runtime_error(
+        "ReplicaDynamics refine: need at least two snapshots");
+  }
 
   long lo = 0;
-  long hi = static_cast<long>(buff.size()) - 1;
+  long hi = n - 1;
 
   while ((hi - lo) > 1) {
     long mid = lo + (hi - lo) / 2;
-    if (!checkState(buff[mid].get(), react)) {
+    if (!checkState(buff[static_cast<size_t>(mid)].get(), react)) {
       lo = mid;
     } else {
       hi = mid;
     }
   }
 
-  return (lo + hi) / 2 + 1;
+  long idx = (lo + hi) / 2 + 1;
+  if (idx < 1) {
+    idx = 1;
+  }
+  if (idx >= n) {
+    idx = n - 1;
+  }
+  return idx;
 }
 
 void ReplicaDynamicsJob::dephase() {
@@ -103,6 +137,9 @@ void ReplicaDynamicsJob::dephase() {
 
   while (step < DephaseSteps) {
     long dephaseBufferLength = DephaseSteps - step;
+    if (dephaseBufferLength < 1) {
+      break;
+    }
     loop++;
     std::vector<std::shared_ptr<Matter>> dephaseBuffer(dephaseBufferLength);
 
@@ -115,6 +152,12 @@ void ReplicaDynamicsJob::dephase() {
     bool transitionFlag = checkState(current.get(), reactant.get());
 
     if (transitionFlag) {
+      if (dephaseBuffer.size() < 2) {
+        AtomMatrix velocity = current->getVelocities();
+        velocity = velocity * (-1);
+        current->setVelocities(velocity);
+        continue;
+      }
       long dephaseRefineStep = refine(dephaseBuffer, reactant.get());
       QUILL_LOG_DEBUG(log, "loop = {}; dephase refine step = {}", loop,
                       dephaseRefineStep);
@@ -135,8 +178,8 @@ void ReplicaDynamicsJob::dephase() {
       QUILL_LOG_TRACE_L1(log, "Successful dephasing for {} steps", step);
     }
 
-    if ((params.parallel_replica_options.dephase_loop_stop) &&
-        (loop > params.parallel_replica_options.dephase_loop_max)) {
+    const long loop_max = params.parallel_replica_options.dephase_loop_max;
+    if (loop_max > 0 && loop >= loop_max) {
       QUILL_LOG_DEBUG(
           log,
           "Reach dephase loop maximum, stop dephasing! Dephased for {} steps",

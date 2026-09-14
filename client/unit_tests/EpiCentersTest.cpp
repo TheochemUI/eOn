@@ -12,12 +12,14 @@
 #include "eon/EpiCenters.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/Eigen.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 
 #include <algorithm>
 #include <memory>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -444,9 +446,25 @@ TEST_CASE("cnaEpiCenter returns a non-FCC/HCP atom", "[epicenters][cna]") {
 
   // CNA needs the neighbor cutoff
   long idx = eonc::EpiCenters::cnaEpiCenter(matter.get(), 3.3);
-  // May return -2 if no non-FCC/HCP atom found (small cluster)
-  // Just verify it doesn't crash
-  CHECK(idx >= -2);
+  REQUIRE(idx >= 0);
+  REQUIRE(idx < matter->numberOfAtoms());
+  REQUIRE_FALSE(matter->getFixed(idx));
+}
+
+TEST_CASE("randomFreeAtomEpiCenter throws when every atom is fixed",
+          "[epicenters][empty]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter matter(pot, params);
+  matter.resize(2);
+  AtomMatrix pos(2, 3);
+  pos << 0.0, 0.0, 0.0, 2.0, 0.0, 0.0;
+  matter.setPositions(pos);
+  matter.setFixed(0, 1);
+  matter.setFixed(1, 1);
+  REQUIRE_THROWS_AS(eonc::EpiCenters::randomFreeAtomEpiCenter(&matter),
+                    std::runtime_error);
 }
 
 TEST_CASE("coordinationLessOrEqual filters atoms correctly",

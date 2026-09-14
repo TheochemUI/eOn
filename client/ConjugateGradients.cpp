@@ -191,7 +191,7 @@ int ConjugateGradients::single_step(double a_maxMove) {
 
 int ConjugateGradients::run(size_t a_maxIterations, double a_maxMove) {
   size_t iterations = 0;
-  while (!m_objf->isConverged() && iterations <= a_maxIterations) {
+  while (!m_objf->isConverged() && iterations < a_maxIterations) {
     step(a_maxMove);
     iterations++;
   }

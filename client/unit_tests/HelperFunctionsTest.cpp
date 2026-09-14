@@ -20,11 +20,15 @@
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
+#include "eon/RandomNumbers.h"
 
+#include <atomic>
 #include <cmath>
 #include <cstdio>
 #include <stdexcept>
 #include <string>
+#include <thread>
+#include <vector>
 
 namespace tests {
 
@@ -103,6 +107,24 @@ TEST_CASE("HelperFunctions: randomInt(lo, hi) respects bounds", "[helpers]") {
     REQUIRE(r >= 1);
     REQUIRE(r <= 4);
   }
+}
+
+TEST_CASE("ran2 streams are independent across threads", "[helpers][rng]") {
+  std::atomic<int> bad{0};
+  auto worker = [&](long seed) {
+    eonc::rng::random(seed);
+    for (int i = 0; i < 2000; ++i) {
+      const double r = eonc::rng::random();
+      if (!(r > 0.0 && r < 1.0)) {
+        ++bad;
+      }
+    }
+  };
+  std::thread a(worker, 11);
+  std::thread b(worker, 17);
+  a.join();
+  b.join();
+  REQUIRE(bad.load() == 0);
 }
 
 TEST_CASE("SaddleSearchJob listed_atoms moves a free atom",

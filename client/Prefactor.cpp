@@ -267,16 +267,24 @@ VectorXi eonc::Prefactor::movedAtomsPct(const Parameters &parameters,
 
   int nMoved = 0;
   double d = 0.0;
-  while (d / sum <= parameters.prefactor_options.filter_fraction &&
-         nMoved < nFree) {
-    int maxi = mini;
+  while (nMoved < nFree &&
+         (sum <= 0.0 ||
+          d / sum < parameters.prefactor_options.filter_fraction)) {
+    int maxi = -1;
     for (int i = 0; i < nAtoms; i++) {
-      if (diff[i] >= diff[maxi]) {
-        if (std::find(moved.data(), moved.data() + nMoved, i) ==
-            moved.data() + nMoved) {
-          maxi = i;
-        }
+      if (min1->getFixed(i) || saddle->getFixed(i)) {
+        continue;
       }
+      if (std::find(moved.data(), moved.data() + nMoved, i) !=
+          moved.data() + nMoved) {
+        continue;
+      }
+      if (maxi < 0 || diff[i] >= diff[maxi]) {
+        maxi = i;
+      }
+    }
+    if (maxi < 0) {
+      break;
     }
     moved[nMoved] = maxi;
     nMoved++;

@@ -72,6 +72,10 @@ std::vector<std::string> SaddleSearchJob::run() {
     *saddle = *initial;
   }
 
+  if (standaloneARTn && std::filesystem::exists(modeFilename)) {
+    mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
+  }
+
   const bool useStandaloneARTn = params.saddle_search_options.method == "artn";
   const bool useARTnAsMinMode =
       params.saddle_search_options.method == "min_mode" &&

@@ -12,7 +12,10 @@
 #include "eon/Matter.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/MonteCarlo.h"
 #include "eon/Parameters.h"
+#include "eon/Prefactor.h"
+#include <filesystem>
 #include <memory>
 
 using namespace Catch::Matchers;
@@ -347,6 +350,68 @@ TEST_CASE("relax converges LJ cluster", "[MatterTest][relax]") {
   REQUIRE(E_after <= E_before);
   // SVN reference: -39.965352 for relaxed LJ cluster
   REQUIRE(E_after == Catch::Approx(-39.965352).epsilon(1e-4));
+}
+
+TEST_CASE("setMasses and distanceTo reject size mismatch", "[MatterTest]") {
+  auto [m1, params] = makeLJCluster();
+  VectorXd shortMasses(2);
+  shortMasses.setConstant(1.0);
+  REQUIRE_THROWS_AS(m1->setMasses(shortMasses), std::invalid_argument);
+
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto m2 = std::make_shared<Matter>(pot, params);
+  m2->resize(2);
+  REQUIRE_THROWS_AS(m1->distanceTo(*m2), std::invalid_argument);
+}
+
+TEST_CASE("getAtomicNrsFree matches free atom count", "[MatterTest]") {
+  auto [m1, params] = makeLJCluster();
+  m1->setFixed(0, true);
+  auto zfree = m1->getAtomicNrsFree();
+  REQUIRE(zfree.size() == m1->numberOfFreeAtoms());
+  REQUIRE(zfree.size() == m1->numberOfAtoms() - 1);
+}
+
+TEST_CASE("MonteCarlo uses caller args and leaves fixed atoms still",
+          "[MatterTest][montecarlo]") {
+  auto [m1, params] = makeLJCluster();
+  m1->setFixed(0, true);
+  const AtomMatrix before = m1->getPositions();
+  const auto cwd = std::filesystem::current_path();
+  const auto tmp = std::filesystem::temp_directory_path() / "eon_mc_test";
+  std::filesystem::create_directories(tmp);
+  std::filesystem::current_path(tmp);
+  MonteCarlo mc(m1, params);
+  mc.run(8, 50.0, 1e-9);
+  std::filesystem::current_path(cwd);
+  std::filesystem::remove_all(tmp);
+  const AtomMatrix after = m1->getPositions();
+  REQUIRE((after.row(0) - before.row(0)).norm() ==
+          Catch::Approx(0.0).margin(1e-15));
+  REQUIRE((after - before).norm() < 1e-6);
+}
+
+TEST_CASE("movedAtomsPct skips atoms fixed in min1", "[MatterTest][prefactor]") {
+  auto [min1, params] = makeLJCluster();
+  auto pot = min1->getPotential();
+  auto saddle = std::make_shared<Matter>(pot, params);
+  *saddle = *min1;
+  auto min2 = std::make_shared<Matter>(pot, params);
+  *min2 = *min1;
+  min1->setFixed(0, true);
+  saddle->setFixed(0, true);
+  min2->setFixed(0, true);
+  AtomMatrix pos = saddle->getPositions();
+  pos.row(1) += AtomMatrix::Constant(1, 3, 0.4).row(0);
+  saddle->setPositions(pos);
+  params.prefactor_options.filter_fraction = 1.0;
+  params.prefactor_options.within_radius = 0.0;
+  VectorXi moved =
+      eonc::Prefactor::movedAtomsPct(params, min1.get(), saddle.get(),
+                                     min2.get());
+  for (int i = 0; i < moved.size(); ++i) {
+    REQUIRE(moved[i] != 0);
+  }
 }
 
 } /* namespace tests */

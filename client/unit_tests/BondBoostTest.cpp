@@ -15,6 +15,8 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Matter.h"
 
+#include <stdexcept>
+
 namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
@@ -95,6 +97,28 @@ TEST_CASE("BondBoost schedule advances only from advance(), not boost()",
   bb.advance();
   bb.advance();
   REQUIRE(bb.scheduleStep() == 5);
+}
+
+TEST_CASE("BondBoost listed index out of range throws", "[bondboost][list]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  params.hyperdynamics_options.boost_atom_list = "999999";
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter matter(pot, params);
+  matter.con2matter(std::string("reactant.con"));
+  BondBoost bb(&matter, params);
+  REQUIRE_THROWS_AS(bb.initialize(), std::out_of_range);
+}
+
+TEST_CASE("BondBoost garbage list is not treated as all", "[bondboost][list]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  params.hyperdynamics_options.boost_atom_list = "not-a-list";
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter matter(pot, params);
+  matter.con2matter(std::string("reactant.con"));
+  BondBoost bb(&matter, params);
+  REQUIRE_THROWS_AS(bb.initialize(), std::invalid_argument);
 }
 
 } /* namespace tests */

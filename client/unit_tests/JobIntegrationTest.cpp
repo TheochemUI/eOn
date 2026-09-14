@@ -17,6 +17,7 @@
 
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/BaseStructures.h"
 #include "eon/Job.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
@@ -363,6 +364,31 @@ potential = lj
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
+                 "HessianJob reports FAIL when no mobile atoms remain",
+                 "[job][hessian][fail]") {
+  EON_REQUIRE_TEST_DATA(".");
+  writeConfig(R"(
+[Main]
+job = hessian
+random_seed = 42
+
+[Potential]
+potential = lj
+
+[Hessian]
+phva_atoms = none
+)");
+
+  std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+
+  auto results = runJob();
+  REQUIRE(results.count("termination_reason") > 0);
+  REQUIRE(std::stoi(results["termination_reason"]) ==
+          static_cast<int>(eonc::RunStatus::FAIL_POTENTIAL_FAILED));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
                  "HessianJob writes hessian.dat when quiet=true",
                  "[job][hessian][integration]") {
   EON_REQUIRE_TEST_DATA(".");
@@ -438,10 +464,13 @@ max_energy = 10.0
   // Force calls must be <= SVN (39)
   REQUIRE(forceCalls_ <= 39);
 
-  // Eigenvalue must be negative (true saddle point)
+  // Eigenvalue must be negative (true saddle point).
+  // SVN printed -1.014995. Dimer::rotate now updates the plane from the
+  // pre-rotation direction (eOn-00lg); the FD curvature on this fixture
+  // is -1.010564. Energy still matches the SVN saddle.
   double eigenvalue = std::stod(results["final_eigenvalue"]);
   REQUIRE(eigenvalue < 0.0);
-  REQUIRE(eigenvalue == Catch::Approx(-1.014995).epsilon(1e-3));
+  REQUIRE(eigenvalue == Catch::Approx(-1.010564).epsilon(1e-3));
 
   // Reactant energy must match
   double reactantE = std::stod(results["potential_energy_reactant"]);
@@ -1116,8 +1145,9 @@ max_energy = 10.0
   int status = std::stoi(results["termination_reason"]);
   REQUIRE(status == 0);
 
-  // Force calls must be <= SVN (67)
-  REQUIRE(forceCalls_ <= 67);
+  // SVN printed 67 force calls. The corrected dimer rotate (eOn-00lg)
+  // takes two extra evaluations on this fixture; energies still match.
+  REQUIRE(forceCalls_ <= 69);
 
   // Energies must match SVN exactly
   double saddleE = std::stod(results["potential_energy_saddle"]);

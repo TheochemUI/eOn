@@ -358,7 +358,7 @@ public:
     } else if (params.optimizer_options.convergence_metric == "max_atom") {
       return m_matter.maxForce();
     } else if (params.optimizer_options.convergence_metric == "max_component") {
-      return m_matter.getForces().maxCoeff();
+      return m_matter.getForces().cwiseAbs().maxCoeff();
     } else {
       EONC_LOG_CRITICAL("{} Unknown opt_convergence_metric: {}", "[Matter]",
                         params.optimizer_options.convergence_metric);

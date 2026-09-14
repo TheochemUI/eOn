@@ -150,6 +150,8 @@ std::vector<std::string> BasinHoppingJob::run() {
       accepted = true;
       if (params.basin_hopping_options.significant_structure) {
         *current = *minTrial;
+      } else if (swapMove) {
+        *current = *swapTrial;
       } else {
         *current = *trial;
       }
@@ -178,9 +180,10 @@ std::vector<std::string> BasinHoppingJob::run() {
           // it is new, otherwise it is old
           if (std::fabs(currentEnergy - uniqueEnergies[i]) <
               params.structure_comparison_options.energy_difference) {
-            if (current->compare(*uniqueStructures[i],
-                                 params.structure_comparison_options
-                                     .indistinguishable_atoms)) {
+            Matter probe = *current;
+            if (probe.compare(*uniqueStructures[i],
+                              params.structure_comparison_options
+                                  .indistinguishable_atoms)) {
               newStructure = false;
             }
           }
@@ -409,13 +412,23 @@ void BasinHoppingJob::randomSwap(Matter *matter) {
   int changerb = 0;
 
   changera = randomInt(0, matter->numberOfAtoms() - 1);
-  while (matter->getAtomicNr(changera) != ela) {
+  int guard = 0;
+  while ((matter->getAtomicNr(changera) != ela || matter->getFixed(changera)) &&
+         guard < 10000) {
     changera = randomInt(0, matter->numberOfAtoms() - 1);
+    guard++;
   }
-
   changerb = randomInt(0, matter->numberOfAtoms() - 1);
-  while (matter->getAtomicNr(changerb) != elb) {
+  guard = 0;
+  while ((matter->getAtomicNr(changerb) != elb || matter->getFixed(changerb) ||
+          changerb == changera) &&
+         guard < 10000) {
     changerb = randomInt(0, matter->numberOfAtoms() - 1);
+    guard++;
+  }
+  if (matter->getAtomicNr(changera) != ela || matter->getFixed(changera) ||
+      matter->getAtomicNr(changerb) != elb || matter->getFixed(changerb)) {
+    return;
   }
 
   double posax = matter->getPosition(changera, 0);

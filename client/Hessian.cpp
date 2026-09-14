@@ -105,6 +105,7 @@ VectorXd Hessian::getFreqs(Matter *matterIn, const VectorXi &atomsIn) {
 
     if (!calculate()) {
       freqs.resize(0);
+      hessian.resize(0, 0);
     }
   }
   return freqs;

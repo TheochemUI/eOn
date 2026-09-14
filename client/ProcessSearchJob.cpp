@@ -21,6 +21,7 @@
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/Optimizer.h"
 #include "eon/Prefactor.h"
+#include <filesystem>
 #include <thread>
 
 #include <format>
@@ -91,10 +92,14 @@ std::vector<std::string> ProcessSearchJob::run() {
     } else {
       *saddle = *min1 = *min2 = *initial;
     }
+    if (displacement) {
+      *displacement = *saddle;
+    }
   } else {
     // ARTn and dynamics start from the initial minimum
     *saddle = *min1 = *min2 = *initial;
   }
+  min2->setPotential(min2Pot);
 
   const bool useARTnAsMinMode =
       params.saddle_search_options.method == "min_mode" &&
@@ -102,7 +107,8 @@ std::vector<std::string> ProcessSearchJob::run() {
 
   if (params.saddle_search_options.method == "min_mode") {
     if (params.saddle_search_options.displace_type ==
-        eonc::EpiCenters::DISP_LOAD) {
+            eonc::EpiCenters::DISP_LOAD &&
+        std::filesystem::exists(modeFilename)) {
       mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
     }
 #ifdef WITH_ARTN
@@ -123,7 +129,8 @@ std::vector<std::string> ProcessSearchJob::run() {
     // and perpendicular relaxation internally.
     AtomMatrix artnMode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
     if (params.saddle_search_options.displace_type ==
-        eonc::EpiCenters::DISP_LOAD) {
+            eonc::EpiCenters::DISP_LOAD &&
+        std::filesystem::exists(modeFilename)) {
       artnMode =
           eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
     }
@@ -156,6 +163,10 @@ std::vector<std::string> ProcessSearchJob::run() {
         "support (reconfigure with -Dwith_artn=true)");
   }
 #endif
+
+  if (!saddleSearch) {
+    throw std::runtime_error("unknown saddle_search.method");
+  }
 
   int status = doProcessSearch();
 
@@ -229,8 +240,12 @@ int ProcessSearchJob::doProcessSearch() {
         min2->relax(false, params.debug_options.write_movies, false, "min2");
   }
 
-  fCallsMin += (min1->getPotentialCalls() - fc1_before) +
-               (min2->getPotentialCalls() - fc2_before);
+  if (min1->getPotential().get() == min2->getPotential().get()) {
+    fCallsMin += min1->getPotentialCalls() - fc1_before;
+  } else {
+    fCallsMin += (min1->getPotentialCalls() - fc1_before) +
+                 (min2->getPotentialCalls() - fc2_before);
+  }
   QUILL_LOG_DEBUG(log, "Min1: {} fcalls, Min2: {} fcalls",
                   min1->getPotentialCalls() - fc1_before,
                   min2->getPotentialCalls() - fc2_before);

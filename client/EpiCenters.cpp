@@ -19,96 +19,69 @@
 
 using namespace eonc::helpers;
 
+namespace {
+long pickFromHits(const std::vector<long> &hits, const char *what) {
+  if (hits.empty()) {
+    throw std::runtime_error(what);
+  }
+  const long pick =
+      static_cast<long>(randomDouble(static_cast<long>(hits.size())));
+  return hits[static_cast<size_t>(pick)];
+}
+} // namespace
+
 long eonc::EpiCenters::cnaEpiCenter(const Matter *matter,
                                     double neighborCutoff) {
-  long nAtoms = matter->numberOfAtoms();
-  std::vector<long> cnaList(nAtoms);
-  long indexEpiCenter = -2;
-
+  const long nAtoms = matter->numberOfAtoms();
+  std::vector<long> cnaList(static_cast<size_t>(nAtoms));
   cna(cnaList.data(), matter, neighborCutoff);
 
-  // Count atoms that are not FCC or HCP and are free to move
-  long count = 0;
-  for (long i = 0; i < nAtoms; i++) {
-    if (cnaList[i] == 2 && !matter->getFixed(i))
-      count++;
-  }
-  // Pick a random atom being both free and not FCC or HCP coordinated
-  long pick = static_cast<long>(randomDouble(count)) + 1;
-  for (long i = 0; i < nAtoms; i++) {
-    if (cnaList[i] == 2 && !matter->getFixed(i)) {
-      pick--;
-      if (!pick) {
-        indexEpiCenter = i;
-        break;
-      }
+  std::vector<long> hits;
+  hits.reserve(static_cast<size_t>(nAtoms));
+  for (long i = 0; i < nAtoms; ++i) {
+    if (cnaList[static_cast<size_t>(i)] == 2 && !matter->getFixed(i)) {
+      hits.push_back(i);
     }
   }
-
-  assert(indexEpiCenter > -1 && indexEpiCenter < nAtoms);
-  return indexEpiCenter;
+  return pickFromHits(hits, "EpiCenters: no free non-FCC/HCP atom");
 }
 
 long eonc::EpiCenters::minCoordinatedEpiCenter(const Matter *matter,
                                                double neighborCutoff) {
-  long nAtoms = matter->numberOfAtoms();
-  // Can't use vector<bool> (.data() is deleted), use unique_ptr<bool[]>
-  auto minCoordinatedList = std::make_unique<bool[]>(nAtoms);
-  long indexEpiCenter = -2;
-
-  long minCoordinationVal = minCoordination(matter, neighborCutoff);
+  const long nAtoms = matter->numberOfAtoms();
+  auto minCoordinatedList = std::make_unique<bool[]>(static_cast<size_t>(nAtoms));
+  const long minCoordinationVal = minCoordination(matter, neighborCutoff);
   coordinationLessOrEqual(minCoordinatedList.get(), minCoordinationVal, matter,
                           neighborCutoff);
 
-  // Count all atoms that are minimally coordinated and free to move
-  long count = 0;
-  for (long i = 0; i < nAtoms; i++) {
-    if (minCoordinatedList[i] && !matter->getFixed(i))
-      count++;
-  }
-  // Pick a random atom that is free and minimally coordinated
-  long pick = static_cast<long>(randomDouble(count));
-  for (long i = 0; i < nAtoms; i++) {
-    if (minCoordinatedList[i] && !matter->getFixed(i)) {
-      if (!pick) {
-        indexEpiCenter = i;
-        break;
-      } else {
-        pick--;
-      }
+  std::vector<long> hits;
+  hits.reserve(static_cast<size_t>(nAtoms));
+  for (long i = 0; i < nAtoms; ++i) {
+    if (minCoordinatedList[static_cast<size_t>(i)] && !matter->getFixed(i)) {
+      hits.push_back(i);
     }
   }
-
-  assert(indexEpiCenter > -1 && indexEpiCenter < nAtoms);
-  return indexEpiCenter;
+  return pickFromHits(hits, "EpiCenters: no free minimally coordinated atom");
 }
 
 long eonc::EpiCenters::lastAtom(const Matter *matter) {
-  long nAtoms = matter->numberOfAtoms();
-  long indexEpiCenter = nAtoms - 1;
-  assert(indexEpiCenter > -1 && indexEpiCenter < nAtoms);
-  return indexEpiCenter;
+  const long nAtoms = matter->numberOfAtoms();
+  if (nAtoms <= 0) {
+    throw std::runtime_error("EpiCenters: lastAtom on empty Matter");
+  }
+  return nAtoms - 1;
 }
 
 long eonc::EpiCenters::randomFreeAtomEpiCenter(const Matter *matter) {
-  long nAtoms = matter->numberOfAtoms();
-  long indexEpiCenter = -2;
-
-  long freeCount = matter->numberOfFreeAtoms();
-  long pick = static_cast<long>(randomDouble(freeCount));
-
-  for (long i = 0; i < nAtoms; i++) {
+  const long nAtoms = matter->numberOfAtoms();
+  std::vector<long> hits;
+  hits.reserve(static_cast<size_t>(nAtoms));
+  for (long i = 0; i < nAtoms; ++i) {
     if (!matter->getFixed(i)) {
-      if (!pick) {
-        indexEpiCenter = i;
-        break;
-      } else {
-        pick--;
-      }
+      hits.push_back(i);
     }
   }
-  assert(indexEpiCenter > -1 && indexEpiCenter < nAtoms);
-  return indexEpiCenter;
+  return pickFromHits(hits, "EpiCenters: no free atom");
 }
 
 void eonc::EpiCenters::cna(long *cna, const Matter *matter,
