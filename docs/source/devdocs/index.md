@@ -19,6 +19,7 @@ Pull requests and documentation contributions are all highly appreciated.
 testing
 benchmarks
 parallel-potentials
+library-api
 in-process
 abi-surface
 rgpot-migration
