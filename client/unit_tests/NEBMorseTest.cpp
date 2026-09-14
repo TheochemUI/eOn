@@ -399,6 +399,13 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB with single image does not crash",
 
 // --- Potential thread safety tests ---
 
+TEST_CASE("NEB writes MMF peak seeds by default", "[neb][xr04]") {
+  Parameters params;
+  REQUIRE(params.neb_options.mmf_peaks.enabled);
+  REQUIRE(params.neb_options.mmf_peaks.tolerance ==
+          Catch::Approx(0.05).margin(1e-12));
+}
+
 TEST_CASE("Potential isThreadSafe defaults to true",
           "[potential][thread_safety]") {
   Parameters params;
