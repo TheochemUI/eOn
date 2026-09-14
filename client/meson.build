@@ -1056,10 +1056,44 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
     potentials += [metatomic_pot]
 endif
 
-if get_option('with_parallel_neb')
-    tbb_dep = dependency('tbb', required : true)
-    _deps += [tbb_dep]
+# NEB image-force std::execution::par.
+# GCC/Clang: -Dwith_parallel_neb=true pulls TBB (libstdc++ backend).
+# nvc++: -Dstdpar=cpu|gpu adds -stdpar=multicore|gpu and does not need TBB.
+# The potential is the cost. Do not wrap Morse / LJ atom loops in
+# std::for_each(std::execution::par); that is cargo-cult vs the surf-notes
+# nvc++ / -mp=gpu / QMC_GPU=openmp;cuda path (QMCPACK, not eOn).
+stdpar = get_option('stdpar')
+if stdpar != 'none'
+    cxx = meson.get_compiler('cpp')
+    cxx_id = cxx.get_id()
+    if cxx_id != 'nvidia_hpc' and cxx_id != 'pgi'
+        error('stdpar=@0@ requires nvc++ (compiler id nvidia_hpc or pgi); got @1@'.format(stdpar, cxx_id))
+    endif
+    if stdpar == 'gpu'
+        _args += ['-stdpar=gpu']
+        _linkargs += ['-stdpar=gpu']
+        # surf-notes: name the arch. QMCPACK uses QMC_GPU_ARCHS=sm_80;sm_90
+        # on Snellius/Elja. nvc++ wants -gpu=cc80,cc90, not that CMake string.
+        gpu_cc = get_option('stdpar_gpu_cc').strip()
+        if gpu_cc != '' and gpu_cc != 'native'
+            _args += ['-gpu=' + gpu_cc]
+            _linkargs += ['-gpu=' + gpu_cc]
+        endif
+    else
+        _args += ['-stdpar=multicore']
+        _linkargs += ['-stdpar=multicore']
+    endif
     _args += ['-DEON_PARALLEL_NEB']
+endif
+
+if get_option('with_parallel_neb')
+    if stdpar == 'none'
+        tbb_dep = dependency('tbb', required : true)
+        _deps += [tbb_dep]
+    endif
+    if '-DEON_PARALLEL_NEB' not in _args
+        _args += ['-DEON_PARALLEL_NEB']
+    endif
 endif
 
 if get_option('with_artn')

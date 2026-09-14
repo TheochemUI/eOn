@@ -78,9 +78,13 @@ without additional NEB iterations. Enable with `ci_mmf = true`.
 
 ### Parallel evaluation
 
-When compiled with TBB support (`-Dwith_parallel_neb=true`), image forces are
-evaluated in parallel. Python-based potentials automatically fall back to serial
-evaluation.
+When compiled with TBB (`-Dwith_parallel_neb=true`) or nvc++
+(`-Dstdpar=cpu` / `-Dstdpar=gpu`), dirty-image force calls use
+`std::execution::par`. nvc++ does not need TBB; see {doc}`stdpar`.
+Without those flags, `parallel = true` still fans out with one
+`std::thread` per image. Python-based potentials fall back to serial
+evaluation unless they report thread-safe shared instances or per-image
+copies. Morse and other host potentials stay on the CPU.
 
 ## Configuration
 

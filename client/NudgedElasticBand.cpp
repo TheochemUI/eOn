@@ -27,6 +27,12 @@
 #include <format>
 #include <stdexcept>
 #include <thread>
+#ifdef EON_PARALLEL_NEB
+#include <algorithm>
+#include <execution>
+#include <numeric>
+#include <vector>
+#endif
 using namespace eonc::helpers;
 namespace fs = std::filesystem;
 
@@ -451,7 +457,7 @@ double NudgedElasticBand::convergenceForce() {
         fmax = std::max(fmax, projectedForce[i]->row(j).norm());
       }
     } else if (params.optimizer_options.convergence_metric == "max_component") {
-      fmax = std::max(fmax, projectedForce[i]->maxCoeff());
+      fmax = std::max(fmax, projectedForce[i]->cwiseAbs().maxCoeff());
     } else {
       log = eonc::log::traceback();
       QUILL_LOG_CRITICAL(
@@ -523,6 +529,14 @@ void NudgedElasticBand::updateForces(bool ci_active) {
     // Per-image evaluation (sequential or parallel threads)
     bool canParallel = pot->isSharedInstanceThreadSafe() || perImagePotentials_;
     if (numImages > 1 && params.main_options.parallel && canParallel) {
+#ifdef EON_PARALLEL_NEB
+      // TBB-backed std::execution::par (meson -Dwith_parallel_neb=true).
+      // One thread per image oversubscribes a 20-bead band on 8 cores.
+      std::vector<long> beads(static_cast<size_t>(numImages));
+      std::iota(beads.begin(), beads.end(), 1);
+      std::for_each(std::execution::par, beads.begin(), beads.end(),
+                    [this](long i) { path[i]->getForcesRaw(); });
+#else
       // std::thread rather than std::jthread -- Apple Clang libc++ lacks the
       // latter. Wrap launch + join so a throw from any lambda still joins the
       // remaining threads before we rethrow; otherwise the unjoined std::thread
@@ -541,6 +555,7 @@ void NudgedElasticBand::updateForces(bool ci_active) {
             t.join();
         throw;
       }
+#endif
     } else {
       for (long i = 1; i <= numImages; i++) {
         path[i]->getForcesRaw();
