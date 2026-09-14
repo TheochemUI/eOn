@@ -432,6 +432,18 @@ TEST_CASE("MonteCarlo uses caller args and leaves fixed atoms still",
   REQUIRE((after - before).norm() < 1e-6);
 }
 
+TEST_CASE("same-size resize keeps atom ids", "[MatterTest][mtxr]") {
+  auto [m1, params] = makeLJCluster();
+  const long n = m1->numberOfAtoms();
+  for (long i = 0; i < n; ++i) {
+    m1->setAtomIndex(i, 700 + i);
+  }
+  m1->resize(n);
+  for (long i = 0; i < n; ++i) {
+    REQUIRE(m1->getAtomIndex(i) == 700 + i);
+  }
+}
+
 TEST_CASE("movedAtomsPct skips atoms fixed in min1",
           "[MatterTest][prefactor]") {
   auto [min1, params] = makeLJCluster();

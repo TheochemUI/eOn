@@ -159,14 +159,19 @@ bool eonc::helpers::loadOrSynthesizeDisplacement(
       return false;
     }
     // displacement.con may carry stale fixed-atom coordinates from a prior run.
+    // It also usually has sequential column-5 ids; keep the reactant's.
     const AtomMatrix &initPos = initial.getPositions();
     AtomMatrix pos = target.getPositionsCopy();
     const long n = initial.numberOfAtoms();
+    std::vector<long> fileMap(static_cast<size_t>(n));
     for (long i = 0; i < n; i++) {
       if (initial.getFixed(i)) {
         pos.row(i) = initPos.row(i);
       }
+      target.setAtomIndex(i, initial.getAtomIndex(i));
+      fileMap[static_cast<size_t>(i)] = initial.mapFileRow(i);
     }
+    target.setFileToMatter(std::move(fileMap));
     target.setPositions(pos);
     return true;
   }
