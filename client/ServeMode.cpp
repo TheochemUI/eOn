@@ -30,6 +30,8 @@
 #include "eon/ServeRpcServer.h"
 
 #include <algorithm>
+#include <cctype>
+#include <ranges>
 #include <sstream>
 #include <thread>
 #include <vector>
@@ -256,7 +258,9 @@ std::vector<ServeEndpoint> parseServeSpec(const std::string &spec) {
     rest.erase(rest.find_last_not_of(" \t") + 1);
 
     // Lowercase the potential name
-    std::transform(pot_str.begin(), pot_str.end(), pot_str.begin(), ::tolower);
+    std::ranges::transform(pot_str, pot_str.begin(), [](unsigned char c) {
+      return static_cast<char>(std::tolower(c));
+    });
 
     ServeEndpoint ep;
     ep.potential =

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <ranges>
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -55,8 +56,8 @@ RgpotPot::RgpotPot(const Parameters &p)
   // Engine-path env overrides are backend-scoped: NWCHEMC_LIBRARY must not
   // leak into a cpmdc configure (CPMDPot resolves CPMDC_LIBRARY itself).
   std::string backend_lc = opt.backend;
-  std::transform(backend_lc.begin(), backend_lc.end(), backend_lc.begin(),
-                 [](unsigned char c) { return std::tolower(c); });
+  std::ranges::transform(backend_lc, backend_lc.begin(),
+                         [](unsigned char c) { return std::tolower(c); });
   if (backend_lc.rfind("nwchem", 0) == 0) {
     if (const char *e = std::getenv("NWCHEMC_LIBRARY"))
       opt.engine_path = e;

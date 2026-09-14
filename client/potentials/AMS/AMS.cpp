@@ -11,7 +11,10 @@
 */
 
 #include "eon/potentials/AMS/AMS.h"
+#include <algorithm>
+#include <cctype>
 #include <cstddef>
+#include <ranges>
 #include <format>
 #include <fstream>
 #include <iostream>
@@ -523,18 +526,26 @@ std::string AMS::generate_run(const Parameters &p) {
   std::string engine_block; // Shadows the class variable
   // TODO: Use args everywhere, cleaner logic
   // Ensure capitals and existence
-  engine.empty()
-      ? throw std::runtime_error("AMS Engine is required \n")
-      : std::transform(engine.begin(), engine.end(), engine.begin(), ::toupper);
+  if (engine.empty()) {
+    throw std::runtime_error("AMS Engine is required \n");
+  }
+  std::ranges::transform(engine, engine.begin(), [](unsigned char c) {
+    return static_cast<char>(std::toupper(c));
+  });
   // engine functions uniquely, it serves as a filename, so we store
   // engine_lower as a lowercase version too
   engine_lower = engine;
-  std::transform(engine.begin(), engine.end(), engine_lower.begin(), ::tolower);
+  std::ranges::transform(engine, engine_lower.begin(), [](unsigned char c) {
+    return static_cast<char>(std::tolower(c));
+  });
   // Prepare the block
   if (engine == "MOPAC") {
-    model.empty()
-        ? throw std::runtime_error("MOPAC needs a model\n")
-        : std::transform(model.begin(), model.end(), model.begin(), ::toupper);
+    if (model.empty()) {
+      throw std::runtime_error("MOPAC needs a model\n");
+    }
+    std::ranges::transform(model, model.begin(), [](unsigned char c) {
+      return static_cast<char>(std::toupper(c));
+    });
     std::string engine_formatter = R"(
  Engine {}
   Model {}
@@ -543,11 +554,18 @@ std::string AMS::generate_run(const Parameters &p) {
     engine_block = std::format(engine_formatter, engine, model);
     return engine_block;
   } else if (engine == "ADF" || engine == "BAND") {
-    basis.empty()
-        ? throw std::runtime_error("ADF/BAND need a basis\n")
-        : std::transform(basis.begin(), basis.end(), basis.begin(), ::toupper);
-    xc.empty() ? throw std::runtime_error("ADF/BAND need a functional\n")
-               : std::transform(xc.begin(), xc.end(), xc.begin(), ::toupper);
+    if (basis.empty()) {
+      throw std::runtime_error("ADF/BAND need a basis\n");
+    }
+    std::ranges::transform(basis, basis.begin(), [](unsigned char c) {
+      return static_cast<char>(std::toupper(c));
+    });
+    if (xc.empty()) {
+      throw std::runtime_error("ADF/BAND need a functional\n");
+    }
+    std::ranges::transform(xc, xc.begin(), [](unsigned char c) {
+      return static_cast<char>(std::toupper(c));
+    });
     std::string engine_formatter = R"(
    Engine {}
      Basis
@@ -562,9 +580,12 @@ std::string AMS::generate_run(const Parameters &p) {
     engine_block = std::format(engine_formatter, engine, basis, xc);
     return engine_block;
   } else if (engine == "DFTB") {
-    resources.empty() ? throw std::runtime_error("DFTB need resources\n")
-                      : std::transform(resources.begin(), resources.end(),
-                                       resources.begin(), ::toupper);
+    if (resources.empty()) {
+      throw std::runtime_error("DFTB need resources\n");
+    }
+    std::ranges::transform(resources, resources.begin(), [](unsigned char c) {
+      return static_cast<char>(std::toupper(c));
+    });
     std::string engine_formatter = R"(
    Engine {}
      ResourcesDir {}
@@ -573,9 +594,13 @@ std::string AMS::generate_run(const Parameters &p) {
     engine_block = std::format(engine_formatter, engine, resources);
     return engine_block;
   } else if (engine == "reaxff") {
-    forcefield.empty() ? throw std::runtime_error("REAXFF needs a forcefield\n")
-                       : std::transform(forcefield.begin(), forcefield.end(),
-                                        forcefield.begin(), ::toupper);
+    if (forcefield.empty()) {
+      throw std::runtime_error("REAXFF needs a forcefield\n");
+    }
+    std::ranges::transform(forcefield, forcefield.begin(),
+                           [](unsigned char c) {
+                             return static_cast<char>(std::toupper(c));
+                           });
 
     std::string engine_formatter = R"(
    Engine {}
