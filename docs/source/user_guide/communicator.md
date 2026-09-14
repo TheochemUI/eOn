@@ -46,6 +46,29 @@ client_path = "eonclient-custom"
 number_of_cpus = 8
 ```
 
+### In-process (`type = local_lib` / inprocess)
+
+`LocalInProcess` runs jobs as `pyeonclient.Matter` in the server process.
+There is no `eonclient` subprocess. It needs a build with
+`-Dwith_pyeonclient=true`.
+
+```{code-block} ini
+[Communicator]
+type = "inprocess"
+```
+
+Dispatch follows `Parameters.job`:
+
+| Job | What runs |
+|---|---|
+| minimization (default) | `Matter.relax` |
+| point | energy / forces only |
+| process_search / saddle_search | `ProcessSearch` on the Matter |
+
+`results.dat` is still synthesized as text so the classic explorer can parse
+it. The result dict also carries `_matter` / `_structure` so callers do not
+have to re-read CON.
+
 ## Additional topics
 
 ```{versionchanged} 2.0

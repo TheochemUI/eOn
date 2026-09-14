@@ -16,8 +16,11 @@
 #include <cstdint>
 #include <format>
 #include <fstream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "magic_enum/magic_enum.hpp"
 
@@ -41,12 +44,10 @@ struct JobResultEnvelope {
   bool has_saddle{false};
   bool has_reactant{false};
   bool has_product{false};
+  std::vector<std::pair<std::string, double>> extras;
 
-  void writeResultsDat(const std::string &path) const {
-    std::ofstream out(path, std::ios::binary);
-    if (!out) {
-      throw std::runtime_error("JobResultEnvelope: cannot open " + path);
-    }
+  std::string toString() const {
+    std::ostringstream out;
     out << status_code << " termination_reason\n";
     if (!status_text.empty()) {
       out << status_text << " termination_reason_text\n";
@@ -76,6 +77,18 @@ struct JobResultEnvelope {
       out << std::format("{:.12e} potential_energy_product\n",
                          potential_energy_product);
     }
+    for (const auto &kv : extras) {
+      out << std::format("{:.12e} {}\n", kv.second, kv.first);
+    }
+    return out.str();
+  }
+
+  void writeResultsDat(const std::string &path) const {
+    std::ofstream out(path, std::ios::binary);
+    if (!out) {
+      throw std::runtime_error("JobResultEnvelope: cannot open " + path);
+    }
+    out << toString();
     if (!out) {
       throw std::runtime_error("JobResultEnvelope: write failed for " + path);
     }

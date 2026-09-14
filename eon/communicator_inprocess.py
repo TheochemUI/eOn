@@ -81,6 +81,62 @@ def _structure_from_job_con(job: dict, key: str = "pos.con"):
     return io.loadcon(StringIO(text))
 
 
+def _run_inprocess_job(pc, job_kind, matter, pot, params, job: dict) -> dict:
+    """Dispatch one Matter through the job type. Returns energy/status/matter."""
+    JT = pc.JobType
+    if job_kind in (JT.Minimization, JT.Unknown):
+        matter, converged = matter.relax(
+            inplace=True, quiet=True, write_movie=False, checkpoint=False
+        )
+        return {
+            "matter": matter,
+            "energy": float(matter.potential_energy),
+            "force_calls": int(matter.force_calls),
+            "status": 0 if converged else 1,
+            "job_type": "minimization",
+            "converged": converged,
+        }
+    if job_kind == JT.Point:
+        energy = float(matter.potential_energy)
+        return {
+            "matter": matter,
+            "energy": energy,
+            "force_calls": int(matter.force_calls),
+            "status": 0,
+            "job_type": "point",
+            "converged": True,
+        }
+    if job_kind in (JT.Process_Search, JT.Saddle_Search):
+        n = int(matter.n_atoms) if hasattr(matter, "n_atoms") else int(
+            matter.positions.shape[0]
+        )
+        mode = np.zeros((n, 3), dtype=float)
+        if "direction.dat" in job:
+            raw = job["direction.dat"]
+            text = raw.getvalue() if hasattr(raw, "getvalue") else str(raw)
+            vals = [float(x) for x in text.split()]
+            if len(vals) >= 3 * n:
+                mode = np.asarray(vals[: 3 * n], dtype=float).reshape(n, 3)
+        search = pc.ProcessSearch(matter, mode, params, pot)
+        reactant, saddle, status = search.run(inplace=True)
+        return {
+            "matter": reactant,
+            "saddle": saddle,
+            "energy": float(saddle.potential_energy),
+            "force_calls": int(reactant.force_calls),
+            "status": int(status),
+            "job_type": (
+                "process_search"
+                if job_kind == JT.Process_Search
+                else "saddle_search"
+            ),
+            "converged": int(status) == 0,
+        }
+    raise CommunicatorError(
+        f"inprocess communicator has no dispatch for job type {job_kind!r}"
+    )
+
+
 def _results_dat(status: int, energy: float, force_calls: int, job_type: str) -> str:
     return (
         f"{status} termination_reason\n"
@@ -116,10 +172,13 @@ class LocalInProcess(Communicator):
         Job dict keys (legacy file names kept for explorer compatibility):
           * pos.con — reactant structure (StringIO of .con text)
           * id — job id string
+        Dispatch follows Parameters.job (minimization, point, process_search,
+        saddle_search). Other types raise CommunicatorError.
         """
         pc = self._pc
         params = _params_from_invariants(pc, invariants)
         pot = pc.make_potential(params)
+        job_kind = getattr(params, "job", pc.JobType.Minimization)
 
         for job in data:
             jid = job.get("id", "job")
@@ -132,12 +191,8 @@ class LocalInProcess(Communicator):
             from pyeonclient.bridge import structure_to_matter, matter_to_structure
 
             matter = structure_to_matter(structure, pot, params)
-            # Default job for in-process path: minimize (Matter.relax).
-            # Full JobType dispatch lands as more C++ entry points are bound.
-            # relax returns (Matter, converged: bool); default is non-inplace.
-            matter, converged = matter.relax(
-                inplace=True, quiet=True, write_movie=False, checkpoint=False
-            )
+            payload = _run_inprocess_job(pc, job_kind, matter, pot, params, job)
+            matter = payload["matter"]
             out = matter_to_structure(matter)
 
             import eon.fileio as fio
@@ -146,33 +201,31 @@ class LocalInProcess(Communicator):
             fio.savecon(min_io, out)
             min_io.seek(0)
 
-            energy = float(matter.potential_energy)
-            fcalls = int(matter.force_calls)
-            status = 0 if converged else 1
-            results = StringIO(
-                _results_dat(status, energy, fcalls, "minimization")
-            )
+            energy = float(payload["energy"])
+            fcalls = int(payload["force_calls"])
+            status = int(payload["status"])
+            jname = str(payload["job_type"])
+            results = StringIO(_results_dat(status, energy, fcalls, jname))
 
-            self._finished.append(
-                {
-                    "id": jid,
-                    # Bundle index within the job, as the file-based
-                    # communicators set it; one task per job here.
-                    "number": 0,
-                    "name": str(jid),
-                    "min.con": min_io,
-                    "results.dat": results,
-                    # also expose Matter for callers that want zero re-parse
-                    "_matter": matter,
-                    "_structure": out,
-                    "_energy": energy,
-                    "_converged": converged,
-                }
-            )
+            rec = {
+                "id": jid,
+                "number": 0,
+                "name": str(jid),
+                "min.con": min_io,
+                "results.dat": results,
+                "_matter": matter,
+                "_structure": out,
+                "_energy": energy,
+                "_converged": bool(payload.get("converged", status == 0)),
+            }
+            if payload.get("saddle") is not None:
+                rec["_saddle"] = payload["saddle"]
+            self._finished.append(rec)
             logger.info(
-                "inprocess job %s: converged=%s E=%.6f fcalls=%s",
+                "inprocess job %s type=%s status=%s E=%.6f fcalls=%s",
                 jid,
-                converged,
+                jname,
+                status,
                 energy,
                 fcalls,
             )
