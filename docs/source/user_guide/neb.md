@@ -62,6 +62,12 @@ setup_mmf_peaks = true
 mmf_peak_tolerance = 0.05
 ```
 
+Isomer endpoints with scrambled atom order can be aligned before
+interpolation with `match_endpoints = true` (default off). The `ira`
+method rigid-rotates and permutes the reactant onto the product via
+IRACompare. Hungarian assignment is not in-tree; `match_method =
+hungarian` currently uses IRA.
+
 ```{note}
 `eOn`, like many other codes after {cite:t}`neb-sheppardOptimizationMethodsFinding2008` uses one optimizer instance for moving the whole band of images.
 ```
