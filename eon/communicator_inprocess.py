@@ -117,6 +117,25 @@ def _run_inprocess_job(pc, job_kind, matter, pot, params, job: dict) -> dict:
             vals = [float(x) for x in text.split()]
             if len(vals) >= 3 * n:
                 mode = np.asarray(vals[: 3 * n], dtype=float).reshape(n, 3)
+        if hasattr(pc, "ProcessSearchJob"):
+            job_obj = pc.ProcessSearchJob(pot, params)
+            product = job_obj.run_from_matter(matter)
+            saddle = job_obj.saddle
+            return {
+                "matter": product,
+                "saddle": saddle,
+                "min1": job_obj.min1,
+                "min2": job_obj.min2,
+                "energy": float(saddle.potential_energy) if saddle else 0.0,
+                "force_calls": int(product.force_calls) if product else 0,
+                "status": 0,
+                "job_type": (
+                    "process_search"
+                    if job_kind == JT.Process_Search
+                    else "saddle_search"
+                ),
+                "converged": True,
+            }
         search = pc.ProcessSearch(matter, mode, params, pot)
         reactant, saddle, status = search.run(inplace=True)
         return {

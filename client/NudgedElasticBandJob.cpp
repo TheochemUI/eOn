@@ -10,10 +10,13 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/NudgedElasticBandJob.h"
+#include "eon/BaseStructures.h"
 #include "eon/ConjugateGradients.h"
 #include "eon/EonLogger.h"
+#include "eon/JobResult.h"
 #include "eon/NEBInitialPaths.hpp"
 #include "eon/NEBSplineExtrema.h"
+#include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 
 #include <filesystem>
@@ -185,24 +188,26 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   returnFiles.push_back(resultsFilename);
 
   {
-    std::ofstream out(resultsFilename, std::ios::binary);
+    auto env = JobResultEnvelope::fromMinimization(
+        status == NudgedElasticBand::NEBStatus::GOOD
+            ? RunStatus::GOOD
+            : RunStatus::FAIL_MAX_ITERATIONS,
+        params.potential_options.potential,
+        PotRegistry::get().total_force_calls(), true,
+        neb->path[0]->getPotentialEnergy());
+    env.job_type = "neb";
+    env.extras.emplace_back("force_calls_neb", static_cast<double>(fCallsNEB));
+    env.extras.emplace_back("energy_reference",
+                            neb->path[0]->getPotentialEnergy());
+    env.extras.emplace_back("number_of_images",
+                            static_cast<double>(neb->numImages));
+    env.writeResultsDat(resultsFilename);
+    std::ofstream out(resultsFilename, std::ios::binary | std::ios::app);
     if (!out) {
-      QUILL_LOG_ERROR(m_log, "Failed to open {} for writing", resultsFilename);
+      QUILL_LOG_ERROR(m_log, "Failed to reopen {} for image keys",
+                      resultsFilename);
       return;
     }
-
-    out << std::format("{} termination_reason\n", static_cast<int>(status));
-    out << std::format("{} termination_reason_text\n",
-                       magic_enum::enum_name(status));
-    out << std::format(
-        "{} potential_type\n",
-        magic_enum::enum_name<PotType>(params.potential_options.potential));
-    out << std::format("{} total_force_calls\n",
-                       PotRegistry::get().total_force_calls());
-    out << std::format("{} force_calls_neb\n", fCallsNEB);
-    out << std::format("{:f} energy_reference\n",
-                       neb->path[0]->getPotentialEnergy());
-    out << std::format("{} number_of_images\n", neb->numImages);
 
     for (long i = 0; i <= neb->numImages + 1; i++) {
       out << std::format("{:f} image{}_energy\n",
