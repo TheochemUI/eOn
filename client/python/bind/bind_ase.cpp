@@ -85,11 +85,33 @@ void bind_ase(nb::module_ &m) {
         matter->resize(n);
         bool periodic = false;
         try {
-          nb::object any =
-              np.attr("any")(np.attr("asarray")(atoms.attr("pbc")));
-          periodic = nb::cast<bool>(any);
+          nb::object pbc_i = np_contig(atoms.attr("pbc"), "int64");
+          ArrI64 pbc = nb::cast<ArrI64>(pbc_i);
+          if (pbc.ndim() == 0) {
+            periodic = pbc.data()[0] != 0;
+          } else if (pbc.ndim() == 1 && pbc.shape(0) == 3) {
+            bool any = false;
+            bool all = true;
+            for (size_t ax = 0; ax < 3; ++ax) {
+              const bool v = pbc.data()[ax] != 0;
+              any = any || v;
+              all = all && v;
+            }
+            if (any && !all) {
+              throw std::invalid_argument(
+                  "matter_from_ase: mixed PBC is not supported; Matter has "
+                  "one periodic flag");
+            }
+            periodic = all;
+          } else {
+            throw std::invalid_argument(
+                "matter_from_ase: pbc must be a bool or length-3 mask");
+          }
+        } catch (const std::invalid_argument &) {
+          throw;
         } catch (...) {
-          periodic = true;
+          throw std::invalid_argument(
+              "matter_from_ase: could not read atoms.pbc");
         }
         matter->setPeriodic(periodic);
         matter_set_cell_buf(*matter, f64_ptr(cell));
@@ -132,7 +154,9 @@ void bind_ase(nb::module_ &m) {
               continue;
             }
             if (cname != "FixAtoms") {
-              continue;
+              throw std::invalid_argument(
+                  "matter_from_ase: unsupported ASE constraint '" + cname +
+                  "'; only FixAtoms and FixCartesian are imported");
             }
             if (!nb::hasattr(c, "get_indices")) {
               continue;

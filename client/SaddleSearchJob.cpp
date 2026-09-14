@@ -111,7 +111,6 @@ std::vector<std::string> SaddleSearchJob::run() {
 }
 
 int SaddleSearchJob::doSaddleSearch() {
-  Matter matterTemp(pot, params);
   long status;
   int f1{0};
   f1 = this->pot->forceCallCounter;
@@ -124,6 +123,9 @@ int SaddleSearchJob::doSaddleSearch() {
       printf("unknown exception: %i\n", e);
       throw e;
     }
+  } catch (const std::exception &e) {
+    QUILL_LOG_ERROR(log, "Saddle search potential failed: {}", e.what());
+    status = MinModeSaddleSearch::STATUS_POTENTIAL_FAILED;
   }
 
   if (params.saddle_search_options.method == "min_mode" &&

@@ -17,6 +17,7 @@
 #include "eon/SurrogatePotential.h"
 
 #include "eon/EonLogger.h"
+#include <cmath>
 #include <memory>
 #include <stdexcept>
 
@@ -544,6 +545,10 @@ void Matter::computePotential() const {
       potential->forceCallCounter++;
       PotRegistry::get().on_force_call(potential->getType());
     }
+    if (!std::isfinite(potentialEnergy) || !forces.allFinite()) {
+      throw std::runtime_error(
+          "Potential returned non-finite energy or forces");
+    }
     forceCalls = forceCalls + 1;
     recomputePotential = false;
 
@@ -628,7 +633,9 @@ void Matter::setVelocities(const AtomMatrix &v) {
 
 void Matter::setForces(const AtomMatrix &f) {
   forces = f.array() * getFree().array();
-  recomputeMaskedForces = true;
+  maskedForces = forces;
+  recomputeMaskedForces = false;
+  recomputePotential = false;
 }
 
 AtomMatrix Matter::getAccelerations() {

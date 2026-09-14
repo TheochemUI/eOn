@@ -141,6 +141,17 @@ TEST_CASE("getFree respects per-axis constraints", "[MatterTest][fixed]") {
   REQUIRE(m1->getFixed(0, 1) == 0);
 }
 
+TEST_CASE("setForces persist until positions change", "[MatterTest][hfa4]") {
+  auto [m1, params] = makeLJCluster();
+  (void)m1->getPotentialEnergy();
+  AtomMatrix inj = m1->getForces();
+  inj.setConstant(0.123);
+  m1->setForces(inj);
+  AtomMatrix got = m1->getForces();
+  const AtomMatrix expect = inj.array() * m1->getFree().array();
+  REQUIRE((got - expect).cwiseAbs().maxCoeff() < 1e-12);
+}
+
 TEST_CASE("getForces zeroes fixed atoms", "[MatterTest][forces]") {
   auto [m1, params] = makeLJCluster();
   m1->setFixed(0, true);

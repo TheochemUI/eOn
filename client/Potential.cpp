@@ -112,7 +112,9 @@
 #include "eon/potentials/XTBPot/XTBPot.h"
 #endif
 
+#include <cmath>
 #include <limits>
+#include <stdexcept>
 
 std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix &pos,
                                                  const VectorXi &atmnrs,
@@ -125,6 +127,10 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix &pos,
               box.data());
   forceCallCounter++;
   PotRegistry::get().on_force_call(ptype);
+  if (!std::isfinite(energy) || !forces.allFinite()) {
+    throw std::runtime_error(
+        "Potential::get_ef: non-finite energy or forces");
+  }
 
   return std::make_tuple(energy, forces);
 }

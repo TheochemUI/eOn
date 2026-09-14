@@ -163,7 +163,7 @@ class Structure:
         """
         n = len(self)
         ids = np.asarray(self.atom_ids, dtype=np.uint64).reshape(-1)
-        if ids.shape[0] == n:
+        if ids.shape[0] == n and ids.size > 0 and np.unique(ids).size == n:
             return ids
         return np.arange(1, n + 1, dtype=np.uint64)
 

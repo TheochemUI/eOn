@@ -116,6 +116,9 @@ std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params) {
   case OH_TST: {
     return (std::make_unique<OHTSTJob>(std::move(params)));
   }
+  case Test: {
+    return (std::make_unique<TestJob>(std::move(params)));
+  }
   default:
     throw std::runtime_error("No known job could be constructed");
     break;

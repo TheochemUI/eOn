@@ -20,6 +20,7 @@
 #include <format>
 #include <fstream>
 #include <map>
+#include <stdexcept>
 #include <string>
 
 #if !defined(EONMPI) && !defined(IS_WINDOWS)
@@ -411,19 +412,36 @@ void LAMMPSPot::forceLocal(long N, const double *R, const int *atomicNrs,
     }
 
     lmp.scatter_atoms(LAMMPSObj, "x", 1, 3, const_cast<double *>(R));
-    lmp.command(LAMMPSObj, "run 1 pre no post no");
+    // New instance / box change: rebuild neighbors. create_atoms sits at
+    // the origin; pre no would evaluate on that neighbor list.
+    if (newLammps) {
+      lmp.command(LAMMPSObj, "run 1 pre yes post no");
+    } else {
+      lmp.command(LAMMPSObj, "run 1 pre no post no");
+    }
 
     auto *pe =
         static_cast<double *>(lmp.extract_variable(LAMMPSObj, "pe", nullptr));
-    *U = *pe;
-    free(pe);
-
     auto *fx =
         static_cast<double *>(lmp.extract_variable(LAMMPSObj, "fx", "all"));
     auto *fy =
         static_cast<double *>(lmp.extract_variable(LAMMPSObj, "fy", "all"));
     auto *fz =
         static_cast<double *>(lmp.extract_variable(LAMMPSObj, "fz", "all"));
+    if (!pe || !fx || !fy || !fz) {
+      if (pe)
+        free(pe);
+      if (fx)
+        free(fx);
+      if (fy)
+        free(fy);
+      if (fz)
+        free(fz);
+      throw std::runtime_error(
+          "LAMMPS: extract_variable returned null (pe/fx/fy/fz)");
+    }
+    *U = *pe;
+    free(pe);
 
     for (long i = 0; i < N; i++) {
       F[3 * i + 0] = fx[i];
@@ -508,8 +526,12 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
       }
     }
   } else {
-    EONC_LOG_ERROR("[LAMMPS] in.lammps not found in working directory");
-    return;
+    if (LAMMPSObj != nullptr) {
+      lmp.close(LAMMPSObj);
+      LAMMPSObj = nullptr;
+    }
+    throw std::runtime_error(
+        "LAMMPS: in.lammps not found in working directory");
   }
 
   if (realunits) {
@@ -522,7 +544,14 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   lmp.command(LAMMPSObj, "atom_modify map array sort 0 0");
   lmp.command(LAMMPSObj, "neigh_modify delay 1");
 
-  // Define periodic cell (prism for non-orthorhombic)
+  // LAMMPS restricted triclinic: (ax, by, cz, bx, cx, cy).
+  // Row-major Matter cell also has ay, az, bz at box[1], box[2], box[5].
+  constexpr double kTiltCut = 1.0e-8;
+  if (std::abs(box[1]) > kTiltCut || std::abs(box[2]) > kTiltCut ||
+      std::abs(box[5]) > kTiltCut) {
+    throw std::runtime_error(
+        "LAMMPS: cell is not restricted triclinic (ay/az/bz must be ~0)");
+  }
   std::string region_cmd =
       std::format("region cell prism 0 {} 0 {} 0 {} {} {} {} units box", box[0],
                   box[4], box[8], box[3], box[6], box[7]);

@@ -12,6 +12,7 @@
 #include "eon/fpe_handler.h"
 
 #include <cfenv>
+#include <cstdint>
 #include <csignal>
 #include <cstdio>
 
@@ -27,6 +28,9 @@
 
 #if defined(__linux__)
 #include <ucontext.h>
+#endif
+#if defined(__APPLE__)
+#include <sys/ucontext.h>
 #endif
 
 #if defined(__APPLE__) && defined(__x86_64__)
@@ -185,6 +189,69 @@ static void fpe_signal_handler(int sig, siginfo_t *sip, void *scp) {
       ctx->uc_mcontext.fpregs->cwd |= (1u << 3); // x87 OM
     }
   }
+#elif defined(__linux__) && defined(__aarch64__)
+  // ARM polarity is the opposite of MXCSR: FPCR trap-enable bits SET mean
+  // trap. Clearing sticky FPSR flags alone re-executes with trapping still
+  // armed (eOn-qkuw / eOn-g7fl on aarch64). Clear the matching FPCR enables.
+  constexpr uint32_t kFpsimdMagic = 0x46508001u;
+  constexpr unsigned kFpcrIoe = 1u << 8;
+  constexpr unsigned kFpcrDze = 1u << 9;
+  constexpr unsigned kFpcrOfe = 1u << 10;
+  unsigned fpcr_clear = kFpcrIoe | kFpcrDze | kFpcrOfe;
+  if (mxcsr_mask_bits == MXCSR_MASK_ZM) {
+    fpcr_clear = kFpcrDze;
+  } else if (mxcsr_mask_bits == MXCSR_MASK_IM) {
+    fpcr_clear = kFpcrIoe;
+  } else if (mxcsr_mask_bits == MXCSR_MASK_OM) {
+    fpcr_clear = kFpcrOfe;
+  }
+  auto *ctx = static_cast<ucontext_t *>(scp);
+  unsigned char *p =
+      reinterpret_cast<unsigned char *>(ctx->uc_mcontext.__reserved);
+  unsigned char *end = p + sizeof(ctx->uc_mcontext.__reserved);
+  struct A64Head {
+    uint32_t magic;
+    uint32_t size;
+  };
+  struct Fpsimd {
+    A64Head head;
+    uint32_t fpsr;
+    uint32_t fpcr;
+  };
+  while (p + sizeof(A64Head) <= end) {
+    auto *h = reinterpret_cast<A64Head *>(p);
+    if (h->magic == 0 || h->size < sizeof(A64Head)) {
+      break;
+    }
+    if (h->magic == kFpsimdMagic && h->size >= sizeof(Fpsimd) &&
+        p + h->size <= end) {
+      auto *f = reinterpret_cast<Fpsimd *>(p);
+      f->fpsr &= ~0x1Fu;
+      f->fpcr &= ~fpcr_clear;
+      break;
+    }
+    if (h->size == 0) {
+      break;
+    }
+    p += h->size;
+  }
+#elif defined(__APPLE__) && defined(__aarch64__)
+  constexpr unsigned kFpcrIoe = 1u << 8;
+  constexpr unsigned kFpcrDze = 1u << 9;
+  constexpr unsigned kFpcrOfe = 1u << 10;
+  unsigned fpcr_clear = kFpcrIoe | kFpcrDze | kFpcrOfe;
+  if (mxcsr_mask_bits == MXCSR_MASK_ZM) {
+    fpcr_clear = kFpcrDze;
+  } else if (mxcsr_mask_bits == MXCSR_MASK_IM) {
+    fpcr_clear = kFpcrIoe;
+  } else if (mxcsr_mask_bits == MXCSR_MASK_OM) {
+    fpcr_clear = kFpcrOfe;
+  }
+  auto *ctx = static_cast<ucontext_t *>(scp);
+  if (ctx->uc_mcontext) {
+    ctx->uc_mcontext->__ns.__fpsr &= ~0x1Fu;
+    ctx->uc_mcontext->__ns.__fpcr &= ~fpcr_clear;
+  }
 #endif
   (void)sig;
 }
@@ -202,10 +269,10 @@ void enableFPE() {
   // Enable floating-point exceptions on Unix
   feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
 #elif defined(__APPLE__) && defined(__aarch64__)
-  // Enable floating-point exceptions on ARM macOS
+  // ARM: trap-enable bits live in FPCR (IOE/DZE/OFE), not FPSR flags.
   fenv_t env;
   fegetenv(&env);
-  env.__fpsr &= ~(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+  env.__fpcr |= ((1u << 8) | (1u << 9) | (1u << 10));
   fesetenv(&env);
 #elif defined(__APPLE__) && defined(__x86_64__)
   // Enable floating-point exceptions on Intel macOS
@@ -237,7 +304,7 @@ void disableFPE() {
   fenv_t env;
   fegetenv(&env);
 #if defined(__aarch64__)
-  env.__fpsr |= (FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+  env.__fpcr &= ~((1u << 8) | (1u << 9) | (1u << 10));
 #endif
   fesetenv(&env);
 #endif

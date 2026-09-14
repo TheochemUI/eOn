@@ -18,6 +18,8 @@
 // to 3 N_mobile without changing free/fixed.
 
 #include "eon/Davidson.h"
+
+#include <algorithm>
 #include "eon/EonLogger.h"
 #include "eon/HelperFunctions.h"
 #include "eon/MobileAtoms.h"
@@ -56,7 +58,8 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
     return;
   }
 
-  const long maxIter = params.davidson_options.max_iterations;
+  const long maxIter =
+      std::max(1L, params.davidson_options.max_iterations);
   const double tol = params.davidson_options.tolerance;
   const double dr = params.main_options.finiteDifference;
   const bool useDiagPrec = params.davidson_options.diagonal_preconditioner;

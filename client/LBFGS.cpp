@@ -120,11 +120,12 @@ int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
   // y0 is the change in the gradient, not the force
   Eigen::VectorXd y0 = a_f0 - a_f1;
 
-  // Skip degenerate curvature update (reset memory instead of aborting)
-  if (std::abs(s0.dot(y0)) < LBFGS_EPS) {
+  // Skip degenerate or negative curvature (Powell / Nocedal).
+  const double sy = s0.dot(y0);
+  if (sy <= LBFGS_EPS) {
     QUILL_LOG_WARNING(m_log,
-                      "[LBFGS] s0.y0 too small ({:.4e}), resetting memory",
-                      s0.dot(y0));
+                      "[LBFGS] s0.y0 not positive ({:.4e}), resetting memory",
+                      sy);
     reset();
     return 0;
   }

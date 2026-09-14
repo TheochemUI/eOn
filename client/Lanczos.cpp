@@ -26,6 +26,7 @@
 #include "eon/Potential.h"
 #include "eon/SafeMath.h"
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 
@@ -57,7 +58,8 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
     return;
   }
 
-  const long maxIters = params.lanczos_options.max_iterations;
+  const long maxIters =
+      std::max(1L, params.lanczos_options.max_iterations);
   MatrixXd T(size, maxIters), Q(size, maxIters);
   T.setZero();
   VectorXd u(size), r = packMobileRows(direction, mobile);

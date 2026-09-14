@@ -64,6 +64,9 @@ std::vector<std::string> MinimizationJob::run() {
     } else {
       throw e;
     }
+  } catch (const std::exception &e) {
+    QUILL_LOG_ERROR(log, "Minimization potential failed: {}", e.what());
+    status = RunStatus::FAIL_POTENTIAL_FAILED;
   }
 
   QUILL_LOG_DEBUG(log, "Saving result to {}", posOutFilename);
