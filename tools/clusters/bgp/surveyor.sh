@@ -1,5 +1,5 @@
 #!/bin/bash
-prefix=/home/chill/cross
+prefix=${GPAW_PREFIX:?set GPAW_PREFIX to the GPAW/cross install}
 setups=${prefix}/share/gpaw-setups-0.8.7929
 pythonpath=${prefix}/lib/python2.6/site-packages
 gpaw_python=${prefix}/bin/gpaw-python

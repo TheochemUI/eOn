@@ -51,13 +51,11 @@ def test_metatomic_minimize_via_run_job_in_directory(tmp_path):
     pos = os.environ.get("EON_PET_MAD_POS", "").strip()
     pos_path = Path(pos) if pos else None
     if pos_path is None:
-        # cookbook default location (terra/dev)
-        cand = Path(
-            "/home/rgoswami/Git/Github/epfl/pixi_envs/atomistic-cookbook/"
-            "atomistic-cookbook/examples/eon-pet-neb/min_reactant/pos.con"
-        )
-        if cand.is_file():
-            pos_path = cand
+        root = os.environ.get("EON_PET_NEB_ROOT", "").strip()
+        if root:
+            cand = Path(root) / "min_reactant" / "pos.con"
+            if cand.is_file():
+                pos_path = cand
     work = _write_min_workdir(tmp_path, MODEL, pos_path)
     files = pyec.minimize_workdir(work)  # Matter.relax steps, not black-box Job
     results = work / "results.dat"

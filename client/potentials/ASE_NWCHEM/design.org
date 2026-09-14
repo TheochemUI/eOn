@@ -5,11 +5,12 @@ Here is the basic design guideline:
 # ase version 3.23.0b1
 from ase.calculators.nwchem import NWChem
 from ase.calculators.socketio import SocketIOCalculator
+import os
 import psutil
 from pathlib import Path
 run_path = Path.cwd()/'runs' # Where things are run
 scratch_path = Path.cwd()/'nwchem_aux' # scratch from NWChem
-nwchem_path = '/home/rgoswami/micromamba/envs/eongit/bin/nwchem'
+nwchem_path = os.environ.get('NWCHEM_COMMAND') or 'nwchem'
 memory = '2 gb' # Probably needs no change
 # Multiplicity of the molecule. 1 for singlets, 2 for doublets.
 mult = 1
