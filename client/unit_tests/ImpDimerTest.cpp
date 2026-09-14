@@ -10,13 +10,13 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "HelperFunctions.h"
-#include "ImprovedDimer.h"
-#include "Matter.h"
-#include "MinModeSaddleSearch.h"
-#include "Parameters.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/HelperFunctions.h"
+#include "eon/ImprovedDimer.h"
+#include "eon/Matter.h"
+#include "eon/MinModeSaddleSearch.h"
+#include "eon/Parameters.h"
 
 namespace tests {
 

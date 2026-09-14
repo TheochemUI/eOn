@@ -10,7 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "XTBPot.h"
+#include "eon/potentials/XTBPot/XTBPot.h"
 #include <cstddef>
 #include <vector>
 

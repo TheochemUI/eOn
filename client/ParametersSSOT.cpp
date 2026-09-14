@@ -1,9 +1,9 @@
 /*
 ** Apply defaults originating from schema/eon_params.capnp (via codegen).
 */
-#include "ParametersSSOT.h"
-#include "BaseStructures.h"
-#include "generated/ParametersSSOTDefaults.h"
+#include "eon/ParametersSSOT.h"
+#include "eon/BaseStructures.h"
+#include "eon/generated/ParametersSSOTDefaults.h"
 
 #include <string>
 #include <unordered_set>
@@ -16,7 +16,7 @@ using GD = eonc::params_ssot::GeneratedDefaults;
 // Catalog field index for ssot_has_field (mirrors generated catalog sections).
 const std::unordered_set<std::string> &field_index() {
   static const std::unordered_set<std::string> idx = {
-#include "generated/ParametersSSOTFieldIndex.inc"
+#include "eon/generated/ParametersSSOTFieldIndex.inc"
   };
   return idx;
 }

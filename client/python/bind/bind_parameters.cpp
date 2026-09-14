@@ -1,4 +1,6 @@
-#include "Parameters.h"
+#include "eon/ConFileIO.h"
+#include "eon/HelperFunctions.h"
+#include "eon/Parameters.h"
 
 #include <magic_enum/magic_enum.hpp>
 #include <nanobind/nanobind.h>
@@ -41,6 +43,63 @@ void bind_parameters(nb::module_ &m) {
           [](eonc::Parameters &s, eonc::PotType p) {
             s.potential_options.potential = p;
           })
+      .def_prop_rw(
+          "dftd_functional",
+          [](const eonc::Parameters &s) { return s.dftd_options.functional; },
+          [](eonc::Parameters &s, const std::string &v) {
+            s.dftd_options.functional = v;
+          },
+          "s-dftd3 / dftd4 method key (default pbe)")
+      .def_prop_rw(
+          "dftd_atm",
+          [](const eonc::Parameters &s) { return s.dftd_options.atm; },
+          [](eonc::Parameters &s, bool v) { s.dftd_options.atm = v; },
+          "Axilrod-Teller-Muto three-body term")
+      .def_prop_rw(
+          "d3_damping",
+          [](const eonc::Parameters &s) { return s.dftd_options.d3_damping; },
+          [](eonc::Parameters &s, const std::string &v) {
+            s.dftd_options.d3_damping = v;
+          },
+          "bj | zero")
+      .def_prop_rw(
+          "d4_charge",
+          [](const eonc::Parameters &s) { return s.dftd_options.d4_charge; },
+          [](eonc::Parameters &s, double v) { s.dftd_options.d4_charge = v; })
+      .def_prop_rw(
+          "expr_expression",
+          [](const eonc::Parameters &s) { return s.expr_options.expression; },
+          [](eonc::Parameters &s, const std::string &v) {
+            s.expr_options.expression = v;
+          },
+          "Lepton expression over named terms, e.g. 0.5*lj + d3")
+      .def_prop_rw(
+          "expr_terms",
+          [](const eonc::Parameters &s) { return s.expr_options.terms; },
+          [](eonc::Parameters &s, const std::string &v) {
+            s.expr_options.terms = v;
+          },
+          "Comma-separated term names matching the expression")
+      .def_prop_rw(
+          "mopac_charge",
+          [](const eonc::Parameters &s) { return s.mopac_options.charge; },
+          [](eonc::Parameters &s, int v) { s.mopac_options.charge = v; })
+      .def_prop_rw(
+          "mopac_spin",
+          [](const eonc::Parameters &s) { return s.mopac_options.spin; },
+          [](eonc::Parameters &s, int v) { s.mopac_options.spin = v; })
+      .def_prop_rw(
+          "mopac_model",
+          [](const eonc::Parameters &s) { return s.mopac_options.model; },
+          [](eonc::Parameters &s, int v) { s.mopac_options.model = v; },
+          "OpenMOPAC model id (4 is AM1)")
+      .def_prop_rw(
+          "mopac_engine_path",
+          [](const eonc::Parameters &s) { return s.mopac_options.engine_path; },
+          [](eonc::Parameters &s, const std::string &v) {
+            s.mopac_options.engine_path = v;
+          },
+          "libmopacc path; empty uses default search")
       .def_prop_rw(
           "temperature",
           [](const eonc::Parameters &s) { return s.main_options.temperature; },
@@ -91,6 +150,14 @@ void bind_parameters(nb::module_ &m) {
           })
       // --- Potential ---
       .def_prop_rw(
+          "emt_rasmussen",
+          [](const eonc::Parameters &s) {
+            return s.potential_options.EMTRasmussen;
+          },
+          [](eonc::Parameters &s, bool v) {
+            s.potential_options.EMTRasmussen = v;
+          })
+      .def_prop_rw(
           "potentials_path",
           [](const eonc::Parameters &s) {
             return s.potential_options.potentialsPath;
@@ -130,6 +197,47 @@ void bind_parameters(nb::module_ &m) {
           },
           [](eonc::Parameters &s, double v) {
             s.optimizer_options.max_move = v;
+          })
+      .def_prop_rw(
+          "opt_convergence_metric",
+          [](const eonc::Parameters &s) {
+            return s.optimizer_options.convergence_metric;
+          },
+          [](eonc::Parameters &s, const std::string &v) {
+            if (auto label = eonc::helpers::convergenceMetricLabel(v)) {
+              s.optimizer_options.convergence_metric = v;
+              s.optimizer_options.convergence_metric_label =
+                  std::string(*label);
+            } else {
+              throw std::invalid_argument("unknown opt_convergence_metric: " +
+                                          v);
+            }
+          },
+          "norm | max_atom | max_component")
+      .def_prop_rw(
+          "opt_method",
+          [](const eonc::Parameters &s) { return s.optimizer_options.method; },
+          [](eonc::Parameters &s, eonc::OptType v) {
+            s.optimizer_options.method = v;
+          },
+          "Minimization / default job optimizer (CG, LBFGS, FIRE, QM, SD)")
+      .def_prop_rw(
+          "refine_opt_method",
+          [](const eonc::Parameters &s) {
+            return s.optimizer_options.refine.method;
+          },
+          [](eonc::Parameters &s, eonc::OptType v) {
+            s.optimizer_options.refine.method = v;
+          },
+          "Switch optimizer when force drops below refine_threshold; "
+          "OptType.None_ disables")
+      .def_prop_rw(
+          "refine_threshold",
+          [](const eonc::Parameters &s) {
+            return s.optimizer_options.refine.threshold;
+          },
+          [](eonc::Parameters &s, double v) {
+            s.optimizer_options.refine.threshold = v;
           })
       // --- Debug ---
       .def_prop_rw(
@@ -191,6 +299,13 @@ void bind_parameters(nb::module_ &m) {
           },
           [](eonc::Parameters &s, long v) { s.neb_options.max_iterations = v; })
       .def_prop_rw(
+          "neb_opt_method",
+          [](const eonc::Parameters &s) { return s.neb_options.opt_method; },
+          [](eonc::Parameters &s, eonc::OptType v) {
+            s.neb_options.opt_method = v;
+          },
+          "NEB band optimizer (independent of opt_method)")
+      .def_prop_rw(
           "neb_force_tolerance",
           [](const eonc::Parameters &s) {
             return s.neb_options.force_tolerance;
@@ -237,6 +352,14 @@ void bind_parameters(nb::module_ &m) {
           },
           [](eonc::Parameters &s, bool v) {
             s.neb_options.climbing_image.converged_only = v;
+          })
+      .def_prop_rw(
+          "neb_climbing_band_slack",
+          [](const eonc::Parameters &s) {
+            return s.neb_options.climbing_image.band_slack;
+          },
+          [](eonc::Parameters &s, double v) {
+            s.neb_options.climbing_image.band_slack = v;
           })
       .def_prop_rw(
           "neb_ci_after",
@@ -538,13 +661,38 @@ void bind_parameters(nb::module_ &m) {
           [](eonc::Parameters &s, bool v) {
             s.dimer_options.remove_rotation = v;
           })
+      // --- Lanczos / Davidson (PHVA mobile set for Krylov; default All) ---
+      .def_prop_rw(
+          "lanczos_phva_atoms",
+          [](const eonc::Parameters &s) {
+            return s.lanczos_options.phva_atoms;
+          },
+          [](eonc::Parameters &s, const std::string &v) {
+            s.lanczos_options.phva_atoms = v;
+          },
+          "PHVA mobile/active atoms for Lanczos Krylov space, or All = free "
+          "(not free/fixed)")
+      .def_prop_rw(
+          "davidson_phva_atoms",
+          [](const eonc::Parameters &s) {
+            return s.davidson_options.phva_atoms;
+          },
+          [](eonc::Parameters &s, const std::string &v) {
+            s.davidson_options.phva_atoms = v;
+          },
+          "PHVA mobile/active atoms for Davidson Ritz space, or All = free "
+          "(not free/fixed)")
       // --- Hessian ---
       .def_prop_rw(
-          "hessian_atom_list",
-          [](const eonc::Parameters &s) { return s.hessian_options.atom_list; },
+          "hessian_phva_atoms",
+          [](const eonc::Parameters &s) {
+            return s.hessian_options.phva_atoms;
+          },
           [](eonc::Parameters &s, const std::string &v) {
-            s.hessian_options.atom_list = v;
-          })
+            s.hessian_options.phva_atoms = v;
+          },
+          "PHVA mobile/active atoms for dense FD Hessian, or All = free "
+          "(not free/fixed)")
       .def_prop_rw(
           "hessian_zero_freq_value",
           [](const eonc::Parameters &s) {

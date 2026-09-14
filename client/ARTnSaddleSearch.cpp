@@ -9,8 +9,8 @@
  * Repo:
  * https://github.com/TheochemUI/eOn
  */
-#include "ARTnSaddleSearch.h"
-#include "Eigen.h"
+#include "eon/ARTnSaddleSearch.h"
+#include "eon/Eigen.h"
 
 #include <cstdlib>
 #include <filesystem>

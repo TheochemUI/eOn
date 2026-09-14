@@ -26,3 +26,16 @@ That regenerates:
 Layout under `schema/` or `packages/` can change; the release contract is that
 the **fat** tarball is a complete monorepo archive the feedstock can build, while
 splits publish independently with their own versions when useful.
+
+## Job request / result envelope
+
+**Authoring home:** `schema/eon_job_result.capnp`
+
+Runtime control-plane types for kill-file-IPC (not parameter authoring):
+
+- `Geometry` — flat `positions` (3N), `box` (9), Z, frozen mask
+- `JobRequest` / `JobResult` — status codes, barriers, force-call buckets, optional geometries
+
+Python: `eon_schema.jobs` (path helper + `results.dat` adapters).
+
+`.con` / `results.dat` remain **durable adapters**, not the in-process primary API.

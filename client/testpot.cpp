@@ -9,10 +9,10 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "Matter.h"
-#include "Parameters.h"
-#include "Potential.h"
-#include "PyGuard.h"
+#include "eon/Matter.h"
+#include "eon/Parameters.h"
+#include "eon/Potential.h"
+#include "eon/PyGuard.h"
 #include <cstdlib>
 #include <iostream>
 #include <memory>

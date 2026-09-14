@@ -9,14 +9,14 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "SaddleSearchJob.h"
+#include "eon/SaddleSearchJob.h"
 #ifdef WITH_ARTN
-#include "ARTnSaddleSearch.h"
+#include "eon/ARTnSaddleSearch.h"
 #endif
-#include "EonLogger.h"
-#include "EpiCenters.h"
-#include "HelperFunctions.h"
-#include "Potential.h"
+#include "eon/EonLogger.h"
+#include "eon/EpiCenters.h"
+#include "eon/HelperFunctions.h"
+#include "eon/Potential.h"
 
 #include <filesystem>
 #include <format>
@@ -51,6 +51,7 @@ std::vector<std::string> SaddleSearchJob::run() {
 
   const bool standaloneARTn = params.saddle_search_options.method == "artn";
 
+  AtomMatrix mode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
   if (!standaloneARTn && params.saddle_search_options.displace_type ==
                              eonc::EpiCenters::DISP_LOAD) {
     // Load displacement.con, or synthesize from pos.con + direction.dat (#79).
@@ -61,17 +62,43 @@ std::vector<std::string> SaddleSearchJob::run() {
                         displacementFilename, modeFilename);
       throw std::runtime_error("missing displacement.con and direction.dat");
     }
+    if (std::filesystem::exists(modeFilename)) {
+      mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
+    }
+  } else if (!standaloneARTn && eonc::helpers::applyClientDisplacement(
+                                    *saddle, *initial, params, &mode)) {
+    // listed_atoms / random / last_atom / least_coordinated / not_fcc_hcp
   } else {
     *saddle = *initial;
   }
 
-  AtomMatrix mode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
-  const bool canLoadMode =
-      params.saddle_search_options.displace_type == eonc::EpiCenters::DISP_LOAD;
-  if (canLoadMode && std::filesystem::exists(modeFilename)) {
+  if (standaloneARTn && std::filesystem::exists(modeFilename)) {
     mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
   }
 
+  (void)runPrepared(mode);
+  return returnFiles;
+}
+
+std::shared_ptr<Matter>
+SaddleSearchJob::runFromMatter(std::shared_ptr<Matter> seed) {
+  if (!seed) {
+    throw std::runtime_error("SaddleSearchJob::runFromMatter: null Matter");
+  }
+  initial = seed;
+  initial->setPotential(pot);
+  displacement = std::make_shared<Matter>(pot, params);
+  saddle = std::make_shared<Matter>(pot, params);
+  AtomMatrix mode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
+  if (!eonc::helpers::applyClientDisplacement(*saddle, *initial, params,
+                                              &mode)) {
+    *saddle = *initial;
+  }
+  *displacement = *saddle;
+  return runPrepared(mode);
+}
+
+std::shared_ptr<Matter> SaddleSearchJob::runPrepared(const AtomMatrix &mode) {
   const bool useStandaloneARTn = params.saddle_search_options.method == "artn";
   const bool useARTnAsMinMode =
       params.saddle_search_options.method == "min_mode" &&
@@ -103,11 +130,10 @@ std::vector<std::string> SaddleSearchJob::run() {
   printEndState(status);
   saveData(status);
 
-  return returnFiles;
+  return saddle;
 }
 
 int SaddleSearchJob::doSaddleSearch() {
-  Matter matterTemp(pot, params);
   long status;
   int f1{0};
   f1 = this->pot->forceCallCounter;
@@ -120,6 +146,9 @@ int SaddleSearchJob::doSaddleSearch() {
       printf("unknown exception: %i\n", e);
       throw e;
     }
+  } catch (const std::exception &e) {
+    QUILL_LOG_ERROR(log, "Saddle search potential failed: {}", e.what());
+    status = MinModeSaddleSearch::STATUS_POTENTIAL_FAILED;
   }
 
   if (params.saddle_search_options.method == "min_mode" &&
@@ -165,16 +194,7 @@ void SaddleSearchJob::saveData(int status) {
 
   std::string modeFilename("mode.dat");
   returnFiles.push_back(modeFilename);
-  {
-    std::ofstream modeOut(modeFilename, std::ios::binary);
-    if (modeOut) {
-      auto eigenvec = saddleSearch->getEigenvector();
-      for (long row = 0; row < eigenvec.rows(); ++row) {
-        modeOut << std::format("{:12.6f} {:12.6f} {:12.6f}\n", eigenvec(row, 0),
-                               eigenvec(row, 1), eigenvec(row, 2));
-      }
-    }
-  }
+  eonc::helpers::saveMode(modeFilename, saddle, saddleSearch->getEigenvector());
 
   std::string saddleFilename("saddle.con");
   returnFiles.push_back(saddleFilename);

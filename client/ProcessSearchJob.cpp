@@ -9,18 +9,19 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "ProcessSearchJob.h"
+#include "eon/ProcessSearchJob.h"
 #ifdef WITH_ARTN
-#include "ARTnSaddleSearch.h"
+#include "eon/ARTnSaddleSearch.h"
 #endif
-#include "BasinHoppingSaddleSearch.h"
-#include "BiasedGradientSquaredDescent.h"
-#include "DynamicsSaddleSearch.h"
-#include "EpiCenters.h"
-#include "HelperFunctions.h"
-#include "MinModeSaddleSearch.h"
-#include "Optimizer.h"
-#include "Prefactor.h"
+#include "eon/BasinHoppingSaddleSearch.h"
+#include "eon/BiasedGradientSquaredDescent.h"
+#include "eon/DynamicsSaddleSearch.h"
+#include "eon/EpiCenters.h"
+#include "eon/HelperFunctions.h"
+#include "eon/MinModeSaddleSearch.h"
+#include "eon/Optimizer.h"
+#include "eon/Prefactor.h"
+#include <filesystem>
 #include <thread>
 
 #include <format>
@@ -29,7 +30,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "EonLogger.h"
+#include "eon/EonLogger.h"
 
 std::vector<std::string> ProcessSearchJob::run() {
   std::string reactantFilename("pos.con");
@@ -69,6 +70,7 @@ std::vector<std::string> ProcessSearchJob::run() {
   barriersValues[0] = barriersValues[1] = 0;
   prefactorsValues[0] = prefactorsValues[1] = 0;
 
+  AtomMatrix mode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
   if (params.saddle_search_options.method == "min_mode" ||
       params.saddle_search_options.method == "basin_hopping" ||
       params.saddle_search_options.method == "bgsd") {
@@ -84,22 +86,29 @@ std::vector<std::string> ProcessSearchJob::run() {
         exit(1);
       }
       *min1 = *min2 = *initial;
+    } else if (eonc::helpers::applyClientDisplacement(*saddle, *initial, params,
+                                                      &mode)) {
+      *min1 = *min2 = *initial;
     } else {
       *saddle = *min1 = *min2 = *initial;
+    }
+    if (displacement) {
+      *displacement = *saddle;
     }
   } else {
     // ARTn and dynamics start from the initial minimum
     *saddle = *min1 = *min2 = *initial;
   }
+  min2->setPotential(min2Pot);
 
-  AtomMatrix mode;
   const bool useARTnAsMinMode =
       params.saddle_search_options.method == "min_mode" &&
       params.saddle_search_options.minmode_method == "artn";
 
   if (params.saddle_search_options.method == "min_mode") {
     if (params.saddle_search_options.displace_type ==
-        eonc::EpiCenters::DISP_LOAD) {
+            eonc::EpiCenters::DISP_LOAD &&
+        std::filesystem::exists(modeFilename)) {
       mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
     }
 #ifdef WITH_ARTN
@@ -120,7 +129,8 @@ std::vector<std::string> ProcessSearchJob::run() {
     // and perpendicular relaxation internally.
     AtomMatrix artnMode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
     if (params.saddle_search_options.displace_type ==
-        eonc::EpiCenters::DISP_LOAD) {
+            eonc::EpiCenters::DISP_LOAD &&
+        std::filesystem::exists(modeFilename)) {
       artnMode =
           eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
     }
@@ -154,12 +164,65 @@ std::vector<std::string> ProcessSearchJob::run() {
   }
 #endif
 
+  if (!saddleSearch) {
+    throw std::runtime_error("unknown saddle_search.method");
+  }
+
+  (void)runPrepared();
+  return returnFiles;
+}
+
+std::shared_ptr<Matter>
+ProcessSearchJob::runFromMatter(std::shared_ptr<Matter> seed) {
+  if (!seed) {
+    throw std::runtime_error("ProcessSearchJob::runFromMatter: null Matter");
+  }
+  initial = seed;
+  initial->setPotential(pot);
+  auto min2Pot = (pot->needsPerImageInstance() && params.main_options.parallel)
+                     ? eonc::helpers::makePotential(params)
+                     : pot;
+  displacement = std::make_shared<Matter>(pot, params);
+  saddle = std::make_shared<Matter>(pot, params);
+  min1 = std::make_shared<Matter>(pot, params);
+  min2 = std::make_shared<Matter>(min2Pot, params);
+  AtomMatrix mode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
+  if (!eonc::helpers::applyClientDisplacement(*saddle, *initial, params,
+                                              &mode)) {
+    *saddle = *initial;
+  }
+  *displacement = *saddle;
+  *min1 = *min2 = *initial;
+  min2->setPotential(min2Pot);
+  if (params.saddle_search_options.method == "min_mode") {
+    saddleSearch = std::make_unique<MinModeSaddleSearch>(
+        saddle, mode, initial->getPotentialEnergy(), params, pot);
+  } else if (params.saddle_search_options.method == "basin_hopping") {
+    saddleSearch =
+        std::make_unique<BasinHoppingSaddleSearch>(min1, saddle, pot, params);
+  } else if (params.saddle_search_options.method == "dynamics") {
+    saddleSearch = std::make_unique<DynamicsSaddleSearch>(saddle, params);
+  } else if (params.saddle_search_options.method == "bgsd") {
+    saddleSearch = std::make_unique<BiasedGradientSquaredDescent>(
+        saddle, initial->getPotentialEnergy(), params);
+  } else {
+    throw std::runtime_error(
+        "ProcessSearchJob::runFromMatter: unsupported saddle_search.method");
+  }
+  return runPrepared();
+}
+
+std::shared_ptr<Matter> ProcessSearchJob::runPrepared() {
+  if (!saddleSearch) {
+    throw std::runtime_error("unknown saddle_search.method");
+  }
+
   int status = doProcessSearch();
 
   printEndState(status);
   saveData(status);
 
-  return returnFiles;
+  return min2 ? min2 : saddle;
 }
 
 int ProcessSearchJob::doProcessSearch() {
@@ -226,8 +289,12 @@ int ProcessSearchJob::doProcessSearch() {
         min2->relax(false, params.debug_options.write_movies, false, "min2");
   }
 
-  fCallsMin += (min1->getPotentialCalls() - fc1_before) +
-               (min2->getPotentialCalls() - fc2_before);
+  if (min1->getPotential().get() == min2->getPotential().get()) {
+    fCallsMin += min1->getPotentialCalls() - fc1_before;
+  } else {
+    fCallsMin += (min1->getPotentialCalls() - fc1_before) +
+                 (min2->getPotentialCalls() - fc2_before);
+  }
   QUILL_LOG_DEBUG(log, "Min1: {} fcalls, Min2: {} fcalls",
                   min1->getPotentialCalls() - fc1_before,
                   min2->getPotentialCalls() - fc2_before);
@@ -243,7 +310,27 @@ int ProcessSearchJob::doProcessSearch() {
   }
 
   if (!initial->compare(*min1)) {
-    QUILL_LOG_DEBUG(log, "initial != min1");
+    // Report how far off the endpoint landed. Whether the minimisation
+    // stopped just outside the state-identity tolerance or relaxed into a
+    // different state entirely calls for opposite fixes, and the status
+    // alone does not distinguish them.
+    const double tol = params.structure_comparison_options.distance_difference;
+    auto countMoved = [&](const Matter &m) {
+      long moved = 0;
+      for (long i = 0; i < initial->numberOfAtoms(); ++i) {
+        if (initial
+                ->pbc(initial->getPositions().row(i) - m.getPositions().row(i))
+                .norm() > tol) {
+          ++moved;
+        }
+      }
+      return moved;
+    };
+    QUILL_LOG_INFO(log,
+                   "initial != min1: {} of {} atoms past the {} A tolerance "
+                   "for min1 ({} for min2); largest separation {} A",
+                   countMoved(*min1), initial->numberOfAtoms(), tol,
+                   countMoved(*min2), initial->perAtomNorm(*min1));
     return MinModeSaddleSearch::STATUS_BAD_NOT_CONNECTED;
   }
 

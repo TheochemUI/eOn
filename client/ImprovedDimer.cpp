@@ -12,17 +12,17 @@
 // An implementation of Johannes Kaestner and Paul Sherwood's improved dimer.
 // An attempt to keep to the variable names in their 2008 paper has been made.
 
-#include "ImprovedDimer.h"
-#include "DimerRotationDispatch.h"
-#include "HelperFunctions.h"
-#include "LowestEigenmode.h"
-#include "SafeMath.h"
-#include "eonExceptions.hpp"
+#include "eon/ImprovedDimer.h"
+#include "eon/DimerRotationDispatch.h"
+#include "eon/HelperFunctions.h"
+#include "eon/LowestEigenmode.h"
+#include "eon/SafeMath.h"
+#include "eon/eonExceptions.hpp"
 
 #include <cmath>
 #include <thread>
 
-#include "EonLogger.h"
+#include "eon/EonLogger.h"
 using namespace eonc::helpers;
 
 const char ImprovedDimer::OPT_SD[] = "sd";
@@ -53,7 +53,7 @@ ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
 void ImprovedDimer::setReferenceMode(const VectorXd &ref) {
   fixedReferenceMode = ref;
   if (fixedReferenceMode.norm() > 1e-10) {
-    fixedReferenceMode.normalize();
+    eonc::safemath::safe_normalize_inplace(fixedReferenceMode);
   }
   hasFixedReference = true;
 }
@@ -69,12 +69,12 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   rotationDidConverge = true;
   foundNegativeCurvature = false;
   if (tau.norm() > 1e-10) {
-    tau.normalize();
+    eonc::safemath::safe_normalize_inplace(tau);
   } else {
     // Fallback if the tangent was zero on free atoms (unlikely but safe)
     tau.setRandom();
     tau = tau.array() * matter->getFreeV().array();
-    tau.normalize();
+    eonc::safemath::safe_normalize_inplace(tau);
   }
 
   // Track the best (most negative) curvature and corresponding mode
@@ -112,9 +112,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     totalForceCalls += alt->forceCalls;
     statsRotations = alt->rotations;
     tau = tau.array() * matter->getFreeV().array();
-    if (tau.norm() > 1e-10) {
-      tau.normalize();
-    }
+    eonc::safemath::safe_normalize_inplace(tau);
     x0_r = matter->getPositionsV();
     x0->setPositionsV(x0_r);
     x1->setPositionsV(x0_r + delta * tau);
@@ -129,6 +127,9 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     y.clear();
     rho.clear();
     init_lbfgs = true;
+  }
+  if (params.dimer_options.opt_method == OPT_CG) {
+    init_cg = true;
   }
 
   VectorXd x1_rp, x1_r, tau_prime, tau_Old, g1_prime;
@@ -146,9 +147,10 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   if (params.dimer_options.remove_rotation) {
     rotationRemove(AtomMatrix::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
     x1_r = x1->getPositionsV();
-    tau = x1_r - x0_r;
-    tau.normalize();
+    tau = x1->pbcV(x1_r - x0_r);
+    eonc::safemath::safe_normalize_inplace(tau);
     x1_r = x0_r + tau * delta;
+    x1->setPositionsV(x1_r);
   }
 
   // Calculate gradients on x0 and x1.
@@ -224,7 +226,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
     // Rotational force, F_R
     F_R = -2.0 * (g1 - g0) + 2.0 * ((g1 - g0).dot(tau)) * tau;
-    statsTorque = F_R.norm() / (delta * 2.0);
+    statsTorque = eonc::safemath::safe_div(F_R.norm(), delta * 2.0, 0.0);
 
     // Determine step direction theta via selected optimizer
     if (params.dimer_options.opt_method == OPT_SD) {
@@ -237,7 +239,9 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       } else {
         a = std::abs(F_R.dot(F_R_Old));
         b = F_R_Old.squaredNorm();
-        gamma = (a < 0.5 * b) ? F_R.dot(F_R - F_R_Old) / b : 0.0;
+        gamma = (a < 0.5 * b)
+                    ? eonc::safemath::safe_div(F_R.dot(F_R - F_R_Old), b, 0.0)
+                    : 0.0;
       }
 
       theta = (gamma == 0.0) ? F_R : F_R + thetaOld * gamma;
@@ -246,14 +250,15 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       if (theta.norm() < eonc::safemath::eps) {
         theta = F_R - F_R.dot(tau) * tau;
       }
-      theta.normalize();
+      eonc::safemath::safe_normalize_inplace(theta);
       F_R_Old = F_R;
 
     } else if (params.dimer_options.opt_method == OPT_LBFGS) {
       if (!init_lbfgs) {
         VectorXd s0 = tau - tau_Old;
         s.push_back(s0);
-        VectorXd y0 = (F_R_Old - F_R) / delta;
+        VectorXd y0 =
+            eonc::safemath::safe_div(1.0, delta, 0.0) * (F_R_Old - F_R);
         y.push_back(y0);
         rho.push_back(eonc::safemath::safe_recip(s0.dot(y0), 0.0));
       } else {
@@ -298,7 +303,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     }
 
     // Curvature along tau
-    C_tau = (g1 - g0).dot(tau) / delta;
+    C_tau = eonc::safemath::safe_div((g1 - g0).dot(tau), delta, 0.0);
 
     // Track best negative curvature for mode restoration
     if (C_tau < bestNegativeCurvature) {
@@ -311,7 +316,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     }
 
     // Estimate optimum rotation angle
-    double d_C_tau_d_phi = 2.0 * (g1 - g0).dot(theta) / delta;
+    double d_C_tau_d_phi =
+        2.0 * eonc::safemath::safe_div((g1 - g0).dot(theta), delta, 0.0);
     phi_prime = -0.5 * eonc::safemath::safe_atan_ratio(
                            d_C_tau_d_phi, 2.0 * std::abs(C_tau), 0.0);
     statsAngle = phi_prime * (180.0 / eonc::helpers::pi);
@@ -334,7 +340,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       positions.push_back(x1_rp);
       gradients.push_back(g1_prime);
 
-      double C_tau_prime = (g1_prime - g0).dot(tau_prime) / delta;
+      double C_tau_prime =
+          eonc::safemath::safe_div((g1_prime - g0).dot(tau_prime), delta, 0.0);
 
       // Optimal rotation angle via Fourier interpolation
       double a1 = eonc::safemath::safe_div(
@@ -371,7 +378,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
                        x1);
         x1_r = x1->getPositionsV();
         tau = x1_r - x0_r;
-        tau.normalize();
+        eonc::safemath::safe_normalize_inplace(tau);
         x1_r = x0_r + tau * delta;
       }
 
@@ -386,7 +393,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
            g0 * (1.0 - std::cos(phi_min) -
                  std::sin(phi_min) * std::tan(phi_prime * 0.5));
 
-      statsTorque = F_R.norm() / (2.0 * delta);
+      statsTorque = eonc::safemath::safe_div(F_R.norm(), 2.0 * delta, 0.0);
       statsRotations += 1;
       QUILL_LOG_INFO(
           log,

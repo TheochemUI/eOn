@@ -6,10 +6,10 @@
 ** C ABI surface of libmetatomic_pot.so.
 */
 #define EON_MTA_BUILD
-#include "metatomic_c_abi.h"
+#include "eon/potentials/Metatomic/metatomic_c_abi.h"
 
-#include "../../Parameters.h"
-#include "MetatomicPotential.h"
+#include "eon/Parameters.h"
+#include "eon/potentials/Metatomic/MetatomicPotential.h"
 
 #include <cstdio>
 #include <exception>

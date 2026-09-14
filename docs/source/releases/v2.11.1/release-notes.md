@@ -34,7 +34,7 @@ energy and force values against analytic expectations.
 
 `PotType::EXT` was renamed to `PotType::EXT_POT` so that `magic_enum` correctly
 maps the `potential = ext_pot` configuration string.  Previously the string
-`ext_pot` did not match the enum name `EXT`, causing silent fallback to
+`ext_pot` did not match the enum name `EXT`, causing a fallback to
 `UNKNOWN` and a confusing error about unsupported potential types.
 
 #### Conda-forge Windows serve mode (packaging)

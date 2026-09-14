@@ -9,18 +9,25 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "Quickmin.h"
-#include "HelperFunctions.h"
+#include "eon/Quickmin.h"
+#include "eon/HelperFunctions.h"
+
+#include <cmath>
 
 int Quickmin::step(double a_maxMove) {
   Eigen::VectorXd force = -m_objf->getGradient();
+  const double fn = force.norm();
+  if (!(fn > 0.0) || !std::isfinite(fn)) {
+    ++m_iteration;
+    return 1;
+  }
   if (m_optConfig.opts.quickmin.steepest_descent) {
     m_vel.setZero();
   } else {
     if (m_vel.dot(force) < 0) {
       m_vel.setZero();
     } else {
-      Eigen::VectorXd f_unit = force.normalized();
+      const Eigen::VectorXd f_unit = force / fn;
       m_vel = m_vel.dot(f_unit) * f_unit;
     }
   }

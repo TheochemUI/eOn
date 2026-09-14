@@ -13,73 +13,83 @@
 // R. A. Olsen, G. J. Kroes, G. Henkelman, A. Arnaldsson, and H. Jónsson,
 // Comparison of methods for finding saddle points without knowledge of the
 // final states, J. Chem. Phys. 121, 9776-9792 (2004).
+//
+// Krylov space is the PHVA mobile set (Li & Jensen, Theor. Chem. Acc. 107,
+// 211 (2002)): free/fixed is the optimizer mask; phva_atoms (or an explicit
+// mobile list) selects which free atoms enter the 3 N_mobile Krylov space.
+// Default phva_atoms=All keeps historical behavior (all free atoms).
 
-#include "Lanczos.h"
-#include "HelperFunctions.h"
-#include "Potential.h"
-#include "SafeMath.h"
+#include "eon/Lanczos.h"
+#include "eon/EonLogger.h"
+#include "eon/HelperFunctions.h"
+#include "eon/MobileAtoms.h"
+#include "eon/Potential.h"
+#include "eon/SafeMath.h"
 
-#include "EonLogger.h"
-
+#include <algorithm>
 #include <cmath>
+#include <memory>
+
 Lanczos::Lanczos(std::shared_ptr<Matter> matter, const Parameters &params,
                  std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
   lowestEv.resize(matter->numberOfAtoms(), 3);
   lowestEv.setZero();
   lowestEw = 0.0;
-  /* Logger initialized via class member */
 }
 
-// The 1 character variables in this method match the variables in the
-// equations in the paper given at the top of this file.
 void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
+  const VectorXi mobile =
+      resolveMobileAtoms(matter.get(), params.lanczos_options.phva_atoms);
+  compute(std::move(matter), std::move(direction), mobile);
+}
+
+void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
+                      const VectorXi &mobileIn) {
   totalForceCalls = 0;
   statsRotations = 0;
-  int size = 3 * matter->numberOfFreeAtoms();
-  MatrixXd T(size, params.lanczos_options.max_iterations),
-      Q(size, params.lanczos_options.max_iterations);
-  T.setZero();
-  VectorXd u(size), r(size);
+  lowestEv.resize(matter->numberOfAtoms(), 3);
+  lowestEv.setZero();
 
-  // Convert the AtomMatrix of all the atoms into
-  // a single column vector with just the free coordinates.
-  int i, j;
-  for (i = 0, j = 0; i < matter->numberOfAtoms(); i++) {
-    if (!matter->getFixed(i)) {
-      r.segment<3>(j) = direction.row(i);
-      j += 3;
-    }
+  const VectorXi mobile = resolveMobileAtoms(matter.get(), mobileIn);
+  const int size = 3 * static_cast<int>(mobile.size());
+  if (size == 0) {
+    lowestEw = 0.0;
+    return;
   }
+
+  const long maxIters =
+      std::max(1L, params.lanczos_options.max_iterations);
+  MatrixXd T(size, maxIters), Q(size, maxIters);
+  T.setZero();
+  VectorXd u(size), r = packMobileRows(direction, mobile);
 
   double alpha, beta = r.norm();
   if (beta < eonc::safemath::eps) {
-    // Zero initial direction; cannot proceed with Lanczos
     lowestEw = 0.0;
-    lowestEv.resize(matter->numberOfAtoms(), 3);
-    lowestEv.setZero();
     return;
   }
   double ew = 0, ewOld = 0, ewAbsRelErr;
-  double dr = params.main_options.finiteDifference;
+  const double dr = params.main_options.finiteDifference;
   VectorXd evEst, evT, evOldEst;
 
-  VectorXd force1, force2;
-  // Use the potential passed to LowestEigenmode (via the Matter object),
-  // not a fresh instance -- otherwise force calls aren't tracked.
   auto tmpMatter = std::make_unique<Matter>(*matter);
   const long forceCallsStart = tmpMatter->getForceCalls();
-  force1 = tmpMatter->getForcesFreeV();
+  const AtomMatrix pos0 = matter->getPositions();
+  const VectorXd force0 = mobileForces(tmpMatter.get(), mobile);
 
-  for (i = 0; i < size; i++) {
+  auto applyH = [&](const VectorXd &v) -> VectorXd {
+    AtomMatrix pos = pos0;
+    unpackMobileRows(packMobileRows(pos0, mobile) + dr * v, mobile, pos);
+    tmpMatter->setPositions(pos);
+    return -(mobileForces(tmpMatter.get(), mobile) - force0) / dr;
+  };
+
+  for (int i = 0; i < size; i++) {
     statsRotations = i;
     Q.col(i) = r / beta;
 
-    // Finite difference force in the direction of the ith Lanczos vector
-    tmpMatter->setPositionsFreeV(matter->getPositionsFreeV() + dr * Q.col(i));
-    force2 = tmpMatter->getForcesFreeV();
-
-    u = -(force2 - force1) / dr;
+    u = applyH(Q.col(i));
 
     if (i == 0) {
       r = u;
@@ -98,8 +108,6 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
     beta = r.norm();
 
     if (beta <= 1e-10 * std::fabs(alpha)) {
-      /* If Q(0) is an eigenvector (or a linear combination of a subset of
-      eignevectors) then the lanczos cannot complete the basis of vector Q.*/
       if (i == 0) {
         ew = alpha;
         evEst = Q.col(0);
@@ -107,7 +115,6 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
       QUILL_LOG_ERROR(log, "[ILanczos] ERROR: linear dependence");
       break;
     }
-    // Check Eigenvalues
     if (i >= 1) {
       Eigen::SelfAdjointEigenSolver<MatrixXd> es(T.block(0, 0, i + 1, i + 1));
       ew = es.eigenvalues()(0);
@@ -116,7 +123,6 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
                                              std::fabs(ewOld), 1.0);
       ewOld = ew;
 
-      // Convert eigenvector of T matrix to eigenvector of full Hessian
       evEst = Q.block(0, 0, size, i + 1) * evT;
       evEst.normalize();
       statsAngle = eonc::safemath::safe_acos(std::fabs(evEst.dot(evOldEst))) *
@@ -125,9 +131,9 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
       evOldEst = evEst;
       QUILL_LOG_INFO(log,
                      "[ILanczos] {:9s} {:9s} {:10s} {:14s} {:9.4f} "
-                     "{:10.6f} {:7.3f} {:5}",
+                     "{:10.6f} {:7.3f} {:5} n_mobile={}",
                      "----", "----", "----", "----", ew, ewAbsRelErr,
-                     statsAngle, i);
+                     statsAngle, i, mobile.size());
       if (ewAbsRelErr < params.lanczos_options.tolerance) {
         QUILL_LOG_INFO(log, "[ILanczos] Tolerance reached: {}",
                        params.lanczos_options.tolerance);
@@ -162,14 +168,9 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   lowestEw = ew;
   totalForceCalls = tmpMatter->getForceCalls() - forceCallsStart;
 
-  // Convert back from free atom coordinate column vector
-  // to AtomMatrix style.
-  lowestEv.resize(matter->numberOfAtoms(), 3);
-  for (i = 0, j = 0; i < matter->numberOfAtoms(); i++) {
-    if (!matter->getFixed(i)) {
-      lowestEv.row(i) = evEst.segment<3>(j);
-      j += 3;
-    }
+  lowestEv.setZero();
+  if (evEst.size() == size) {
+    unpackMobileRows(evEst, mobile, lowestEv);
   }
 }
 

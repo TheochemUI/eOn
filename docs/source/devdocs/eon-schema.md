@@ -12,7 +12,7 @@ myst:
 
 **eon-schema** is the single Python home for eOn parameter surfaces used by both
 **eon-akmc** and **pyeonclient**. It is a PyPI split (`pip install eon-schema`);
-the conda-forge fat tarball still ships the full monorepo (including this package
+the conda-forge fat tarball still includes the full monorepo (including this package
 under `packages/eon-schema/` and the authoring Cap’n Proto under `schema/`).
 
 ## What it owns
@@ -31,8 +31,7 @@ under `packages/eon-schema/` and the authoring Cap’n Proto under `schema/`).
 | **eon-akmc** | `eon.schema` → L1 | Sphinx `autopydantic_model:: eon.schema.*` unchanged |
 | **pyeonclient** | `pyeonclient.models` → L2 | Requires `pyeonclient[models]` → `eon-schema>=0.2` |
 
-Do **not** re-author L1 under `eon/schema.py` or duplicate L2 under
-`pyeonclient/models.py`. Those modules are thin shims.
+`eon/schema.py` and `pyeonclient/models.py` are thin shims over L1 and L2.
 
 ## Dependencies
 
@@ -41,9 +40,9 @@ Do **not** re-author L1 under `eon/schema.py` or duplicate L2 under
 - **pydantic≥2** is a hard dependency of eon-schema (L1 + L2)
 
 Downstream tooling (e.g. **rgpycrumbs**) should write and hydrate job configs
-via eon-schema INI helpers instead of importing full eon-akmc
-`eon.config.ConfigClass`. That cutover is tracked in the rgpycrumbs issue
-tracker, not completed in this tree.
+via eon-schema INI helpers. Importing full eon-akmc
+`eon.config.ConfigClass` is the older path. That cutover is tracked in the
+rgpycrumbs issue tracker.
 
 ## INI helpers
 

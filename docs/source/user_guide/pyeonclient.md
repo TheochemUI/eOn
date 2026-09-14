@@ -5,11 +5,10 @@ myst:
     "keywords": "pyeonclient, Dimer, saddle search, NEB, Hessian, Matter, ASE"
 ---
 
-# pyeonclient (Python client API)
+# pyeonclient
 
 ```{versionadded} 2.16
-In-process client: first-class algorithm objects on :class:`~pyeonclient.Matter`,
-not a working directory and not the `eonclient` binary alone.
+In-process client: algorithm objects on :class:`~pyeonclient.Matter`.
 ```
 
 [pyeonclient](https://pypi.org/project/pyeonclient/) exposes the eOn **C++
@@ -34,19 +33,19 @@ call — the same engines the binary uses.
 | Parallel replica | `run_parallel_replica` → `ParallelReplicaJob` | `job = parallel_replica` |
 | Safe hyperdynamics | `run_safe_hyperdynamics` → `SafeHyperJob` | `job = safe_hyperdynamics` |
 | Replica exchange | `run_replica_exchange` → `ReplicaExchangeJob` | `job = replica_exchange` |
-| GP surrogate NEB | `run_gp_surrogate_neb` → `GPSurrogateJob` (gated) | `WITH_GP_SURROGATE` |
+| GP surrogate NEB | `run_gp_surrogate_neb` → `GPSurrogateJob` (`WITH_GP_SURROGATE`) | `WITH_GP_SURROGATE` |
 | Opaque batch | `make_job` + `Job.run` | any `JobType` via factory |
 
 `make_job(params)` still constructs every `JobType` the C++ factory supports
 (process search, dynamics, basin hopping, TAD, …) for workdir-oriented runs.
-Prefer the first-class classes when you want Matter in / Matter out.
+Prefer the Matter-first classes for Matter-in / Matter-out work.
 
 ## Install
 
 ```{code-block} bash
 pip install pyeonclient
 pip install 'pyeonclient[ase]'
-pip install 'rgpot>=2.4.2'   # multi-ABI engines for Metatomic via RGPOT
+pip install 'rgpot>=2.5.2'   # multi-ABI engines for Metatomic via RGPOT
 ```
 
 Typed Dimer/NEB specs come from the shared **[eon-schema](project:../devdocs/eon-schema.md)**
@@ -70,7 +69,7 @@ API, packaging notes, and a PET-MAD single-point benchmark plot.
 
 ## Mutation policy (`inplace`)
 
-Algorithms that change geometry **do not mutate caller-owned Matter by default**.
+Algorithms that change geometry leave caller-owned Matter unchanged by default.
 Pass ``inplace=True`` to write into the input object.
 
 ```{code-block} python
@@ -180,10 +179,8 @@ Parameters: `saddle_method`, `saddle_minmode_method`, `saddle_max_iterations`,
 
 ## NEB
 
-Use **eOn-native** path initializers (IDPP / SIDPP / linear). Do not pull
-ASE ``interpolate("idpp")`` into a pyeonclient band — the same engines live
-in ``helpers::neb_paths`` and are already what the endpoint NEB constructor
-uses.
+Path initializers are IDPP / SIDPP / linear from ``helpers::neb_paths``,
+the same engines the endpoint NEB constructor uses.
 
 Typed knobs live on :class:`~pyeonclient.NebSpec`. Compose the same steps as a
 workdir job without a package alias:
@@ -238,9 +235,8 @@ Helpers: ``neb_linear_path``, ``neb_idpp_path``, ``neb_idpp_collective_path``,
 ``neb_sidpp_path``, ``neb_initial_path``. See {doc}`neb` for energy-weighted
 springs and OCINEB (``neb_ci_mmf``, …).
 
-GP-surrogate NEB is still the same **NEB** idea with a GP accelerant on the
-band engine (``WITH_GP_SURROGATE``), not a separate product noun — and **not**
-prefactor / Parallel Replica.
+GP-surrogate NEB is NEB with a GP accelerant on the band engine
+(``WITH_GP_SURROGATE``).
 
 ## Hessian and prefactors
 
@@ -253,10 +249,27 @@ freqs = hess.get_freqs(matter, atoms)
 pref1, pref2 = pyec.get_prefactors(params, min1, saddle, min2)
 ```
 
-Parameters: `hessian_atom_list`, `hessian_zero_freq_value`, `prefactor_rate`
+Parameters: `hessian_phva_atoms`, `hessian_zero_freq_value`, `prefactor_rate`
 (`htst` / `qqhtst`), `prefactor_filter_scheme`, `prefactor_within_radius`, …
 
-## Job factory (full JobType surface)
+### Free/fixed versus PHVA active (Lanczos / Davidson)
+
+**free/fixed** is the optimizer mask. **`phva_atoms`** (or `compute(..., atoms=)`)
+is the PHVA mobile set for dense Hessian and matrix-free min-mode. Default
+`All` keeps historical behavior (Krylov over all free atoms). An explicit list
+bounds the Krylov dimension to \(3 N_\mathrm{active}\) without rewriting free
+flags:
+
+```{code-block} python
+mobile = pyec.resolve_mobile_atoms(matter, "12,15,18")  # ∩ free
+lanczos = pyec.Lanczos(matter, params, pot)
+lanczos.compute(matter, direction, atoms=mobile)
+# or params.lanczos_phva_atoms = "12,15,18" then compute(matter, direction)
+```
+
+Same polarity for `params.davidson_phva_atoms` / `Davidson.compute(..., atoms=)`.
+
+## Job factory
 
 Every type in `JobType` that the C++ `makeJob` factory implements is available
 as a workdir-oriented job:
@@ -270,7 +283,7 @@ pyec.write_potcall_summary()
 
 Use this for process search, dynamics, basin hopping, TAD, parallel replica,
 Monte Carlo, GP surrogate, structure comparison, etc., until those gain
-dedicated Matter-first classes. The algorithms above are already first-class.
+dedicated Matter-first classes. The algorithms above already take Matter.
 
 ## ASE bridge
 
@@ -281,7 +294,7 @@ matter = pyec.from_ase(atoms, pot, params)
 atoms = pyec.to_ase(matter)
 ```
 
-**Seamless calculator** — wrap a live ASE Calculator as the Matter PEF
+**ASE calculator** — wrap a live ASE Calculator as the Matter PEF
 (no file script, no ``-Dwith_ase``)::
 
 ```{code-block} python

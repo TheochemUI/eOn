@@ -9,7 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "SurrogatePotential.h"
+#include "eon/SurrogatePotential.h"
 
 std::tuple<double, AtomMatrix, double>
 SurrogatePotential::get_ef_var(const AtomMatrix pos, const VectorXi atmnrs,

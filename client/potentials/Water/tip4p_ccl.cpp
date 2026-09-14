@@ -15,13 +15,13 @@ TIP4P potential for water
 @date 2006-2007
 University of Iceland
 */
-#include "tip4p_ccl.hpp"
+#include "eon/potentials/Water/tip4p_ccl.hpp"
 #include <cassert>
 #include <cmath>
 #include <iostream>
 // If unit_system.hpp is removed the system of unit will be  (Energy: eV,
 // distance: Angstrom, time: fs, charge: e).
-#include "tip4p_unit_system.hpp"
+#include "eon/potentials/Water/tip4p_unit_system.hpp"
 
 using namespace forcefields;
 /* defined(FORCEFIELDS_UNIT_SYSTEM_HPP) && \

@@ -8,21 +8,27 @@ myst:
 
 # Tutorials
 
-We provide several full tutorials which demonstrate the usage of `eOn` (both
-server and client).
+These tutorials run the `eOn` server and client.
 
 ```{tip}
-The [atomistic-cookbook](https://atomistic-cookbook.org/) provides additional
+The [atomistic-cookbook](https://atomistic-cookbook.org/) has more
 self-contained tutorials with Jupyter notebooks and visualization:
 - [Finding Reaction Paths with eOn and a Metatomic Potential](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html):
   NEB for oxadiazole formation (N2O + ethylene) using PET-MAD, contrasting
   ASE's standard NEB with eOn's energy-weighted springs and dimer refinement
 ```
 
+```{tip}
+For **built-in potentials** (no metatomic download) with modern `plt-neb` /
+`plt-min` figures, start from {doc}`systems/index` (Morse Pt NEB, LJ cluster
+minimization, Pt dimer saddle).
+```
+
 ```{toctree}
 :maxdepth: 2
 :caption: Contents
 
+systems/index
 akmc
 parrep
 displacement_scripts

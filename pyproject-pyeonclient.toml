@@ -1,6 +1,6 @@
 [project]
 name = "pyeonclient"
-version = "0.3.4"
+version = "0.4.0"
 description = "Nanobind bindings to the eOn C++ client (Matter, Parameters, Potential, Jobs, NEB, RGPOT)"
 authors = [
     {name = "Rohit Goswami", email = "rgoswami@ieee.org"},
@@ -10,7 +10,7 @@ license = {text = "BSD-3-Clause"}
 requires-python = ">=3.12"
 dependencies = [
     "numpy>=1.26.4",
-    "readcon>=0.8.0",
+    "readcon>=0.14.9",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -40,12 +40,13 @@ models = ["eon-schema>=0.2.1"]
 # wheel artifact or a from-source build (see README).
 metatomic = [
     # Engines from rgpot cover torch 2.7+ (same floor as rgpot multi-ABI).
+    # rgpot>=2.5.2 engines match vesin 0.6 VesinOptions (skin/n_threads).
     "torch>=2.7",
-    "rgpot>=2.4.1",
+    "rgpot>=3.2.0",
     "metatensor>=0.1.0",
     "metatensor-torch>=0.6.0",
-    "metatomic-torch>=0.1.0",
-    "vesin>=0.1.0",
+    "metatomic-torch>=0.1.15",
+    "vesin>=0.6.1",
 ]
 # Cookbook-ish helper stack (config writing lives in rgpycrumbs).
 # No conda-forge eOn / eonclient required.

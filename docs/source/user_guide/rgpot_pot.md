@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    "description": "eOn RGPOT potential: in-process rgpot NWChemPot/CPMDPot via dlopen (not potserv RPC)."
+    "description": "eOn RGPOT potential: in-process rgpot NWChemPot/CPMDPot via dlopen."
     "keywords": "eOn, RGPOT, rgpot, NWChemPot, CPMDPot, libnwchemc, dlopen"
 ---
 
@@ -10,18 +10,13 @@ myst:
 ```{versionadded} 2.16.0
 ```
 
-When eOn is built with **`-Dwith_rgpot=true`**, potential type **`RGPOT`** links
-[rgpot](https://github.com/OmniPotentRPC/rgpot) **NWChemPot** / **CPMDPot** and
-loads `libnwchemc.so` / `libcpmdc.so` with **`dlopen` in the eOn process**.
+When eOn is built with `-Dwith_rgpot=true`, potential type `RGPOT` links
+[rgpot](https://github.com/OmniPotentRPC/rgpot) NWChemPot / CPMDPot and loads
+`libnwchemc.so` / `libcpmdc.so` with `dlopen` in the eOn process.
 
-This is **not**:
-
-- Cap'n Proto to **potserv** (that is an *external* RPC client role), nor
-- **`eonclient --serve`** (that is eOn acting as an *RPC server*; see
-  [Serve mode](project:serve_mode.md)), nor
-- **SocketNWChem** (i-PI socket to a standalone NWChem binary).
-
-For the three-role overview, see [rgpot integration](project:rgpot_integration.md).
+Sibling roles live elsewhere: potserv Cap'n Proto clients, `eonclient --serve`
+([Serve mode](project:serve_mode.md)), and SocketNWChem (i-PI to a standalone
+NWChem binary). Overview: [rgpot integration](project:rgpot_integration.md).
 
 ## Build
 
@@ -30,12 +25,12 @@ meson setup bbdir-rgpot -Dwith_rgpot=true -Dwith_tests=true
 meson compile -C bbdir-rgpot
 ```
 
-Requires Cap'n Proto **headers/libs** (method params are Cap'n Proto messages
+Requires Cap'n Proto headers and libs (method params are Cap'n Proto messages
 passed into the C ABI) and the `rgpot` Meson subproject
-(`subprojects/rgpot.wrap`). The build pulls `nwchempot_dep` / `cpmdpot_dep`
-only — not `ptlrpc_dep` (that is for serve mode).
+(`subprojects/rgpot.wrap`). The build pulls `nwchempot_dep` / `cpmdpot_dep`.
+Serve mode uses `ptlrpc_dep` under `-Dwith_serve`.
 
-Engines are resolved at **runtime**:
+Engines are resolved at runtime:
 
 - `NWCHEMC_LIBRARY` or `RGPOT_NWCHEMC_ENGINE` (NWChem embed library), or
 - `[RgpotPot] engine_path` / `engine_library` in the config.
@@ -104,7 +99,7 @@ Optional `input_block` (or env `RGPOT_NWCHEM_INPUT_BLOCK`) supplies NWChem
 `scf_type` looks like an XC label (e.g. `b3lyp`), a minimal DFT block is
 emitted automatically.
 
-Installed **rgpot ≥ 2.5.0** is preferred via `pkg-config` (`dependency('rgpot')`);
+Installed rgpot ≥ 2.5.0 is preferred via `pkg-config` (`dependency('rgpot')`);
 the Meson wrap is the fallback for hermetic/dev builds.
 
 ## vs SocketNWChem

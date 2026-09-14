@@ -3,8 +3,8 @@
 **
 ** SPDX-License-Identifier: BSD-3-Clause
 */
-#include "MetatomicDynPot.h"
-#include "MetatomicLoader.h"
+#include "eon/potentials/Metatomic/MetatomicDynPot.h"
+#include "eon/potentials/Metatomic/MetatomicLoader.h"
 
 #include <array>
 #include <stdexcept>

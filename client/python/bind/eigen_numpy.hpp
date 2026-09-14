@@ -6,7 +6,7 @@
  * alive via rv_policy::reference_internal). Use *copy* helpers when the
  * Eigen temporary must outlive the Python buffer.
  */
-#include "Eigen.h"
+#include "eon/Eigen.h"
 
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
@@ -35,6 +35,15 @@ view_n3(double *data, long n) {
 inline nb::ndarray<nb::numpy, double, nb::c_contig, nb::device::cpu>
 view_n3(const double *data, long n) {
   return view_n3(const_cast<double *>(data), n);
+}
+
+/// Zero-copy (n,3) view that cannot be written in place (assignment
+/// through the property is the only write path that dirties caches).
+inline nb::object view_n3_readonly(const double *data, long n) {
+  auto arr = view_n3(const_cast<double *>(data), n);
+  nb::object o = nb::cast(arr);
+  o.attr("flags").attr("writeable") = false;
+  return o;
 }
 
 inline nb::ndarray<nb::numpy, double, nb::c_contig, nb::device::cpu>
@@ -143,6 +152,9 @@ vector_to_numpy(const Eigen::MatrixBase<Derived> &v) {
   return nb::ndarray<nb::numpy, double, nb::c_contig>(buf, {n}, owner);
 }
 
+/// int64 is the canonical width for _core integer arrays: it round trips
+/// through vectori_from_numpy_i64 and matches the numpy default integer.
+/// VectorXi storage is int32, so the two differ by a narrowing copy.
 inline nb::ndarray<nb::numpy, int64_t, nb::c_contig>
 vectori_to_numpy(const VectorXi &v) {
   const size_t n = static_cast<size_t>(v.size());

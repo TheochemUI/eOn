@@ -1,3 +1,7 @@
+# Public headers: $src/include/eon/ (numpy/fmt style package tree).
+# Sources: client/*.cpp. Both in-tree and installed form:
+#   -I$prefix/include   #include "eon/Potential.h"
+# thirdparty/ stays beside sources for catch2 etc.
 _incdirs += [include_directories('thirdparty')]
 _runtime_rpath = []
 
@@ -9,13 +13,27 @@ fs = import('fs')
 add_languages('c', required: true)
 cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
+# PGI/nvc++ cannot link_whole a static inih into a shared eonclib.
+if cppc.get_id() in ['nvidia_hpc', 'pgi'] and get_option('default_library') == 'shared'
+    error('nvc++ PGI linker has no link_whole; configure with -Ddefault_library=static')
+endif
 
+# eOn compiles no Fortran of its own: the kernels live in librgpot. The
+# language is still detected rather than required, because a wrap build
+# compiles rgpot's kernels (rgpot asks for the language itself) and the
+# Windows link against them needs the flang runtime paths found below.
+# A build against an installed rgpot needs no Fortran compiler at all --
+# requiring one here made every such consumer supply an unused toolchain.
+#
+# with_fortran / with_cuh2 stay as potential selectors: they gate the
+# RgpotAdapter arms in Potential.cpp, not any compilation here.
 use_fortran = false
 if get_option('with_fortran') or get_option('with_cuh2')
-    use_fortran = true
-    add_languages('fortran', required: true)
-    fc = meson.get_compiler('fortran')
-    _fargs += fc.get_supported_arguments(['-fno-implicit-none'])
+    use_fortran = add_languages('fortran', required: false)
+    if use_fortran
+        fc = meson.get_compiler('fortran')
+        _fargs += fc.get_supported_arguments(['-fno-implicit-none'])
+    endif
 endif
 
 if get_option('use_mkl')
@@ -33,6 +51,8 @@ endif
 host_system = host_machine.system()
 is_windows = host_system == 'windows'
 is_mingw = is_windows and cc.get_id() == 'gcc'
+# Populated when flang_rt import libs are located (Windows MSVC + flang).
+_flang_rt_dir = ''
 
 # Add conditionals
 if host_system == 'darwin'
@@ -55,22 +75,109 @@ if is_windows
         # conda-forge flang ships flang_rt import libs under the clang resource
         # dir (e.g. Library/lib/clang/19/lib/x86_64-pc-windows-msvc/).  Meson
         # links Fortran objects with MSVC link.exe, which does not search that
-        # path by default and fails with LNK1104 on flang_rt.runtime.dynamic.lib.
-        if use_fortran and fc.get_id() == 'flang'
-            _flang_rt_libpath = run_command(
-                fc,
-                '-print-resource-dir',
-                check: false,
-            )
-            if _flang_rt_libpath.returncode() == 0
-                _flang_rt_res = _flang_rt_libpath.stdout().strip()
-                _flang_rt_dir = join_paths(
-                    _flang_rt_res,
-                    'lib',
-                    'x86_64-pc-windows-msvc',
+        # path by default and fails with LNK1104 on FortranRuntime.dynamic.lib
+        # / flang_rt.runtime.dynamic.lib. Feedstock also puts this dir on LIB.
+        # flang-new reports id 'llvm-flang' or 'flang' depending on Meson.
+        if use_fortran
+            if fc.get_id() in ['flang', 'llvm-flang', 'flang-new']
+                _flang_rt_candidates = []
+                _flang_rt_libpath = run_command(
+                    fc,
+                    '-print-resource-dir',
+                    check: false,
                 )
-                if fs.is_dir(_flang_rt_dir)
+                if _flang_rt_libpath.returncode() == 0
+                    _flang_rt_res = _flang_rt_libpath.stdout().strip()
+                    # Normalize D:\... to D:/... so join_paths / fs.is_* work.
+                    _flang_rt_res = _flang_rt_res.replace('\\', '/')
+                    _flang_rt_candidates += [
+                        join_paths(_flang_rt_res, 'lib', 'x86_64-pc-windows-msvc'),
+                        join_paths(_flang_rt_res, 'lib'),
+                        _flang_rt_res,
+                    ]
+                endif
+                # Fallback: conda/pixi layout under the compiler's bindir parents.
+                # win-64 flang often ships import libs in Library/lib (not only under
+                # the clang resource triple dir).
+                _fc_path = fc.cmd_array()[0]
+                _fc_dir = fs.parent(_fc_path)
+                # .../Library/bin/flang-new.exe -> .../Library
+                _lib_root = fs.parent(_fc_dir)
+                _flang_rt_candidates += [
+                    join_paths(_lib_root, 'lib'),
+                    join_paths(_lib_root, 'lib', 'clang'),
+                    join_paths(_lib_root, 'bin'),
+                ]
+                _flang_rt_dir = ''
+                foreach _cand : _flang_rt_candidates
+                    if _flang_rt_dir != ''
+                        break
+                    endif
+                    if not fs.is_dir(_cand)
+                        continue
+                    endif
+                    # Direct match or clang/<ver>/lib/x86_64-pc-windows-msvc under cand
+                    foreach _probe : [
+                        _cand,
+                        join_paths(_cand, 'lib', 'x86_64-pc-windows-msvc'),
+                    ]
+                        foreach _frt : [
+                            'flang_rt.runtime.dynamic.lib',
+                            'FortranRuntime.dynamic.lib',
+                            'flang_rt.dynamic.lib',
+                        ]
+                            if fs.is_file(join_paths(_probe, _frt))
+                                _flang_rt_dir = _probe
+                                break
+                            endif
+                        endforeach
+                        if _flang_rt_dir != ''
+                            break
+                        endif
+                    endforeach
+                    # Walk clang version dirs one level if cand is .../lib/clang
+                    if _flang_rt_dir == '' and fs.name(_cand) == 'clang'
+                        # Meson has no readdir; try common versions from recent flang.
+                        foreach _ver : ['21', '20', '19', '18', '17']
+                            _probe = join_paths(
+                                _cand,
+                                _ver,
+                                'lib',
+                                'x86_64-pc-windows-msvc',
+                            )
+                            foreach _frt : [
+                                'flang_rt.runtime.dynamic.lib',
+                                'FortranRuntime.dynamic.lib',
+                                'flang_rt.dynamic.lib',
+                            ]
+                                if fs.is_file(join_paths(_probe, _frt))
+                                    _flang_rt_dir = _probe
+                                    break
+                                endif
+                            endforeach
+                            if _flang_rt_dir != ''
+                                break
+                            endif
+                        endforeach
+                    endif
+                endforeach
+                if _flang_rt_dir != ''
                     _linkargs += ['/LIBPATH:' + _flang_rt_dir]
+                    message('flang_rt LIBPATH: ' + _flang_rt_dir)
+                    foreach _frt : [
+                        'flang_rt.runtime.dynamic.lib',
+                        'FortranRuntime.dynamic.lib',
+                        'flang_rt.dynamic.lib',
+                    ]
+                        if fs.is_file(join_paths(_flang_rt_dir, _frt))
+                            _linkargs += [join_paths(_flang_rt_dir, _frt)]
+                            break
+                        endif
+                    endforeach
+                else
+                    warning(
+                        'flang_rt import lib dir not found; MSVC link may LNK1104',
+                    )
                 endif
             endif
         endif
@@ -186,36 +293,9 @@ features_list = [
     ['EMBED_PYTHON', 'Embedded Python'],
 ]
 
-# Join _args into a single string for checking
-_args_str = ' '.join(_args)
-
-features_string = ''
-foreach feature : features_list
-    feature_flag = feature[0]
-    feature_name = feature[1]
-    if '-D' + feature_flag in _args_str
-        features_string += '  ' + feature_name + ': enabled\n'
-    else
-        features_string += '  ' + feature_name + ': disabled\n'
-    endif
-endforeach
-
-# Configure the header file
-configure_file(
-    input: 'version.h.in',
-    output: 'version.h',
-    configuration: {
-        'VERSION': version,
-        'VERSION_MAJOR': version_major,
-        'VERSION_MINOR': version_minor,
-        'VERSION_PATCH': version_patch,
-        'BUILD_DATE': build_date,
-        'OS_INFO': host_system,
-        'ARCH': architecture,
-        'GIT_HASH': git_hash,
-        'FEATURES': features_string,
-    },
-)
+# features_string + version.h are assembled AFTER optional with_* blocks append
+# -DWITH_* to _args (metatomic, xtb, serve, artn, …). Scanning earlier under-reports
+# enabled features in eonclient --features even when those flags are linked in.
 
 # Dependencies
 if not is_windows
@@ -289,7 +369,14 @@ _deps += nlohmann_json_dep
 
 # Highway SIMD (optional, for vectorized potentials)
 hwy_dep = dependency('libhwy', required: false)
-if not hwy_dep.found() and host_machine.system() != 'windows'
+# cmake.subproject imports hwy_list_targets. Meson PGICompiler (nvc++)
+# has no get_pie_args, so that exe dies ninja-write (eOn-jqgs).
+_cxx_id = cppc.get_id()
+if (
+    not hwy_dep.found()
+    and host_machine.system() != 'windows'
+    and _cxx_id not in ['nvidia_hpc', 'pgi']
+)
     # cmake subproject produces .a archives that MSVC link.exe cannot read
     message('Highway: system libhwy not found, trying cmake subproject...')
     hwy_opts = cmake.subproject_options()
@@ -314,11 +401,109 @@ else
     message('Highway SIMD: disabled (not found)')
 endif
 
-# dl_dep needed for dlopen (FortranPotLoader, LammpsLoader)
+# dl_dep needed for dlopen (LammpsLoader, rgpot engine loaders)
 dl_dep = cppc.find_library('dl', required: false)
 _deps += dl_dep
 
-eoncbase_sources = ['fpe_handler.cpp', 'PotRegistry.cpp', 'potentials/FortranPotLoader.cpp']
+# rgpot resolution starts here because the vesin choice below depends on
+# it: a wrap-built rgpot carries its own patched vesin, and linking eOn's
+# copy next to it would define every vesin symbol twice. The roles the
+# resulting objects play are wired further down, once the pots exist.
+#
+# dependency('rgpot') with default allow_fallback configures the wrap once
+# with *default* options before eOn can pass its own; get_variable() then
+# fails for anything the default profile skipped. Force pkg-config-only.
+_rgpot_proj = []
+_rgpot_pkg = dependency(
+    'rgpot',
+    version: '>=3.2.0',
+    method: 'pkg-config',
+    required: false,
+    allow_fallback: false,
+)
+if not _rgpot_pkg.found()
+    # One profile must serve every eOn consumer in this configure: pots
+    # always; the RPC stack only when the RGPOT arm or serve mode asks
+    # (keeps capnp-rpc out of plain builds).
+    rgpot_opts = {
+        'with_rpc_client_only': false,
+        'pure_lib': true,
+        'with_tests': false,
+        'with_examples': false,
+        # engines stay runtime dlopen; do not force fat metatomic/xtb link
+        'with_xtb': false,
+        'with_metatomic': false,
+        # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H are
+        # Fortran kernels inside librgpot.
+        'with_fortran_pots': 'enabled',
+    }
+    if get_option('with_rgpot') or get_option('with_serve')
+        rgpot_opts += {'with_rpc': true}
+    endif
+    _rgpot_proj = subproject('rgpot', default_options: rgpot_opts)
+    # Wrap-built librgpot is not installed (rgpot install: not
+    # is_subproject; CI uses --skip-subprojects). eonclient's rpath
+    # looks in prefix/lib for librgpot.3.dylib.
+    meson.add_install_script(
+        find_program(meson.project_source_root() / 'scripts' / 'install_wrap_rgpot.py'),
+        _rgpot_proj.get_variable('rgpot').full_path(),
+        get_option('libdir'),
+    )
+endif
+
+# vesin: single neighbor-list backend for classical pots + Metatomic.
+# Prefer pkg-config / system; else the rgpot subproject's vendored copy;
+# else eOn's own thirdparty/vesin single TU.
+vesin_dep = dependency('vesin', required: false)
+if not vesin_dep.found()
+    vesin_dep = dependency('vesin', method: 'cmake', required: false)
+endif
+if not vesin_dep.found()
+    vesin_dep = cppc.find_library('vesin', required: false)
+endif
+if not vesin_dep.found() and is_windows
+    vesin_dep = cppc.find_library('libvesin', required: false)
+endif
+if not vesin_dep.found() and not _rgpot_pkg.found()
+    # The rgpot subproject builds vesin already, with the local patches its
+    # Fortran interface binds to.
+    vesin_dep = _rgpot_proj.get_variable('vesin_dep')
+    message('vesin: from the rgpot subproject')
+elif not vesin_dep.found()
+    # vesin 0.6 threads its builds with std::thread only — do NOT add
+    # OpenMP here: an unused libgomp costs ~0.3ms of load/relocation on
+    # every eonclient start.
+    vesin_int_deps = [dependency('threads')]
+    # Static: one fewer shared object to relocate at eonclient startup
+    # (the ASV point fixture is startup-dominated).
+    vesin_int = static_library(
+        'vesin_internal',
+        ['thirdparty/vesin/vesin-single-build.cpp'],
+        dependencies: vesin_int_deps,
+        # Consumers link statically; hiding the symbols keeps them out of
+        # the enclosing shared objects' dynamic tables (startup relocations).
+        cpp_args: cppc.get_supported_arguments(['-fvisibility=hidden']),
+        pic: true,
+    )
+    vesin_dep = declare_dependency(
+        link_with: vesin_int,
+        dependencies: vesin_int_deps,
+        include_directories: include_directories('thirdparty/vesin'),
+    )
+    message('vesin: using vendored thirdparty/vesin')
+else
+    # Ensure #include "vesin.h" works when only a library was found.
+    _incdirs += [include_directories('thirdparty/vesin')]
+    message('vesin: using system / pkg-config')
+endif
+_deps += [vesin_dep]
+
+eoncbase_sources = [
+    'fpe_handler.cpp',
+    'PotRegistry.cpp',
+    'VesinNeighbors.cpp',
+    'potentials/PluginLoader.cpp',
+]
 
 eoncbase = library(
     'eoncbase',
@@ -335,15 +520,9 @@ _linkto += eoncbase
 subdir('potentials/EAM')
 subdir('potentials/EMT')
 subdir('potentials/ExtPot')
-subdir('potentials/IMD')
-subdir('potentials/LJ')
-subdir('potentials/LJCluster')
-subdir('potentials/Morse')
-subdir('potentials/ZBL')
 if not is_windows
     subdir('potentials/SocketNWChem')
 endif
-subdir('potentials/NewPot')
 
 # rgpot roles (see docs/user_guide/rgpot_integration.md):
 #   with_rgpot  -> nwchempot_dep + cpmdpot_dep (direct dlopen engines in eOn)
@@ -355,51 +534,60 @@ subdir('potentials/NewPot')
 # for matching standalone installs — no torch/xtb at link time):
 #   with_rpc_client_only=true, pure_lib=true, with_tests=false,
 #   with_examples=false  (+ with_xtb=false, with_metatomic=false for packages)
-_rgpot_proj = []
 ptlrpc_dep = disabler()
 nwchempot_dep = disabler()
 cpmdpot_dep = disabler()
 _rgpot_from_pkg = false
-if get_option('with_rgpot') or get_option('with_serve')
-    # 1) installed module only (never wrap fallback).
-    # dependency('rgpot') with default allow_fallback configures the wrap
-    # once with *default* options (with_rpc_client_only=false) before we
-    # can pass eOn's client-only opts; get_variable('nwchempot_dep') then
-    # fails because NWChemPot was never built. Force pkg-config-only here.
-    _rgpot_pkg = dependency(
-        'rgpot',
-        method: 'pkg-config',
-        required: false,
-        allow_fallback: false,
-    )
-    if _rgpot_pkg.found()
-        message('rgpot: using pkg-config (installed), not subproject wrap')
-        _rgpot_from_pkg = true
-        nwchempot_dep = _rgpot_pkg
-        cpmdpot_dep = _rgpot_pkg
-        ptlrpc_dep = _rgpot_pkg
-    else
-        # 2) wrap / multi-source fallback
-        message('rgpot: pkg-config not found; falling back to subproject wrap')
-        rgpot_opts = {
-            'with_rpc_client_only': true,
-            'pure_lib': true,
-            'with_tests': false,
-            'with_examples': false,
-            # engines stay runtime dlopen; do not force fat metatomic/xtb link
-            'with_xtb': false,
-            'with_metatomic': false,
-        }
-        _rgpot_proj = subproject('rgpot', default_options: rgpot_opts)
-        if get_option('with_serve')
-            ptlrpc_dep = _rgpot_proj.get_variable('ptlrpc_dep')
-        endif
-        if get_option('with_rgpot') and not is_windows
-            nwchempot_dep = _rgpot_proj.get_variable('nwchempot_dep')
-            cpmdpot_dep = _rgpot_proj.get_variable('cpmdpot_dep')
-        endif
+# rgpot is a hard dependency: the classical pair pots (LJ, LJCluster,
+# Morse, ZBL, ...) live in librgpot and eOn consumes them through the
+# RgpotAdapter. The QM frontends / RPC stack remain optional.
+#
+# 1) installed module first (never wrap fallback here); _rgpot_pkg is
+# probed above, next to the vesin choice that depends on it.
+if _rgpot_pkg.found()
+    message('rgpot: using pkg-config (installed), not subproject wrap')
+    _rgpot_from_pkg = true
+    rgpot_dep = _rgpot_pkg
+    nwchempot_dep = _rgpot_pkg
+    cpmdpot_dep = _rgpot_pkg
+    ptlrpc_dep = _rgpot_pkg
+    # An installed rgpot can be built without the Fortran kernels, and then
+    # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H resolve to
+    # nothing at link time. rgpot.pc advertises them; say so plainly here
+    # rather than failing on undefined vtables.
+    if cppc.get_define('RGPOT_HAS_FORTRAN_POTS', dependencies: _rgpot_pkg) == ''
+        error(
+            'installed rgpot was built without Fortran potentials '
+            + '(rgpot.pc does not define RGPOT_HAS_FORTRAN_POTS). '
+            + 'Rebuild rgpot with -Dwith_fortran_pots=enabled, or point '
+            + 'PKG_CONFIG_PATH at one that has them.',
+        )
+    endif
+else
+    # 2) wrap / multi-source fallback, configured next to the vesin choice
+    # above; here it only takes on its eOn roles.
+    message('rgpot: pkg-config not found; falling back to subproject wrap')
+    rgpot_dep = _rgpot_proj.get_variable('rgpot_dep')
+    # meson applies subproject default_options only on the first configure
+    # of a build directory, so a directory configured before this profile
+    # changed silently keeps the old values and drops potentials. Fail
+    # here instead, naming the fix.
+    if not _rgpot_proj.get_variable('has_fortran')
+        error(
+            'rgpot subproject built without Fortran potentials. '
+            + 'Reconfigure with -Drgpot:with_fortran_pots=enabled, '
+            + 'or wipe the build directory.',
+        )
+    endif
+    if get_option('with_serve')
+        ptlrpc_dep = _rgpot_proj.get_variable('ptlrpc_dep')
+    endif
+    if get_option('with_rgpot') and not is_windows
+        nwchempot_dep = _rgpot_proj.get_variable('nwchempot_dep')
+        cpmdpot_dep = _rgpot_proj.get_variable('cpmdpot_dep')
     endif
 endif
+_deps += [rgpot_dep]
 if get_option('with_serve')
     serve_capnp_dep = dependency('capnp-rpc', required: true)
     if not ptlrpc_dep.found()
@@ -415,16 +603,11 @@ if get_option('with_rgpot') and not is_windows
     subdir('potentials/Rgpot')
 endif
 
+# LJ, LJCluster, Morse, and ZBL live in librgpot (RgpotAdapter arms).
 potentials = [
     eam,
     emt,
     extpot,
-    imd,
-    lennard_jones,
-    lennard_jones_cluster,
-    morse,
-    newpot,
-    zbl,
 ]
 if not is_windows
     potentials += [socket_nwchem]
@@ -447,6 +630,9 @@ eonclib_sources = [
     'ReplicaExchangeJob.cpp',
     'BondBoost.cpp',
     'Job.cpp',
+    'TestJob.cpp',
+    'OHTSTJob.cpp',
+    'GleThermostat.cpp',
     'GlobalOptimization.cpp',
     'LowestEigenmode.cpp',
     'MinModeSaddleSearch.cpp',
@@ -461,6 +647,7 @@ eonclib_sources = [
     'FiniteDifferenceJob.cpp',
     'Lanczos.cpp',
     'Davidson.cpp',
+    'MobileAtoms.cpp',
     'HessianJob.cpp',
     'ReplicaDynamicsJob.cpp',
     'TADJob.cpp',
@@ -484,7 +671,7 @@ eonclib_sources = [
     'HelperFunctions.cpp',
     'RandomNumbers.cpp',
     'StringHelpers.cc',
-    'MatrixHelpers.hpp',  # Template
+    # MatrixHelpers.hpp is header-only under include/eon/ (via -I include).
     'Dimer.cpp',
     'Dynamics.cpp',
     'GlobalOptimizationJob.cpp',
@@ -602,13 +789,11 @@ endif
 # LAMMPS: always compiled, loaded at runtime via dlopen
 subdir('potentials/LAMMPS')
 potentials += [lammps_pot]
+# features_list scans _args for -DLAMMPS_POT; the arm is unconditional.
+_args += ['-DLAMMPS_POT']
 
 if py_embed
     _args += ['-DEMBED_PYTHON']
-    # subdir('potentials/PyAMFF')
-    # pyamff,
-    # subdir('potentials/QSC')
-    # potentials += [ qsc ]
     if get_option('with_ase')
         pyb11f_deps = [dependency('pybind11')]
         _deps += [pyb11f_deps]
@@ -626,41 +811,17 @@ if get_option('with_mpi')
     _deps += [mpi_dep]
 endif
 
-# Fortran potential C++ wrappers: always compiled (load Fortran libs at runtime)
-# The C++ wrappers use dlopen via FortranPotLoader to find the Fortran shared
-# libraries at runtime, so the client binary does not need Fortran at link time.
-fortran_pot_cpp_sources = [
-    'potentials/Aluminum/Aluminum.cpp',
-    'potentials/EDIP/EDIP.cpp',
-    'potentials/FeHe/FeHe.cpp',
-    'potentials/Lenosky/Lenosky.cpp',
-    'potentials/SW/SW.cpp',
-    'potentials/Tersoff/Tersoff.cpp',
-]
-eonclib_sources += fortran_pot_cpp_sources
-
-# Fortran shared libraries: built only when a Fortran compiler is available,
-# installed separately, and loaded at runtime via dlopen.
-_fortran_pot_libs = []
+# Fortran-backed potentials (SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe,
+# CuH2, TIP4P-H) are Fortran 2018 kernels inside librgpot, reached through
+# RgpotAdapter. eOn no longer builds, installs, or dlopens Fortran itself,
+# so the flang runtime handling and the per-pot .def export files retire
+# with them.
 if get_option('with_fortran')
-    subdir('potentials/Aluminum')
-    subdir('potentials/EDIP')
-    subdir('potentials/FeHe')
-    subdir('potentials/Lenosky')
-    subdir('potentials/SW')
-    subdir('potentials/Tersoff')
-    _fortran_pot_libs += [eon_aluminum, eon_edip, eon_fehe, eon_lenosky, eon_sw, eon_tersoff]
-    if get_option('with_water')
-        subdir('potentials/Water_H')
-        potentials += [water_h]
-    endif
     _args += ['-DWITH_FORTRAN']
 endif
 
 if get_option('with_cuh2')
-    subdir('potentials/CuH2')
-    potentials += [cuh2]
-    _args += ['-DCUH2_POT', '-DWITH_FORTRAN']
+    _args += ['-DCUH2_POT']
 endif
 
 if get_option('with_ase_orca')
@@ -791,53 +952,71 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
         endif
         mts_inc_args = []
         foreach d : [_mts_core_inc, _mts_torch_inc_new, _mts_torch_inc_old, _mta_inc]
-            mts_inc_args += ['-isystem', d]
+            # MSVC has no -isystem; /external:I is opt-in. Use -I style via include_directories.
+            mts_inc_args += ['-I' + d]
         endforeach
-        mts_dep = declare_dependency(
-            dependencies: [
-                cppc.find_library('metatensor', dirs: [_mts_core_lib]),
-                cppc.find_library('metatensor_torch', dirs: _mts_torch_lib_dirs),
-                cppc.find_library('metatomic_torch', dirs: [_mta_lib]),
-            ],
-            compile_args: mts_inc_args,
-        )
-        vesin_dep = cppc.find_library(
-            'vesin',
-            dirs: [_vesin_lib],
-            required: false,
-        )
-        if vesin_dep.found()
-            vesin_dep = declare_dependency(
-                dependencies: [
-                    cppc.find_library(
-                        'vesin',
-                        dirs: [_vesin_lib],
-                        required: false,
-                    ),
-                ],
-                compile_args: ['-isystem', _vesin_inc],
+        # Windows wheels: import libs may be foo.lib, libfoo.lib, or foo.dll.lib
+        # (metatensor-core win ships metatensor.dll.lib). Meson find_library('x')
+        # probes x.lib / libx.lib; pass 'x.dll' to hit x.dll.lib.
+        _mts_lib_candidates = is_windows ? ['metatensor', 'libmetatensor', 'metatensor.dll'] : ['metatensor']
+        _mts_torch_candidates = is_windows ? ['metatensor_torch', 'libmetatensor_torch', 'metatensor_torch.dll'] : ['metatensor_torch']
+        _mta_torch_candidates = is_windows ? ['metatomic_torch', 'libmetatomic_torch', 'metatomic_torch.dll'] : ['metatomic_torch']
+        _mts_core_found = disabler()
+        foreach _n : _mts_lib_candidates
+            if not _mts_core_found.found()
+                _mts_core_found = cppc.find_library(_n, dirs: [_mts_core_lib], required: false)
+            endif
+        endforeach
+        if not _mts_core_found.found()
+            error(
+                'pip_metatomic: C library metatensor not found under '
+                + _mts_core_lib
+                + ' (tried '
+                + ', '.join(_mts_lib_candidates)
+                + ')',
             )
         endif
+        _mts_torch_found = disabler()
+        foreach _n : _mts_torch_candidates
+            if not _mts_torch_found.found()
+                _mts_torch_found = cppc.find_library(
+                    _n,
+                    dirs: _mts_torch_lib_dirs,
+                    required: false,
+                )
+            endif
+        endforeach
+        if not _mts_torch_found.found()
+            error(
+                'pip_metatomic: C library metatensor_torch not found under '
+                + ' '.join(_mts_torch_lib_dirs),
+            )
+        endif
+        _mta_torch_found = disabler()
+        foreach _n : _mta_torch_candidates
+            if not _mta_torch_found.found()
+                _mta_torch_found = cppc.find_library(_n, dirs: [_mta_lib], required: false)
+            endif
+        endforeach
+        if not _mta_torch_found.found()
+            error(
+                'pip_metatomic: C library metatomic_torch not found under ' + _mta_lib,
+            )
+        endif
+        mts_dep = declare_dependency(
+            dependencies: [_mts_core_found, _mts_torch_found, _mta_torch_found],
+            compile_args: mts_inc_args,
+        )
+        # vesin: single copy already on _deps via eoncbase (do not re-find pip vesin)
     else
         message(
-            'Looking for existing installations of metatensor, metatensor-torch, metatomic-torch and vesin',
+            'Looking for existing installations of metatensor, metatensor-torch, metatomic-torch',
         )
         message(
             'If this is flaky, pass pip_metatomic=True with the torch version and let pip handle everything',
         )
-        # Prefer pkg-config/cmake vesin before manual find_library / vendored tree.
-        # xref: https://github.com/metatensor/metatensor/issues/930
-        # On Windows (MSVC), static libraries are often prefixed with 'lib'
-        vesin_dep = dependency('vesin', required: false)
-        if not vesin_dep.found()
-            vesin_dep = dependency('vesin', method: 'cmake', required: false)
-        endif
-        if not vesin_dep.found()
-            vesin_dep = cppc.find_library('vesin', required: false)
-        endif
-        if not vesin_dep.found() and is_windows
-            vesin_dep = cppc.find_library('libvesin', required: false)
-        endif
+        # Vesin already resolved for eoncbase (single NL backend for all pots).
+        # Only metatensor / metatomic-torch are located here.
         mts_dep = dependency('metatensor_torch', required: false)
         if not mts_dep.found()
             mts_dep = dependency('metatensor-torch', required: false)
@@ -868,20 +1047,11 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
             ]
         endif
     endif
-    if not vesin_dep.found()
-        vesin_int = library(
-            'vesin_internal',
-            ['thirdparty/vesin/vesin-single-build.cpp'],
-            install: true,
-        )
-        vesin_dep = declare_dependency(
-            link_with: vesin_int,
-            include_directories: include_directories('thirdparty/vesin'),
-        )
-    endif
-    # Fat Metatomic (potential = Metatomic) + deps for RGPOT engine .so.
-    mta_plugin_deps = _deps + [vesin_dep, mts_dep, torch_deps]
-    _deps += [vesin_dep, mts_dep, torch_deps]
+    # Fat Metatomic (potential = Metatomic).
+    # vesin already on _deps (eoncbase VesinNeighbors + classical pots).
+    # mta_plugin_deps, for the RGPOT engine .so, is taken further down once
+    # _deps stops growing.
+    _deps += [mts_dep, torch_deps]
     _args += ['-DWITH_METATOMIC']
     metatomic_pot = library(
         'metatomic_pot',
@@ -895,10 +1065,44 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
     potentials += [metatomic_pot]
 endif
 
-if get_option('with_parallel_neb')
-    tbb_dep = dependency('tbb', required : true)
-    _deps += [tbb_dep]
+# NEB image-force std::execution::par.
+# GCC/Clang: -Dwith_parallel_neb=true pulls TBB (libstdc++ backend).
+# nvc++: -Dstdpar=cpu|gpu adds -stdpar=multicore|gpu and does not need TBB.
+# The potential is the cost. Do not wrap Morse / LJ atom loops in
+# std::for_each(std::execution::par); that is cargo-cult vs the surf-notes
+# nvc++ / -mp=gpu / QMC_GPU=openmp;cuda path (QMCPACK, not eOn).
+stdpar = get_option('stdpar')
+if stdpar != 'none'
+    cxx = meson.get_compiler('cpp')
+    cxx_id = cxx.get_id()
+    if cxx_id != 'nvidia_hpc' and cxx_id != 'pgi'
+        error('stdpar=@0@ requires nvc++ (compiler id nvidia_hpc or pgi); got @1@'.format(stdpar, cxx_id))
+    endif
+    if stdpar == 'gpu'
+        _args += ['-stdpar=gpu']
+        _linkargs += ['-stdpar=gpu']
+        # surf-notes: name the arch. QMCPACK uses QMC_GPU_ARCHS=sm_80;sm_90
+        # on Snellius/Elja. nvc++ wants -gpu=cc80,cc90, not that CMake string.
+        gpu_cc = get_option('stdpar_gpu_cc').strip()
+        if gpu_cc != '' and gpu_cc != 'native'
+            _args += ['-gpu=' + gpu_cc]
+            _linkargs += ['-gpu=' + gpu_cc]
+        endif
+    else
+        _args += ['-stdpar=multicore']
+        _linkargs += ['-stdpar=multicore']
+    endif
     _args += ['-DEON_PARALLEL_NEB']
+endif
+
+if get_option('with_parallel_neb')
+    if stdpar == 'none'
+        tbb_dep = dependency('tbb', required : true)
+        _deps += [tbb_dep]
+    endif
+    if '-DEON_PARALLEL_NEB' not in _args
+        _args += ['-DEON_PARALLEL_NEB']
+    endif
 endif
 
 if get_option('with_artn')
@@ -1027,15 +1231,19 @@ _linkto += potentials
 # the meson subproject when the system package is not available. Upstreaming
 # this removes the need for use_readcon_pkgconfig.patch on the feedstock.
 # ConFileIO needs 0.13+ (clone, bulk set_*_from_flat, compression_from_extension).
+# Wrap tag v0.14.10 still ships Cargo.toml 0.14.9 (eOn-aqmi / feedstock #31).
+# Accept the crate version so cargo-c pkg-config does not fail the check.
 readcon_dep = dependency(
     'readcon-core',
-    version: '>=0.13.1',
+    version: '>=0.14.9',
     method: 'pkg-config',
     required: false,
 )
+readcon_order_srcs = []
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
+        version: '>=0.14.9',
         default_options: {
             'with_tests': false,
             'with_examples': false,
@@ -1043,14 +1251,15 @@ if not readcon_dep.found()
         },
     )
     readcon_dep = readcon_proj.get_variable('readcon_dep')
+    # Order stamp: cargo still emits cdylib+staticlib. partial_dependency
+    # drops declare_dependency.sources, so attach the stamp here.
+    readcon_order_srcs += readcon_proj.get_variable('readcon_order')
 endif
 if is_windows
-    # On Windows with the meson subproject path, readcon_dep's sources
-    # (custom_target .lib) get passed to llvm-ar which misinterprets the .lib
-    # as the archive output name. Strip sources and link_args for the static
-    # library; the full dep with link_args goes to executables via _exe_deps.
-    # With cargo-c/pkg-config there are no custom_target sources, so partial
-    # dependency still works (includes + compile_args only).
+    # On Windows, do not put cargo .lib/.dll on eonclib: llvm-ar treats
+    # the .lib as an archive name, and link rejects the DLL (LNK1107).
+    # The order stamp is attached on eclib sources; link_args stay on
+    # executables via _exe_deps. cargo-c/pkg-config has no custom_target.
     readcon_compile_dep = readcon_dep.partial_dependency(
         includes: true,
         compile_args: true,
@@ -1060,11 +1269,49 @@ else
     _deps += [readcon_dep]
 endif
 
+if get_option('with_metatomic')
+    # The RGPOT metatomic engine .so compiles the same translation units as
+    # eonclib, so it needs every dependency eonclib has. readcon above is the
+    # last append to _deps, hence the snapshot lives here and not next to the
+    # metatomic block, which would miss tbb, artn, ira, the capnp deps and
+    # readcon itself. mts_dep and torch_deps are already on _deps.
+    mta_plugin_deps = _deps
+endif
+
+# version.h FEATURES must see every -DWITH_* appended by the blocks above.
+_args_str = ' '.join(_args)
+features_string = ''
+foreach feature : features_list
+    feature_flag = feature[0]
+    feature_name = feature[1]
+    if '-D' + feature_flag in _args_str
+        features_string += '  ' + feature_name + ': enabled\n'
+    else
+        features_string += '  ' + feature_name + ': disabled\n'
+    endif
+endforeach
+
+configure_file(
+    input: 'version.h.in',
+    output: 'version.h',
+    configuration: {
+        'VERSION': version,
+        'VERSION_MAJOR': version_major,
+        'VERSION_MINOR': version_minor,
+        'VERSION_PATCH': version_patch,
+        'BUILD_DATE': build_date,
+        'OS_INFO': host_system,
+        'ARCH': architecture,
+        'GIT_HASH': git_hash,
+        'FEATURES': features_string,
+    },
+)
+
 # --------------------- Library
 
 eclib = library(
     'eonclib',
-    sources: eonclib_sources,
+    sources: eonclib_sources + readcon_order_srcs,
     include_directories: _incdirs,
     dependencies: _deps + _gprd_extra_deps,
     link_with: _linkto,
@@ -1084,7 +1331,8 @@ if get_option('with_metatomic')
         [
             'potentials/Metatomic/MetatomicPotential.cpp',
             'potentials/Metatomic/MetatomicEngineAbi.cpp',
-        ],
+        ]
+        + readcon_order_srcs,
         dependencies: mta_plugin_deps,
         cpp_args: _args + ['-DRGPOT_MTA_ENGINE_BUILD'],
         link_with: [eclib, eoncbase],
@@ -1097,7 +1345,28 @@ if get_option('with_metatomic')
 endif
 
 # Full deps including readcon link_args (for executables and tests only)
-_exe_deps = _deps + [readcon_dep] + _gprd_extra_deps
+_exe_deps = _deps + _gprd_extra_deps
+if is_windows
+    # _deps carries only readcon's partial dependency there (see the
+    # partial_dependency block above); executables need the link_args too.
+    # Elsewhere _deps already holds the full readcon_dep.
+    #
+    # Everything except sources. readcon-core declares
+    # `sources: readcon_cargo`, and on Windows that array holds the DLL
+    # alongside the import library. Meson hands a dependency's sources to
+    # the linker, and link rejects a DLL as input:
+    #   readcon_core.dll : fatal error LNK1107: invalid or corrupt file
+    # link_args already names the import library by full path, which is the
+    # half MSVC wants.
+    _exe_deps += [
+        readcon_dep.partial_dependency(
+            includes: true,
+            compile_args: true,
+            link_args: true,
+            links: true,
+        ),
+    ]
+endif
 
 # Export variable
 eclib_dep = declare_dependency(
@@ -1125,6 +1394,7 @@ ec = executable(
     link_args: _linkargs,
     build_rpath: ':'.join(_runtime_rpath),
     install_rpath: ':'.join(_runtime_rpath),
+    pie: false,
     # Standalone pyeonclient wheels only need the extension + shared libs.
     install: get_option('install_eon_server'),
 )
@@ -1165,6 +1435,7 @@ if get_option('with_tests')
         ['strparse_run', 'StringHelpersTest.cpp', ''],
         ['test_matter', 'MatterTest.cpp', 'neb_morse'],
         ['test_pot', 'PotTest.cpp', 'neb_morse'],
+        ['test_rgpot_adapter', 'RgpotAdapterTest.cpp', 'neb_morse'],
         # ['approve_params', 'ApproveParams.cpp', ''], # needs to handle additional parameters
         ['test_zbl', 'ZBLPotTest.cpp', 'au_si'],
         ['test_extpot', 'ExtPotTest.cpp', 'extpot'],
@@ -1183,6 +1454,7 @@ if get_option('with_tests')
         ['test_approve_confileio', 'ApproveConFileIO.cpp', 'neb_morse'],
         ['test_minimization', 'MinimizationTest.cpp', 'neb_morse'],
         ['test_optimizer', 'OptimizerTest.cpp', ''],
+        ['test_fpe_handler', 'FPEHandlerTest.cpp', ''],
         ['test_dynamics', 'DynamicsTest.cpp', 'neb_morse'],
         ['test_jobs', 'JobIntegrationTest.cpp', 'neb_morse'],
         ['test_hessian', 'HessianTest.cpp', 'neb_morse'],
@@ -1206,6 +1478,7 @@ if get_option('with_tests')
     endif
     if get_option('with_metatomic')
         test_array += [['test_mta', 'MetatomicTest.cpp', 'lj38']]
+        # DynLib.h (LoadLibrary / dlopen) — builds on MSVC and POSIX.
         test_array += [['test_mta_engine_abi', 'MetatomicEngineAbiTest.cpp', '']]
     endif
     if get_option('with_xtb')
@@ -1237,8 +1510,22 @@ if get_option('with_tests')
         _fortran_pot_dirs += meson.project_build_root() / 'client' / 'potentials' / 'Metatomic'
     endif
     _test_env = environment()
+    _systems_dir = join_paths(
+        meson.project_source_root(),
+        'client',
+        'unit_tests',
+        'data',
+        'systems',
+    )
+    _test_env.set('EON_TEST_SYSTEMS_DIR', _systems_dir)
     if _fortran_pot_dirs.length() > 0
-        _test_env.set('EON_POTENTIALS_PATH', ':'.join(_fortran_pot_dirs))
+        # FortranPotLoader splits on ';' on Windows (drive letters break ':').
+        # Same pathsep rule as PATH: win=';' unix=':'.
+        _pot_pathsep = is_windows ? ';' : ':'
+        _test_env.set(
+            'EON_POTENTIALS_PATH',
+            _pot_pathsep.join(_fortran_pot_dirs),
+        )
     endif
 
     foreach test : test_array
@@ -1254,6 +1541,9 @@ if get_option('with_tests')
                 dependencies: test_deps,
                 include_directories: _incdirs,
                 cpp_args: test_args,
+                # Include /STACK:16M (Windows) so EAM Al Fortran pots do not
+                # SIGSEGV with STATUS_STACK_OVERFLOW (default stack is 1 MB).
+                link_args: _linkargs,
                 link_with: _linkto,
                 build_rpath: ':'.join(_runtime_rpath),
             ),
@@ -1325,12 +1615,27 @@ if get_option('with_tests')
             cpp_args: test_args,
             link_with: _linkto,
         )
+        _rgpot_test_env = environment()
+        _rgpot_test_env.set(
+            'EON_TEST_SYSTEMS_DIR',
+            join_paths(
+                meson.project_source_root(),
+                'client',
+                'unit_tests',
+                'data',
+                'systems',
+            ),
+        )
+        # Optional nwchemc/cpmdc engines: tests SKIP when absent. Catch2 exits 4
+        # when every case is skipped unless --allow-running-no-tests is set.
         test(
             'test_rgpot_pot',
             test_rgpot_exe,
+            args: ['--allow-running-no-tests'],
             timeout: 120,
             suite: 'rgpot',
             is_parallel: false,
+            env: _rgpot_test_env,
             workdir: meson.project_source_root() +
                      '/client/unit_tests/data/systems/rgpot_nwchem_test',
         )

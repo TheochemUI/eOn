@@ -9,15 +9,15 @@
  * Repo:
  * https://github.com/TheochemUI/eOn
  */
-#include "IRACompare.h"
-#include "Eigen.h"
+#include "eon/IRACompare.h"
+#include "eon/Eigen.h"
 #include <cstdlib>
 
 #ifdef WITH_IRA
 extern "C" {
 #include "iralib_interf.h"
 }
-#include "libs/IRA/IRAResource.h" // Include IRA resource after IRA interfaces are defined
+#include "eon/libs/IRA/IRAResource.h" // Include IRA resource after IRA interfaces are defined
 #endif
 
 namespace eonc {

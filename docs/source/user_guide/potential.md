@@ -7,18 +7,18 @@ myst:
 
 # Potential
 
-`eOn` supports a large number of potentials, some vendored within the executable
-and libraries and others via interfaces.
+`eOn` supports many potentials, some vendored within the executable and
+libraries and others via interfaces.
 
 ```{note}
 Some of these require compile-time flags, detailed in the [installation instructions](project:../install/index.md).
-The `conda-forge` package (`conda install -c conda-forge eon`) ships with
+The `conda-forge` package (`conda install -c conda-forge eon`) includes
 **Metatomic**, **XTB**, **EXT_POT**, and the vendored potentials.
 LAMMPS, ASE, VASP, AMS, and MPI potentials require building from source with
 the corresponding `-Dwith_*` flags.
 ```
 
-## Supported Potentials
+## Supported potentials
 
 ### External
 
@@ -57,17 +57,40 @@ FeHe
 EAM_Al
 : Embedded atom method parameterized for Aluminum.
 
-QSC {cite:p}`pot-kimuraQuantumSuttonChenManyBody1998`
-: Quantum Sutton-Chen potential, for FCC metals.
-
 EMT
 : Effective medium theory, for metals.
 
 LJ {cite:p}`pot-jonesDeterminationMolecularFields1924`
-: Lennard-Jones in reduced units
+: Lennard-Jones in reduced units, served by `rgpot`. Neighbor pairs via
+  [vesin](neighbor_lists.md); timed by ASV
+  `TimeMinimizationLJCluster` (ljcluster).
+
+LJCluster {cite:p}`pot-jonesDeterminationMolecularFields1924`
+: Lennard-Jones cluster variant, served by `rgpot`.
 
 Morse_Pt
-: Hard sphere morse potential for Platinum
+: Hard sphere morse potential for Platinum, served by `rgpot`. Neighbor
+  pairs via [vesin](neighbor_lists.md); timed by ASV `TimePointMorsePt` /
+  saddle / NEB Morse fixtures.
+
+ZBL
+: Ziegler-Biersack-Littmark screened nuclear repulsion, served by `rgpot`.
+
+```{versionadded} 3.2.1
+DFTD3 / DFTD4
+: Grimme DFT-D via rgpot 3.2 (`potential = dftd3` / `dftd4`,
+  `[D3Pot]` / `[D4Pot]`). Enable the wraps at meson configure time
+  (`-Dwith_dftd3=true`).
+
+EXPR
+: rgpot ExprPot. `potential = expr` with `[ExprPot]` `expression` and
+  comma-separated `terms` (`0.5*lj + d3`). Terms: `lj`, `ljcluster`,
+  `morse`, `zbl`, `d3`/`dftd3`, `d4`/`dftd4`, `mopac`.
+
+MOPAC
+: rgpot 3.2 MOPACPot (libmopacc). `potential = mopac`, `[MOPACPot]`
+  `charge`, `spin`, `model` (4 is AM1), `engine_path`.
+```
 
 Lenosky_Si {cite:p}`pot-lenoskyHighlyOptimizedEmpirical2000`
 : Lenosky potential, for silicon.
@@ -86,12 +109,6 @@ TIP4P {cite:p}`pot-jorgensenComparisonSimplePotential1983`
 
 SPCE {cite:p}`pot-berendsenMissingTermEffective1987`
 : Extended simple point charge model for water
-
-```{deprecated} 2.0
-These potentials are missing in the SVN sources..
-bopfox
-: Bond order potential, for metals
-```
 
 ## Configuration
 
@@ -142,8 +159,8 @@ increases in speed compared to file or ASE interfaces
 NWChem's Fortran i-PI socket driver truncates UNIX socket names to approximately
 30 characters. The full socket path is ``/tmp/ipi_<unix_socket_path>``, so
 ``unix_socket_path`` should be kept short (under ~20 characters). For example,
-``eon_nwchem`` works but ``eon_nwchem_test_socket`` will be silently truncated,
-causing a connection failure with no clear error message.
+``eon_nwchem`` works but ``eon_nwchem_test_socket`` is truncated,
+and the connection fails with no clear error message.
 ```
 
 An older ASE interface exists as well.

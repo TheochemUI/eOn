@@ -122,8 +122,9 @@ def append_timing(
 ) -> None:
     """Step: append ``time_seconds`` / ``user_time`` / ``system_time``.
 
-    Pass *t0* from :func:`steady_clock_now` before the work, or *elapsed*
-    wall seconds directly.
+    Lines use the results.dat ``<value> <key>`` contract (same as job writers
+    and ``parse_results``). Pass *t0* from :func:`steady_clock_now` before the
+    work, or *elapsed* wall seconds directly.
     """
     if elapsed is None:
         if t0 is None:
@@ -155,7 +156,7 @@ def write_minimization_results(
         f"{int(pot.force_call_counter)} total_force_calls",
     ]
     if status != RunStatus.FAIL_POTENTIAL_FAILED:
-        lines.append(f"{matter.potential_energy} potential_energy")
+        lines.append(f"{matter.potential_energy:.12e} potential_energy")
     Path(path).write_text("\n".join(lines) + "\n")
 
 
@@ -179,13 +180,11 @@ def minimize_workdir(
         params = load_parameters("config.ini")
         pot = make_potential(params.potential, params)
         matter = Matter(pot, params)
-        st = matter.con2matter(pos)
-        # IoStatus may be enum; accept truthy / Ok
-        if hasattr(st, "name") and st.name not in ("Ok", "OK"):
-            from pyeonclient._core import io_ok
+        from pyeonclient._core import io_ok
 
-            if not io_ok(st):
-                raise RuntimeError(f"con2matter failed for {pos}: {st}")
+        st = matter.con2matter(pos)
+        if not io_ok(st):
+            raise RuntimeError(f"con2matter failed for {pos}: {st}")
         quiet = bool(getattr(params, "quiet", False))
         ckpt = bool(getattr(params, "checkpoint", False))
         _m, converged = matter.relax(
@@ -197,7 +196,9 @@ def minimize_workdir(
             prefix_checkpoint="pos",
         )
         converged = bool(converged)
-        matter.matter2con(min_con)
+        st = matter.matter2con(min_con)
+        if not io_ok(st):
+            raise RuntimeError(f"matter2con failed for {min_con}: {st}")
         files.append(min_con)
         write_minimization_results(params, pot, matter, converged=converged)
         files.append("results.dat")

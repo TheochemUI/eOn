@@ -9,11 +9,12 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "FiniteDifferenceJob.h"
-#include "EonLogger.h"
-#include "EpiCenters.h"
-#include "HelperFunctions.h"
-#include "Matter.h"
+#include "eon/FiniteDifferenceJob.h"
+#include "eon/EonLogger.h"
+#include "eon/EpiCenters.h"
+#include "eon/HelperFunctions.h"
+#include "eon/Matter.h"
+#include "eon/PotRegistry.h"
 
 #include <format>
 #include <fstream>
@@ -23,9 +24,10 @@ using namespace eonc::helpers;
 
 std::vector<std::string> FiniteDifferenceJob::run(void) {
   auto reactant = std::make_unique<Matter>(pot, params);
-  if (!eonc::io::io_ok(reactant->con2matter("pos.con"))) {
-    EONC_LOG_CRITICAL("Failed to load pos.con");
-    throw std::runtime_error("failed to load pos.con");
+  const std::string posFile = eonc::helpers::getRelevantFile("pos.con");
+  if (!eonc::io::io_ok(reactant->con2matter(posFile))) {
+    EONC_LOG_CRITICAL("Failed to load {}", posFile);
+    throw std::runtime_error("failed to load " + posFile);
   }
   AtomMatrix posA = reactant->getPositions();
 
@@ -33,14 +35,15 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
 
   AtomMatrix forceA = reactant->getForces();
 
+  const double cutoff = params.structure_comparison_options.neighbor_cutoff;
   long epicenter = eonc::EpiCenters::minCoordinatedEpiCenter(
-      reactant.get(), params.structure_comparison_options.neighbor_cutoff);
+      reactant.get(), cutoff);
   AtomMatrix displacement;
   displacement.resize(reactant->numberOfAtoms(), 3);
   displacement.setZero();
   printf("displacing atoms:");
   for (int i = 0; i < reactant->numberOfAtoms(); i++) {
-    if (reactant->distance(epicenter, i) <= 3.3) {
+    if (reactant->distance(epicenter, i) <= cutoff) {
       printf(" %i", i);
       for (int j = 0; j < 3; j++) {
         if (!reactant->getFixed(i)) {
@@ -50,10 +53,22 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
     }
   }
   printf("\n");
-  displacement.normalize();
+  const double dispNorm = displacement.norm();
+  if (!(dispNorm > 0.0)) {
+    throw std::runtime_error(
+        "FiniteDifferenceJob: no free atoms in the epicenter neighborhood");
+  }
+  displacement /= dispNorm;
 
   std::ofstream results("results.dat");
-  results << std::format("{:>14s}    {:>14s}\n", "dR", "curvature");
+  results << "0 termination_reason\n";
+  results << "GOOD termination_reason_text\n";
+  results << "finite_difference job_type\n";
+  results << std::format("{} total_force_calls\n",
+                         PotRegistry::get().total_force_calls());
+
+  std::ofstream table("curvature.dat");
+  table << std::format("{:>14s}    {:>14s}\n", "dR", "curvature");
   printf("%14s    %14s\n", "dR", "curvature");
   AtomMatrix posB;
   AtomMatrix forceB;
@@ -63,11 +78,15 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
     reactant->setPositions(posB);
     forceB = reactant->getForces();
     curvature = matDot(forceB - forceA, displacement) / dRs[dRi];
-    results << std::format("{:14.8f}    {:14.8f}\n", dRs[dRi], curvature);
+    table << std::format("{:14.8f}    {:14.8f}\n", dRs[dRi], curvature);
+    results << std::format("{:.12e} dR_{}\n", dRs[dRi], dRi);
+    results << std::format("{:.12e} curvature_{}\n", curvature, dRi);
     printf("%14.8f    %14.8f\n", dRs[dRi], curvature);
-    results.flush();
+    table.flush();
   }
 
-  std::vector<std::string> empty;
-  return empty;
+  std::vector<std::string> returnFiles;
+  returnFiles.push_back("results.dat");
+  returnFiles.push_back("curvature.dat");
+  return returnFiles;
 }

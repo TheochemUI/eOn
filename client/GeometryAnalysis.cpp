@@ -9,10 +9,10 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "GeometryAnalysis.h"
-#include "EonLogger.h"
-#include "Matter.h"
-#include "SafeMath.h"
+#include "eon/GeometryAnalysis.h"
+#include "eon/EonLogger.h"
+#include "eon/Matter.h"
+#include "eon/SafeMath.h"
 
 #include <cmath>
 #include <set>

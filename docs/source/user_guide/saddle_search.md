@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn saddle search, transition state, displacement, potential energy surface"
 ---
 
-# Saddle Search
+# Saddle search
 
 A saddle search is initiated by making a local displacement of atoms from their
 position at the minimum of the current state. This displacement can be done
@@ -15,7 +15,7 @@ local environment where reactions are likely to take place in the system, this
 information can be used to make saddle searches more efficient by getting them
 started in the right part of configuration space.
 
-## Displacement Strategies
+## Displacement strategies
 
 ### Epicenters and Weight-Based Selection
 
@@ -32,10 +32,10 @@ probabilistically from several strategies, each controlled by a relative weight:
 | `displace_listed_atom_weight`          | Pick an atom from `displace_atom_list`                         |
 | `displace_listed_type_weight`          | Pick an atom whose type is in `displace_type_list`             |
 
-The weights do not need to sum to 1 — they are normalised internally. Setting a
+The weights do not need to sum to 1; they are normalised internally. Setting a
 weight to 0 disables that strategy. For example, setting only
-`displace_listed_atom_weight = 1.0` and all other weights to 0 ensures that
-every saddle search starts from an atom in the explicit list.
+`displace_listed_atom_weight = 1.0` and all other weights to 0 starts
+every saddle search from an atom in the explicit list.
 
 ### Radius and Magnitude
 
@@ -44,15 +44,15 @@ epicenter are displaced. Each displaced atom receives a random perturbation
 drawn from a Gaussian distribution with standard deviation
 `displace_magnitude` (in Ångströms) independently in each Cartesian direction.
 
-### Displacing All Listed Atoms
+### Displacing all listed atoms
 
 When `displace_all_listed` is **true** and a listed-atom strategy is selected,
-*every* atom in `displace_atom_list` (or `displace_type_list`) is displaced —
-not just one chosen at random. Atoms within `displace_radius` of *any*
+*every* atom in `displace_atom_list` (or `displace_type_list`) is displaced,
+not a single random pick. Atoms within `displace_radius` of *any*
 displaced atom are also included. Set `displace_radius` to 0 to restrict the
 displacement strictly to the listed atoms.
 
-### Dynamic Atom Lists via Scripts
+### Dynamic atom lists via scripts
 
 For systems where the relevant atoms change from state to state (e.g. a
 migrating vacancy), a static list is insufficient. The
@@ -69,10 +69,13 @@ server:
 
 - `random` — uniform random atom
 - `last_atom` — the last atom in the configuration
-- `min_coordinated` — the atom with the fewest neighbours
-- `not_fcc_or_hcp` — an atom whose local structure is neither FCC nor HCP
-- `listed_atoms` — an atom from `displace_atom_list` (parsed from the INI
-  config; no server displacement file needed)
+- `least_coordinated` — the atom with the fewest neighbours
+- `not_fcc_hcp_coordinated` — an atom whose local structure is neither FCC nor HCP
+- `listed_atoms` — pick via `listedAtomEpiCenter` from `displace_atom_list`
+  (CON file-order, remapped; lone `-1` is every free atom) and apply a
+  `displace_radius` / `displace_magnitude` kick. No server displacement
+  file needed. `random`, `last_atom`, and `least_coordinated` use the
+  same client helper.
 - `load` — read a displacement vector from a file written by the server
 
 ## Configuration
@@ -97,7 +100,7 @@ The saddle search writes:
 
 With `write_movies = true` (in `[Debug]`), `climb.con` is written as a
 concatenated structure movie (one frame per iteration). Each frame stores
-structured JSON metadata on line 2 via `readcon-core`, including `energy`,
+structured JSON metadata in the second CON header line via `readcon-core`, including `energy`,
 `frame_index`, `step_size`, `delta_e`, `convergence`, `eigenvalue`, `torque`,
 `angle`, and `rotations`.
 

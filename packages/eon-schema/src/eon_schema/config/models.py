@@ -547,32 +547,32 @@ class PotentialConfig(BaseModel):
     )
     potential: Literal[
         "ams",
+        "ase_pot",
         "ams_io",
-        "ase_nwcem",
+        "ase_nwchem",
         "ase_orca",
-        "bop",
-        "bopfox",
+        "catlearn",
         "cuh2",
+        "dftd3",
+        "dftd4",
         "eam_al",
         "edip",
         "emt",
+        "expr",
         "ext_pot",
         "fehe",
         "gpr",
-        "imd",
         "lammps",
         "lenosky_si",
         "lj",
         "ljcluster",
         "metatomic",
+        "mopac",
         "morse_pt",
         "mpi",
-        "new_pot",
-        "pyamff",
-        "python",
-        "qsc",
         "rgpot",
-        "socket_nwchem",
+        "socketnwchem",
+        "SocketNWChem",
         "spce",
         "sw_si",
         "tersoff_si",
@@ -583,7 +583,6 @@ class PotentialConfig(BaseModel):
         "vasp",
         "xtb",
         "zbl",
-        "zpice",  # TODO(rg): probably not present anymore
     ] = Field(
         default="lj",
         description="Type of potential to execute.",
@@ -592,26 +591,26 @@ class PotentialConfig(BaseModel):
     Options:
      - ``ams``: Amsterdam Modeling Suite potential.
      - ``ams_io``: Amsterdam Modeling Suite via the I/O.
+     - ``ase_nwchem``: ASE interface for NWChem (``ase_nwcem`` is an accepted alias).
      - ``ase_orca``: ASE interface for ORCA quantum chemistry package.
-     - ``bop``: Bond order potential for metals. [unused]
-     - ``bopfox``: Bond order potential, for metals. [unused]
      - ``cuh2``: Potential for copper hydride systems.
      - ``eam_al``: Embedded atom method parameterized for aluminum.
+     - ``dftd3``: Grimme DFT-D3 via rgpot 3.1 s-dftd3 (``[D3Pot]``).
+     - ``dftd4``: Grimme DFT-D4 via rgpot 3.1 dftd4 (``[D4Pot]``).
      - ``edip``: Environment-Dependent Interatomic Potential, for carbon.
      - ``emt``: Effective medium theory, for metals.
+     - ``expr``: rgpot ExprPot algebra over named terms (``[ExprPot]``
+       expression and comma-separated terms: lj, morse, zbl, d3, d4).
      - ``ext_pot``: External potential with system call interface.
      - ``fehe``: Potential for iron-hydrogen systems.
      - ``gpr``: Gaussian process regression potential.
-     - ``imd``: IMD simulation package interface.
      - ``lammps``: The LAMMPS potentials.
      - ``lenosky_si``: Lenosky potential, for silicon.
-     - ``lj``: Lennard-Jones potential in reduced units.
-     - ``ljcluster``: Lennard-Jones cluster potential.
-     - ``morse_pt``: Morse potential for platinum.
+     - ``lj``: Lennard-Jones potential in reduced units (served by rgpot).
+     - ``ljcluster``: Lennard-Jones cluster potential (served by rgpot).
+     - ``mopac``: rgpot 3.2 MOPACPot (libmopacc, default AM1; ``[MOPACPot]``).
+     - ``morse_pt``: Morse potential for platinum (served by rgpot).
      - ``mpi``: Communicate with an MPI process to calculate energy and forces.
-     - ``pyamff``: Python implementation of the AMFF potential.
-     - ``python``: Custom python potential.
-     - ``qsc``: Quantum Sutton-Chen potential, for FCC metals.
      - ``rgpot``: In-process rgpot backends (NWChem / CPMD / metatomic / xTB via dlopen).
      - ``spce``: Simple Point Charge model for water.
      - ``sw_si``: Stillinger-Weber potential, for silicon.
@@ -622,7 +621,16 @@ class PotentialConfig(BaseModel):
      - ``unknown``: Placeholder for unknown potential type.
      - ``vasp``: Vienna Ab-Initio Simulation Program (VASP) interface.
      - ``xtb``: Extended Tight Binding model.
+     - ``zbl``: Ziegler-Biersack-Littmark screened nuclear repulsion (served by rgpot).
     """
+    emt_rasmussen: Optional[bool] = Field(
+        default=False,
+        description="Use the Rasmussen EMT parameterization.",
+    )
+    potentials_path: Optional[str] = Field(
+        default=None,
+        description="Directory of extra potential data files.",
+    )
     log_potential: Optional[bool] = Field(
         default=None,
         description="If true, write timing information about each force call to client.log.",
@@ -632,7 +640,7 @@ class PotentialConfig(BaseModel):
     def set_log_potential(cls, v, values):
         if v is None:
             potential = values.get("potential")
-            if potential in {"mpi", "vasp", "bop", "bopfox"}:
+            if potential in {"mpi", "vasp"}:
                 return True
             else:
                 return False
@@ -715,9 +723,7 @@ class RgpotPot(BaseModel):
     theory: str = Field(
         default="scf", description="Theory level for the NWChem backend."
     )
-    scf_type: str = Field(
-        default="rhf", description="SCF type for the NWChem backend."
-    )
+    scf_type: str = Field(default="rhf", description="SCF type for the NWChem backend.")
     functional: str = Field(
         default="BLYP", description="XC functional for the CPMD backend."
     )
@@ -767,9 +773,7 @@ class RgpotPot(BaseModel):
         default="GFN2xTB",
         description="XTB paramset when backend=xtb.",
     )
-    accuracy: float = Field(
-        default=1.0, description="XTB accuracy when backend=xtb."
-    )
+    accuracy: float = Field(default=1.0, description="XTB accuracy when backend=xtb.")
     electronic_temperature: float = Field(
         default=300.0,
         description="XTB electronic temperature (K) when backend=xtb.",
@@ -777,9 +781,7 @@ class RgpotPot(BaseModel):
     max_iterations: int = Field(
         default=250, description="XTB max iterations when backend=xtb."
     )
-    uhf: int = Field(
-        default=0, description="XTB unpaired electrons when backend=xtb."
-    )
+    uhf: int = Field(default=0, description="XTB unpaired electrons when backend=xtb.")
     engine_root: str = Field(
         default="", description="Engine installation root (NWCHEM_ROOT / CPMD_ROOT)."
     )
@@ -995,9 +997,9 @@ class SaddleSearchConfig(BaseModel):
         relaxation internally. ``direction.dat`` is optional and only biases
         the initial push when present.
     """
-    min_mode_method: Literal[
-        "dimer", "lanczos", "davidson", "gprdimer", "artn"
-    ] = Field(default="dimer", description="Min-mode method to use.")
+    min_mode_method: Literal["dimer", "lanczos", "davidson", "gprdimer", "artn"] = (
+        Field(default="dimer", description="Min-mode method to use.")
+    )
     """
     Options:
      - ``dimer``: Use the dimer min-mode method from :cite:t:`ss-henkelmanDimerMethodFinding1999`
@@ -1063,18 +1065,24 @@ class SaddleSearchConfig(BaseModel):
         default=0.0,
         description="Relative probability to displace with an epicenter listed in displace_atom_list.",
     )
-    displace_atom_list: Union[str, list[int]] = Field(
+    displace_atom_list: Union[str, list[int], int] = Field(
         default="0",
-        description="0-based atom indices to use as displacement epicenters, separated by commas. "
-        "Example: 10, 20, -1 would be atoms 10, 20, and the last atom. "
-        "When displace_atom_kmc_state_script is set, this list is populated dynamically "
-        "per AKMC state from the script's output.",
+        description="CON file-order rows (the order atoms appear in the .con) used as "
+        "displacement epicenters, comma-separated. After load, Structure/Matter "
+        "sort unique atom_ids; the list is remapped through that sort. "
+        'Lone -1 (int, [-1], or "-1") means every free atom. A mixed list '
+        "does not treat -1 as the last atom or as a wrap. Example: 0, 1, 2 "
+        "is the first three file rows. When displace_atom_kmc_state_script is "
+        "set, the script prints Structure-row indices of the temp .con "
+        "(atom_id order); those are not remapped as original file-order.",
     )
     displace_atom_kmc_state_script: str = Field(
         default="",
         description="Path to a Python script that determines which atoms to displace. "
-        "The script receives the path to a .con file as its sole positional argument "
-        "and must print a comma-separated list of 0-based atom indices to stdout. "
+        "The script receives a temp .con written by savecon(Structure) (atom_id / "
+        "Structure order) and must print a comma-separated list of 0-based Structure-row "
+        "indices of that file to stdout. Those indices are not remapped as original "
+        "user .con file-order. "
         "It is executed once per new AKMC state; the result is cached in state.info. "
         "The path can be relative (resolved against the eOn root directory) or absolute. "
         "See the displacement scripts tutorial for worked examples.",
@@ -1117,8 +1125,7 @@ class SaddleSearchConfig(BaseModel):
         description="When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered converged onto a saddle point.",
     )
     max_iterations: int = Field(
-        default=1000,
-        description="The maximum number of translation steps to be taken."
+        default=1000, description="The maximum number of translation steps to be taken."
     )
     nonlocal_count_abort: int = Field(
         default=0,
@@ -1142,7 +1149,8 @@ class SaddleSearchConfig(BaseModel):
         "'last_atom': the last atom in the configuration. "
         "'least_coordinated': the atom with the fewest neighbours. "
         "'not_fcc_hcp_coordinated': an atom whose local structure is neither FCC nor HCP. "
-        "'listed_atoms': an atom from displace_atom_list (parsed from config, no server displacement file needed). "
+        "'listed_atoms': pick a free atom from displace_atom_list and apply "
+        "a client-side radius/magnitude displacement (no server displacement file). "
         "'load': read a displacement vector from a file written by the server.",
     )
     stdev_translation: float = Field(
@@ -1248,6 +1256,7 @@ class SaddleSearchConfig(BaseModel):
         default=30,
         description="The minimum number of active atoms for confining the positive region of the PES, undocumented.",
     )
+
 
 class KDBConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
@@ -1727,7 +1736,18 @@ class NudgedElasticBandConfig(BaseModel):
     )
     neb_climbing_image_converged_only: bool = Field(
         default=True,
-        description="Indicates if only the climbing image converged is used.",
+        description=(
+            "If true, NEB convergence compares the climbing image to the force "
+            "tolerance, but only after the rest of the band is within "
+            "climbing_image_band_slack times that tolerance."
+        ),
+    )
+    neb_climbing_image_band_slack: float = Field(
+        default=10.0,
+        description=(
+            "When climbing_image_converged_only is true, reject convergence if "
+            "any non-CI image exceeds this multiple of the force tolerance."
+        ),
     )
     neb_doubly_nudged: bool = Field(
         default=False, description="Indicates if the doubly nudged method is used."
@@ -1882,6 +1902,13 @@ class LanczosConfig(BaseModel):
         default=True,
         description="If the relative change between the previous lowest eigenvalue and the curvature along the initial direction is less than the tolerance, terminate.",
     )
+    phva_atoms: Union[str, list[int]] = Field(
+        default="All",
+        description=(
+            "PHVA mobile/active atoms for the Lanczos Krylov space (not free/fixed): "
+            "comma-delimited indices or 'All' for every free atom."
+        ),
+    )
 
 
 class DavidsonConfig(BaseModel):
@@ -1898,6 +1925,13 @@ class DavidsonConfig(BaseModel):
     diagonal_preconditioner: bool = Field(
         default=False,
         description="Use a cheap | (H v)_i / v_i | heuristic preconditioner (not the true Hessian diagonal).",
+    )
+    phva_atoms: Union[str, list[int]] = Field(
+        default="All",
+        description=(
+            "PHVA mobile/active atoms for the Davidson Ritz space (not free/fixed): "
+            "comma-delimited indices or 'All' for every free atom."
+        ),
     )
 
 
@@ -1986,9 +2020,12 @@ class BGSDConfig(BaseModel):
 
 class HessianConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
-    atom_list: Union[str, list[int]] = Field(
+    phva_atoms: Union[str, list[int]] = Field(
         default="All",
-        description="The atoms that will be displaced in the calculation of the Hessian: a comma delimited list of atom indices, e.g. 0,1,2. Default is 'All'.",
+        description=(
+            "PHVA mobile/active atoms displaced in the Hessian FD (not free/fixed): "
+            "comma-delimited indices, e.g. 0,1,2, or 'All' for every free atom."
+        ),
     )
     zero_freq_value: float = Field(
         default=1e-6, description="The value assigned to zero frequencies."

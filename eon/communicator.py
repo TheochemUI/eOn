@@ -106,6 +106,67 @@ class EONClientError(Exception):
     pass
 
 
+RETURN_FILES_MANIFEST = "return_files.dat"
+# Legacy harvest (no manifest) keeps these suffixes. A manifest overrides
+# the filter so declared .json / .log files arrive and undeclared files do not.
+_HARVEST_EXTENSIONS = (".con", ".dat", ".json", ".log")
+
+
+def read_return_files_manifest(jobpath):
+    """Return the filenames listed in return_files.dat, or None if absent."""
+    manifest = os.path.join(jobpath, RETURN_FILES_MANIFEST)
+    if not os.path.isfile(manifest):
+        return None
+    names = []
+    with open(manifest, "r") as f:
+        for line in f:
+            name = line.strip()
+            if not name or name.startswith("#"):
+                continue
+            names.append(os.path.basename(name))
+    return names
+
+
+def _read_result_file(path):
+    with open(path, "r") as f:
+        return StringIO(f.read())
+
+
+def harvest_job_files(jobpath):
+    """Harvest one non-bundled job directory into {filename: StringIO}.
+
+    When return_files.dat is present, only those names (plus results.dat)
+    are kept, any extension. A listed file that was never written is
+    logged and omitted. Without a manifest, keep .con/.dat/.json/.log.
+    """
+    listed = read_return_files_manifest(jobpath)
+    files = {}
+    if listed is None:
+        for filename in glob.glob(os.path.join(jobpath, "*.*")):
+            if filename.endswith(_HARVEST_EXTENSIONS):
+                fname = os.path.basename(filename)
+                files[fname] = _read_result_file(filename)
+        return files
+    wanted = list(listed)
+    if "results.dat" not in wanted:
+        wanted.append("results.dat")
+    seen = set()
+    for fname in wanted:
+        if fname in seen:
+            continue
+        seen.add(fname)
+        path = os.path.join(jobpath, fname)
+        if not os.path.isfile(path):
+            logger.warning(
+                "returnFiles lists %s but it is missing under %s",
+                fname,
+                jobpath,
+            )
+            continue
+        files[fname] = _read_result_file(path)
+    return files
+
+
 class Communicator:
     def __init__(self, scratchpath, bundle_size=1, config: ConfigClass = None):
         if config is None:
@@ -182,24 +243,14 @@ class Communicator:
 
             if not is_bundle:
                 # Only a single task inside this job, no need to unbundle.
-                for filename in glob.glob(os.path.join(jobpath, "*.*")):
-                    if not (filename.endswith(".con") or
-                            filename.endswith(".dat")):
-                        continue
-                    rootname, fname = os.path.split(filename)
-                    f = open(filename,'r')
-                    filedata = StringIO(f.read())
-                    f.close()
-
-                    # add result to results
-                    results[0][fname] = filedata
-                    results[0]['number'] = 0
+                harvested = harvest_job_files(jobpath)
+                results[0].update(harvested)
+                results[0]['number'] = 0
             else:
                 # Several tasks bundled inside this job, we need to unbundle.
                 filenames = glob.glob(os.path.join(jobpath,"*_[0-9]*.*"))
                 for filename in filenames:
-                    if not (filename.endswith(".con") or
-                            filename.endswith(".dat")):
+                    if not filename.endswith(_HARVEST_EXTENSIONS):
                         continue
 
                     # parse filename
@@ -438,32 +489,34 @@ class Local(Communicator):
 
     def check_job(self, job):
         p, jobpath = job[0], job[1]
-        # Close the stdout file handle if present so the file can be read
-        if len(job) > 2 and job[2] and not job[2].closed:
-            job[2].close()
+        # Close stdout/stderr file handles so the files can be read for diagnostics.
+        for handle in job[2:]:
+            if handle and not handle.closed:
+                handle.close()
         if p.returncode == 0:
             logger.info('Job finished: %s' % jobpath)
             return True
         else:
-            stdout, stderr = p.communicate()
             rc = p.returncode
-            # Read stdout.dat for additional diagnostics
-            stdout_log = ""
-            stdout_path = os.path.join(jobpath, "stdout.dat")
-            try:
-                with open(stdout_path) as f:
-                    stdout_log = f.read().strip()
-            except OSError:
-                pass
+            # stderr is a file (stderr.dat), not a pipe: never call
+            # communicate() for it. Read both logs from disk for the failure
+            # path so a dead/hung client cannot leave the parent blocked on a
+            # full undrained pipe either.
             errmsg = "job failed: %s (return code %s)" % (jobpath, rc)
-            if stderr:
-                errmsg += "\n  stderr: %s" % stderr.decode(errors='replace')
-            if stdout_log:
-                # Show last few lines of stdout for context
-                lines = stdout_log.splitlines()
-                tail = "\n  ".join(lines[-10:])
-                errmsg += "\n  stdout (last lines): %s" % tail
-            if not stderr and not stdout_log:
+            saw_output = False
+            for name in ("stderr.dat", "stdout.dat"):
+                path = os.path.join(jobpath, name)
+                try:
+                    with open(path) as f:
+                        text = f.read().strip()
+                except OSError:
+                    text = ""
+                if text:
+                    saw_output = True
+                    lines = text.splitlines()
+                    tail = "\n  ".join(lines[-10:])
+                    errmsg += "\n  %s (last lines): %s" % (name, tail)
+            if not saw_output:
                 errmsg += "\n  no output captured; client may have failed to start"
                 if os.name == 'nt' and (rc < 0 or rc > 0x80000000):
                     errmsg += " (Windows error code 0x%X may indicate a missing DLL)" % (rc & 0xFFFFFFFF)
@@ -477,9 +530,15 @@ class Local(Communicator):
         for jobpath in self.make_bundles(data, invariants):
             # move the job directory to the scratch directory
             # update jobpath to be in the scratch directory
-            fstdout = open(os.path.join(jobpath, "stdout.dat"),'w')
-            p = Popen(self.client, cwd=jobpath, stdout=fstdout, stderr=PIPE)
-            self.joblist.append((p, jobpath, fstdout))
+            # Redirect both streams to files. stderr=PIPE with an undrained
+            # pipe deadlocks once the client writes past one OS pipe buffer
+            # (~64 KiB on Linux): the child blocks in anon_pipe_write while
+            # the parent only polls p.poll() and never reads the pipe until
+            # after exit. FPE floods and long client diagnostics both hit this.
+            fstdout = open(os.path.join(jobpath, "stdout.dat"), 'w')
+            fstderr = open(os.path.join(jobpath, "stderr.dat"), 'w')
+            p = Popen(self.client, cwd=jobpath, stdout=fstdout, stderr=fstderr)
+            self.joblist.append((p, jobpath, fstdout, fstderr))
 
             while len(self.joblist) == self.ncpus:
                 for i in range(len(self.joblist)):

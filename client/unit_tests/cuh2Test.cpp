@@ -19,9 +19,9 @@
 
 #include <algorithm>
 
-#include "../Matter.h"
-#include "../Parameters.h"
 #include "CuH2Test.h"
+#include "eon/Matter.h"
+#include "eon/Parameters.h"
 
 namespace tests {
 

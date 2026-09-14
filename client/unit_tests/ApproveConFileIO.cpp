@@ -9,12 +9,12 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "ConFileIO.h"
-#include "HelperFunctions.h"
-#include "Matter.h"
-#include "Parameters.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/ConFileIO.h"
+#include "eon/HelperFunctions.h"
+#include "eon/Matter.h"
+#include "eon/Parameters.h"
 
 #include <chrono>
 #include <cmath>
@@ -66,8 +66,13 @@ std::string read_master(const std::string &name) {
 }
 
 std::shared_ptr<Matter> load_reactant() {
-  Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  // Matter stores a raw Parameters*; this helper's Matter outlives the
+  // function, so the Parameters cannot be a local.
+  static Parameters params = [] {
+    Parameters p;
+    p.potential_options.potential = PotType::LJ;
+    return p;
+  }();
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   REQUIRE(eonc::io::io_ok(m->con2matter(std::string("reactant.con"))));
@@ -123,9 +128,12 @@ TEST_CASE("VerifyForceBearingWrite", "[approval][confileio][modern]") {
   REQUIRE(eonc::io::io_ok(m->matter2con(tmp.string(), false)));
   eonc::io::set_write_con_forces(false);
 
-  std::ifstream in(tmp);
-  std::string body((std::istreambuf_iterator<char>(in)),
-                   std::istreambuf_iterator<char>());
+  std::string body;
+  {
+    std::ifstream in(tmp);
+    body.assign((std::istreambuf_iterator<char>(in)),
+                std::istreambuf_iterator<char>());
+  }
 
   Parameters params;
   params.potential_options.potential = PotType::LJ;
@@ -159,9 +167,12 @@ TEST_CASE("VerifyDefaultWriteHasNoForceSections",
   const auto tmp = make_tmp_con("default_no_forces");
   REQUIRE(eonc::io::io_ok(m->matter2con(tmp.string(), false)));
 
-  std::ifstream in(tmp);
-  std::string body((std::istreambuf_iterator<char>(in)),
-                   std::istreambuf_iterator<char>());
+  std::string body;
+  {
+    std::ifstream in(tmp);
+    body.assign((std::istreambuf_iterator<char>(in)),
+                std::istreambuf_iterator<char>());
+  }
 
   // Classic layout: no per-component force sections and no forces entry in
   // the metadata sections list, so ASE-class readers keep parsing our output.
@@ -193,9 +204,12 @@ TEST_CASE("VerifyNebPathCloneWrite", "[approval][confileio][neb]") {
   const auto tmp = make_tmp_con("neb_band");
   REQUIRE(eonc::io::io_ok(eonc::io::writeNebPath(tmp.string(), path, metas)));
 
-  std::ifstream in(tmp);
-  std::string body((std::istreambuf_iterator<char>(in)),
-                   std::istreambuf_iterator<char>());
+  std::string body;
+  {
+    std::ifstream in(tmp);
+    body.assign((std::istreambuf_iterator<char>(in)),
+                std::istreambuf_iterator<char>());
+  }
   fs::remove(tmp);
 
   std::ostringstream summary;

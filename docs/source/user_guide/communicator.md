@@ -10,13 +10,16 @@ myst:
 `eOn` has a server client architecture for running its calculations. The
 simulation data is stored on the server and clients are sent jobs and return the
 results. Each time `eOn` is run it first checks to see if any results have come
-back from clients and processes them accordingly and then submits more jobs if
+back from clients and processes them, then submits more jobs if
 needed. In `eOn` there are several different ways to run jobs. One can run them
 locally on the server, via MPI,  or using a job queuing system such as
 [SGE](http://www.oracle.com/us/products/tools/oracle-grid-engine-075549.html).
 
 ```{note}
-As of version 2.0 onwards, we recommend using dedicated workflow management tools (like [AiiDA](https://www.aiida.net/) or [Snakemake](https://snakemake.readthedocs.io/) or [Fireworks](https://materialsproject.github.io/fireworks)) instead of using `eOn` to generate submission scripts.
+From 2.0 on, prefer a workflow manager over eOn-generated submit
+scripts. For AiiDA the plugin is {doc}`aiida` (`pip install aiida-eon`).
+Snakemake and [FireWorks](https://materialsproject.github.io/fireworks)
+remain valid alternatives.
 ```
 
 ## Configuration
@@ -43,7 +46,7 @@ client_path = "eonclient-custom"
 number_of_cpus = 8
 ```
 
-## Additional Topics
+## Additional topics
 
 ```{versionchanged} 2.0
 Potentials which can be run in parallel, like those accessed through ASE (e.g. ORCA) are always run in parallel, for the others, there is little to no benefit for this additional overhead.
@@ -67,8 +70,7 @@ variable `eOn_NUMBER_OF_CLIENTS` determines how many of the ranks
 should become clients and `eOn_SERVER_PATH` is the path to the
 server Python script. In MPI mode the clients need to be started
 instead of the server and one of them will become the server process.
-Currently only AKMC is supported. Below is an example of running using
-the MPI communicator:
+Currently only AKMC is supported. Example MPI communicator run:
 
 ```{code-block} bash
 #!/bin/bash

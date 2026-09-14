@@ -2,6 +2,332 @@
 
 <!-- towncrier release notes start -->
 
+## [3.2.0](https://github.com/TheochemUI/eOn/tree/3.2.0) - 2026-08-16
+
+### Added
+
+- The basic-eon workflow runs the tests/ suite on Unix after the
+  client install, including the `sh` package those process tests import.
+  Job modules import `version` from the `eon` package so a source-tree
+  checkout without generated `version.py` still dispatches.
+- User guide for the AiiDA plugin (`pip install aiida-eon`) at
+  `docs/source/user_guide/aiida.md`. The communicator page now links
+  there.
+- `RgpotAdapter` reports `caps().batched` and forwards a band of images to
+  `rgpot::forceBatchImpl`, so a kernel that evaluates several systems in
+  one call sees the whole band. The wrap tracks the rgpot branch that
+  adds `ForceBatch` until a tag carries it.
+
+### Changed
+
+- Appending a frame to a `.con` no longer reads and rewrites the whole movie. `matter2con(filename, append=true)` serializes the new frame on its own and concatenates it, so writing an N-frame trajectory costs N frame writes instead of N(N+1)/2, and per-step movie writers such as `dynamics.con`, `movie.con`, and the basin hopping trial movies stop growing quadratically with step count. Output bytes are unchanged: a movie built by repeated appends is identical to the same frames written in one call. A target eOn did not write, or whose size or modification time moved since eOn wrote it, is still parsed once before anything is added, so an unparseable file yields an append error with its bytes intact. Gzip and zstd targets keep the read-and-rewrite path because a compressed member cannot be extended in place.
+- C++ wrap and Python pins move to readcon 0.14.5 together, so the client
+  can read the spec-3 files the 0.14 writer emits. x-only constraints
+  round-trip on the client and the Python Structure writer (readcon-core #25).
+  0.14.5 ships a win_amd64 wheel, so Windows CI does not build the sdist.
+- Rewrite the Sphinx user guide, tutorials, install notes, developer
+  docs, and older release pages so they no longer trip the house
+  prose rules (robust, comprehensive, below is, out of the box,
+  highlighting, first-class, ship-as-verb, and the rest of that list).
+  Drop remaining X-not-Y contrast frames: state what each path is.
+
+### Fixed
+
+- ASE-NWChem and ASE-ORCA calculators each get a private work directory instead
+  of `directory='.'`, so concurrent LocalInProcess jobs do not clobber each
+  other's scratch files. Calculator errors throw rather than abort the process.
+- Bond-boost hyperdynamics advances the equilibration counter once per MD step.
+  `boost()` only evaluates the current bias, so ParallelReplica (which also
+  installs the bias potential on the trajectory) and SafeHyper share the same
+  `rmd_time` schedule.
+- Constructing a `VASP` potential no longer deletes the working directory's contents. The constructor removed fifteen files, among them `WAVECAR`, `CHGCAR`, `TMPCAR` and `OUTCAR`, so a client restarted in a directory lost the wavefunction and charge density an `ISTART`/`ICHARG` restart reads, along with the previous run's record; and a potential built after the first force call, as `AtomicGPDimer` does, deleted `FU` and `NEWCAR` out from under a VASP process that was still running. A run now clears only the three handshake files it owns, `FU`, `NEWCAR` and `STOPCAR`, once, immediately before it starts VASP. `STOPCAR` was never removed although eOn writes it at shutdown, so a client restarted after a clean shutdown handed the new VASP an abort instruction on its first ionic step. Discarding the results and restart files is available as `VASP::removeStaleFiles()` for a caller that means to start from an empty directory; the `examples/akmc-vasp-slurm` scripts already do the same removals in shell.
+- Copying a Matter leaves biasPotential null. Copy-assign used to skip
+  that pointer, so getBiasForces read an indeterminate BondBoost and
+  the Python suite died on main.
+- Library code no longer calls `std::exit` on a bad `convergence_metric`, FIRE time-step collapse, or basin-hopping / global-optimization enum typo. Those errors throw, so a Python caller inside `gil_scoped_release` gets an exception instead of a silent interpreter kill. Unknown enumerated strings are rejected when `Parameters` is loaded.
+- On Windows, ExtPot launches a suffix-less ext_pot wrapper with python.
+  cmd.exe does not honor a shebang, so a quoted path to the script was
+  not a runnable command.
+- Potential loaders probe plugin libraries on disk before `dlopen`, and `LammpsLoader` no longer loads `liblammps` just to ask whether it is present. Availability checks therefore skip the banner-printing static initializers those libraries run on load.
+- Setting ``params.write_con_forces`` on a pyeonclient Parameters object now writes force sections for that Matter. A ``ConFrameMetadata.write_con_forces`` value overrides the process-wide flag so two writers can disagree.
+- The external-program potential backends (`AMS`, `AMS_IO`, `ExtPot`, `VASP`) now check every file open, read and shell command instead of trusting them. A missing, truncated or stale result file previously left the force and energy arrays holding whatever they held before, and those values went straight into the optimizer; they now raise an error naming the file and how many atoms were read. `AMS_IO` also truncates `ams_output` rather than appending to it, so a failed run cannot hand back the previous run's forces, and `VASP` rejects a structure whose species are not in contiguous runs rather than writing a `POSCAR` whose counts disagree with its coordinates.
+- The readcon wrap overlay still cargo-builds both crate types. A generated
+  .c that depends on that custom_target is the ninja order edge, so eonclib
+  does not link before the outputs exist and does not record NEEDED
+  libreadcon_core.so or pass the DLL to MSVC.
+- `ExtPot` and `VASP` no longer claim to be safe to call from several threads on one instance. Both exchange structures and forces through files at fixed names, so the parallel image evaluation in `NudgedElasticBand`, `ImprovedDimer` and `ProcessSearchJob` had every thread writing one input file and reading one result file, and images took each other's forces. `ExtPot` also asks for a potential instance per image, which gives each thread an exchange directory of its own and keeps the evaluation parallel; `VASP` cannot, since every instance drives the same VASP process through the same files, so its image evaluation runs sequentially. The other external-program backends (`ASE`, `ASE_NWCHEM`, `ASE_ORCA`, `LAMMPS`) already declared both.
+- `ExtPot` runs the external program in a private exchange directory named `extpot_<pid>_<n>` instead of the client's working directory. The exchange files keep their names, `from_eon_to_extpot` and `from_extpot_to_eon`, so a wrapper that opens them by relative name needs no change; two clients started in one directory can no longer read each other's structures and forces. A relative `ext_pot_path` that names an existing file, such as the default `./ext_pot`, is resolved before the command runs; a command line with arguments needs an absolute path to the script, and `EON_EXTPOT_RUN_DIR` names the directory eOn runs in for a wrapper that has to reach it. On Windows a resolved Python wrapper (shebang or `.py`) is invoked through `python.exe`, because `cmd.exe` will not run an extensionless file. The previous result file is removed before each call, so an external program that exits successfully without writing one raises an error rather than handing back the previous call's forces.
+- `PotRegistry` is a process-lifetime heap singleton, so a `Potential` destroyed during interpreter finalization no longer calls into a destroyed registry or locks a destroyed mutex.
+- `loadposcar` accepts both VASP 4 (integer counts after the cell, as the kdb tool writes) and VASP 5 (species names then counts, as `saveposcar` and the server movie files write). eOn can read back `movie.poscar`, `dynamics.poscar`, and the other `movie.py` outputs it wrote.
+- `matter2xyz` writes extended XYZ: the comment carries `Lattice="..."` so a reader can reconstruct the cell, and coordinates use 17 significant digits to match the CON path. Appending a frame whose atom count differs from the last frame in the file is rejected and leaves the file unchanged.
+- `min_mode_method = gprdimer` without `-Dwith_gprd=true` is an error.
+  The search no longer falls through to ImprovedDimer and reports a
+  nonnegative-mode abort.
+- `savecon(..., w="a")` appends one serialized `.con` frame instead of reading the whole movie back and rewriting it. Gzip and zstd targets still rewrite, because a compressed member cannot be extended in place.
+- pyeonclient Structure/Matter conversion looks up every element (H–Og) without importing the server package, and raises on an unknown atomic number instead of writing a fabricated ``Z79`` symbol.
+
+
+## [3.1.0](https://github.com/TheochemUI/eOn/tree/3.1.0) - 2026-08-08
+
+### Changed
+
+- pyeonclient 0.4.0: the potentials it exposes come from ``librgpot`` now
+  rather than eOn's in-tree kernels, so the wheels bundle that library and
+  no longer carry per-pot plugin objects. The Python API is unchanged --
+  the same ``potential`` names select the same physics.
+
+  Its wheel workflow gained a ``target`` input so an upload can be
+  rehearsed against TestPyPI before the irreversible one; a
+  ``pyeonclient-v*`` tag still goes straight to PyPI.
+
+### Fixed
+
+- Fat ``MetatomicPotential`` loads exported PET-MAD (and similar) models on
+  metatensor-torch 0.10.3: scripted modules without ``_mts_buffer_names`` no
+  longer trip the mixed-dict ``.to()`` walk.
+
+
+## [3.0.0](https://github.com/TheochemUI/eOn/tree/3.0.0) - 2026-07-26
+
+### Added
+
+- Continuous ASV dashboard: results history on the `asv-results` orphan branch, asv-tachyon UI under `gh-pages/bench/`, optional Netlify deploy for bench.eondocs.org.
+  Windows CI: robust MSVC activation (VS 18 runners) and strip GNU link.exe from PATH for meson test. ([#378](https://github.com/TheochemUI/eOn/issues/378))
+- PHVA mobile/active sets for dense Hessian and matrix-free min-mode via
+  ``phva_atoms`` (default ``All`` = all free atoms). Free/fixed stays the
+  optimizer mask; Krylov dimension is ``3 * N_active``. Shared
+  ``resolveMobileAtoms`` drives ``HessianJob``, Lanczos, and Davidson.
+  pyeonclient: ``Lanczos``/``Davidson.compute(..., atoms=)``,
+  ``resolve_mobile_atoms``, ``free_atom_indices``, and
+  ``Parameters.hessian_phva_atoms`` / ``lanczos_phva_atoms`` /
+  ``davidson_phva_atoms``. INI keys: ``[Hessian|Lanczos|Davidson] phva_atoms``. ([#379](https://github.com/TheochemUI/eOn/issues/379))
+- Cap'n Proto ``schema/eon_job_result.capnp`` defines typed ``JobRequest`` /
+  ``JobResult`` / flat ``Geometry`` envelopes for the in-process control plane
+  (kill-file-IPC). ``eon_schema.jobs`` provides ``results.dat`` adapters for
+  legacy paths. ([#381](https://github.com/TheochemUI/eOn/issues/381))
+- Vendored vesin updates to 0.6.0 with three local extensions carried as
+  upstream candidates: a CPU implementation of the declared-but-missing
+  ``VesinBruteForce`` algorithm (nearest-image MIC pair search), lazy
+  thread-pool worker spawn (serial consumers stop paying
+  ``hardware_concurrency()`` thread creations per process), and a fused pair
+  visitation API (``vesin_neighbors_visit`` plus the header-only
+  ``vesin_visit.hpp``).
+
+  Every Fortran-backed potential draws its neighbours from vesin rather than
+  from pot-local scaffolding: the EDIP and Lenosky cell/ghost machinery is
+  gone, Tersoff trades its O(N^3) sweeps for per-atom lists, and SW's silent
+  ``MAXNEI`` overflow and FeHe's 800-neighbour gather ceiling are hard errors
+  instead of quiet truncation. Those kernels moved to rgpot in the same
+  release (see below), so the vesin Fortran interface is vendored there
+  rather than here; eOn's vendored copy is the C++ translation unit only. ([#389](https://github.com/TheochemUI/eOn/issues/389))
+- Documentation systems tutorials (Morse Pt NEB, LJ minimization, Pt saddle) with
+  built-in potentials and current `rgpycrumbs` / `plt-neb` / `plt-min` conventions
+  (1:1 reaction-valley landscapes, full structure strips, one min landscape per
+  endpoint).
+- Optimized hyperplanar TST (OH-TST) job (Johannesson and Jonsson, J. Chem. Phys.
+  115, 9644 (2001)): a `job = oh_tst` mode that progresses a hyperplanar dividing
+  surface by reversible work with thermostatted, plane-constrained sampling, and
+  reports the free-energy barrier and crossing rate. Supports Andersen or GLE
+  colored-noise (Ceriotti-Bussi-Parrinello) thermostats and symmetry-restricted
+  sampling of equivalent product minima. Configured under `[OH_TST]`.
+
+### Developer
+
+- Golden masters for CPython server atoms helpers vs pre-#368 scalar code; eon.fileio load/save/round-trip via live readcon fixtures; document chemfiles as optional and unused on server .con path. ([#370](https://github.com/TheochemUI/eOn/issues/370))
+- Windows metatomic CI follows the metatomic/metatensor torch workflow:
+  windows-2022, setup-python, pip CPU torch (PIP_EXTRA_INDEX_URL), and MSVC,
+  with pixi for C++ deps and flang. In-tree Fortran pots and CuH2 stay enabled
+  via feedstock-style flang_rt LIBPATH and MSVC AR=lib. Catch2 runs on the basic
+  multi-OS matrix including windows-2022; ConFileIO tests close temp streams
+  before remove (Windows file locks); inih example tests strip CR for MSVC
+  text-mode stdout. ([#377](https://github.com/TheochemUI/eOn/issues/377))
+- The Windows CI step that used to load ``eon_sw.dll`` and assert it exports a
+  bare ``sw_`` now audits ``librgpot`` instead: the kernels ship inside it with
+  hidden linkage, so the check is that *no* legacy Fortran name reaches the
+  export table, which is the PE counterpart of the Linux ``FortranSymbolAudit``.
+  It accepts a ``--default-library=static`` build, where the kernels land in an
+  archive that has no export table at all. ([#390](https://github.com/TheochemUI/eOn/issues/390))
+
+### Changed
+
+- Client public headers live under ``include/eon/`` (numpy/fmt layout). Sources
+  stay in ``client/``. Use ``#include "eon/Potential.h"`` (and
+  ``eon/fpe_handler.h``, ``eon/potentials/...``) with ``-I$prefix/include``.
+  Relative ``../`` includes are gone; headers install via ``install_subdir``. ([#379](https://github.com/TheochemUI/eOn/issues/379))
+- Classical C++ pair pots (LJ, Morse, LJCluster, QSC) use the shared
+  ``eonc::VesinNeighbors`` wrapper for neighbor lists instead of pot-local
+  Verlet / O(N^2) loops. Vesin is always linked into ``eoncbase`` so Metatomic
+  and classical pots share one NL backend. Client wall time continues to be
+  tracked by the existing ASV suite (``TimePointMorsePt``,
+  ``TimeMinimizationLJCluster``, Morse saddle/NEB); see ``benchmarks/README.md``. ([#386](https://github.com/TheochemUI/eOn/issues/386))
+- The Fortran-backed potentials (Stillinger-Weber, EDIP, Lenosky, Tersoff,
+  EAM aluminium, FeHe, CuH2, and TIP4P-H) are Fortran 2018 kernels inside
+  ``librgpot`` and evaluate through ``RgpotAdapter`` like the classical
+  pots. Each kernel was rewritten rather than wrapped: modules with
+  ``implicit none``, kinds from ``iso_fortran_env`` checked against the C
+  types at compile time, derived-type parameters in place of COMMON
+  blocks, ``intent`` on every argument, ``pure`` kernels, structured
+  control flow, and status returns instead of ``stop``. Neighbours come
+  from vesin, and the pair sums are restated as gathers so the atom loops
+  run under ``do concurrent``.
+
+  eOn no longer builds, installs, or dlopens Fortran: the ``eon_*.so``
+  plugin modules, their Windows ``.def`` export files, and the flang
+  runtime handling are gone. ``FortranPotLoader`` becomes ``PluginLoader``,
+  which still finds engine plugins (the rgpot metatomic and xtb backends)
+  across ``EON_POTENTIALS_PATH`` and ``[Potential] potentials_path``.
+
+  Configuration is unchanged: the same ``potential`` names select the same
+  physics, pinned by the existing reference energies in ``SiPotTest``,
+  ``EAMAlTest``, ``FeHeTest``, and ``cuh2Test``. ([#390](https://github.com/TheochemUI/eOn/issues/390))
+- ``[Hessian] phva_atoms`` replaces ``atom_list`` for the PHVA mobile set
+  (default still ``All``). The C++ client still accepts the legacy
+  ``atom_list`` key when ``phva_atoms`` is absent. Lanczos and Davidson
+  gain the same ``phva_atoms`` key in INI, schema, and ``config.yaml``.
+
+### Fixed
+
+- eOn no longer requires a Fortran compiler. It compiles no Fortran since the
+  kernels moved into ``librgpot``, but ``client/meson.build`` still asked for
+  the language with ``required: true`` whenever ``with_fortran`` or
+  ``with_cuh2`` was set -- both default on -- so every consumer had to supply
+  an unused toolchain. That bit hardest on builds against an *installed*
+  rgpot, which need none at all. The language is detected rather than
+  required now; a wrap build still finds it for rgpot's kernels, and the
+  Windows flang runtime discovery is gated on actually having one.
+
+  ``with_fortran`` and ``with_cuh2`` keep their meaning as potential
+  selectors: they gate the ``RgpotAdapter`` arms, not any compilation.
+- Local communicator writes client stderr to ``stderr.dat`` (no undrained
+  ``PIPE`` deadlock). The FPE continue handler masks the fault class in the
+  restored MXCSR so a single divide-by-zero cannot re-storm. The LAMMPS pot
+  worker demotes floating-point traps after fork and ``forceLocal`` uses
+  ``eat_fpe`` (same external-pot contract as ASE/Metatomic); SafeMath guards
+  remain on CG/dimer/min-mode bare divisions. ([#379](https://github.com/TheochemUI/eOn/issues/379))
+- Server-side process search and superbasin amsel gating receive a ``ConfigClass``
+  (no bare ``config`` / missing ``self.config``). Superbasin recycling passes
+  config into ``Recycling``. Restored ``atoms.identical`` for
+  indistinguishable-atom matching. ``LocalInProcess`` unpacks
+  ``Matter.relax`` as ``(Matter, converged)``. LAMMPS ``forceLocal`` restores
+  FE traps after ``eat_fpe``. Tip4p implements the full ``Potential::force``
+  signature (variance parameter). ([#380](https://github.com/TheochemUI/eOn/issues/380))
+- ClientEON and pyeonclient ``append_results_timing`` write the
+  ``results.dat`` timing footer as ``<value> <key>`` (same contract as
+  job writers and ``parse_results``), so ``time_seconds`` /
+  ``user_time`` / ``system_time`` parse as floats under those keys. ([#382](https://github.com/TheochemUI/eOn/issues/382))
+- AMS_IO writes the XC functional name into the run script: the
+  ``fprintf("xc %s\\n")`` call was missing its ``xc`` argument (undefined
+  behavior). ([#384](https://github.com/TheochemUI/eOn/issues/384))
+- ASE potential import and force failures throw ``std::runtime_error``
+  instead of ``exit(1)``, so pyeonclient / in-process callers can recover
+  instead of killing the whole process. ([#385](https://github.com/TheochemUI/eOn/issues/385))
+- LAMMPS worker path survives a bad geometry: non-finite or failed evaluations
+  reject the structure without ending the client, with bounded respawns,
+  SIGPIPE ignored on the pipe, serialised concurrent exchanges, and process
+  search reporting of how far a rejected endpoint landed from the reactant. ([#387](https://github.com/TheochemUI/eOn/issues/387))
+- Classical pair pots (LJ, Morse, LJCluster, QSC) use ``eonc::PairListCache``:
+  a process-global pool of Verlet-skin cached pair lists. The candidate list
+  builds at ``cutoff + skin`` once; force evaluations on geometries whose atoms
+  have moved less than ``skin/2`` since the build re-use the cached pairs and
+  derive exact vectors from current positions, with the true-cutoff filter
+  keeping results identical to a fresh build. On a cache miss in the MIC regime
+  the pair kernel inlines into the build's single brute-force scan, so one-shot
+  evaluations (point jobs) pay one pair sweep like the pre-list code did.
+  Proximity-matched pool slots keep NEB's per-image force path both race-free
+  and cache-warm, whether images are evaluated serially or in parallel — the
+  pool survives NEB's per-iteration worker threads. Fixes the ASV regressions
+  from the #386 vesin port (point / min / saddle / NEB wall times); minimization,
+  saddle-search, and NEB fixtures run faster than the pre-#386 baseline. ([#389](https://github.com/TheochemUI/eOn/issues/389))
+- A build that resolves rgpot through the subproject wrap now takes vesin
+  from rgpot instead of compiling eOn's vendored copy beside it. Both trees
+  carry the same upstream release, but rgpot's carries local patches its
+  Fortran interface binds to, so linking both left those objects calling a
+  symbol eOn's copy did not define. The vendored translation unit still
+  serves builds against an installed rgpot.
+
+  pyeonclient wheels need no shared object beside ``librgpot``: the Cap'n
+  Proto schema moved inside it, so importing ``pyeonclient._core`` no longer
+  depends on finding a separate ``libptlrpc.so`` at run time. ([#390](https://github.com/TheochemUI/eOn/issues/390))
+- Process registration no longer freezes the process-id counter when the
+  ``processtable`` contains duplicate ids. New process ids are
+  content-addressed with xxHash (``allocate_process_id`` / xxh64 over the
+  saddle payload and barrier), not ``len(procs)`` or ``max(id)+1``, so
+  procdata files are not overwritten. Duplicate appends raise.
+
+
+## [2.17.10](https://github.com/TheochemUI/eOn/tree/2.17.10) - 2026-07-20
+
+### Fixed
+
+- Optimizer file logs (``_lbfgs.log`` etc.) use a durable temp directory so
+  fixture workdir cleanup no longer races Quill file sinks.
+- Packaging: Catch2 ``--allow-running-no-tests`` for the optional rgpot embed
+  suite so all-SKIP without nwchemc/cpmdc is a clean success.
+
+
+## [2.17.9](https://github.com/TheochemUI/eOn/tree/2.17.9) - 2026-07-20
+
+### Fixed
+
+- EDIP OpenMP: zero shared energy/force accumulators under ``!$omp single``
+  before partial reduction (fixes wrong PointJob energies with multi-thread OMP).
+- Basin-hopping force-call reference updated for default LBFGS auto_scale path
+  (1692); energy and acceptance assertions unchanged.
+
+
+## [2.17.8](https://github.com/TheochemUI/eOn/tree/2.17.8) - 2026-07-20
+
+### Fixed
+
+- Evaluate EDIP serially under OpenMP (Fortran energy reduction race under
+  OMP_NUM_THREADS>1 gave wrong PointJob energies with plausible forces).
+- Basin-hopping integration test pins LBFGS auto_scale off so force-call
+  budget matches the SVN reference path.
+
+
+## [2.17.7](https://github.com/TheochemUI/eOn/tree/2.17.7) - 2026-07-20
+
+### Fixed
+
+- Un-nest SW CG minimization TEST_CASE in SiPotTest (was inside LBFGS case after
+  packaging SKIP refactor, breaking with_tests packaging builds).
+
+
+## [2.17.6](https://github.com/TheochemUI/eOn/tree/2.17.6) - 2026-07-20
+
+### Fixed
+
+- Keep JobIntegrationFixture::runJob a class method after SKIP macro refactor
+  (stray brace broke TEST_CASE_METHOD inheritance under packaging builds).
+
+
+## [2.17.5](https://github.com/TheochemUI/eOn/tree/2.17.5) - 2026-07-20
+
+### Fixed
+
+- Catch2 SKIP only via macros in job integration tests (helpers cannot call SKIP).
+
+
+## [2.17.4](https://github.com/TheochemUI/eOn/tree/2.17.4) - 2026-07-20
+
+### Fixed
+
+- Fix Catch2 SKIP usage in unit-test helpers (macros / fixture require path)
+so packaging builds compile with ``-Dwith_tests=true``.
+
+
+## [2.17.3](https://github.com/TheochemUI/eOn/tree/2.17.3) - 2026-07-20
+
+### Fixed
+
+- Pin metatomic builds to vesin>=0.6 and rgpot>=2.5.2 so RGPOT
+  ``libmetatomic_engine`` and fat Metatomic share a matching VesinOptions ABI
+  (skin/n_threads). Bump the rgpot wrap to the 2.5.2 fix commit.
+- Unit tests SKIP when packaging fixtures or optional engines are missing
+  (``EON_TEST_SYSTEMS_DIR`` / ``EON_POTENTIALS_PATH`` / nwchemc·cpmdc), so
+  ``meson test`` succeeds for installable client builds without local test data.
+
+
 ## [2.17.2](https://github.com/TheochemUI/eOn/tree/2.17.2) - 2026-07-17
 
 ### Added

@@ -19,14 +19,14 @@
 
 #include <algorithm>
 
-#include "../AtomicGPDimer.h"
-#include "../GPRHelpers.h"
-#include "../HelperFunctions.h"
-#include "../Job.h"
-#include "../Matter.h"
-#include "../MinModeSaddleSearch.h"
-#include "../Parameters.h"
 #include "GPRDimerTest.h"
+#include "eon/AtomicGPDimer.h"
+#include "eon/GPRHelpers.h"
+#include "eon/HelperFunctions.h"
+#include "eon/Job.h"
+#include "eon/Matter.h"
+#include "eon/MinModeSaddleSearch.h"
+#include "eon/Parameters.h"
 
 namespace tests {
 

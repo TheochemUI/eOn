@@ -1,7 +1,9 @@
 name: Build and Deploy Documentation
 
 concurrency:
-  group: "pages"
+  # Per ref so a PR docs job is not cancelled by another branch's pages
+  # run. Push/tag deploys still serialise on their own ref.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 on:
@@ -13,6 +15,9 @@ on:
   schedule:
     - cron: '0 8 * * 1' # run every Monday at 8am UTC
 
+permissions:
+  contents: read
+
 env:
   # Execute notebook cells on cache miss; reuse outputs on hit (local default remains force in conf.py).
   NB_EXECUTION_MODE: cache
@@ -22,15 +27,16 @@ jobs:
     name: Build documentation
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
+          persist-credentials: false
           # gitversion.py only needs `git log -1`
           fetch-depth: 1
 
-      - uses: prefix-dev/setup-pixi@v0.9.4
+      - uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
         with:
           cache: true
           cache-write: true
@@ -39,7 +45,7 @@ jobs:
             docs-mta
 
       - name: Restore myst-nb execution cache
-        uses: actions/cache@v4
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
           path: docs/source/.jupyter_cache
           key: mystnb-${{ runner.os }}-${{ hashFiles('docs/source/**/*.md', 'docs/source/conf.py', 'eon/**/*.py') }}
@@ -59,18 +65,32 @@ jobs:
           # Do not pip install . here — that would re-run meson-python and compile twice.
           meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release \
             -Dwith_metatomic=True -Dtorch_version=2.10 -Dpip_metatomic=True
-          meson install -C bbdir
+          meson install --skip-subprojects -C bbdir
           sphinx-build -b html -j auto docs/source docs/build/html
+          pixi run -e docs-mta install-doxyhtml
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: documentation
+          path: docs/build/html/
+
+  deploy_docs:
+    name: Deploy documentation
+    needs: build_docs
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download documentation
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: documentation
           path: docs/build/html/
 
       - name: Deploy
-        if: github.event_name == 'push'
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: docs/build/html/

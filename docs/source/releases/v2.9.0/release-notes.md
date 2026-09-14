@@ -9,13 +9,11 @@ myst:
 
 ## [v2.9.0] - 2026-01-27
 
-This release introduces significant advancements in Nudged Elastic Band (NEB)
-path initialization and saddle point refinement. The update features the novel
-Off-path Climbing Image NEB (OCI-NEB) method, a comprehensive suite of Image
-Dependent Pair Potential (IDPP) initializers, and enhanced support for
+This release adds Off-path Climbing Image NEB (OCI-NEB), a set of
+Image Dependent Pair Potential (IDPP) initializers, and support for
 multi-headed Metatomic potentials.
 
-### ✨ Major Features
+### Major features
 
 #### Off-path Climbing Image NEB (OCI-NEB)
 
@@ -26,10 +24,10 @@ into the climbing image phase.
 
 - **Mechanism:** When the climbing image force drops below a specified threshold
   (`trigger_force` or relative `trigger_factor`), the system switches to the
-  dimer search. This allows the image to break orthogonality with the band and
-  follow the true lowest eigenmode toward the saddle, even if the elastic band
-  curvature deviates from the Minimum Energy Path (MEP).
-- **Stability:** The implementation includes robust fallback strategies. If the
+  dimer search. The image then leaves the band-orthogonal constraint and
+  follows the lowest eigenmode toward the saddle, even if the elastic-band
+  curvature leaves the Minimum Energy Path (MEP).
+- **Stability:** The implementation includes fallback strategies. If the
   dimer mode and the path tangent diverge significantly (controlled by
   `angle_tol`), the system penalizes the trust radius or reverts to standard
   CI-NEB.
@@ -48,9 +46,8 @@ Potential (IDPP).
 - **Collective IDPP:** Solves the IDPP objective function for all images
   simultaneously using the global optimizer (e.g., L-BFGS).
 - **Sequential IDPP (S-IDPP):** Grows the path sequentially from the reactant
-  and product inward. This method proves superior for complex reaction
-  coordinates by resolving clashes at the frontiers before interpolating the
-  center.
+  and product inward. For tangled reaction coordinates this clears clashes
+  at the frontiers before interpolating the center.
 - **ZBL Repulsion:** An optional Ziegler-Biersack-Littmark (ZBL) repulsive
   potential can now wrap the IDPP objective (`sidpp_zbl`). This prevents atomic
   fusion during the initialization of dense paths.
@@ -58,16 +55,15 @@ Potential (IDPP).
   density of images (e.g., 3x), relax them via IDPP, and decimate the path back
   to the target image count using cubic Hermite splines.
 
-### 🚀 Enhancements
+### Enhancements
 
 - **Metatomic Variants:** Added support for multi-headed machine learning
   potentials. Users may now specify `variant_base`, `variant_energy`, or
   `variant_energy_uncertainty` in the configuration to target specific output
   heads (e.g., `energy/pbe0` or `energy_uncertainty/ensemble`).
 - **Onsager-Machlup Action:** Implemented spring dynamics based on the
-  Onsager-Machlup action. This allows for adaptive spring constants
-  (`om_optimize_k`) that scale with the local path curvature and force,
-  improving resolution in curved regions.
+  Onsager-Machlup action. Spring constants (`om_optimize_k`) then scale
+  with local path curvature and force, so curved regions keep more images.
 - **Peak Analysis:** The NEB job now automatically detects local maxima along
   the spline. It writes these configurations (`peakXX_pos.con`) and estimates
   their reaction modes (`peakXX_mode.dat`), facilitating subsequent dimer
@@ -78,7 +74,7 @@ Potential (IDPP).
   absolute ones for starting the climbing image.
 
 
-### 🔧 Configuration Changes
+### Configuration changes
 
 New parameters are available in the `[Nudged Elastic Band]` block:
 

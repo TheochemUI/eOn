@@ -10,16 +10,20 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "Optimizer.h"
-#include "ConjugateGradients.h"
-#include "FIRE.h"
-#include "LBFGS.h"
-#include "ObjectiveFunction.h"
-#include "Parameters.h"
-#include "Quickmin.h"
-#include "SteepestDescent.h"
+#include "eon/Optimizer.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/ConjugateGradients.h"
+#include "eon/FIRE.h"
+#include "eon/LBFGS.h"
+#include "eon/ObjectiveFunction.h"
+#include "eon/Parameters.h"
+#include "eon/Quickmin.h"
+#include "eon/SteepestDescent.h"
+
+#include <cmath>
+#include <stdexcept>
+#include <string>
 
 namespace tests {
 
@@ -82,6 +86,26 @@ static Parameters makeOptParams() {
   params.main_options.finiteDifference = 0.01;
   params.saddle_search_options.confine_positive.bowl_breakout = false;
   return params;
+}
+
+TEST_CASE("FIRE throws when the time step collapses", "[optimizer][fire]") {
+  auto params = makeOptParams();
+  params.optimizer_options.time_step = 1e-7;
+  auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
+  VectorXd start(2);
+  start << 5.0, 3.0;
+  objf->setPositions(start);
+
+  FIRE opt(objf, params);
+  REQUIRE_THROWS_AS(opt.step(params.optimizer_options.max_move),
+                    std::runtime_error);
+  try {
+    opt.step(params.optimizer_options.max_move);
+    FAIL("expected throw");
+  } catch (const std::runtime_error &e) {
+    REQUIRE_THAT(std::string(e.what()),
+                 Catch::Matchers::ContainsSubstring("m_dt is too small"));
+  }
 }
 
 TEST_CASE("FIRE optimizer converges on quadratic", "[optimizer][fire]") {
@@ -184,6 +208,24 @@ TEST_CASE("Quickmin optimizer reduces energy on quadratic",
   // Quickmin should at least reduce energy, even if it doesn't converge
   // tightly on a simple quadratic (it's designed for MD, not optimization)
   REQUIRE(E_final < E_init);
+}
+
+TEST_CASE("Quickmin zero-force step stays finite", "[optimizer][quickmin]") {
+  auto params = makeOptParams();
+  auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
+  objf->setPositions(VectorXd::Zero(2));
+  Quickmin opt(objf, params);
+  REQUIRE(opt.step(params.optimizer_options.max_move) == 1);
+  REQUIRE(objf->getPositions().norm() == Catch::Approx(0.0).margin(1e-15));
+}
+
+TEST_CASE("FIRE zero-force step stays finite", "[optimizer][fire]") {
+  auto params = makeOptParams();
+  auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
+  objf->setPositions(VectorXd::Zero(2));
+  FIRE opt(objf, params);
+  REQUIRE_NOTHROW(opt.step(params.optimizer_options.max_move));
+  REQUIRE(std::isfinite(objf->getPositions().norm()));
 }
 
 TEST_CASE("SteepestDescent optimizer converges on quadratic",

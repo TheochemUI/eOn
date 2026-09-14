@@ -9,8 +9,8 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "NEBSplineExtrema.h"
-#include "ConFileIO.h"
+#include "eon/NEBSplineExtrema.h"
+#include "eon/ConFileIO.h"
 #include <cmath>
 #include <format>
 #include <fstream>

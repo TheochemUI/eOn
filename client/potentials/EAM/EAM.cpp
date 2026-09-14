@@ -9,8 +9,8 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "EAM.h"
-#include "Parameters.h"
+#include "eon/potentials/EAM/EAM.h"
+#include "eon/potentials/EAM/Parameters.h"
 
 #include <algorithm>
 #include <array>

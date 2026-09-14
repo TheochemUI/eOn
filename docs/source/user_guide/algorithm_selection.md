@@ -14,19 +14,19 @@ This page helps you select the right eOn algorithm for your task.
 | Method | Use when | Configuration |
 |---|---|---|
 | **NEB** | You know both reactant and product | <project:neb.md> |
-| **Dimer** | You have one minimum and want to explore | <project:dimer.md> |
+| **Dimer** | One known minimum; search nearby saddles | <project:dimer.md> |
 | **Process Search** | Automated saddle point exploration from one state | <project:process_search.md> |
 | **Saddle Search** | Single saddle point search with displacement | <project:saddle_search.md> |
 
 ### NEB vs Dimer
 
-Use **NEB** when you have both endpoint structures and want the minimum energy
-path. NEB optimizes the entire path simultaneously and identifies the
-transition state as the highest-energy image.
+Use **NEB** when both endpoint structures are known and the minimum-energy
+path is the target. NEB optimizes the entire path simultaneously and
+identifies the transition state as the highest-energy image.
 
-Use the **Dimer** method when you have only one minimum and want to find
-nearby saddle points. The dimer walks uphill along the lowest curvature
-direction without needing the product state.
+Use the **Dimer** method from a single minimum to locate nearby saddle
+points. The dimer walks uphill along the lowest curvature direction
+without the product state.
 
 **Process Search** combines both: it uses the dimer to find saddle points,
 then minimizes from the saddle to identify the product.
@@ -42,12 +42,12 @@ then minimizes from the saddle to identify the product.
 
 ## Optimization
 
-| Optimizer | Convergence | Robustness | Memory |
+| Optimizer | Convergence | Failure mode | Memory |
 |---|---|---|---|
 | **LBFGS** | Fast near minima | Can fail far from min | O(memory * N) |
-| **FIRE** | Moderate | Very robust | O(N) |
+| **FIRE** | Moderate | Tolerant of poor guesses | O(N) |
 | **CG** | Moderate | Good | O(N) |
-| **QuickMin** | Slow | Very robust | O(N) |
+| **QuickMin** | Slow | Tolerant of poor guesses | O(N) |
 | **SD** | Very slow | Guaranteed descent | O(N) |
 
 For most tasks, start with **LBFGS**. If it fails to converge, try **FIRE**

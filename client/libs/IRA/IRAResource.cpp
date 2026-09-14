@@ -10,7 +10,7 @@
  * https://github.com/TheochemUI/eOn
  */
 
-#include "IRAResource.h"
+#include "eon/libs/IRA/IRAResource.h"
 #include <iostream>
 
 namespace eonc {

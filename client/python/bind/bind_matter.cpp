@@ -1,8 +1,8 @@
-#include "Matter.h"
-#include "Parameters.h"
-#include "Potential.h"
 #include "bind_helpers.hpp"
 #include "eigen_numpy.hpp"
+#include "eon/Matter.h"
+#include "eon/Parameters.h"
+#include "eon/Potential.h"
 
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
@@ -30,7 +30,10 @@ void bind_matter(nb::module_ &m) {
            nb::keep_alive<1, 3>(),
            "Create empty Matter bound to a potential and parameters "
            "(Parameters must outlive Matter)")
-      .def(nb::init<const Matter &>(), nb::arg("other"), "Copy construct")
+      // The copy shares `other`'s non-owning Parameters pointer, so it has to
+      // hold `other`, which in turn holds the Parameters.
+      .def(nb::init<const Matter &>(), nb::arg("other"), nb::keep_alive<1, 2>(),
+           "Copy construct")
       .def("resize", &Matter::resize, nb::arg("n_atoms"))
       .def_prop_ro("n_atoms", &Matter::numberOfAtoms)
       .def_prop_ro("n_free", &Matter::numberOfFreeAtoms)
@@ -40,7 +43,8 @@ void bind_matter(nb::module_ &m) {
       .def_prop_rw(
           "positions",
           [](Matter &self) {
-            return view_n3(matter_positions_ptr(self), self.numberOfAtoms());
+            return view_n3_readonly(matter_positions_ptr(self),
+                                    self.numberOfAtoms());
           },
           [](Matter &self, const NpF64 &arr) {
             matter_set_positions_buf(self,
@@ -48,7 +52,13 @@ void bind_matter(nb::module_ &m) {
                                      self.numberOfAtoms());
           },
           nb::rv_policy::reference_internal,
-          "Cartesian positions (n,3) float64 — zero-copy view of C++ storage")
+          "Cartesian positions (n,3) float64 — zero-copy view of C++ storage. "
+          "The view keeps this Matter alive but not the buffer: resize(), "
+          "con2matter() and convel2matter() reallocate, and a view taken "
+          "before one of those is dangling afterwards. Take np.array(...) of "
+          "it to outlive a reallocation; assign through the property "
+          "(m.positions = arr) to write. The view is not writeable so "
+          "in-place += cannot skip setPositions.")
       .def_prop_ro(
           "positions_free",
           [](const Matter &self) {
@@ -94,10 +104,14 @@ void bind_matter(nb::module_ &m) {
               nb::gil_scoped_release release;
               (void)self.getForces(); // ensure force cache
             }
-            return view_n3(matter_forces_ptr(self), self.numberOfAtoms());
+            return view_n3_readonly(matter_forces_ptr(self),
+                                    self.numberOfAtoms());
           },
           nb::rv_policy::reference_internal,
-          "Forces with fixed atoms zeroed (zero-copy view of cache)")
+          "Forces with fixed atoms zeroed (read-only view of cache). "
+          "In-place += cannot skip set_forces(). The next force evaluation "
+          "overwrites the cache; resize()/con2matter() reallocate it. "
+          "Take np.array(...) of it to keep a value.")
       .def_prop_ro(
           "forces_raw",
           [](Matter &self) {
@@ -105,9 +119,12 @@ void bind_matter(nb::module_ &m) {
               nb::gil_scoped_release release;
               (void)self.getForcesRaw();
             }
-            return view_n3(matter_forces_raw_ptr(self), self.numberOfAtoms());
+            return view_n3_readonly(matter_forces_raw_ptr(self),
+                                    self.numberOfAtoms());
           },
-          nb::rv_policy::reference_internal)
+          nb::rv_policy::reference_internal,
+          "Forces without the fixed-atom mask (read-only view). Same "
+          "invalidation as forces.")
       .def_prop_ro(
           "forces_free",
           [](Matter &self) {
@@ -157,7 +174,11 @@ void bind_matter(nb::module_ &m) {
             matter_set_z_buf(self, reinterpret_cast<const int *>(arr.data()),
                              self.numberOfAtoms());
           },
-          nb::rv_policy::move, "Atomic numbers (Z)")
+          nb::rv_policy::move,
+          "Atomic numbers (Z), int64 in and out. int64 is the canonical "
+          "width across _core integer arrays (free_atom_indices, "
+          "resolve_mobile_atoms); the int32 step is the narrowing to the "
+          "C++ VectorXi storage.")
       .def(
           "get_fixed",
           [](const Matter &self, long atom) { return self.getFixed(atom); },
@@ -183,16 +204,24 @@ void bind_matter(nb::module_ &m) {
             nb::object cont =
                 np.attr("ascontiguousarray")(obj, nb::arg("dtype") = "int32");
             auto arr = nb::cast<NpI32>(cont);
-            if (arr.ndim() != 1 ||
-                static_cast<long>(arr.shape(0)) != self.numberOfAtoms()) {
-              throw std::invalid_argument(
-                  "fixed mask must be 1-d int array of length n_atoms");
+            const long n = self.numberOfAtoms();
+            if (arr.ndim() == 1 && static_cast<long>(arr.shape(0)) == n) {
+              matter_set_fixed_buf(
+                  self, reinterpret_cast<const int *>(arr.data()), n);
+              return;
             }
-            matter_set_fixed_buf(self,
-                                 reinterpret_cast<const int *>(arr.data()),
-                                 self.numberOfAtoms());
+            if (arr.ndim() == 2 && static_cast<long>(arr.shape(0)) == n &&
+                static_cast<long>(arr.shape(1)) == 3) {
+              matter_set_fixed_axes_buf(
+                  self, reinterpret_cast<const int *>(arr.data()), n);
+              return;
+            }
+            throw std::invalid_argument(
+                "fixed mask must be shape (n_atoms,) or (n_atoms, 3)");
           },
-          nb::rv_policy::move, "Fixed flags (1=fixed, 0=free)")
+          nb::rv_policy::move,
+          "Fixed flags (1=fixed, 0=free). A 1-d array is whole-atom; an "
+          "Nx3 array is per-axis. Getter stays 1-d (all axes fixed).")
 
       // --- free mask ---
       .def_prop_ro(
@@ -253,8 +282,20 @@ void bind_matter(nb::module_ &m) {
           nb::arg("other"), nb::arg("index"))
       .def("distance_to", &Matter::distanceTo, nb::arg("other"))
       .def("per_atom_norm", &Matter::perAtomNorm, nb::arg("other"))
-      .def("compare", &Matter::compare, nb::arg("other"),
-           nb::arg("indistinguishable") = false)
+      .def(
+          "compare",
+          [](const Matter &self, const Matter &other, bool indistinguishable) {
+            // Matter::compare is non-const: with remove_translation set it
+            // runs translationRemove, which calls setPositions on its left
+            // operand, translating and PBC-wrapping it and invalidating the
+            // force cache. A query must not do that to self, so it runs on
+            // a copy.
+            Matter probe(self);
+            return probe.compare(other, indistinguishable);
+          },
+          nb::arg("other"), nb::arg("indistinguishable") = false,
+          "True when the structures match under "
+          "Parameters.structure_comparison. Neither Matter is modified.")
 
       // --- relax (default non-mutating; inplace=True mutates self) ---
       .def(
@@ -280,7 +321,11 @@ void bind_matter(nb::module_ &m) {
               ok = out.relax(quiet, write_movie, checkpoint, prefix_movie,
                              prefix_checkpoint, retain_frames);
             }
-            return nb::make_tuple(std::move(out), ok);
+            // out shares self's Parameters pointer, and keep_alive cannot
+            // reach into the tuple.
+            nb::object out_obj = nb::cast(std::move(out));
+            tie_lifetime(out_obj, matter_object(self));
+            return nb::make_tuple(out_obj, ok);
           },
           nb::arg("inplace") = false, nb::arg("quiet") = false,
           nb::arg("write_movie") = false, nb::arg("checkpoint") = false,
@@ -357,8 +402,14 @@ void bind_matter(nb::module_ &m) {
 
       .def("__len__", &Matter::numberOfAtoms)
       .def("__repr__", [](const Matter &self) {
+        // Never trigger a force call: repr runs on every REPL echo, and a
+        // stale cache would evaluate the potential with the GIL held.
+        // Read potential_energy when the number is wanted.
+        const std::string energy =
+            self.needsForceUpdate() ? std::string("stale")
+                                    : std::to_string(self.getPotentialEnergy());
         return "<Matter n=" + std::to_string(self.numberOfAtoms()) +
-               " E=" + std::to_string(self.getPotentialEnergy()) + ">";
+               " E=" + energy + ">";
       });
 }
 

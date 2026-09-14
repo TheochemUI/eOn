@@ -1,6 +1,6 @@
-#include "EnvHelpers.hpp"
-#include "BaseStructures.h"
-#include "EonLogger.h"
+#include "eon/EnvHelpers.hpp"
+#include "eon/BaseStructures.h"
+#include "eon/EonLogger.h"
 
 namespace eonc::helpers {
 

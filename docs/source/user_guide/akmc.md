@@ -5,7 +5,7 @@ myst:
     "keywords": "aKMC, adaptive kinetic monte carlo, eOn, rare event systems, transition state theory"
 ---
 
-# Adaptive Kinetic Monte Carlo
+# Adaptive kinetic Monte Carlo
 
 The adaptive kinetic Monte Carlo (aKMC) method is a method to coarse grain
 molecular dynamics for rare event systems as described in
@@ -13,8 +13,8 @@ molecular dynamics for rare event systems as described in
 event system is one in which the interesting dynamics is governed by short
 transitions between stable states. The fast vibrational motion within a stable
 state is considered to be in equilibrium and described statisitcally. A
-transition between states is assumed to be first order, since it is a rare
-events, and the rate of the transition is calculated from the harmonic
+transition between states is treated as first order, since it is a rare
+event, and the rate of the transition is calculated from the harmonic
 approximation to transition state theory (hTST).
 
 The hTST approximation of a transition rate is calculated from the energy
@@ -25,7 +25,7 @@ form {math}`R = v \exp (-\Delta E/kT)` where {math}`v` is the product of all pos
 modes at the minimum divided by those at the saddle, {math}`\Delta E` is the energy
 barrier, and {math}`kT` is the thermal enregy.
 
-In order to propogate the dynamics within aKMC, a list of all possible rates
+To propagate the dynamics within aKMC, a list of all possible rates
 leading away from the current stable state to any other state is required.
 Formally, there are an enourmously large number of such transitions (also called
 processes) available in a typical atomic system, but in fact only the
@@ -35,7 +35,7 @@ same order as the fastest processes found.
 
 The search for possible processes is the primary task of the aKMC simulations.
 Each client does a minimum mode (minmode) following search from the miminum of
-the current state and tries to find a saddle point which connects from the
+the current state and searches for a saddle point which connects from the
 minimum in the current state to an adjacent state
 {cite:p}`ak-henkelmanDimerMethodFinding1999`. A saddle point is connected to a
 state if a minimization initiated along the negative mode at the saddle
@@ -47,14 +47,11 @@ determine the connecting states. The prefactor for the transition is also
 calculated by finite difference and the hTST rate is calculated. These data are
 reported back to the server.
 
-Essentially, then, unlike traditional Kinetic Monte Carlo (KMC) methods,
-adaptive (a), or off-lattice KMC {cite:p}`ak-trochetOffLatticeKineticMonte2020`
-doesn't require a lattice of predetermined points in configuration space. The
-method dynamically builds a rate table based on local atomic movements and
-energy barriers. This allows for more accurate modeling of complex systems where
-atomic positions are not fixed to a grid. The confidence scheme and thermal
-accessibility settings in AKMC ensure that transitions between states are based
-on well-defined criteria, enhancing the precision of simulations.
+Adaptive (a), or off-lattice KMC {cite:p}`ak-trochetOffLatticeKineticMonte2020`
+works in continuous configuration space. The method builds a rate table from
+local atomic movements and energy barriers, so atoms can sit off a grid. The
+confidence scheme and thermal accessibility settings restrict accepted
+transitions to those that meet the documented thresholds.
 
 The server is reponsible for the time evolution of the system by the KMC
 algorithm. Each process leading to a new state is tabulated in a rate table and

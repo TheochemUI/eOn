@@ -7,9 +7,9 @@
  * Buffer access uses public Matter getters/setters; ASE/Python cache state
  * lives in the binding layer (AseCalcPotential), not on Matter.
  */
-#include "ConFileIO.h"
-#include "Eigen.h"
-#include "Matter.h"
+#include "eon/ConFileIO.h"
+#include "eon/Eigen.h"
+#include "eon/Matter.h"
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/vector.h>
@@ -31,6 +31,36 @@ matter_work(std::shared_ptr<eonc::Matter> matter, bool inplace) {
   if (inplace)
     return matter;
   return std::make_shared<eonc::Matter>(*matter);
+}
+
+/// Matter stores a non-owning `const Parameters *` (Matter.h) and every copy
+/// shares it, so a derived Matter handed to Python must hold a reference to
+/// something that owns those Parameters. `nb::keep_alive<0, N>` covers a
+/// return value that *is* the object; it cannot reach inside a returned tuple
+/// or list, so those sites tie their elements through here.
+inline void tie_lifetime(nb::handle nurse, nb::handle patient) {
+  if (!nurse.is_valid() || !patient.is_valid())
+    return;
+  if (nurse.is_none() || patient.is_none() || nurse.ptr() == patient.ptr())
+    return;
+  nb::detail::keep_alive(nurse.ptr(), patient.ptr());
+}
+
+/// Python object already wrapping `m`, or an invalid handle when Python has
+/// never seen it.
+inline nb::object matter_object(const eonc::Matter &m) { return nb::find(m); }
+
+/// Cast a freshly built path to a list, tying each frame to the object whose
+/// Parameters the frames point at.
+inline nb::list matter_path_to_python(std::vector<eonc::Matter> path,
+                                      nb::handle owner) {
+  nb::list out;
+  for (auto &frame : path) {
+    nb::object obj = nb::cast(std::move(frame));
+    tie_lifetime(obj, owner);
+    out.append(obj);
+  }
+  return out;
 }
 
 /// Write C++ ConFrames to a short-lived temp .con and load as Python
@@ -131,6 +161,16 @@ inline void matter_set_fixed_buf(eonc::Matter &m, const int *fx, long n) {
   }
   for (long i = 0; i < n; ++i) {
     m.setFixed(i, fx[i] ? 1 : 0);
+  }
+}
+
+inline void matter_set_fixed_axes_buf(eonc::Matter &m, const int *fx, long n) {
+  if (n != m.numberOfAtoms()) {
+    throw std::invalid_argument("fixed n != n_atoms");
+  }
+  for (long i = 0; i < n; ++i) {
+    const long base = i * 3;
+    m.setFixedMask(i, {fx[base] != 0, fx[base + 1] != 0, fx[base + 2] != 0});
   }
 }
 

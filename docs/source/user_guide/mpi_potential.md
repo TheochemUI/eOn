@@ -5,12 +5,11 @@ myst:
     "keywords": "eOn MPI potential, VASP interface, parallel VASP, ab-initio"
 ---
 
-# MPI Potential
+# MPI potential
 
 ```{admonition} conda-forge availability
 :class: warning
-**Not** included in the `conda-forge` package. Requires building from source
-with `-Dwith_mpi=True`.
+The `conda-forge` package omits MPI. Build from source with `-Dwith_mpi=True`.
 ```
 
 ```{note}
@@ -51,7 +50,7 @@ LCHARG=.FALSE.
 
 ### Example
 
-Here is an example of a script that will run 8 VASP ranks and 1 client rank::
+Example script that runs 8 VASP ranks and 1 client rank:
 
 ```{code-block} bash
 #!/bin/sh

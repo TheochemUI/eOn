@@ -75,6 +75,8 @@ try:
         ImprovedDimer,
         Lanczos,
         Davidson,
+        resolve_mobile_atoms,
+        free_atom_indices,
         built_with_gprd,
         # Saddle
         MinModeSaddleSearch,
@@ -167,6 +169,18 @@ from pyeonclient.steps import (  # noqa: E402
     rgpot_metatomic_neb_workdir,
 )
 
+# Optional gpr_optim overlay (GP-OIE / OCINEB via gpr_optim.session)
+try:
+    from pyeonclient.gpr_overlay import (  # type: ignore F401
+        compute_gpneb_from_matters,
+        gpr_optim_available,
+        gpneb_session_from_matters,
+    )
+except ImportError:  # pragma: no cover
+    gpr_optim_available = lambda: False  # type: ignore[misc, assignment]
+    gpneb_session_from_matters = None  # type: ignore[misc, assignment]
+    compute_gpneb_from_matters = None  # type: ignore[misc, assignment]
+
 to_ase = matter_to_ase
 from_ase = ase_to_matter
 
@@ -203,6 +217,8 @@ __all__ = [
     "ImprovedDimer",
     "Lanczos",
     "Davidson",
+    "resolve_mobile_atoms",
+    "free_atom_indices",
     "built_with_gprd",
     "MinModeSaddleSearch",
     "SaddleStatus",
@@ -273,5 +289,8 @@ __all__ = [
     "to_structure",
     "matter_to_structure",
     "structure_to_matter",
+    "gpr_optim_available",
+    "gpneb_session_from_matters",
+    "compute_gpneb_from_matters",
     "__version__",
 ]

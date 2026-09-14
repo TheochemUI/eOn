@@ -9,11 +9,11 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "Prefactor.h"
-#include "HelperFunctions.h"
-#include "Hessian.h"
+#include "eon/Prefactor.h"
+#include "eon/HelperFunctions.h"
+#include "eon/Hessian.h"
 
-#include "EonLogger.h"
+#include "eon/EonLogger.h"
 #include <algorithm>
 #include <cmath>
 #include <format>
@@ -34,8 +34,10 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
     atoms = movedAtoms(parameters, min1, saddle, min2);
   }
 
-  int size = 3 * atoms.rows();
-  assert(size > 0);
+  if (atoms.size() == 0) {
+    EONC_LOG_ERROR("[Prefactor] no moved atoms");
+    return -1;
+  }
 
   // calculate min1 frequencies
   Hessian hessian(parameters, min1);
@@ -88,8 +90,11 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   logFreqs(min2Freqs, "minimum 2");
 
   // check for correct number of negative modes
+  // Bound each loop by its own vector: removeZeroFreqs returns a shorter
+  // vector than the 3N it was handed, and each of the three is shrunk by a
+  // separate call.
   int numNegFreq = 0;
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < min1Freqs.size(); i++) {
     if (min1Freqs(i) < 0) {
       EONC_LOG_DEBUG("[Prefactor] min1 had negative mode of {}", min1Freqs(i));
       numNegFreq++;
@@ -101,7 +106,7 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   }
 
   numNegFreq = 0;
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < saddleFreqs.size(); i++) {
     if (saddleFreqs(i) < 0) {
       numNegFreq++;
     }
@@ -112,7 +117,7 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   }
 
   numNegFreq = 0;
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < min2Freqs.size(); i++) {
     if (min2Freqs(i) < 0) {
       numNegFreq++;
     }
@@ -265,16 +270,24 @@ VectorXi eonc::Prefactor::movedAtomsPct(const Parameters &parameters,
 
   int nMoved = 0;
   double d = 0.0;
-  while (d / sum <= parameters.prefactor_options.filter_fraction &&
-         nMoved < nFree) {
-    int maxi = mini;
+  while (nMoved < nFree &&
+         (sum <= 0.0 ||
+          d / sum < parameters.prefactor_options.filter_fraction)) {
+    int maxi = -1;
     for (int i = 0; i < nAtoms; i++) {
-      if (diff[i] >= diff[maxi]) {
-        if (std::find(moved.data(), moved.data() + nMoved, i) ==
-            moved.data() + nMoved) {
-          maxi = i;
-        }
+      if (min1->getFixed(i) || saddle->getFixed(i)) {
+        continue;
       }
+      if (std::find(moved.data(), moved.data() + nMoved, i) !=
+          moved.data() + nMoved) {
+        continue;
+      }
+      if (maxi < 0 || diff[i] >= diff[maxi]) {
+        maxi = i;
+      }
+    }
+    if (maxi < 0) {
+      break;
     }
     moved[nMoved] = maxi;
     nMoved++;

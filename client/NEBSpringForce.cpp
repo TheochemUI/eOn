@@ -9,7 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "NEBSpringForce.h"
+#include "eon/NEBSpringForce.h"
 
 namespace eonc::neb {
 

@@ -9,10 +9,10 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "Hessian.h"
-#include "EonLogger.h"
-#include "HelperFunctions.h"
-#include "SafeMath.h"
+#include "eon/Hessian.h"
+#include "eon/EonLogger.h"
+#include "eon/HelperFunctions.h"
+#include "eon/SafeMath.h"
 
 #include <cmath>
 #include <fstream>
@@ -21,7 +21,7 @@
 
 namespace {
 
-// atom_list entries are *mobile / displaced* atoms for FD (hybrid/PHVA-class
+// phva_atoms entries are *mobile / displaced* atoms for FD (hybrid/PHVA-class
 // active set). Intersect with non-fixed atoms in HessianJob.
 
 bool isCentralScheme(const std::string &scheme) {
@@ -105,6 +105,7 @@ VectorXd Hessian::getFreqs(Matter *matterIn, const VectorXi &atomsIn) {
 
     if (!calculate()) {
       freqs.resize(0);
+      hessian.resize(0, 0);
     }
   }
   return freqs;
@@ -238,10 +239,19 @@ bool Hessian::calculate() {
 
   if (!parameters.main_options.quiet) {
     QUILL_LOG_DEBUG(log, "[Hessian] writing hessian\n");
-    std::ofstream hessfile;
-    hessfile.open("hessian.dat");
+  }
+  {
+    std::ofstream hessfile("hessian.dat");
+    if (!hessfile) {
+      QUILL_LOG_ERROR(log, "[Hessian] failed to open hessian.dat");
+      return false;
+    }
     hessfile << hessian;
     hessfile.close();
+    if (!hessfile) {
+      QUILL_LOG_ERROR(log, "[Hessian] failed to write hessian.dat");
+      return false;
+    }
   }
 
   // Completed run: remove checkpoint so a later job does not resume stale cols

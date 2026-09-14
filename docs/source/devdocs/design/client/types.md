@@ -22,14 +22,14 @@ storage order.
 ```{warning}
 New multi-dimensional Eigen matrix types in the codebase **must** use
 `eOnStorageOrder` or one of the existing row-major aliases.  Adding a bare
-`Eigen::MatrixXd` (column-major) will silently corrupt force projections and
+`Eigen::MatrixXd` (column-major) will corrupt force projections and
 data mapping.
 ```
 
 ```{versionchanged} 2.11
 Removed the `EIGEN_DEFAULT_TO_ROW_MAJOR` preprocessor macro.  All matrix types
-are now explicitly row-major via aliases in `client/Eigen.h`, ensuring binary
-compatibility with other Eigen-based libraries.
+are now explicitly row-major via aliases in `client/Eigen.h`, so the types
+stay binary-compatible with other Eigen-based libraries.
 ```
 
 ## Header conventions

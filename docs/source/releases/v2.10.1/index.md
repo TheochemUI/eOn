@@ -9,7 +9,7 @@ myst:
 
 Patch release that fixes a critical NEB convergence regression introduced in
 v2.10.0, where removing the `EIGEN_DEFAULT_TO_ROW_MAJOR` macro left bare
-`MatrixXd` types as column-major, silently corrupting force projections.  Also
+`MatrixXd` types as column-major, corrupting force projections.  Also
 fixes a Python 3.10 compatibility issue and adds a CI-NEB regression test to
 prevent similar regressions in the future.
 

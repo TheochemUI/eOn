@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    "description": "Overview of eOn v2.13.0: ARTn saddle search via pARTn, OCINEB climbing-image + min-mode hybrid, IRA structure comparison, NEB strategy decomposition, Highway SIMD subproject, parallel dimer/NEB via std::thread."
+    "description": "eOn v2.13.0: ARTn saddle search via pARTn, OCINEB climbing-image + min-mode hybrid, IRA structure comparison, NEB strategy decomposition, Highway SIMD subproject, parallel dimer/NEB via std::thread."
     "keywords": "eOn v2.13.0, ARTn, pARTn, OCINEB, IRA, NEB modularization, Highway SIMD, parallel dimer"
 ---
 
@@ -20,7 +20,7 @@ SOFI point-group detection.
 NEB is decomposed into a strategy-pattern: tangent, projection, spring
 force, OCINEB controller, spline extrema, initial paths, and objective
 function are now pluggable components. Parallel image evaluation via
-C++20 threads lands in both NEB (per-image) and improved dimer (two
+C++20 threads is available in both NEB (per-image) and improved dimer (two
 replicas). Highway SIMD is added as an optional subproject; hand-written
 kernels for Morse/LJ/EAM pair loops are staged for a follow-up release.
 

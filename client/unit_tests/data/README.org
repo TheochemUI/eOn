@@ -16,7 +16,7 @@ Reference values in the tests are derived from the SVN eOn baseline
 git worktree add /tmp/svn_build svn-Jul_01_2024
 cd /tmp/svn_build/client
 mkdir -p potentials/QSC && echo '#pragma once
-#include "../../Potential.h"
+#include "Potential.h"
 class QSC : public Potential { public: void initialize() override {}
 void force(long n, const double *r, const int *a, double *f,
 double *e, const double *b) override { *e=0; for(long i=0;i<3*n;i++) f[i]=0; }

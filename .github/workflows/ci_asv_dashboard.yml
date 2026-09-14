@@ -1,0 +1,237 @@
+# Continuous ASV history + asv-tachyon static dashboard.
+#
+# Data: orphan branch `asv-results` holds `.asv/results/**` (long-lived history).
+# UI:   gh-pages `/bench/` via peaceiris (docs stay at site root with keep_files).
+# Host: optional Netlify site bench.eondocs.org (NETLIFY_AUTH_TOKEN + NETLIFY_SITE_ID secrets).
+#
+# Live paths after merge:
+#   https://eondocs.org/bench/
+#   https://bench.eondocs.org/   (if Netlify custom domain wired)
+
+name: ASV dashboard
+
+concurrency:
+  group: asv-dashboard
+  cancel-in-progress: false
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "benchmarks/**"
+      - "asv.conf.json"
+      - "eon/**"
+      - "client/**"
+      - "meson.build"
+      - "meson_options.txt"
+      - "pixi.toml"
+      - "pixi.lock"
+      - ".github/workflows/ci_asv_dashboard.yml"
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+    inputs:
+      quick:
+        description: "asv --quick (faster, noisier)"
+        type: boolean
+        default: true
+      force_full:
+        description: "Ignore quick; run full suite"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  asv-publish:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          path: src
+
+      - name: Checkout asv-results orphan (history)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          ref: asv-results
+          path: asv-results
+          fetch-depth: 0
+        continue-on-error: true
+
+      - name: Bootstrap asv-results layout
+        working-directory: src
+        run: |
+          set -e
+          mkdir -p .asv/results
+          if [ -d ../asv-results/.asv/results ]; then
+            rsync -a ../asv-results/.asv/results/ .asv/results/
+            echo "Restored results from asv-results branch"
+            find .asv/results -type f | wc -l
+          else
+            echo "No asv-results branch yet; starting fresh history"
+          fi
+
+      - uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
+        with:
+          cache: true
+          cache-write: true
+          activate-environment: true
+          manifest-path: src/pixi.toml
+
+      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+
+      - name: Ensure cbindgen
+        working-directory: src
+        shell: bash
+        run: command -v cbindgen || cargo install cbindgen
+
+      - name: Build eonclient
+        working-directory: src
+        run: |
+          set -e
+          pixi run bash -c "meson setup bbdir \
+            --prefix=\$CONDA_PREFIX --libdir=lib \
+            --buildtype release --wipe 2>/dev/null \
+            || meson setup bbdir --prefix=\$CONDA_PREFIX \
+            --libdir=lib --buildtype release"
+          pixi run meson install --skip-subprojects -C bbdir
+          command -v eonclient
+          test -x "$(command -v eonclient)"
+
+      - name: Install asv + tachyon
+        working-directory: src
+        run: pixi run bash -c 'pip install -q "asv>=0.6" "asv-tachyon>=0.5.7"'
+
+      - name: asv machine
+        working-directory: src
+        run: |
+          pixi run asv machine --yes \
+            --machine github-actions \
+            --os "$(uname -s)" \
+            --arch "$(uname -m)" \
+            --cpu "gha" \
+            --ram "0"
+
+      - name: asv run
+        working-directory: src
+        env:
+          QUICK: ${{ (github.event_name == 'schedule' || inputs.force_full) && 'false' || 'true' }}
+        run: |
+          set -e
+          EXTRA=""
+          N=5
+          if [ "$QUICK" = "true" ]; then
+            EXTRA="--quick"
+          else
+            N=8
+          fi
+          pixi run bash scripts/asv_run_history.sh "$N" "$EXTRA"
+
+      - name: asv publish + tachyon UI
+        working-directory: src
+        run: |
+          set -e
+          pixi run asv publish
+          pixi run asv-tachyon install .asv/html
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          html = Path(".asv/html")
+          idx = json.loads((html / "index.json").read_text())
+          by_hash, by_rev = {}, {}
+          for rev, h in idx.get("revision_to_hash", {}).items():
+              try:
+                  subj = subprocess.check_output(
+                      ["git", "log", "-1", "--format=%s", h], text=True
+                  ).strip()
+              except Exception:
+                  subj = ""
+              if subj:
+                  by_hash[h] = subj
+                  by_rev[str(rev)] = subj
+          (html / "commits.json").write_text(
+              json.dumps({"by_revision": by_rev, **by_hash}, indent=2) + "\n"
+          )
+          (html / "site.json").write_text(json.dumps({
+              "project": "eOn",
+              "title": "eOn benchmarks",
+              "docs_url": "https://eondocs.org/",
+              "repo_url": "https://github.com/TheochemUI/eOn",
+              "bench_url": "https://bench.eondocs.org/",
+          }, indent=2) + "\n")
+          PY
+          test -f .asv/html/index.json
+          test -f .asv/html/index.html
+          ls -la .asv/html | head
+
+      - name: Commit results to asv-results orphan
+        working-directory: src
+        run: |
+          set -e
+          # Prepare orphan worktree payload
+          STAGE="$GITHUB_WORKSPACE/asv-results-stage"
+          rm -rf "$STAGE"
+          mkdir -p "$STAGE/.asv"
+          rsync -a .asv/results/ "$STAGE/.asv/results/"
+          cd "$STAGE"
+          git init -b asv-results
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Preserve any existing README on the branch if present
+          if [ -f "$GITHUB_WORKSPACE/asv-results/README.md" ]; then
+            cp "$GITHUB_WORKSPACE/asv-results/README.md" README.md
+          else
+            cat > README.md <<'MD'
+          # asv-results (orphan)
+
+          Long-lived ASV result JSON for eOn. Updated by `ASV dashboard` workflow.
+          Do not put source trees here — only `.asv/results/**`.
+          MD
+          fi
+          echo "*.pyc" > .gitignore
+          echo "__pycache__/" >> .gitignore
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No result changes"
+          else
+            git commit -m "asv: update results $(date -u +%Y-%m-%dT%H:%MZ)"
+          fi
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+          git push -f origin asv-results
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy UI to gh-pages /bench
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: src/.asv/html
+          destination_dir: bench
+          keep_files: true
+          commit_message: "deploy(asv): tachyon dashboard"
+
+      - name: Deploy to Netlify (bench.eondocs.org)
+        working-directory: src
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          set -e
+          if [ -z "${NETLIFY_AUTH_TOKEN:-}" ] || [ -z "${NETLIFY_SITE_ID:-}" ]; then
+            echo "NETLIFY_AUTH_TOKEN / NETLIFY_SITE_ID not set; skip Netlify deploy"
+            exit 0
+          fi
+          npx --yes netlify-cli deploy --prod --dir=.asv/html \
+            --message "asv-tachyon $(git rev-parse --short HEAD)"
+
+      - name: Upload HTML artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: asv-html
+          path: src/.asv/html/
+          retention-days: 30

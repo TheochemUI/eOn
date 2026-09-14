@@ -10,8 +10,8 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "ApprovalTests.hpp"
-#include "Parameters.h"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/Parameters.h"
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -372,6 +372,16 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << std::endl;
   os << "lanczosQuitEarly: " << std::boolalpha
      << params.lanczos_options.quit_early << std::endl;
+  os << "lanczosPhvaAtoms: " << params.lanczos_options.phva_atoms << std::endl;
+
+  os << "\n[Davidson]" << std::endl;
+  os << "davidsonTolerance: " << params.davidson_options.tolerance << std::endl;
+  os << "davidsonMaxIterations: " << params.davidson_options.max_iterations
+     << std::endl;
+  os << "davidsonDiagonalPreconditioner: " << std::boolalpha
+     << params.davidson_options.diagonal_preconditioner << std::endl;
+  os << "davidsonPhvaAtoms: " << params.davidson_options.phva_atoms
+     << std::endl;
 
   os << "\n[Prefactor]" << std::endl;
   os << "prefactorDefaultValue: " << params.prefactor_options.default_value
@@ -395,7 +405,7 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << std::endl;
 
   os << "\n[Hessian]" << std::endl;
-  os << "hessianAtomList: " << params.hessian_options.atom_list << std::endl;
+  os << "hessianPhvaAtoms: " << params.hessian_options.phva_atoms << std::endl;
   os << "hessianZeroFreqValue: " << params.hessian_options.zero_freq_value
      << std::endl;
 

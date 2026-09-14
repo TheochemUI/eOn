@@ -7,31 +7,105 @@ Con(figuration) i/o library.
 :class:`eon.structure.Structure` (alias ``Atoms``).
 '''
 import configparser
+import contextlib
 #from io import BytesIO as StringIO
 from io import StringIO
 import logging
-logger = logging.getLogger('io')
 import numpy
 import os
 
 import pickle as pickle
 import readcon
+import stat
+import tempfile
 
 from eon.geometry.cell import box_to_length_angle, length_angle_to_box
 from eon.structure import Structure
 
-def save_prng_state():
-    state = numpy.random.get_state()
-    fh = open('prng.pkl', 'wb')
-    pickle.dump(state, fh, pickle.HIGHEST_PROTOCOL)
+logger = logging.getLogger('io')
 
-def get_prng_state():
-    fh = open('prng.pkl', 'rb')
-    state = pickle.load(fh)
+def prng_state_path(config):
+    '''Path of the persisted numpy PRNG pickle.
+
+    ConfigClass.init restores from this file under path_root, so every
+    writer and reset must use the same location rather than the process CWD.
+    '''
+    return os.path.join(config.path_root, 'prng.pkl')
+
+
+def save_prng_state(path):
+    state = numpy.random.get_state()
+    with open(path, 'wb') as fh:
+        pickle.dump(state, fh, pickle.HIGHEST_PROTOCOL)
+
+def get_prng_state(path):
+    with open(path, 'rb') as fh:
+        state = pickle.load(fh)
     numpy.random.set_state(state)
 
 # Re-export cell helpers (used by callers / POSCAR path)
 __all_cell__ = ("length_angle_to_box", "box_to_length_angle")
+
+
+def _process_umask():
+    mask = os.umask(0)
+    os.umask(mask)
+    return mask
+
+
+# What open() and os.mkdir() give a new file or directory. mkstemp and
+# mkdtemp ignore the umask and use 0600 / 0700, so anything staged through
+# them is widened back to these before being moved into place.
+_UMASK = _process_umask()
+DEFAULT_FILE_MODE = 0o666 & ~_UMASK
+DEFAULT_DIR_MODE = 0o777 & ~_UMASK
+
+
+@contextlib.contextmanager
+def atomic_write(path, mode='w'):
+    '''
+    Rewrite a file in one step, for callers that truncate and rewrite whole.
+        path: destination file
+        mode: 'w' or 'wb'
+    The body writes to a temporary file in the destination's own directory,
+    which is renamed over the destination on a clean exit. A reader sees
+    either the old contents or the new ones, and a write that fails partway
+    (a full disk, a killed process) leaves the destination as it was.
+    mkstemp opens at 0600, so the destination's own mode carries over, or
+    the umask default for a file that does not exist yet.
+    '''
+    directory = os.path.dirname(os.path.abspath(path))
+    fd, temp_path = tempfile.mkstemp(dir=directory,
+                                     prefix='.' + os.path.basename(path) + '.',
+                                     suffix='.tmp')
+    try:
+        with os.fdopen(fd, mode) as f:
+            yield f
+        try:
+            os.chmod(temp_path, stat.S_IMODE(os.stat(path).st_mode))
+        except OSError:
+            os.chmod(temp_path, DEFAULT_FILE_MODE)
+        os.replace(temp_path, path)
+    except BaseException:
+        try:
+            os.unlink(temp_path)
+        except OSError:
+            pass
+        raise
+
+
+def _maybe_open(target, mode, attr):
+    '''
+    Context manager over a filename or an already open file-like object.
+        target: filename or file-like object
+        mode:   mode passed to open() when target is a filename
+        attr:   attribute marking target as file-like ('readline' or 'write')
+    A handle opened here is closed on exit; one passed in by the caller is
+    left open.
+    '''
+    if hasattr(target, attr):
+        return contextlib.nullcontext(target)
+    return open(target, mode)
 
 
 def _frame_to_atoms(frame):
@@ -44,14 +118,43 @@ def loadcons(filename):
     return [_frame_to_atoms(f) for f in frames]
 
 
-def loadposcars(filename):
-    filein = open(filename, 'r')
-    p = []
-    while True:
+def loadxyz(filename):
+    '''
+    Load the first frame of an XYZ/PDB/GRO file via readcon chemfiles ingress.
+
+    Requires a chemfiles-linked readcon (``pip install readcon-chemfiles``).
+    The .con path stays on readcon-core; this is the foreign-format edge.
+    '''
+    if not getattr(readcon, "has_chemfiles_support", lambda: False)():
+        raise RuntimeError(
+            "loadxyz needs a chemfiles-linked readcon "
+            "(pip install readcon-chemfiles)"
+        )
+    return _frame_to_atoms(readcon.read_chemfiles_first(filename))
+
+
+def _tokens_are_ints(tokens):
+    """True when every token parses as an int (VASP 4 counts line)."""
+    if not tokens:
+        return False
+    for tok in tokens:
         try:
-            p.append(loadposcar(filein))
-        except:
-            return p
+            int(tok)
+        except ValueError:
+            return False
+    return True
+
+
+def loadposcars(filename):
+    '''Load every POSCAR frame from filename (VASP 4 or VASP 5).'''
+    p = []
+    with open(filename, 'r') as filein:
+        while True:
+            try:
+                p.append(loadposcar(filein))
+            except (ValueError, IndexError):
+                # End of file: the next header line is empty.
+                return p
 
 
 def loadcon(filein, reset = True):
@@ -64,36 +167,54 @@ def loadcon(filein, reset = True):
         if reset:
             filein.seek(0)
         frames = readcon.read_con_string(content)
-    else:
-        frames = readcon.read_con(filein)
-    if not frames:
-        raise IOError("No frames found in con data")
-    return _frame_to_atoms(frames[0])
+        if not frames:
+            raise IOError("No frames found in con data")
+        return _frame_to_atoms(frames[0])
+    return _frame_to_atoms(readcon.read_first_frame(filein))
+
+def _as_structure(p):
+    """Copy a Structure-like object into a Structure.
+
+    Anything carrying the five geometry attributes plus a length passes; an
+    ``atom_ids`` attribute carries over, and one without gets the sequential
+    numbering :class:`Structure` gives a fresh configuration.
+    """
+    n = len(p)
+    s = Structure(n)
+    s.box = numpy.asarray(p.box, dtype=float).reshape(3, 3).copy()
+    s.r = numpy.asarray(p.r, dtype=float).reshape(n, 3).copy()
+    s.free = numpy.asarray(p.free, dtype=float)
+    s.names = list(p.names)
+    s.mass = numpy.asarray(p.mass, dtype=float).reshape(n).copy()
+    ids = getattr(p, 'atom_ids', None)
+    if ids is not None:
+        s.atom_ids = numpy.asarray(ids, dtype=numpy.uint64).reshape(-1).copy()
+    return s
+
 
 def _atoms_to_frame(p):
     """Convert a Structure (or Structure-like) to a readcon.ConFrame."""
-    if isinstance(p, Structure):
-        return p.to_conframe()
-    lengths, angles = box_to_length_angle(p.box)
-    atom_list = []
-    for i in range(len(p)):
-        atom_list.append(
-            readcon.Atom(
-                symbol=p.names[i],
-                x=float(p.r[i][0]),
-                y=float(p.r[i][1]),
-                z=float(p.r[i][2]),
-                fixed=[p.free[i] == 0] * 3,
-                atom_id=i + 1,
-                mass=float(p.mass[i]),
-            )
-        )
-    return readcon.ConFrame(
-        cell=list(lengths),
-        angles=list(angles),
-        atoms=atom_list,
-        prebox_header=["Generated by eOn", ""],
-    )
+    if not isinstance(p, Structure):
+        p = _as_structure(p)
+    return p.to_conframe()
+
+
+def _path_is_compressed_con(path):
+    name = os.path.basename(path).lower()
+    return name.endswith(".gz") or name.endswith(".zst")
+
+
+def _file_ends_with_newline(path):
+    """True for an empty file too: nothing needs separating from the first frame."""
+    try:
+        with open(path, "rb") as fh:
+            fh.seek(0, os.SEEK_END)
+            if fh.tell() == 0:
+                return True
+            fh.seek(-1, os.SEEK_END)
+            return fh.read(1) == b"\n"
+    except OSError:
+        return True
 
 
 def savecon(fileout, p, w = 'w'):
@@ -102,18 +223,28 @@ def savecon(fileout, p, w = 'w'):
         fileout: can be either a file name or a file-like object
         p:       Structure (or Structure-like) to save
         w:       write/append flag
+
+    Append of an uncompressed file concatenates one serialized frame. A
+    gzip or zstd target cannot be extended in place, so those still
+    read the existing frames and rewrite the file.
     '''
     frame = _atoms_to_frame(p)
     if hasattr(fileout, 'write'):
         text = readcon.write_con_string([frame])
         fileout.write(text)
-    else:
-        if w == 'a' and os.path.exists(fileout):
+    elif w == 'a' and os.path.exists(fileout) and os.path.getsize(fileout) > 0:
+        if _path_is_compressed_con(fileout):
             existing = readcon.read_con(fileout)
             existing.append(frame)
             readcon.write_con(fileout, existing)
         else:
-            readcon.write_con(fileout, [frame])
+            text = readcon.write_con_string([frame])
+            with open(fileout, 'a') as fh:
+                if not _file_ends_with_newline(fileout):
+                    fh.write('\n')
+                fh.write(text)
+    else:
+        readcon.write_con(fileout, [frame])
 
 
 def load_mode(modefilein):
@@ -121,47 +252,50 @@ def load_mode(modefilein):
     Reads a mode.dat file into an N by 3 numpy array
         modefilein: may be either a file-like object of a filename
     '''
-    if hasattr(modefilein, 'readline'):
-        f = modefilein
-    else:
-        f = open(modefilein, 'r')
-    if len(f.readline().split()) == 3:
-        f.seek(0);
-    lines = f.readlines()
+    with _maybe_open(modefilein, 'r', 'readline') as f:
+        if len(f.readline().split()) == 3:
+            f.seek(0)
+        lines = f.readlines()
     mode = []
     for line in lines:
-        l = line.strip().split()
+        l = line.split()
+        if not l:
+            continue
+        if len(l) < 3:
+            raise IOError("Malformed mode.dat line, expected three columns: %r" % line)
         for j in range(3):
             mode.append(float(l[j]))
     return numpy.array(mode).reshape(len(mode)//3, 3)
 
-def save_mode(modefileout, displace_vector):
+def save_mode(modefileout, displace_vector, free=None):
     '''
     Saves an Nx3 numpy array into a mode.dat file.
         modefileout:     may be either a filename or file-like object
         displace_vector: the mode (Nx3 numpy array)
+        free:            optional (N,) or (N,3) mask; a 0 axis is written as 0
+    17 significant digits round trip a double exactly, and match what the
+    client's printf writers emit for the same value.
     '''
-    if hasattr(modefileout, 'write'):
-        f = modefileout
-    else:
-        f = open(modefileout, 'w')
-    for i in range(len(displace_vector)):
-        f.write("%.3f %.3f %.3f\n" % (displace_vector[i][0],
-            displace_vector[i][1], displace_vector[i][2]))
+    vec = numpy.asarray(displace_vector, dtype=float)
+    if free is not None:
+        mask = numpy.asarray(free, dtype=float)
+        if mask.ndim == 1:
+            mask = numpy.repeat(mask.reshape(-1, 1), 3, axis=1)
+        vec = vec * (mask > 0.5)
+    with _maybe_open(modefileout, 'w', 'write') as f:
+        for i in range(len(vec)):
+            f.write("%.17g %.17g %.17g\n" % (vec[i][0], vec[i][1], vec[i][2]))
 
 
 def save_results_dat(fileout, results):
     '''
     Saves a results.dat file from a dictionary
+        fileout: may be either a filename or a file-like object
+        results: dictionary of values, written one "<value> <key>" line each
     '''
-    if hasattr(fileout, 'write'):
-        f = fileout
-    else:
-        f = open(fileout, 'w')
-
-    for key in results:
-        #print(results[key], key, con)  #GH: this made no sense to me - replaced with the following
-        f.write(results[key], key)
+    with _maybe_open(fileout, 'w', 'write') as f:
+        for key in results:
+            f.write("%s %s\n" % (results[key], key))
 
 def modify_config(config_path, changes):
     parser = configparser.ConfigParser()
@@ -173,136 +307,158 @@ def modify_config(config_path, changes):
     config_str_io.seek(0)
     return config_str_io
 
+def _coerce_results_value(token):
+    '''Parse one results.dat value token.
+
+    Integers stay int. Everything float() accepts (1.0, 1e-5, nan, inf)
+    becomes float. Dotted identifiers and other non-numerics stay str so
+    the key is present for the caller.
+    '''
+    body = token.lstrip('+-')
+    if body.isdigit():
+        return int(token)
+    try:
+        return float(token)
+    except ValueError:
+        return token
+
+
 def parse_results(filein):
     '''
     Reads a results.dat file and gives a dictionary of the values contained therein
     '''
-    if hasattr(filein, 'readline'):
-        f = filein
-        f.seek(0)
-    else:
-        f = open(filein)
     results = {}
-    for line in f:
-        line = line.split()
-        if len(line) < 2:
-            continue
-        if '.' in line[0]:
-            try:
-                results[line[1]] = float(line[0])
-            except ValueError:
-                logger.warning("Couldn't parse float in results.dat: %s", line)
-        else:
-            try:
-                results[line[1]] = int(line[0])
-            except ValueError:
-                try:
-                    results[line[1]] = line[0]
-                except ValueError:
-                    logger.warning("Couldn't parse string in results.dat: %s", line)
+    with _maybe_open(filein, 'r', 'readline') as f:
+        f.seek(0)
+        for line in f:
+            line = line.split()
+            if len(line) < 2:
+                continue
+            results[line[1]] = _coerce_results_value(line[0])
 
     return results
 
 def loadposcar(filein):
     '''
-    Load the POSCAR file named filename and returns an atoms object
+    Load a VASP POSCAR (or one frame of a multi-frame movie).
+
+    POSCAR is the one structure format that does not go through readcon:
+    the kdb tool emits VASP 4, and movie.py writes VASP 5 for external
+    viewers. The reader accepts both. After the cell, a line of integer
+    counts is VASP 4 (species taken from the comment); a line of species
+    names followed by the counts is VASP 5.
+
+    filein: filename or file-like object
     '''
-    if hasattr(filein, 'readline'):
-        f = filein
-    else:
-        f = open(filein, 'r')
-    # Line 1: Atom types
-    AtomTypes = f.readline().split()
-    # Line 2: scaling of coordinates
-    scale = float(f.readline())
-    # Lines 3-5: the box
-    box = numpy.zeros((3, 3))
-    for i in range(3):
-        line = f.readline().split()
-        box[i] = numpy.array([float(line[0]), float(line[1]), float(line[2])]) * scale
-    # Line 6: number of atoms of each type.
-    line = f.readline().split()
-    NumAtomsPerType = []
-    for l in line:
-        NumAtomsPerType.append(int(l))
-    # Now have enough info to make the Structure object.
-    num_atoms = sum(NumAtomsPerType)
-    p = Structure(num_atoms)
-    # Fill in the box.
-    p.box = box
-    # Line 7: selective or cartesian
-    sel = f.readline()[0]
-    selective_flag = (sel == 's' or sel == 'S')
-    if not selective_flag:
-        car = sel
-    else:
-        car = f.readline()[0]
-    direct_flag = not (car == 'c' or car == 'C' or car == 'k' or car == 'K')
-    atom_index = 0
-    for i in range(len(NumAtomsPerType)):
-        for j in range(NumAtomsPerType[i]):
-            p.names[atom_index] = AtomTypes[i]
+    with _maybe_open(filein, 'r', 'readline') as f:
+        # Line 1: comment, often the species names.
+        AtomTypes = f.readline().split()
+        # Line 2: scaling of coordinates
+        scale = float(f.readline())
+        # Lines 3-5: the box
+        box = numpy.zeros((3, 3))
+        for i in range(3):
             line = f.readline().split()
-            if(selective_flag):
-                assert len(line) >= 6
-            else:
-                assert len(line) >= 3
-            pos = line[0:3]
-            if selective_flag:
-                sel = line[3:7]
-                if sel[0] == 'T' or sel[0] == 't':
-                    p.free[atom_index] = 1
-                elif sel[0] == 'F' or sel[0] == 'f':
-                    p.free[atom_index] = 0
-            p.r[atom_index] = numpy.array([float(q) for q in pos])
-            if direct_flag:
-                p.r[atom_index] = numpy.dot(p.r[atom_index], p.box)
-            else:
-                p.r[atom_index] *= scale
-            atom_index += 1
-    return p
+            box[i] = numpy.array([float(line[0]), float(line[1]), float(line[2])]) * scale
+        # Line 6 is either VASP 4 counts or VASP 5 species names.
+        line = f.readline().split()
+        if _tokens_are_ints(line):
+            NumAtomsPerType = [int(tok) for tok in line]
+        else:
+            if line:
+                AtomTypes = line
+            counts_line = f.readline().split()
+            NumAtomsPerType = [int(tok) for tok in counts_line]
+        # Now have enough info to make the Structure object.
+        num_atoms = sum(NumAtomsPerType)
+        p = Structure(num_atoms)
+        # Fill in the box.
+        p.box = box
+        # Selective Dynamics (optional) or Cartesian/Direct.
+        sel = f.readline()[0]
+        selective_flag = (sel == 's' or sel == 'S')
+        if not selective_flag:
+            car = sel
+        else:
+            car = f.readline()[0]
+        direct_flag = not (car == 'c' or car == 'C' or car == 'k' or car == 'K')
+        atom_index = 0
+        for i in range(len(NumAtomsPerType)):
+            for j in range(NumAtomsPerType[i]):
+                p.names[atom_index] = AtomTypes[i]
+                line = f.readline().split()
+                if(selective_flag):
+                    assert len(line) >= 6
+                else:
+                    assert len(line) >= 3
+                pos = line[0:3]
+                if selective_flag:
+                    sel = line[3:6]
+                    flags = []
+                    for flag in sel:
+                        flags.append(1.0 if flag in ('T', 't') else 0.0)
+                    while len(flags) < 3:
+                        flags.append(flags[0] if flags else 1.0)
+                    p.free[atom_index] = flags
+                p.r[atom_index] = numpy.array([float(q) for q in pos])
+                if direct_flag:
+                    p.r[atom_index] = numpy.dot(p.r[atom_index], p.box)
+                else:
+                    p.r[atom_index] *= scale
+                atom_index += 1
+        return p
 
 
 def saveposcar(fileout, p, w='w', direct = False):
     '''
-    Save a POSCAR
+    Save a VASP 5 POSCAR (species on the comment line and again before
+    the counts). movie.py uses this for visualization; loadposcar reads
+    this layout and the VASP 4 layout kdb produces.
         fileout: name to save it under
-        point:    atoms object to save
-        w:        write/append flag
+        p:       Structure (or Structure-like) to save
+        w:       write/append flag
     '''
-    if hasattr(fileout, 'write'):
-        poscar = fileout
-    else:
-        poscar = open(fileout, w)
-    atom_types = []
-    num_each_type = {}
-    for name in p.names:
-        if not name in atom_types:
-            atom_types.append(name)
-            num_each_type[name] = 1
+    with _maybe_open(fileout, w, 'write') as poscar:
+        atom_types = []
+        num_each_type = {}
+        rows_each_type = {}
+        for i, name in enumerate(p.names):
+            if not name in atom_types:
+                atom_types.append(name)
+                num_each_type[name] = 1
+                rows_each_type[name] = [i]
+            else:
+                num_each_type[name] += 1
+                rows_each_type[name].append(i)
+        # The header names the types once and then gives one count per type,
+        # so a reader walks the coordinate block type by type. A configuration
+        # whose species interleave writes its atoms in a different order than
+        # it holds them.
+        order = [i for name in atom_types for i in rows_each_type[name]]
+        poscar.write(" ".join(atom_types)+'\n') #Line 1: Atom type
+        poscar.write("1.0\n") #Line 2: scaling
+        for i in range(3):
+            poscar.write(" ".join(['%20.14f' % s for s in p.box[i]])+'\n')  #lines 3-5: box
+        poscar.write(" ".join(atom_types)+'\n') #Line 6: Atom type
+        poscar.write(" ".join(['%s' % num_each_type[key] for key in atom_types])+'\n')
+        poscar.write('Selective Dynamics\n') #line 7: selective dynamics
+        if direct:
+            poscar.write('Direct\n')  #line 8 cartesian coordinates
+            ibox = numpy.linalg.inv(numpy.array(p.box))
+            positions = numpy.dot(p.r, ibox)
         else:
-            num_each_type[name] += 1
-    poscar.write(" ".join(atom_types)+'\n') #Line 1: Atom type
-    poscar.write("1.0\n") #Line 2: scaling
-    for i in range(3):
-        poscar.write(" ".join(['%20.14f' % s for s in p.box[i]])+'\n')  #lines 3-5: box
-    poscar.write(" ".join(atom_types)+'\n') #Line 6: Atom type
-    poscar.write(" ".join(['%s' % num_each_type[key] for key in atom_types])+'\n')
-    poscar.write('Selective Dynamics\n') #line 7: selective dynamics
-    if direct:
-        poscar.write('Direct\n')  #line 8 cartesian coordinates
-        ibox = numpy.linalg.inv(numpy.array(p.box))
-        p.r = numpy.dot(p.r, ibox)
-    else:
-        poscar.write('Cartesian\n') #line 8 cartesian coordinates
-    for i in range(len(p)):
-            posline = " ".join(['%20.14f' % s for s in p.r[i]]) + " "
-            for j in range(3):
-                if(p.free[i]):
-                    posline+='   T'
+            poscar.write('Cartesian\n') #line 8 cartesian coordinates
+            positions = p.r
+        free = numpy.asarray(p.free, dtype=float)
+        for i in order:
+                posline = " ".join(['%20.14f' % s for s in positions[i]]) + " "
+                if free.ndim == 1:
+                    axis_free = (free[i] > 0.5, free[i] > 0.5, free[i] > 0.5)
                 else:
-                    posline+='   F'
-            poscar.write(posline+'\n')
+                    axis_free = (free[i, 0] > 0.5, free[i, 1] > 0.5, free[i, 2] > 0.5)
+                for flag in axis_free:
+                    posline += '   T' if flag else '   F'
+                poscar.write(posline+'\n')
 
 
 from configparser import ConfigParser as SCP
@@ -360,10 +516,8 @@ class ini(SCP):
             name = self.filenames
         else:
             name = self.filenames[-1]
-#        configfile = open(name, 'wb')
-        configfile = open(name, 'w')
-        self.write(configfile)
-        configfile.close()
+        with atomic_write(name) as configfile:
+            self.write(configfile)
 
 
 class Dynamics:
@@ -556,10 +710,9 @@ class Table:
     def write(self):
         if not self.initialized:
             self.init()
-        f = open(self.filename, "w")
         #print("into table write: ",self.filename)
-        self.writefilehandle(f)
-        f.close()
+        with atomic_write(self.filename) as f:
+            self.writefilehandle(f)
 
     def writefilehandle(self, filehandle):
         f = filehandle

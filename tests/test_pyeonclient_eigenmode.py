@@ -128,3 +128,101 @@ def test_parameters_dimer_saddle_attrs():
     assert p.dimer_improved is False
     p.saddle_minmode_method = "lanczos"
     assert p.saddle_minmode_method == "lanczos"
+
+
+def test_resolve_mobile_atoms_all_is_free():
+    m, pot, params = _lj_h2()
+    free = pyec.free_atom_indices(m)
+    all_m = pyec.resolve_mobile_atoms(m, "All")
+    np.testing.assert_array_equal(free, all_m)
+    np.testing.assert_array_equal(free, pyec.all_free_atoms(m))
+
+
+def test_resolve_mobile_atoms_intersects_fixed():
+    m, pot, params = _lj_h2()
+    m.fixed = np.array([1, 0], dtype=np.int64)
+    mobile = pyec.resolve_mobile_atoms(m, np.array([0, 1], dtype=np.int64))
+    np.testing.assert_array_equal(mobile, np.array([1], dtype=np.int64))
+    # free mask unchanged
+    assert int(m.n_free) == 1
+
+
+def test_lanczos_active_atoms_zeros_environment():
+    """PHVA mobile set: Krylov only on atoms=; free mask stays full."""
+    params = pyec.Parameters()
+    params.potential = pyec.PotType.LJ
+    pot = pyec.make_potential(pyec.PotType.LJ, params)
+    m = pyec.Matter(pot, params)
+    m.resize(4)
+    m.positions = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [1.2, 0.0, 0.0],
+            [0.0, 1.2, 0.0],
+            [1.2, 1.2, 0.0],
+        ],
+        dtype=np.float64,
+    )
+    m.cell = np.eye(3) * 20.0
+    m.atomic_numbers = np.array([1, 1, 1, 1], dtype=np.int64)
+    m.masses = np.ones(4)
+    m.fixed = np.zeros(4, dtype=np.int64)
+    m.periodic = False
+    assert int(m.n_free) == 4
+
+    direction = np.zeros((4, 3), dtype=np.float64)
+    direction[0, 0] = 1.0
+    direction[1, 0] = -0.5
+    atoms = np.array([0, 1], dtype=np.int64)
+
+    for Cls in (pyec.Lanczos, pyec.Davidson):
+        solver = Cls(m, params, pot)
+        solver.compute(m, direction, atoms=atoms)
+        assert np.isfinite(solver.eigenvalue)
+        ev = np.asarray(solver.eigenvector)
+        assert ev.shape == (4, 3)
+        # Environment (atoms 2,3) must be zero in the mode
+        assert np.linalg.norm(ev[2]) < 1e-12
+        assert np.linalg.norm(ev[3]) < 1e-12
+        # Active block nonzero
+        assert np.linalg.norm(ev[:2]) > 1e-12
+        # free mask not rewritten
+        assert int(m.n_free) == 4
+
+
+def test_lanczos_phva_atoms_param_restricts_krylov():
+    params = pyec.Parameters()
+    params.potential = pyec.PotType.LJ
+    params.lanczos_phva_atoms = "0,1"
+    pot = pyec.make_potential(pyec.PotType.LJ, params)
+    m = pyec.Matter(pot, params)
+    m.resize(3)
+    m.positions = np.array(
+        [[0.0, 0.0, 0.0], [1.2, 0.0, 0.0], [0.6, 1.0, 0.0]], dtype=np.float64
+    )
+    m.cell = np.eye(3) * 20.0
+    m.atomic_numbers = np.ones(3, dtype=np.int64)
+    m.masses = np.ones(3)
+    m.fixed = np.zeros(3, dtype=np.int64)
+    direction = np.zeros((3, 3), dtype=np.float64)
+    direction[0, 0] = 1.0
+    solver = pyec.Lanczos(m, params, pot)
+    solver.compute(m, direction)  # uses params.lanczos_phva_atoms
+    ev = np.asarray(solver.eigenvector)
+    assert np.linalg.norm(ev[2]) < 1e-12
+    assert int(m.n_free) == 3
+
+
+def test_lanczos_default_matches_explicit_free():
+    m, pot, params = _lj_h2()
+    direction = np.array([[0.0, 0.0, 0.0], [0.05, 0.0, 0.0]], dtype=np.float64)
+    free = pyec.free_atom_indices(m)
+    a = pyec.Lanczos(m, params, pot)
+    a.compute(m, direction)
+    b = pyec.Lanczos(m, params, pot)
+    b.compute(m, direction, atoms=free)
+    assert a.eigenvalue == pytest.approx(b.eigenvalue, abs=1e-6)
+    eva = np.asarray(a.eigenvector).ravel()
+    evb = np.asarray(b.eigenvector).ravel()
+    cos = abs(float(np.dot(eva, evb)) / (np.linalg.norm(eva) * np.linalg.norm(evb) + 1e-30))
+    assert cos == pytest.approx(1.0, abs=1e-5)

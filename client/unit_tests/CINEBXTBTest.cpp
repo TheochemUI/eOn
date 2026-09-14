@@ -10,9 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "NudgedElasticBand.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/NudgedElasticBand.h"
 
 namespace tests {
 

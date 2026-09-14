@@ -31,6 +31,52 @@ from eon.geometry import (  # noqa: F401
 
 # --- structure comparison / CNA (unchanged algorithms) ---
 
+def identical(atoms1, atoms2, epsilon_r):
+    """True if two structures match when same-element atoms are interchangeable.
+
+    Parameters
+    ----------
+    atoms1, atoms2 : Structure
+        Configurations to compare (same box within 1e-4).
+    epsilon_r : float
+        Max allowed MIC displacement (Å) for a pair to count as the same site.
+    """
+    if len(atoms1) != len(atoms2):
+        return False
+
+    for i in range(3):
+        for j in range(3):
+            if abs(atoms1.box[i][j] - atoms2.box[i][j]) > 0.0001:
+                logger.warning(
+                    "Identical returned false because boxes were not the same"
+                )
+                return False
+    box = atoms1.box
+    ibox = numpy.linalg.inv(box)
+
+    mismatch = []
+    pan = per_atom_norm(atoms1.r - atoms2.r, box, ibox)
+    for i in range(len(pan)):
+        if pan[i] > epsilon_r:
+            mismatch.append(i)
+        elif atoms1.names[i] != atoms2.names[i]:
+            return False
+
+    for i in mismatch:
+        pan = per_atom_norm(atoms1.r - atoms2.r[i], box, ibox)
+        minpan = 1e300
+        minj = 0
+        for j in range(len(pan)):
+            if i == j:
+                continue
+            if pan[j] < minpan:
+                minpan = pan[j]
+                minj = j
+        if not (minpan < epsilon_r and atoms1.names[minj] == atoms2.names[i]):
+            return False
+    return True
+
+
 def match(a, b, eps_r, neighbor_cutoff, indistinguishable,
           check_rotation=False, use_identical=False):
     if len(a) != len(b):
@@ -43,7 +89,7 @@ def match(a, b, eps_r, neighbor_cutoff, indistinguishable,
             return rot_match(a, b, eps_r)
     else:
         if indistinguishable and use_identical:
-            return identical(a, b)
+            return identical(a, b, eps_r)
         else:
             diff = pbc(a.r - b.r, a.box)
             return numpy.max(numpy.sum(diff**2.0, axis=1)) < eps_r**2.0
@@ -570,8 +616,8 @@ elements[ 23] = elements[  'V'] = {'symbol':   'V', 'name':      'vanadium', 'ma
 elements[ 24] = elements[ 'Cr'] = {'symbol':  'Cr', 'name':      'chromium', 'mass':  51.99610000, 'radius':  1.3900, 'color': [0.541, 0.600, 0.780], 'number': 24}
 elements[ 25] = elements[ 'Mn'] = {'symbol':  'Mn', 'name':     'manganese', 'mass':  54.93804500, 'radius':  1.3900, 'color': [0.611, 0.478, 0.780], 'number': 25}
 elements[ 26] = elements[ 'Fe'] = {'symbol':  'Fe', 'name':          'iron', 'mass':  55.84500000, 'radius':  1.3200, 'color': [0.878, 0.400, 0.200], 'number': 26}
-elements[ 27] = elements[ 'Co'] = {'symbol':  'Co', 'name':        'cobalt', 'mass':  58.69340000, 'radius':  1.2600, 'color': [0.941, 0.565, 0.627], 'number': 27}
-elements[ 28] = elements[ 'Ni'] = {'symbol':  'Ni', 'name':        'nickel', 'mass':  58.93319500, 'radius':  1.2400, 'color': [0.314, 0.816, 0.314], 'number': 28}
+elements[ 27] = elements[ 'Co'] = {'symbol':  'Co', 'name':        'cobalt', 'mass':  58.93319500, 'radius':  1.2600, 'color': [0.941, 0.565, 0.627], 'number': 27}
+elements[ 28] = elements[ 'Ni'] = {'symbol':  'Ni', 'name':        'nickel', 'mass':  58.69340000, 'radius':  1.2400, 'color': [0.314, 0.816, 0.314], 'number': 28}
 elements[ 29] = elements[ 'Cu'] = {'symbol':  'Cu', 'name':        'copper', 'mass':  63.54600000, 'radius':  1.3200, 'color': [0.784, 0.502, 0.200], 'number': 29}
 elements[ 30] = elements[ 'Zn'] = {'symbol':  'Zn', 'name':          'zinc', 'mass':  65.38000000, 'radius':  1.2200, 'color': [0.490, 0.502, 0.690], 'number': 30}
 elements[ 31] = elements[ 'Ga'] = {'symbol':  'Ga', 'name':       'gallium', 'mass':  69.72300000, 'radius':  1.2200, 'color': [0.761, 0.561, 0.561], 'number': 31}
@@ -629,16 +675,16 @@ elements[ 82] = elements[ 'Pb'] = {'symbol':  'Pb', 'name':          'lead', 'ma
 elements[ 83] = elements[ 'Bi'] = {'symbol':  'Bi', 'name':       'bismuth', 'mass': 208.98040000, 'radius':  1.4800, 'color': [0.620, 0.310, 0.710], 'number': 83}
 elements[ 84] = elements[ 'Po'] = {'symbol':  'Po', 'name':      'polonium', 'mass': 210.00000000, 'radius':  1.4000, 'color': [0.671, 0.361, 0.000], 'number': 84}
 elements[ 85] = elements[ 'At'] = {'symbol':  'At', 'name':      'astatine', 'mass': 210.00000000, 'radius':  1.5000, 'color': [0.459, 0.310, 0.271], 'number': 85}
-elements[ 86] = elements[ 'Rn'] = {'symbol':  'Rn', 'name':         'radon', 'mass': 220.00000000, 'radius':  1.5000, 'color': [0.259, 0.510, 0.588], 'number': 86}
+elements[ 86] = elements[ 'Rn'] = {'symbol':  'Rn', 'name':         'radon', 'mass': 222.00000000, 'radius':  1.5000, 'color': [0.259, 0.510, 0.588], 'number': 86}
 elements[ 87] = elements[ 'Fr'] = {'symbol':  'Fr', 'name':      'francium', 'mass': 223.00000000, 'radius':  2.6000, 'color': [0.259, 0.000, 0.400], 'number': 87}
 elements[ 88] = elements[ 'Ra'] = {'symbol':  'Ra', 'name':        'radium', 'mass': 226.00000000, 'radius':  2.2100, 'color': [0.000, 0.490, 0.000], 'number': 88}
 elements[ 89] = elements[ 'Ac'] = {'symbol':  'Ac', 'name':      'actinium', 'mass': 227.00000000, 'radius':  2.1500, 'color': [0.439, 0.671, 0.980], 'number': 89}
-elements[ 90] = elements[ 'Th'] = {'symbol':  'Th', 'name':       'thorium', 'mass': 231.03588000, 'radius':  2.0600, 'color': [0.000, 0.729, 1.000], 'number': 90}
-elements[ 91] = elements[ 'Pa'] = {'symbol':  'Pa', 'name':  'protactinium', 'mass': 232.03806000, 'radius':  2.0000, 'color': [0.000, 0.631, 1.000], 'number': 91}
-elements[ 92] = elements[  'U'] = {'symbol':   'U', 'name':       'uranium', 'mass': 237.00000000, 'radius':  1.9600, 'color': [0.000, 0.561, 1.000], 'number': 92}
-elements[ 93] = elements[ 'Np'] = {'symbol':  'Np', 'name':     'neptunium', 'mass': 238.02891000, 'radius':  1.9000, 'color': [0.000, 0.502, 1.000], 'number': 93}
-elements[ 94] = elements[ 'Pu'] = {'symbol':  'Pu', 'name':     'plutonium', 'mass': 243.00000000, 'radius':  1.8700, 'color': [0.000, 0.420, 1.000], 'number': 94}
-elements[ 95] = elements[ 'Am'] = {'symbol':  'Am', 'name':     'americium', 'mass': 244.00000000, 'radius':  1.8000, 'color': [0.329, 0.361, 0.949], 'number': 95}
+elements[ 90] = elements[ 'Th'] = {'symbol':  'Th', 'name':       'thorium', 'mass': 232.03806000, 'radius':  2.0600, 'color': [0.000, 0.729, 1.000], 'number': 90}
+elements[ 91] = elements[ 'Pa'] = {'symbol':  'Pa', 'name':  'protactinium', 'mass': 231.03588000, 'radius':  2.0000, 'color': [0.000, 0.631, 1.000], 'number': 91}
+elements[ 92] = elements[  'U'] = {'symbol':   'U', 'name':       'uranium', 'mass': 238.02891000, 'radius':  1.9600, 'color': [0.000, 0.561, 1.000], 'number': 92}
+elements[ 93] = elements[ 'Np'] = {'symbol':  'Np', 'name':     'neptunium', 'mass': 237.00000000, 'radius':  1.9000, 'color': [0.000, 0.502, 1.000], 'number': 93}
+elements[ 94] = elements[ 'Pu'] = {'symbol':  'Pu', 'name':     'plutonium', 'mass': 244.00000000, 'radius':  1.8700, 'color': [0.000, 0.420, 1.000], 'number': 94}
+elements[ 95] = elements[ 'Am'] = {'symbol':  'Am', 'name':     'americium', 'mass': 243.00000000, 'radius':  1.8000, 'color': [0.329, 0.361, 0.949], 'number': 95}
 elements[ 96] = elements[ 'Cm'] = {'symbol':  'Cm', 'name':        'curium', 'mass': 247.00000000, 'radius':  1.6900, 'color': [0.471, 0.361, 0.890], 'number': 96}
 elements[ 97] = elements[ 'Bk'] = {'symbol':  'Bk', 'name':     'berkelium', 'mass': 247.00000000, 'radius':  1.6600, 'color': [0.541, 0.310, 0.890], 'number': 97}
 elements[ 98] = elements[ 'Cf'] = {'symbol':  'Cf', 'name':   'californium', 'mass': 251.00000000, 'radius':  1.6800, 'color': [0.631, 0.212, 0.831], 'number': 98}

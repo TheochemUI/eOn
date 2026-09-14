@@ -9,13 +9,13 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "BasinHoppingSaddleSearch.h"
-#include "Dimer.h"
-#include "ImprovedDimer.h"
-#include "Lanczos.h"
-#include "LowestEigenmode.h"
-#include "MinModeSaddleSearch.h"
-#include "NudgedElasticBand.h"
+#include "eon/BasinHoppingSaddleSearch.h"
+#include "eon/Dimer.h"
+#include "eon/ImprovedDimer.h"
+#include "eon/Lanczos.h"
+#include "eon/LowestEigenmode.h"
+#include "eon/MinModeSaddleSearch.h"
+#include "eon/NudgedElasticBand.h"
 #include <cmath>
 #include <cstdio>
 

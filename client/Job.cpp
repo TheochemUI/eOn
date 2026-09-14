@@ -9,29 +9,30 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "Job.h"
-#include "BasinHoppingJob.h"
-#include "DynamicsJob.h"
-#include "FiniteDifferenceJob.h"
-#include "GlobalOptimizationJob.h"
-#include "HessianJob.h"
-#include "MinimizationJob.h"
-#include "MonteCarloJob.h"
-#include "NudgedElasticBandJob.h"
-#include "ParallelReplicaJob.h"
-#include "Parameters.h"
-#include "PointJob.h"
-#include "PrefactorJob.h"
-#include "ProcessSearchJob.h"
-#include "ReplicaExchangeJob.h"
-#include "SaddleSearchJob.h"
-#include "SafeHyperJob.h"
-#include "StructureComparisonJob.h"
-#include "TADJob.h"
-#include "TestJob.h"
+#include "eon/Job.h"
+#include "eon/BasinHoppingJob.h"
+#include "eon/DynamicsJob.h"
+#include "eon/FiniteDifferenceJob.h"
+#include "eon/GlobalOptimizationJob.h"
+#include "eon/HessianJob.h"
+#include "eon/MinimizationJob.h"
+#include "eon/MonteCarloJob.h"
+#include "eon/NudgedElasticBandJob.h"
+#include "eon/OHTSTJob.h"
+#include "eon/ParallelReplicaJob.h"
+#include "eon/Parameters.h"
+#include "eon/PointJob.h"
+#include "eon/PrefactorJob.h"
+#include "eon/ProcessSearchJob.h"
+#include "eon/ReplicaExchangeJob.h"
+#include "eon/SaddleSearchJob.h"
+#include "eon/SafeHyperJob.h"
+#include "eon/StructureComparisonJob.h"
+#include "eon/TADJob.h"
+#include "eon/TestJob.h"
 
 #ifdef WITH_GP_SURROGATE
-#include "GPSurrogateJob.h"
+#include "eon/GPSurrogateJob.h"
 #endif
 
 namespace eonc::helpers {
@@ -112,6 +113,12 @@ std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params) {
     break;
   }
 #endif
+  case OH_TST: {
+    return (std::make_unique<OHTSTJob>(std::move(params)));
+  }
+  case Test: {
+    return (std::make_unique<TestJob>(std::move(params)));
+  }
   default:
     throw std::runtime_error("No known job could be constructed");
     break;

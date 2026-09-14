@@ -1,0 +1,15 @@
+# Local zizmor config. See https://docs.zizmor.sh/configuration/
+rules:
+  dangerous-triggers:
+    ignore:
+      # Isolated commenters on completed workflow_run. Tokens are not shared with the producer.
+      - ci_bench_commenter.yml
+      - ci_doc_commenter.yml
+  cache-poisoning:
+    ignore:
+      # Pages/artifact publish jobs that also cache the docs/schema build.
+      - ci_docs.yml
+      - eon-schema-publish.yml
+  template-injection:
+    ignore:
+      - pyeonclient-wheels.yml

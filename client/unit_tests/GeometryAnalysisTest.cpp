@@ -10,10 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "GeometryAnalysis.h"
-#include "Matter.h"
+#include "eon/GeometryAnalysis.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/Matter.h"
 
 namespace tests {
 

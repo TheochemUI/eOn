@@ -1,7 +1,7 @@
-#include "ParametersSSOT.h"
-#include "Parameters.h"
+#include "eon/ParametersSSOT.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/Parameters.h"
 
 #include <cstdlib>
 #include <filesystem>

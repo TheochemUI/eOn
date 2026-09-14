@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn NEB, Nudged Elastic Band, minimum energy path, saddle point, climbing image"
 ---
 
-# Nudged Elastic Band
+# Nudged elastic band
 
 The nudged elastic band (NEB) is a method for finding saddle points and minimum
 energy paths between known reactants and products. The method works by
@@ -19,7 +19,7 @@ Details may be found in {cite:t}`neb-jonssonNudgedElasticBand1998`,
 {cite:t}`neb-sheppardPathsWhichNudged2011`, and
 {cite:t}`neb-asgeirssonExploringPotentialEnergy2018`.
 
-In order to run a nudged elastic band calculation, set **job** to
+To run a nudged elastic band calculation, set **job** to
 *nudged_elastic_band* in the **[Main]** section. Details of the optimizer can be
 set as per the <project:optimizer.md> document.
 
@@ -30,6 +30,10 @@ set as per the <project:optimizer.md> document.
 
 For a full walkthrough (ASE NEB vs eOn energy-weighted springs + OCI dimer), see
 the [atomistic-cookbook PET-MAD example](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html).
+
+For a **built-in** Morse Pt NEB with current `rgpycrumbs eon plt-neb` 1D/2D
+figures (full history, 1:1 reaction-valley panel, structure strip), see
+{doc}`/tutorials/systems/morse_pt_neb`.
 ```
 
 ## Variants
@@ -72,11 +76,30 @@ Following (dimer) search on the climbing image after it stabilizes, using
 hessian eigenmode alignment to refine the saddle point to higher accuracy
 without additional NEB iterations. Enable with `ci_mmf = true`.
 
+`climbing_image_converged_only` (default true) compares the climbing image
+to `converged_force`. That is not a band-wide certificate: a SIDPP path
+that lands two images on the same point can put the climber on a
+stationary artifact while the rest of the band is still at 2 eV/Å.
+`climbing_image_band_slack` (default 10) refuses that report. The job is
+not converged while any image exceeds slack times the tolerance. SIDPP
+itself throws if adjacent images collapse below \(10^{-6}\) Å.
+
+```{code-block} ini
+[Nudged Elastic Band]
+climbing_image_method = true
+climbing_image_converged_only = true
+climbing_image_band_slack = 10.0
+```
+
 ### Parallel evaluation
 
-When compiled with TBB support (`-Dwith_parallel_neb=true`), image forces are
-evaluated in parallel. Python-based potentials automatically fall back to serial
-evaluation.
+When compiled with TBB (`-Dwith_parallel_neb=true`) or nvc++
+(`-Dstdpar=cpu` / `-Dstdpar=gpu`), dirty-image force calls use
+`std::execution::par`. nvc++ does not need TBB; see {doc}`stdpar`.
+Without those flags, `parallel = true` still fans out with one
+`std::thread` per image. Python-based potentials fall back to serial
+evaluation unless they report thread-safe shared instances or per-image
+copies. Morse and other host potentials stay on the CPU.
 
 ## Configuration
 
@@ -140,7 +163,7 @@ Far from the minimum energy path, second order optimizers like those using the
 LBFGS may not be optimal. In these situations, to traverse uninteresting
 sections of the potential energy surface rapidly, it is best to use an
 accelerating optimizer like QuickMin to begin with and transition to LBFGS
-later. To facilitate this, the `[Refine]` section has been introduced.
+later. The `[Refine]` section does that switch.
 
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.RefineConfig

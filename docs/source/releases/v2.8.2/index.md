@@ -7,12 +7,13 @@ myst:
 
 ## [v2.8.2] - 2025-12-01
 
-This release brings significant enhancements to the [Metatomic](https://docs.metatensor.org/metatomic/latest/index.html) interface,
-enabling per-atom energy uncertainty quantification and variance estimation.
+This release adds per-atom energy uncertainty quantification and variance
+estimation to the [Metatomic](https://docs.metatensor.org/metatomic/latest/index.html)
+interface.
 
-Additionally, the build system has been refined with new `pixi` helpers for
+The build system has been refined with new `pixi` helpers for
 release management, and the **PyTorch** dependency has been updated to v2.8 to
-maintain compatibility with the latest machine learning potential ecosystems.
+keep compatibility with current machine learning potential stacks.
 
 ```{toctree}
 :maxdepth: 2

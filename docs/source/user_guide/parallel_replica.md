@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn Parallel Replica, PRD, accelerated MD, replica dynamics"
 ---
 
-# Parallel Replica
+# Parallel replica
 
 Parallel Replica dynamics (PRD) is the simplest and the accurate way to
 accelerate a molecular dynamics simulation as discussed by
@@ -30,15 +30,15 @@ Because those {math}`N` trajectories are independent, they can explore the phase
 times faster than using a single trajectory. The overall simulation clock is
 advanced by the sum of all the simulation times in replicas.
 
-In order to work with distributed computing, we have modified the traditional
+For distributed computing, we have modified the traditional
 scheme for running PRD. The replica generating and dephasing stage is exactly
 the same.  However, we make all replicas run the same number of MD steps to
-avoid biasing the successful transition trajectories. In other words, results
-will only be reported back when the clients finish their full trajectories. The
+avoid biasing the successful transition trajectories. Results
+are reported only when the clients finish their full trajectories. The
 server increments the simulation time {math}`t` until the first transition
 occurs.
 
-In order to run Parallel Replica jobs:
+To run Parallel Replica jobs:
 - Set {any}`job <eon.schema.MainConfig.job>` to *parallel_replica* in the
 **[Main]** section.
 - For regular MD the {any}`time step <eon.schema.DynamicsConfig.time_step>` and

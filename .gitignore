@@ -1,5 +1,5 @@
 # Custom, other things are auto-ignored
-subprojects
+# subprojects extracted trees ignored under Meson section; wraps + packagefiles kept
 artn_gitinfo.h
 ira_gitinfo.h
 **/artn_gitinfo.h
@@ -37,9 +37,6 @@ eon/version.py
 
 # /client/potentials/Morse/
 /client/potentials/Morse/*.a
-
-# /client/potentials/NewPot/
-/client/potentials/NewPot/*.a
 
 # /client/potentials/SW/
 /client/potentials/SW/*.a
@@ -173,6 +170,8 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+/docs/doxyYoda/
+/docs/doxygen-html/
 
 # PyBuilder
 target/
@@ -607,9 +606,11 @@ Temporary Items
 # Edit at https://www.toptal.com/developers/gitignore?templates=meson
 
 ### Meson ###
-# subproject directories
+# subproject directories (extracted sources stay ignored; wraps + packagefiles tracked)
 /subprojects/*
 !/subprojects/*.wrap
+!/subprojects/packagefiles/
+!/subprojects/packagefiles/**
 
 # Meson Directories
 meson-logs
@@ -691,3 +692,6 @@ packages/eon-schema/build/
 # Docs figures generated from JSON at sphinx-build time (SSoT is fig/data/*.json)
 docs/source/fig/generated/
 bbdir-mta-bench*/
+
+# ExtPot exchange directories, retained when an external-program call fails
+extpot_*/

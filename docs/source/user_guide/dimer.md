@@ -46,16 +46,17 @@ obtained differs.
 `rotation_backend` (`classical` \| `lanczos` \| `davidson` \| `lor`). The LOR path
 implements Leng et al. {cite:p}`dm-lengEfficientSoftestMode2013`: 2×2 then 3×3 Ritz
 problems in the rotation subspace, force translation for H·P₃ (linear action of H
-on the unit Gram–Schmidt residual of the trial direction, not Gram–Schmidt on
-H·P in ambient space), residual / `rotations_max` / stall stops, and a best-mode
+on the unit Gram–Schmidt residual of the trial direction), residual /
+`rotations_max` / stall stops, and a best-mode
 restore when the Ritz sequence is non-monotonic under FD noise.
 ```
 
 LOR stops when the *relative* residual
 `‖F_⊥‖ / (|C_N| + 1) < max(1e-3, lor_residual_tol)` (default
-`lor_residual_tol = 0.1`). That parameter is **not** classical `torque_min`
-(angular torque for the constrained rotation loop); it only applies when
-`rotation_backend = lor`. Budget is `rotations_max` (default 10; values
+`lor_residual_tol = 0.1`). That parameter is the LOR residual stop and
+applies only when `rotation_backend = lor`. Classical rotation uses
+`torque_min` (angular torque for the constrained rotation loop). Budget is
+`rotations_max` (default 10; values
 `<= 0` fall back to 10). Exhausting the budget without meeting the residual
 stop sets `rotationDidConverge` false on `ImprovedDimer`.
 
@@ -72,7 +73,7 @@ rotations_max = 20
 `improved = True` (default) uses `ImprovedDimer`; non-classical backends skip the
 classical `IDimerRot` loop and call the selected min-mode backend through a
 shared dispatch helper. Rotation iteration budgets for LOR follow
-`rotations_max` (not geometry `max_iterations`).
+`rotations_max`. Geometry uses `max_iterations`.
 
 ## Configuration
 

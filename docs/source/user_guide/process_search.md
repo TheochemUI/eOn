@@ -5,7 +5,7 @@ myst:
     "keywords": "eOn process search, aKMC, saddle search, minimum energy path"
 ---
 
-# Process Search
+# Process search
 
 The aKMC method can ask clients to do a saddle search, find connecting minima,
 and calculate prefactors all within the context of this job.

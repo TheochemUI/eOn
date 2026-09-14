@@ -16,7 +16,7 @@ Potential CCL Table II for intramolecular interactions in water.
 University of Iceland
 */
 
-#include "ccl.hpp"
+#include "eon/potentials/Water/ccl.hpp"
 #include <cassert>
 #include <cmath>
 // #include "unit_system.hpp"

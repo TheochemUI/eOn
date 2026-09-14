@@ -9,115 +9,112 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "EonLogger.h"
+#include "eon/EonLogger.h"
+#include <cctype>
 #include <csignal>
 #include <ctime>
 #include <limits>
+#include <memory>
+#include <stdexcept>
+#include <string>
 #include <utility>
+#include <vector>
 
-#include "HelperFunctions.h"
-#include "Parameters.h"
-#include "Potential.h"
+#include "eon/HelperFunctions.h"
+#include "eon/Parameters.h"
+#include "eon/Potential.h"
 #ifdef WITH_CATLEARN
-#include "potentials/CatLearnPot/CatLearnPot.h"
-#endif
-
-#ifdef IMD_POT
-#include "potentials/IMD/IMD.h"
+#include "eon/potentials/CatLearnPot/CatLearnPot.h"
 #endif
 
 #ifdef WITH_GPRD
-#include "potentials/GPRPotential/GPRPotential.h"
+#include "eon/potentials/GPRPotential/GPRPotential.h"
 #endif
 
-#include "potentials/EAM/EAM.h"
-#include "potentials/EMT/EffectiveMediumTheory.h"
-#include "potentials/ExtPot/ExtPot.h"
-#include "potentials/LJ/LJ.h"
-#include "potentials/LJCluster/LJCluster.h"
-#include "potentials/Morse/Morse.h"
+#include "eon/potentials/EAM/EAM.h"
+#include "eon/potentials/EMT/EffectiveMediumTheory.h"
+#include "eon/potentials/ExtPot/ExtPot.h"
+#include "eon/potentials/PluginLoader.h"
+#include "eon/potentials/RgpotAdapter/RgpotAdapter.h"
+#include "rgpot/LennardJones/LJClusterPot.hpp"
+#include "rgpot/LennardJones/LJPot.hpp"
+#include "rgpot/Morse/MorsePot.hpp"
+#include "rgpot/ZBL/ZBLPot.hpp"
+#ifdef RGPOT_HAS_DFTD3
+#include "rgpot/D3Pot/D3Pot.hpp"
+#endif
+#ifdef RGPOT_HAS_DFTD4
+#include "rgpot/D4Pot/D4Pot.hpp"
+#endif
+#ifdef RGPOT_HAS_EXPR
+#include "rgpot/ExprPot/ExprPot.hpp"
+#endif
+#include "rgpot/MOPACPot/MOPACPot.hpp"
+#include "rgpot/fortran/FortranPots.hpp"
 #ifndef IS_WINDOWS
-#include "potentials/SocketNWChem/SocketNWChemPot.h"
+#include "eon/potentials/SocketNWChem/SocketNWChemPot.h"
 #ifdef WITH_RGPOT
-#include "potentials/Rgpot/RgpotPot.h"
+#include "eon/potentials/Rgpot/RgpotPot.h"
 #endif
 #endif
-#include "potentials/ZBL/ZBLPot.h"
 
 // Fortran potentials: always compiled, loaded at runtime via dlopen
-#include "potentials/Aluminum/Aluminum.h"
-#include "potentials/EDIP/EDIP.h"
-#include "potentials/FeHe/FeHe.h"
-#include "potentials/FortranPotLoader.h"
-#include "potentials/Lenosky/Lenosky.h"
-#include "potentials/SW/SW.h"
-#include "potentials/Tersoff/Tersoff.h"
 
 #ifdef EMBED_PYTHON
-
-#ifdef PYAMFF_POT
-#include "potentials/PyAMFF/PyAMFF.h"
-#endif
 #ifdef WITH_ASE_POT
-#include "potentials/ASE/ASE.h"
+#include "eon/potentials/ASE/ASE.h"
 #endif
-
-#include "potentials/QSC/QSC.h"
 #endif
 
 #ifdef EONMPI
-#include "potentials/MPIPot/MPIPot.h"
+#include "eon/potentials/MPIPot/MPIPot.h"
 #endif
 
-#include "potentials/LAMMPS/LAMMPSPot.h"
-
-#ifdef NEW_POT
-#include "potentials/NewPot/NewPot.h"
-#endif
+#include "eon/potentials/LAMMPS/LAMMPSPot.h"
 
 // TODO: This should be guarded by WITH_FORTRAN as well
 #ifdef CUH2_POT
-#include "potentials/CuH2/CuH2.h"
 #endif
 
 #ifndef _WIN32
 #ifdef WITH_VASP
-#include "potentials/VASP/VASP.h"
+#include "eon/potentials/VASP/VASP.h"
 #endif
 #endif
 
 #ifdef WITH_AMS
-#include "potentials/AMS/AMS.h"
-#include "potentials/AMS_IO/AMS_IO.h"
+#include "eon/potentials/AMS/AMS.h"
+#include "eon/potentials/AMS_IO/AMS_IO.h"
 #endif
 
 #ifdef WITH_ASE_ORCA
-#include "potentials/ASE_ORCA/ASE_ORCA.h"
+#include "eon/potentials/ASE_ORCA/ASE_ORCA.h"
 #endif
 
 #ifdef WITH_ASE_NWCHEM
-#include "potentials/ASE_NWCHEM/ASE_NWCHEM.h"
+#include "eon/potentials/ASE_NWCHEM/ASE_NWCHEM.h"
 #endif
 
 #ifdef WITH_METATOMIC
-#include "potentials/Metatomic/MetatomicPotential.h"
+#include "eon/potentials/Metatomic/MetatomicPotential.h"
 #endif
 
 #ifdef WITH_WATER
-#include "potentials/Water/Water.hpp"
+#include "eon/potentials/Water/Water.hpp"
 #ifdef WITH_FORTRAN
-#include "potentials/Water_H/Tip4p_H.h"
 #endif
-#include "potentials/Water_Pt/Tip4p_Pt.hpp"
+#include "eon/potentials/Water_Pt/Tip4p_Pt.hpp"
 #endif
 
 // Should respect Fortran availability
 
 #ifdef WITH_XTB
-#include "potentials/XTBPot/XTBPot.h"
+#include "eon/potentials/XTBPot/XTBPot.h"
 #endif
 
+#include <cmath>
 #include <limits>
+#include <stdexcept>
 
 std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix &pos,
                                                  const VectorXi &atmnrs,
@@ -130,14 +127,124 @@ std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix &pos,
               box.data());
   forceCallCounter++;
   PotRegistry::get().on_force_call(ptype);
+  if (!std::isfinite(energy) || !forces.allFinite()) {
+    throw std::runtime_error(
+        "Potential::get_ef: non-finite energy or forces");
+  }
 
   return std::make_tuple(energy, forces);
 }
 
 namespace eonc::helpers {
+namespace {
+
+std::string lower_copy(std::string s) {
+  for (char &c : s) {
+    c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+  }
+  return s;
+}
+
+#ifdef RGPOT_HAS_EXPR
+#ifdef RGPOT_HAS_DFTD3
+rgpot::D3Damping d3_damping_from_params(const Parameters &params) {
+  rgpot::D3Damping damp = rgpot::D3Damping::BJ;
+  if (lower_copy(params.dftd_options.d3_damping) == "zero") {
+    damp = rgpot::D3Damping::Zero;
+  }
+  return damp;
+}
+#endif
+
+std::unique_ptr<rgpot::PotentialBase> make_expr_term(const std::string &raw,
+                                                     const Parameters &params) {
+  const std::string name = lower_copy(raw);
+  if (name == "lj") {
+    return std::make_unique<rgpot::LJPot>(rgpot::LJConfig{});
+  }
+  if (name == "ljcluster") {
+    return std::make_unique<rgpot::LJClusterPot>(rgpot::LJClusterConfig{});
+  }
+  if (name == "morse" || name == "morse_pt") {
+    return std::make_unique<rgpot::MorsePot>(rgpot::MorseConfig{});
+  }
+  if (name == "zbl") {
+    return std::make_unique<rgpot::ZBLPot>(rgpot::ZBLConfig{
+        .cut_inner = params.zbl_options.cut_inner,
+        .cut_global = params.zbl_options.cut_global,
+    });
+  }
+#ifdef RGPOT_HAS_DFTD3
+  if (name == "d3" || name == "dftd3") {
+    return std::make_unique<rgpot::D3Pot>(rgpot::D3Config{
+        .damping = d3_damping_from_params(params),
+        .functional = params.dftd_options.functional,
+        .atm = params.dftd_options.atm,
+    });
+  }
+#endif
+#ifdef RGPOT_HAS_DFTD4
+  if (name == "d4" || name == "dftd4") {
+    return std::make_unique<rgpot::D4Pot>(rgpot::D4Config{
+        .functional = params.dftd_options.functional,
+        .charge = params.dftd_options.d4_charge,
+        .atm = params.dftd_options.atm,
+    });
+  }
+#endif
+  if (name == "mopac") {
+    return std::make_unique<rgpot::MOPACPot>(rgpot::MOPACPot::Config{
+        .charge = params.mopac_options.charge,
+        .spin = params.mopac_options.spin,
+        .model = params.mopac_options.model,
+        .engine_path = params.mopac_options.engine_path,
+    });
+  }
+  throw std::runtime_error(
+      "ExprPot unknown term '" + raw +
+      "' (lj, ljcluster, morse, zbl, d3/dftd3, d4/dftd4, mopac)");
+}
+
+std::vector<rgpot::ExprPot::Term> parse_expr_terms(const Parameters &params) {
+  std::vector<rgpot::ExprPot::Term> terms;
+  std::string buf = params.expr_options.terms;
+  std::string token;
+  auto flush = [&]() {
+    while (!token.empty() &&
+           std::isspace(static_cast<unsigned char>(token.front()))) {
+      token.erase(token.begin());
+    }
+    while (!token.empty() &&
+           std::isspace(static_cast<unsigned char>(token.back()))) {
+      token.pop_back();
+    }
+    if (!token.empty()) {
+      terms.emplace_back(token, make_expr_term(token, params));
+      token.clear();
+    }
+  };
+  for (char c : buf) {
+    if (c == ',') {
+      flush();
+    } else {
+      token.push_back(c);
+    }
+  }
+  flush();
+  if (terms.empty()) {
+    throw std::runtime_error(
+        "ExprPot needs [ExprPot] terms (comma-separated names used in "
+        "expression)");
+  }
+  return terms;
+}
+#endif
+
+} // namespace
+
 std::shared_ptr<Potential> makePotential(const Parameters &params) {
   // Inject config-file path before any potential constructor runs
-  FortranPotLoader::instance().add_config_paths(
+  PluginLoader::instance().add_config_paths(
       params.potential_options.potentialsPath);
   return makePotential(params.potential_options.potential, params);
 }
@@ -145,7 +252,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
                                          const Parameters &params) {
   // Inject config-file path before any potential constructor runs.
   // Called on every code path including Job::Job which uses this overload.
-  FortranPotLoader::instance().add_config_paths(
+  PluginLoader::instance().add_config_paths(
       params.potential_options.potentialsPath);
   switch (ptype) {
   // TODO: Every potential must know their own type
@@ -158,32 +265,22 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
   case PotType::LJ: {
-    return (std::make_shared<LJ>(params));
+    return makeRgpot<rgpot::LJPot>(PotType::LJ, params, rgpot::LJConfig{});
     break;
   }
   case PotType::LJCLUSTER: {
-    return (std::make_shared<LJCluster>(params));
+    return makeRgpot<rgpot::LJClusterPot>(PotType::LJCLUSTER, params,
+                                          rgpot::LJClusterConfig{});
     break;
   }
   case PotType::MORSE_PT: {
-    return (std::make_shared<Morse>(params));
+    return makeRgpot<rgpot::MorsePot>(PotType::MORSE_PT, params,
+                                      rgpot::MorseConfig{});
     break;
   }
-#ifdef NEW_POT
-  case PotType::NEW: {
-    return (std::make_shared<NewPot>(params));
-    break;
-  }
-#endif
 #ifdef CUH2_POT
   case PotType::CUH2: {
-    return (std::make_shared<CuH2>(params));
-    break;
-  }
-#endif
-#ifdef IMD_POT
-  case PotType::IMD: {
-    return (std::make_shared<IMD>(params));
+    return makeRgpotDefault<rgpot::fortranpots::CuH2Pot>(PotType::CUH2, params);
     break;
   }
 #endif
@@ -202,34 +299,38 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
   case PotType::TIP4P_H: {
-    return (std::make_shared<Tip4p_H>(params));
+    return makeRgpotDefault<rgpot::fortranpots::WaterHPot>(PotType::TIP4P_H,
+                                                           params);
     break;
   }
 #endif
 #endif
   // Fortran potentials: always available, loaded at runtime via dlopen
   case PotType::EAM_AL: {
-    return (std::make_shared<Aluminum>(params));
+    return makeRgpotDefault<rgpot::fortranpots::EAMAlPot>(PotType::EAM_AL,
+                                                          params);
     break;
   }
   case PotType::EDIP: {
-    return (std::make_shared<EDIP>(params));
+    return makeRgpotDefault<rgpot::fortranpots::EDIPPot>(PotType::EDIP, params);
     break;
   }
   case PotType::FEHE: {
-    return (std::make_shared<FeHe>(params));
+    return makeRgpotDefault<rgpot::fortranpots::FeHePot>(PotType::FEHE, params);
     break;
   }
   case PotType::LENOSKY_SI: {
-    return (std::make_shared<Lenosky>(params));
+    return makeRgpotDefault<rgpot::fortranpots::LenoskyPot>(PotType::LENOSKY_SI,
+                                                            params);
     break;
   }
   case PotType::SW_SI: {
-    return (std::make_shared<SW>(params));
+    return makeRgpotDefault<rgpot::fortranpots::SWPot>(PotType::SW_SI, params);
     break;
   }
   case PotType::TERSOFF_SI: {
-    return (std::make_shared<Tersoff>(params));
+    return makeRgpotDefault<rgpot::fortranpots::TersoffPot>(PotType::TERSOFF_SI,
+                                                            params);
     break;
   }
 #ifndef _WIN32
@@ -250,22 +351,12 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   }
 #endif
 #ifdef EMBED_PYTHON
-#ifdef PYAMFF_POT
-  case PotType::PYAMFF: {
-    return (std::make_shared<PyAMFF>());
-    break;
-  }
-#endif
 #ifdef WITH_ASE_POT
   case PotType::ASE_POT: {
     return (std::make_shared<ASE>(params));
     break;
   }
 #endif
-  // case PotType::QSC: {
-  //   return (std::make_shared<QSC>());
-  //   break;
-  // }
 #endif
 #ifdef WITH_AMS
   case PotType::AMS: {
@@ -277,17 +368,6 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
 #endif
-#ifdef WITH_GPRD
-  // case PotType::GPR: {
-  //   return "gpr"s;
-  //   break;
-  // }
-#endif
-  // case PotType::PYTHON: {
-  //   TODO: Implement
-  //   return "python"s;
-  //   break;
-  // }
 #ifdef WITH_CATLEARN
   case PotType::CatLearn: {
     return (std::make_shared<CatLearnPot>(params));
@@ -319,8 +399,41 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     break;
   }
 #endif
+#ifdef RGPOT_HAS_DFTD3
+  case PotType::DFTD3: {
+    rgpot::D3Damping damp = rgpot::D3Damping::BJ;
+    std::string dname = params.dftd_options.d3_damping;
+    for (char &c : dname) {
+      c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    }
+    if (dname == "zero") {
+      damp = rgpot::D3Damping::Zero;
+    }
+    return makeRgpot<rgpot::D3Pot>(
+        PotType::DFTD3, params,
+        rgpot::D3Config{.damping = damp,
+                        .functional = params.dftd_options.functional,
+                        .atm = params.dftd_options.atm});
+    break;
+  }
+#endif
+#ifdef RGPOT_HAS_DFTD4
+  case PotType::DFTD4: {
+    return makeRgpot<rgpot::D4Pot>(
+        PotType::DFTD4, params,
+        rgpot::D4Config{.functional = params.dftd_options.functional,
+                        .charge = params.dftd_options.d4_charge,
+                        .atm = params.dftd_options.atm});
+    break;
+  }
+#endif
   case PotType::ZBL: {
-    return (std::make_shared<ZBLPot>(params));
+    return makeRgpot<rgpot::ZBLPot>(
+        PotType::ZBL, params,
+        rgpot::ZBLConfig{
+            .cut_inner = params.zbl_options.cut_inner,
+            .cut_global = params.zbl_options.cut_global,
+        });
     break;
   }
 #ifndef IS_WINDOWS
@@ -332,6 +445,30 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 #ifdef WITH_RGPOT
   case PotType::RGPOT: {
     return (std::make_shared<RgpotPot>(params));
+    break;
+  }
+#endif
+  case PotType::MOPAC: {
+    return makeRgpot<rgpot::MOPACPot>(
+        PotType::MOPAC, params,
+        rgpot::MOPACPot::Config{
+            .charge = params.mopac_options.charge,
+            .spin = params.mopac_options.spin,
+            .model = params.mopac_options.model,
+            .engine_path = params.mopac_options.engine_path,
+        });
+    break;
+  }
+#ifdef RGPOT_HAS_EXPR
+  case PotType::EXPR: {
+    if (params.expr_options.expression.empty()) {
+      throw std::runtime_error(
+          "ExprPot needs [ExprPot] expression, e.g. 0.5*lj + d3");
+    }
+    rgpot::ExprPot expr(params.expr_options.expression,
+                        parse_expr_terms(params));
+    return std::make_shared<RgpotAdapter<rgpot::ExprPot>>(PotType::EXPR, params,
+                                                          std::move(expr));
     break;
   }
 #endif

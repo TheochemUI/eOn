@@ -1,11 +1,11 @@
 /*
 ** ASE ↔ Matter in nanobind: bulk buffer paths (no Python-list geometry builds).
 */
-#include "Matter.h"
-#include "Parameters.h"
-#include "Potential.h"
 #include "bind_helpers.hpp"
 #include "eigen_numpy.hpp"
+#include "eon/Matter.h"
+#include "eon/Parameters.h"
+#include "eon/Potential.h"
 
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
@@ -83,18 +83,81 @@ void bind_ase(nb::module_ &m) {
 
         auto matter = std::make_shared<Matter>(pot, params);
         matter->resize(n);
+        bool periodic = false;
+        try {
+          nb::object pbc_i = np_contig(atoms.attr("pbc"), "int64");
+          ArrI64 pbc = nb::cast<ArrI64>(pbc_i);
+          if (pbc.ndim() == 0) {
+            periodic = pbc.data()[0] != 0;
+          } else if (pbc.ndim() == 1 && pbc.shape(0) == 3) {
+            bool any = false;
+            bool all = true;
+            for (size_t ax = 0; ax < 3; ++ax) {
+              const bool v = pbc.data()[ax] != 0;
+              any = any || v;
+              all = all && v;
+            }
+            if (any && !all) {
+              throw std::invalid_argument(
+                  "matter_from_ase: mixed PBC is not supported; Matter has "
+                  "one periodic flag");
+            }
+            periodic = all;
+          } else {
+            throw std::invalid_argument(
+                "matter_from_ase: pbc must be a bool or length-3 mask");
+          }
+        } catch (const std::invalid_argument &) {
+          throw;
+        } catch (...) {
+          throw std::invalid_argument(
+              "matter_from_ase: could not read atoms.pbc");
+        }
+        matter->setPeriodic(periodic);
         matter_set_cell_buf(*matter, f64_ptr(cell));
         matter_set_positions_buf(*matter, f64_ptr(pos), n);
         matter_set_masses_buf(*matter, f64_ptr(mass), n);
         matter_set_z_buf(*matter, reinterpret_cast<const int *>(z.data()), n);
 
-        // FixAtoms → fixed mask
-        std::vector<int> fixed(static_cast<size_t>(n), 0);
+        // FixAtoms / FixCartesian → per-axis fixed mask
         try {
           nb::object constraints = atoms.attr("constraints");
           const size_t nc = nb::len(constraints);
           for (size_t ci = 0; ci < nc; ++ci) {
             nb::object c = constraints[nb::int_(ci)];
+            if (nb::hasattr(c, "mask") && nb::hasattr(c, "a")) {
+              const long i = nb::cast<long>(c.attr("a"));
+              if (i < 0 || i >= n) {
+                continue;
+              }
+              nb::object mask_o = np_contig(c.attr("mask"), "int64");
+              ArrI64 mask = nb::cast<ArrI64>(mask_o);
+              if (mask.ndim() != 1 || mask.shape(0) != 3) {
+                continue;
+              }
+              auto cur = matter->getFixedMask(i);
+              for (size_t ax = 0; ax < 3; ++ax) {
+                if (mask.data()[ax] != 0) {
+                  cur[ax] = true;
+                }
+              }
+              matter->setFixedMask(i, cur);
+              continue;
+            }
+            // Only FixAtoms. FixBondLengths and FixedLine also have
+            // get_indices() and must not fully freeze those atoms.
+            std::string cname;
+            try {
+              cname =
+                  nb::cast<std::string>(c.attr("__class__").attr("__name__"));
+            } catch (...) {
+              continue;
+            }
+            if (cname != "FixAtoms") {
+              throw std::invalid_argument(
+                  "matter_from_ase: unsupported ASE constraint '" + cname +
+                  "'; only FixAtoms and FixCartesian are imported");
+            }
             if (!nb::hasattr(c, "get_indices")) {
               continue;
             }
@@ -106,7 +169,7 @@ void bind_ase(nb::module_ &m) {
             for (size_t k = 0; k < idx.shape(0); ++k) {
               long i = static_cast<long>(idx.data()[k]);
               if (i >= 0 && i < n) {
-                fixed[static_cast<size_t>(i)] = 1;
+                matter->setFixed(i, 1);
               }
             }
           }
@@ -114,17 +177,7 @@ void bind_ase(nb::module_ &m) {
           // ignore constraint extraction failures
         } catch (const nb::cast_error &) {
         }
-        matter_set_fixed_buf(*matter, fixed.data(), n);
 
-        bool periodic = false;
-        try {
-          nb::object any =
-              np.attr("any")(np.attr("asarray")(atoms.attr("pbc")));
-          periodic = nb::cast<bool>(any);
-        } catch (...) {
-          periodic = true;
-        }
-        matter->setPeriodic(periodic);
         return matter;
       },
       nb::arg("atoms"), nb::arg("potential"), nb::arg("parameters"),
@@ -165,16 +218,41 @@ void bind_ase(nb::module_ &m) {
                   nb::arg("positions") = positions, nb::arg("cell") = cell,
                   nb::arg("pbc") = use_pbc, nb::arg("masses") = masses);
 
-        nb::list fixed_idx;
+        auto constraints_mod = ase.attr("constraints");
+        auto FixAtoms = constraints_mod.attr("FixAtoms");
+        auto FixCartesian = constraints_mod.attr("FixCartesian");
+        nb::list cons;
+        nb::list fully_fixed;
         for (long i = 0; i < n; ++i) {
-          if (matter.getFixed(i)) {
-            fixed_idx.append(i);
+          const auto mask = matter.getFixedMask(i);
+          const bool fx = mask[0];
+          const bool fy = mask[1];
+          const bool fz = mask[2];
+          if (fx && fy && fz) {
+            fully_fixed.append(i);
+          } else if (fx || fy || fz) {
+            cons.append(FixCartesian(
+                i, nb::make_tuple(fx ? 1 : 0, fy ? 1 : 0, fz ? 1 : 0)));
           }
         }
-        if (nb::len(fixed_idx) > 0) {
-          auto FixAtoms = ase.attr("constraints").attr("FixAtoms");
-          atoms.attr("set_constraint")(
-              FixAtoms(nb::arg("indices") = fixed_idx));
+        if (nb::len(fully_fixed) > 0) {
+          cons.append(FixAtoms(nb::arg("indices") = fully_fixed));
+        }
+        if (nb::len(cons) > 0) {
+          atoms.attr("set_constraint")(cons);
+        }
+        try {
+          const double energy = matter.getPotentialEnergy();
+          AtomMatrix F = matter.getForces();
+          nb::object forces = np.attr("array")(
+              nb::cast(view_n3(F.data(), n), nb::rv_policy::copy),
+              nb::arg("dtype") = "float64", nb::arg("copy") = true);
+          auto SPC = ase.attr("calculators")
+                         .attr("singlepoint")
+                         .attr("SinglePointCalculator");
+          atoms.attr("calc") = SPC(atoms, nb::arg("energy") = energy,
+                                   nb::arg("forces") = forces);
+        } catch (...) {
         }
         return atoms;
       },

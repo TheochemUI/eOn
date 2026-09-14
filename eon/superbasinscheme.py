@@ -33,6 +33,12 @@ class SuperbasinScheme:
         for i in os.listdir(self.path):
             if i == 'storage':
                 continue
+            if not i.isdigit():
+                # Superbasins are numbered. Anything else in here is debris:
+                # an editor backup, an NFS silly-rename, or a staging file
+                # from a write that was killed before its rename.
+                logger.warning("Ignoring %s in the superbasin path", i)
+                continue
             self.next_sb_num = max(self.next_sb_num, int(i))
             self.superbasins.append(
                 superbasin.Superbasin(self.path, i,

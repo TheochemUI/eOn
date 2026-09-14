@@ -10,10 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "../MatrixHelpers.hpp"
-#include "Matter.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/MatrixHelpers.hpp"
+#include "eon/Matter.h"
 #include <cstdlib>
 #include <filesystem>
 #include <memory>

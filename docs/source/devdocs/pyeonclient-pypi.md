@@ -2,7 +2,7 @@
 
 `pyeonclient` is a **separate** PyPI project from `eon-akmc`. Distribution follows
 the **torch model**: wheels and sdist on PyPI; optional fat Metatomic builds
-against **PyPI torch**, not a conda-forge gate.
+against **PyPI torch**.
 
 | Project | Import | Contents |
 |---------|--------|----------|
@@ -49,8 +49,9 @@ Probes::
 
 ## Release
 
-1. Bump `version` in `pyproject-pyeonclient.toml` and
-   `client/python/bind/module.cpp` `__version__` (lockstep). Pin
+1. Bump `version` in `pyproject-pyeonclient.toml`. `client/python/meson.build`
+   reads it from there and defines `PYEONCLIENT_VERSION`, which
+   `client/python/bind/module.cpp` publishes as `_core.__version__`. Pin
    `pyeonclient[models]` → `eon-schema` floor if schema public API changed.
 2. Tag: `git tag -s pyeonclient-v0.3.3 -m "pyeonclient 0.3.3"`
 3. Push tag → `pyeonclient-wheels.yml` builds and publishes (CI publish job).

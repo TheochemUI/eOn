@@ -13,10 +13,10 @@
 /// Micro-benchmarks for potential force evaluation.
 /// Uses Catch2 BENCHMARK macro for reliable timing.
 
-#include "Matter.h"
-#include "Parameters.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/Matter.h"
+#include "eon/Parameters.h"
 
 namespace tests {
 

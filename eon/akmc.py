@@ -18,7 +18,7 @@ from pathlib import Path
 
 numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
 
-from eon.version import version
+from eon import version
 from eon.config import ConfigClass
 from eon import communicator
 from eon import locking
@@ -133,7 +133,7 @@ def akmc(config: ConfigClass = None, steps=0):
 
     parser.write(open(metafile, 'w'))
 
-    io.save_prng_state()
+    io.save_prng_state(io.prng_state_path(config))
 
     return steps
 
@@ -468,7 +468,7 @@ def main(config: ConfigClass = None):
             get_akmc_metadata(config)
         current_state = states.get_state(start_state_num)
         if config.sb_on:
-            sb_scheme = get_superbasin_scheme(states)
+            sb_scheme = get_superbasin_scheme(states, config)
             sb = sb_scheme.get_containing_superbasin(current_state)
         else:
             sb = None
@@ -546,7 +546,7 @@ def main(config: ConfigClass = None):
                             os.path.join(config.path_results, "akmc.log"),
                             os.path.join(config.path_results, "jobs.tbl"),
                             os.path.join(config.path_root, "results"),
-                            os.path.join(config.path_root, "prng.pkl"),
+                            io.prng_state_path(config),
                             os.path.join(config.path_root, "explorer.pickle"),
                             os.path.join(config.path_root, "temperatures.dat"),
                             os.path.join(config.path_root, "client.log"),

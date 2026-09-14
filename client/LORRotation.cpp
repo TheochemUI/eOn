@@ -15,9 +15,9 @@
 // At most one *new* force evaluation per rotation iteration (F at R0+δ·dir);
 // center forces F(R0) are cached once for the whole LOR call.
 
-#include "LORRotation.h"
-#include "HelperFunctions.h"
-#include "SafeMath.h"
+#include "eon/LORRotation.h"
+#include "eon/HelperFunctions.h"
+#include "eon/SafeMath.h"
 
 #include <Eigen/Eigenvalues>
 #include <algorithm>

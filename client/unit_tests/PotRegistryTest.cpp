@@ -10,9 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "PotRegistry.h"
-#include "Potential.h"
+#include "eon/PotRegistry.h"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/Potential.h"
 #include <fstream>
 #include <memory>
 
@@ -32,6 +32,13 @@ public:
       forces[i] = 0.0;
   }
 };
+
+TEST_CASE("PotRegistry get returns a stable process-lifetime instance",
+          "[PotRegistry][lifecycle]") {
+  auto &a = PotRegistry::get();
+  auto &b = PotRegistry::get();
+  REQUIRE(&a == &b);
+}
 
 TEST_CASE("PotRegistry tracks creation and destruction",
           "[PotRegistry][lifecycle]") {

@@ -4,7 +4,8 @@
 
 | Layer | Module | Role |
 |-------|--------|------|
-| **L0** | `eon_schema.ssot` | Cap’n Proto field graph (vendored from monorepo `schema/`) |
+| **L0** | `eon_schema.ssot` | Cap’n Proto params field graph (vendored from monorepo `schema/`) |
+| **L0** | `eon_schema.jobs` | Cap’n Proto `JobRequest` / `JobResult` / `Geometry` + `results.dat` adapters |
 | **L1** | `eon_schema.config` | Full job-config pydantic models (`MainConfig`, `Metatomic`, `Config`, …) |
 | **L2** | `eon_schema.api` / `fields` | In-process specs (`DimerSpec`, `NebSpec`, enums) |
 
@@ -47,8 +48,11 @@ pip install -e packages/eon-schema
 ## Quick use
 
 ```python
-# L0
+# L0 params
 from eon_schema.ssot import capnp_path, load_catalog
+
+# L0 job envelope
+from eon_schema.jobs import job_result_capnp_path, results_dat_to_dict
 
 # L1 (same objects as eon.schema.*)
 from eon_schema.config import MainConfig, Metatomic, Config
@@ -58,6 +62,7 @@ from eon_schema.api import DimerSpec
 from eon_schema.fields import MinModeMethod, Accelerant
 
 print(capnp_path())
+print(job_result_capnp_path())
 print(MainConfig().job)
 print(DimerSpec(method=MinModeMethod.improved, accelerant=Accelerant.gp).core_kwargs())
 ```
@@ -78,7 +83,8 @@ from pyeonclient.models import DimerSpec, NebSpec  # re-export
 
 ```text
 src/eon_schema/
-  ssot/          # L0 vendored Cap'n Proto + catalog
+  ssot/          # L0 vendored params Cap'n Proto + catalog
+  jobs/          # L0 JobRequest/JobResult schema + results.dat adapters
   config/        # L1 job-config models (models.py)
   fields/        # enums
   api/           # L2 DimerSpec, NebSpec

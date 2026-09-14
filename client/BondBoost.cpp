@@ -10,13 +10,16 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "BondBoost.h"
-#include "EonLogger.h"
-#include "HelperFunctions.h"
+#include "eon/BondBoost.h"
+#include "eon/EonLogger.h"
+#include "eon/HelperFunctions.h"
 
 #include <algorithm>
+#include <cctype>
 #include <cmath>
+#include <stdexcept>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 const char Hyperdynamics::NONE[] = "none";
@@ -36,75 +39,104 @@ void BondBoost::initialize() {
 
   const std::string &balString =
       parameters.hyperdynamics_options.boost_atom_list;
-  auto atoms = eonc::helpers::split_string_int(balString, ",");
+  std::string lowered = balString;
+  std::transform(lowered.begin(), lowered.end(), lowered.begin(),
+                 [](unsigned char c) {
+                   return static_cast<char>(std::tolower(c));
+                 });
 
-  if (balString == "all" || atoms.empty()) {
-    QUILL_LOG_DEBUG(log, "boost all atoms that are set free\n");
-    nBAs = matter->numberOfFreeAtoms();
-    nRAs = nAtoms - nBAs;
-    BAList.resize(nBAs);
-    RAList.resize(nRAs);
-    long k = 0;
-    for (long i = 0; i < nAtoms; i++) {
+  BAList.clear();
+  if (lowered.empty() || lowered == "all") {
+    for (long i = 0; i < nAtoms; ++i) {
       if (!matter->getFixed(i)) {
-        BAList[k++] = i;
+        BAList.push_back(i);
       }
     }
   } else {
-    QUILL_LOG_DEBUG(log, "boost the following selected atoms:");
-    for (size_t i = 0; i < atoms.size(); i++) {
-      QUILL_LOG_DEBUG(log, "{} ", atoms[i]);
+    const auto atoms = eonc::helpers::split_string_int(balString, ",");
+    if (atoms.empty()) {
+      throw std::invalid_argument(
+          "hyperdynamics.boost_atom_list must be 'all' or a comma list of "
+          "CON file-order indices");
     }
-    QUILL_LOG_DEBUG(log, "\n");
-    nBAs = static_cast<long>(atoms.size());
-    nRAs = nAtoms - nBAs;
-    BAList.resize(nBAs);
-    RAList.resize(nRAs);
-    for (long i = 0; i < nBAs; i++) {
-      BAList[i] = atoms[i];
+    std::unordered_set<long> seen;
+    for (int raw : atoms) {
+      const long row = matter->mapFileRow(static_cast<long>(raw));
+      if (row < 0 || row >= nAtoms) {
+        throw std::out_of_range(
+            "hyperdynamics.boost_atom_list index out of range");
+      }
+      if (matter->getFixed(row)) {
+        continue;
+      }
+      if (seen.insert(row).second) {
+        BAList.push_back(row);
+      }
     }
+  }
+  if (BAList.empty()) {
+    throw std::runtime_error("BondBoost: no boostable atoms");
   }
 
-  // Build rest-atoms list (atoms not in BAList)
-  long count = 0;
-  for (long i = 0; i < nAtoms; i++) {
-    bool isBoosted = std::any_of(BAList.begin(), BAList.end(),
-                                 [i](long ba) { return ba == i; });
-    if (!isBoosted) {
-      RAList[count++] = i;
+  nBAs = static_cast<long>(BAList.size());
+  const std::unordered_set<long> boosted(BAList.begin(), BAList.end());
+  RAList.clear();
+  RAList.reserve(static_cast<size_t>(nAtoms - nBAs));
+  for (long i = 0; i < nAtoms; ++i) {
+    if (boosted.find(i) == boosted.end()) {
+      RAList.push_back(i);
     }
   }
-  if (count != nRAs) {
-    QUILL_LOG_DEBUG(log, "Error: nRestAtoms does not equal counted number!\n");
-  }
+  nRAs = static_cast<long>(RAList.size());
 
   nTABs = nBAs * (nBAs - 1) / 2 + nBAs * nRAs;
-  TABAList.resize(2 * nTABs);
+  TABAList.assign(static_cast<size_t>(2 * std::max(nTABs, 0L)), 0);
   TABLList.setZero(nTABs, 1);
-  QUILL_LOG_DEBUG(log, "BondBoost Used !\n");
+  QUILL_LOG_DEBUG(log, "BondBoost: {} boost atoms, {} rest, {} tagged bonds",
+                  nBAs, nRAs, nTABs);
 }
 
-double BondBoost::boost() {
-  long RMDS = static_cast<long>(parameters.hyperdynamics_options.rmd_time /
-                                parameters.dynamics_options.time_step);
-  double biasPot = 0.0;
+long BondBoost::rmdSteps() const {
+  const double dt = parameters.dynamics_options.time_step;
+  if (!(dt > 0.0)) {
+    return 0;
+  }
+  return static_cast<long>(parameters.hyperdynamics_options.rmd_time / dt);
+}
 
+void BondBoost::advance() {
+  const long RMDS = rmdSteps();
   if (nReg <= RMDS) {
-    // Equilibration phase: accumulate average bond lengths
+    // Equilibration: sample bond lengths once per MD step.
     Matrix<double, Eigen::Dynamic, 1> TABL_tmp = Rmdsteps();
     TABLList = TABLList + (1.0 / RMDS) * TABL_tmp;
     nReg++;
-  } else {
-    // Boost phase
     if (nReg == RMDS + 1) {
       nBBs = BondSelect();
     }
-    Epsr_Q.resize(nBBs);
-    CBBLList.setZero(nBBs, 1);
-    biasPot = Booststeps();
-    nReg++;
-    Epsr_Q.clear();
+    return;
   }
+  if (nReg == RMDS + 1) {
+    nBBs = BondSelect();
+  }
+  nReg++;
+}
+
+double BondBoost::boost() {
+  const long RMDS = rmdSteps();
+  if (nReg <= RMDS) {
+    return 0.0;
+  }
+  // RMDS == 0 and a caller that never advance()s still has to select bonds
+  // on the first evaluation; SafeHyper / ParallelReplica call advance()
+  // first and reach BondSelect there.
+  if (nBBs == 0) {
+    nBBs = BondSelect();
+  }
+  Epsr_Q.resize(nBBs);
+  CBBLList.setZero(nBBs, 1);
+  const double biasPot = Booststeps();
+  Epsr_Q.clear();
   return biasPot;
 }
 

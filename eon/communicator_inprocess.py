@@ -132,9 +132,12 @@ class LocalInProcess(Communicator):
             from pyeonclient.bridge import structure_to_matter, matter_to_structure
 
             matter = structure_to_matter(structure, pot, params)
-            # Default job for in-process path: minimize (Matter.relax)
+            # Default job for in-process path: minimize (Matter.relax).
             # Full JobType dispatch lands as more C++ entry points are bound.
-            converged = matter.relax(quiet=True, write_movie=False, checkpoint=False)
+            # relax returns (Matter, converged: bool); default is non-inplace.
+            matter, converged = matter.relax(
+                inplace=True, quiet=True, write_movie=False, checkpoint=False
+            )
             out = matter_to_structure(matter)
 
             import eon.fileio as fio
@@ -153,7 +156,9 @@ class LocalInProcess(Communicator):
             self._finished.append(
                 {
                     "id": jid,
-                    "number": jid,
+                    # Bundle index within the job, as the file-based
+                    # communicators set it; one task per job here.
+                    "number": 0,
                     "name": str(jid),
                     "min.con": min_io,
                     "results.dat": results,

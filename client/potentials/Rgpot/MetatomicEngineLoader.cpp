@@ -1,4 +1,4 @@
-#include "MetatomicEngineLoader.h"
+#include "eon/potentials/Rgpot/MetatomicEngineLoader.h"
 #include <cstdlib>
 #include <stdexcept>
 #include <string>

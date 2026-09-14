@@ -19,11 +19,11 @@
 
 #include <algorithm>
 
-#include "../GPRHelpers.h"
-#include "../HelperFunctions.h"
-#include "../Matter.h"
-#include "../Parameters.h"
 #include "AtomsConfigurationTest.h"
+#include "eon/GPRHelpers.h"
+#include "eon/HelperFunctions.h"
+#include "eon/Matter.h"
+#include "eon/Parameters.h"
 
 namespace tests {
 

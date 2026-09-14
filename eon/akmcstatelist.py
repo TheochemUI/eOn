@@ -137,16 +137,28 @@ class AKMCStateList(statelist.StateList):
                         return
 
             # The process is not in the list and must be added as a new process.
-            reverse_process_id = product.get_num_procs()
+            # Fall through to content-addressed reverse id below.
+            reverse_process_id = None
 
         else:
             # This must be a new state.
             print("register_process: new product state")
             product.set_energy(reactant.procs[process_id]['product_energy'])
-            reverse_process_id = 0
+            reverse_process_id = None
+
+        # Content-addressed reverse id from the shared saddle (tagged reverse so
+        # it does not collide with the forward process id on the reactant).
+        if reverse_process_id is None:
+            with open(reactant.proc_saddle_path(process_id), "rb") as sf:
+                saddle_bytes = sf.read()
+            reverse_process_id = product.allocate_process_id(
+                b"akmc-reverse",
+                saddle_bytes,
+                ("from-state-%d" % reactant_number).encode("ascii"),
+                ("forward-proc-%d" % process_id).encode("ascii"),
+            )
 
         # The product state does not know the reverse process yet.
-        # Reverse id has been determined above. (0 if it is a new state, else the last element in the proc table + 1)
         shutil.copy(reactant.proc_saddle_path(process_id), product.proc_saddle_path(reverse_process_id))
         shutil.copy(reactant.proc_reactant_path(process_id), product.proc_product_path(reverse_process_id))
         shutil.copy(reactant.proc_product_path(process_id), product.proc_reactant_path(reverse_process_id))

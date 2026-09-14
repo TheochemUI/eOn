@@ -1,4 +1,4 @@
-#include "XTBEngineLoader.h"
+#include "eon/potentials/Rgpot/XTBEngineLoader.h"
 #include <cstdlib>
 #include <stdexcept>
 #include <string>

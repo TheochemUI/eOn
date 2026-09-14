@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Ensure pyeonclient version is lockstep across pyproject + C++ module."""
+"""Ensure _core.__version__ is derived from pyproject-pyeonclient.toml."""
 from __future__ import annotations
 
 import re
@@ -17,16 +17,29 @@ def main() -> int:
 
     meta = tomllib.loads((ROOT / "pyproject-pyeonclient.toml").read_text())
     v_py = meta["project"]["version"]
+
     mod = (ROOT / "client/python/bind/module.cpp").read_text()
-    m = re.search(r'__version__"\)\s*=\s*"([^"]+)"', mod)
-    if not m:
-        print("ERROR: no __version__ in module.cpp", file=sys.stderr)
+    if re.search(r'__version__"\)\s*=\s*"', mod):
+        print(
+            "ERROR: module.cpp hardcodes __version__; it must publish "
+            "PYEONCLIENT_VERSION",
+            file=sys.stderr,
+        )
         return 1
-    v_cpp = m.group(1)
-    if v_py != v_cpp:
-        print(f"ERROR: version mismatch pyproject={v_py} module.cpp={v_cpp}", file=sys.stderr)
+    if not re.search(r'__version__"\)\s*=\s*PYEONCLIENT_VERSION', mod):
+        print("ERROR: no __version__ = PYEONCLIENT_VERSION in module.cpp", file=sys.stderr)
         return 1
-    print(f"pyeonclient version OK: {v_py}")
+
+    build = (ROOT / "client/python/meson.build").read_text()
+    if "pyproject-pyeonclient.toml" not in build or "PYEONCLIENT_VERSION" not in build:
+        print(
+            "ERROR: client/python/meson.build does not define "
+            "PYEONCLIENT_VERSION from pyproject-pyeonclient.toml",
+            file=sys.stderr,
+        )
+        return 1
+
+    print(f"pyeonclient version OK: {v_py} (generated into _core)")
     return 0
 
 

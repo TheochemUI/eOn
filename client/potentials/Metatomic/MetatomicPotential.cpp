@@ -9,9 +9,9 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "MetatomicPotential.h"
-#include "../../Parameters.h"
-#include "../../fpe_handler.h"
+#include "eon/potentials/Metatomic/MetatomicPotential.h"
+#include "eon/Parameters.h"
+#include "eon/fpe_handler.h"
 #include "vesin.h"
 
 #include <torch/csrc/jit/runtime/graph_executor.h>
@@ -23,6 +23,31 @@
 #include <vector>
 
 using namespace std::string_literals;
+
+namespace {
+
+// metatensor-torch 0.10.3 Module::to() walks every attribute when
+// `_mts_buffer_names` is missing. Exported PET-MAD stores mixed dicts as
+// ordinary attrs; empty containers count as non-metatensor and throw.
+// Weights already moved. Swallow only that mixed-dict error. Do not
+// register `_mts_buffer_names` on scripted modules (JIT slot assert).
+bool is_mixed_mts_to_error(const c10::Error &e) {
+  const std::string w = e.what_without_backtrace();
+  return w.find("metatensor and non-metatensor") != std::string::npos;
+}
+
+void move_atomistic_model(metatensor_torch::Module &model,
+                          torch::Device device) {
+  try {
+    model.to(device);
+  } catch (const c10::Error &e) {
+    if (!is_mixed_mts_to_error(e)) {
+      throw;
+    }
+  }
+}
+
+} // namespace
 
 static torch::optional<std::string> normalize_variant(const std::string &s) {
   if (s.empty() || s == "off")
@@ -107,7 +132,7 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   device_ = torch::Device(device_type_);
   QUILL_LOG_INFO(m_log, "[MetatomicPotential] Using device: {}", device_.str());
 
-  this->model_.to(this->device_);
+  move_atomistic_model(this->model_, this->device_);
 
   // 4. Set data type (float32/float64) based on model capabilities
   if (this->capabilities_->dtype() == "float64") {
@@ -508,9 +533,12 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
 
   auto cutoff = request->engine_cutoff(m_metatomic_opts.length_unit);
 
-  VesinOptions options{}; // zero-initialize all fields (incl. algorithm=0=Auto)
+  // Zero-init so vesin 0.6 skin/n_threads stay 0 when compiling against 0.6
+  // headers (must match linked libvesin — pin vesin>=0.6 for metatomic builds).
+  VesinOptions options{};
   options.cutoff = cutoff;
   options.full = request->full_list();
+  options.sorted = false;
   options.return_shifts = true;
   options.return_distances = false; // we don't need distances
   options.return_vectors = true;    // metatomic uses vectors for autograd
@@ -529,6 +557,9 @@ metatensor_torch::TensorBlock MetatomicPotential::computeNeighbors(
     std::string err_str = "vesin_neighbors failed";
     if (error_message != nullptr) {
       err_str += ": " + std::string(error_message);
+    } else {
+      err_str += " (no message; vesin header/lib ABI mismatch? need vesin>=0.6 "
+                 "with matching engine)";
     }
     delete vesin_neighbor_list;
     throw std::runtime_error(err_str);

@@ -9,7 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "NEBTangent.h"
+#include "eon/NEBTangent.h"
 
 #include <algorithm>
 #include <cmath>

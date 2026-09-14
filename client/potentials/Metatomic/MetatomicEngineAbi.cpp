@@ -4,9 +4,9 @@
 ** Fat eOn still uses MetatomicPotential directly via potential=Metatomic.
 */
 #define RGPOT_MTA_ENGINE_BUILD
-#include "../../Parameters.h"
-#include "../Rgpot/metatomic_c_abi.h"
-#include "MetatomicPotential.h"
+#include "eon/Parameters.h"
+#include "eon/potentials/Metatomic/MetatomicPotential.h"
+#include "eon/potentials/Rgpot/metatomic_c_abi.h"
 #include <cstdio>
 #include <cstring>
 #include <exception>

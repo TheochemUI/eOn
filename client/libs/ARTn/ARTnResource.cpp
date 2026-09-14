@@ -10,7 +10,7 @@
  * https://github.com/TheochemUI/eOn
  */
 
-#include "ARTnResource.h"
+#include "eon/libs/ARTn/ARTnResource.h"
 #include <iostream>
 
 namespace eonc {

@@ -1,6 +1,6 @@
 // Isolated TU: rgpot only (no eOn Potential.h) — avoids Cap'n Proto Potential
 // clash.
-#include "RGPotEngine.h"
+#include "eon/potentials/Rgpot/RGPotEngine.h"
 
 #include <array>
 #include <cctype>
@@ -12,11 +12,13 @@
 
 #include <capnp/message.h>
 
-#include "MetatomicEngineLoader.h"
-#include "XTBEngineLoader.h"
+#include "eon/potentials/Rgpot/MetatomicEngineLoader.h"
+#include "eon/potentials/Rgpot/XTBEngineLoader.h"
 #include "rgpot/CPMDPot/CPMDPot.hpp"
 #include "rgpot/NWChemPot/NWChemPot.hpp"
 #include "rgpot/rpc/Potentials.capnp.h"
+
+using rgpot::types::AtomMatrix;
 
 namespace {
 

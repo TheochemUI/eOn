@@ -9,9 +9,9 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "ServeMode.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/ServeMode.h"
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 

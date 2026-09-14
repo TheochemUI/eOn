@@ -14,8 +14,8 @@ myst:
 #### Eigen row-major storage for atom data mapping
 
 `Eigen::Map` calls that wrap raw `double*` atom data now specify
-`Eigen::RowMajor` explicitly, ensuring consistent `[x0, y0, z0, x1, ...]`
-layout regardless of compile-time defaults.  This completes the storage-order
+`Eigen::RowMajor` explicitly, so the layout stays `[x0, y0, z0, x1, ...]`
+regardless of compile-time defaults.  This completes the storage-order
 cleanup started in v2.10.1.
 
 #### Windows MSVC compatibility (conda-forge upstream absorption)

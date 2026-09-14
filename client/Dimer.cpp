@@ -9,10 +9,10 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "Dimer.h"
-#include "DimerRotationDispatch.h"
-#include "HelperFunctions.h"
-#include "SafeMath.h"
+#include "eon/Dimer.h"
+#include "eon/DimerRotationDispatch.h"
+#include "eon/HelperFunctions.h"
+#include "eon/SafeMath.h"
 
 #include <cassert>
 #include <cmath>
@@ -57,6 +57,11 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
     totalForceCalls += alt->forceCalls;
     statsRotations = alt->rotations;
     eonc::safemath::safe_normalize_inplace(direction);
+    for (long i = 0; i < nAtoms; ++i) {
+      if (matterCenter->getFixed(i)) {
+        direction.row(i).setZero();
+      }
+    }
     *matterCenter = *matter;
     return;
   }
@@ -87,7 +92,8 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
                              rotationalPlaneOld, lengthRotationalForceOld);
 
     torque = rotationalForce.norm();
-    assert(std::isnormal(torque));
+    // torque == 0 is a valid aligned dimer; isnormal(0) is false.
+    assert(std::isfinite(torque));
 
     // Convergence: stop if torque is below threshold or max rotations reached
     if ((torque > params.dimer_options.torque_max &&
@@ -132,7 +138,12 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
 
   statsTorque = torque;
   statsCurvature = curvature;
-  direction.normalize();
+  eonc::safemath::safe_normalize_inplace(direction);
+  for (long i = 0; i < nAtoms; ++i) {
+    if (matterCenter->getFixed(i)) {
+      direction.row(i).setZero();
+    }
+  }
   statsAngle = eonc::safemath::safe_acos(matDot(direction, initialDirection));
   statsAngle *= (180.0 / eonc::helpers::pi);
   statsRotations = rotations;
@@ -159,8 +170,8 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce) {
     matterDimer->setPositions(posDimer);
     rotationRemove(matterCenter, matterDimer);
     posDimer = matterDimer->getPositions();
-    direction = posDimer - posCenter;
-    direction.normalize();
+    direction = matterCenter->pbc(posDimer - posCenter);
+    eonc::safemath::safe_normalize_inplace(direction);
     posDimer = posCenter + direction * params.main_options.finiteDifference;
   }
 
@@ -262,8 +273,10 @@ void Dimer::rotate(double rotationAngle) {
   double cosA = std::cos(rotationAngle);
   double sinA = std::sin(rotationAngle);
 
-  direction = direction * cosA + rotationalPlane * sinA;
-  rotationalPlane = rotationalPlane * cosA - direction * sinA;
+  AtomMatrix newDirection = direction * cosA + rotationalPlane * sinA;
+  AtomMatrix newPlane = rotationalPlane * cosA - direction * sinA;
+  direction = std::move(newDirection);
+  rotationalPlane = std::move(newPlane);
 
   eonc::safemath::safe_normalize_inplace(direction);
   eonc::safemath::safe_normalize_inplace(rotationalPlane);

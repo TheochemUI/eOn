@@ -9,12 +9,12 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "DynamicsSaddleSearch.h"
-#include "BondBoost.h"
-#include "Dynamics.h"
-#include "EigenmodeStrategy.h"
-#include "MinModeSaddleSearch.h"
-#include "NudgedElasticBand.h"
+#include "eon/DynamicsSaddleSearch.h"
+#include "eon/BondBoost.h"
+#include "eon/Dynamics.h"
+#include "eon/EigenmodeStrategy.h"
+#include "eon/MinModeSaddleSearch.h"
+#include "eon/NudgedElasticBand.h"
 
 #include <cmath>
 #include <filesystem>

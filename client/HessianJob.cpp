@@ -9,12 +9,17 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "HessianJob.h"
-#include "EonLogger.h"
-#include "Hessian.h"
-#include "Matter.h"
-#include "Potential.h"
+#include "eon/HessianJob.h"
+#include "eon/BaseStructures.h"
+#include "eon/EonLogger.h"
+#include "eon/Hessian.h"
+#include "eon/Matter.h"
+#include "eon/MobileAtoms.h"
+#include "eon/PotRegistry.h"
+#include "eon/Potential.h"
+#include "magic_enum/magic_enum.hpp"
 
+#include <filesystem>
 #include <format>
 #include <fstream>
 #include <stdexcept>
@@ -33,73 +38,36 @@ std::vector<std::string> HessianJob::run(void) {
   }
 
   Hessian hessian(params, matter.get());
-  long nAtoms = matter->numberOfAtoms();
 
-  VectorXi moved(nAtoms);
-  moved.setConstant(-1);
-
-  int nMoved = 0;
-  // [Hessian] atom_list = mobile/displaced atoms for FD (hybrid/PHVA-class
-  // active set), comma-separated 0-based indices, or "All" = every non-fixed
-  // atom. Intersect with free flags so frozen CON atoms are never displaced.
-  const std::string &atomList = params.hessian_options.atom_list;
-  const bool useExplicitList = !atomList.empty() && atomList != "All" &&
-                               atomList != "all" && atomList != "ALL";
-
-  if (useExplicitList) {
-    std::string token;
-    for (size_t p = 0; p <= atomList.size(); ++p) {
-      const char c = (p < atomList.size()) ? atomList[p] : ',';
-      if (c == ',' || c == ' ' || c == '\t' || p == atomList.size()) {
-        if (!token.empty()) {
-          try {
-            const long idx = std::stol(token);
-            if (idx >= 0 && idx < nAtoms && !matter->getFixed(idx)) {
-              moved[nMoved++] = static_cast<int>(idx);
-            }
-          } catch (const std::exception &) {
-            // skip non-integer tokens
-          }
-          token.clear();
-        }
-      } else {
-        token.push_back(c);
-      }
-    }
-  } else {
-    for (int i = 0; i < nAtoms; i++) {
-      if (!matter->getFixed(i)) {
-        moved[nMoved] = i;
-        nMoved++;
-      }
-    }
+  // [Hessian] phva_atoms = PHVA mobile/active set (displaced in FD). free/fixed
+  // is the optimizer mask; resolveMobileAtoms intersects the list with free.
+  const VectorXi mobile =
+      eonc::resolveMobileAtoms(matter.get(), params.hessian_options.phva_atoms);
+  const bool no_mobile = mobile.size() == 0;
+  bool freqs_ok = false;
+  if (!no_mobile) {
+    const VectorXd freqs = hessian.getFreqs(matter.get(), mobile);
+    freqs_ok = freqs.size() > 0;
   }
-  if (nMoved == 0) {
-    // No free atoms: leave results.dat with force_calls only (no crash).
-    std::string results_file("results.dat");
-    returnFiles.push_back(results_file);
-    std::ofstream out(results_file, std::ios::binary);
-    if (out) {
-      out << std::format("{} force_calls\n",
-                         PotRegistry::get().total_force_calls());
-    }
-    return returnFiles;
-  }
-  // Copy into a dense VectorXi — Eigen head() blocks must not be passed as
-  // the sole owner of mobile indices (can alias/garbage on some builds).
-  VectorXi mobile(nMoved);
-  for (int i = 0; i < nMoved; ++i) {
-    mobile(i) = moved(i);
-  }
-  hessian.getFreqs(matter.get(), mobile);
 
   std::string results_file("results.dat");
   returnFiles.push_back(results_file);
 
   std::ofstream out(results_file, std::ios::binary);
   if (out) {
+    const auto status =
+        freqs_ok ? RunStatus::GOOD : RunStatus::FAIL_POTENTIAL_FAILED;
+    out << std::format("{} termination_reason\n", static_cast<int>(status));
+    out << std::format("{} termination_reason_text\n",
+                       magic_enum::enum_name<RunStatus>(status));
+    out << "hessian job_type\n";
     out << std::format("{} force_calls\n",
                        PotRegistry::get().total_force_calls());
+    out << std::format("{} total_force_calls\n",
+                       PotRegistry::get().total_force_calls());
+  }
+  if (std::filesystem::exists("hessian.dat")) {
+    returnFiles.push_back("hessian.dat");
   }
 
   return returnFiles;

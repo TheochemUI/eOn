@@ -60,8 +60,8 @@ release/prepare/towncrier YAML cannot merge unnoticed on paths that install tool
   generated YAML. Drift between only-YAML edits and Nickel is a bug (`gha-drift`).
 - **Non-goals here**: porting `ci_build_akmc.yml` / `ci_xtb.yml` / etc. into Nickel.
 
-Hand `ci_*.yml` may still pin `checkout@v4` while this tree centralizes pins for the
-release trio only; dual pins are intentional until those workflows migrate.
+Hand `ci_*.yml` hash-pin the same action families (zizmor `unpinned-uses`).
+Bump generated pins in `lib/pins.ncl`; bump hand workflows in place.
 
 ## Maintainer docs
 

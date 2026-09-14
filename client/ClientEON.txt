@@ -1,9 +1,8 @@
 /*! \mainpage The eOnClient API
 
-<b>Version \version</b>, Build Date: \builddate
-
-Built by: \builduser on \buildhost
-<hr>
+The install, tutorials, and Python API live in the
+<a href="https://eondocs.org/">eOn book</a>.
+This tree is the C++ <code>client/</code> and <code>include/eon</code> headers.
 
 \section Overview
 

@@ -14,7 +14,7 @@ myst:
     "keywords": "eOn visualization, trajectory plotting, NEB landscape, saddle search, minimization, rgpycrumbs, chemparseplot"
 ---
 
-# Visualizing Optimization Trajectories
+# Visualizing optimization trajectories
 
 eOn can embed structured per-iteration metadata directly into trajectory movie
 frames when `write_movies = true` is set in the `[Debug]` section of
@@ -28,6 +28,13 @@ to emit the older minimization and saddle-search `.dat` sidecars. NEB continues
 to write its existing `neb.dat` / `neb_*.dat` outputs alongside the `.con`
 movies.
 
+```{tip}
+Prefer the **built-in potential systems** under {doc}`systems/index` (Morse Pt
+NEB, LJ minimization) when you want CI-stable examples without downloading a
+metatomic model. This page keeps the PET-MAD vinyl alcohol case as the
+metatomic consumer walkthrough.
+```
+
 This tutorial walks through two complete workflows with PET-MAD:
 
 - a single-ended minimization of a perturbed vinyl alcohol structure
@@ -36,6 +43,15 @@ This tutorial walks through two complete workflows with PET-MAD:
 For each workflow we run `eonclient`, then visualize the result through the
 public `rgpycrumbs` dispatcher so the tutorial matches current command-line
 usage.
+
+**Plotting conventions used here (and in {doc}`systems/index`):**
+
+| Job | CLI | Notes |
+|-----|-----|--------|
+| NEB profile | `plt-neb --plot-type profile --highlight-last --plot-structures all` | Gold SP star on the final band; full structure strip |
+| NEB landscape | `plt-neb --plot-type landscape --project-path --landscape-path all` | True **1:1 Å** `(s, d)` panel; two-row strip when many images |
+| Min profile / conv | `plt-min --plot-type profile\|convergence` | Overlay multiple `--job-dir` / `--label` pairs |
+| Min landscape | `plt-min --plot-type landscape --label reactant` | **One landscape per endpoint**; title + initial/minimized labels |
 
 ## Setup
 
@@ -136,9 +152,8 @@ def show_plot(path):
 
 ## Minimization
 
-We start by minimizing a slightly distorted vinyl alcohol molecule to
-demonstrate the single-ended optimization outputs consumed by
-`rgpycrumbs eon plt-min`.
+We start by minimizing a slightly distorted vinyl alcohol molecule.
+`rgpycrumbs eon plt-min` reads those single-ended optimization outputs.
 
 ```{code-cell} python
 :tags: [remove-cell]
@@ -180,6 +195,7 @@ min_profile = plot_dir / "min_profile.png"
 run_rgpycrumbs(
     "eon", "plt-min",
     "--job-dir", str(min_dir),
+    "--label", "vinyl alcohol",
     "--prefix", "minimization",
     "--plot-type", "profile",
     "--dpi", "150",
@@ -190,18 +206,24 @@ show_plot(min_profile)
 
 ### 2D optimization landscape
 
+One landscape for this job only. Each trajectory defines its own RMSD basis
+on a `(s, d)` frame. The title and strip use the `--label`.
+
 ```{code-cell} python
 min_landscape = plot_dir / "min_landscape.png"
 run_rgpycrumbs(
     "eon", "plt-min",
     "--job-dir", str(min_dir),
+    "--label", "vinyl alcohol",
     "--prefix", "minimization",
     "--plot-type", "landscape",
     "--project-path",
-    "--surface-type", "grad_matern",
+    "--surface-type", "grad_imq",
     "--plot-structures", "endpoints",
     "--strip-renderer", "xyzrender",
-    "--perspective-tilt", "8",
+    "--strip-dividers",
+    "--xyzrender-config", "paton",
+    "--rotation", "90x,0y,0z",
     "--dpi", "150",
     "--output", str(min_landscape),
 )
@@ -215,6 +237,7 @@ min_convergence = plot_dir / "min_convergence.png"
 run_rgpycrumbs(
     "eon", "plt-min",
     "--job-dir", str(min_dir),
+    "--label", "vinyl alcohol",
     "--prefix", "minimization",
     "--plot-type", "convergence",
     "--dpi", "150",
@@ -223,7 +246,7 @@ run_rgpycrumbs(
 show_plot(min_convergence)
 ```
 
-## Nudged Elastic Band
+## Nudged elastic band
 
 We run an OCI-NEB calculation on the vinyl alcohol -> acetaldehyde
 keto-enol tautomerization using PET-MAD.
@@ -295,12 +318,17 @@ run_rgpycrumbs(
     "--con-file", str(neb_dir / "neb.con"),
     "--ira-kmax", "14",
     "--force-recompute",
-    "--rc-mode", "rmsd",
     "--plot-type", "profile",
-    "--plot-structures", "crit_points",
+    "--highlight-last",
+    "--show-pts",
+    # Full band strip (use crit_points for a lighter R/SP/P-only strip).
+    "--plot-structures", "all",
     "--strip-renderer", "xyzrender",
-    "--perspective-tilt", "8",
-    "--zoom-ratio", "0.15",
+    "--strip-dividers",
+    "--xyzrender-config", "paton",
+    "--rotation", "90x,0y,0z",
+    "--show-legend",
+    "--title", "Vinyl alcohol NEB path optimization",
     "--dpi", "150",
     "--output-file", str(neb_profile),
 )
@@ -318,18 +346,22 @@ run_rgpycrumbs(
     "--con-file", str(neb_dir / "neb.con"),
     "--ira-kmax", "14",
     "--force-recompute",
-    "--rc-mode", "rmsd",
     "--plot-type", "landscape",
+    "--rc-mode", "path",
+    "--landscape-mode", "surface",
     "--surface-type", "grad_imq",
     "--show-pts",
+    "--highlight-last",
+    # Full history for the GP surface; 1:1 Å (s, d) panel via --project-path.
     "--landscape-path", "all",
     "--project-path",
-    "--plot-structures", "crit_points",
+    "--plot-structures", "all",
     "--strip-renderer", "xyzrender",
     "--strip-dividers",
-    "--perspective-tilt", "8",
-    "--zoom-ratio", "0.2",
+    "--xyzrender-config", "paton",
+    "--rotation", "90x,0y,0z",
     "--show-legend",
+    "--title", "Vinyl alcohol NEB-RMSD surface",
     "--dpi", "150",
     "--output-file", str(neb_landscape),
 )
@@ -340,9 +372,11 @@ show_plot(neb_landscape)
 
 For producing your own NEB trajectories beyond this tutorial:
 
+- {doc}`systems/index` — **built-in** Morse Pt NEB, LJ minimization, and Pt
+  saddle systems (recommended for docs / CI)
 - The [`eon-pet-neb`](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html)
   example in the [lab-cosmo/atomistic-cookbook](https://github.com/lab-cosmo/atomistic-cookbook):
-  a step-by-step PET-MAD NEB walkthrough using ASE for path setup. This is
+  a PET-MAD NEB example that uses ASE for path setup. This is
   the canonical metatomic-consumer integration test for eOn.
 - [HaoZeke/eon_orchestrator](https://github.com/HaoZeke/eon_orchestrator):
   Snakemake-orchestrated workflow for batches of NEB calculations with

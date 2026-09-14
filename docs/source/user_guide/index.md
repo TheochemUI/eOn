@@ -1,11 +1,11 @@
 ---
 myst:
   html_meta:
-    "description": "Comprehensive user guide for the eOn software, detailing all algorithms, configuration settings, and job types."
+    "description": "User guide for eOn: algorithms, configuration settings, and job types."
     "keywords": "eOn user guide, documentation, configuration, algorithms, tutorials"
 ---
 
-# User Guide
+# User guide
 
 Here we collect a brief introduction to each algorithm, with curated references
 for more information along with the configuration settings as implemented
@@ -14,18 +14,31 @@ within `eOn`.
 ## Python client (pyeonclient)
 
 For **in-process** client work (minimization, NEB, Matter objects) use the pip
-package `pyeonclient` — an ASE-shaped API where the path is a
-`list[Matter]`, not a working directory:
+package `pyeonclient`: an ASE-shaped API on a `list[Matter]`.
 
 ```{toctree}
 :maxdepth: 1
 :caption: Python API
 
 pyeonclient
+neighbor_lists
 ```
 
 See also the [API reference](../apidocs/pyeonclient.md) and the
 [atomistic-cookbook PET-MAD NEB example](https://atomistic-cookbook.org/examples/eon-pet-neb/eon-pet-neb.html).
+
+## AiiDA (`aiida-eon`)
+
+Schedule `eonclient` through AiiDA with the
+[aiida-eon](https://pypi.org/project/aiida-eon/) plugin
+({doc}`aiida`). That plugin schedules the `eonclient` workdir binary.
+
+```{toctree}
+:maxdepth: 1
+:caption: Workflow managers
+
+aiida
+```
 
 ## Configuration file (`config.ini`)
 
@@ -60,7 +73,8 @@ See {doc}`/devdocs/design/client/parameters` for the JSON schema.
 
 ````{margin}
 ```{note}
-As of version 2.0 onwards, we recommend using dedicated workflow management tools (like [AiiDA](https://www.aiida.net/) or [Snakemake](https://snakemake.readthedocs.io/) or [Fireworks](https://materialsproject.github.io/fireworks)) instead of using `eOn` to generate submission scripts.
+From 2.0 on, prefer a workflow manager over eOn-generated submit
+scripts. AiiDA: {doc}`aiida`. Snakemake and FireWorks also work.
 ```
 ````
 
@@ -73,6 +87,11 @@ mpi.
 Methods run in parallel are broken up by the eon server into tasks which
 are run by client program. The server then compiles the information sent back
 by the clients in a way that can be used by the sampling or dynamics methods.
+
+## Geometry and neighbor lists
+
+Pair finding owned by eOn uses **vesin**. Architecture and **ASV** measurement
+surface: [Neighbor lists (vesin)](neighbor_lists.md).
 
 ## Potentials
 
@@ -91,7 +110,7 @@ quip
 mpi_potential
 ```
 
-## Configuration Sections
+## Configuration sections
 
 ```{toctree}
 :maxdepth: 1
@@ -146,6 +165,7 @@ hyperdynamics
 communicator
 debug
 paths
+stdpar
 ```
 
 ## Miscellaneous

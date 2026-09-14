@@ -10,13 +10,13 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "ASE.h"
-#include "../../PyGuard.h"
-#include "../../fpe_handler.h"
-#include <cstdlib> // for exit()
+#include "eon/potentials/ASE/ASE.h"
+#include "eon/PyGuard.h"
+#include "eon/fpe_handler.h"
 #include <pybind11/embed.h>
 #include <pybind11/numpy.h> // for py::array_t
 #include <pybind11/pybind11.h>
+#include <stdexcept>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -65,7 +65,8 @@ ASE::ASE(const Parameters &a_params)
             e.what());
     fprintf(stderr, "%s should exist and have no errors on the Python side.\n",
             py_file.c_str());
-    exit(1);
+    throw std::runtime_error(std::string("ASE calculator import failed: ") +
+                             e.what());
   }
   return;
 }
@@ -73,6 +74,7 @@ ASE::ASE(const Parameters &a_params)
 void ASE::force(long nAtoms, const double *R, const int *atomicNrs, double *F,
                 double *U, double *variance, const double *box) {
   variance = nullptr;
+  py::gil_scoped_acquire gil;
   try {
     // TODO(rg): This is easier on the type system if Eigen::Map is used like in
     // ASE_ORCA convert arrays to Numpy arrays
@@ -95,10 +97,12 @@ void ASE::force(long nAtoms, const double *R, const int *atomicNrs, double *F,
 
   } catch (py::error_already_set &e) {
     fprintf(stderr, "ASE calculator: Python error: %s\n", e.what());
-    exit(1);
+    throw std::runtime_error(std::string("ASE calculator Python error: ") +
+                             e.what());
   } catch (const std::exception &e) {
     fprintf(stderr, "ASE calculator: C++ exception: %s\n", e.what());
-    exit(1);
+    throw std::runtime_error(std::string("ASE calculator C++ exception: ") +
+                             e.what());
   }
 
   counter++;

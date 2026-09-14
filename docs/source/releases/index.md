@@ -17,6 +17,8 @@ has more details.
 :caption: Versions
 
 changelog
+v3.2.1/index
+v3.2.0/index
 v2.16.0/index
 v2.15.0/index
 v2.14.0/index

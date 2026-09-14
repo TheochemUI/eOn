@@ -9,8 +9,8 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "NEBForceProjection.h"
-#include "HelperFunctions.h"
+#include "eon/NEBForceProjection.h"
+#include "eon/HelperFunctions.h"
 
 #include <algorithm>
 #include <cmath>

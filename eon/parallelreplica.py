@@ -58,7 +58,7 @@ def parallelreplica(config: ConfigClass = None):
     parser = configparser.RawConfigParser()
     write_pr_metadata(parser, current_state.number, time, wuid)
     parser.write(open(metafile, 'w'))
-    io.save_prng_state()
+    io.save_prng_state(io.prng_state_path(config))
 
 def step(current_time, current_state, states, transition, config: ConfigClass = None):
     if config is None:
@@ -255,7 +255,7 @@ def main(config: ConfigClass = None):
             dynamics_path = os.path.join(config.path_results, "dynamics.txt")
             info_path = os.path.join(config.path_results, "info.txt")
             log_path = os.path.join(config.path_results, "pr.log")
-            prng_path = os.path.join(config.path_results, "prng.pkl")
+            prng_path = io.prng_state_path(config)
             for i in [info_path, dynamics_path, log_path, prng_path]:
                 if os.path.isfile(i):
                     os.remove(i)

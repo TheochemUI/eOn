@@ -3,9 +3,9 @@
 **
 ** SPDX-License-Identifier: BSD-3-Clause
 */
-#include "MetatomicLoader.h"
+#include "eon/potentials/Metatomic/MetatomicLoader.h"
 
-#include "../FortranPotLoader.h"
+#include "eon/potentials/PluginLoader.h"
 
 #include <iostream>
 #include <vector>
@@ -53,7 +53,7 @@ bool MetatomicLoader::try_load() {
       break;
   }
   if (!m_handle) {
-    for (const auto &dir : FortranPotLoader::instance().search_paths()) {
+    for (const auto &dir : PluginLoader::instance().search_paths()) {
       for (const char **p = candidates; *p; ++p) {
         std::string full = dir;
         if (!full.empty() && full.back() != '/' && full.back() != '\\')

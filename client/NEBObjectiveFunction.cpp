@@ -9,7 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "NudgedElasticBand.h"
+#include "eon/NudgedElasticBand.h"
 
 namespace eonc {
 

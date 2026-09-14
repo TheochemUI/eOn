@@ -1,8 +1,8 @@
 /*
 ** This file is part of eOn.
 */
-#include "RgpotPot.h"
-#include "RGPotEngine.h"
+#include "eon/potentials/Rgpot/RgpotPot.h"
+#include "eon/potentials/Rgpot/RGPotEngine.h"
 
 #include <algorithm>
 #include <cctype>

@@ -3,6 +3,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 on: [push, pull_request]
+permissions:
+  contents: read
 jobs:
   build_eon:
     runs-on: ${{ matrix.os }}
@@ -10,20 +12,30 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # TODO(rg): Handle the windows-2022 later, issues linking fmt
-        os: [ubuntu-22.04, macos-14]
+        # windows-2022: same runner family as metatomic/metatensor torch CI.
+        # windows-latest currently ships VS 18 only and breaks msvc-dev-cmd.
+        os: [ubuntu-22.04, macos-14, windows-2022]
     steps:
-      - uses: actions/checkout@v4
-      - uses: prefix-dev/setup-pixi@v0.9.4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      # --- Unix: hermetic pixi (conda + pypi torch) ---
+      - name: Setup pixi [unix]
+        if: runner.os != 'Windows'
+        uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
         with:
           cache: true
           cache-write: true
           activate-environment: true
           environments: >-
             dev-mta
-      - name: Install cbindgen
+
+      - name: Install cbindgen [unix]
+        if: runner.os != 'Windows'
         shell: bash
         run: command -v cbindgen || cargo install cbindgen
+
       - name: Use Homebrew gfortran (macOS)
         if: runner.os == 'macOS'
         run: |
@@ -31,8 +43,10 @@ jobs:
           FC=$(find "$(brew --prefix gcc)/bin" -name 'gfortran-*' | head -1)
           echo "FC=$FC" >> "$GITHUB_ENV"
           echo "SDKROOT=$(xcrun --show-sdk-path)" >> "$GITHUB_ENV"
-      - name: Install eon
-        shell: pixi run bash -e {0}
+
+      - name: Install eon [unix]
+        if: runner.os != 'Windows'
+        shell: pixi run -e dev-mta bash -e {0}
         run: |
           meson setup --reconfigure bbdir  \
           --prefix=$CONDA_PREFIX           \
@@ -42,8 +56,190 @@ jobs:
           -Dtorch_version=2.10             \
           -Dwith_tests=True                \
           -Dpip_metatomic=True
-          meson install -C bbdir
-      - name: Run tests
-        shell: bash -el {0}
+          meson install --skip-subprojects -C bbdir
+
+      - name: Run tests [unix]
+        if: runner.os != 'Windows'
+        shell: pixi run -e dev-mta bash -e {0}
         run: |
-          meson test -C bbdir
+          meson test -C bbdir --suite eon --print-errorlogs
+
+      # --- Windows: follow metatomic/metatensor torch CI ---
+      # setup-python + pip CPU torch + MSVC. Do NOT load pip torch from a
+      # conda/pixi env that also activates compilers (WinError 127 on shm.dll
+      # from DLL/search-order clashes). pixi only supplies C++ deps (eigen,
+      # quill, rust for readcon-core).
+      # Ref: metatensor/metatomic .github/workflows/torch-tests.yml
+      - name: Setup Python [windows]
+        if: runner.os == 'Windows'
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+
+      - name: Setup pixi C++ deps [windows]
+        if: runner.os == 'Windows'
+        uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
+        with:
+          cache: true
+          cache-write: true
+          # No activate-environment: keep setup-python as the active interpreter.
+          environments: >-
+            dev-mta
+
+      - name: Install cbindgen [windows]
+        if: runner.os == 'Windows'
+        shell: bash
+        run: command -v cbindgen || cargo install cbindgen
+
+      - name: Activate MSVC [windows]
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+
+      - name: Install pip torch + metatomic stack [windows]
+        if: runner.os == 'Windows'
+        shell: bash
+        env:
+          # Same as metatomic torch-tests / wheel builds
+          PIP_EXTRA_INDEX_URL: https://download.pytorch.org/whl/cpu
+        run: |
+          set -euo pipefail
+          # Prefer actions/setup-python over any conda/pixi python on PATH
+          export PATH="${pythonLocation}:${pythonLocation}/Scripts:${PATH}"
+          python -m pip install -U pip
+          python -m pip install meson ninja
+          python -m pip install "torch>=2.10,<2.11"
+          python -m pip install \
+            "metatomic-torch>=0.1.15,<0.2" \
+            "metatensor-torch>=0.10,<0.11" \
+            "vesin>=0.6,<0.7" \
+            "vesin-torch>=0.6,<0.7"
+          python -c "import torch, vesin, metatensor, metatensor.torch, metatomic.torch as m; print('pip_metatomic ok', torch.__version__, torch.__file__)"
+
+      - name: Install eon [windows]
+        if: runner.os == 'Windows'
+        shell: bash
+        env:
+          PIP_EXTRA_INDEX_URL: https://download.pytorch.org/whl/cpu
+        run: |
+          set -euo pipefail
+          # setup-python first
+          export PATH="${pythonLocation}:${pythonLocation}/Scripts:${PATH}"
+          # Drop: Git usr (shadows MSVC link), MinGW, Strawberry Perl (broken
+          # pkg-config / windres / ld that poison CMake Eigen detection).
+          export PATH=$(echo "$PATH" | tr ':' '\n' \
+            | grep -vE '/usr/bin$|[Mm]ingw|[Ss]trawberry' \
+            | paste -sd:)
+          # C++ deps from pixi (eigen, quill, flang, …); do not use pixi python/torch
+          PIXI_PRE="${PIXI_PROJECT_ROOT:-$PWD}/.pixi/envs/dev-mta"
+          if [ ! -d "$PIXI_PRE/Library" ]; then
+            echo "pixi env missing: $PIXI_PRE" >&2
+            ls -la .pixi/envs || true
+            exit 1
+          fi
+          # Prefer pixi pkg-config over anything left on PATH
+          if [ -x "$PIXI_PRE/Library/bin/pkg-config.exe" ]; then
+            export PKG_CONFIG="$PIXI_PRE/Library/bin/pkg-config.exe"
+          elif [ -x "$PIXI_PRE/Library/bin/pkgconf.exe" ]; then
+            export PKG_CONFIG="$PIXI_PRE/Library/bin/pkgconf.exe"
+          fi
+          export PKG_CONFIG_PATH="${PIXI_PRE}/Library/lib/pkgconfig:${PIXI_PRE}/lib/pkgconfig"
+          export CMAKE_PREFIX_PATH="${PIXI_PRE}/Library;${PIXI_PRE}"
+          # conda-forge eigen ships Eigen3Config under Library/share/eigen3/cmake
+          for _ed in \
+            "${PIXI_PRE}/Library/share/eigen3/cmake" \
+            "${PIXI_PRE}/Library/share/eigen3" \
+            "${PIXI_PRE}/Library/lib/cmake/Eigen3"
+          do
+            if [ -f "${_ed}/Eigen3Config.cmake" ] || [ -f "${_ed}/eigen3-config.cmake" ]; then
+              export Eigen3_DIR="${_ed}"
+              break
+            fi
+          done
+          echo "Eigen3_DIR=${Eigen3_DIR:-unset}"
+          echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}"
+          ls "${PIXI_PRE}/Library/include/eigen3/Eigen/Core" 2>/dev/null \
+            || ls "${PIXI_PRE}/Library/include/Eigen/Core" 2>/dev/null \
+            || { echo "eigen headers missing under $PIXI_PRE"; find "$PIXI_PRE" -name 'Core' -path '*Eigen*' 2>/dev/null | head; exit 1; }
+          export INCLUDE="${PIXI_PRE}/Library/include;${INCLUDE:-}"
+          export LIB="${PIXI_PRE}/Library/lib;${LIB:-}"
+          # pixi Library/bin: flang, flang_rt DLLs (after MSVC tools on PATH)
+          export PATH="${PIXI_PRE}/Library/bin:${PIXI_PRE}/bin:${PATH}"
+          # Drop conda GNU-style flags; force MSVC for CMake probes + archives
+          # (feedstock build.bat: AR=lib so flang does not select llvm-ar).
+          unset LDFLAGS CFLAGS CXXFLAGS FCFLAGS || true
+          export CC=cl CXX=cl
+          export AR=lib
+          export ARFLAGS=
+          # conda-forge flang_win-64 activate.bat: FC=flang-new (see also SciPy
+          # feedstock: trust compiler activation; meson searches flang-new).
+          # setup-python + pixi without full bat activation needs this explicitly.
+          export FC=flang-new
+          if ! command -v flang-new >/dev/null 2>&1; then
+            echo "flang-new not on PATH; PIXI_PRE=${PIXI_PRE}" >&2
+            ls -la "${PIXI_PRE}/Library/bin"/flang* 2>/dev/null || true
+            exit 1
+          fi
+          echo "FC=$(command -v flang-new)"
+          export CMAKE_C_COMPILER=cl
+          export CMAKE_CXX_COMPILER=cl
+          export CMAKE_GENERATOR=Ninja
+          # flang_rt import libs under clang resource dir (LNK1104 otherwise).
+          # Also put runtime DLLs on PATH for LoadLibrary of pot plugins.
+          # shellcheck source=scripts/ci/win_flang_rt.sh
+          source scripts/ci/win_flang_rt.sh
+          eon_export_flang_rt "${PIXI_PRE}" --required
+          python -c "import torch, vesin, metatensor, metatensor.torch, metatomic.torch; print('pre-meson import ok')"
+          # Help diagnose find_library against pip wheel layout
+          python - <<'PY'
+          import pathlib, site, torch
+          sp = pathlib.Path(torch.__file__).resolve().parent.parent
+          tv = ".".join(torch.__version__.split(".")[:2])
+          for rel in (
+              "metatensor/lib",
+              f"metatensor_torch/torch-{tv}/lib",
+              f"metatomic/torch/torch-{tv}/lib",
+              "vesin/lib",
+              "torch/lib",
+          ):
+              d = sp / rel
+              print(rel, "exists" if d.is_dir() else "MISSING", d)
+              if d.is_dir():
+                  print("  ", sorted(p.name for p in d.iterdir())[:40])
+          PY
+          # In-tree Fortran + CuH2 ON (same as feedstock / AKMC Windows).
+          meson setup bbdir \
+            --prefix="${PIXI_PRE}" \
+            --libdir=lib \
+            --buildtype release \
+            --default-library=static \
+            -Dwith_metatomic=True \
+            -Dtorch_version=2.10 \
+            -Dwith_tests=True \
+            -Dpip_metatomic=True \
+            -Dwith_fortran=true \
+            -Dwith_cuh2=true
+          meson install --skip-subprojects -C bbdir
+
+      - name: Run tests [windows]
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Same interpreter/meson as Install eon (pip meson in setup-python).
+          # Do not prepend pixi Scripts — that puts a different meson first and
+          # meson test then rejects build.dat from the pip meson configure.
+          export PATH="${pythonLocation}/Scripts:${pythonLocation}:${PATH}"
+          export PATH=$(echo "$PATH" | tr ':' '\n' \
+            | grep -vE '/usr/bin$|[Mm]ingw|[Ss]trawberry' \
+            | paste -sd:)
+          PIXI_PRE="${PIXI_PROJECT_ROOT:-$PWD}/.pixi/envs/dev-mta"
+          # DLLs: torch + pixi runtime (flang_rt) for Fortran pot plugins
+          export PATH="${pythonLocation}/Lib/site-packages/torch/lib:${PIXI_PRE}/Library/bin:${PATH}"
+          # shellcheck source=scripts/ci/win_flang_rt.sh
+          source scripts/ci/win_flang_rt.sh
+          eon_export_flang_rt "${PIXI_PRE}" --required
+          echo "FLANG_RT_LIB_DIR=${FLANG_RT_LIB_DIR:-unset} FLANG_RT_DLL_DIR=${FLANG_RT_DLL_DIR:-unset}"
+          unset LDFLAGS CFLAGS CXXFLAGS FCFLAGS || true
+          which meson
+          meson --version
+          meson test -C bbdir --suite eon --print-errorlogs

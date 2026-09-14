@@ -4,23 +4,26 @@
 ** Default method is "improved". accelerant="gp" routes to AtomicGPDimer
 *(WITH_GPRD).
 */
-#include "Davidson.h"
-#include "Dimer.h"
-#include "EigenmodeStrategy.h"
-#include "ImprovedDimer.h"
-#include "Lanczos.h"
-#include "LowestEigenmode.h"
-#include "Matter.h"
-#include "Parameters.h"
-#include "Potential.h"
 #include "eigen_numpy.hpp"
+#include "eon/Davidson.h"
+#include "eon/Dimer.h"
+#include "eon/EigenmodeStrategy.h"
+#include "eon/ImprovedDimer.h"
+#include "eon/Lanczos.h"
+#include "eon/LowestEigenmode.h"
+#include "eon/Matter.h"
+#include "eon/MobileAtoms.h"
+#include "eon/Parameters.h"
+#include "eon/Potential.h"
 
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/optional.h>
 #include <nanobind/stl/shared_ptr.h>
 #include <nanobind/stl/string.h>
 
 #include <cctype>
 #include <memory>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -305,15 +308,66 @@ void bind_eigenmode(nb::module_ &m) {
   {
     auto cls = nb::class_<eonc::Lanczos>(
         m, "Lanczos",
-        "Lanczos min-mode (low-level). Prefer Dimer(method=\"lanczos\").");
+        "Lanczos min-mode (low-level). Prefer Dimer(method=\"lanczos\"). "
+        "Optional atoms= selects the PHVA mobile set (Krylov dim 3*n_mobile); "
+        "default is all free atoms. free/fixed is not rewritten.");
     bind_minmode_common(cls);
+    cls.def(
+        "compute",
+        [](eonc::Lanczos &self, std::shared_ptr<eonc::Matter> matter,
+           const NpF64 &dir, const NpI64 &atoms) {
+          AtomMatrix direction = atom_matrix_from_numpy(dir);
+          VectorXi mobile = vectori_from_numpy_i64(atoms);
+          nb::gil_scoped_release release;
+          self.compute(std::move(matter), direction, mobile);
+        },
+        nb::arg("matter"), nb::arg("direction"), nb::arg("atoms"),
+        "Converge lowest eigenmode on a PHVA mobile set. "
+        "direction: float64 (n_atoms, 3); atoms: int64 1-d free-atom indices. "
+        "Eigenvector rows outside atoms are zero.");
   }
   {
     auto cls = nb::class_<eonc::Davidson>(
         m, "Davidson",
-        "Davidson min-mode (low-level). Prefer Dimer(method=\"davidson\").");
+        "Davidson min-mode (low-level). Prefer Dimer(method=\"davidson\"). "
+        "Optional atoms= selects the PHVA mobile set; default is all free.");
     bind_minmode_common(cls);
+    cls.def(
+        "compute",
+        [](eonc::Davidson &self, std::shared_ptr<eonc::Matter> matter,
+           const NpF64 &dir, const NpI64 &atoms) {
+          AtomMatrix direction = atom_matrix_from_numpy(dir);
+          VectorXi mobile = vectori_from_numpy_i64(atoms);
+          nb::gil_scoped_release release;
+          self.compute(std::move(matter), direction, mobile);
+        },
+        nb::arg("matter"), nb::arg("direction"), nb::arg("atoms"),
+        "Converge lowest eigenmode on a PHVA mobile set. "
+        "direction: float64 (n_atoms, 3); atoms: int64 1-d free-atom indices.");
   }
+  // resolve_mobile_atoms: free mask vs PHVA active list
+  m.def(
+      "resolve_mobile_atoms",
+      [](eonc::Matter &matter, const std::string &atom_list) {
+        return vectori_to_numpy(eonc::resolveMobileAtoms(&matter, atom_list));
+      },
+      nb::arg("matter"), nb::arg("phva_atoms") = "All",
+      "PHVA mobile indices from phva_atoms (All = free). free/fixed "
+      "unchanged.");
+  m.def(
+      "resolve_mobile_atoms",
+      [](eonc::Matter &matter, const NpI64 &candidates) {
+        return vectori_to_numpy(eonc::resolveMobileAtoms(
+            &matter, vectori_from_numpy_i64(candidates)));
+      },
+      nb::arg("matter"), nb::arg("candidates"),
+      "Intersect candidate atom indices with free flags (order preserved).");
+  m.def(
+      "free_atom_indices",
+      [](eonc::Matter &matter) {
+        return vectori_to_numpy(eonc::freeAtomIndices(&matter));
+      },
+      nb::arg("matter"), "Ascending free (unfixed) atom indices.");
 #ifdef WITH_GPRD
   {
     auto cls = nb::class_<eonc::AtomicGPDimer>(

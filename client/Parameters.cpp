@@ -9,10 +9,10 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "Parameters.h"
-#include "ParametersINI.h"
-#include "ParametersJSON.h"
-#include "ParametersSSOT.h"
+#include "eon/Parameters.h"
+#include "eon/ParametersINI.h"
+#include "eon/ParametersJSON.h"
+#include "eon/ParametersSSOT.h"
 #include "magic_enum/magic_enum.hpp"
 
 #include <INIReader.h>
@@ -21,7 +21,7 @@
 #include <cstdio>
 #include <cstring>
 
-#include "EonLogger.h"
+#include "eon/EonLogger.h"
 
 Parameters::Parameters() {
   // Covered groups: defaults originate from schema/eon_params.capnp via

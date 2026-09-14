@@ -1,4 +1,4 @@
-#include "SocketNWChemPot.h"
+#include "eon/potentials/SocketNWChem/SocketNWChemPot.h"
 
 #include <cctype>
 #include <cstring>

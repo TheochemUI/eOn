@@ -9,8 +9,8 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "ConjugateGradients.h"
-#include "SafeMath.h"
+#include "eon/ConjugateGradients.h"
+#include "eon/SafeMath.h"
 
 #include <cmath>
 
@@ -20,7 +20,7 @@ Eigen::VectorXd ConjugateGradients::getStep() {
   double gamma = 0.0;
   if (a < 0.5 * b) {
     // Polak-Ribiere way to determine how much to mix in of old direction
-    gamma = m_force.dot(m_force - m_forceOld) / b;
+    gamma = eonc::safemath::safe_div(m_force.dot(m_force - m_forceOld), b, 0.0);
   } else {
     gamma = 0;
   }
@@ -80,8 +80,8 @@ int ConjugateGradients::line_search(double a_maxMove) {
   int line_i = 0;
   do {
     // Determine curvature from last step (Secant method)
-    curvature =
-        std::fabs((projectedForceBeforeStep - projectedForce) / stepSize);
+    curvature = std::fabs(eonc::safemath::safe_div(
+        projectedForceBeforeStep - projectedForce, stepSize, 0.0));
     stepSize = eonc::safemath::safe_div(projectedForce, curvature, a_maxMove);
 
     if (a_maxMove < std::fabs(stepSize)) {
@@ -129,13 +129,13 @@ int ConjugateGradients::single_step(double a_maxMove) {
   // Determine curvature
   double projectedForce1 = m_force.dot(m_directionNorm);
   double projectedForce2 = forceAfterStep.dot(m_directionNorm);
-  double curvature =
-      (projectedForce1 - projectedForce2) / m_optConfig.finiteDifference;
+  double curvature = eonc::safemath::safe_div(
+      projectedForce1 - projectedForce2, m_optConfig.finiteDifference, 0.0);
 
   double stepSize = a_maxMove;
 
   if (curvature > 0.0) {
-    stepSize = projectedForce1 / curvature;
+    stepSize = eonc::safemath::safe_div(projectedForce1, curvature, a_maxMove);
   }
 
   if (m_optConfig.bowlBreakout && a_maxMove < 0.0) {
@@ -170,7 +170,8 @@ int ConjugateGradients::single_step(double a_maxMove) {
       if (passedMinimum < 0.0 &&
           0.1 * std::fabs(projectedForce1) < std::fabs(projectedForce2)) {
         forceChange = (projectedForce1 - projectedForce2);
-        stepSize = (projectedForce1 / forceChange) * stepSize;
+        stepSize = eonc::safemath::safe_div(projectedForce1, forceChange, 0.0) *
+                   stepSize;
         QUILL_LOG_DEBUG(m_log, "Force changed {}, step size adjusted to {}",
                         forceChange, stepSize);
       }
@@ -190,7 +191,7 @@ int ConjugateGradients::single_step(double a_maxMove) {
 
 int ConjugateGradients::run(size_t a_maxIterations, double a_maxMove) {
   size_t iterations = 0;
-  while (!m_objf->isConverged() && iterations <= a_maxIterations) {
+  while (!m_objf->isConverged() && iterations < a_maxIterations) {
     step(a_maxMove);
     iterations++;
   }

@@ -1,5 +1,4 @@
 /*
-#include <stdexcept>
 ** This file is part of eOn.
 **
 ** SPDX-License-Identifier: BSD-3-Clause
@@ -10,15 +9,16 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "GlobalOptimizationJob.h"
-#include "EonLogger.h"
-#include "GlobalOptimization.h"
+#include "eon/GlobalOptimizationJob.h"
+#include "eon/EonLogger.h"
+#include "eon/GlobalOptimization.h"
 
 #include <format>
 #include <memory>
-// #include "MinimizationJob.h"
-#include "Dynamics.h"
-#include "HelperFunctions.h"
+#include <stdexcept>
+// #include "eon/MinimizationJob.h"
+#include "eon/Dynamics.h"
+#include "eon/HelperFunctions.h"
 
 #include <algorithm>
 #include <cmath>
@@ -117,7 +117,8 @@ void GlobalOptimizationJob::analyze(Matter &matter_cur, Matter &matter_hop) {
     QUILL_LOG_CRITICAL(
         log,
         "ERROR: new minimum is neither accepted nor rejected: client stops.");
-    std::exit(1);
+    throw std::runtime_error(
+        "[Global Optimization] new minimum is neither accepted nor rejected");
   }
 }
 
@@ -155,7 +156,8 @@ void GlobalOptimizationJob::applyMoveFeedbackMD() {
     QUILL_LOG_CRITICAL(log,
                        "ERROR: client does not know what to do with ekin.");
     QUILL_LOG_CRITICAL(log, "ERROR: client stops in applyMoveFeedbackMD.");
-    std::exit(1);
+    throw std::runtime_error(std::format(
+        "[Global Optimization] unknown hoppingResult: {}", hoppingResult));
   }
 }
 
@@ -217,7 +219,9 @@ void GlobalOptimizationJob::decisionStep(Matter &matter_cur,
     log = eonc::log::traceback();
     QUILL_LOG_CRITICAL(
         log, "ERROR: accept/reject method not specified. client stops.");
-    std::exit(1);
+    throw std::invalid_argument(
+        std::format("[Global Optimization] unknown decision_method: {}",
+                    params.global_optimization_options.decision_method));
   }
   applyDecisionFeedback();
 }
@@ -236,16 +240,19 @@ void GlobalOptimizationJob::acceptRejectNPEW(Matter &matter_cur,
 void GlobalOptimizationJob::acceptRejectBoltzmann(Matter &matter_cur,
                                                   Matter &matter_hop) {
   double eTrial = matter_hop.getPotentialEnergy();
-  double eCurrent = matter_hop.getPotentialEnergy();
+  double eCurrent = matter_cur.getPotentialEnergy();
 
   double deltaE = eTrial - eCurrent;
-  double kB = 8.6173324e-5;
+  const double kB = params.constants.kB;
+  const double T = params.main_options.temperature;
 
   double p;
   if (deltaE <= 0.0) {
     p = 1.0;
+  } else if (!(T > 0.0) || !(kB > 0.0)) {
+    p = 0.0;
   } else {
-    p = std::exp(-deltaE / params.main_options.temperature * kB);
+    p = std::exp(-deltaE / (kB * T));
   }
 
   if (randomDouble(1.0) < p) {
@@ -297,7 +304,9 @@ void GlobalOptimizationJob::randomMove(Matter &matter) {
         } else {
           log = eonc::log::traceback();
           QUILL_LOG_CRITICAL(log, "Unknown displacement_distribution");
-          std::exit(1);
+          throw std::invalid_argument(std::format(
+              "[Global Optimization] unknown displacement_distribution: {}",
+              params.basin_hopping_options.displacement_distribution));
         }
       }
     }
@@ -392,9 +401,17 @@ void GlobalOptimizationJob::velopt(Matter &matter) {
   }
   matter.setVelocities(vat);
   long nFreeCoords = matter.numberOfFreeAtoms() * 3;
+  if (nFreeCoords <= 0) {
+    throw std::invalid_argument(
+        "GlobalOptimizationJob::velopt: no free atoms");
+  }
   double kinE = matter.getKineticEnergy();
   double kB = params.constants.kB;
   double kinT = (2.0 * kinE / nFreeCoords / kB);
+  if (!(kinT > 0.0)) {
+    throw std::runtime_error(
+        "GlobalOptimizationJob::velopt: zero kinetic temperature");
+  }
   double temperature = (2.0 * ekin / kB);
   matter.setVelocities(vat * std::sqrt(temperature / kinT));
 }

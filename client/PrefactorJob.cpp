@@ -9,15 +9,17 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "PrefactorJob.h"
-#include "EonLogger.h"
-#include "HelperFunctions.h"
-#include "Hessian.h"
-#include "Matter.h"
-#include "Potential.h"
-#include "Prefactor.h"
+#include "eon/PrefactorJob.h"
+#include "eon/EonLogger.h"
+#include "eon/HelperFunctions.h"
+#include "eon/Hessian.h"
+#include "eon/Matter.h"
+#include "eon/PotRegistry.h"
+#include "eon/Potential.h"
+#include "eon/Prefactor.h"
 
 #include <cmath>
+#include <filesystem>
 #include <format>
 #include <fstream>
 #include <stdexcept>
@@ -31,23 +33,24 @@ std::vector<std::string> PrefactorJob::run() {
   std::vector<std::string> returnFiles;
   VectorXd freqs;
 
-  std::string reactantFilename("reactant.con");
-  std::string saddleFilename("saddle.con");
-  std::string productFilename("product.con");
+  std::string reactantFilename =
+      eonc::helpers::getRelevantFile("reactant.con");
+  std::string saddleFilename = eonc::helpers::getRelevantFile("saddle.con");
+  std::string productFilename = eonc::helpers::getRelevantFile("product.con");
 
   auto reactant = std::make_unique<Matter>(pot, params);
   auto saddle = std::make_unique<Matter>(pot, params);
   auto product = std::make_unique<Matter>(pot, params);
 
-  if (!eonc::io::io_ok(reactant->con2matter("reactant.con")) ||
-      !eonc::io::io_ok(saddle->con2matter("saddle.con")) ||
-      !eonc::io::io_ok(product->con2matter("product.con"))) {
+  if (!eonc::io::io_ok(reactant->con2matter(reactantFilename)) ||
+      !eonc::io::io_ok(saddle->con2matter(saddleFilename)) ||
+      !eonc::io::io_ok(product->con2matter(productFilename))) {
     EONC_LOG_CRITICAL("Failed to load reactant/saddle/product for prefactor");
     throw std::runtime_error("failed to load prefactor geometries");
   }
-  double pref1, pref2;
-  eonc::Prefactor::getPrefactors(params, reactant.get(), saddle.get(),
-                                 product.get(), pref1, pref2);
+  double pref1 = 0.0, pref2 = 0.0;
+  const int prefStatus = eonc::Prefactor::getPrefactors(
+      params, reactant.get(), saddle.get(), product.get(), pref1, pref2);
 
   VectorXi atoms;
   if (params.prefactor_options.all_free_atoms) {
@@ -83,23 +86,27 @@ std::vector<std::string> PrefactorJob::run() {
     atoms = eonc::Prefactor::movedAtoms(params, reactant.get(), saddle.get(),
                                         product.get());
   }
-  assert(3 * atoms.rows() > 0);
+  bool failed = (prefStatus == -1) || (atoms.rows() == 0);
 
-  if (params.prefactor_options.configuration ==
-      PrefactorJob::PREFACTOR_REACTANT) {
-    Hessian hessian(params, reactant.get());
-    freqs = hessian.getFreqs(reactant.get(), atoms);
-  } else if (params.prefactor_options.configuration ==
-             PrefactorJob::PREFACTOR_SADDLE) {
-    Hessian hessian(params, saddle.get());
-    freqs = hessian.getFreqs(saddle.get(), atoms);
-  } else if (params.prefactor_options.configuration ==
-             PrefactorJob::PREFACTOR_PRODUCT) {
-    Hessian hessian(params, product.get());
-    freqs = hessian.getFreqs(product.get(), atoms);
+  if (!failed) {
+    if (params.prefactor_options.configuration ==
+        PrefactorJob::PREFACTOR_REACTANT) {
+      Hessian hessian(params, reactant.get());
+      freqs = hessian.getFreqs(reactant.get(), atoms);
+    } else if (params.prefactor_options.configuration ==
+               PrefactorJob::PREFACTOR_SADDLE) {
+      Hessian hessian(params, saddle.get());
+      freqs = hessian.getFreqs(saddle.get(), atoms);
+    } else if (params.prefactor_options.configuration ==
+               PrefactorJob::PREFACTOR_PRODUCT) {
+      Hessian hessian(params, product.get());
+      freqs = hessian.getFreqs(product.get(), atoms);
+    }
   }
 
-  bool failed = freqs.size() != 3 * atoms.rows();
+  if (!failed) {
+    failed = freqs.size() != 3 * atoms.rows();
+  }
 
   std::string results_file("results.dat");
   std::string freq_file("freq.dat");
@@ -110,9 +117,21 @@ std::vector<std::string> PrefactorJob::run() {
   std::ofstream outFreq(freq_file, std::ios::binary);
 
   if (outResults) {
+    outResults << std::format("{} termination_reason\n", failed ? 1 : 0);
+    outResults << std::format("{} termination_reason_text\n",
+                              failed ? "fail" : "good");
+    outResults << "prefactor job_type\n";
     outResults << std::format("{} good\n", failed ? "false" : "true");
     outResults << std::format("{} force_calls\n",
                               PotRegistry::get().total_force_calls());
+    outResults << std::format("{} total_force_calls\n",
+                              PotRegistry::get().total_force_calls());
+    if (!failed) {
+      outResults << std::format("{:.12e} prefactor_reactant_to_product\n",
+                                pref1);
+      outResults << std::format("{:.12e} prefactor_product_to_reactant\n",
+                                pref2);
+    }
   }
 
   if (outFreq && !failed) {
@@ -127,6 +146,13 @@ std::vector<std::string> PrefactorJob::run() {
                                    (2 * eonc::helpers::pi * 10.18e-15));
       }
     }
+  }
+
+  if (std::filesystem::exists("freqs.dat")) {
+    returnFiles.push_back("freqs.dat");
+  }
+  if (std::filesystem::exists("hessian.dat")) {
+    returnFiles.push_back("hessian.dat");
   }
 
   return returnFiles;

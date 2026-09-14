@@ -1,6 +1,6 @@
-#include "../MatrixHelpers.hpp"
-#include "Matter.h"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/MatrixHelpers.hpp"
+#include "eon/Matter.h"
 #include <cmath>
 #include <cstdlib>
 #include <memory>

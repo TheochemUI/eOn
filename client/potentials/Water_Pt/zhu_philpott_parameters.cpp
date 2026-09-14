@@ -16,7 +16,7 @@ Parameters for potential ZhuPhilpott.
 University of Iceland
 @see zhu_philpott.hpp
 */
-#include "zhu_philpott_parameters.hpp"
+#include "eon/potentials/Water_Pt/zhu_philpott_parameters.hpp"
 using namespace forcefields::zhu_philpott_parameters;
 
 double const Standard::sigmaO_ = 2.86;                     // Angstrom

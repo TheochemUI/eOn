@@ -1,7 +1,7 @@
 // Time eOn linked XTBPot (ship) on water GFN2 — same geometry as rgpot bench.
-#include "Parameters.h"
-#include "Potential.h"
-#include "potentials/XTBPot/XTBPot.h"
+#include "eon/Parameters.h"
+#include "eon/Potential.h"
+#include "eon/potentials/XTBPot/XTBPot.h"
 
 #include <chrono>
 #include <cstdlib>

@@ -1489,6 +1489,18 @@ package:
     sha256: 9485ba49e8f47d2b597dd399e88f4802e100851b27c21d7525625b0b4025a5d9
   category: main
   optional: false
+- name: eon-schema
+  version: <dynamic>
+  manager: pip
+  platform: osx-arm64
+  dependencies:
+    pydantic: '>=2.0'
+    typing-extensions: '>=4.0'
+    rgpycrumbs: '>=1.3 ; extra == ''rgpycrumbs'''
+  url: ./packages/eon-schema
+  hash: {}
+  category: main
+  optional: false
 - name: jinja2
   version: 3.1.6
   manager: pip
@@ -1507,6 +1519,27 @@ package:
   dependencies: {}
   url: https://download.pytorch.org/whl/markupsafe-3.0.3-cp312-cp312-macosx_11_0_arm64.whl
   hash: {}
+  category: main
+  optional: false
+- name: pydantic-core
+  version: 2.46.4
+  manager: pip
+  platform: osx-arm64
+  dependencies:
+    typing-extensions: '>=4.14.1'
+  url: https://files.pythonhosted.org/packages/19/95/6195171e385007300f0f5574592e467c568becce2d937a0b6804f218bc49/pydantic_core-2.46.4-cp312-cp312-macosx_11_0_arm64.whl
+  hash:
+    sha256: 962ccbab7b642487b1d8b7df90ef677e03134cf1fd8880bf698649b22a69371f
+  category: main
+  optional: false
+- name: nanobind
+  version: 2.13.0
+  manager: pip
+  platform: osx-arm64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/39/8d/cec69a0a804711fd89f47fad92cd2a438a1ceaafd9dabaf3b8b403b5cbba/nanobind-2.13.0-py3-none-any.whl
+  hash:
+    sha256: 9268d7201eaf5519ae61b7a83175f2af77088cb4b99dd3ce5b00550f697da7b7
   category: main
   optional: false
 - name: towncrier
@@ -1529,14 +1562,85 @@ package:
     sha256: b953d133d98f9aeae9084b56a3563fd2519dfc6ec33f61c9cd2c61ff243fb513
   category: main
   optional: false
-- name: readcon
+- name: typing-extensions
+  version: 4.16.0
+  manager: pip
+  platform: osx-arm64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl
+  hash:
+    sha256: 481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8
+  category: main
+  optional: false
+- name: xxhash
+  version: 3.8.1
+  manager: pip
+  platform: osx-arm64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/57/04/b10a245a4c09a9cfa88f8e9ae755029413ad1ac17047f9a61906e5ae0799/xxhash-3.8.1-cp312-cp312-macosx_11_0_arm64.whl
+  hash:
+    sha256: 220d68130f83f7cc86d6edfdeab176adc73d7200bf3a8ec10c629e8cf605c215
+  category: main
+  optional: false
+- name: typing-inspection
+  version: 0.4.4
+  manager: pip
+  platform: osx-arm64
+  dependencies:
+    typing-extensions: '>=4.15.0'
+  url: https://files.pythonhosted.org/packages/67/81/4add07e5172b7ac40d8ed5ff580409a7801a4fe26d529bdd915401dabfbe/typing_inspection-0.4.4-py3-none-any.whl
+  hash:
+    sha256: 65b8397ba37ccbce054456aaccddfc91e6e3083c92824df348d96ca832f3f147
+  category: main
+  optional: false
+- name: annotated-types
   version: 0.8.0
   manager: pip
   platform: osx-arm64
   dependencies: {}
-  url: https://files.pythonhosted.org/packages/68/12/f0b642f03dcfbbc2e238501fa4430919c733e882939f9d4f52c7c72409b8/readcon-0.8.0-cp312-cp312-macosx_11_0_arm64.whl
+  url: https://files.pythonhosted.org/packages/99/91/8acff4f5e50511b911bbccb72b8628a49c68ce14148cd9f6431094859a90/annotated_types-0.8.0-py3-none-any.whl
   hash:
-    sha256: 41263d323a01a75f5d00854ce01344ae8c4478bbec973e6fe8b3607f33bef94b
+    sha256: f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0
+  category: main
+  optional: false
+- name: vesin
+  version: 0.6.0
+  manager: pip
+  platform: osx-arm64
+  dependencies:
+    numpy: '*'
+    vesin-torch ; extra: == 'torch'
+  url: https://files.pythonhosted.org/packages/a7/52/2d91ab075569763e2839446bcf610dc5e6f5f1e7be4c0c1c9c476ad857e6/vesin-0.6.0-py3-none-macosx_11_0_arm64.whl
+  hash:
+    sha256: 6fdb37490bd4fc8a00cfc12595861684855ef9ec30981d6086ce78569ed24b80
+  category: main
+  optional: false
+- name: readcon
+  version: 0.14.5
+  manager: pip
+  platform: osx-arm64
+  dependencies:
+    readcon-chemfiles: ==0.14.5 ; extra == 'chemfiles'
+  url: https://files.pythonhosted.org/packages/fa/cc/3bf0d31586beb64cb502a360ad4e69706296103d0d2d6a7c3e6109deb332/readcon-0.14.5-cp312-cp312-macosx_11_0_arm64.whl
+  hash:
+    sha256: 3a44dc89fd2ed3cddd950b7ce053da066cf33a90400d93a6da49b12336d4ae95
+  category: main
+  optional: false
+- name: pydantic
+  version: 2.13.4
+  manager: pip
+  platform: osx-arm64
+  dependencies:
+    annotated-types: '>=0.6.0'
+    pydantic-core: ==2.46.4
+    typing-extensions: '>=4.14.1'
+    typing-inspection: '>=0.4.2'
+    email-validator: '>=2.0.0 ; extra == ''email'''
+    tzdata ; python_full_version: '>= ''3.9'' and sys_platform == ''win32'' and extra
+      == ''timezone'''
+  url: https://files.pythonhosted.org/packages/fd/7b/122376b1fd3c62c1ed9dc80c931ace4844b3c55407b6fb2d199377c9736f/pydantic-2.13.4-py3-none-any.whl
+  hash:
+    sha256: 45a282cde31d808236fd7ea9d919b128653c8b38b393d1c4ab335c62924d9aba
   category: main
   optional: false
 - name: _openmp_mutex
@@ -2787,6 +2891,18 @@ package:
     sha256: 9e156ffaefb8463437144326ada4b85d1de17961b9997ac5f1cbbaf747bd8bed
   category: main
   optional: false
+- name: eon-schema
+  version: <dynamic>
+  manager: pip
+  platform: linux-64
+  dependencies:
+    pydantic: '>=2.0'
+    typing-extensions: '>=4.0'
+    rgpycrumbs: '>=1.3 ; extra == ''rgpycrumbs'''
+  url: ./packages/eon-schema
+  hash: {}
+  category: main
+  optional: false
 - name: jinja2
   version: 3.1.6
   manager: pip
@@ -2807,14 +2923,24 @@ package:
   hash: {}
   category: main
   optional: false
-- name: readcon
-  version: 0.8.0
+- name: xxhash
+  version: 3.8.1
   manager: pip
   platform: linux-64
   dependencies: {}
-  url: https://files.pythonhosted.org/packages/04/73/c188f7e6cb2d1f889b4d36fa2756b4e8d7fc1d3dfa1bb3035525b27d2e38/readcon-0.8.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+  url: https://files.pythonhosted.org/packages/18/96/34db781c8f0cf99c544ca1f2bc2e5bf55426e1eb4ca6de8ea5da56a9f352/xxhash-3.8.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
   hash:
-    sha256: c9b7f44b59f499de6d95737e4eeca7da0de20134cd01fc7a227fd236288bc836
+    sha256: 82c0cedd280eab2e8291270e6c04894dbc096f8159a39dcf1807429f026ca3cc
+  category: main
+  optional: false
+- name: nanobind
+  version: 2.13.0
+  manager: pip
+  platform: linux-64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/39/8d/cec69a0a804711fd89f47fad92cd2a438a1ceaafd9dabaf3b8b403b5cbba/nanobind-2.13.0-py3-none-any.whl
+  hash:
+    sha256: 9268d7201eaf5519ae61b7a83175f2af77088cb4b99dd3ce5b00550f697da7b7
   category: main
   optional: false
 - name: towncrier
@@ -2835,6 +2961,88 @@ package:
   url: https://files.pythonhosted.org/packages/42/06/8ba22ec32c74ac1be3baa26116e3c28bc0e76a5387476921d20b6fdade11/towncrier-25.8.0-py3-none-any.whl
   hash:
     sha256: b953d133d98f9aeae9084b56a3563fd2519dfc6ec33f61c9cd2c61ff243fb513
+  category: main
+  optional: false
+- name: typing-extensions
+  version: 4.16.0
+  manager: pip
+  platform: linux-64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl
+  hash:
+    sha256: 481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8
+  category: main
+  optional: false
+- name: pydantic-core
+  version: 2.46.4
+  manager: pip
+  platform: linux-64
+  dependencies:
+    typing-extensions: '>=4.14.1'
+  url: https://files.pythonhosted.org/packages/5f/97/2aab507d3d00ca626e8e57c1eac6a79e4e5fbcc63eb99733ff55d1717f65/pydantic_core-2.46.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+  hash:
+    sha256: 926c9541b14b12b1681dca8a0b75feb510b06c6341b70a8e500c2fdcff837cce
+  category: main
+  optional: false
+- name: typing-inspection
+  version: 0.4.4
+  manager: pip
+  platform: linux-64
+  dependencies:
+    typing-extensions: '>=4.15.0'
+  url: https://files.pythonhosted.org/packages/67/81/4add07e5172b7ac40d8ed5ff580409a7801a4fe26d529bdd915401dabfbe/typing_inspection-0.4.4-py3-none-any.whl
+  hash:
+    sha256: 65b8397ba37ccbce054456aaccddfc91e6e3083c92824df348d96ca832f3f147
+  category: main
+  optional: false
+- name: vesin
+  version: 0.6.0
+  manager: pip
+  platform: linux-64
+  dependencies:
+    numpy: '*'
+    vesin-torch ; extra: == 'torch'
+  url: https://files.pythonhosted.org/packages/75/d1/2ca1ec1cbd728e29a0754b2fee177eb10f1b9840f5f62940a3c4085b6672/vesin-0.6.0-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+  hash:
+    sha256: 166b6bb2ecb8178387d412b4ac6120d0ac5f6c7e2fc055be0e0456010d9e5dbb
+  category: main
+  optional: false
+- name: readcon
+  version: 0.14.5
+  manager: pip
+  platform: linux-64
+  dependencies:
+    readcon-chemfiles: ==0.14.5 ; extra == 'chemfiles'
+  url: https://files.pythonhosted.org/packages/92/6b/76d7536feb9ee48e7c8046a4240c5aaa65aac4cc9dfe1377dc32b426ce34/readcon-0.14.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+  hash:
+    sha256: 1b3f988cf59d795e3cf346b3bb4b346d3769150e8d51f380cd7930bd7d15a5ac
+  category: main
+  optional: false
+- name: annotated-types
+  version: 0.8.0
+  manager: pip
+  platform: linux-64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/99/91/8acff4f5e50511b911bbccb72b8628a49c68ce14148cd9f6431094859a90/annotated_types-0.8.0-py3-none-any.whl
+  hash:
+    sha256: f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0
+  category: main
+  optional: false
+- name: pydantic
+  version: 2.13.4
+  manager: pip
+  platform: linux-64
+  dependencies:
+    annotated-types: '>=0.6.0'
+    pydantic-core: ==2.46.4
+    typing-extensions: '>=4.14.1'
+    typing-inspection: '>=0.4.2'
+    email-validator: '>=2.0.0 ; extra == ''email'''
+    tzdata ; python_full_version: '>= ''3.9'' and sys_platform == ''win32'' and extra
+      == ''timezone'''
+  url: https://files.pythonhosted.org/packages/fd/7b/122376b1fd3c62c1ed9dc80c931ace4844b3c55407b6fb2d199377c9736f/pydantic-2.13.4-py3-none-any.whl
+  hash:
+    sha256: 45a282cde31d808236fd7ea9d919b128653c8b38b393d1c4ab335c62924d9aba
   category: main
   optional: false
 - name: argcomplete
@@ -4022,6 +4230,18 @@ package:
     sha256: 368d8628424966fd8f9c8018326a9c779e06913dd39e646cf331226acc90e5b2
   category: main
   optional: false
+- name: eon-schema
+  version: <dynamic>
+  manager: pip
+  platform: win-64
+  dependencies:
+    pydantic: '>=2.0'
+    typing-extensions: '>=4.0'
+    rgpycrumbs: '>=1.3 ; extra == ''rgpycrumbs'''
+  url: ./packages/eon-schema
+  hash: {}
+  category: main
+  optional: false
 - name: jinja2
   version: 3.1.6
   manager: pip
@@ -4043,13 +4263,35 @@ package:
   category: main
   optional: false
 - name: readcon
-  version: 0.8.0
+  version: 0.14.5
+  manager: pip
+  platform: win-64
+  dependencies:
+    readcon-chemfiles: ==0.14.5 ; extra == 'chemfiles'
+  url: https://files.pythonhosted.org/packages/2b/d0/741dbaf8a1276981af216f55ab2cf8ffc8c73f241a6b7fa1cac73d81da45/readcon-0.14.5-cp312-cp312-win_amd64.whl
+  hash:
+    sha256: 40dff98579947066ef3c84efcff77ea45151b29bdf28ef37aec5630765e9a276
+  category: main
+  optional: false
+- name: nanobind
+  version: 2.13.0
   manager: pip
   platform: win-64
   dependencies: {}
-  url: https://files.pythonhosted.org/packages/3d/dd/80e7d17ca39acec96a74f7886be857f0d962b826ad73317e195d54882e04/readcon-0.8.0-cp312-cp312-win_amd64.whl
+  url: https://files.pythonhosted.org/packages/39/8d/cec69a0a804711fd89f47fad92cd2a438a1ceaafd9dabaf3b8b403b5cbba/nanobind-2.13.0-py3-none-any.whl
   hash:
-    sha256: 25d0ab830aadf0ad049950b14640b8f7425b7fc99779e2052a189a2058acc18b
+    sha256: 9268d7201eaf5519ae61b7a83175f2af77088cb4b99dd3ce5b00550f697da7b7
+  category: main
+  optional: false
+- name: pydantic-core
+  version: 2.46.4
+  manager: pip
+  platform: win-64
+  dependencies:
+    typing-extensions: '>=4.14.1'
+  url: https://files.pythonhosted.org/packages/40/8c/985c1d41ea1107c2534abd9870e4ed5c8e7669b5c308297835c001e7a1c4/pydantic_core-2.46.4-cp312-cp312-win_amd64.whl
+  hash:
+    sha256: e9c26f834c65f5752f3f06cb08cb86a913ceb7274d0db6e267808a708b46bc89
   category: main
   optional: false
 - name: towncrier
@@ -4070,6 +4312,76 @@ package:
   url: https://files.pythonhosted.org/packages/42/06/8ba22ec32c74ac1be3baa26116e3c28bc0e76a5387476921d20b6fdade11/towncrier-25.8.0-py3-none-any.whl
   hash:
     sha256: b953d133d98f9aeae9084b56a3563fd2519dfc6ec33f61c9cd2c61ff243fb513
+  category: main
+  optional: false
+- name: vesin
+  version: 0.6.0
+  manager: pip
+  platform: win-64
+  dependencies:
+    numpy: '*'
+    vesin-torch ; extra: == 'torch'
+  url: https://files.pythonhosted.org/packages/49/61/ebff303f97e3c17c9eda155464aa37d5eec4ce27d31e01cda7e76b5bb7e7/vesin-0.6.0-py3-none-win_amd64.whl
+  hash:
+    sha256: 84c19d030a38ea6c752e31d7281403e5ece0373ab86cacbe85c3a7c15d701a33
+  category: main
+  optional: false
+- name: typing-extensions
+  version: 4.16.0
+  manager: pip
+  platform: win-64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl
+  hash:
+    sha256: 481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8
+  category: main
+  optional: false
+- name: typing-inspection
+  version: 0.4.4
+  manager: pip
+  platform: win-64
+  dependencies:
+    typing-extensions: '>=4.15.0'
+  url: https://files.pythonhosted.org/packages/67/81/4add07e5172b7ac40d8ed5ff580409a7801a4fe26d529bdd915401dabfbe/typing_inspection-0.4.4-py3-none-any.whl
+  hash:
+    sha256: 65b8397ba37ccbce054456aaccddfc91e6e3083c92824df348d96ca832f3f147
+  category: main
+  optional: false
+- name: annotated-types
+  version: 0.8.0
+  manager: pip
+  platform: win-64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/99/91/8acff4f5e50511b911bbccb72b8628a49c68ce14148cd9f6431094859a90/annotated_types-0.8.0-py3-none-any.whl
+  hash:
+    sha256: f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0
+  category: main
+  optional: false
+- name: xxhash
+  version: 3.8.1
+  manager: pip
+  platform: win-64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/ec/31/3fa0b807d7e21515cd975e7fe5c039d52ac3e9401a96d6ad68dae6305215/xxhash-3.8.1-cp312-cp312-win_amd64.whl
+  hash:
+    sha256: 2256e80e4960ee282f63428adb349cb7f8bd8efe4db770d88eb815f4b9860724
+  category: main
+  optional: false
+- name: pydantic
+  version: 2.13.4
+  manager: pip
+  platform: win-64
+  dependencies:
+    annotated-types: '>=0.6.0'
+    pydantic-core: ==2.46.4
+    typing-extensions: '>=4.14.1'
+    typing-inspection: '>=0.4.2'
+    email-validator: '>=2.0.0 ; extra == ''email'''
+    tzdata ; python_full_version: '>= ''3.9'' and sys_platform == ''win32'' and extra
+      == ''timezone'''
+  url: https://files.pythonhosted.org/packages/fd/7b/122376b1fd3c62c1ed9dc80c931ace4844b3c55407b6fb2d199377c9736f/pydantic-2.13.4-py3-none-any.whl
+  hash:
+    sha256: 45a282cde31d808236fd7ea9d919b128653c8b38b393d1c4ab335c62924d9aba
   category: main
   optional: false
 - name: argcomplete
@@ -5501,6 +5813,27 @@ package:
     sha256: 47101a4055a70a4876ffc87b750ab2287b67eca793f21c8224be5e1ee6394d3f
   category: main
   optional: false
+- name: eon-schema
+  version: <dynamic>
+  manager: pip
+  platform: osx-64
+  dependencies:
+    pydantic: '>=2.0'
+    typing-extensions: '>=4.0'
+    rgpycrumbs: '>=1.3 ; extra == ''rgpycrumbs'''
+  url: ./packages/eon-schema
+  hash: {}
+  category: main
+  optional: false
+- name: markupsafe
+  version: 3.0.2
+  manager: pip
+  platform: osx-64
+  dependencies: {}
+  url: https://download.pytorch.org/whl/MarkupSafe-3.0.2-cp312-cp312-macosx_10_13_universal2.whl
+  hash: {}
+  category: main
+  optional: false
 - name: jinja2
   version: 3.1.6
   manager: pip
@@ -5510,6 +5843,16 @@ package:
     babel: '>=2.7 ; extra == ''i18n'''
   url: https://download.pytorch.org/whl/jinja2-3.1.6-py3-none-any.whl
   hash: {}
+  category: main
+  optional: false
+- name: nanobind
+  version: 2.13.0
+  manager: pip
+  platform: osx-64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/39/8d/cec69a0a804711fd89f47fad92cd2a438a1ceaafd9dabaf3b8b403b5cbba/nanobind-2.13.0-py3-none-any.whl
+  hash:
+    sha256: 9268d7201eaf5519ae61b7a83175f2af77088cb4b99dd3ce5b00550f697da7b7
   category: main
   optional: false
 - name: towncrier
@@ -5532,23 +5875,95 @@ package:
     sha256: b953d133d98f9aeae9084b56a3563fd2519dfc6ec33f61c9cd2c61ff243fb513
   category: main
   optional: false
-- name: markupsafe
-  version: 3.0.3
+- name: xxhash
+  version: 3.8.1
   manager: pip
   platform: osx-64
   dependencies: {}
-  url: https://files.pythonhosted.org/packages/5a/72/147da192e38635ada20e0a2e1a51cf8823d2119ce8883f7053879c2199b5/markupsafe-3.0.3-cp312-cp312-macosx_10_13_x86_64.whl
+  url: https://files.pythonhosted.org/packages/42/91/f65c34a7aa7b4e7cf4854f8e6ef3f7ee32ceac41d4f008da0780db0612f6/xxhash-3.8.1-cp312-cp312-macosx_10_13_x86_64.whl
   hash:
-    sha256: d53197da72cc091b024dd97249dfc7794d6a56530370992a5e1a08983ad9230e
+    sha256: e6e49370822c1f4d8d90e678b06dbcb08b51a026a7c4b55479e7d467f2e813bc
   category: main
   optional: false
-- name: readcon
+- name: typing-extensions
+  version: 4.16.0
+  manager: pip
+  platform: osx-64
+  dependencies: {}
+  url: https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl
+  hash:
+    sha256: 481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8
+  category: main
+  optional: false
+- name: typing-inspection
+  version: 0.4.4
+  manager: pip
+  platform: osx-64
+  dependencies:
+    typing-extensions: '>=4.15.0'
+  url: https://files.pythonhosted.org/packages/67/81/4add07e5172b7ac40d8ed5ff580409a7801a4fe26d529bdd915401dabfbe/typing_inspection-0.4.4-py3-none-any.whl
+  hash:
+    sha256: 65b8397ba37ccbce054456aaccddfc91e6e3083c92824df348d96ca832f3f147
+  category: main
+  optional: false
+- name: vesin
+  version: 0.6.0
+  manager: pip
+  platform: osx-64
+  dependencies:
+    numpy: '*'
+    vesin-torch ; extra: == 'torch'
+  url: https://files.pythonhosted.org/packages/81/4d/329afb15fd694a3d3d6b44a76556b43a55084b4c843eda5c4f42497f20df/vesin-0.6.0-py3-none-macosx_11_0_x86_64.whl
+  hash:
+    sha256: af679df30d9c63eb5b8fd6ee646b0e4c5a4b319d14c0944c80d026108aafe176
+  category: main
+  optional: false
+- name: annotated-types
   version: 0.8.0
   manager: pip
   platform: osx-64
   dependencies: {}
-  url: https://files.pythonhosted.org/packages/63/c1/d56a0f4e81d0c4bcdafeb43e7c4dc63764cad5ca4465f989256819ac0ee3/readcon-0.8.0-cp312-cp312-macosx_10_12_x86_64.whl
+  url: https://files.pythonhosted.org/packages/99/91/8acff4f5e50511b911bbccb72b8628a49c68ce14148cd9f6431094859a90/annotated_types-0.8.0-py3-none-any.whl
   hash:
-    sha256: e6d191b42c72c0ee2a925b3f8dcbfd8458c93341e6933189dd774f1b3d8fc8c6
+    sha256: f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0
+  category: main
+  optional: false
+- name: readcon
+  version: 0.14.5
+  manager: pip
+  platform: osx-64
+  dependencies:
+    readcon-chemfiles: ==0.14.5 ; extra == 'chemfiles'
+  url: https://files.pythonhosted.org/packages/a2/36/d7ea1a65cc0c0c109780acc736e2545a319480022ae52eb9c1f642f10644/readcon-0.14.5-cp312-cp312-macosx_10_12_x86_64.whl
+  hash:
+    sha256: 29129ec241b965943934d9bba300c2e0aec827146d0f0b6660c474b2d02f6940
+  category: main
+  optional: false
+- name: pydantic-core
+  version: 2.46.4
+  manager: pip
+  platform: osx-64
+  dependencies:
+    typing-extensions: '>=4.14.1'
+  url: https://files.pythonhosted.org/packages/ce/8c/af022f0af448d7747c5154288d46b5f2bc5f17366eaa0e23e9aa04d59f3b/pydantic_core-2.46.4-cp312-cp312-macosx_10_12_x86_64.whl
+  hash:
+    sha256: 3245406455a5d98187ec35530fd772b1d799b26667980872c8d4614991e2c4a2
+  category: main
+  optional: false
+- name: pydantic
+  version: 2.13.4
+  manager: pip
+  platform: osx-64
+  dependencies:
+    annotated-types: '>=0.6.0'
+    pydantic-core: ==2.46.4
+    typing-extensions: '>=4.14.1'
+    typing-inspection: '>=0.4.2'
+    email-validator: '>=2.0.0 ; extra == ''email'''
+    tzdata ; python_full_version: '>= ''3.9'' and sys_platform == ''win32'' and extra
+      == ''timezone'''
+  url: https://files.pythonhosted.org/packages/fd/7b/122376b1fd3c62c1ed9dc80c931ace4844b3c55407b6fb2d199377c9736f/pydantic-2.13.4-py3-none-any.whl
+  hash:
+    sha256: 45a282cde31d808236fd7ea9d919b128653c8b38b393d1c4ab335c62924d9aba
   category: main
   optional: false

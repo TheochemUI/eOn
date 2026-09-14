@@ -9,8 +9,8 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "NEBProjection.h"
-#include "NEBForceProjection.h"
+#include "eon/NEBProjection.h"
+#include "eon/NEBForceProjection.h"
 
 namespace eonc::neb {
 

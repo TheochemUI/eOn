@@ -11,10 +11,10 @@
 */
 // An interface to the GPDimer library
 
-#include "AtomicGPDimer.h"
-#include "GPRHelpers.h"
-#include "HelperFunctions.h"
-#include "fpe_handler.h"
+#include "eon/AtomicGPDimer.h"
+#include "eon/GPRHelpers.h"
+#include "eon/HelperFunctions.h"
+#include "eon/fpe_handler.h"
 #include <cassert>
 #include <cmath>
 #include <cstring>
@@ -101,6 +101,19 @@ double AtomicGPDimer::getEigenvalue() {
 
 AtomMatrix AtomicGPDimer::getEigenvector() {
   const gpr::Coord &orient = atomic_dimer.getFinalOrientation();
-  long nFree = matterCenter->numberOfFreeAtoms();
-  return Eigen::Map<const AtomMatrix>(orient.data(), nFree, 3);
+  const long nFree = matterCenter->numberOfFreeAtoms();
+  const long nAtoms = matterCenter->numberOfAtoms();
+  AtomMatrix freeMode =
+      Eigen::Map<const AtomMatrix>(orient.data(), nFree, 3);
+  if (nFree == nAtoms) {
+    return freeMode;
+  }
+  AtomMatrix full = AtomMatrix::Zero(nAtoms, 3);
+  long k = 0;
+  for (long i = 0; i < nAtoms; ++i) {
+    if (!matterCenter->getFixed(i)) {
+      full.row(i) = freeMode.row(k++);
+    }
+  }
+  return full;
 }

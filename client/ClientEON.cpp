@@ -11,21 +11,26 @@
 */
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
-#include "EonLogger.h"
+#include "eon/EonLogger.h"
 #include <windows.h>
 #endif
 
-#include "BaseStructures.h"
-#include "Bundling.h"
-#include "CommandLine.h"
-#include "EpiCenters.h"
-#include "HelperFunctions.h"
-#include "Job.h"
-#include "Parameters.h"
-#include "PotRegistry.h"
-#include "Potential.h"
+#include "eon/BaseStructures.h"
+#include "eon/Bundling.h"
+#include "eon/CommandLine.h"
+#include "eon/EpiCenters.h"
+#include "eon/HelperFunctions.h"
+#include "eon/Job.h"
+#include "eon/Parameters.h"
+#include "eon/PotRegistry.h"
+#include "eon/Potential.h"
 #include "version.h"
+#include <cstdlib>
+#include <exception>
+#include <format>
 #include <fstream>
+#include <iostream>
+#include <string_view>
 
 #include <cerrno>
 #include <chrono>
@@ -42,7 +47,7 @@
 #endif
 
 #if defined WITH_ASE_ORCA || EMBED_PYTHON || WITH_ASE_NWCHEM
-#include "PyGuard.h"
+#include "eon/PyGuard.h"
 #endif
 
 #ifdef EONMPIBGP
@@ -50,7 +55,7 @@
 #endif
 
 // Includes for FPE trapping
-#include "fpe_handler.h"
+#include "eon/fpe_handler.h"
 
 #ifdef _WIN32
 #include <float.h>
@@ -124,7 +129,7 @@ void printSystemInfo() {
   QUILL_LOG_INFO(log, "DIR: {}", cwd.string());
 }
 
-int main(int argc, char **argv) {
+static int eonClientMain(int argc, char **argv) {
   // --- Start Logging setup
   // Configure backend for optimal performance (see BackendOptions.h)
   quill::BackendOptions backend_options;
@@ -401,15 +406,13 @@ int main(int argc, char **argv) {
 
     printSystemInfo();
 
-    // XXX(rg): Be more gentle here
     bool bundlingEnabled = false;
-    int bundleSize = -1; // eonc::getBundleSize();
-    if (bundleSize == 0) {
-      bundleSize = 1;
-    } else if (bundleSize == -1) {
-      // Not using bundling
+    int bundleSize = eonc::getBundleSize();
+    if (bundleSize <= 0) {
       bundleSize = 1;
       bundlingEnabled = false;
+    } else {
+      bundlingEnabled = true;
     }
 
     std::vector<std::string> bundledFilenames;
@@ -453,15 +456,29 @@ int main(int argc, char **argv) {
       } catch (int e) {
         QUILL_LOG_CRITICAL(logger, "[ERROR] job exited on error {}", e);
         logger->flush_log();
+        return EXIT_FAILURE;
       } catch (const std::exception &e) {
         QUILL_LOG_CRITICAL(logger, "[ERROR] unhandled exception: {}", e.what());
         logger->flush_log();
+        std::cerr << "[ERROR] unhandled exception: " << e.what() << "\n";
         return EXIT_FAILURE;
       }
 
       job.reset(); // Force Potential destruction so PotRegistry records entries
       PotRegistry::get().write_summary();
-      filenames.push_back(std::string("client.log"));
+      filenames.push_back(std::string("_potcalls.json"));
+      filenames.push_back(std::string("client_quill.log"));
+      filenames.push_back(std::string("client_traceback.log"));
+
+      {
+        std::ofstream manifest("return_files.dat");
+        if (manifest) {
+          for (const auto &fn : filenames) {
+            manifest << fn << "\n";
+          }
+        }
+        filenames.push_back(std::string("return_files.dat"));
+      }
 
       // Finalize Timing Information
       auto end_time = std::chrono::steady_clock::now();
@@ -475,12 +492,14 @@ int main(int argc, char **argv) {
       QUILL_LOG_INFO(logger, "  User time: {:.3f} seconds", utime);
       QUILL_LOG_INFO(logger, "  System time: {:.3f} seconds", stime);
 
+      // results.dat contract is "<value> <key>" (same as all job writers and
+      // eon.fileio.parse_results / eon_schema.jobs adapters).
       std::ofstream result_file("results.dat", std::ios::app);
       if (result_file.is_open()) {
-        result_file << "time_seconds " << elapsed.count() << "\n";
+        result_file << std::format("{:.12e} time_seconds\n", elapsed.count());
 #ifndef _WIN32
-        result_file << "user_time " << utime << "\n";
-        result_file << "system_time " << stime << "\n";
+        result_file << std::format("{:.12e} user_time\n", utime);
+        result_file << std::format("{:.12e} system_time\n", stime);
 #endif
       } else {
         QUILL_LOG_ERROR(logger, "Failed to write timing to results.dat");
@@ -523,5 +542,34 @@ int main(int argc, char **argv) {
 
   // Ensure all queued log messages are flushed before exiting
   quill::Backend::stop();
-  exit(0);
+  return EXIT_SUCCESS;
+}
+
+namespace {
+
+int reportFatal(std::string_view what) {
+  std::cerr << "eonclient: fatal error: " << what << '\n';
+  // Drain the queued CRITICAL lines that say why: an escaping exception
+  // reaches std::terminate without them, and so does std::exit.
+  quill::Backend::stop();
+#ifdef EONMPI
+  int mpiReady = 0;
+  MPI_Initialized(&mpiReady);
+  if (mpiReady) {
+    MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
+  }
+#endif
+  return EXIT_FAILURE;
+}
+
+} // namespace
+
+int main(int argc, char **argv) {
+  try {
+    return eonClientMain(argc, argv);
+  } catch (const std::exception &e) {
+    return reportFatal(e.what());
+  } catch (...) {
+    return reportFatal("exception of unknown type");
+  }
 }

@@ -15,7 +15,7 @@ Potential for water and Platinum
 @date 2007
 University of Iceland
 */
-#include "zhu_philpott.hpp"
+#include "eon/potentials/Water_Pt/zhu_philpott.hpp"
 #include <cassert>
 #include <cmath>
 

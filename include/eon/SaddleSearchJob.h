@@ -1,0 +1,89 @@
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
+#pragma once
+#include "EonLogger.h"
+
+#include "HelperFunctions.h"
+#include "Job.h"
+#include "Matter.h"
+#include "MinModeSaddleSearch.h"
+#include "Parameters.h"
+#include "SaddleSearchMethod.h"
+
+namespace eonc {
+
+/**
+ * @file
+ * @ingroup Jobs
+ *
+ * \brief Finds transition states by finding saddle points on the potential
+ * energy surface
+ *
+ * The saddle seach job implements a ref MinModeSaddleSearch, as well as an \ref
+ * Optimizer "optimizer". A saddle search is initiated by making a local
+ * displacement of atoms from their position at the minimum of the current
+ * state. It can either be run using the ref Dimer or the ref Lanczos min-mode
+ * method.
+ *
+ * The saddle seach job also optionally generates and works with a GP
+ * approximated potential energy system with the GPR Dimer minimum mode method
+ */
+
+/**
+ * Declaration of the Saddle Search job
+ */
+
+class SaddleSearchJob : public Job {
+public:
+  //! Saddle Search job constructor
+  /*!
+   * \param *params defined by the config.init file
+   */
+  SaddleSearchJob(std::unique_ptr<Parameters> parameters)
+      : Job(std::move(parameters)), fCallsSaddle{0} {}
+  //! Saddle Search Job Deconstructor
+  ~SaddleSearchJob(void) = default;
+  //! Kicks off the Saddle Search
+  std::vector<std::string> run(void) override;
+  /// In-process entry: seed reactant Matter, no pos.con (eOn-gbkb).
+  std::shared_ptr<Matter> runFromMatter(std::shared_ptr<Matter> seed);
+
+private:
+  std::shared_ptr<Matter> runPrepared(const AtomMatrix &mode);
+  //! Runs the correct saddle search; also checks if the run was successful
+  int doSaddleSearch();
+  //! Logs the run status and makes sure the run was successful
+  void printEndState(int status);
+  //! Writes the results from the run to file
+  void saveData(int status);
+
+  //! Container for the results of the run
+  std::vector<std::string> returnFiles;
+
+  //! Initializes a ref SaddleSearchMethod (base class for polymorphism)
+  std::unique_ptr<SaddleSearchMethod> saddleSearch;
+  //! Initial configuration.
+  std::shared_ptr<Matter> initial;
+  //! Configuration used during the saddle point search.
+  std::shared_ptr<Matter> saddle;
+  //! Configuration used during the saddle point search.
+  std::shared_ptr<Matter> displacement;
+
+  //! Force calls to find the saddle
+  int fCallsSaddle;
+
+  eonc::log::Scoped log;
+};
+
+} // namespace eonc
+
+using eonc::SaddleSearchJob;

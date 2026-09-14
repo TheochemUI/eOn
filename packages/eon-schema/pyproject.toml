@@ -1,6 +1,6 @@
 [project]
 name = "eon-schema"
-version = "0.2.2"
+version = "0.2.3"
 description = "Shared eOn L0 Cap'n Proto SSoT, L1 job-config pydantic models, and L2 API specs for eon-akmc + pyeonclient"
 readme = "README.md"
 license = {text = "BSD-3-Clause"}
@@ -48,3 +48,4 @@ include = [
 "src/eon_schema/ssot/eon_params.capnp" = "eon_schema/ssot/eon_params.capnp"
 "src/eon_schema/ssot/eon_params_catalog.json" = "eon_schema/ssot/eon_params_catalog.json"
 "src/eon_schema/ssot/README.md" = "eon_schema/ssot/README.md"
+"src/eon_schema/jobs/eon_job_result.capnp" = "eon_schema/jobs/eon_job_result.capnp"

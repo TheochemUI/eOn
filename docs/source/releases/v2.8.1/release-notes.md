@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Detailed release notes for eOn v2.8.1, covering new features, enhancements, build system improvements, and documentation updates."
-    "keywords": "eOn v2.8.1 release notes, new features, enhancements, bug fixes"
+    "description": "Detailed release notes for eOn v2.8.1, covering NEB endpoint minimization, metatomic device selection, and bug fixes."
+    "keywords": "eOn v2.8.1 release notes, new features, bug fixes"
 ---
 
 # Release notes
@@ -10,7 +10,7 @@ myst:
 ## [v2.8.1] - 2025-11-03
 
 This release primarily includes bug fixes for Nudged Elastic Band (NEB)
-calculations and updates major dependencies, most notably PyTorch.
+calculations and updates major dependencies, including PyTorch.
 
 ### ✨ New Features
 
@@ -26,7 +26,7 @@ calculations and updates major dependencies, most notably PyTorch.
   final `neb.dat` file is now generated separately from intermediate iteration
   files (e.g., `neb_000.dat`).
 * **NEB:** Prevented zero projected forces from being reported in
-  `NudgedElasticBandJob` results, ensuring more robust output.
+  `NudgedElasticBandJob` results when the true force is non-zero.
 * **NEB:** The search for the highest energy image now correctly iterates over
   intermediate images only.
 * **Matching:** Fixed a bug in the `helper_functions::identical` by correcting a

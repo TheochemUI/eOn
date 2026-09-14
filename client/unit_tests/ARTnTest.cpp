@@ -13,13 +13,13 @@
 /// Integration tests for ARTn: run both dimer and ARTn on the same system,
 /// verify they find the same saddle point.
 
-#include "ARTnSaddleSearch.h"
-#include "ImprovedDimer.h"
-#include "Matter.h"
-#include "MinModeSaddleSearch.h"
 #include "TestUtils.hpp"
+#include "eon/ARTnSaddleSearch.h"
+#include "eon/ImprovedDimer.h"
+#include "eon/Matter.h"
+#include "eon/MinModeSaddleSearch.h"
 #ifdef WITH_ARTN
-#include "libs/ARTn/ARTnResource.h"
+#include "eon/libs/ARTn/ARTnResource.h"
 #endif
 #include "catch2/catch_amalgamated.hpp"
 

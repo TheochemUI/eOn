@@ -9,14 +9,15 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "Matter.h"
-#include "BaseStructures.h"
-#include "BondBoost.h"
-#include "GeometryAnalysis.h"
-#include "HelperFunctions.h"
-#include "SurrogatePotential.h"
+#include "eon/Matter.h"
+#include "eon/BaseStructures.h"
+#include "eon/BondBoost.h"
+#include "eon/GeometryAnalysis.h"
+#include "eon/HelperFunctions.h"
+#include "eon/SurrogatePotential.h"
 
-#include "EonLogger.h"
+#include "eon/EonLogger.h"
+#include <cmath>
 #include <memory>
 #include <stdexcept>
 
@@ -35,6 +36,7 @@ const Matter &Matter::operator=(const Matter &matter) {
   atomicNrs = matter.atomicNrs;
   isFixed = matter.isFixed;
   atomIndex = matter.atomIndex;
+  fileToMatter = matter.fileToMatter;
   cell = matter.cell;
   cellInverse = matter.cellInverse;
   velocities = matter.velocities;
@@ -48,8 +50,21 @@ const Matter &Matter::operator=(const Matter &matter) {
 
   potential = matter.potential;
   potentialEnergy = matter.potentialEnergy;
+  energyVariance = matter.energyVariance;
+  forceCalls = matter.forceCalls;
   recomputePotential = matter.recomputePotential;
-  recomputeFreeMask = true; // Force cache rebuild after assignment
+  // Both caches describe the forces this object held before the assignment.
+  // resize() above already raises them; state it here alongside the members
+  // this function owns.
+  recomputeFreeMask = true;
+  recomputeMaskedForces = true;
+
+  // A BondBoost binds to one Matter (BondBoost.h:32 takes a Matter *), so a
+  // copy cannot share the source's: boosting through it would drive the
+  // original. The copy starts without one and re-establishes it through
+  // setBiasPotential. biasForces is zeroed by the resize above, which is the
+  // state that matches having no bias potential.
+  biasPotential = nullptr;
 
   headerCon = matter.headerCon;
   // ConFrame is move-only; copy does not retain movie trajectory.
@@ -84,6 +99,7 @@ Matter &Matter::operator=(Matter &&other) noexcept {
   atomicNrs = std::move(other.atomicNrs);
   isFixed = std::move(other.isFixed);
   atomIndex = std::move(other.atomIndex);
+  fileToMatter = std::move(other.fileToMatter);
   freeMask = std::move(other.freeMask);
   maskedForces = std::move(other.maskedForces);
   freeIndices = std::move(other.freeIndices);
@@ -140,6 +156,9 @@ bool Matter::compare(const Matter &matter, bool indistinguishable) {
 
 // Returns the distance to the given matter object.
 double Matter::distanceTo(const Matter &matter) {
+  if (matter.numberOfAtoms() != nAtoms) {
+    throw std::invalid_argument("Matter::distanceTo: size mismatch");
+  }
   return pbc(positions - matter.positions).norm();
 }
 
@@ -158,32 +177,38 @@ double Matter::perAtomNorm(const Matter &matter) {
 }
 
 void Matter::resize(const long int length) {
-  if (length > 0) {
-    nAtoms = length;
-    positions.resize(length, 3);
-    positions.setZero();
+  if (length < 0) {
+    throw std::invalid_argument("Matter::resize: negative atom count");
+  }
+  // Zero is a real size: leaving nAtoms at the old value there sends
+  // setMasses and every other nAtoms loop off the end of an empty array.
+  nAtoms = length;
+  positions.resize(length, 3);
+  positions.setZero();
 
-    velocities.resize(length, 3);
-    velocities.setZero();
+  velocities.resize(length, 3);
+  velocities.setZero();
 
-    biasForces.resize(length, 3);
-    biasForces.setZero();
+  biasForces.resize(length, 3);
+  biasForces.setZero();
 
-    forces.resize(length, 3);
-    forces.setZero();
+  forces.resize(length, 3);
+  forces.setZero();
 
-    masses.resize(length);
-    masses.setZero();
+  masses.resize(length);
+  masses.setZero();
 
-    atomicNrs.resize(length);
-    atomicNrs.setZero();
+  atomicNrs.resize(length);
+  atomicNrs.setZero();
 
-    isFixed.resize(length);
-    isFixed.setZero();
+  isFixed.resize(length, 3);
+  isFixed.setZero();
 
-    atomIndex.resize(length);
-    for (long i = 0; i < length; i++)
-      atomIndex(i) = static_cast<int>(i); // default: sequential
+  atomIndex.resize(length);
+  fileToMatter.resize(static_cast<size_t>(length));
+  for (long i = 0; i < length; i++) {
+    atomIndex(i) = static_cast<std::int64_t>(i); // default: sequential
+    fileToMatter[static_cast<size_t>(i)] = i;
   }
   recomputePotential = true;
   recomputeMaskedForces = true;
@@ -197,6 +222,8 @@ Matrix3d Matter::getCell() const { return cell; }
 void Matter::setCell(const Matrix3d &newCell) {
   cell = newCell;
   cellInverse = cell.inverse();
+  recomputePotential = true;
+  recomputeMaskedForces = true;
 }
 
 double Matter::getPosition(long int indexAtom, int axis) const {
@@ -235,7 +262,12 @@ AtomMatrix Matter::getPositionsFree() const {
 }
 
 VectorXi Matter::getAtomicNrsFree() const {
-  return this->atomicNrs.array() * getFreeV().cast<int>().array();
+  getFree();
+  VectorXi ret(static_cast<Eigen::Index>(freeIndices.size()));
+  for (size_t j = 0; j < freeIndices.size(); j++) {
+    ret[static_cast<Eigen::Index>(j)] = atomicNrs[freeIndices[j]];
+  }
+  return ret;
 }
 
 bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
@@ -255,6 +287,9 @@ VectorXd Matter::getPositionsFreeV() const {
 
 // update Matter with the new positions of the free atoms given in array 'pos'
 void Matter::setPositions(const AtomMatrix &pos) {
+  if (pos.rows() != nAtoms) {
+    throw std::invalid_argument("Matter::setPositions: row count mismatch");
+  }
   positions = pos;
   if (usePeriodicBoundaries) {
     applyPeriodicBoundary();
@@ -288,6 +323,8 @@ void Matter::setPositionsFreeV(const VectorXd &pos) {
 
 AtomMatrix Matter::getBiasForces() {
   if (biasPotential != nullptr) {
+    // Evaluate the current bias only. The MD job advances the bond-boost
+    // schedule once per step via BondBoost::advance().
     biasPotential->boost();
   }
   return biasForces.array() * getFree().array();
@@ -366,9 +403,10 @@ void Matter::setMass(long int indexAtom, double mass) {
 }
 
 void Matter::setMasses(const VectorXd &massesIn) {
-  for (int i = 0; i < nAtoms; i++) {
-    masses[i] = massesIn[i];
+  if (massesIn.size() != nAtoms) {
+    throw std::invalid_argument("Matter::setMasses: size mismatch");
   }
+  masses = massesIn;
 }
 
 long Matter::getAtomicNr(long int indexAtom) const {
@@ -381,10 +419,41 @@ void Matter::setAtomicNr(long int indexAtom, long atomicNr) {
   recomputeMaskedForces = true;
 }
 
-int Matter::getFixed(long int indexAtom) const { return (isFixed[indexAtom]); }
+int Matter::getFixed(long int indexAtom) const {
+  return (isFixed(indexAtom, 0) > 0.5 && isFixed(indexAtom, 1) > 0.5 &&
+          isFixed(indexAtom, 2) > 0.5)
+             ? 1
+             : 0;
+}
+
+int Matter::getFixed(long int indexAtom, int axis) const {
+  return isFixed(indexAtom, axis) > 0.5 ? 1 : 0;
+}
+
+std::array<bool, 3> Matter::getFixedMask(long int indexAtom) const {
+  return {isFixed(indexAtom, 0) > 0.5, isFixed(indexAtom, 1) > 0.5,
+          isFixed(indexAtom, 2) > 0.5};
+}
 
 void Matter::setFixed(long int indexAtom, int isFixed_passed) {
-  isFixed[indexAtom] = isFixed_passed;
+  const double v = isFixed_passed ? 1.0 : 0.0;
+  isFixed(indexAtom, 0) = v;
+  isFixed(indexAtom, 1) = v;
+  isFixed(indexAtom, 2) = v;
+  recomputeFreeMask = true;
+  recomputeMaskedForces = true;
+}
+
+void Matter::setFixed(long int indexAtom, int axis, int isFixed_passed) {
+  isFixed(indexAtom, axis) = isFixed_passed ? 1.0 : 0.0;
+  recomputeFreeMask = true;
+  recomputeMaskedForces = true;
+}
+
+void Matter::setFixedMask(long int indexAtom, std::array<bool, 3> mask) {
+  isFixed(indexAtom, 0) = mask[0] ? 1.0 : 0.0;
+  isFixed(indexAtom, 1) = mask[1] ? 1.0 : 0.0;
+  isFixed(indexAtom, 2) = mask[2] ? 1.0 : 0.0;
   recomputeFreeMask = true;
   recomputeMaskedForces = true;
 }
@@ -403,23 +472,29 @@ double Matter::getPotentialEnergy() const {
 }
 
 double Matter::getKineticEnergy() const {
-  // Vectorized: 0.5 * sum(mass_i * |v_i|^2) for free atoms
-  // Use free mask (1-isFixed) to zero out fixed atom contributions
-  Eigen::VectorXd speed2(nAtoms);
-  for (long i = 0; i < nAtoms; i++) {
-    speed2[i] = velocities.row(i).squaredNorm();
-  }
-  auto freeMask = (1 - isFixed.array()).cast<double>();
-  return 0.5 * (masses.array() * freeMask * speed2.array()).sum();
+  // 0.5 * sum(mass_i * |v_i,free|^2); a constrained axis does not contribute.
+  AtomMatrix vfree = velocities.array() * getFree().array();
+  Eigen::VectorXd speed2 = vfree.rowwise().squaredNorm();
+  return 0.5 * (masses.array() * speed2.array()).sum();
 }
 
 double Matter::getMechanicalEnergy() const {
   return getPotentialEnergy() + getKineticEnergy();
 }
 
-long int Matter::numberOfFreeAtoms() const { return nAtoms - isFixed.sum(); }
+long int Matter::numberOfFixedAtoms() const {
+  long n = 0;
+  for (long i = 0; i < nAtoms; ++i) {
+    if (getFixed(i)) {
+      ++n;
+    }
+  }
+  return n;
+}
 
-long int Matter::numberOfFixedAtoms() const { return isFixed.sum(); }
+long int Matter::numberOfFreeAtoms() const {
+  return nAtoms - numberOfFixedAtoms();
+}
 
 long Matter::getForceCalls() const { return (forceCalls); }
 
@@ -456,7 +531,7 @@ void Matter::computePotential() const {
       this->potentialEnergy = freePE;
       this->energyVariance = vari;
       for (long idx{0}, jdx{0}; idx < nAtoms; idx++) {
-        if (!isFixed(idx)) {
+        if (!getFixed(idx)) {
           forces.row(idx) = freeForces.row(jdx);
           jdx++;
         }
@@ -470,10 +545,14 @@ void Matter::computePotential() const {
       potential->forceCallCounter++;
       PotRegistry::get().on_force_call(potential->getType());
     }
+    if (!std::isfinite(potentialEnergy) || !forces.allFinite()) {
+      throw std::runtime_error(
+          "Potential returned non-finite energy or forces");
+    }
     forceCalls = forceCalls + 1;
     recomputePotential = false;
 
-    if (isFixed.sum() == 0 && removeNetForce) {
+    if (isFixed.maxCoeff() < 0.5 && removeNetForce) {
       Vector3d tempForce = forces.colwise().sum() / nAtoms;
       for (long int i = 0; i < nAtoms; i++) {
         forces.row(i) -= tempForce.transpose();
@@ -500,13 +579,13 @@ double Matter::maxForce() const {
   // Ensures that the forces are up to date
   computePotential();
 
-  // I think this can be done in one line with the rowwise method
+  const AtomMatrix &f = getForces();
   double maxForce = 0.0;
   for (int i = 0; i < nAtoms; i++) {
     if (getFixed(i)) {
       continue;
     }
-    maxForce = std::max(forces.row(i).norm(), maxForce);
+    maxForce = std::max(f.row(i).norm(), maxForce);
   }
   return maxForce;
 }
@@ -519,21 +598,21 @@ void Matter::setAtomicNrs(const VectorXi &atmnrs) {
         "Vector of atomic numbers not equal to the number of atoms");
   } else {
     this->atomicNrs = atmnrs;
+    recomputePotential = true;
+    recomputeMaskedForces = true;
   }
 }
 
 AtomMatrix Matter::getFree() const {
   if (recomputeFreeMask) {
     freeMask.resize(nAtoms, 3);
+    freeMask = 1.0 - isFixed.array();
     freeIndices.clear();
-    freeIndices.reserve(nAtoms);
+    freeIndices.reserve(static_cast<size_t>(nAtoms));
     for (long i = 0; i < nAtoms; i++) {
-      double val = isFixed(i) ? 0.0 : 1.0;
-      freeMask(i, 0) = val;
-      freeMask(i, 1) = val;
-      freeMask(i, 2) = val;
-      if (!isFixed(i))
+      if (freeMask.row(i).sum() > 0.5) {
         freeIndices.push_back(static_cast<int>(i));
+      }
     }
     recomputeFreeMask = false;
   }
@@ -554,6 +633,9 @@ void Matter::setVelocities(const AtomMatrix &v) {
 
 void Matter::setForces(const AtomMatrix &f) {
   forces = f.array() * getFree().array();
+  maskedForces = forces;
+  recomputeMaskedForces = false;
+  recomputePotential = false;
 }
 
 AtomMatrix Matter::getAccelerations() {
@@ -595,7 +677,7 @@ void Matter::setComputedPotential(double energy, double variance) {
   forceCalls++;
 
   // Apply the same net force removal as computePotential()
-  if (isFixed.sum() == 0 && removeNetForce) {
+  if (isFixed.maxCoeff() < 0.5 && removeNetForce) {
     Vector3d tempForce = forces.colwise().sum() / nAtoms;
     for (long int i = 0; i < nAtoms; i++) {
       forces.row(i) -= tempForce.transpose();

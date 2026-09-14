@@ -15,7 +15,7 @@ SPC/E potential for water.
 @date 2006-2007
 University of Iceland
 */
-#include "spce_ccl.hpp"
+#include "eon/potentials/Water/spce_ccl.hpp"
 #include <cassert>
 #include <cmath>
 #include <iostream>

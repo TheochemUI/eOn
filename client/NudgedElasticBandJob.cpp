@@ -9,12 +9,12 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "NudgedElasticBandJob.h"
-#include "ConjugateGradients.h"
-#include "EonLogger.h"
-#include "NEBInitialPaths.hpp"
-#include "NEBSplineExtrema.h"
-#include "Potential.h"
+#include "eon/NudgedElasticBandJob.h"
+#include "eon/ConjugateGradients.h"
+#include "eon/EonLogger.h"
+#include "eon/NEBInitialPaths.hpp"
+#include "eon/NEBSplineExtrema.h"
+#include "eon/Potential.h"
 
 #include <filesystem>
 #include <format>
@@ -283,7 +283,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
           std::ofstream modeOut(peakModeFile);
           if (modeOut) {
             for (long row = 0; row < peakMode.rows(); ++row) {
-              modeOut << std::format("{:12.6f} {:12.6f} {:12.6f}\n",
+              modeOut << std::format("{:.17g} {:.17g} {:.17g}\n",
                                      peakMode(row, 0), peakMode(row, 1),
                                      peakMode(row, 2));
             }

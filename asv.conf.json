@@ -7,7 +7,10 @@
     "benchmark_dir": "benchmarks",
     "results_dir": ".asv/results",
     "html_dir": ".asv/html",
-    "branches": ["HEAD"],
+    "branches": [
+        "HEAD"
+    ],
     "build_command": [],
-    "install_command": []
+    "install_command": [],
+    "show_commit_url": "https://github.com/TheochemUI/eOn/commit/"
 }

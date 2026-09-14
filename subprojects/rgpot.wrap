@@ -1,7 +1,6 @@
 [wrap-git]
 directory = rgpot
 url = https://github.com/OmniPotentRPC/rgpot.git
-# Packaged install exports rgpot.pc (headers + nwchempot/cpmdpot/ptlrpc).
-# eOn prefers dependency('rgpot') when installed; wrap is the fallback.
-revision = v2.5.0
+# rgpot 3.2.0 ships MOPACPot (libmopacc, AM1 default) plus ForceBatch.
+revision = v3.2.0
 depth = 1

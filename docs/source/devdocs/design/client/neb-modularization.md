@@ -58,7 +58,7 @@ the highest-energy image climbs along the band to the exact saddle point.
 OCINEB (Off-Path Climbing Image NEB) {cite:t}`neb-goswamiEnhancedClimbingImage2026`
 extends CI-NEB with Min-Mode Following (MMF) and hessian eigenmode alignment:
 once the climbing image stabilizes, a dimer search refines the saddle point.
-This is controlled by `NEBOcinebController` which monitors CI stability and
+`NEBOcinebController` monitors CI stability and
 triggers a `MinModeSaddleSearch` when the angular tolerance is met.
 
 ## Eigenmode methods
@@ -71,12 +71,12 @@ using EigenmodeStrategy = std::variant<DimerStrategy, ImprovedDimerStrategy,
                                         LanczosStrategy, GPRDimerStrategy>;
 ```
 
-This eliminates virtual dispatch overhead and enables value semantics. The
-variant is constructed by `buildEigenmodeStrategy()` based on configuration.
+The variant removes virtual dispatch overhead and gives value semantics. It
+is constructed by `buildEigenmodeStrategy()` based on configuration.
 
 ## Parallel force evaluation
 
 When built with `-Deon_parallel_neb=true` (requires TBB), NEB evaluates image
 forces in parallel using `std::for_each` with `std::execution::par`. The
-`Potential::isThreadSafe()` virtual method gates parallelism: Python-based
+`Potential::isThreadSafe()` virtual method controls parallelism: Python-based
 potentials (ASE, CatLearn) return `false` and fall back to serial evaluation.

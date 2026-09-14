@@ -211,6 +211,13 @@ orca_sline:
 lanczosTolerance: 0.0100000000000000002
 lanczosMaxIterations: 20
 lanczosQuitEarly: true
+lanczosPhvaAtoms: All
+
+[Davidson]
+davidsonTolerance: 0.0100000000000000002
+davidsonMaxIterations: 20
+davidsonDiagonalPreconditioner: false
+davidsonPhvaAtoms: All
 
 [Prefactor]
 prefactorDefaultValue: 0
@@ -225,7 +232,7 @@ prefactorFilterScheme: fraction
 prefactorFilterFraction: 0.900000000000000022
 
 [Hessian]
-hessianAtomList: All
+hessianPhvaAtoms: All
 hessianZeroFreqValue: 9.99999999999999955e-07
 
 [Nudged Elastic Band]

@@ -12,15 +12,22 @@
 // Minimum-mode via Davidson subspace iteration with finite-difference
 // Hessian-vector products (same H*v as Lanczos). Replaces dimer rotation
 // constrained minimization when min_mode_method = davidson.
+//
+// Krylov / Ritz space is the PHVA mobile set (see Lanczos.cpp): default
+// phva_atoms=All keeps all free atoms; an explicit list bounds the space
+// to 3 N_mobile without changing free/fixed.
 
-#include "Davidson.h"
-#include "HelperFunctions.h"
-#include "Potential.h"
-#include "SafeMath.h"
+#include "eon/Davidson.h"
 
-#include "EonLogger.h"
+#include <algorithm>
+#include "eon/EonLogger.h"
+#include "eon/HelperFunctions.h"
+#include "eon/MobileAtoms.h"
+#include "eon/Potential.h"
+#include "eon/SafeMath.h"
 
 #include <cmath>
+#include <memory>
 #include <vector>
 
 Davidson::Davidson(std::shared_ptr<Matter> matter, const Parameters &params,
@@ -32,10 +39,27 @@ Davidson::Davidson(std::shared_ptr<Matter> matter, const Parameters &params,
 }
 
 void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
+  const VectorXi mobile =
+      resolveMobileAtoms(matter.get(), params.davidson_options.phva_atoms);
+  compute(std::move(matter), std::move(direction), mobile);
+}
+
+void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
+                       const VectorXi &mobileIn) {
   totalForceCalls = 0;
   statsRotations = 0;
-  const int size = 3 * matter->numberOfFreeAtoms();
-  const long maxIter = params.davidson_options.max_iterations;
+  lowestEv.resize(matter->numberOfAtoms(), 3);
+  lowestEv.setZero();
+
+  const VectorXi mobile = resolveMobileAtoms(matter.get(), mobileIn);
+  const int size = 3 * static_cast<int>(mobile.size());
+  if (size == 0) {
+    lowestEw = 0.0;
+    return;
+  }
+
+  const long maxIter =
+      std::max(1L, params.davidson_options.max_iterations);
   const double tol = params.davidson_options.tolerance;
   const double dr = params.main_options.finiteDifference;
   const bool useDiagPrec = params.davidson_options.diagonal_preconditioner;
@@ -45,39 +69,26 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   V.setZero();
   HV.setZero();
 
-  VectorXd r(size);
-  int i, j;
-  for (i = 0, j = 0; i < matter->numberOfAtoms(); i++) {
-    if (!matter->getFixed(i)) {
-      r.segment<3>(j) = direction.row(i);
-      j += 3;
-    }
-  }
-
+  VectorXd r = packMobileRows(direction, mobile);
   double beta = r.norm();
   if (beta < eonc::safemath::eps) {
     lowestEw = 0.0;
-    lowestEv.resize(matter->numberOfAtoms(), 3);
-    lowestEv.setZero();
     return;
   }
   r /= beta;
 
   auto tmpMatter = std::make_unique<Matter>(*matter);
   const long forceCallsStart = tmpMatter->getForceCalls();
-  const VectorXd force0 = tmpMatter->getForcesFreeV();
+  const AtomMatrix pos0 = matter->getPositions();
+  const VectorXd force0 = mobileForces(tmpMatter.get(), mobile);
 
-  // Apply H via one-sided FD of forces (same as Lanczos): H v ≈ -(F(x+dr
-  // v)-F(x))/dr
   auto applyH = [&](const VectorXd &v) -> VectorXd {
-    tmpMatter->setPositionsFreeV(matter->getPositionsFreeV() + dr * v);
-    const VectorXd force1 = tmpMatter->getForcesFreeV();
-    return -(force1 - force0) / dr;
+    AtomMatrix pos = pos0;
+    unpackMobileRows(packMobileRows(pos0, mobile) + dr * v, mobile, pos);
+    tmpMatter->setPositions(pos);
+    return -(mobileForces(tmpMatter.get(), mobile) - force0) / dr;
   };
 
-  // Optional cheap diagonal preconditioner: one FD probe along e_k is too
-  // expensive, so approximate diag(H) from the first H*v0 components | (Hv)_i /
-  // v_i | when |v_i| is appreciable; else 1.0.
   VectorXd diagH = VectorXd::Ones(size);
 
   V.col(0) = r;
@@ -100,9 +111,7 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
     statsRotations = iter;
     statsAngle = 0.0;
 
-    // Rayleigh-Ritz on current subspace: G = V^T H V
     MatrixXd G = V.leftCols(subspace).transpose() * HV.leftCols(subspace);
-    // Symmetrize numerical noise
     G = 0.5 * (G + G.transpose());
 
     Eigen::SelfAdjointEigenSolver<MatrixXd> es(G);
@@ -111,7 +120,6 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
     evEst = V.leftCols(subspace) * y;
     evEst.normalize();
 
-    // Residual r = H x - lambda x  (using HV * y)
     VectorXd Hx = HV.leftCols(subspace) * y;
     VectorXd resid = Hx - ew * evEst;
     const double residNorm = resid.norm();
@@ -127,8 +135,9 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
 
     QUILL_LOG_INFO(log,
                    "[Davidson] ew={:10.6f} rel_err={:10.6f} |r|={:10.6f} "
-                   "angle={:7.3f} dim={:3d} iter={:3d}",
-                   ew, ewAbsRelErr, residNorm, statsAngle, subspace, iter);
+                   "angle={:7.3f} dim={:3d} iter={:3d} n_mobile={}",
+                   ew, ewAbsRelErr, residNorm, statsAngle, subspace, iter,
+                   mobile.size());
 
     if (ewAbsRelErr < tol && residNorm < tol * (std::fabs(ew) + 1.0)) {
       QUILL_LOG_INFO(log, "[Davidson] Tolerance reached: {}", tol);
@@ -139,7 +148,6 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
       break;
     }
 
-    // Preconditioned residual correction (classical Davidson step)
     VectorXd t(size);
     if (useDiagPrec) {
       for (int k = 0; k < size; ++k) {
@@ -150,7 +158,6 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
       t = resid;
     }
 
-    // Orthogonalize against V and normalize
     for (int c = 0; c < subspace; ++c) {
       t -= V.col(c).dot(t) * V.col(c);
     }
@@ -182,13 +189,9 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
 
   lowestEw = ew;
   totalForceCalls = tmpMatter->getForceCalls() - forceCallsStart;
-  lowestEv.resize(matter->numberOfAtoms(), 3);
   lowestEv.setZero();
-  for (i = 0, j = 0; i < matter->numberOfAtoms(); i++) {
-    if (!matter->getFixed(i)) {
-      lowestEv.row(i) = evEst.segment<3>(j);
-      j += 3;
-    }
+  if (evEst.size() == size) {
+    unpackMobileRows(evEst, mobile, lowestEv);
   }
 }
 

@@ -1,6 +1,6 @@
-#include "../Eigen.h"
-#include "../MatrixHelpers.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/Eigen.h"
+#include "eon/MatrixHelpers.hpp"
 
 using namespace Catch::Matchers;
 

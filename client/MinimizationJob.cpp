@@ -9,13 +9,15 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "MinimizationJob.h"
-#include "BaseStructures.h"
-#include "HelperFunctions.h"
-#include "Matter.h"
-#include "Optimizer.h"
+#include "eon/MinimizationJob.h"
+#include "eon/BaseStructures.h"
+#include "eon/HelperFunctions.h"
+#include "eon/JobResult.h"
+#include "eon/Matter.h"
+#include "eon/Optimizer.h"
 
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -63,6 +65,9 @@ std::vector<std::string> MinimizationJob::run() {
     } else {
       throw e;
     }
+  } catch (const std::exception &e) {
+    QUILL_LOG_ERROR(log, "Minimization potential failed: {}", e.what());
+    status = RunStatus::FAIL_POTENTIAL_FAILED;
   }
 
   QUILL_LOG_DEBUG(log, "Saving result to {}", posOutFilename);
@@ -76,35 +81,12 @@ std::vector<std::string> MinimizationJob::run() {
   std::filesystem::path resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename.string());
 
-  std::ofstream fileResults(resultsFilename, std::ios::binary);
-
-  if (!fileResults.is_open()) {
-    std::cerr << "Error opening file " << resultsFilename << ": "
-              << std::strerror(errno) << std::endl;
-    throw std::runtime_error("Failed to open results file: " +
-                             std::string(std::strerror(errno)));
-    return returnFiles;
-  }
-
-  fileResults << static_cast<int>(status) << " termination_reason\n";
-  fileResults << magic_enum::enum_name<RunStatus>(status)
-              << " termination_reason_text\n";
-  fileResults << "minimization job_type\n";
-  fileResults << magic_enum::enum_name<PotType>(
-                     params.potential_options.potential)
-              << " potential_type\n";
-  fileResults << this->pot->forceCallCounter.load() << " total_force_calls\n";
-
-  if (status != RunStatus::FAIL_POTENTIAL_FAILED) {
-    fileResults << pos->getPotentialEnergy() << " potential_energy\n";
-  }
-
-  // No explicit fclose needed; RAII handles it.
-  if (!fileResults.good()) {
-    std::cerr << "Error writing to file " << resultsFilename
-              << ": May be incomplete." << std::endl;
-    // Consider throwing, depending on the severity.
-  }
+  const bool hasE = status != RunStatus::FAIL_POTENTIAL_FAILED;
+  const double energy = hasE ? pos->getPotentialEnergy() : 0.0;
+  JobResultEnvelope::fromMinimization(
+      status, params.potential_options.potential,
+      this->pot->forceCallCounter.load(), hasE, energy)
+      .writeResultsDat(resultsFilename.string());
 
   return returnFiles;
 }

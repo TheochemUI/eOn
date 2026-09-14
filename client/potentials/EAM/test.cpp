@@ -11,7 +11,7 @@
 */
 #include <stdio.h>
 
-#include "EAM.h"
+#include "eon/potentials/EAM/EAM.h"
 
 int main() {
   EAM pot;

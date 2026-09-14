@@ -1,5 +1,4 @@
 # Booleans
-option('with_newpot', type : 'boolean', value : false)
 option('with_water', type : 'boolean', value : false)
 option('with_ams', type : 'boolean', value : false)
 option('with_mpi', type : 'boolean', value : false)
@@ -17,7 +16,6 @@ option('with_xtb', type : 'boolean', value : false)
 option('with_ase_orca', type : 'boolean', value : false)
 option('with_ase_nwchem', type : 'boolean', value : false)
 option('with_ase', type : 'boolean', value : false)
-option('with_qsc', type : 'boolean', value : false)
 option('use_mkl', type: 'boolean', value: false, description: 'Enable Intel MKL support')
 option('gprd_linalg_backend', type: 'combo', choices: ['eigen', 'cusolver', 'kokkos', 'stdpar'], value: 'eigen', description: 'Linear algebra backend for GPR-dimer hot-path operations')
 option('with_metatomic', type : 'boolean', value : false)
@@ -29,7 +27,11 @@ option('with_rgpot', type : 'boolean', value : false,
 option('with_serve', type : 'boolean', value : false,
        description : 'eOn as rgpot-compatible Cap\'n Proto RPC *server* (eonclient --serve); clients connect TO eOn (NOT RGPOT pot, NOT potserv client)')
 # (RPC *client* to potserv is not an eOn pot type; use rgpot potserv + external client.)
-option('with_parallel_neb', type : 'boolean', value : false, description : 'Enable parallel NEB bead force evaluations (requires TBB)')
+option('with_parallel_neb', type : 'boolean', value : false, description : 'Enable parallel NEB bead force evaluations (TBB on GCC/Clang; nvc++ uses -Dstdpar instead)')
+option('stdpar', type : 'combo', choices : ['none', 'cpu', 'gpu'], value : 'none',
+       description : 'nvc++ std::execution offload for NEB image forces. cpu=-stdpar=multicore, gpu=-stdpar=gpu. Morse and other host potentials stay on the CPU. Not QMCPACK QMC_GPU.')
+option('stdpar_gpu_cc', type : 'string', value : 'cc80,cc90',
+       description : 'nvc++ -gpu= arch list when -Dstdpar=gpu. Default is A100+H100 (Snellius/Elja). Set native to omit the flag.')
 option('native_arch', type : 'boolean', value : false, description : 'Use -march=native for CPU-specific optimizations (not portable)')
 option('fast_math', type : 'boolean', value : false, description : 'Enable -ffast-math (unsafe FP reordering, safe for atomic coords)')
 option('with_artn', type : 'boolean', value : false, description : 'Enable ARTn saddle search method (requires Fortran + LAPACK)')

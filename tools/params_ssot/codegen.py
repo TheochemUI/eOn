@@ -14,8 +14,8 @@ Outputs (relative to repo root):
   schema/eon_params_catalog.json
   packages/eon-schema/.../ssot/eon_params_catalog.json  (vendored for split)
   eon/_params_ssot_catalog.py
-  client/generated/ParametersSSOTDefaults.h
-  client/generated/ParametersSSOTFieldIndex.inc
+  include/eon/generated/ParametersSSOTDefaults.h
+  include/eon/generated/ParametersSSOTFieldIndex.inc
 """
 from __future__ import annotations
 
@@ -323,8 +323,8 @@ def main() -> int:
         / "eon_params_catalog.json"
     )
     out_py = REPO / "eon" / "_params_ssot_catalog.py"
-    out_h = REPO / "client" / "generated" / "ParametersSSOTDefaults.h"
-    out_idx = REPO / "client" / "generated" / "ParametersSSOTFieldIndex.inc"
+    out_h = REPO / "include" / "eon" / "generated" / "ParametersSSOTDefaults.h"
+    out_idx = REPO / "include" / "eon" / "generated" / "ParametersSSOTFieldIndex.inc"
     out_h.parent.mkdir(parents=True, exist_ok=True)
     out_json_pkg.parent.mkdir(parents=True, exist_ok=True)
 

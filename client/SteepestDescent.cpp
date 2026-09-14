@@ -12,8 +12,8 @@
 
 // Based on the SteepestDescent minimizer written in ASE.
 
-#include "SteepestDescent.h"
-#include "SafeMath.h"
+#include "eon/SteepestDescent.h"
+#include "eon/SafeMath.h"
 
 int SteepestDescent::step(double a_maxMove) {
   Eigen::VectorXd r = m_objf->getPositions();
@@ -22,7 +22,7 @@ int SteepestDescent::step(double a_maxMove) {
   Eigen::VectorXd dr;
   double alpha = m_optConfig.opts.sd.alpha;
   if (m_optConfig.opts.sd.two_point && iteration > 0) {
-    Eigen::VectorXd dx = r - m_rPrev;
+    Eigen::VectorXd dx = m_objf->difference(r, m_rPrev);
     Eigen::VectorXd dg = -f + m_fPrev;
     alpha = eonc::safemath::safe_div(dx.dot(dx), dx.dot(dg), 0.0);
     if (alpha < 0) {

@@ -10,7 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "CatLearnPot.h"
+#include "eon/potentials/CatLearnPot/CatLearnPot.h"
 #include "Eigen/src/Core/Matrix.h"
 
 CatLearnPot::CatLearnPot(const Parameters &a_params)

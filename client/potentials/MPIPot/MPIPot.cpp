@@ -10,7 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "MPIPot.h"
+#include "eon/potentials/MPIPot/MPIPot.h"
 #include <mpi.h>
 #include <stdio.h>
 #include <time.h>

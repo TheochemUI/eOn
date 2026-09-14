@@ -51,9 +51,8 @@ class Explorer:
                 self.wuid = self.superbasin.id * 1000000
 
     def save_wuid(self):
-        f = open(self.wuid_path, 'w')
-        f.write("%i\n" % self.wuid)
-        f.close()
+        with io.atomic_write(self.wuid_path) as f:
+            f.write("%i\n" % self.wuid)
 
 
 class MinModeExplorer(Explorer):
@@ -93,8 +92,9 @@ class MinModeExplorer(Explorer):
             if not os.path.isdir(self.config.kdb_scratch_path):
                 os.makedirs(self.config.kdb_scratch_path)
             try:
-                queried = [int(q) for q in open(os.path.join(self.config.kdb_scratch_path, "queried"), 'r').readlines()]
-            except:
+                with open(os.path.join(self.config.kdb_scratch_path, "queried"), 'r') as f:
+                    queried = [int(q) for q in f]
+            except (OSError, ValueError):
                 queried = []
             if self.state.number not in queried:
                 queried.append(self.state.number)
@@ -112,6 +112,8 @@ class MinModeExplorer(Explorer):
             atom_list_str = str(self.state.info.get("Saddle Search", "displace_atom_list", ""))
             if atom_list_str:
                 self.config.disp_listed_atoms = utl.parse_atom_list_str(atom_list_str)
+                # Script saw savecon(Structure); do not remap as file-order.
+                self.config.disp_listed_from_script = True
                 # Ensure the listed-atom displacement method is active
                 if self.config.displace_listed_atom_weight == 0.0:
                     self.config.displace_listed_atom_weight = 1.0
@@ -239,7 +241,7 @@ class ClientMinModeExplorer(MinModeExplorer):
                 io.savecon(dispIO, displacement)
                 search['displacement.con'] = dispIO
                 modeIO = io.StringIO()
-                io.save_mode(modeIO, mode)
+                io.save_mode(modeIO, mode, getattr(self.reactant, "free", None))
                 search['direction.dat'] = modeIO
 
             searches.append(search)
@@ -383,7 +385,7 @@ class ServerMinModeExplorer(MinModeExplorer):
         MinModeExplorer.__init__(self, states, previous_state, state, superbasin, config=config)
 
     def save(self):
-        f = open("explorer.pickle", "w")
+        f = open("explorer.pickle", "wb")
         d = self.__dict__.copy()
         del d['states']
         del d['previous_state']
@@ -449,6 +451,10 @@ class ServerMinModeExplorer(MinModeExplorer):
             id = int(result['name'].split("_")[1]) + result['number']
             searchdata_id = "%d_%d" % (state_num, id)
 
+            if id not in self.wuid_to_search_id:
+                logger.warning("No search id for result %s; skipping",
+                               searchdata_id)
+                continue
             search_id = self.wuid_to_search_id[id]
             if search_id not in self.process_searches:
                 continue
@@ -528,8 +534,10 @@ class ServerMinModeExplorer(MinModeExplorer):
             if not job:
                 displacement, mode, disp_type = self.generate_displacement()
                 reactant = self.state.get_reactant()
-                process_search = ProcessSearch(reactant, displacement, mode,
-                                               disp_type, self.search_id, self.state.number)
+                process_search = ProcessSearch(
+                    reactant, displacement, mode, disp_type, self.search_id,
+                    self.state.number, config=self.config,
+                )
                 self.process_searches[self.search_id] = process_search
                 self.wuid_to_search_id[self.wuid] = self.search_id
                 job, job_type = process_search.get_job(self.state.number)
@@ -561,7 +569,11 @@ class ServerMinModeExplorer(MinModeExplorer):
 
 
 class ProcessSearch:
-    def __init__ (self, reactant, displacement, mode, disp_type, search_id, state_number):
+    def __init__(self, reactant, displacement, mode, disp_type, search_id,
+                 state_number, config: ConfigClass = None):
+        if config is None:
+            raise TypeError("ProcessSearch requires a ConfigClass instance")
+        self.config = config
         self.reactant = reactant
         self.displacement = displacement
         self.mode = mode
@@ -810,7 +822,7 @@ class ProcessSearch:
         job['displacement.con'] = dispIO
 
         modeIO = io.StringIO()
-        io.save_mode(modeIO, self.mode)
+        io.save_mode(modeIO, self.mode, getattr(self.reactant, "free", None))
         job['direction.dat'] = modeIO
 
         reactIO = io.StringIO()

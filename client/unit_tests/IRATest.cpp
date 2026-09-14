@@ -13,10 +13,10 @@
 /// Integration tests for the IRA structure comparison library.
 /// Requires -Dwith_ira=true and a working libira.
 
-#include "IRACompare.h"
-#include "Matter.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/IRACompare.h"
+#include "eon/Matter.h"
 
 namespace tests {
 

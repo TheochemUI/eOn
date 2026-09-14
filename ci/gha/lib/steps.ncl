@@ -4,14 +4,23 @@ let P = import "pins.ncl" in
 {
   pins = P,
 
-  checkout_minimal = { uses = P.checkout },
+  checkout_minimal = {
+    uses = P.checkout,
+    with = { "persist-credentials" = false },
+  },
 
   checkout_full = {
     uses = P.checkout,
-    with = { "fetch-depth" = 0 },
+    with = {
+      "fetch-depth" = 0,
+      "persist-credentials" = false,
+    },
   },
 
-  checkout_default = { uses = P.checkout },
+  checkout_default = {
+    uses = P.checkout,
+    with = { "persist-credentials" = false },
+  },
 
   setup_python = fun ver =>
     {
@@ -28,6 +37,14 @@ let P = import "pins.ncl" in
     with = {
       "python-version" = P.python_version,
       cache = "pip",
+    },
+  },
+
+  # No pip cache: publishing jobs (zizmor cache-poisoning).
+  setup_python_nocache = {
+    uses = P.setup_python,
+    with = {
+      "python-version" = P.python_version,
     },
   },
 

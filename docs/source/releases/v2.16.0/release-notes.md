@@ -11,7 +11,7 @@ myst:
 
 See the [CHANGELOG](project:../changelog.md) for the fragment-by-fragment list
 after `cog bump` consumes `docs/newsfragments/`; this page consolidates
-**user-facing and maintainer** highlights from commits since `v2.15.0`, so the
+**user-facing and maintainer** changes from commits since `v2.15.0`, so the
 cut has one place to link from the GitHub Release and feedstock PR.
 
 ### Potentials
@@ -21,12 +21,12 @@ cut has one place to link from the GitHub Release and feedstock PR.
 Potential type **`RGPOT`** (build with `-Dwith_rgpot=true`) runs
 [rgpot](https://github.com/OmniPotentRPC/rgpot)'s `NWChemPot` / `CPMDPot`
 frontends inside `eonclient` and `dlopen`s the `libnwchemc` / `libcpmdc`
-engine libraries — no sockets, no potserv. Configuration lives in the
+engine libraries -- no sockets, no potserv. Configuration lives in the
 `[RgpotPot]` INI section and the matching Python `RgpotPot` schema model
 (backend, basis/theory/scf_type for NWChem, functional/cutoff_ry for CPMD,
 charge, multiplicity, engine paths, input_block). Engine-path environment
-overrides are backend-scoped (`NWCHEMC_LIBRARY` vs `CPMDC_LIBRARY`). Ships
-with a CPMD BLYP example (`examples/rgpot_cpmd_blyp/`), nwchemc + cpmdc smoke
+overrides are backend-scoped (`NWCHEMC_LIBRARY` vs `CPMDC_LIBRARY`). Includes
+a CPMD BLYP example (`examples/rgpot_cpmd_blyp/`), nwchemc + cpmdc smoke
 tests, a dedicated CI job, and user-guide pages
 ({doc}`/user_guide/rgpot_pot`, {doc}`/user_guide/rgpot_integration`).
 

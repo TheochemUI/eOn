@@ -10,7 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "EffectiveMediumTheory.h"
+#include "eon/potentials/EMT/EffectiveMediumTheory.h"
 
 #include <cstring>
 #include <vector>

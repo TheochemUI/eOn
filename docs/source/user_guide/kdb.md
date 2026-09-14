@@ -5,13 +5,12 @@ myst:
     "keywords": "eOn Kinetic Database, KDB, aKMC acceleration, process recycling, tsase"
 ---
 
-# Kinetic Database
+# Kinetic database
 
 One of the bottlenecks in an aKMC simulation is performing the saddle point
-searches. The kinetic database has been demonstrated by
-{cite:t}`kdb-terrellDatabaseAtomisticReaction2012` to ameliorate this cost by
-storing information about processes as they are found and using it to predict
-future saddle points.
+searches. The kinetic database of
+{cite:t}`kdb-terrellDatabaseAtomisticReaction2012` stores information about
+processes as they are found and uses it to predict future saddle points.
 
 In the following figure, the hydrogen of a carboxyl group on an Au(111) surface
 transfers to the other oxygen (a). In this process, the hydrogen is determined

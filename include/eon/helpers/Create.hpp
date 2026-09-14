@@ -1,0 +1,38 @@
+/*
+** This file is part of eOn.
+**
+** SPDX-License-Identifier: BSD-3-Clause
+**
+** Copyright (c) 2010--present, eOn Development Team
+** All rights reserved.
+**
+** Repo:
+** https://github.com/TheochemUI/eOn
+*/
+#pragma once
+#include "eon/SurrogatePotential.h"
+
+#ifdef WITH_CATLEARN
+#include "eon/potentials/CatLearnPot/CatLearnPot.h"
+#endif
+
+namespace helpers::create {
+template <typename... Args>
+std::shared_ptr<SurrogatePotential>
+makeSurrogatePotential(PotType a_ptype, const Parameters &a_params,
+                       Args &&...a_args) {
+  switch (a_ptype) {
+    // TODO: Every potential must know their own type
+#ifdef WITH_CATLEARN
+  case PotType::CatLearn: {
+    return (std::make_shared<CatLearnPot>(a_params));
+    break;
+  }
+#endif
+  default:
+    throw std::runtime_error(
+        "No known surrogate potential could be constructed");
+    break;
+  }
+}
+} // namespace helpers::create

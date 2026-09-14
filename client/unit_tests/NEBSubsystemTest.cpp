@@ -13,14 +13,14 @@
 /// Unit tests for NEB subsystem components: tangent, force projection,
 /// spring forces, and spline extrema finding.
 
-#include "Eigen.h"
-#include "HelperFunctions.h"
-#include "NEBForceProjection.h"
-#include "NEBSplineExtrema.h"
-#include "NEBSpringForce.h"
-#include "NEBTangent.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/Eigen.h"
+#include "eon/HelperFunctions.h"
+#include "eon/NEBForceProjection.h"
+#include "eon/NEBSplineExtrema.h"
+#include "eon/NEBSpringForce.h"
+#include "eon/NEBTangent.h"
 
 #include <cmath>
 #include <memory>
@@ -357,7 +357,7 @@ TEST_CASE("WeightedSpring: energy-weighted spring force", "[neb]") {
 
 // Minimal mock Matter that provides getPotentialEnergy, getPositions,
 // getForces, distanceTo, and pbc -- enough for findSplineExtrema.
-#include "Matter.h"
+#include "eon/Matter.h"
 
 namespace {
 

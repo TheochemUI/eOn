@@ -9,13 +9,13 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "Optimizer.h"
-#include "BaseStructures.h"
-#include "ConjugateGradients.h"
-#include "FIRE.h"
-#include "LBFGS.h"
-#include "Quickmin.h"
-#include "SteepestDescent.h"
+#include "eon/Optimizer.h"
+#include "eon/BaseStructures.h"
+#include "eon/ConjugateGradients.h"
+#include "eon/FIRE.h"
+#include "eon/LBFGS.h"
+#include "eon/Quickmin.h"
+#include "eon/SteepestDescent.h"
 
 namespace eonc::helpers::create {
 std::unique_ptr<Optimizer> mkOptim(std::shared_ptr<ObjectiveFunction> a_objf,

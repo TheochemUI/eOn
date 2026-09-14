@@ -1,11 +1,11 @@
 /*
 ** Hessian + Prefactor — first-class vibrational analysis surface.
 */
-#include "Hessian.h"
-#include "Matter.h"
-#include "Parameters.h"
-#include "Prefactor.h"
 #include "eigen_numpy.hpp"
+#include "eon/Hessian.h"
+#include "eon/Matter.h"
+#include "eon/Parameters.h"
+#include "eon/Prefactor.h"
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/optional.h>
@@ -26,7 +26,8 @@ void bind_analysis(nb::module_ &m) {
   using eonc::Parameters;
 
   nb::class_<Hessian>(m, "Hessian",
-                      "Finite-difference Hessian / frequencies on free atoms")
+                      "Finite-difference Hessian / frequencies on a PHVA "
+                      "mobile atom set (pass indices; free/fixed is separate)")
       .def(
           "__init__",
           [](Hessian *self, const Parameters &params, Matter &matter) {

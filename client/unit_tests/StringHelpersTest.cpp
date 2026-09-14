@@ -10,7 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "../StringHelpers.hpp"
+#include "eon/StringHelpers.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include <string>
 #include <vector>

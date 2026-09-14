@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.2.3] — 2026-07-24
+
+### Added
+
+- ``eon_schema.jobs``: Cap'n Proto ``JobRequest`` / ``JobResult`` / ``Geometry``
+  schema path helper (vendored from monorepo ``schema/eon_job_result.capnp``)
+  and ``results.dat`` parse/serialize adapters for the kill-file-IPC control plane.
+
 ## [0.2.2] — 2026-07-17
 
 ### Changed

@@ -10,9 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 
-#include "GPRPotential.h"
-#include "../../subprojects/gprdimer/gpr/auxiliary/AdditionalFunctionality.h"
-#include "../../subprojects/gprdimer/structures/Structures.h"
+#include "eon/potentials/GPRPotential/GPRPotential.h"
+#include "subprojects/gprdimer/gpr/auxiliary/AdditionalFunctionality.h"
+#include "subprojects/gprdimer/structures/Structures.h"
 
 namespace {
 

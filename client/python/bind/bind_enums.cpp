@@ -1,6 +1,6 @@
-#include "BaseStructures.h"
-#include "ConFileIO.h"
-#include "Matter.h"
+#include "eon/BaseStructures.h"
+#include "eon/ConFileIO.h"
+#include "eon/Matter.h"
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>
@@ -19,8 +19,7 @@ void bind_enums(nb::module_ &m) {
       .value("WriteError", eonc::io::IoStatus::WriteError)
       .value("AppendError", eonc::io::IoStatus::AppendError)
       .value("OpenError", eonc::io::IoStatus::OpenError)
-      .value("InvalidArgument", eonc::io::IoStatus::InvalidArgument)
-      .export_values();
+      .value("InvalidArgument", eonc::io::IoStatus::InvalidArgument);
 
   m.def(
       "io_ok", [](eonc::io::IoStatus s) { return eonc::io::io_ok(s); },
@@ -34,8 +33,7 @@ void bind_enums(nb::module_ &m) {
 
   nb::enum_<eonc::PbcConvention>(m, "PbcConvention")
       .value("Legacy", eonc::PbcConvention::Legacy)
-      .value("MinimumImage", eonc::PbcConvention::MinimumImage)
-      .export_values();
+      .value("MinimumImage", eonc::PbcConvention::MinimumImage);
 
   // Full PotType surface (matches config names / magic_enum)
   nb::enum_<eonc::PotType>(m, "PotType")
@@ -45,9 +43,7 @@ void bind_enums(nb::module_ &m) {
       .value("LJ", eonc::PotType::LJ)
       .value("LJCLUSTER", eonc::PotType::LJCLUSTER)
       .value("MORSE_PT", eonc::PotType::MORSE_PT)
-      .value("NEW", eonc::PotType::NEW)
       .value("CUH2", eonc::PotType::CUH2)
-      .value("IMD", eonc::PotType::IMD)
       .value("TIP4P", eonc::PotType::TIP4P)
       .value("TIP4P_PT", eonc::PotType::TIP4P_PT)
       .value("TIP4P_H", eonc::PotType::TIP4P_H)
@@ -61,12 +57,9 @@ void bind_enums(nb::module_ &m) {
       .value("VASP", eonc::PotType::VASP)
       .value("LAMMPS", eonc::PotType::LAMMPS)
       .value("MPI", eonc::PotType::MPI)
-      .value("PYAMFF", eonc::PotType::PYAMFF)
-      .value("QSC", eonc::PotType::QSC)
       .value("AMS", eonc::PotType::AMS)
       .value("AMS_IO", eonc::PotType::AMS_IO)
       .value("GPR", eonc::PotType::GPR)
-      .value("PYTHON", eonc::PotType::PYTHON)
       .value("CatLearn", eonc::PotType::CatLearn)
       .value("XTB", eonc::PotType::XTB)
       .value("ASE_ORCA", eonc::PotType::ASE_ORCA)
@@ -76,7 +69,10 @@ void bind_enums(nb::module_ &m) {
       .value("ZBL", eonc::PotType::ZBL)
       .value("SocketNWChem", eonc::PotType::SocketNWChem)
       .value("RGPOT", eonc::PotType::RGPOT)
-      .export_values();
+      .value("DFTD3", eonc::PotType::DFTD3)
+      .value("DFTD4", eonc::PotType::DFTD4)
+      .value("EXPR", eonc::PotType::EXPR)
+      .value("MOPAC", eonc::PotType::MOPAC);
 
   m.def(
       "pot_type_from_name",
@@ -113,8 +109,7 @@ void bind_enums(nb::module_ &m) {
       .value("Structure_Comparison", eonc::JobType::Structure_Comparison)
       .value("Monte_Carlo", eonc::JobType::Monte_Carlo)
       .value("Test", eonc::JobType::Test)
-      .value("GP_Surrogate", eonc::JobType::GP_Surrogate)
-      .export_values();
+      .value("GP_Surrogate", eonc::JobType::GP_Surrogate);
 
   m.def(
       "job_type_from_name",
@@ -138,8 +133,7 @@ void bind_enums(nb::module_ &m) {
       .value("CG", eonc::OptType::CG)
       .value("LBFGS", eonc::OptType::LBFGS)
       .value("FIRE", eonc::OptType::FIRE)
-      .value("SD", eonc::OptType::SD)
-      .export_values();
+      .value("SD", eonc::OptType::SD);
 
   nb::enum_<eonc::NEBInit>(m, "NEBInit")
       .value("LINEAR", eonc::NEBInit::LINEAR)
@@ -147,14 +141,12 @@ void bind_enums(nb::module_ &m) {
       .value("IDPP_COLLECTIVE", eonc::NEBInit::IDPP_COLLECTIVE)
       .value("SIDPP", eonc::NEBInit::SIDPP)
       .value("SIDPP_ZBL", eonc::NEBInit::SIDPP_ZBL)
-      .value("FILE", eonc::NEBInit::FILE)
-      .export_values();
+      .value("FILE", eonc::NEBInit::FILE);
 
   nb::enum_<eonc::RunStatus>(m, "RunStatus")
       .value("GOOD", eonc::RunStatus::GOOD)
       .value("FAIL_MAX_ITERATIONS", eonc::RunStatus::FAIL_MAX_ITERATIONS)
-      .value("FAIL_POTENTIAL_FAILED", eonc::RunStatus::FAIL_POTENTIAL_FAILED)
-      .export_values();
+      .value("FAIL_POTENTIAL_FAILED", eonc::RunStatus::FAIL_POTENTIAL_FAILED);
 }
 
 } // namespace eonc::pybind

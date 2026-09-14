@@ -11,8 +11,8 @@ myst:
 ```
 
 ```{versionchanged} 2.12
-QUIP works through LAMMPS's `pair_style quip`, and LAMMPS is now loaded
-at runtime via `dlopen`. No eOn rebuild is needed -- just install a
+QUIP works through LAMMPS's `pair_style quip`, and LAMMPS is loaded
+at runtime via `dlopen`. No eOn rebuild is needed: install a
 LAMMPS library built with the QUIP package.
 ```
 
@@ -23,14 +23,14 @@ In order, we require:
   + Without MPI
   + Linked to the same QUIP
 
-The rest of the document walks through a concrete example of this use-case.
+The rest of the document walks through an example of this use-case.
 
 ## Sample run
 
 This needs to be in conjunction with the LAMMPS [pair style
 quip](https://docs.lammps.org/pair_quip.html).
 
-## Example Build
+## Example build
 
 ## Base environment
 
@@ -81,8 +81,7 @@ make -j$(nproc)
 make install
 ```
 
-Assuming the same environment is not being used, it makes sense to track the
-variables for the outputs as well.
+If a different environment is in use, track the output paths as well.
 
 ```{code-block} bash
 cd build
@@ -91,14 +90,14 @@ export LMP_BLD_DIR=$(pwd)
 
 ## eOn
 
-Assuming we are starting from scratch..
+From a clean tree:
 
 ```{code-block} bash
 gh repo clone theochemui/eon
 cd eOn
 meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype=release
 meson install -C bbdir
-# LAMMPS is loaded at runtime -- just ensure liblammps.so is on LD_LIBRARY_PATH
+# LAMMPS is loaded at runtime -- liblammps.so must be on LD_LIBRARY_PATH
 ```
 
 At this point both `eonclient` examples and `eon` (e.g. AKMC) examples will run.

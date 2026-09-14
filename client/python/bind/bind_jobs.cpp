@@ -9,10 +9,10 @@
 **   5. write_potcall_summary()
 **   6. append_results_timing(...)
 */
-#include "HelperFunctions.h"
-#include "Job.h"
-#include "Parameters.h"
-#include "PotRegistry.h"
+#include "eon/HelperFunctions.h"
+#include "eon/Job.h"
+#include "eon/Parameters.h"
+#include "eon/PotRegistry.h"
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/shared_ptr.h>
@@ -21,6 +21,7 @@
 #include <nanobind/stl/vector.h>
 
 #include <chrono>
+#include <format>
 #include <fstream>
 #include <memory>
 #include <stdexcept>
@@ -90,15 +91,17 @@ void bind_jobs(nb::module_ &m) {
         if (!out.is_open())
           throw std::runtime_error("append_results_timing: cannot open " +
                                    path);
-        out << "time_seconds " << elapsed_seconds << "\n";
+        // results.dat contract: "<value> <key>" (parse_results /
+        // eon_schema.jobs)
+        out << std::format("{:.12e} time_seconds\n", elapsed_seconds);
 #ifndef _WIN32
-        out << "user_time " << user_time << "\n";
-        out << "system_time " << system_time << "\n";
+        out << std::format("{:.12e} user_time\n", user_time);
+        out << std::format("{:.12e} system_time\n", system_time);
 #endif
       },
       nb::arg("path") = "results.dat", nb::arg("elapsed_seconds"),
       nb::arg("user_time") = 0.0, nb::arg("system_time") = 0.0,
-      "Append ClientEON timing footer to results.dat.");
+      "Append ClientEON timing footer to results.dat (value-key lines).");
 
   m.def(
       "steady_clock_now",

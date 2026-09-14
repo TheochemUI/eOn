@@ -9,21 +9,28 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "ConFileIO.h"
-#include "Eigen.h"
-#include "EonLogger.h"
-#include "HelperFunctions.h"
-#include "Matter.h"
-#include "SafeMath.h"
+#include "eon/ConFileIO.h"
+#include "eon/Eigen.h"
+#include "eon/EonLogger.h"
+#include "eon/HelperFunctions.h"
+#include "eon/Matter.h"
+#include "eon/SafeMath.h"
 
+#include <algorithm>
 #include <atomic>
 #include <cmath>
+#include <cstdint>
 #include <cstring>
 #include <filesystem>
 #include <format>
 #include <fstream>
+#include <mutex>
+#include <numeric>
+#include <optional>
 #include <stdexcept>
 #include <string>
+#include <system_error>
+#include <unordered_map>
 #include <vector>
 
 namespace {
@@ -125,6 +132,239 @@ eonc::io::IoStatus write_frames(const fs::path &path,
   }
 }
 
+/// Permutation taking .con file order to Matter order.
+///
+/// A .con file groups atoms by species, because header lines 7 and 8 are a
+/// type count and per-type counts. A configuration whose species interleave
+/// therefore lands in the file in a different order than the one its
+/// index-coupled sidecars (mode.dat, direction.dat, the Hessian) are written
+/// in. Column 5 is the atom id, which survives the grouping untouched, and
+/// ascending ids put the atoms back.
+///
+/// Ids that repeat carry no permutation to invert, so file order stands.
+std::vector<size_t> matter_order(const std::vector<readcon::Atom> &atoms) {
+  const size_t n = atoms.size();
+  std::vector<size_t> order(n);
+  std::iota(order.begin(), order.end(), size_t{0});
+  if (n < 2) {
+    return order;
+  }
+  const bool ascending =
+      std::is_sorted(atoms.begin(), atoms.end(),
+                     [](const readcon::Atom &a, const readcon::Atom &b) {
+                       return a.atom_id < b.atom_id;
+                     }) &&
+      std::adjacent_find(atoms.begin(), atoms.end(),
+                         [](const readcon::Atom &a, const readcon::Atom &b) {
+                           return a.atom_id == b.atom_id;
+                         }) == atoms.end();
+  if (ascending) {
+    return order;
+  }
+  std::vector<uint64_t> ids;
+  ids.reserve(n);
+  for (const auto &atom : atoms) {
+    ids.push_back(atom.atom_id);
+  }
+  std::vector<uint64_t> sorted(ids);
+  std::sort(sorted.begin(), sorted.end());
+  if (std::adjacent_find(sorted.begin(), sorted.end()) != sorted.end()) {
+    return order;
+  }
+  std::stable_sort(order.begin(), order.end(),
+                   [&ids](size_t a, size_t b) { return ids[a] < ids[b]; });
+  return order;
+}
+
+/// On-disk fingerprint of a .con this process wrote. A streaming append
+/// trusts its own tail only while both fields still match, so a file
+/// replaced behind our back is re-parsed before anything is added to it.
+struct FileStamp {
+  std::uintmax_t size{0};
+  fs::file_time_type mtime{};
+  friend bool operator==(const FileStamp &, const FileStamp &) = default;
+};
+
+std::optional<FileStamp> stamp_file(const fs::path &path) {
+  std::error_code ec;
+  const auto size = fs::file_size(path, ec);
+  if (ec) {
+    return std::nullopt;
+  }
+  const auto mtime = fs::last_write_time(path, ec);
+  if (ec) {
+    return std::nullopt;
+  }
+  return FileStamp{size, mtime};
+}
+
+/// Absolute, symlink-resolved key so "movie.con" and "./movie.con" from the
+/// same working directory share one entry, and the same relative name under a
+/// different working directory does not.
+std::string append_key(const fs::path &path) {
+  std::error_code ec;
+  auto resolved = fs::weakly_canonical(path, ec);
+  if (ec || resolved.empty()) {
+    resolved = fs::absolute(path, ec);
+    if (ec) {
+      return path.lexically_normal().string();
+    }
+  }
+  return resolved.lexically_normal().string();
+}
+
+/// Guards both the stamp table and the append critical section: two threads
+/// concatenating onto one .con would interleave frame bodies.
+std::mutex &append_mutex() {
+  static std::mutex m;
+  return m;
+}
+
+std::unordered_map<std::string, FileStamp> &append_stamps() {
+  static std::unordered_map<std::string, FileStamp> stamps;
+  return stamps;
+}
+
+/// Call under append_mutex(), after the writer closed the file.
+void remember_stamp(const std::string &key, const fs::path &path) {
+  if (auto stamp = stamp_file(path)) {
+    append_stamps()[key] = *stamp;
+  } else {
+    append_stamps().erase(key);
+  }
+}
+
+/// Call under append_mutex(). True when the file still matches the state this
+/// process left behind, so its frames need no re-parse.
+bool tail_is_ours(const std::string &key, const fs::path &path) {
+  const auto it = append_stamps().find(key);
+  if (it == append_stamps().end()) {
+    return false;
+  }
+  const auto stamp = stamp_file(path);
+  return stamp.has_value() && *stamp == it->second;
+}
+
+/// Atom count of the last complete XYZ frame, or nullopt if the file
+/// cannot be walked as XYZ. An empty file has no last frame.
+std::optional<long> last_xyz_natoms(const fs::path &path) {
+  std::ifstream in(path);
+  if (!in) {
+    return std::nullopt;
+  }
+  std::optional<long> last;
+  std::string line;
+  while (std::getline(in, line)) {
+    if (line.empty()) {
+      continue;
+    }
+    long n = 0;
+    try {
+      n = std::stol(line);
+    } catch (const std::exception &) {
+      return std::nullopt;
+    }
+    if (n < 0) {
+      return std::nullopt;
+    }
+    if (!std::getline(in, line)) {
+      return std::nullopt;
+    }
+    for (long i = 0; i < n; ++i) {
+      if (!std::getline(in, line)) {
+        return std::nullopt;
+      }
+    }
+    last = n;
+  }
+  return last;
+}
+
+/// True for an empty file too: nothing needs separating from the first frame.
+bool ends_with_newline(const fs::path &path) {
+  std::ifstream in(path, std::ios::binary | std::ios::ate);
+  if (!in) {
+    return true;
+  }
+  const auto len = static_cast<std::streamoff>(in.tellg());
+  if (len <= 0) {
+    return true;
+  }
+  in.seekg(len - 1);
+  char last = '\n';
+  if (!in.get(last)) {
+    return true;
+  }
+  return last == '\n';
+}
+
+/// Concatenate frames onto an existing uncompressed .con.
+///
+/// ConFrameWriter emits self-contained frames with no file-level preamble and
+/// no cross-frame state in the output, so bytes serialized one frame at a time
+/// equal the bytes of a whole-file rewrite. Serialization goes through a
+/// scratch file next to the target because readcon-core exposes no
+/// writer over a caller-owned stream and no flush on an open writer; the
+/// target itself is opened in append mode and flushed before returning, which
+/// keeps the file complete and parseable after every call.
+eonc::io::IoStatus append_frames(const fs::path &path,
+                                 const std::vector<readcon::ConFrame> &frames,
+                                 uint8_t precision) {
+  static std::atomic<uint64_t> scratch_counter{0};
+  const auto scratch =
+      path.parent_path() /
+      std::format(".{}.eon-append-{}.tmp", path.filename().string(),
+                  scratch_counter.fetch_add(1, std::memory_order_relaxed));
+
+  std::string bytes;
+  try {
+    {
+      readcon::ConFrameWriter writer(
+          scratch, readcon::ConFrameWriter::Compression::None, precision);
+      writer.extend(frames);
+    }
+    std::ifstream in(scratch, std::ios::binary | std::ios::ate);
+    if (!in) {
+      throw std::runtime_error("serialized frame not readable back");
+    }
+    const auto len = static_cast<std::streamoff>(in.tellg());
+    if (len <= 0) {
+      throw std::runtime_error("serialized frame is empty");
+    }
+    bytes.resize(static_cast<size_t>(len));
+    in.seekg(0);
+    if (!in.read(bytes.data(), static_cast<std::streamsize>(len))) {
+      throw std::runtime_error("short read of serialized frame");
+    }
+  } catch (const std::exception &e) {
+    std::error_code ec;
+    fs::remove(scratch, ec);
+    EONC_LOG_ERROR("Failed to serialize frame for {}: {}", path.string(),
+                   e.what());
+    return eonc::io::IoStatus::WriteError;
+  }
+  std::error_code ec;
+  fs::remove(scratch, ec);
+
+  std::ofstream out(path, std::ios::binary | std::ios::app);
+  if (!out) {
+    EONC_LOG_ERROR("Failed to open {} for append", path.string());
+    return eonc::io::IoStatus::WriteError;
+  }
+  // A frame header must start its own line. eOn's own frames end in a
+  // newline; a hand-written or foreign tail may not.
+  if (!ends_with_newline(path)) {
+    out.put('\n');
+  }
+  out.write(bytes.data(), static_cast<std::streamsize>(bytes.size()));
+  out.flush();
+  if (!out) {
+    EONC_LOG_ERROR("Failed to append to {}", path.string());
+    return eonc::io::IoStatus::WriteError;
+  }
+  return eonc::io::IoStatus::Ok;
+}
+
 /// Seed a builder with identity fields (symbol/fixed/mass/id) and cell headers.
 /// Geometry filled via positions_data() / set_*_from_flat.
 readcon::ConFrameBuilder seed_builder(Matter &m,
@@ -141,16 +381,31 @@ readcon::ConFrameBuilder seed_builder(Matter &m,
     throw std::invalid_argument("seed_builder: atom_ids size mismatch");
   }
   for (long i = 0; i < n; ++i) {
-    const bool fixed = m.getFixed(i) != 0;
-    builder.add_atom(symbol_for_z(m.getAtomicNr(i)), 0.0, 0.0, 0.0,
-                     std::array<bool, 3>{fixed, fixed, fixed},
+    const auto mask = m.getFixedMask(i);
+    builder.add_atom(symbol_for_z(m.getAtomicNr(i)), 0.0, 0.0, 0.0, mask,
                      atom_ids[static_cast<size_t>(i)], m.getMass(i));
   }
   return builder;
 }
 
+bool should_write_forces(const Matter &m,
+                         const eonc::io::ConFrameMetadata *metadata) {
+  // Per-write metadata wins so two callers can disagree without a race on
+  // the process-wide flag. Parameters next, so pyeonclient setting the
+  // field on the bound Parameters object is enough. The atomic global is
+  // last (INI parse and the explicit setter).
+  if (metadata && metadata->write_con_forces.has_value()) {
+    return *metadata->write_con_forces;
+  }
+  if (m.getWriteConForces()) {
+    return true;
+  }
+  return eonc::io::write_con_forces();
+}
+
 void apply_geometry(readcon::ConFrameBuilder &builder, Matter &m,
-                    bool with_velocities) {
+                    bool with_velocities,
+                    const eonc::io::ConFrameMetadata *metadata) {
   const long n = m.numberOfAtoms();
   if (n <= 0) {
     return;
@@ -164,7 +419,7 @@ void apply_geometry(readcon::ConFrameBuilder &builder, Matter &m,
   // only enter when the pot is already clean so we serialize cached forces.
   // Gated: force sections are opt-in ([Main] write_con_forces) because
   // ASE-class readers reject frames that carry them.
-  if (eonc::io::write_con_forces() && !m.needsForceUpdate()) {
+  if (should_write_forces(m, metadata) && !m.needsForceUpdate()) {
     builder.set_forces_from_flat(flat_row_major(m.getForcesRaw()));
   }
 
@@ -213,7 +468,7 @@ readcon::ConFrame frame_from_matter(Matter &m,
     }
   }
   apply_frame_metadata(builder, meta_ptr);
-  apply_geometry(builder, m, with_velocities);
+  apply_geometry(builder, m, with_velocities, meta_ptr);
   return builder.build();
 }
 
@@ -263,17 +518,24 @@ cell_to_lengths_angles(const Matter &m) {
   lengths[0] = cell.row(0).norm();
   lengths[1] = cell.row(1).norm();
   lengths[2] = cell.row(2).norm();
+  // CON header line 4 is alpha beta gamma:
+  // alpha = angle(b,c), beta = angle(a,c), gamma = angle(a,b).
   std::array<double, 3> angles;
   angles[0] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
-                  cell.row(0).dot(cell.row(1)), lengths[0] * lengths[1])) *
+                  cell.row(1).dot(cell.row(2)), lengths[1] * lengths[2])) *
               180.0 / eonc::helpers::pi;
   angles[1] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
                   cell.row(0).dot(cell.row(2)), lengths[0] * lengths[2])) *
               180.0 / eonc::helpers::pi;
   angles[2] = eonc::safemath::safe_acos(eonc::safemath::safe_div(
-                  cell.row(1).dot(cell.row(2)), lengths[1] * lengths[2])) *
+                  cell.row(0).dot(cell.row(1)), lengths[0] * lengths[1])) *
               180.0 / eonc::helpers::pi;
   return {lengths, angles};
+}
+
+void resetConAppendState() {
+  const std::lock_guard<std::mutex> guard(append_mutex());
+  append_stamps().clear();
 }
 
 IoStatus matter2con(Matter &m, std::string filename, bool append,
@@ -282,16 +544,41 @@ IoStatus matter2con(Matter &m, std::string filename, bool append,
 
   m.applyPeriodicBoundaryIfEnabled();
 
-  // ConFrame is move-only (no default ctor).
-  // Append rewrites the full multi-frame file (read_all + write_frames) so
-  // compression-aware writers need no seek-append. Cost is O(N) frames per
-  // append (O(N^2) for long MD movies); NEB bands use writeNebPath instead.
+  const fs::path path(filename);
+  const auto compression =
+      readcon::ConFrameWriter::compression_from_extension(path);
+  const bool streamable =
+      compression == readcon::ConFrameWriter::Compression::None;
+
+  // The lock covers the stamp table and the read-then-extend window on one
+  // path. Nothing under it evaluates a potential: frame_from_matter reads
+  // cached energy and forces only while the pot is clean.
+  const std::lock_guard<std::mutex> guard(append_mutex());
+  const auto key = append_key(path);
+  const bool exists = fs::exists(path);
+  const bool concatenate = append && exists && streamable;
+
+  // ConFrame is move-only (no default ctor), so frames carries the new frame
+  // either way. A gzip or zstd target cannot be concatenated: readcon-core
+  // reads a single gzip member, so appended members would be invisible
+  // on read-back, and the streaming writers cannot be flushed frame by frame.
+  // Those targets keep the whole-file rewrite, which stays O(N) per append.
   std::vector<readcon::ConFrame> frames;
-  if (append && fs::exists(filename)) {
+  if (append && exists && !streamable) {
     try {
       // Prefer read_all_frames (single ownership hand-off) over the iterator
       // path for append rewrite; simpler lifetime for ASAN/CI envs.
-      frames = readcon::read_all_frames(filename);
+      frames = readcon::read_all_frames(path);
+    } catch (const std::exception &e) {
+      EONC_LOG_ERROR("Failed to append to {}: {}", filename, e.what());
+      return IoStatus::AppendError;
+    }
+  } else if (concatenate && !tail_is_ours(key, path)) {
+    // Refuse to extend a file eOn cannot parse, matching the rewrite path:
+    // the target keeps its bytes and the caller sees AppendError. Frames this
+    // process wrote and nobody touched since need no such check.
+    try {
+      [[maybe_unused]] const auto existing = readcon::read_all_frames(path);
     } catch (const std::exception &e) {
       EONC_LOG_ERROR("Failed to append to {}: {}", filename, e.what());
       return IoStatus::AppendError;
@@ -303,7 +590,15 @@ IoStatus matter2con(Matter &m, std::string filename, bool append,
     EONC_LOG_ERROR("Failed to build frame for {}: {}", filename, e.what());
     return IoStatus::InvalidArgument;
   }
-  return write_frames(filename, frames, kConPrecision);
+
+  const auto status = concatenate ? append_frames(path, frames, kConPrecision)
+                                  : write_frames(path, frames, kConPrecision);
+  if (io_ok(status)) {
+    remember_stamp(key, path);
+  } else {
+    append_stamps().erase(key);
+  }
+  return status;
 }
 
 IoStatus con2matter(Matter &m, std::string filename) {
@@ -319,121 +614,138 @@ IoStatus con2matter(Matter &m, std::string filename) {
 
 IoStatus con2matter(Matter &m, const readcon::ConFrame &frame,
                     ConFrameMetadata *out_metadata) {
-  const auto &atoms = frame.atoms();
-  const auto &lengths = frame.cell();
-  const auto &angles_deg = frame.angles();
-  const auto &prebox = frame.prebox_header();
-  const auto &postbox = frame.postbox_header();
+  try {
+    const auto &atoms = frame.atoms();
+    const auto &lengths = frame.cell();
+    const auto &angles_deg = frame.angles();
+    const auto &prebox = frame.prebox_header();
+    const auto &postbox = frame.postbox_header();
 
-  m.headerCon[0] = prebox[0] + "\n";
-  m.headerCon[1] = prebox[1] + "\n";
-  m.headerCon[3] = postbox[0] + "\n";
-  m.headerCon[4] = postbox[1] + "\n";
+    m.headerCon[0] = prebox[0] + "\n";
+    m.headerCon[1] = prebox[1] + "\n";
+    m.headerCon[3] = postbox[0] + "\n";
+    m.headerCon[4] = postbox[1] + "\n";
 
-  double angles[3] = {angles_deg[0], angles_deg[1], angles_deg[2]};
-  if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
-    Matrix3d cell = Matrix3d::Zero();
-    cell(0, 0) = lengths[0];
-    cell(1, 1) = lengths[1];
-    cell(2, 2) = lengths[2];
-    m.setCell(cell);
-  } else {
-    angles[0] *= eonc::helpers::pi / 180.0;
-    angles[1] *= eonc::helpers::pi / 180.0;
-    angles[2] *= eonc::helpers::pi / 180.0;
+    double angles[3] = {angles_deg[0], angles_deg[1], angles_deg[2]};
+    if (angles[0] == 90.0 && angles[1] == 90.0 && angles[2] == 90.0) {
+      Matrix3d cell = Matrix3d::Zero();
+      cell(0, 0) = lengths[0];
+      cell(1, 1) = lengths[1];
+      cell(2, 2) = lengths[2];
+      m.setCell(cell);
+    } else {
+      angles[0] *= eonc::helpers::pi / 180.0;
+      angles[1] *= eonc::helpers::pi / 180.0;
+      angles[2] *= eonc::helpers::pi / 180.0;
+      const double alpha = angles[0];
+      const double beta = angles[1];
+      const double gamma = angles[2];
 
-    Matrix3d cell = Matrix3d::Zero();
-    cell(0, 0) = 1.0;
-    cell(1, 0) = cos(angles[0]);
-    cell(1, 1) = sin(angles[0]);
-    cell(2, 0) = cos(angles[1]);
-    cell(2, 1) = (cos(angles[2]) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
-    cell(2, 2) = eonc::safemath::safe_sqrt(1.0 - pow(cell(2, 0), 2) -
-                                           pow(cell(2, 1), 2));
+      Matrix3d cell = Matrix3d::Zero();
+      cell(0, 0) = 1.0;
+      cell(1, 0) = cos(gamma);
+      cell(1, 1) = sin(gamma);
+      cell(2, 0) = cos(beta);
+      cell(2, 1) = (cos(alpha) - cell(1, 0) * cell(2, 0)) / cell(1, 1);
+      cell(2, 2) = eonc::safemath::safe_sqrt(1.0 - pow(cell(2, 0), 2) -
+                                             pow(cell(2, 1), 2));
 
-    cell(0, 0) *= lengths[0];
-    cell(1, 0) *= lengths[1];
-    cell(1, 1) *= lengths[1];
-    cell(2, 0) *= lengths[2];
-    cell(2, 1) *= lengths[2];
-    cell(2, 2) *= lengths[2];
-    m.setCell(cell);
-  }
-  m.headerCon[2] =
-      std::format("{} {} {}\n", angles_deg[0], angles_deg[1], angles_deg[2]);
-
-  const auto n = static_cast<Eigen::Index>(atoms.size());
-  m.resize(static_cast<long>(atoms.size()));
-
-  AtomMatrix positions = AtomMatrix::Zero(n, 3);
-  AtomMatrix forces = AtomMatrix::Zero(n, 3);
-  AtomMatrix velocities = AtomMatrix::Zero(n, 3);
-  VectorXd masses = VectorXd::Zero(n);
-  VectorXi atomic_nrs = VectorXi::Zero(n);
-  bool any_force = false;
-  bool any_velocity = false;
-
-  for (Eigen::Index i = 0; i < n; ++i) {
-    const auto &atom = atoms[static_cast<size_t>(i)];
-    positions(i, 0) = atom.x;
-    positions(i, 1) = atom.y;
-    positions(i, 2) = atom.z;
-    masses(i) = atom.mass;
-    atomic_nrs(i) = static_cast<int>(atom.atomic_number);
-    const auto fixed = atom.fixed_mask();
-    m.setFixed(static_cast<long>(i),
-               (fixed[0] || fixed[1] || fixed[2]) ? 1 : 0);
-    m.setAtomIndex(static_cast<long>(i), static_cast<int>(atom.atom_id));
-
-    if (auto vel = atom.velocity()) {
-      any_velocity = true;
-      velocities(i, 0) = (*vel)[0];
-      velocities(i, 1) = (*vel)[1];
-      velocities(i, 2) = (*vel)[2];
+      cell(0, 0) *= lengths[0];
+      cell(1, 0) *= lengths[1];
+      cell(1, 1) *= lengths[1];
+      cell(2, 0) *= lengths[2];
+      cell(2, 1) *= lengths[2];
+      cell(2, 2) *= lengths[2];
+      m.setCell(cell);
     }
-    if (auto force = atom.force()) {
-      any_force = true;
-      forces(i, 0) = (*force)[0];
-      forces(i, 1) = (*force)[1];
-      forces(i, 2) = (*force)[2];
+    m.headerCon[2] =
+        std::format("{} {} {}\n", angles_deg[0], angles_deg[1], angles_deg[2]);
+
+    const auto n = static_cast<Eigen::Index>(atoms.size());
+    m.resize(static_cast<long>(atoms.size()));
+
+    // Undo the species grouping the .con format imposes, so an index into
+    // Matter addresses the same atom as the matching row of mode.dat.
+    const std::vector<size_t> order = matter_order(atoms);
+    std::vector<long> file_to_matter(static_cast<size_t>(n));
+    for (Eigen::Index i = 0; i < n; ++i) {
+      file_to_matter[order[static_cast<size_t>(i)]] = static_cast<long>(i);
     }
+    m.setFileToMatter(std::move(file_to_matter));
+
+    AtomMatrix positions = AtomMatrix::Zero(n, 3);
+    AtomMatrix forces = AtomMatrix::Zero(n, 3);
+    AtomMatrix velocities = AtomMatrix::Zero(n, 3);
+    VectorXd masses = VectorXd::Zero(n);
+    VectorXi atomic_nrs = VectorXi::Zero(n);
+    bool any_force = false;
+    bool any_velocity = false;
+
+    for (Eigen::Index i = 0; i < n; ++i) {
+      const auto &atom = atoms[order[static_cast<size_t>(i)]];
+      positions(i, 0) = atom.x;
+      positions(i, 1) = atom.y;
+      positions(i, 2) = atom.z;
+      masses(i) = atom.mass;
+      atomic_nrs(i) = static_cast<int>(atom.atomic_number);
+      const auto fixed = atom.fixed_mask();
+      m.setFixedMask(static_cast<long>(i), {fixed[0], fixed[1], fixed[2]});
+      m.setAtomIndex(static_cast<long>(i),
+                     static_cast<std::int64_t>(atom.atom_id));
+
+      if (auto vel = atom.velocity()) {
+        any_velocity = true;
+        velocities(i, 0) = (*vel)[0];
+        velocities(i, 1) = (*vel)[1];
+        velocities(i, 2) = (*vel)[2];
+      }
+      if (auto force = atom.force()) {
+        any_force = true;
+        forces(i, 0) = (*force)[0];
+        forces(i, 1) = (*force)[1];
+        forces(i, 2) = (*force)[2];
+      }
+    }
+
+    m.setMasses(masses);
+    m.setAtomicNrs(atomic_nrs);
+    m.setPositions(positions);
+
+    if (any_velocity || frame.has_velocities()) {
+      m.setVelocities(velocities);
+    }
+
+    const auto meta = metadata_from_frame(frame);
+    if (out_metadata != nullptr) {
+      *out_metadata = meta;
+    }
+
+    // Trust file energy+forces only when both are present. Energy-only must not
+    // mark the pot clean with a zero force matrix (optimizer footgun). Prefer
+    // writing raw forces (friend) so fixed-atom components survive RT; then
+    // mark clean without setComputedPotential's net-force adjustment on zeros.
+    const bool has_force_section = any_force || frame.has_forces();
+    if (meta.energy && has_force_section) {
+      m.forces = forces;
+      m.potentialEnergy = *meta.energy;
+      m.energyVariance = 0.0;
+      m.recomputePotential = false;
+      m.recomputeMaskedForces = true;
+    } else if (has_force_section) {
+      m.forces = forces;
+      m.recomputePotential = true;
+      m.recomputeMaskedForces = true;
+    } else {
+      // Classic geometry-only files: always recompute pot (main-era behavior).
+      m.recomputePotential = true;
+    }
+
+    // setPositions already applied PBC when enabled; no second wrap here.
+    return IoStatus::Ok;
+  } catch (const std::exception &e) {
+    EONC_LOG_ERROR("Failed to convert frame to matter: {}", e.what());
+    return IoStatus::ReadError;
   }
-
-  m.setMasses(masses);
-  m.setAtomicNrs(atomic_nrs);
-  m.setPositions(positions);
-
-  if (any_velocity || frame.has_velocities()) {
-    m.setVelocities(velocities);
-  }
-
-  const auto meta = metadata_from_frame(frame);
-  if (out_metadata != nullptr) {
-    *out_metadata = meta;
-  }
-
-  // Trust file energy+forces only when both are present. Energy-only must not
-  // mark the pot clean with a zero force matrix (optimizer footgun). Prefer
-  // writing raw forces (friend) so fixed-atom components survive RT; then mark
-  // clean without setComputedPotential's net-force adjustment on zeros.
-  const bool has_force_section = any_force || frame.has_forces();
-  if (meta.energy && has_force_section) {
-    m.forces = forces;
-    m.potentialEnergy = *meta.energy;
-    m.energyVariance = 0.0;
-    m.recomputePotential = false;
-    m.recomputeMaskedForces = true;
-  } else if (has_force_section) {
-    m.forces = forces;
-    m.recomputePotential = true;
-    m.recomputeMaskedForces = true;
-  } else {
-    // Classic geometry-only files: always recompute pot (main-era behavior).
-    m.recomputePotential = true;
-  }
-
-  // setPositions already applied PBC when enabled; no second wrap here.
-  return IoStatus::Ok;
 }
 
 IoStatus matter2convel(Matter &m, std::string filename) {
@@ -465,6 +777,28 @@ IoStatus convel2matter(Matter &m, std::string filename) {
 
 IoStatus matter2xyz(Matter &m, std::string filename, bool append) {
   filename = ensure_extension(std::move(filename), ".xyz");
+
+  m.applyPeriodicBoundaryIfEnabled();
+  const long n = m.numberOfAtoms();
+
+  if (append && fs::exists(filename)) {
+    std::error_code ec;
+    const auto sz = fs::file_size(filename, ec);
+    if (!ec && sz > 0) {
+      const auto prev = last_xyz_natoms(filename);
+      if (!prev) {
+        EONC_LOG_ERROR("matter2xyz: cannot parse existing {}", filename);
+        return IoStatus::AppendError;
+      }
+      if (*prev != n) {
+        EONC_LOG_ERROR(
+            "matter2xyz: append atom count {} != last frame {} in {}", n, *prev,
+            filename);
+        return IoStatus::InvalidArgument;
+      }
+    }
+  }
+
   std::ofstream out;
   out.open(filename,
            append ? (std::ios::out | std::ios::app | std::ios::binary)
@@ -474,36 +808,69 @@ IoStatus matter2xyz(Matter &m, std::string filename, bool append) {
     return IoStatus::OpenError;
   }
 
-  m.applyPeriodicBoundaryIfEnabled();
-
-  out << std::format("{}\nGenerated by eOn\n", m.numberOfAtoms());
+  const Matrix3d cell = m.getCell();
+  out << std::format(
+      "{}\nLattice=\"{:.17g} {:.17g} {:.17g} {:.17g} {:.17g} {:.17g} "
+      "{:.17g} {:.17g} {:.17g}\" Properties=species:S:1:pos:R:3 Generated "
+      "by eOn\n",
+      n, cell(0, 0), cell(0, 1), cell(0, 2), cell(1, 0), cell(1, 1), cell(1, 2),
+      cell(2, 0), cell(2, 1), cell(2, 2));
   const AtomMatrix pos = m.getPositions();
-  for (long i = 0; i < m.numberOfAtoms(); ++i) {
-    out << std::format("{}\t{:11.6f}\t{:11.6f}\t{:11.6f}\n",
+  for (long i = 0; i < n; ++i) {
+    out << std::format("{}\t{:.17g}\t{:.17g}\t{:.17g}\n",
                        symbol_for_z(m.getAtomicNr(i)), pos(i, 0), pos(i, 1),
                        pos(i, 2));
   }
-  return out ? IoStatus::Ok : IoStatus::WriteError;
+  // Close before testing: the destructor's flush is where a full disk or a
+  // short write surfaces, and by then the state is gone.
+  out.close();
+  if (!out) {
+    EONC_LOG_ERROR("matter2xyz: failed to write {}", filename);
+    return IoStatus::WriteError;
+  }
+  return IoStatus::Ok;
 }
 
 IoStatus writeTibble(Matter &m, std::string fname) {
-  const AtomMatrix fSys = m.getForces();
-  const double eSys = m.getPotentialEnergy();
+  // Debug table, not a structure format. getForces()/getPotentialEnergy()
+  // run computePotential() on a dirty pot, which would charge a dump to
+  // the force-call count in results.dat. Cached values only; the header
+  // drops the columns it cannot fill. atmID is the CON column-5 id.
+  const bool have_forces = !m.needsForceUpdate();
+  if (!have_forces) {
+    EONC_LOG_WARNING(
+        "writeTibble: pot is dirty, {} omits the force and energy columns",
+        fname);
+  }
   const AtomMatrix pos = m.getPositions();
   std::ofstream out(fname);
   if (!out) {
     EONC_LOG_ERROR("writeTibble: cannot open {}", fname);
     return IoStatus::OpenError;
   }
-  out << "x y z fx fy fz energy mass symbol atmID fixed\n";
+  out << (have_forces ? "x y z fx fy fz energy mass symbol atmID fixed\n"
+                      : "x y z mass symbol atmID fixed\n");
+  const AtomMatrix fSys = have_forces ? m.getForces() : AtomMatrix();
+  const double eSys = have_forces ? m.getPotentialEnergy() : 0.0;
   for (long idx = 0; idx < m.numberOfAtoms(); ++idx) {
-    out << std::format("{} {} {} {} {} {} {} {} {} {} {}\n", pos(idx, 0),
-                       pos(idx, 1), pos(idx, 2), fSys(idx, 0), fSys(idx, 1),
-                       fSys(idx, 2), eSys, m.getMass(idx),
-                       symbol_for_z(m.getAtomicNr(idx)), (idx + 1),
-                       m.getFixed(idx));
+    out << std::format("{} {} {}", pos(idx, 0), pos(idx, 1), pos(idx, 2));
+    if (have_forces) {
+      out << std::format(" {} {} {} {}", fSys(idx, 0), fSys(idx, 1),
+                         fSys(idx, 2), eSys);
+    }
+    const auto mask = m.getFixedMask(idx);
+    const int fixed_bits =
+        (mask[0] ? 1 : 0) | (mask[1] ? 2 : 0) | (mask[2] ? 4 : 0);
+    out << std::format(" {} {} {} {}\n", m.getMass(idx),
+                       symbol_for_z(m.getAtomicNr(idx)), m.getAtomIndex(idx),
+                       fixed_bits);
   }
-  return out ? IoStatus::Ok : IoStatus::WriteError;
+  out.close();
+  if (!out) {
+    EONC_LOG_ERROR("writeTibble: failed to write {}", fname);
+    return IoStatus::WriteError;
+  }
+  return IoStatus::Ok;
 }
 
 std::vector<readcon::ConFrame>
@@ -545,7 +912,8 @@ buildNebPathFrames(const std::vector<std::shared_ptr<Matter>> &path,
       }
       auto builder = seed.clone();
       apply_frame_metadata(builder, &metadata_per_image[i]);
-      apply_geometry(builder, img, /*with_velocities=*/false);
+      apply_geometry(builder, img, /*with_velocities=*/false,
+                     &metadata_per_image[i]);
       frames.push_back(builder.build());
     }
   } catch (const std::exception &e) {
@@ -561,7 +929,16 @@ IoStatus writeConFrames(std::string filename,
     return IoStatus::InvalidArgument;
   }
   filename = ensure_extension(std::move(filename), ".con");
-  return write_frames(filename, frames, kConPrecision);
+  const fs::path path(filename);
+  const std::lock_guard<std::mutex> guard(append_mutex());
+  const auto key = append_key(path);
+  const auto status = write_frames(path, frames, kConPrecision);
+  if (io_ok(status)) {
+    remember_stamp(key, path);
+  } else {
+    append_stamps().erase(key);
+  }
+  return status;
 }
 
 IoStatus writeNebPath(std::string filename,

@@ -9,11 +9,14 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "ParametersJSON.h"
-#include "Parameters.h"
-#include "ParametersINI.h"
+#include "eon/ParametersJSON.h"
+#include "eon/HelperFunctions.h"
+#include "eon/Parameters.h"
+#include "eon/ParametersINI.h"
 #include "magic_enum/magic_enum.hpp"
 
+#include <cctype>
+#include <format>
 #include <nlohmann/json.hpp>
 #include <stdexcept>
 
@@ -56,6 +59,7 @@ json to_json(const Parameters &p) {
       {"finite_difference", p.main_options.finiteDifference},
       {"max_force_calls", p.main_options.maxForceCalls},
       {"remove_net_force", p.main_options.removeNetForce},
+      {"write_con_forces", p.main_options.writeConForces},
   };
 
   // [Potential]
@@ -130,6 +134,7 @@ json to_json(const Parameters &p) {
   j["Nudged Elastic Band"]["climbing_image"] = {
       {"enabled", p.neb_options.climbing_image.enabled},
       {"converged_only", p.neb_options.climbing_image.converged_only},
+      {"band_slack", p.neb_options.climbing_image.band_slack},
   };
 
   // [Dimer]
@@ -160,9 +165,25 @@ json to_json(const Parameters &p) {
       {"min_value", p.prefactor_options.min_value},
   };
 
+  // [Lanczos]
+  j["Lanczos"] = {
+      {"tolerance", p.lanczos_options.tolerance},
+      {"max_iterations", p.lanczos_options.max_iterations},
+      {"quit_early", p.lanczos_options.quit_early},
+      {"phva_atoms", p.lanczos_options.phva_atoms},
+  };
+
+  // [Davidson]
+  j["Davidson"] = {
+      {"tolerance", p.davidson_options.tolerance},
+      {"max_iterations", p.davidson_options.max_iterations},
+      {"diagonal_preconditioner", p.davidson_options.diagonal_preconditioner},
+      {"phva_atoms", p.davidson_options.phva_atoms},
+  };
+
   // [Hessian]
   j["Hessian"] = {
-      {"atom_list", p.hessian_options.atom_list},
+      {"phva_atoms", p.hessian_options.phva_atoms},
       {"zero_freq_value", p.hessian_options.zero_freq_value},
       {"fd_scheme", p.hessian_options.fd_scheme},
       {"resume", p.hessian_options.resume},
@@ -204,6 +225,7 @@ void from_json(const json &j, Parameters &p) {
     JSON_OPT(m, "finite_difference", p.main_options.finiteDifference);
     JSON_OPT(m, "max_force_calls", p.main_options.maxForceCalls);
     JSON_OPT(m, "remove_net_force", p.main_options.removeNetForce);
+    JSON_OPT(m, "write_con_forces", p.main_options.writeConForces);
   }
 
   // [Potential]
@@ -245,6 +267,17 @@ void from_json(const json &j, Parameters &p) {
       p.optimizer_options.method =
           enum_from_json(s.at("opt_method"), p.optimizer_options.method);
     JSON_OPT(s, "convergence_metric", p.optimizer_options.convergence_metric);
+    for (char &c : p.optimizer_options.convergence_metric) {
+      c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    }
+    if (auto label = eonc::helpers::convergenceMetricLabel(
+            p.optimizer_options.convergence_metric)) {
+      p.optimizer_options.convergence_metric_label = std::string(*label);
+    } else {
+      throw std::invalid_argument(
+          std::format("unknown convergence_metric: {}",
+                      p.optimizer_options.convergence_metric));
+    }
     JSON_OPT(s, "max_iterations", p.optimizer_options.max_iterations);
     JSON_OPT(s, "max_move", p.optimizer_options.max_move);
     JSON_OPT(s, "converged_force", p.optimizer_options.converged_force);
@@ -300,6 +333,7 @@ void from_json(const json &j, Parameters &p) {
       JSON_OPT(ci, "enabled", p.neb_options.climbing_image.enabled);
       JSON_OPT(ci, "converged_only",
                p.neb_options.climbing_image.converged_only);
+      JSON_OPT(ci, "band_slack", p.neb_options.climbing_image.band_slack);
     }
   }
 
@@ -360,6 +394,8 @@ int load_json(const std::string &json_str, Parameters &params) {
     from_json(j, params);
     return 0;
   } catch (const json::exception &e) {
+    return 1;
+  } catch (const std::invalid_argument &) {
     return 1;
   }
 }

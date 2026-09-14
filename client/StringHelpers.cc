@@ -1,4 +1,4 @@
-#include "StringHelpers.hpp"
+#include "eon/StringHelpers.hpp"
 
 #include <cassert>
 #include <iostream>

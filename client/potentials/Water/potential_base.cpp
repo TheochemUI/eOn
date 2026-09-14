@@ -15,7 +15,7 @@ Basic  tools to write potentials.
 @date 2006-2008
 University of Iceland
 */
-#include "potential_base.hpp"
+#include "eon/potentials/Water/potential_base.hpp"
 #include <cassert>
 #include <cmath>
 #include <cstdlib>

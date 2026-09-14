@@ -1,3 +1,4 @@
+import ast
 import configparser
 import numpy
 import os.path
@@ -201,9 +202,10 @@ class ConfigClass:
                 sys.exit(3)
 
         if int(self.main_random_seed) >= 0:
-            if os.path.isfile(os.path.join(self.path_root, 'prng.pkl')):
-                from eon import fileio as io
-                io.get_prng_state()
+            from eon import fileio as io
+            prng_path = io.prng_state_path(self)
+            if os.path.isfile(prng_path):
+                io.get_prng_state(prng_path)
             else:
                 numpy.random.seed(self.main_random_seed)
         else:
@@ -254,7 +256,7 @@ class ConfigClass:
         self.displace_water_weight = parser.getfloat('Saddle Search', 'displace_water_weight') # undocumented
         self.stdev_translation = parser.getfloat('Saddle Search', 'stdev_translation') # undocumented
         self.stdev_rotation = parser.getfloat('Saddle Search', 'stdev_rotation') # undocumented
-        self.molecule_list = eval(parser.get('Saddle Search', 'molecule_list')) # undocumented
+        self.molecule_list = ast.literal_eval(parser.get('Saddle Search', 'molecule_list')) # undocumented
         self.disp_at_random = parser.getint('Saddle Search', 'disp_at_random') # undocumented
         self.disp_magnitude= parser.getfloat('Saddle Search', 'displace_magnitude')
         self.disp_radius = parser.getfloat('Saddle Search', 'displace_radius')
@@ -262,6 +264,9 @@ class ConfigClass:
         self.void_bias_fraction = parser.getfloat('Saddle Search', 'void_bias_fraction')
         self.disp_max_coord = parser.getint('Saddle Search', 'displace_max_coordination')
         self.random_mode = parser.getboolean('Saddle Search', 'random_mode')
+        # Static INI lists are original .con file-order. Explorer flips this
+        # when injecting displace_atom_kmc_state_script Structure-row output.
+        self.disp_listed_from_script = False
         if self.displace_listed_atom_weight != 0.0:
             self.disp_listed_atoms = [ int(c.lstrip()) for c in parser.get('Saddle Search', 'displace_atom_list').split(',') ]
             if self.disp_listed_atoms == ['None']:

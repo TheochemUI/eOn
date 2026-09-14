@@ -9,10 +9,10 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "GlobalOptimization.h"
+#include "eon/GlobalOptimization.h"
 #include <cstdio>
 
-#include "EonLogger.h"
+#include "eon/EonLogger.h"
 
 GlobalOptimization::GlobalOptimization(const Parameters &params)
     : parameters{params} {}

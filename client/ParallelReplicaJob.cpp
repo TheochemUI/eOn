@@ -9,16 +9,17 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "ParallelReplicaJob.h"
-#include "BaseStructures.h"
-#include "BondBoost.h"
-#include "Dynamics.h"
-#include "ForceCallTimer.h"
-#include "HelperFunctions.h"
-#include "Matter.h"
+#include "eon/ParallelReplicaJob.h"
+#include "eon/BaseStructures.h"
+#include "eon/BondBoost.h"
+#include "eon/Dynamics.h"
+#include "eon/ForceCallTimer.h"
+#include "eon/HelperFunctions.h"
+#include "eon/Matter.h"
 #include <stdexcept>
 
 #include <cmath>
+#include <memory>
 #include <format>
 #include <fstream>
 
@@ -95,6 +96,13 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
   }
 
   for (int step = 1; step <= params.dynamics_options.steps; step++) {
+    if (params.hyperdynamics_options.bias_potential ==
+        Hyperdynamics::BOND_BOOST) {
+      // oneStep() evaluates accelerations (and therefore boost()) more than
+      // once. Advance the equilibration counter here, once per MD step, so
+      // ParallelReplica and SafeHyper share the same rmd_time schedule.
+      bondBoost.advance();
+    }
     dynamics.oneStep();
     double boost = 1.0;
     if (params.hyperdynamics_options.bias_potential ==
@@ -174,6 +182,8 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
         }
         QUILL_LOG_DEBUG(log, "[ParallelReplica] Transition time: {:.3e} s",
                         transitionTime * params.constants.timeUnit * 1e-15);
+        *trajectory = transitionStructure;
+        break;
 
       } else if (step + 1 == params.dynamics_options.steps &&
                  transitionTime == 0) {
@@ -198,24 +208,26 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
     }
   }
 
-  // Decorrelation dynamics
-  int decorrelationSteps =
-      static_cast<int>(std::floor(params.parallel_replica_options.corr_time /
-                                      params.dynamics_options.time_step +
-                                  0.5));
-  QUILL_LOG_DEBUG(log, "[ParallelReplica] Decorrelating: {} steps",
-                  decorrelationSteps);
-  for (int step = 1; step <= decorrelationSteps; step++) {
-    dynamics.oneStep(step);
-  }
-  QUILL_LOG_DEBUG(log, "[ParallelReplica] Decorrelation complete");
-
-  // Minimize final structure
-  Matter product(pot, params);
-  product = *trajectory;
-  product.relax();
-  if (!eonc::io::io_ok(product.matter2con("product.con"))) {
-    QUILL_LOG_ERROR(log, "Failed to write product.con");
+  std::unique_ptr<Matter> product;
+  if (transitionTime != 0) {
+    int decorrelationSteps = static_cast<int>(
+        std::floor(params.parallel_replica_options.corr_time /
+                       params.dynamics_options.time_step +
+                   0.5));
+    if (decorrelationSteps < 0) {
+      decorrelationSteps = 0;
+    }
+    QUILL_LOG_DEBUG(log, "[ParallelReplica] Decorrelating: {} steps",
+                    decorrelationSteps);
+    for (int dstep = 1; dstep <= decorrelationSteps; ++dstep) {
+      dynamics.oneStep(dstep);
+    }
+    product = std::make_unique<Matter>(pot, params);
+    *product = *trajectory;
+    product->relax();
+    if (!eonc::io::io_ok(product->matter2con("product.con"))) {
+      QUILL_LOG_ERROR(log, "Failed to write product.con");
+    }
   }
 
   // Write results
@@ -248,13 +260,19 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
                            params.parallel_replica_options.corr_time *
                                params.constants.timeUnit * 1.0e-15);
         out << std::format("{:f} potential_energy_product\n",
-                           product.getPotentialEnergy());
+                           product->getPotentialEnergy());
       }
       out << std::format("{:f} speedup\n",
                          simulationTime / (params.dynamics_options.steps *
                                            params.dynamics_options.time_step));
     }
   }
+
+  // bondBoost is a stack local of this function and setBiasPotential does not
+  // own it, so the trajectory must not carry the pointer past the return.
+  // getBiasForces reads a null bias potential as zero bias, which is what a
+  // Matter that is no longer being boosted means.
+  trajectory->setBiasPotential(nullptr);
 
   return trajectory;
 }

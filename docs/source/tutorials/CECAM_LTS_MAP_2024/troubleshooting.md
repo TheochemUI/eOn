@@ -8,7 +8,7 @@ myst:
 # Virtualbox Troublshooting
 
 ```{warning}
-It is **highly** recommended to run `eOn` locally, since hypervision virtualization incurs a **significant** slowdown.
+Run `eOn` locally. Hypervisor virtualization adds a large overhead.
 ```
 
 The virtual machine used for the CECAM-LTS-MAP 2024 event has an older version
@@ -35,7 +35,7 @@ meson compile -j1 -C bbdir
 meson install bbdir
 ```
 
-Now everything should be ready to run.
+Then run the example:
 
 ```{code-block} bash
 cd examples/akmc-al

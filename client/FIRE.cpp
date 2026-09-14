@@ -9,10 +9,12 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "FIRE.h"
-#include "HelperFunctions.h"
+#include "eon/FIRE.h"
+#include "eon/HelperFunctions.h"
 
 #include <algorithm>
+#include <format>
+#include <stdexcept>
 
 int FIRE::step(double a_maxMove) {
   double P = 0;
@@ -28,11 +30,15 @@ int FIRE::step(double a_maxMove) {
   m_vel += f * m_dt;
   Eigen::VectorXd dx = m_vel * m_dt;
 
-  dx = eonc::helpers::maxAtomMotionAppliedV(dx, m_max_move);
+  dx = eonc::helpers::maxAtomMotionAppliedV(dx, a_maxMove);
   m_objf->setPositions(x + dx);
 
   f = -m_objf->getGradient();
-  Eigen::VectorXd f_unit = f / f.norm();
+  const double fnorm = f.norm();
+  Eigen::VectorXd f_unit = Eigen::VectorXd::Zero(f.size());
+  if (fnorm > 0.0) {
+    f_unit = f / fnorm;
+  }
 
   // FIRE
   P = f.dot(m_vel);
@@ -57,7 +63,8 @@ int FIRE::step(double a_maxMove) {
   if (m_dt < 1e-6) {
     QUILL_LOG_CRITICAL(m_log, "[FIRE] [critical] m_dt is too small: {:.4f}",
                        m_dt);
-    std::exit(1);
+    throw std::runtime_error(
+        std::format("[FIRE] m_dt is too small: {:.4f}", m_dt));
   }
 
   m_iteration++;

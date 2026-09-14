@@ -24,10 +24,10 @@
  * the capnp-generated `Potential` interface).
  */
 
-#include "ServeMode.h"
-#include "EonLogger.h"
-#include "Potential.h"
-#include "ServeRpcServer.h"
+#include "eon/ServeMode.h"
+#include "eon/EonLogger.h"
+#include "eon/Potential.h"
+#include "eon/ServeRpcServer.h"
 
 #include <algorithm>
 #include <sstream>

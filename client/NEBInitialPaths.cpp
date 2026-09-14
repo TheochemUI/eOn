@@ -1,15 +1,17 @@
-#include "NEBInitialPaths.hpp"
-#include "BaseStructures.h"
-#include "IDPPObjectiveFunction.hpp"
-#include "Optimizer.h"
-#include "Parameters.h"
+#include "eon/NEBInitialPaths.hpp"
+#include "eon/BaseStructures.h"
+#include "eon/IDPPObjectiveFunction.hpp"
+#include "eon/Optimizer.h"
+#include "eon/Parameters.h"
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <memory>
 #include <span>
+#include <stdexcept>
 #include <vector>
 
-#include "EonLogger.h"
+#include "eon/EonLogger.h"
 namespace fs = std::filesystem;
 
 namespace eonc::helpers::neb_paths {
@@ -33,7 +35,7 @@ std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
   AtomMatrix posInitial = all_images_on_path.front().getPositions();
   AtomMatrix posFinal = all_images_on_path.back().getPositions();
   AtomMatrix imageSep = initImg.pbc(posFinal - posInitial) / (nimgs + 1);
-  // Only the ones which are not the front and back
+  imageSep = imageSep.array() * initImg.getFree().array();
   for (auto it{std::next(all_images_on_path.begin())};
        it != std::prev(all_images_on_path.end()); ++it) {
     *it = Matter(initImg);
@@ -151,8 +153,7 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
                     nimgs, xi, residual);
 
     // Explicitly sync positions back to the path vector just to be safe
-    path[i].setPositions(AtomMatrix::Map(idpp_objf->getPositions().data(),
-                                         path[i].numberOfAtoms(), 3));
+    path[i].setPositionsFreeV(idpp_objf->getPositions());
   }
 
   QUILL_LOG_INFO(log, "IDPP path generation complete.");
@@ -211,8 +212,8 @@ Matter interpolateImage(const Matter &A, const Matter &B, double fraction) {
   Matter newImg(A);
   AtomMatrix posA = A.getPositions();
   AtomMatrix posB = B.getPositions();
-  // Use PBC-aware interpolation
   AtomMatrix diff = A.pbc(posB - posA);
+  diff = diff.array() * A.getFree().array();
   newImg.setPositions(posA + fraction * diff);
   return newImg;
 }
@@ -324,7 +325,28 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
   double finalResidual = relaxPath(init.max_iterations);
   QUILL_LOG_INFO(log, "S-IDPP: Final residual: {:.4f}", finalResidual);
 
+  ensureDistinctAdjacentImages(path, 1.0e-6);
   return path;
+}
+
+void ensureDistinctAdjacentImages(const std::vector<Matter> &path,
+                                  double min_sep) {
+  if (path.size() < 2) {
+    return;
+  }
+  if (!(min_sep > 0.0)) {
+    throw std::invalid_argument(
+        "NEB path: min adjacent image separation must be positive");
+  }
+  for (size_t i = 1; i < path.size(); ++i) {
+    const AtomMatrix diff = path[i].pbc(path[i].getPositions() -
+                                        path[i - 1].getPositions());
+    const double d = diff.norm();
+    if (!(d > min_sep) || !std::isfinite(d)) {
+      throw std::runtime_error(
+          "NEB path: adjacent images are degenerate (SIDPP collapse)");
+    }
+  }
 }
 
 AtomMatrix cubicInterpolate(const AtomMatrix &P0, const AtomMatrix &T0,

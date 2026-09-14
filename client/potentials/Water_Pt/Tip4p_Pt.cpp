@@ -9,7 +9,7 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-#include "Tip4p_Pt.hpp"
+#include "eon/potentials/Water_Pt/Tip4p_Pt.hpp"
 
 void Tip4p_Pt::force(long N, const double *R, const int *atomicNrs, double *F,
                      double *U, double *variance, const double *box) {

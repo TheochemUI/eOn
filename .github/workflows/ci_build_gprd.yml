@@ -13,13 +13,39 @@ on:
       - "client/GPRHelpers.*"
       - "client/meson.build"
       - "meson_options.txt"
+permissions:
+  contents: read
 jobs:
-  build_eon:
+  # Fork PRs do not receive SUBMODULE_PRIVATE. A single job that exits 0
+  # after skip reports Success. Split so the integration job is Skipped
+  # (not a fake pass) when the secret is missing (eOn-234v).
+  gprd-gate:
+    runs-on: ubuntu-latest
+    outputs:
+      available: ${{ steps.gate.outputs.available }}
+    steps:
+      - name: Check submodule SSH secret
+        id: gate
+        env:
+          SUBMODULE_PRIVATE: ${{ secrets.SUBMODULE_PRIVATE }}
+        run: |
+          if [ -z "$SUBMODULE_PRIVATE" ]; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "GPRD integration skipped: SUBMODULE_PRIVATE unavailable"
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  gprd-integration:
+    needs: gprd-gate
+    if: needs.gprd-gate.outputs.available == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
       - name: Setup SSH for private submodule
-        uses: webfactory/ssh-agent@v0.9.0
+        uses: webfactory/ssh-agent@a6f90b1f127823b31d4d4a8d96047790581349bd # v0.9.1
         with:
           ssh-private-key: ${{ secrets.SUBMODULE_PRIVATE }}
       - name: Pull GPRD submodule
@@ -31,7 +57,7 @@ jobs:
           cd subprojects/gpr_optim
           git checkout 365b78bdf4042f75915e1113396e1b4aa50edaa2
           git rev-parse --short HEAD
-      - uses: prefix-dev/setup-pixi@v0.9.4
+      - uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
         with:
           cache: true
           cache-write: true
@@ -50,7 +76,7 @@ jobs:
           --libdir=lib                     \
           -Dwith_gprd=true                 \
           -Dwith_tests=true
-          meson install -C bbdir
+          meson install --skip-subprojects -C bbdir
       - name: Integration Tests
         shell: pixi run bash -e {0}
         run: |

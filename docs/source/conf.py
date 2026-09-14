@@ -7,11 +7,13 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 from datetime import datetime
+
 project = "eOn"
 author = "the eOn developers"
 copyright = f"{datetime.now().date().year}, {author}"
 try:
     import tomllib
+
     with open("../../pyproject.toml", "rb") as f:
         release = tomllib.load(f)["project"]["version"]
 except Exception:
@@ -66,6 +68,7 @@ myst_enable_extensions = [
 # CI sets NB_EXECUTION_MODE=cache (still executes on miss; faster reruns).
 # Local/default remains "force" so authors always see live notebook output.
 import os as _os
+
 nb_execution_mode = _os.environ.get("NB_EXECUTION_MODE", "force")
 nb_execution_timeout = 600
 nb_execution_raise_on_error = False
@@ -87,10 +90,7 @@ html_theme = "shibuya"
 html_title = "eOn"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
-html_js_files = [
-    ("https://antics-api.turtletech.us/antics.js", {"defer": "defer"}),
-]
-html_baseurl = 'https://eondocs.org/'
+html_baseurl = "https://eondocs.org/"
 
 html_context = {
     "source_type": "github",
@@ -106,6 +106,11 @@ html_theme_options = {
     "dark_code": True,
     "globaltoc_expand_depth": 2,
     "nav_links": [
+        {
+            "title": "C++ API",
+            "url": "/api-cpp/index.html",
+            "resource": True,
+        },
         {
             "title": "Ecosystem",
             "children": [

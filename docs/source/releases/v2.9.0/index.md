@@ -1,7 +1,7 @@
 ---
 myst:
   html_meta:
-    "description": "Overview of the eOn v2.9.0 release, highlighting major features like RO-NEB-CI, metatomic potential support, and a modernized build system."
+    "description": "eOn v2.9.0: NEB endpoint fixes, PyTorch 2.8, and updated metatomic and vesin APIs."
     "keywords": "eOn v2.9.0, release"
 ---
 

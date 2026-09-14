@@ -180,7 +180,9 @@ class TestStateGetDisplacementAtomList:
         config.path_scratch = str(tmp_path / "scratch")
         config.path_root = str(tmp_path)
 
-        with mock.patch("eon._utils.gen_ids_from_con", return_value="0, 2, 4") as mock_gen:
+        with mock.patch(
+            "eon._utils.gen_ids_from_con", return_value="0, 2, 4"
+        ) as mock_gen:
             result1 = state.get_displacement_atom_list(config)
             assert result1 == "0, 2, 4"
             assert mock_gen.call_count == 1
@@ -256,6 +258,7 @@ class TestExplorerAtomListInjection:
             with mock.patch("eon.explorer.communicator.get_communicator"):
                 with mock.patch("eon.explorer.displace.DisplacementManager"):
                     from eon.explorer import MinModeExplorer
+
                     exp = object.__new__(MinModeExplorer)
                     exp.config = config
                     exp.state = state
@@ -268,10 +271,16 @@ class TestExplorerAtomListInjection:
                     # Run the relevant part of __init__ manually
                     # (the injection block + DisplacementManager construction)
                     from eon import _utils as _utl
+
                     if config.displace_atom_kmc_state_script:
-                        atom_list_str = str(state.info.get("Saddle Search", "displace_atom_list", ""))
+                        atom_list_str = str(
+                            state.info.get("Saddle Search", "displace_atom_list", "")
+                        )
                         if atom_list_str:
-                            config.disp_listed_atoms = _utl.parse_atom_list_str(atom_list_str)
+                            config.disp_listed_atoms = _utl.parse_atom_list_str(
+                                atom_list_str
+                            )
+                            config.disp_listed_from_script = True
                             if config.displace_listed_atom_weight == 0.0:
                                 config.displace_listed_atom_weight = 1.0
 
@@ -290,7 +299,10 @@ class TestExplorerAtomListInjection:
         # so nothing should change on config
         if config.displace_atom_kmc_state_script:
             from eon import _utils as _utl
-            atom_list_str = str(state.info.get("Saddle Search", "displace_atom_list", ""))
+
+            atom_list_str = str(
+                state.info.get("Saddle Search", "displace_atom_list", "")
+            )
             if atom_list_str:
                 config.disp_listed_atoms = _utl.parse_atom_list_str(atom_list_str)
                 if config.displace_listed_atom_weight == 0.0:
@@ -307,6 +319,7 @@ class TestExplorerAtomListInjection:
         config.displace_listed_atom_weight = 0.5  # user-set
 
         from eon import _utils as _utl
+
         atom_list_str = str(state.info.get("Saddle Search", "displace_atom_list", ""))
         if atom_list_str:
             config.disp_listed_atoms = _utl.parse_atom_list_str(atom_list_str)
