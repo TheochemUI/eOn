@@ -632,10 +632,10 @@ void bind_parameters(nb::module_ &m) {
       .def_prop_rw(
           "dimer_opt_method",
           [](const eonc::Parameters &s) { return s.dimer_options.opt_method; },
-          [](eonc::Parameters &s, const std::string &v) {
+          [](eonc::Parameters &s, eonc::OptType v) {
             s.dimer_options.opt_method = v;
           },
-          "Rotation optimizer: cg | lbfgs | sd")
+          "Rotation optimizer (CG, LBFGS, SD)")
       .def_prop_rw(
           "dimer_rotations_max",
           [](const eonc::Parameters &s) {

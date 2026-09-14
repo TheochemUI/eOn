@@ -285,7 +285,7 @@ public:
     bool improved{true};
     double converged_angle{5.0};
     long max_iterations{1000};
-    std::string opt_method{"cg"};
+    OptType opt_method{OptType::CG};
     long rotations_max{10};
     long rotations_min{1};
     double torque_max{1.0};
