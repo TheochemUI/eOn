@@ -156,7 +156,10 @@ VectorXd CollectiveIDPPObjectiveFunction::getGradient(bool fdstep) {
     AtomMatrix nextPos = path[i + 1].getPositions();
     AtomMatrix prevPos = path[i - 1].getPositions();
     tangents[i] = path[i].pbc(nextPos - prevPos);
-    tangents[i].normalize(); // Unit tangent
+    const double tnorm = tangents[i].norm();
+    if (tnorm > 1e-10) {
+      tangents[i] /= tnorm;
+    }
   }
 
   // 2. Project Forces and Add Springs (The "NEB" part of IDPP-NEB)
