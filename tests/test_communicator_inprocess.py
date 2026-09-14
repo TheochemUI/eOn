@@ -63,3 +63,24 @@ def test_inprocess_minimize_job(tmp_path):
     assert r0.get("_structure") is not None
     assert r0["_matter"].n_atoms == 2
     assert np.isfinite(r0["_energy"])
+
+
+@pytest.mark.parametrize(
+    "job_ini,expect",
+    [
+        ("[Main]\njob = point\n[Potential]\npotential = lj\n", "point"),
+        ("[Main]\njob = hessian\n[Potential]\npotential = lj\n", "hessian"),
+    ],
+)
+def test_inprocess_job_type_matrix(tmp_path, job_ini, expect):
+    from eon.communicator_inprocess import LocalInProcess
+    from eon.config import config
+
+    config.path_scratch = str(tmp_path / "scratch")
+    c = LocalInProcess(str(tmp_path / "scratch"), bundle_size=1, config=config)
+    job = {"id": "t1", "pos.con": _lj_pos_con()}
+    c.submit_jobs([job], {"config.ini": (StringIO(job_ini), 0o644)})
+    r0 = c.get_results()[0]
+    text = r0["results.dat"].getvalue()
+    assert expect in text
+    assert r0.get("_structure") is not None

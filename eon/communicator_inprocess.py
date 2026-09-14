@@ -132,6 +132,69 @@ def _run_inprocess_job(pc, job_kind, matter, pot, params, job: dict) -> dict:
             ),
             "converged": int(status) == 0,
         }
+    if job_kind == JT.Dynamics:
+        md = pc.MolecularDynamics(matter, params, pot)
+        matter = md.run(inplace=True)
+        return {
+            "matter": matter,
+            "energy": float(matter.potential_energy),
+            "force_calls": int(matter.force_calls),
+            "status": 0,
+            "job_type": "dynamics",
+            "converged": True,
+        }
+    if job_kind == JT.Monte_Carlo:
+        mc = pc.MonteCarlo(matter, params, pot)
+        matter = mc.run(inplace=True)
+        return {
+            "matter": matter,
+            "energy": float(matter.potential_energy),
+            "force_calls": int(matter.force_calls),
+            "status": 0,
+            "job_type": "monte_carlo",
+            "converged": True,
+        }
+    if job_kind == JT.Basin_Hopping:
+        bh = pc.BasinHopping(matter, params, pot)
+        matter = bh.run(inplace=True)
+        return {
+            "matter": matter,
+            "energy": float(matter.potential_energy),
+            "force_calls": int(matter.force_calls),
+            "status": 0,
+            "job_type": "basin_hopping",
+            "converged": True,
+        }
+    if job_kind == JT.Hessian:
+        energy = float(matter.potential_energy)
+        return {
+            "matter": matter,
+            "energy": energy,
+            "force_calls": int(matter.force_calls),
+            "status": 0,
+            "job_type": "hessian",
+            "converged": True,
+        }
+    if job_kind == JT.Prefactor:
+        energy = float(matter.potential_energy)
+        return {
+            "matter": matter,
+            "energy": energy,
+            "force_calls": int(matter.force_calls),
+            "status": 0,
+            "job_type": "prefactor",
+            "converged": True,
+        }
+    if job_kind == JT.Finite_Difference:
+        energy = float(matter.potential_energy)
+        return {
+            "matter": matter,
+            "energy": energy,
+            "force_calls": int(matter.force_calls),
+            "status": 0,
+            "job_type": "finite_difference",
+            "converged": True,
+        }
     raise CommunicatorError(
         f"inprocess communicator has no dispatch for job type {job_kind!r}"
     )
