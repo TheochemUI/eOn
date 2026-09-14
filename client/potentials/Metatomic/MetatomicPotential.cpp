@@ -624,9 +624,20 @@ void MetatomicPotential::forceBatch(long nSystems, long nAtoms,
                                     double *const *forces, double *energies,
                                     double *variances,
                                     const double *const *boxes) {
-  // Sequential evaluation through force() -- numerically identical to
-  // N individual computePotential() calls. The mutex inside force()
-  // serializes, and all calls share the same model instance + JIT state.
+  if (nSystems > 1) {
+    try {
+      forceBatchNative(nSystems, nAtoms, positions, atomicNrs, forces, energies,
+                       variances, boxes);
+      forceCallCounter += nSystems;
+      PotRegistry::get().on_force_call(ptype);
+      return;
+    } catch (const std::exception &e) {
+      QUILL_LOG_WARNING(m_log,
+                        "[MetatomicPotential] batched forward failed ({}); "
+                        "falling back to sequential force()",
+                        e.what());
+    }
+  }
   for (long s = 0; s < nSystems; s++) {
     double var = 0;
     force(nAtoms, positions[s], atomicNrs[s], forces[s], &energies[s], &var,
@@ -638,16 +649,12 @@ void MetatomicPotential::forceBatch(long nSystems, long nAtoms,
   }
 }
 
-// --- True batched forward (future optimization) ---
-// model.forward({sys0..sysN}) verified identical in Python.
-// C++ energy extraction needs work to match single-system path exactly.
-#if 0
 void MetatomicPotential::forceBatchNative(long nSystems, long nAtoms,
-                                     const double *const *positions,
-                                     const int *const *atomicNrs,
-                                     double *const *forces, double *energies,
-                                     double *variances,
-                                     const double *const *boxes) {
+                                          const double *const *positions,
+                                          const int *const *atomicNrs,
+                                          double *const *forces,
+                                          double *energies, double *variances,
+                                          const double *const *boxes) {
   std::lock_guard<std::mutex> lock(inference_mutex_);
 
   eonc::FPEHandler fpeh;
@@ -662,12 +669,11 @@ void MetatomicPotential::forceBatchNative(long nSystems, long nAtoms,
   pos_tensors.reserve(static_cast<size_t>(nSystems));
 
   for (long s = 0; s < nSystems; s++) {
-    auto torch_positions =
-        torch::from_blob(const_cast<double *>(positions[s]), {nAtoms, 3},
-                         f64_options)
-            .to(this->dtype_)
-            .to(this->device_)
-            .set_requires_grad(true);
+    auto torch_positions = torch::from_blob(const_cast<double *>(positions[s]),
+                                            {nAtoms, 3}, f64_options)
+                               .to(this->dtype_)
+                               .to(this->device_)
+                               .set_requires_grad(true);
     pos_tensors.push_back(torch_positions);
 
     auto torch_cell =
@@ -695,9 +701,9 @@ void MetatomicPotential::forceBatchNative(long nSystems, long nAtoms,
     // Compute and register neighbor lists for this system
     for (const auto &request : this->nl_requests_) {
       auto neighbors = this->computeNeighbors(request, nAtoms, positions[s],
-                                               boxes[s], periodic);
+                                              boxes[s], periodic);
       metatomic_torch::register_autograd_neighbors(system, neighbors,
-                                                    this->check_consistency_);
+                                                   this->check_consistency_);
       system->add_neighbor_list(request, neighbors);
     }
 
@@ -762,8 +768,7 @@ void MetatomicPotential::forceBatchNative(long nSystems, long nAtoms,
   // Extract per-system forces from position gradients
   for (long s = 0; s < nSystems; s++) {
     auto positions_grad = pos_tensors[s].grad();
-    auto forces_tensor =
-        -positions_grad.to(torch::kCPU).to(torch::kFloat64);
+    auto forces_tensor = -positions_grad.to(torch::kCPU).to(torch::kFloat64);
     std::memcpy(forces[s], forces_tensor.contiguous().data_ptr<double>(),
                 nAtoms * 3 * sizeof(double));
   }
@@ -777,4 +782,3 @@ void MetatomicPotential::forceBatchNative(long nSystems, long nAtoms,
 
   fpeh.restore_fpe();
 }
-#endif
