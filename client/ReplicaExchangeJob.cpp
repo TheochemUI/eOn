@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/ReplicaExchangeJob.h"
+#include "eon/PotCapabilities.h"
 #include "eon/BaseStructures.h"
 #include "eon/Dynamics.h"
 #include "eon/HelperFunctions.h"
@@ -135,8 +136,9 @@ ReplicaExchangeJob::runFromMatter(std::shared_ptr<Matter> initial) {
       params.replica_exchange_options.replicas);
 
   // Parallel replica dynamics when enabled and potential supports it
-  const bool canParallel = params.main_options.parallel &&
-                           (pot->isSharedInstanceThreadSafe() || perImage);
+  const bool canParallel =
+      params.main_options.parallel &&
+      (eonc::potAllowsSharedInstance(*pot) || perImage);
 
   for (long step = 1; step <= samplingSteps; step++) {
     if (canParallel && nReplicas > 1) {

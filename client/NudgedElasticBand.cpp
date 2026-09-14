@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/NudgedElasticBand.h"
+#include "eon/PotCapabilities.h"
 #include "eon/BaseStructures.h"
 #include "eon/EigenmodeStrategy.h"
 #include "eon/IDPPObjectiveFunction.hpp"
@@ -544,7 +545,8 @@ void NudgedElasticBand::updateForces(bool ci_active) {
     }
   } else {
     // Per-image evaluation (sequential or parallel threads)
-    bool canParallel = pot->isSharedInstanceThreadSafe() || perImagePotentials_;
+    bool canParallel =
+        eonc::potAllowsSharedInstance(*pot) || perImagePotentials_;
     if (numImages > 1 && params.main_options.parallel && canParallel) {
 #ifdef EON_PARALLEL_NEB
       // TBB-backed std::execution::par (meson -Dwith_parallel_neb=true).

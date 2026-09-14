@@ -26,6 +26,13 @@ mutex is documented (Metatomic inference lock). The contract is:
 
 ## Threading model
 
+Callers should use the nonmember queries in `eon/PotCapabilities.h`
+(`potIsThreadSafe`, `potAllowsSharedInstance`) rather than naming the
+virtuals at every NEB/dimer site. The virtuals stay the override point
+on each backend; the free functions are a C++20 concept-constrained
+adapter so a later trait cut does not touch those TUs. The header is
+header-only (no extra object file).
+
 Two virtual methods on `Potential` control the behavior:
 
 ### `isThreadSafe()`
