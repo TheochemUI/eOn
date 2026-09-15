@@ -124,6 +124,9 @@
 
 ### Fixed
 
+- NEB `minimize_endpoints` defaults to false, matching SVN and the
+  pyeonclient NEB API. The old true default added endpoint relaxations
+  to `total_force_calls` on fixtures that never asked for them.
 - A failed `hessian.dat` write now fails the Hessian calculation instead of returning a successful eigen solve.
 - AKMCState stores the search count in MetaData and increments it on each append, instead of rereading the search log.
 - AtomicGPDimer throws on a null Matter and returns a zero mode if the GP orientation size does not match the free-atom count.

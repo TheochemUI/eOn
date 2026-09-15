@@ -1852,7 +1852,7 @@ class NudgedElasticBandConfig(BaseModel):
         default=0.33, description="The step size for adding new images in S-IDPP."
     )
     minimize_endpoints: bool = Field(
-        default=True,
+        default=False,
         description="Minimize the reactant and product before the NEB.",
     )
     minimize_endpoints_for_ipath: bool = Field(
