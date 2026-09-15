@@ -22,6 +22,9 @@
 #include <stdexcept>
 #include <string>
 
+
+namespace eonc {
+
 namespace {
 void checkAtom(long nAtoms, long indexAtom, const char *fn) {
   if (indexAtom < 0 || indexAtom >= nAtoms) {
@@ -747,3 +750,5 @@ double Matter::getEnergyVariance() const { return this->energyVariance; }
 // double Matter::getMaxVariance() { return this->variance.maxCoeff(); }
 
 std::shared_ptr<Potential> Matter::getPotential() { return this->potential; }
+
+} // namespace eonc

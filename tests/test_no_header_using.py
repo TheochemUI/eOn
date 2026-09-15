@@ -40,6 +40,9 @@ JOB_HEADERS = sorted(
         "AtomicGPDimer.h",
         "Dynamics.h",
         "ServeMode.h",
+        "NudgedElasticBand.h",
+        "Optimizer.h",
+        "ServeRpcServer.h",
     )
 ]
 

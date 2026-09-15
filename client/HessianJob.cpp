@@ -25,6 +25,9 @@
 #include <stdexcept>
 #include <string>
 
+
+namespace eonc {
+
 std::vector<std::string> HessianJob::run(void) {
   std::string matter_in("pos.con");
 
@@ -67,3 +70,5 @@ std::vector<std::string> HessianJob::run(void) {
 
   return returnFiles;
 }
+
+} // namespace eonc

@@ -22,6 +22,9 @@
 #include <fstream>
 #include <stdexcept>
 
+
+namespace eonc {
+
 std::vector<std::string> FiniteDifferenceJob::run(void) {
   auto reactant = std::make_unique<Matter>(pot, params);
   const std::string posFile = eonc::helpers::getRelevantFile("pos.con");
@@ -90,3 +93,5 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
   returnFiles.push_back("curvature.dat");
   return returnFiles;
 }
+
+} // namespace eonc

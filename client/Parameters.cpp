@@ -23,6 +23,9 @@
 
 #include "eon/EonLogger.h"
 
+
+namespace eonc {
+
 Parameters::Parameters() {
   // Covered groups: defaults originate from schema/eon_params.capnp via
   // apply_ssot_defaults (codegen). Uncovered groups still use NSDMI.
@@ -146,3 +149,5 @@ int Parameters::load_json(const std::string &json_str) {
 std::string Parameters::to_json() const {
   return eonc::config::to_json(*this).dump(2);
 }
+
+} // namespace eonc

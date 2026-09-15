@@ -129,6 +129,3 @@ private:
 };
 
 } // namespace eonc
-
-using eonc::NEBObjectiveFunction;
-using eonc::NudgedElasticBand;
