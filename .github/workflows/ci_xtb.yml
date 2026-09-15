@@ -24,15 +24,22 @@ jobs:
           cache: true
           cache-write: true
           # dev-xtb activation prepends PATH; setup-pixi refuses that on
-          # Windows. Steps use `pixi run`, so GITHUB_ENV activate is unused.
+          # Windows. Named-env `pixi run` is the activate path.
           activate-environment: false
           environments: >-
             dev-xtb
       - name: Install cbindgen
         shell: bash
         run: command -v cbindgen || cargo install cbindgen
-      - name: Install eon
-        shell: pixi run bash -e {0}
+      - name: Activate MSVC (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+        with:
+          arch: x64
+          vsversion: "2022"
+      - name: Install eon [unix]
+        if: runner.os != 'Windows'
+        shell: pixi run -e dev-xtb bash -e {0}
         run: |
           meson setup --reconfigure bbdir  \
           --prefix=$CONDA_PREFIX           \
@@ -41,7 +48,40 @@ jobs:
           -Dwith_xtb=True            \
           -Dwith_tests=True
           meson install --skip-subprojects -C bbdir
-      - name: Run tests
-        shell: pixi run bash -e {0}
+      - name: Install eon [windows]
+        if: runner.os == 'Windows'
+        shell: pixi run -e dev-xtb bash -e {0}
         run: |
+          set -euo pipefail
+          export PATH=$(echo "$PATH" | tr ':' '\n' \
+            | grep -vE '/usr/bin$|[Mm]ingw|[Ss]trawberry' \
+            | paste -sd:)
+          if [ -n "${CONDA_PREFIX:-}" ]; then
+            export PATH="${CONDA_PREFIX}/Library/bin:${CONDA_PREFIX}/bin:${PATH}"
+          fi
+          unset LDFLAGS CFLAGS CXXFLAGS FCFLAGS || true
+          export CC=cl CXX=cl AR=lib ARFLAGS= FC=flang-new
+          meson setup --reconfigure bbdir \
+            --prefix=$CONDA_PREFIX \
+            --buildtype release \
+            --libdir=lib \
+            -Dwith_xtb=True \
+            -Dwith_tests=True
+          meson install --skip-subprojects -C bbdir
+      - name: Run tests [unix]
+        if: runner.os != 'Windows'
+        shell: pixi run -e dev-xtb bash -e {0}
+        run: |
+          meson test -C bbdir --suite eon --print-errorlogs
+      - name: Run tests [windows]
+        if: runner.os == 'Windows'
+        shell: pixi run -e dev-xtb bash -e {0}
+        run: |
+          set -euo pipefail
+          export PATH=$(echo "$PATH" | tr ':' '\n' \
+            | grep -vE '/usr/bin$|[Mm]ingw|[Ss]trawberry' \
+            | paste -sd:)
+          if [ -n "${CONDA_PREFIX:-}" ]; then
+            export PATH="${CONDA_PREFIX}/Library/bin:${CONDA_PREFIX}/bin:${PATH}"
+          fi
           meson test -C bbdir --suite eon --print-errorlogs
