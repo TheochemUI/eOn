@@ -229,8 +229,8 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce) {
   double projB = matDot(direction, forceB);
 
   // Remove force component parallel to dimer
-  forceA = makeOrthogonal(forceA, direction);
-  forceB = makeOrthogonal(forceB, direction);
+  forceA = helpers::makeOrthogonal(forceA, direction);
+  forceB = helpers::makeOrthogonal(forceB, direction);
 
   // Rotational force = orthogonal force difference
   rotationalForce =
@@ -261,7 +261,7 @@ void Dimer::determineRotationalPlane(const AtomMatrix &rotationalForce,
 
   // Orthogonalize to dimer direction and normalize
   lengthRotationalForceOld = rotationalPlane.norm();
-  rotationalPlane = makeOrthogonal(rotationalPlane, direction);
+  rotationalPlane = helpers::makeOrthogonal(rotationalPlane, direction);
   eonc::safemath::safe_normalize_inplace(rotationalPlane);
 
   rotationalForceOld = rotationalForce;
@@ -282,7 +282,7 @@ void Dimer::rotate(double rotationAngle) {
   eonc::safemath::safe_normalize_inplace(rotationalPlane);
 
   // Remove component from rotationalPlane parallel to direction
-  rotationalPlane = makeOrthogonal(rotationalPlane, direction);
+  rotationalPlane = helpers::makeOrthogonal(rotationalPlane, direction);
   eonc::safemath::safe_normalize_inplace(rotationalPlane);
 }
 

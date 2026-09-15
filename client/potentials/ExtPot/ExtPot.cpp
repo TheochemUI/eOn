@@ -11,6 +11,7 @@
 */
 
 #include "eon/potentials/ExtPot/ExtPot.h"
+#include "eon/Parameters.h"
 #include "eon/potentials/ExtPot/ExtPotCommand.h"
 #include "eon/potentials/ExternalCommand.h"
 

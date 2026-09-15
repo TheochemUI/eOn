@@ -35,6 +35,7 @@
 
 namespace {
 
+using Matter = eonc::Matter;
 namespace fs = std::filesystem;
 
 constexpr uint8_t kConPrecision = 17;
@@ -367,7 +368,7 @@ eonc::io::IoStatus append_frames(const fs::path &path,
 
 /// Seed a builder with identity fields (symbol/fixed/mass/id) and cell headers.
 /// Geometry filled via positions_data() / set_*_from_flat.
-readcon::ConFrameBuilder seed_builder(Matter &m,
+readcon::ConFrameBuilder seed_builder(eonc::Matter &m,
                                       const std::array<std::string, 2> &prebox,
                                       const std::array<std::string, 2> &postbox,
                                       const std::vector<uint64_t> &atom_ids) {

@@ -48,7 +48,7 @@ ReplicaExchangeJob::runFromMatter(std::shared_ptr<Matter> initial) {
   pos = initial;
   pos->setPotential(pot);
 
-  auto &rex = params.replica_exchange_options();
+  auto &rex = ParametersLoadAccess::replica_exchange_options(params);
   if (rex.replicas < 1) {
     throw std::invalid_argument(
         "ReplicaExchangeJob: replica_exchange.replicas must be >= 1");
