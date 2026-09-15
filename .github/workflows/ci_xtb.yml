@@ -61,10 +61,18 @@ jobs:
           fi
           unset LDFLAGS CFLAGS CXXFLAGS FCFLAGS || true
           export CC=cl CXX=cl AR=lib ARFLAGS= FC=flang-new
+          if [ -n "${CONDA_PREFIX:-}" ]; then
+            # shellcheck source=scripts/ci/win_flang_rt.sh
+            source scripts/ci/win_flang_rt.sh
+            eon_export_flang_rt "${CONDA_PREFIX}" --required
+          fi
+          # Shared eoncbase.dll has no eoncbase.lib for plugin links (LNK1181).
+          # Same static default as the basic-eon Windows job and the feedstock.
           meson setup --reconfigure bbdir \
             --prefix=$CONDA_PREFIX \
             --buildtype release \
             --libdir=lib \
+            --default-library=static \
             -Dwith_xtb=True \
             -Dwith_tests=True
           meson install --skip-subprojects -C bbdir
