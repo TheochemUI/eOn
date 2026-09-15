@@ -19,13 +19,20 @@
 #include <mutex>
 #include <vector>
 
+namespace eonc {
+class ILammpsLoader;
+}
+
 class LAMMPSPot : public eonc::Potential {
 
 public:
   [[nodiscard]] bool needsPerImageInstance() const noexcept override {
     return true;
   }
-  LAMMPSPot(const eonc::Parameters &p);
+  /// Production: process-default LammpsLoader and POSIX worker isolation.
+  explicit LAMMPSPot(const eonc::Parameters &p);
+  /// Test seam: injected loader, no worker fork, no process-default load.
+  LAMMPSPot(const eonc::Parameters &p, eonc::ILammpsLoader &loader);
   ~LAMMPSPot();
   void cleanMemory();
   void force(long N, const double *R, const int *atomicNrs, double *F,
@@ -33,6 +40,9 @@ public:
   void setFixedMask(long nAtoms, const double *isFixed) override;
 
 private:
+  LAMMPSPot(const eonc::Parameters &p, eonc::ILammpsLoader &loader,
+            bool isolate_worker);
+  eonc::ILammpsLoader &loader_;
   int lammpsThr{0};
 #ifdef EONMPI
   MPI_Comm mpiComm;
