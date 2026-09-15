@@ -11,23 +11,10 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-// Helper to get element symbols from atomic numbers
-using std::this_thread::sleep_for;
-using namespace std::chrono_literals;
-
-namespace {
-const char *elementArray[] = {
-    "Unknown", "H",  "He", "Li", "Be", "B",    "C",  "N",  "O",  "F",  "Ne",
-    "Na",      "Mg", "Al", "Si", "P",  "S",    "Cl", "Ar", "K",  "Ca", "Sc",
-    "Ti",      "V",  "Cr", "Mn", "Fe", "Co",   "Ni", "Cu", "Zn", "Ga", "Ge",
-    "As",      "Se", "Br", "Kr", "Rb", "Sr",   "Y",  "Zr", "Nb", "Mo", "Tc",
-    "Ru",      "Rh", "Pd", "Ag", "Cd", "In",   "Sn", "Sb", "Te", "I",  "Xe",
-    "Cs",      "Ba", "La", "Ce", "Pr", "Nd",   "Pm", "Sm", "Eu", "Gd", "Tb",
-    "Dy",      "Ho", "Er", "Tm", "Yb", "Lu",   "Hf", "Ta", "W",  "Re", "Os",
-    "Ir",      "Pt", "Au", "Hg", "Tl", "Pb",   "Bi", "Po", "At", "Rn", "Fr",
-    "Ra",      "Ac", "Th", "Pa", "U",  nullptr};
-char const *atomicNumber2symbol(int n) { return elementArray[n]; }
-} // namespace
+#include <chrono>
+#include <cstdint>
+#include <readcon-core.hpp>
+#include <thread>
 
 SocketNWChemPot::SocketNWChemPot(const eonc::Parameters &p)
     : eonc::Potential(eonc::PotType::SocketNWChem, p),
@@ -147,7 +134,9 @@ void SocketNWChemPot::forceOnce(long N, const double *R, const int *atomicNrs,
     std::vector<std::string> symbols;
     symbols.reserve(N);
     for (long i = 0; i < N; ++i) {
-      symbols.emplace_back(atomicNumber2symbol(atomicNrs[i]));
+      const int z = atomicNrs[i];
+      symbols.emplace_back(z > 0 ? readcon::z_to_symbol(static_cast<uint64_t>(z))
+                                 : "X");
     }
     if (make_template_input) {
       write_nwchem_template("nwchem_socket.nwi", N, symbols);
@@ -221,7 +210,7 @@ void SocketNWChemPot::forceOnce(long N, const double *R, const int *atomicNrs,
       break;
     }
     // A small sleep to prevent busy-waiting that consumes 100% CPU.
-    sleep_for(10ms);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
 
   // Request and receive results ---

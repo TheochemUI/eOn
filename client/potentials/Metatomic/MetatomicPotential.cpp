@@ -22,8 +22,6 @@
 #include <string>
 #include <vector>
 
-using namespace std::string_literals;
-
 namespace {
 
 // metatensor-torch 0.10.3 Module::to() walks every attribute when

@@ -14,14 +14,12 @@
 #include <cstdlib>
 #include <string>
 
-using namespace std::string_literals;
-
 int main() {
   std::string confile("pos.con");
   eonc::Parameters parameters;
   auto pot = eonc::helpers::makePotential(parameters);
   eonc::Matter matter(pot, parameters);
   matter.con2matter(confile);
-  matter.writeTibble("rSysdat.txt"s);
+  matter.writeTibble("rSysdat.txt");
   return EXIT_SUCCESS;
 }
