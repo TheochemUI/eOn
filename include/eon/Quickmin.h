@@ -45,4 +45,3 @@ private:
 
 } // namespace eonc
 
-using eonc::Quickmin;

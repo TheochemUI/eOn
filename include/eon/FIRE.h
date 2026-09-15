@@ -53,4 +53,3 @@ private:
 
 } // namespace eonc
 
-using eonc::FIRE;

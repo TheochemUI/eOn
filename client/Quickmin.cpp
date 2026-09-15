@@ -14,6 +14,9 @@
 
 #include <cmath>
 
+
+namespace eonc {
+
 int Quickmin::step(double a_maxMove) {
   Eigen::VectorXd force = -m_objf->getGradient();
   const double fn = force.norm();
@@ -48,3 +51,5 @@ int Quickmin::run(size_t a_maxSteps, double a_maxMove) {
   }
   return m_objf->isConverged() ? 1 : 0;
 }
+
+} // namespace eonc
