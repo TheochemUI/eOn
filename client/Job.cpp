@@ -34,6 +34,12 @@
 
 #include <memory>
 
+namespace eonc {
+// Referenced from makeJob so MSVC does not drop this TU from a static
+// eonclib (anonymous-namespace registrars would never run).
+void forceJobRegistration() {}
+} // namespace eonc
+
 #ifdef WITH_GP_SURROGATE
 #include "eon/GPSurrogateJob.h"
 #endif
