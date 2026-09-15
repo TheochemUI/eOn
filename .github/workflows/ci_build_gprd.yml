@@ -13,12 +13,17 @@ on:
       - "client/GPRHelpers.*"
       - "client/meson.build"
       - "meson_options.txt"
+permissions:
+  contents: read
 jobs:
-  build_eon:
+  # Fork PRs do not receive SUBMODULE_PRIVATE. A single job that exits 0
+  # after skip reports Success. Split so the integration job is Skipped
+  # (not a fake pass) when the secret is missing (eOn-234v).
+  gprd-gate:
     runs-on: ubuntu-latest
+    outputs:
+      available: ${{ steps.gate.outputs.available }}
     steps:
-      # Private gpr_optim clone needs SUBMODULE_PRIVATE. Fork PRs do not receive
-      # repo secrets; exit 0 so the check stays green without a fake build.
       - name: Check submodule SSH secret
         id: gate
         env:
@@ -26,15 +31,21 @@ jobs:
         run: |
           if [ -z "$SUBMODULE_PRIVATE" ]; then
             echo "available=false" >> "$GITHUB_OUTPUT"
-            echo "SUBMODULE_PRIVATE unavailable; skipping GPRD build"
+            echo "GPRD integration skipped: SUBMODULE_PRIVATE unavailable"
           else
             echo "available=true" >> "$GITHUB_OUTPUT"
           fi
-      - uses: actions/checkout@v4
-        if: steps.gate.outputs.available == 'true'
+
+  gprd-integration:
+    needs: gprd-gate
+    if: needs.gprd-gate.outputs.available == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
       - name: Setup SSH for private submodule
-        if: steps.gate.outputs.available == 'true'
-        uses: webfactory/ssh-agent@v0.9.0
+        uses: webfactory/ssh-agent@a6f90b1f127823b31d4d4a8d96047790581349bd # v0.9.1
         with:
           ssh-private-key: ${{ secrets.SUBMODULE_PRIVATE }}
       - name: Pull GPRD submodule
@@ -47,8 +58,7 @@ jobs:
           cd subprojects/gpr_optim
           git checkout 365b78bdf4042f75915e1113396e1b4aa50edaa2
           git rev-parse --short HEAD
-      - uses: prefix-dev/setup-pixi@v0.9.4
-        if: steps.gate.outputs.available == 'true'
+      - uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
         with:
           cache: true
           cache-write: true

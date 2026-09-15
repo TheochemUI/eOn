@@ -36,6 +36,8 @@
 // hence the separate translation unit.
 #include "Potentials.capnp.h"
 
+namespace eonc {
+
 namespace {
 
 /**
@@ -100,8 +102,8 @@ private:
 
 } // anonymous namespace
 
-void eonc::startRpcServer(ForceCallback callback, const std::string &host,
-                          uint16_t port) {
+void startRpcServer(ForceCallback callback, const std::string &host,
+                    uint16_t port) {
   EONC_LOG_INFO("Starting Cap'n Proto RPC server on {}:{}", host, port);
 
   capnp::EzRpcServer server(kj::heap<CallbackPotImpl>(std::move(callback)),
@@ -182,8 +184,8 @@ private:
 
 } // anonymous namespace
 
-void eonc::startPooledRpcServer(std::vector<ForceCallback> pool,
-                                const std::string &host, uint16_t port) {
+void startPooledRpcServer(std::vector<ForceCallback> pool,
+                          const std::string &host, uint16_t port) {
   EONC_LOG_INFO("Starting pooled RPC gateway on {}:{} with {} instances", host,
                 port, pool.size());
 
@@ -194,3 +196,5 @@ void eonc::startPooledRpcServer(std::vector<ForceCallback> pool,
   EONC_LOG_INFO("Gateway ready on port {}. Ctrl+C to stop.", port);
   kj::NEVER_DONE.wait(waitScope);
 }
+
+} // namespace eonc

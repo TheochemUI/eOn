@@ -375,10 +375,7 @@ def main(config: ConfigClass = None):
                 rmdirs.append(os.path.join(config.path_root, "old_searches"))
             for i in rmdirs:
                 if os.path.isdir(i):
-                    shutil.rmtree(i)
-                    #XXX: ugly way to remove all empty directories containing this one
-                    os.mkdir(i)
-                    os.removedirs(i)
+                    io.remove_tree_and_empty_parents(i)
 
             dynamics_path = os.path.join(config.path_results, "dynamics.txt")
             info_path = os.path.join(config.path_results, "info.txt")

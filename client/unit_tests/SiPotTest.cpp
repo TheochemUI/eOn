@@ -41,7 +41,7 @@ TEST_CASE("SW potential returns finite energy and forces on Si diamond",
           "[pot][sw][si]") {
   SIPOT_REQUIRE_POS_CON();
   Parameters params;
-  params.potential_options.potential = PotType::SW_SI;
+  ParametersLoadAccess::potential_options(params).potential = PotType::SW_SI;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
@@ -63,7 +63,7 @@ TEST_CASE("SW potential returns finite energy and forces on Si diamond",
 TEST_CASE("Tersoff energy matches SVN on Si diamond", "[pot][tersoff][si]") {
   SIPOT_REQUIRE_POS_CON();
   Parameters params;
-  params.potential_options.potential = PotType::TERSOFF_SI;
+  ParametersLoadAccess::potential_options(params).potential = PotType::TERSOFF_SI;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
@@ -80,7 +80,7 @@ TEST_CASE("Tersoff energy matches SVN on Si diamond", "[pot][tersoff][si]") {
 TEST_CASE("EDIP energy matches SVN on Si diamond", "[pot][edip][si]") {
   SIPOT_REQUIRE_POS_CON();
   Parameters params;
-  params.potential_options.potential = PotType::EDIP;
+  ParametersLoadAccess::potential_options(params).potential = PotType::EDIP;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
@@ -97,7 +97,7 @@ TEST_CASE("EDIP energy matches SVN on Si diamond", "[pot][edip][si]") {
 TEST_CASE("Lenosky energy matches SVN on Si diamond", "[pot][lenosky][si]") {
   SIPOT_REQUIRE_POS_CON();
   Parameters params;
-  params.potential_options.potential = PotType::LENOSKY_SI;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LENOSKY_SI;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
@@ -116,14 +116,14 @@ TEST_CASE("SW and Tersoff give different energies on same Si system",
   SIPOT_REQUIRE_POS_CON();
   Parameters params;
 
-  params.potential_options.potential = PotType::SW_SI;
+  ParametersLoadAccess::potential_options(params).potential = PotType::SW_SI;
   auto pot_sw = eonc::helpers::makePotential(params);
   auto m1 = std::make_shared<Matter>(pot_sw, params);
   m1->con2matter(std::string("pos.con"));
   double e_sw = m1->getPotentialEnergy();
   SIPOT_REQUIRE_LOADED(e_sw, "sw_si");
 
-  params.potential_options.potential = PotType::TERSOFF_SI;
+  ParametersLoadAccess::potential_options(params).potential = PotType::TERSOFF_SI;
   auto pot_tersoff = eonc::helpers::makePotential(params);
   auto m2 = std::make_shared<Matter>(pot_tersoff, params);
   m2->con2matter(std::string("pos.con"));
@@ -136,10 +136,10 @@ TEST_CASE("SW and Tersoff give different energies on same Si system",
 TEST_CASE("SW minimization energy matches SVN", "[pot][sw][si][minimization]") {
   SIPOT_REQUIRE_POS_CON();
   Parameters params;
-  params.potential_options.potential = PotType::SW_SI;
-  params.optimizer_options.method = OptType::LBFGS;
-  params.optimizer_options.converged_force = 0.001;
-  params.optimizer_options.max_iterations = 200;
+  ParametersLoadAccess::potential_options(params).potential = PotType::SW_SI;
+  ParametersLoadAccess::optimizer_options(params).method = OptType::LBFGS;
+  ParametersLoadAccess::optimizer_options(params).converged_force = 0.001;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 200;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
@@ -157,10 +157,10 @@ TEST_CASE("SW minimization energy matches SVN", "[pot][sw][si][minimization]") {
 TEST_CASE("SW CG minimization matches SVN", "[pot][sw][si][minimization][cg]") {
   SIPOT_REQUIRE_POS_CON();
   Parameters params;
-  params.potential_options.potential = PotType::SW_SI;
-  params.optimizer_options.method = OptType::CG;
-  params.optimizer_options.converged_force = 0.001;
-  params.optimizer_options.max_iterations = 200;
+  ParametersLoadAccess::potential_options(params).potential = PotType::SW_SI;
+  ParametersLoadAccess::optimizer_options(params).method = OptType::CG;
+  ParametersLoadAccess::optimizer_options(params).converged_force = 0.001;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 200;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));

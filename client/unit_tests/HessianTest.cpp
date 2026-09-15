@@ -26,7 +26,7 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 TEST_CASE("Hessian on LJ cluster is symmetric", "[hessian]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
@@ -52,7 +52,7 @@ TEST_CASE("Hessian on LJ cluster is symmetric", "[hessian]") {
 
 TEST_CASE("Hessian getFreqs returns finite eigenvalues", "[hessian]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
@@ -71,7 +71,7 @@ TEST_CASE("Hessian getFreqs returns finite eigenvalues", "[hessian]") {
 
 TEST_CASE("Hessian getFreqs rejects out-of-range atom indices", "[hessian]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
@@ -87,7 +87,7 @@ TEST_CASE("Hessian getFreqs rejects out-of-range atom indices", "[hessian]") {
 TEST_CASE("Hessian mobile phva_atoms yields 3*n_mobile square matrix",
           "[hessian]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   // Mobile/displaced set = hybrid/PHVA-class active list
   VectorXi subAtoms(2);
   subAtoms << 0, 1;
@@ -103,8 +103,8 @@ TEST_CASE("Hessian mobile phva_atoms yields 3*n_mobile square matrix",
 
 TEST_CASE("Hessian column checkpoint resume matches full FD", "[hessian]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
-  params.hessian_options.fd_scheme = "one_sided";
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::hessian_options(params).fd_scheme = "one_sided";
   const std::string ckpt = "hessian_resume_test.ckpt";
   std::remove(ckpt.c_str());
 
@@ -116,8 +116,8 @@ TEST_CASE("Hessian column checkpoint resume matches full FD", "[hessian]") {
 
   // Full run writes columns + symmetrizes; also writes ckpt each column then
   // deletes it on success.
-  params.hessian_options.resume = false;
-  params.hessian_options.checkpoint_path = ckpt;
+  ParametersLoadAccess::hessian_options(params).resume = false;
+  ParametersLoadAccess::hessian_options(params).checkpoint_path = ckpt;
   Hessian hessFull(params, matter.get());
   MatrixXd Hfull = hessFull.getHessian(matter.get(), subAtoms);
   REQUIRE(Hfull.rows() == 6);
@@ -132,7 +132,7 @@ TEST_CASE("Hessian column checkpoint resume matches full FD", "[hessian]") {
   // Hessian.cpp one_sided) so resume continues cols 2..5 then symmetrizes.
   {
     Matter matterTemp(*matter);
-    const double dr = params.main_options.finiteDifference;
+    const double dr = params.main_options().finiteDifference;
     const int nAtoms = matter->numberOfAtoms();
     const int size = 6;
     AtomMatrix pos = matter->getPositions();
@@ -164,8 +164,8 @@ TEST_CASE("Hessian column checkpoint resume matches full FD", "[hessian]") {
     }
   }
 
-  params.hessian_options.resume = true;
-  params.hessian_options.checkpoint_path = ckpt;
+  ParametersLoadAccess::hessian_options(params).resume = true;
+  ParametersLoadAccess::hessian_options(params).checkpoint_path = ckpt;
   Hessian hessRes(params, matter.get());
   MatrixXd Hres = hessRes.getHessian(matter.get(), subAtoms);
 
@@ -181,8 +181,8 @@ TEST_CASE("Hessian column checkpoint resume matches full FD", "[hessian]") {
 TEST_CASE("Hessian central fd_scheme produces finite symmetric H",
           "[hessian]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
-  params.hessian_options.fd_scheme = "central";
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::hessian_options(params).fd_scheme = "central";
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
@@ -203,7 +203,7 @@ TEST_CASE("Hessian central fd_scheme produces finite symmetric H",
 TEST_CASE("Hessian on Pt frozen layers system handles mixed fixed/free",
           "[hessian][morse_pt]") {
   Parameters params;
-  params.potential_options.potential = PotType::MORSE_PT;
+  ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
   auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("../Pt_Heptamer_FrozenLayers/pos.con"));

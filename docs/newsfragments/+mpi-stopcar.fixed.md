@@ -1,0 +1,1 @@
+MPI `stop_clients` sends `STOPCAR` to ready client ranks. AKMC uses that instead of `Abort`.

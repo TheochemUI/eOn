@@ -18,13 +18,13 @@
 #include <cmath>
 #include <thread>
 
-using namespace eonc::helpers;
+namespace eonc {
 
 Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
   // Give matterDimer its own potential for parallel force evaluation
-  auto dimerPot = (pot->needsPerImageInstance() && params.main_options.parallel)
+  auto dimerPot = (pot->needsPerImageInstance() && params.main_options().parallel)
                       ? eonc::helpers::makePotential(params)
                       : pot;
   matterCenter = std::make_shared<Matter>(pot, params);
@@ -49,7 +49,7 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
 
   // Optional: LOR / Lanczos / Davidson (enum dispatch; classical falls
   // through).
-  if (auto alt = runAlternativeRotation(params.dimer_options.rotation_backend,
+  if (auto alt = runAlternativeRotation(params.dimer_options().rotation_backend,
                                         matter, params, pot, direction,
                                         static_cast<quill::Logger *>(log))) {
     eigenvalue = alt->eigenvalue;
@@ -57,6 +57,11 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
     totalForceCalls += alt->forceCalls;
     statsRotations = alt->rotations;
     eonc::safemath::safe_normalize_inplace(direction);
+    for (long i = 0; i < nAtoms; ++i) {
+      if (matterCenter->getFixed(i)) {
+        direction.row(i).setZero();
+      }
+    }
     *matterCenter = *matter;
     return;
   }
@@ -87,33 +92,34 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
                              rotationalPlaneOld, lengthRotationalForceOld);
 
     torque = rotationalForce.norm();
-    assert(std::isnormal(torque));
+    // torque == 0 is a valid aligned dimer; isnormal(0) is false.
+    assert(std::isfinite(torque));
 
     // Convergence: stop if torque is below threshold or max rotations reached
-    if ((torque > params.dimer_options.torque_max &&
-         rotations >= params.dimer_options.rotations_max) ||
-        (torque < params.dimer_options.torque_max &&
-         torque >= params.dimer_options.torque_min &&
-         rotations >= params.dimer_options.rotations_min) ||
-        (torque < params.dimer_options.torque_min)) {
+    if ((torque > params.dimer_options().torque_max &&
+         rotations >= params.dimer_options().rotations_max) ||
+        (torque < params.dimer_options().torque_max &&
+         torque >= params.dimer_options().torque_min &&
+         rotations >= params.dimer_options().rotations_min) ||
+        (torque < params.dimer_options().torque_min)) {
       doneRotating = true;
     }
 
     double rotForce1 = matDot(rotationalForce, rotationalPlane);
-    rotate(params.dimer_options.rotation_angle);
+    rotate(params.dimer_options().rotation_angle);
 
     if (!doneRotating) {
       curvature = calcRotationalForceReturnCurvature(rotationalForce);
       double rotForce2 = matDot(rotationalForce, rotationalPlane);
 
       double rotForceChange =
-          (rotForce1 - rotForce2) / params.dimer_options.rotation_angle;
+          (rotForce1 - rotForce2) / params.dimer_options().rotation_angle;
       double forceDimer = (rotForce1 + rotForce2) / 2.0;
 
       rotationAngle = eonc::safemath::safe_atan_ratio(2.0 * forceDimer,
                                                       rotForceChange, 0.0) /
                           2.0 -
-                      params.dimer_options.rotation_angle / 2.0;
+                      params.dimer_options().rotation_angle / 2.0;
 
       if (rotForceChange < 0) {
         rotationAngle += eonc::helpers::pi / 2.0;
@@ -133,6 +139,11 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
   statsTorque = torque;
   statsCurvature = curvature;
   eonc::safemath::safe_normalize_inplace(direction);
+  for (long i = 0; i < nAtoms; ++i) {
+    if (matterCenter->getFixed(i)) {
+      direction.row(i).setZero();
+    }
+  }
   statsAngle = eonc::safemath::safe_acos(matDot(direction, initialDirection));
   statsAngle *= (180.0 / eonc::helpers::pi);
   statsRotations = rotations;
@@ -152,16 +163,16 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce) {
 
   // Displace to get dimer configuration A
   AtomMatrix posDimer =
-      posCenter + direction * params.main_options.finiteDifference;
+      posCenter + direction * params.main_options().finiteDifference;
 
   // Optional rotation removal (Melander, Laasonen, Jonsson, JCTC 2015)
-  if (params.dimer_options.remove_rotation) {
+  if (params.dimer_options().remove_rotation) {
     matterDimer->setPositions(posDimer);
-    rotationRemove(matterCenter, matterDimer);
+    eonc::geometry::rotationRemove(matterCenter, matterDimer);
     posDimer = matterDimer->getPositions();
-    direction = posDimer - posCenter;
+    direction = matterCenter->pbc(posDimer - posCenter);
     eonc::safemath::safe_normalize_inplace(direction);
-    posDimer = posCenter + direction * params.main_options.finiteDifference;
+    posDimer = posCenter + direction * params.main_options().finiteDifference;
   }
 
   // Obtain forces for dimer and center
@@ -218,15 +229,15 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce) {
   double projB = matDot(direction, forceB);
 
   // Remove force component parallel to dimer
-  forceA = makeOrthogonal(forceA, direction);
-  forceB = makeOrthogonal(forceB, direction);
+  forceA = helpers::makeOrthogonal(forceA, direction);
+  forceB = helpers::makeOrthogonal(forceB, direction);
 
   // Rotational force = orthogonal force difference
   rotationalForce =
-      (forceA - forceB) / (2.0 * params.main_options.finiteDifference);
+      (forceA - forceB) / (2.0 * params.main_options().finiteDifference);
 
   // Curvature along the dimer
-  return (projB - projA) / (2.0 * params.main_options.finiteDifference);
+  return (projB - projA) / (2.0 * params.main_options().finiteDifference);
 }
 
 void Dimer::determineRotationalPlane(const AtomMatrix &rotationalForce,
@@ -250,7 +261,7 @@ void Dimer::determineRotationalPlane(const AtomMatrix &rotationalForce,
 
   // Orthogonalize to dimer direction and normalize
   lengthRotationalForceOld = rotationalPlane.norm();
-  rotationalPlane = makeOrthogonal(rotationalPlane, direction);
+  rotationalPlane = helpers::makeOrthogonal(rotationalPlane, direction);
   eonc::safemath::safe_normalize_inplace(rotationalPlane);
 
   rotationalForceOld = rotationalForce;
@@ -262,13 +273,17 @@ void Dimer::rotate(double rotationAngle) {
   double cosA = std::cos(rotationAngle);
   double sinA = std::sin(rotationAngle);
 
-  direction = direction * cosA + rotationalPlane * sinA;
-  rotationalPlane = rotationalPlane * cosA - direction * sinA;
+  AtomMatrix newDirection = direction * cosA + rotationalPlane * sinA;
+  AtomMatrix newPlane = rotationalPlane * cosA - direction * sinA;
+  direction = std::move(newDirection);
+  rotationalPlane = std::move(newPlane);
 
   eonc::safemath::safe_normalize_inplace(direction);
   eonc::safemath::safe_normalize_inplace(rotationalPlane);
 
   // Remove component from rotationalPlane parallel to direction
-  rotationalPlane = makeOrthogonal(rotationalPlane, direction);
+  rotationalPlane = helpers::makeOrthogonal(rotationalPlane, direction);
   eonc::safemath::safe_normalize_inplace(rotationalPlane);
 }
+
+} // namespace eonc

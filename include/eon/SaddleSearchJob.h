@@ -49,14 +49,16 @@ public:
    * \param *params defined by the config.init file
    */
   SaddleSearchJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)),
-        fCallsSaddle{0} {}
+      : Job(std::move(parameters)), fCallsSaddle{0} {}
   //! Saddle Search Job Deconstructor
   ~SaddleSearchJob(void) = default;
   //! Kicks off the Saddle Search
-  std::vector<std::string> run(void);
+  std::vector<std::string> run(void) override;
+  /// In-process entry: seed reactant Matter, no pos.con (eOn-gbkb).
+  std::shared_ptr<Matter> runFromMatter(std::shared_ptr<Matter> seed);
 
 private:
+  std::shared_ptr<Matter> runPrepared(const AtomMatrix &mode);
   //! Runs the correct saddle search; also checks if the run was successful
   int doSaddleSearch();
   //! Logs the run status and makes sure the run was successful
@@ -83,5 +85,3 @@ private:
 };
 
 } // namespace eonc
-
-using eonc::SaddleSearchJob;

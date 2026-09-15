@@ -11,6 +11,7 @@
 */
 
 #include "eon/potentials/ExtPot/ExtPot.h"
+#include "eon/Parameters.h"
 #include "eon/potentials/ExtPot/ExtPotCommand.h"
 #include "eon/potentials/ExternalCommand.h"
 
@@ -117,9 +118,9 @@ std::string resolveCommand(const std::string &command) {
 
 } // namespace
 
-ExtPot::ExtPot(const Parameters &p)
-    : Potential(p),
-      eon_extpot_path{resolveCommand(p.potential_options.extPotPath)} {}
+ExtPot::ExtPot(const eonc::Parameters &p)
+    : eonc::Potential(p),
+      eon_extpot_path{resolveCommand(p.potential_options().extPotPath)} {}
 
 void ExtPot::cleanMemory(void) {
   if (exchangeDir.empty() || retainExchangeDir) {

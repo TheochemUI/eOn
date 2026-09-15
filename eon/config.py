@@ -264,6 +264,9 @@ class ConfigClass:
         self.void_bias_fraction = parser.getfloat('Saddle Search', 'void_bias_fraction')
         self.disp_max_coord = parser.getint('Saddle Search', 'displace_max_coordination')
         self.random_mode = parser.getboolean('Saddle Search', 'random_mode')
+        # Static INI lists are original .con file-order. Explorer flips this
+        # when injecting displace_atom_kmc_state_script Structure-row output.
+        self.disp_listed_from_script = False
         if self.displace_listed_atom_weight != 0.0:
             self.disp_listed_atoms = [ int(c.lstrip()) for c in parser.get('Saddle Search', 'displace_atom_list').split(',') ]
             if self.disp_listed_atoms == ['None']:

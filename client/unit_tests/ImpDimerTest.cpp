@@ -25,11 +25,11 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 TEST_CASE("ImprovedDimer computes eigenvalue on displaced cluster",
           "[ImprovedDimer]") {
   Parameters parameters;
-  parameters.potential_options.potential = PotType::LJ;
-  parameters.optimizer_options.method = OptType::CG;
-  parameters.optimizer_options.converged_force = 0.001;
-  parameters.dimer_options.converged_angle = 0.001;
-  parameters.saddle_search_options.minmode_method =
+  ParametersLoadAccess::potential_options(parameters).potential = PotType::LJ;
+  ParametersLoadAccess::optimizer_options(parameters).method = OptType::CG;
+  ParametersLoadAccess::optimizer_options(parameters).converged_force = 0.001;
+  ParametersLoadAccess::dimer_options(parameters).converged_angle = 0.001;
+  ParametersLoadAccess::saddle_search_options(parameters).minmode_method =
       LowestEigenmode::MINMODE_DIMER;
 
   auto pot = eonc::helpers::makePotential(parameters);

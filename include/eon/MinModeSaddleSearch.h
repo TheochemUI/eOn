@@ -145,5 +145,3 @@ private:
 };
 
 } // namespace eonc
-
-using eonc::MinModeSaddleSearch;

@@ -14,10 +14,10 @@
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
 
-class MPIPot : public Potential {
+class MPIPot : public eonc::Potential {
 
 public:
-  MPIPot(const Parameters &p);
+  MPIPot(const eonc::Parameters &p);
   ~MPIPot();
   void initialize() {};
   void cleanMemory(void);

@@ -18,10 +18,10 @@
 #include <unistd.h>
 #endif
 
-MPIPot::MPIPot(const Parameters &p)
-    : Potential(p) {
-  potentialRank = p.potential_options.MPIPotentialRank;
-  poll_period = p.potential_options.MPIPollPeriod;
+MPIPot::MPIPot(const eonc::Parameters &p)
+    : eonc::Potential(p) {
+  potentialRank = p.potential_options().MPIPotentialRank;
+  poll_period = p.potential_options().MPIPollPeriod;
   return;
 }
 

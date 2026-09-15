@@ -49,17 +49,31 @@ public:
    * \param *params defined by the config.init file
    */
   ProcessSearchJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)),
-        fCallsSaddle{0},
-        fCallsMin{0},
+      : Job(std::move(parameters)), fCallsSaddle{0}, fCallsMin{0},
+        fCallsPrefactors{0} {}
+  ProcessSearchJob(std::shared_ptr<Potential> potPassed,
+                   const Parameters &parameters)
+      : Job(std::move(potPassed), parameters), fCallsSaddle{0}, fCallsMin{0},
         fCallsPrefactors{0} {}
   //! Process Search job De-constructor
   ~ProcessSearchJob() = default;
   //! Kicks off the Process Search
   std::vector<std::string> run(void) override;
+  /// In-process entry: seed reactant Matter, no pos.con (eOn-gbkb).
+  std::shared_ptr<Matter> runFromMatter(std::shared_ptr<Matter> seed);
+
+  std::shared_ptr<Matter> getInitial() const { return initial; }
+  std::shared_ptr<Matter> getSaddle() const { return saddle; }
+  std::shared_ptr<Matter> getMin1() const { return min1; }
+  std::shared_ptr<Matter> getMin2() const { return min2; }
+  double prefactorForward() const { return prefactorsValues[0]; }
+  double prefactorReverse() const { return prefactorsValues[1]; }
+  double barrierForward() const { return barriersValues[0]; }
+  double barrierReverse() const { return barriersValues[1]; }
 
 private:
   eonc::log::Scoped log;
+  std::shared_ptr<Matter> runPrepared();
   //! Runs the correct saddle search; also checks if the run was successful
   int doProcessSearch(void);
   //! Logs the run status and makes sure the run was successful
@@ -103,5 +117,3 @@ private:
 };
 
 } // namespace eonc
-
-using eonc::ProcessSearchJob;

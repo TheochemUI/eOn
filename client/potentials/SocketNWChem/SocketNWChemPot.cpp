@@ -1,4 +1,5 @@
 #include "eon/potentials/SocketNWChem/SocketNWChemPot.h"
+#include "eon/Parameters.h"
 
 #include <cctype>
 #include <cstring>
@@ -11,37 +12,24 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-// Helper to get element symbols from atomic numbers
-using std::this_thread::sleep_for;
-using namespace std::chrono_literals;
+#include <chrono>
+#include <cstdint>
+#include <readcon-core.hpp>
+#include <thread>
 
-namespace {
-const char *elementArray[] = {
-    "Unknown", "H",  "He", "Li", "Be", "B",    "C",  "N",  "O",  "F",  "Ne",
-    "Na",      "Mg", "Al", "Si", "P",  "S",    "Cl", "Ar", "K",  "Ca", "Sc",
-    "Ti",      "V",  "Cr", "Mn", "Fe", "Co",   "Ni", "Cu", "Zn", "Ga", "Ge",
-    "As",      "Se", "Br", "Kr", "Rb", "Sr",   "Y",  "Zr", "Nb", "Mo", "Tc",
-    "Ru",      "Rh", "Pd", "Ag", "Cd", "In",   "Sn", "Sb", "Te", "I",  "Xe",
-    "Cs",      "Ba", "La", "Ce", "Pr", "Nd",   "Pm", "Sm", "Eu", "Gd", "Tb",
-    "Dy",      "Ho", "Er", "Tm", "Yb", "Lu",   "Hf", "Ta", "W",  "Re", "Os",
-    "Ir",      "Pt", "Au", "Hg", "Tl", "Pb",   "Bi", "Po", "At", "Rn", "Fr",
-    "Ra",      "Ac", "Th", "Pa", "U",  nullptr};
-char const *atomicNumber2symbol(int n) { return elementArray[n]; }
-} // namespace
-
-SocketNWChemPot::SocketNWChemPot(const Parameters &p)
-    : Potential(PotType::SocketNWChem, p),
+SocketNWChemPot::SocketNWChemPot(const eonc::Parameters &p)
+    : eonc::Potential(eonc::PotType::SocketNWChem, p),
       listen_fd(-1),
       conn_fd(-1),
       is_connected(false) {
 
-  unix_socket_mode = p.socket_nwchem_options.unix_socket_mode;
-  nwchem_settings = p.socket_nwchem_options.nwchem_settings;
-  mem_in_gb = p.socket_nwchem_options.mem_in_gb;
-  make_template_input = p.socket_nwchem_options.make_template_input;
+  unix_socket_mode = p.socket_nwchem_options().unix_socket_mode;
+  nwchem_settings = p.socket_nwchem_options().nwchem_settings;
+  mem_in_gb = p.socket_nwchem_options().mem_in_gb;
+  make_template_input = p.socket_nwchem_options().make_template_input;
 
   if (unix_socket_mode) {
-    unix_socket_basename = p.socket_nwchem_options.unix_socket_path;
+    unix_socket_basename = p.socket_nwchem_options().unix_socket_path;
     // NWChem's Fortran i-PI driver truncates the socket name to ~30 chars.
     // The full path is /tmp/ipi_<basename>, so basename must be short.
     server_address = "/tmp/ipi_" + unix_socket_basename;
@@ -62,8 +50,8 @@ SocketNWChemPot::SocketNWChemPot(const Parameters &p)
     std::cout << "SocketNWChemPot: Initializing in UNIX mode." << std::endl;
     std::cout << "Listening on socket file: " << server_address << std::endl;
   } else {
-    server_address = p.socket_nwchem_options.host;
-    port = p.socket_nwchem_options.port;
+    server_address = p.socket_nwchem_options().host;
+    port = p.socket_nwchem_options().port;
     std::cout << "SocketNWChemPot: Initializing in TCP mode." << std::endl;
     std::cout << "Listening on: " << server_address << ":" << port << std::endl;
   }
@@ -131,11 +119,25 @@ void SocketNWChemPot::write_nwchem_template(
 void SocketNWChemPot::force(long N, const double *R, const int *atomicNrs,
                             double *F, double *U, double *variance,
                             const double *box) {
+  try {
+    forceOnce(N, R, atomicNrs, F, U, variance, box);
+    return;
+  } catch (const std::runtime_error &) {
+    drop_connection();
+  }
+  forceOnce(N, R, atomicNrs, F, U, variance, box);
+}
+
+void SocketNWChemPot::forceOnce(long N, const double *R, const int *atomicNrs,
+                                double *F, double *U, double *variance,
+                                const double *box) {
   if (!is_connected) {
     std::vector<std::string> symbols;
     symbols.reserve(N);
     for (long i = 0; i < N; ++i) {
-      symbols.emplace_back(atomicNumber2symbol(atomicNrs[i]));
+      const int z = atomicNrs[i];
+      symbols.emplace_back(z > 0 ? readcon::z_to_symbol(static_cast<uint64_t>(z))
+                                 : "X");
     }
     if (make_template_input) {
       write_nwchem_template("nwchem_socket.nwi", N, symbols);
@@ -209,7 +211,7 @@ void SocketNWChemPot::force(long N, const double *R, const int *atomicNrs,
       break;
     }
     // A small sleep to prevent busy-waiting that consumes 100% CPU.
-    sleep_for(10ms);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
 
   // Request and receive results ---
@@ -299,6 +301,14 @@ void SocketNWChemPot::accept_connection() {
     throw std::runtime_error("Failed to accept client connection.");
   }
   is_connected = true;
+}
+
+void SocketNWChemPot::drop_connection() {
+  if (conn_fd >= 0) {
+    ::close(conn_fd);
+    conn_fd = -1;
+  }
+  is_connected = false;
 }
 
 void SocketNWChemPot::send_header(const char *msg) {

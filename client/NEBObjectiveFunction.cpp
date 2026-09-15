@@ -60,13 +60,13 @@ int NEBObjectiveFunction::degreesOfFreedom() {
 bool NEBObjectiveFunction::isUncertain() {
   double maxMaxUnc = std::numeric_limits<double>::lowest();
   double currentMaxUnc{0};
-  for (long idx = 0; idx <= neb->numImages; idx++) {
+  for (long idx = 0; idx <= neb->numImages + 1; idx++) {
     currentMaxUnc = neb->path[idx]->getEnergyVariance();
     if (currentMaxUnc > maxMaxUnc) {
       maxMaxUnc = currentMaxUnc;
     }
   }
-  bool unc_conv{maxMaxUnc > params.gp_surrogate_options.uncertainty};
+  bool unc_conv{maxMaxUnc > params.gp_surrogate_options().uncertainty};
   if (unc_conv) {
     this->status = NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY;
   }
@@ -74,7 +74,7 @@ bool NEBObjectiveFunction::isUncertain() {
 }
 
 bool NEBObjectiveFunction::isConverged() {
-  bool force_conv = getConvergence() < params.neb_options.force_tolerance;
+  bool force_conv = getConvergence() < params.neb_options().force_tolerance;
   return force_conv;
 }
 

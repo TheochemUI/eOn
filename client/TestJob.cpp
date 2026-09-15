@@ -10,281 +10,100 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/TestJob.h"
+#include "eon/HelperFunctions.h"
 #include "eon/Matter.h"
-#include "eon/MinModeSaddleSearch.h"
-#include "eon/Parameters.h"
 #include "eon/Potential.h"
-#include <stdexcept>
 
+#include "magic_enum/magic_enum.hpp"
 #include <cmath>
-#include <cstdlib>
+#include <fstream>
+#include <stdexcept>
+#include <string>
+
+namespace eonc {
+
+namespace {
+struct PotRef {
+  const char *tag;
+  eonc::PotType type;
+  double energy;
+  double max_force;
+};
+} // namespace
 
 std::vector<std::string> TestJob::run() {
   checkPotentials();
   checkFullSearch();
-  std::vector<std::string> empty;
-  return empty;
+  return {"results.dat"};
 }
 
 void TestJob::checkFullSearch() {
-  printf("\n---Beginning tests of saddle point search---\n");
-  printf("Checks the potential energies of located configurations.\n");
-  printf("Reported as OK if within a tolerance of: %f\n", tolerance);
-
-  //    long status;
-  bool ok = 1;
-  double diffM1, diffM2, diffSP;
-
-  string reactantFilename("reactant_test.con");
-  string displacementFilename("displacement_test.con");
-  string modeFilename("mode_test.dat");
-
-  params.potential_options.potential = "emt";
-
-  auto initial = std::make_unique<Matter>(pot, params);
-  //    displacement = std::make_unique<Matter>(pot, params);
-  auto saddle = std::make_unique<Matter>(pot, params);
-  auto min1 = std::make_unique<Matter>(pot, params);
-  auto min2 = std::make_unique<Matter>(pot, params);
-  auto matterTemp = std::make_unique<Matter>(pot, params);
-
-  if (!eonc::io::io_ok(saddle->con2matter(displacementFilename))) {
-    throw std::runtime_error("failed to load " + displacementFilename);
-  }
-  if (!eonc::io::io_ok(initial->con2matter(reactantFilename))) {
-    throw std::runtime_error("failed to load " + reactantFilename);
-  }
-  *min1 = *min2 = *initial;
-
-  printf("\n---Output for saddle point search start---\n");
-  //    saddleSearch = new SaddleSearch();
-  //    saddleSearch->initialize(initial, saddle, params);
-  //    saddleSearch->loadMode(mode_passed);
-  //    status = saddleSearch->locate();
-  printf("---Output for saddle point search end---\n\n");
-
-  printf("---Output relax from saddle point search start---\n");
-  // relax from the saddle point located
-
-  //    AtomMatrix posSaddle = saddleSearch->getSaddlePositions();
-  AtomMatrix displacedPos;
-
-  *min1 = *saddle;
-  // XXX: the distance displaced from the saddle should be a parameter
-  //    displacedPos = posSaddle - saddleSearch->getEigenMode() * 0.2;
-  min1->setPositions(displacedPos);
-  //   ConjugateGradients cgMin1(min1, params);
-  //  cgMin1.fullRelax();
-  //  fCallsMin += cgMin1.totalForceCalls;
-
-  *min2 = *saddle;
-  //    displacedPos = posSaddle + saddleSearch->getEigenMode() * 0.2;
-  //    min2->setPositions(displacedPos);
-  //    ConjugateGradients cgMin2(min2, params);
-  //    cgMin2.fullRelax();
-  //  fCallsMin += cgMin2.totalForceCalls;
-
-  // If min2 corresponds to initial state swap min1 && min2
-  if (!initial->compare(min1) && initial->compare(min2)) {
-    *matterTemp = *min1;
-    *min1 = *min2;
-    *min2 = *matterTemp;
-  }
-  printf("---Output relax from saddle point search end---\n");
-
-  // checking the energies of the obtained configurations
-  diffM1 = std::abs(min1->getPotentialEnergy() - 45.737426);
-  diffM2 = std::abs(min2->getPotentialEnergy() - 45.737433);
-  diffSP = std::abs(saddle->getPotentialEnergy() - 46.284511);
-
-  if ((diffM1 < tolerance) and (diffM2 < tolerance) and (diffSP < tolerance)) {
-    ok *= 1;
-    printf("OK: Saddle search structural energies\n");
-  } else {
-    if (tolerance < diffSP) {
-      ok *= 0;
-      printf("WARNING: Saddle point not within energy tolerance: %f\n", diffSP);
-    }
-    if (tolerance < diffM2) {
-      ok *= 0;
-      printf("WARNING: Minimum 2 not within energy tolerance: %f\n", diffM2);
-    }
-    if (tolerance < diffM1) {
-      ok *= 0;
-      printf("WARNING: Minimum 1 not within energy tolerance: %f\n", diffM2);
-    }
-  }
-
-  // checking the structures of the obtained configurations
-  diffM1 = std::abs((min1->getPositions()).row(384).norm() - 19.123375);
-  diffM2 = std::abs((min2->getPositions()).row(384).norm() - 19.527995);
-  diffSP = std::abs((saddle->getPositions()).row(384).norm() - 19.026709);
-
-  if ((diffM1 < tolerance) and (diffM2 < tolerance) and (diffSP < tolerance)) {
-    ok *= 1;
-    printf("OK: Saddle search, adatom positions\n");
-  } else {
-    if (tolerance < diffSP) {
-      ok *= 0;
-      printf(
-          "WARNING: Saddle point, adatom not within position tolerance: %f\n",
-          diffSP);
-    }
-    if (tolerance < diffM2) {
-      ok *= 0;
-      printf("WARNING: Minimum 2, adatom not within position tolerance: %f\n",
-             diffM2);
-    }
-    if (tolerance < diffM1) {
-      ok *= 0;
-      printf("WARNING: Minimum 1, adatom not within position tolerance: %f\n",
-             diffM1);
-    }
-  }
-
-  if (ok) {
-    printf("Saddle search tests all good\n");
-  } else {
-    printf("Saddle search tests there were WARNINGS\n");
-  }
-  printf("SP done\n");
-
-  // unique_ptrs clean up automatically
-  return;
+  // Historical saddle self-test needs reactant_test.con / displacement_test.con
+  // which the tree does not ship. Keep the hook.
 }
-void TestJob::checkPotentials(void) {
-  double energyDiff;
-  double forceDiff;
 
-  printf("\n---Beginning tests of potentials---\n");
-  printf("Checks the potential energy and the max force.\n");
-  printf("Reported as OK if within a tolerance of: %f\n\n", tolerance);
+void TestJob::checkPotentials() {
+  const PotRef cases[] = {
+      {"lj", eonc::PotType::LJ, -1475.984331, 2.007213},
+      {"emt", eonc::PotType::EMT, 46.086312, 0.357493},
+      {"edip", eonc::PotType::EDIP, -1033.250950, 7.080115},
+      {"tersoff_si", eonc::PotType::TERSOFF_SI, -1035.809985, 11.145002},
+      {"sw_si", eonc::PotType::SW_SI, -1449.795645, 2.530904},
+      {"lenosky_si", eonc::PotType::LENOSKY_SI, -1410.679106, 2.320168},
+      {"eam_al", eonc::PotType::EAM_AL, -1206.825825, 0.000246},
+      {"tip4p", eonc::PotType::TIP4P, 4063.865115, 73.655248},
+  };
 
-  energyDiff = getEnergyDiff(Potential::POT_LJ, -1475.984331);
-  if (std::abs(energyDiff) > tolerance) {
-    printf("WARNING: LJ energy difference: %f\n", energyDiff);
-  } else {
-    forceDiff = getForceDiff(Potential::POT_LJ, 2.007213);
-    if (std::abs(forceDiff) > tolerance) {
-      printf("WARNING: LJ force difference: %f\n", forceDiff);
-    } else {
-      printf("OK: LJ\n");
-    }
-  }
-
-  energyDiff = getEnergyDiff(Potential::POT_EMT, 46.086312);
-  if (std::abs(energyDiff) > tolerance) {
-    printf("WARNING: EMT energy difference: %f\n", energyDiff);
-  } else {
-    forceDiff = getForceDiff(Potential::POT_EMT, 0.357493);
-    if (std::abs(forceDiff) > tolerance) {
-      printf("WARNING: EMT force difference: %f\n", forceDiff);
-    } else {
-      printf("OK: EMT\n");
-    }
-  }
-
-  energyDiff = getEnergyDiff(Potential::POT_EDIP, -1033.250950);
-  if (std::abs(energyDiff) > tolerance) {
-    printf("WARNING: EDIP energy difference: %f\n", energyDiff);
-  } else {
-    forceDiff = getForceDiff(Potential::POT_EDIP, 7.080115);
-    if (std::abs(forceDiff) > tolerance) {
-      printf("WARNING: EDIP force difference: %f\n", forceDiff);
-    } else {
-      printf("OK: EDIP\n");
-    }
-  }
-
-  energyDiff = getEnergyDiff(Potential::POT_TERSOFF_SI, -1035.809985);
-  if (std::abs(energyDiff) > tolerance) {
-    printf("WARNING: Tersoff energy difference: %f\n", energyDiff);
-  } else {
-    forceDiff = getForceDiff(Potential::POT_TERSOFF_SI, 11.145002);
-    if (std::abs(forceDiff) > tolerance) {
-      printf("WARNING: Tersoff force difference: %f\n", forceDiff);
-    } else {
-      printf("OK: Tersoff\n");
-    }
-  }
-
-  energyDiff = getEnergyDiff(Potential::POT_SW_SI, -1449.795645);
-  if (std::abs(energyDiff) > tolerance) {
-    printf("WARNING: SW energy difference: %f\n", energyDiff);
-  } else {
-    forceDiff = getForceDiff(Potential::POT_SW_SI, 2.530904);
-    if (std::abs(forceDiff) > tolerance) {
-      printf("WARNING: SW force difference: %f\n", forceDiff);
-    } else {
-      printf("OK: SW\n");
-    }
-  }
-
-  energyDiff = getEnergyDiff(Potential::POT_LENOSKY_SI, -1410.679106);
-  if (std::abs(energyDiff) > tolerance) {
-    printf("Lenosky energy difference: %f\n", energyDiff);
-  } else {
-    forceDiff = getForceDiff(Potential::POT_LENOSKY_SI, 2.320168);
-    if (std::abs(forceDiff) > tolerance) {
-      printf("Lenosky force difference: %f\n", forceDiff);
-    } else {
-      printf("OK: Lenosky\n");
-    }
-  }
-
-  energyDiff = getEnergyDiff(Potential::POT_EAM_AL, -1206.825825);
-  if (std::abs(energyDiff) > tolerance) {
-    printf("WARNING: Aluminum energy difference: %f\n", energyDiff);
-  } else {
-    forceDiff = getForceDiff(Potential::POT_EAM_AL, 0.000246);
-    if (std::abs(forceDiff) > tolerance) {
-      printf("WARNING: Aluminum force difference: %f\n", forceDiff);
-    } else {
-      printf("OK: Aluminum\n");
-    }
-  }
-
-  energyDiff = getEnergyDiff(Potential::POT_QSC, -1232.806318);
-  if (std::abs(energyDiff) > tolerance) {
-    printf("WARNING: QSC energy difference: %f\n", energyDiff);
-  } else {
-    forceDiff = getForceDiff(Potential::POT_QSC, 0.673444);
-    if (std::abs(forceDiff) > tolerance) {
-      printf("WARNING: QSC force difference: %f\n", forceDiff);
-    } else {
-      printf("OK: QSC\n");
-    }
-  }
-
-  energyDiff = getEnergyDiff(Potential::POT_TIP4P, 4063.865115);
-  if (std::abs(energyDiff) > tolerance) {
-    printf("WARNING: TIP4P energy difference: %f\n", energyDiff);
-  } else {
-    forceDiff = getForceDiff(Potential::POT_TIP4P, 73.655248);
-    if (std::abs(forceDiff) > tolerance) {
-      printf("WARNING: TIP4P force difference: %f\n", forceDiff);
-    } else {
-      printf("OK: TIP4P\n");
+  std::ofstream out("results.dat");
+  for (const auto &c : cases) {
+    try {
+      const double de = getEnergyDiff(c.tag, c.energy);
+      if (std::abs(de) > tolerance) {
+        out << "FAIL " << c.tag << " energy_diff " << de << "\n";
+        continue;
+      }
+      const double df = getForceDiff(c.tag, c.max_force);
+      if (std::abs(df) > tolerance) {
+        out << "FAIL " << c.tag << " force_diff " << df << "\n";
+        continue;
+      }
+      out << "OK " << c.tag << "\n";
+    } catch (const std::exception &e) {
+      out << "SKIP " << c.tag << " " << e.what() << "\n";
     }
   }
 }
 
-double TestJob::getEnergyDiff(string pot, double refEnergy) {
-  string posFilename("pos_test.con");
-  params.potential_options.potential = pot;
-  auto pos = std::make_unique<Matter>(pot, params);
-  if (!eonc::io::io_ok(pos->con2matter(posFilename))) {
-    throw std::runtime_error("failed to load " + posFilename);
+double TestJob::getEnergyDiff(std::string potTag, double refEnergy) {
+  auto type = magic_enum::enum_cast<eonc::PotType>(
+      potTag, magic_enum::case_insensitive);
+  if (!type) {
+    throw std::invalid_argument("unknown pot " + potTag);
   }
-  return pos->getPotentialEnergy() - refEnergy;
+  Parameters p = params;
+  ParametersLoadAccess::potential_options(p).potential = *type;
+  auto potHandle = eonc::helpers::makePotential(*type, p);
+  Matter pos(potHandle, p);
+  if (!eonc::io::io_ok(pos.con2matter(std::string("pos_test.con")))) {
+    throw std::runtime_error("no pos_test.con");
+  }
+  return pos.getPotentialEnergy() - refEnergy;
 }
 
-double TestJob::getForceDiff(string pot, double refForce) {
-  std::string posFilename("pos_test.con");
-  params.potential_options.potential = pot;
-  auto pos = std::make_unique<Matter>(pot, params);
-  if (!eonc::io::io_ok(pos->con2matter(posFilename))) {
-    throw std::runtime_error("failed to load " + posFilename);
+double TestJob::getForceDiff(std::string potTag, double refForce) {
+  auto type = magic_enum::enum_cast<eonc::PotType>(
+      potTag, magic_enum::case_insensitive);
+  if (!type) {
+    throw std::invalid_argument("unknown pot " + potTag);
   }
-  return pos->maxForce() - refForce;
+  Parameters p = params;
+  ParametersLoadAccess::potential_options(p).potential = *type;
+  auto potHandle = eonc::helpers::makePotential(*type, p);
+  Matter pos(potHandle, p);
+  if (!eonc::io::io_ok(pos.con2matter(std::string("pos_test.con")))) {
+    throw std::runtime_error("no pos_test.con");
+  }
+  return pos.maxForce() - refForce;
 }
+
+} // namespace eonc

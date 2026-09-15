@@ -17,16 +17,16 @@
 
 #include <iostream>
 
-class XTBPot final : public Potential {
+class XTBPot final : public eonc::Potential {
 public:
   // Functions
-  XTBPot(const Parameters &p)
-      : Potential(PotType::XTB, p),
-        xtb_acc{p.xtb_options.acc},
-        xtb_electronic_temperature{p.xtb_options.elec_temperature},
-        xtb_max_iter{p.xtb_options.maxiter},
-        total_charge{p.xtb_options.charge},
-        uhf{p.xtb_options.uhf} {
+  XTBPot(const eonc::Parameters &p)
+      : eonc::Potential(eonc::PotType::XTB, p),
+        xtb_acc{p.xtb_options().acc},
+        xtb_electronic_temperature{p.xtb_options().elec_temperature},
+        xtb_max_iter{p.xtb_options().maxiter},
+        total_charge{p.xtb_options().charge},
+        uhf{p.xtb_options().uhf} {
     // Deprecated for packaging: prefer -Dwith_rgpot=true + potential=RGPOT
     // backend=xtb (dlopen libxtb_engine.so). Native -Dwith_xtb stays available.
     std::cerr
@@ -54,13 +54,13 @@ public:
       throw std::runtime_error("Failed to create xtb results");
     }
     // Unmarshal parameters
-    if (p.xtb_options.paramset == "GFNFF") {
+    if (p.xtb_options().paramset == "GFNFF") {
       xtb_paramset = GFNMethod::GFNFF;
-    } else if (p.xtb_options.paramset == "GFN0xTB") {
+    } else if (p.xtb_options().paramset == "GFN0xTB") {
       xtb_paramset = GFNMethod::GFN0xTB;
-    } else if (p.xtb_options.paramset == "GFN1xTB") {
+    } else if (p.xtb_options().paramset == "GFN1xTB") {
       xtb_paramset = GFNMethod::GFN1xTB;
-    } else if (p.xtb_options.paramset == "GFN2xTB") {
+    } else if (p.xtb_options().paramset == "GFN2xTB") {
       xtb_paramset = GFNMethod::GFN2xTB;
     } else {
       throw std::runtime_error("Parameter set for XTB must be one of GFNFF, "

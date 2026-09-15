@@ -24,19 +24,24 @@ owns that step. New pair finding goes through vesin.
 ## Python
 
 ```python
-from eon.geometry import neighbor_list, neighbor_list_linkcell, pbc
+from eon.geometry import neighbor_list, neighbor_list_linkcell, neighbor_list_pairs, pbc
 nl = neighbor_list(structure, cutoff=4.0)
+i, j, S = neighbor_list_pairs(structure, cutoff=4.0)
 ```
 
 `brute=True` exists for API compatibility. The production algorithm is
-always vesin.
+always vesin. `neighbor_list` unique-indexes atoms (historical eOn
+adjacency). `neighbor_list_pairs` keeps every atom-image row
+(`i`, `j`, cell shift `S`), the vesin/tonari pair contract.
+Displacement is `r[j] - r[i] + S @ box`.
 
 ### minimage
 
 `eon.geometry.pbc` applies the minimum-image wrap. When
 [minimage](https://github.com/HaoZeke/minimage) is installed it uses
 `minimage.Cell.from_vesin` (the same wrap [linkcell](https://github.com/HaoZeke/linkcell)
-uses). Without that extra the numpy path (`pbc_eon_legacy`) runs.
+uses) and `Cell.wrap_many` for packed `(N, 3)` rows. Without that extra
+the numpy path (`pbc_eon_legacy`) runs.
 
 ```python
 from eon.geometry import pbc
@@ -51,7 +56,7 @@ sets to vesin. Production `neighbor_list` does not call it.
 
 ```python
 from eon.geometry import neighbor_list_linkcell
-pairs = neighbor_list_linkcell(positions, box, cutoff=4.0)
+pairs = neighbor_list_linkcell(structure, cutoff=4.0)
 ```
 
 Install extras: `pip install minimage linkcell`. Tests skip when those

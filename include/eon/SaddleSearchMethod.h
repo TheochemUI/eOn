@@ -39,5 +39,3 @@ public:
 };
 
 } // namespace eonc
-
-using eonc::SaddleSearchMethod;

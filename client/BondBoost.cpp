@@ -15,9 +15,15 @@
 #include "eon/HelperFunctions.h"
 
 #include <algorithm>
+#include <cctype>
 #include <cmath>
+#include <ranges>
+#include <stdexcept>
 #include <string>
+#include <unordered_set>
 #include <vector>
+
+namespace eonc {
 
 const char Hyperdynamics::NONE[] = "none";
 const char Hyperdynamics::BOND_BOOST[] = "bond_boost";
@@ -25,6 +31,9 @@ const char Hyperdynamics::BOND_BOOST[] = "bond_boost";
 BondBoost::BondBoost(Matter *matt, const Parameters &params)
     : matter{matt},
       parameters{params} {
+  if (!matter) {
+    throw std::invalid_argument("BondBoost: null Matter");
+  }
   nAtoms = matter->numberOfAtoms();
 }
 
@@ -35,58 +44,69 @@ void BondBoost::initialize() {
   nReg = 1;
 
   const std::string &balString =
-      parameters.hyperdynamics_options.boost_atom_list;
-  auto atoms = eonc::helpers::split_string_int(balString, ",");
+      parameters.hyperdynamics_options().boost_atom_list;
+  std::string lowered = balString;
+  std::ranges::transform(lowered, lowered.begin(), [](unsigned char c) {
+    return static_cast<char>(std::tolower(c));
+  });
 
-  if (balString == "all" || atoms.empty()) {
-    QUILL_LOG_DEBUG(log, "boost all atoms that are set free\n");
-    nBAs = matter->numberOfFreeAtoms();
-    nRAs = nAtoms - nBAs;
-    BAList.resize(nBAs);
-    RAList.resize(nRAs);
-    long k = 0;
-    for (long i = 0; i < nAtoms; i++) {
+  BAList.clear();
+  if (lowered.empty() || lowered == "all") {
+    for (long i = 0; i < nAtoms; ++i) {
       if (!matter->getFixed(i)) {
-        BAList[k++] = i;
+        BAList.push_back(i);
       }
     }
   } else {
-    QUILL_LOG_DEBUG(log, "boost the following selected atoms:");
-    for (size_t i = 0; i < atoms.size(); i++) {
-      QUILL_LOG_DEBUG(log, "{} ", atoms[i]);
+    const auto atoms = eonc::helpers::split_string_int(balString, ",");
+    if (atoms.empty()) {
+      throw std::invalid_argument(
+          "hyperdynamics.boost_atom_list must be 'all' or a comma list of "
+          "CON file-order indices");
     }
-    QUILL_LOG_DEBUG(log, "\n");
-    nBAs = static_cast<long>(atoms.size());
-    nRAs = nAtoms - nBAs;
-    BAList.resize(nBAs);
-    RAList.resize(nRAs);
-    for (long i = 0; i < nBAs; i++) {
-      BAList[i] = atoms[i];
+    std::unordered_set<long> seen;
+    for (int raw : atoms) {
+      const long row = matter->mapFileRow(static_cast<long>(raw));
+      if (row < 0 || row >= nAtoms) {
+        throw std::out_of_range(
+            "hyperdynamics.boost_atom_list index out of range");
+      }
+      if (matter->getFixed(row)) {
+        continue;
+      }
+      if (seen.insert(row).second) {
+        BAList.push_back(row);
+      }
     }
+  }
+  if (BAList.empty()) {
+    throw std::runtime_error("BondBoost: no boostable atoms");
   }
 
-  // Build rest-atoms list (atoms not in BAList)
-  long count = 0;
-  for (long i = 0; i < nAtoms; i++) {
-    bool isBoosted = std::any_of(BAList.begin(), BAList.end(),
-                                 [i](long ba) { return ba == i; });
-    if (!isBoosted) {
-      RAList[count++] = i;
+  nBAs = static_cast<long>(BAList.size());
+  const std::unordered_set<long> boosted(BAList.begin(), BAList.end());
+  RAList.clear();
+  RAList.reserve(static_cast<size_t>(nAtoms - nBAs));
+  for (long i = 0; i < nAtoms; ++i) {
+    if (boosted.find(i) == boosted.end()) {
+      RAList.push_back(i);
     }
   }
-  if (count != nRAs) {
-    QUILL_LOG_DEBUG(log, "Error: nRestAtoms does not equal counted number!\n");
-  }
+  nRAs = static_cast<long>(RAList.size());
 
   nTABs = nBAs * (nBAs - 1) / 2 + nBAs * nRAs;
-  TABAList.resize(2 * nTABs);
+  TABAList.assign(static_cast<size_t>(2 * std::max(nTABs, 0L)), 0);
   TABLList.setZero(nTABs, 1);
-  QUILL_LOG_DEBUG(log, "BondBoost Used !\n");
+  QUILL_LOG_DEBUG(log, "BondBoost: {} boost atoms, {} rest, {} tagged bonds",
+                  nBAs, nRAs, nTABs);
 }
 
 long BondBoost::rmdSteps() const {
-  return static_cast<long>(parameters.hyperdynamics_options.rmd_time /
-                           parameters.dynamics_options.time_step);
+  const double dt = parameters.dynamics_options().time_step;
+  if (!(dt > 0.0)) {
+    return 0;
+  }
+  return static_cast<long>(parameters.hyperdynamics_options().rmd_time / dt);
 }
 
 void BondBoost::advance() {
@@ -128,9 +148,12 @@ double BondBoost::boost() {
 /// Compute bias potential and forces for bond-boost hyperdynamics.
 /// Returns the bias potential energy contribution.
 double BondBoost::Booststeps() {
-  const double QRR = parameters.hyperdynamics_options.qrr;
-  const double PRR = parameters.hyperdynamics_options.prr;
-  const double DVMAX = parameters.hyperdynamics_options.dvmax;
+  const double QRR = parameters.hyperdynamics_options().qrr;
+  const double PRR = parameters.hyperdynamics_options().prr;
+  const double DVMAX = parameters.hyperdynamics_options().dvmax;
+  if (nBBs <= 0 || !(QRR > 0.0)) {
+    return 0.0;
+  }
   const double nBBsD = static_cast<double>(nBBs);
 
   AtomMatrix addForces(nBBs, 3);
@@ -146,7 +169,12 @@ double BondBoost::Booststeps() {
   // Compute strain parameters and find maximum
   double epsrMax = 0.0;
   for (long i = 0; i < nBBs; i++) {
-    Epsr_Q[i] = (CBBLList(i, 0) - EBBLList(i, 0)) / EBBLList(i, 0) / QRR;
+    const double eq = EBBLList(i, 0);
+    if (!(eq > 0.0)) {
+      Epsr_Q[i] = 0.0;
+      continue;
+    }
+    Epsr_Q[i] = (CBBLList(i, 0) - eq) / eq / QRR;
     if (std::abs(Epsr_Q[i]) >= epsrMax) {
       epsrMax = std::abs(Epsr_Q[i]);
     }
@@ -189,6 +217,9 @@ double BondBoost::Booststeps() {
     long a1 = BBAList[2 * i];
     long a2 = BBAList[2 * i + 1];
     double R = CBBLList(i, 0);
+    if (!(R > 0.0) || !(EBBLList(i, 0) > 0.0)) {
+      continue;
+    }
 
     for (int j = 0; j < 3; j++) {
       double rij = matter->pdistance(a1, a2, j);
@@ -238,7 +269,7 @@ Matrix<double, Eigen::Dynamic, 1> BondBoost::Rmdsteps() {
 
 /// Select bonds within cutoff distance for boosting.
 long BondBoost::BondSelect() {
-  const double qCutoff = parameters.hyperdynamics_options.qcut;
+  const double qCutoff = parameters.hyperdynamics_options().qcut;
 
   // Count bonds within cutoff
   long nSelected = 0;
@@ -261,3 +292,5 @@ long BondBoost::BondSelect() {
   }
   return nSelected;
 }
+
+} // namespace eonc

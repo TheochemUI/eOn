@@ -13,8 +13,9 @@
 #include "eon/EonLogger.h"
 
 #include <cmath>
+#include <stdexcept>
 
-using namespace eonc::helpers;
+namespace eonc {
 
 const char Dynamics::ANDERSEN[] = "andersen";
 const char Dynamics::NOSE_HOOVER[] = "nose_hoover";
@@ -24,6 +25,9 @@ const char Dynamics::NONE[] = "none";
 Dynamics::Dynamics(Matter *matter_in, const DynamicsConfig &config)
     : matter{matter_in},
       m_config{config} {
+  if (!matter) {
+    throw std::invalid_argument("Dynamics: null Matter");
+  }
   dt = m_config.time_step;
   nAtoms = matter->numberOfAtoms();
   nFreeCoords = matter->numberOfFreeAtoms() * 3;
@@ -57,7 +61,8 @@ void Dynamics::oneStep(int stepNumber) {
     }
     double kinE = matter->getKineticEnergy();
     double potE = matter->getPotentialEnergy();
-    double kinT = 2.0 * kinE / nFreeCoords / kB;
+    const double kinT =
+        (nFreeCoords > 0 && kB > 0.0) ? 2.0 * kinE / nFreeCoords / kB : 0.0;
 
     if (stepNumber % m_config.write_movies_interval == 0) {
       QUILL_LOG_DEBUG(log, "{} {:8} {:10.4} {:12.4} {:12.4} {:10.2}\n",
@@ -105,12 +110,13 @@ void Dynamics::run() {
   QUILL_LOG_DEBUG(log, "{} {:8} {:10} {:12} {:12} {:10}\n", "[Dynamics]",
                   "step", "KE", "PE", "TE", "kinT");
 
-  for (long step = 0; step <= m_config.steps; step++) {
+  for (long step = 0; step < m_config.steps; step++) {
     oneStep();
 
     double kinE = matter->getKineticEnergy();
     double potE = matter->getPotentialEnergy();
-    double kinT = 2.0 * kinE / nFreeCoords / kB;
+    const double kinT =
+        (nFreeCoords > 0 && kB > 0.0) ? 2.0 * kinE / nFreeCoords / kB : 0.0;
     sumT += kinT;
     sumT2 += kinT * kinT;
 
@@ -126,8 +132,9 @@ void Dynamics::run() {
     }
   }
 
-  double avgT = sumT / static_cast<double>(m_config.steps);
-  double varT = sumT2 / static_cast<double>(m_config.steps) - avgT * avgT;
+  const double nstat = static_cast<double>(std::max(m_config.steps, 1L));
+  double avgT = sumT / nstat;
+  double varT = sumT2 / nstat - avgT * avgT;
   double stdT = std::sqrt(varT);
   QUILL_LOG_DEBUG(log,
                   "{} Temperature : Average = {:.2f} ; StdDev = {:.2f} ; "
@@ -145,11 +152,13 @@ void Dynamics::andersenCollision() {
   auto mass = matter->getMasses();
 
   for (long i = 0; i < nAtoms; i++) {
-    if (randomDouble() < pCol && !matter->getFixed(i)) {
+    if (eonc::rng::randomDouble() < pCol && !matter->getFixed(i)) {
       for (int j = 0; j < 3; j++) {
         double vOld = velocity(i, j);
-        double vNew =
-            std::sqrt(kB * temperature / mass[i]) * gaussRandom(0.0, 1.0);
+        const double vNew = (mass[i] > 0.0 && kB > 0.0 && temperature > 0.0)
+                                ? std::sqrt(kB * temperature / mass[i]) *
+                                      eonc::rng::gaussRandom(0.0, 1.0)
+                                : 0.0;
         velocity(i, j) = std::sqrt(1.0 - alpha * alpha) * vOld + alpha * vNew;
       }
     }
@@ -164,8 +173,10 @@ void Dynamics::setThermalVelocity() {
   for (long i = 0; i < nAtoms; i++) {
     if (!matter->getFixed(i)) {
       for (int j = 0; j < 3; j++) {
-        velocity(i, j) =
-            std::sqrt(kB * temperature / mass[i]) * gaussRandom(0.0, 1.0);
+        velocity(i, j) = (mass[i] > 0.0 && kB > 0.0 && temperature > 0.0)
+                             ? std::sqrt(kB * temperature / mass[i]) *
+                                   eonc::rng::gaussRandom(0.0, 1.0)
+                             : 0.0;
       }
     }
   }
@@ -175,71 +186,65 @@ void Dynamics::setThermalVelocity() {
 void Dynamics::rescaleVelocity() {
   AtomMatrix velocity = matter->getVelocities();
   double kinE = matter->getKineticEnergy();
-  double kinT = 2.0 * kinE / nFreeCoords / kB;
+  const double kinT =
+      (nFreeCoords > 0 && kB > 0.0) ? 2.0 * kinE / nFreeCoords / kB : 0.0;
+  if (!(kinT > 0.0) || !(temperature > 0.0)) {
+    return;
+  }
   matter->setVelocities(velocity * std::sqrt(temperature / kinT));
+}
+
+void Dynamics::nhcChainHalfStep(AtomMatrix &vel, double &kinE) {
+  const double dt2 = 0.5 * dt;
+  const double dt4 = 0.25 * dt;
+  const double dt8 = 0.125 * dt;
+  const double q1 = m_config.nose_mass;
+  const double q2 = q1;
+  const double Temp = kB * temperature;
+  if (!(q1 > 0.0)) {
+    throw std::invalid_argument("thermostat.nose_mass must be positive");
+  }
+
+  // Martyna, Klein, Tuckerman JCP 97, 2635 (1992): G2 = (Q1 v_ξ1² − kT) / Q2.
+  auto g2 = [&]() { return (q1 * vxi1 * vxi1 - Temp) / q2; };
+  auto g1 = [&]() { return (2.0 * kinE - nFreeCoords * Temp) / q1; };
+
+  vxi2 += g2() * dt4;
+  vxi1 *= std::exp(-vxi2 * dt8);
+  vxi1 += g1() * dt4;
+  vxi1 *= std::exp(-vxi2 * dt8);
+  xi1 += vxi1 * dt2;
+  xi2 += vxi2 * dt2;
+  const double s = std::exp(-vxi1 * dt2);
+  vel *= s;
+  kinE *= s * s;
+  vxi1 *= std::exp(-vxi2 * dt8);
+  vxi1 += g1() * dt4;
+  vxi1 *= std::exp(-vxi2 * dt8);
+  vxi2 += g2() * dt4;
 }
 
 /// Nose-Hoover chain thermostat (Martyna-Klein-Tuckerman algorithm).
 /// Two chain variables (xi1, xi2) with velocities (vxi1, vxi2).
 void Dynamics::noseHooverVerlet() {
-  double dt2 = 0.5 * dt;
-  double dt4 = 0.25 * dt;
-  double dt8 = 0.125 * dt;
-  double q1 = m_config.nose_mass;
-  double q2 = q1;
-  double Temp = kB * temperature;
-
+  const double dt2 = 0.5 * dt;
   AtomMatrix vel = matter->getVelocities();
   AtomMatrix pos = matter->getPositions();
   double kinE = matter->getKineticEnergy();
 
-  // Forward half-step for chain variables
-  double g2 = (q1 * vxi1 * vxi1 - Temp);
-  vxi2 += g2 * dt4;
-  vxi1 *= std::exp(-vxi2 * dt8);
-  double g1 = (2.0 * kinE - nFreeCoords * Temp) / q1;
-  vxi1 += g1 * dt4;
-  vxi1 *= std::exp(-vxi2 * dt8);
-  xi1 += vxi1 * dt2;
-  xi2 += vxi2 * dt2;
-  double s = std::exp(-vxi1 * dt2);
-  vel *= s;
-  kinE *= s * s;
-  vxi1 *= std::exp(-vxi2 * dt8);
-  g1 = (2.0 * kinE - nFreeCoords * Temp) / q1;
-  vxi1 += g1 * dt4;
-  vxi1 *= std::exp(-vxi2 * dt8);
-  g2 = (q1 * vxi1 * vxi1 - Temp) / q2;
-  vxi2 += g2 * dt4;
+  nhcChainHalfStep(vel, kinE);
 
-  // Position + velocity Verlet step
   pos += vel * dt2;
   matter->setPositions(pos);
   AtomMatrix acc = matter->getAccelerations();
   vel += acc * dt;
   pos += vel * dt2;
+  matter->setPositions(pos);
+  matter->setVelocities(vel);
   kinE = matter->getKineticEnergy();
 
-  // Backward half-step for chain variables
-  g2 = (q1 * vxi1 * vxi1 - Temp);
-  vxi2 += g2 * dt4;
-  vxi1 *= std::exp(-vxi2 * dt8);
-  g1 = (2.0 * kinE - nFreeCoords * Temp) / q1;
-  vxi1 += g1 * dt4;
-  vxi1 *= std::exp(-vxi2 * dt8);
-  xi1 += vxi1 * dt2;
-  xi2 += vxi2 * dt2;
-  s = std::exp(-vxi1 * dt2);
-  vel *= s;
-  kinE *= s * s;
-  vxi1 *= std::exp(-vxi2 * dt8);
-  g1 = (2.0 * kinE - nFreeCoords * Temp) / q1;
-  vxi1 += g1 * dt4;
-  vxi1 *= std::exp(-vxi2 * dt8);
-  g2 = (q1 * vxi1 * vxi1 - Temp) / q2;
-  vxi2 += g2 * dt4;
+  nhcChainHalfStep(vel, kinE);
 
-  matter->setPositions(pos);
   matter->setVelocities(vel);
 }
 
@@ -258,7 +263,7 @@ void Dynamics::langevinVerlet() {
     if (!matter->getFixed(i)) {
       for (int j = 0; j < 3; j++) {
         noise(i, j) = std::sqrt(4.0 * gamma * kB * temperature / dt / mass[i]) *
-                      gaussRandom(0.0, 1.0);
+                      eonc::rng::gaussRandom(0.0, 1.0);
       }
     }
   }
@@ -275,7 +280,7 @@ void Dynamics::langevinVerlet() {
     if (!matter->getFixed(i)) {
       for (int j = 0; j < 3; j++) {
         noise(i, j) = std::sqrt(4.0 * gamma * kB * temperature / dt / mass[i]) *
-                      gaussRandom(0.0, 1.0);
+                      eonc::rng::gaussRandom(0.0, 1.0);
       }
     }
   }
@@ -283,3 +288,5 @@ void Dynamics::langevinVerlet() {
   vel += 0.5 * dt * acc;
   matter->setVelocities(vel);
 }
+
+} // namespace eonc

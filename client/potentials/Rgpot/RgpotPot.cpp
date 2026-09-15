@@ -8,12 +8,13 @@
 #include <cctype>
 #include <cstdlib>
 #include <iostream>
+#include <ranges>
 #include <string>
 
-RgpotPot::RgpotPot(const Parameters &p)
-    : Potential(PotType::RGPOT, p) {
+RgpotPot::RgpotPot(const eonc::Parameters &p)
+    : eonc::Potential(eonc::PotType::RGPOT, p) {
   RGPotEngineOptions opt;
-  const auto &o = p.rgpot_options;
+  const auto &o = p.rgpot_options();
   opt.backend = o.backend;
   opt.basis = o.basis;
   opt.theory = o.theory;
@@ -55,12 +56,14 @@ RgpotPot::RgpotPot(const Parameters &p)
   // Engine-path env overrides are backend-scoped: NWCHEMC_LIBRARY must not
   // leak into a cpmdc configure (CPMDPot resolves CPMDC_LIBRARY itself).
   std::string backend_lc = opt.backend;
-  std::transform(backend_lc.begin(), backend_lc.end(), backend_lc.begin(),
-                 [](unsigned char c) { return std::tolower(c); });
+  std::ranges::transform(backend_lc, backend_lc.begin(),
+                         [](unsigned char c) { return std::tolower(c); });
   if (backend_lc.rfind("nwchem", 0) == 0) {
     if (const char *e = std::getenv("NWCHEMC_LIBRARY"))
       opt.engine_path = e;
     else if (const char *e = std::getenv("RGPOT_NWCHEMC_ENGINE"))
+      opt.engine_path = e;
+    else if (const char *e = std::getenv("RGPOT_NWCHEM_ENGINE"))
       opt.engine_path = e;
   } else if (backend_lc.rfind("cpmd", 0) == 0) {
     if (const char *e = std::getenv("CPMDC_LIBRARY"))
@@ -81,18 +84,18 @@ RgpotPot::RgpotPot(const Parameters &p)
     else if (const char *e = std::getenv("XTB_ENGINE"))
       opt.engine_path = e;
     if (opt.xtb_paramset.empty() || opt.xtb_paramset == "GFN2xTB") {
-      if (!p.xtb_options.paramset.empty())
-        opt.xtb_paramset = p.xtb_options.paramset;
+      if (!p.xtb_options().paramset.empty())
+        opt.xtb_paramset = p.xtb_options().paramset;
     }
   }
 
   // Dual-read [Metatomic] when RGPOT backend is metatomic
   if ((backend_lc.rfind("meta", 0) == 0 || backend_lc == "mta") &&
       opt.model_path.empty())
-    opt.model_path = p.metatomic_options.model_path;
+    opt.model_path = p.metatomic_options().model_path;
   if ((backend_lc.rfind("meta", 0) == 0 || backend_lc == "mta") &&
-      opt.device == "cpu" && !p.metatomic_options.device.empty())
-    opt.device = p.metatomic_options.device;
+      opt.device == "cpu" && !p.metatomic_options().device.empty())
+    opt.device = p.metatomic_options().device;
 
   impl_ = std::make_unique<RGPotEngine>(opt);
   backend_ = impl_->backend();

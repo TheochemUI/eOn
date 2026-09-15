@@ -1,5 +1,4 @@
 import importlib as _importlib
-from eon.server import server
 
 try:
     from eon.version import version as __version__
@@ -19,3 +18,16 @@ except ModuleNotFoundError:
 # string as __version__, whether it came from generated version.py or
 # the fallback above.
 version = __version__
+
+
+def __getattr__(name):
+    if name == "server":
+        from eon.server import server as _server
+
+        globals()["server"] = _server
+        return _server
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__():
+    return sorted(set(globals()) | {"server"})

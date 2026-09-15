@@ -62,7 +62,3 @@ void startPooledRpcServer(std::vector<ForceCallback> pool,
                           const std::string &host, uint16_t port);
 
 } // namespace eonc
-
-using eonc::ForceCallback;
-using eonc::startPooledRpcServer;
-using eonc::startRpcServer;

@@ -13,11 +13,11 @@
 
 #include "eon/Potential.h"
 
-class VASP : public Potential {
+class VASP : public eonc::Potential {
 
 public:
-  VASP(const Parameters &p)
-      : Potential(p) {
+  VASP(const eonc::Parameters &p)
+      : eonc::Potential(p) {
     vaspRunCount++;
   }
   ~VASP() { cleanMemory(); }

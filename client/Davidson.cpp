@@ -18,15 +18,19 @@
 // to 3 N_mobile without changing free/fixed.
 
 #include "eon/Davidson.h"
+
 #include "eon/EonLogger.h"
 #include "eon/HelperFunctions.h"
 #include "eon/MobileAtoms.h"
 #include "eon/Potential.h"
 #include "eon/SafeMath.h"
+#include <algorithm>
 
 #include <cmath>
 #include <memory>
 #include <vector>
+
+namespace eonc {
 
 Davidson::Davidson(std::shared_ptr<Matter> matter, const Parameters &params,
                    std::shared_ptr<Potential> pot)
@@ -38,7 +42,7 @@ Davidson::Davidson(std::shared_ptr<Matter> matter, const Parameters &params,
 
 void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   const VectorXi mobile =
-      resolveMobileAtoms(matter.get(), params.davidson_options.phva_atoms);
+      resolveMobileAtoms(matter.get(), params.davidson_options().phva_atoms);
   compute(std::move(matter), std::move(direction), mobile);
 }
 
@@ -56,10 +60,10 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
     return;
   }
 
-  const long maxIter = params.davidson_options.max_iterations;
-  const double tol = params.davidson_options.tolerance;
-  const double dr = params.main_options.finiteDifference;
-  const bool useDiagPrec = params.davidson_options.diagonal_preconditioner;
+  const long maxIter = std::max(1L, params.davidson_options().max_iterations);
+  const double tol = params.davidson_options().tolerance;
+  const double dr = params.main_options().finiteDifference;
+  const bool useDiagPrec = params.davidson_options().diagonal_preconditioner;
 
   MatrixXd V(size, maxIter);
   MatrixXd HV(size, maxIter);
@@ -195,3 +199,5 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
 double Davidson::getEigenvalue() { return lowestEw; }
 
 AtomMatrix Davidson::getEigenvector() { return lowestEv; }
+
+} // namespace eonc

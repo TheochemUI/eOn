@@ -12,6 +12,7 @@
 #include "eon/MinimizationJob.h"
 #include "eon/BaseStructures.h"
 #include "eon/HelperFunctions.h"
+#include "eon/JobResult.h"
 #include "eon/Matter.h"
 #include "eon/Optimizer.h"
 
@@ -21,11 +22,13 @@
 #include <iostream>
 #include <stdexcept>
 
+namespace eonc {
+
 std::vector<std::string> MinimizationJob::run() {
   std::string posInFilename("pos.con");
   std::string posOutFilename("min.con");
 
-  if (params.main_options.checkpoint) {
+  if (params.main_options().checkpoint) {
     if (std::filesystem::exists("pos_cp.con")) {
       posInFilename = "pos_cp.con";
       QUILL_LOG_DEBUG(log, "[Minimization] Resuming from checkpoint");
@@ -48,8 +51,8 @@ std::vector<std::string> MinimizationJob::run() {
   bool converged;
   try {
     converged =
-        pos->relax(false, params.debug_options.write_movies,
-                   params.main_options.checkpoint, "minimization", "pos");
+        pos->relax(false, params.debug_options().write_movies,
+                   params.main_options().checkpoint, "minimization", "pos");
     if (converged) {
       status = RunStatus::GOOD;
       QUILL_LOG_DEBUG(log, "Minimization converged within tolerence");
@@ -64,6 +67,9 @@ std::vector<std::string> MinimizationJob::run() {
     } else {
       throw e;
     }
+  } catch (const std::exception &e) {
+    QUILL_LOG_ERROR(log, "Minimization potential failed: {}", e.what());
+    status = RunStatus::FAIL_POTENTIAL_FAILED;
   }
 
   QUILL_LOG_DEBUG(log, "Saving result to {}", posOutFilename);
@@ -77,36 +83,14 @@ std::vector<std::string> MinimizationJob::run() {
   std::filesystem::path resultsFilename("results.dat");
   returnFiles.push_back(resultsFilename.string());
 
-  std::ofstream fileResults(resultsFilename, std::ios::binary);
-
-  if (!fileResults.is_open()) {
-    std::cerr << "Error opening file " << resultsFilename << ": "
-              << std::strerror(errno) << std::endl;
-    throw std::runtime_error("Failed to open results file: " +
-                             std::string(std::strerror(errno)));
-    return returnFiles;
-  }
-
-  fileResults << static_cast<int>(status) << " termination_reason\n";
-  fileResults << magic_enum::enum_name<RunStatus>(status)
-              << " termination_reason_text\n";
-  fileResults << "minimization job_type\n";
-  fileResults << magic_enum::enum_name<PotType>(
-                     params.potential_options.potential)
-              << " potential_type\n";
-  fileResults << this->pot->forceCallCounter.load() << " total_force_calls\n";
-
-  if (status != RunStatus::FAIL_POTENTIAL_FAILED) {
-    fileResults << std::format("{:.12e} potential_energy\n",
-                               pos->getPotentialEnergy());
-  }
-
-  // No explicit fclose needed; RAII handles it.
-  if (!fileResults.good()) {
-    std::cerr << "Error writing to file " << resultsFilename
-              << ": May be incomplete." << std::endl;
-    // Consider throwing, depending on the severity.
-  }
+  const bool hasE = status != RunStatus::FAIL_POTENTIAL_FAILED;
+  const double energy = hasE ? pos->getPotentialEnergy() : 0.0;
+  JobResultEnvelope::fromMinimization(
+      status, params.potential_options().potential,
+      this->pot->forceCallCounter.load(), hasE, energy)
+      .writeResultsDat(resultsFilename.string());
 
   return returnFiles;
 }
+
+} // namespace eonc

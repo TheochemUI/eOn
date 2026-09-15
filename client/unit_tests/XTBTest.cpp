@@ -61,15 +61,15 @@ TEST_CASE_METHOD(PotTest, "XTB", "[PotTest]") {
 
   double e_mta{0};
   AtomMatrix f_mta = MatrixXd::Ones(m1->numberOfAtoms(), 3);
-  params.potential_options.potential = PotType::XTB;
-  params.xtb_options.paramset = "GFN2xTB";
-  params.xtb_options.acc = 1.0;
-  params.xtb_options.elec_temperature = 300.0;
-  params.xtb_options.maxiter = 250;
-  params.xtb_options.charge = 0.0;
-  params.xtb_options.uhf = 0;
+  ParametersLoadAccess::potential_options(params).potential = PotType::XTB;
+  ParametersLoadAccess::xtb_options(params).paramset = "GFN2xTB";
+  ParametersLoadAccess::xtb_options(params).acc = 1.0;
+  ParametersLoadAccess::xtb_options(params).elec_temperature = 300.0;
+  ParametersLoadAccess::xtb_options(params).maxiter = 250;
+  ParametersLoadAccess::xtb_options(params).charge = 0.0;
+  ParametersLoadAccess::xtb_options(params).uhf = 0;
   auto pot =
-      eonc::helpers::makePotential(params.potential_options.potential, params);
+      eonc::helpers::makePotential(params.potential_options().potential, params);
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
              m1->getAtomicNrs().data(), f_mta.data(), &e_mta, nullptr,
              m1->getCell().data());

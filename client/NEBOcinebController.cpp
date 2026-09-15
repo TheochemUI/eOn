@@ -21,7 +21,7 @@ namespace eonc::neb {
 
 OCINEBController::Config
 OCINEBController::fromParams(const Parameters &params) {
-  auto &ci = params.neb_options.climbing_image;
+  auto &ci = params.neb_options().climbing_image;
   auto &r = ci.ocineb;
   return Config{
       r.use_mmf,
@@ -30,7 +30,7 @@ OCINEBController::fromParams(const Parameters &params) {
       r.max_steps,
       r.ci_stability_count,
       r.angle_tol,
-      params.neb_options.force_tolerance,
+      params.neb_options().force_tolerance,
   };
 }
 
@@ -39,7 +39,8 @@ OCINEBController::OCINEBController(const Config &cfg)
 
 void OCINEBController::initBaseline(double baseline_force) {
   baseline_force_ = baseline_force;
-  current_threshold_ = baseline_force_ * cfg_.trigger_factor;
+  current_threshold_ = std::max(baseline_force_ * cfg_.trigger_factor,
+                                2.0 * cfg_.force_tolerance);
 }
 
 bool OCINEBController::shouldTrigger(double convForce, bool ci_active,
@@ -53,7 +54,7 @@ bool OCINEBController::shouldTrigger(double convForce, bool ci_active,
     return false;
   if (convForce <= cfg_.force_tolerance)
     return false;
-  return (convForce < current_threshold_ || convForce < cfg_.trigger_force);
+  return convForce < current_threshold_;
 }
 
 void OCINEBController::updateStability(long climbingImage) {
@@ -126,8 +127,8 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
 
   bool shouldReset =
       (savedPositions - neb.path[neb.climbingImage]->getPositions()).norm() >
-      neb.params.optimizer_options.max_move *
-          neb.params.neb_options.image_count;
+      neb.params.optimizer_options().max_move *
+          neb.params.neb_options().image_count;
 
   if (shouldReset) {
     QUILL_LOG_DEBUG(log, "Resetting optimization history.");
@@ -188,10 +189,22 @@ int OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
   }
 
   AtomMatrix finalModeMatrix = tempMinModeSearch->getEigenvector();
-  VectorXd finalMode = VectorXd::Map(finalModeMatrix.data(), 3 * neb.atoms);
+  VectorXd finalMode =
+      VectorXd::Map(finalModeMatrix.data(), finalModeMatrix.size());
   VectorXd currentTangent =
-      VectorXd::Map(neb.tangent[neb.climbingImage]->data(), 3 * neb.atoms);
-  alignment = std::abs(finalMode.normalized().dot(currentTangent.normalized()));
+      VectorXd::Map(neb.tangent[neb.climbingImage]->data(),
+                    neb.tangent[neb.climbingImage]->size());
+  if (finalMode.size() != currentTangent.size()) {
+    QUILL_LOG_WARNING(log,
+                      "MMF mode size {} != tangent size {}; skip alignment",
+                      finalMode.size(), currentTangent.size());
+    alignment = 0.0;
+  } else if (finalMode.norm() == 0.0 || currentTangent.norm() == 0.0) {
+    alignment = 0.0;
+  } else {
+    alignment =
+        std::abs(finalMode.normalized().dot(currentTangent.normalized()));
+  }
 
   if (minModeStatus == MinModeSaddleSearch::STATUS_GOOD ||
       minModeStatus == MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST) {
@@ -217,7 +230,8 @@ int OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
 void OCINEBController::updateThresholdSuccess(double convForce,
                                               double newForce) {
   current_threshold_ = newForce * (0.5 + 0.4 * (newForce / convForce));
-  double max_threshold = baseline_force_ * cfg_.trigger_factor;
+  double max_threshold = std::max(baseline_force_ * cfg_.trigger_factor,
+                                  2.0 * cfg_.force_tolerance);
   current_threshold_ = std::min(current_threshold_, max_threshold);
 }
 
@@ -230,8 +244,7 @@ void OCINEBController::updateThresholdBackoff(double alignment) {
   // convergence, but also capped by the trigger_factor envelope so a
   // loose force_tolerance cannot push min_threshold above the cap and
   // starve MMF activation.
-  double min_threshold = std::min(cfg_.force_tolerance * 2.0,
-                                  baseline_force_ * cfg_.trigger_factor);
+  double min_threshold = 2.0 * cfg_.force_tolerance;
   current_threshold_ = std::max(current_threshold_, min_threshold);
 }
 

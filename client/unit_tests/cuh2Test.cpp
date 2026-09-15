@@ -22,6 +22,7 @@
 #include "CuH2Test.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
+#include "eonc_test_aliases.hpp"
 
 namespace tests {
 
@@ -36,7 +37,7 @@ CuH2Test::~CuH2Test() {
 TEST_F(CuH2Test, TestMatter) {
   string confile("pos.con");
   Parameters parameters;
-  parameters.potential_options.potential = PotType::CUH2;
+  ParametersLoadAccess::potential_options(parameters).potential = PotType::CUH2;
   auto pot = eonc::helpers::makePotential(parameters);
   auto matter = std::make_shared<Matter>(pot, parameters);
   matter->con2matter(confile);

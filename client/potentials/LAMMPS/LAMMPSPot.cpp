@@ -20,6 +20,7 @@
 #include <format>
 #include <fstream>
 #include <map>
+#include <stdexcept>
 #include <string>
 
 #if !defined(EONMPI) && !defined(IS_WINDOWS)
@@ -35,19 +36,31 @@
 
 #ifdef EONMPI
 #define LAMMPS_LIB_MPI
+#include "eon/ParametersMpi.h"
 #endif
 
-LAMMPSPot::LAMMPSPot(const Parameters &p)
-    : Potential(p),
-      lammpsThr{p.potential_options.LAMMPSThreads}
+LAMMPSPot::LAMMPSPot(const eonc::Parameters &p)
+    : LAMMPSPot(p, eonc::LammpsLoader::instance(), true) {}
+
+LAMMPSPot::LAMMPSPot(const eonc::Parameters &p, eonc::ILammpsLoader &loader)
+    : LAMMPSPot(p, loader, false) {}
+
+LAMMPSPot::LAMMPSPot(const eonc::Parameters &p, eonc::ILammpsLoader &loader,
+                     bool isolate_worker)
+    : eonc::Potential(p),
+      loader_{loader},
+      lammpsThr{p.potential_options().LAMMPSThreads}
 #ifdef EONMPI
       ,
-      mpiComm{p.potential_options.MPIClientComm}
+      mpiComm{eonc::getMpiClientComm(p)}
 #endif
 {
   // Fail fast if LAMMPS library not available
-  eonc::LammpsLoader::instance().require_loaded();
+  loader_.require_loaded();
 #if !defined(EONMPI) && !defined(IS_WINDOWS)
+  if (!isolate_worker) {
+    return;
+  }
   // Fork the worker NOW, at construction, before this process ever opens a
   // LAMMPS instance (and thus before liblammps initialises MPI).  Open MPI
   // does not support using MPI in a process that called MPI_Init before fork,
@@ -55,17 +68,76 @@ LAMMPSPot::LAMMPSPot(const Parameters &p)
   // LAMMPSPot -- endpoints and per-image alike -- runs its LAMMPS in its own
   // child process, so the parent never initialises MPI at all.
   ensureWorker();
+#else
+  (void)isolate_worker;
 #endif
 }
 
 LAMMPSPot::~LAMMPSPot() { cleanMemory(); }
+
+void LAMMPSPot::setFixedMask(long nAtoms, const double *isFixed) {
+  if (nAtoms <= 0 || isFixed == nullptr) {
+    fixedMask_.clear();
+    maskN_ = 0;
+    return;
+  }
+  fixedMask_.assign(isFixed, isFixed + 3 * nAtoms);
+  maskN_ = nAtoms;
+}
+
+void LAMMPSPot::applySetforce(long N) {
+  if (LAMMPSObj == nullptr || maskN_ != N || fixedMask_.empty()) {
+    return;
+  }
+  auto &lmp = loader_;
+  static constexpr const char *kUnfix[] = {
+      "unfix eon_fx", "unfix eon_fy", "unfix eon_fz", "unfix eon_freeze"};
+  static constexpr const char *kUngroup[] = {
+      "group eon_fx delete", "group eon_fy delete", "group eon_fz delete",
+      "group eon_frozen delete"};
+  for (const char *cmd : kUnfix) {
+    try {
+      lmp.command(LAMMPSObj, cmd);
+    } catch (...) {
+    }
+  }
+  for (const char *cmd : kUngroup) {
+    try {
+      lmp.command(LAMMPSObj, cmd);
+    } catch (...) {
+    }
+  }
+  // Matter stores per-axis isFixed. A z-only freeze must not leave LAMMPS
+  // free to move that atom in z.
+  std::string ids[3];
+  for (long i = 0; i < N; ++i) {
+    for (int ax = 0; ax < 3; ++ax) {
+      if (fixedMask_[static_cast<size_t>(3 * i + ax)] >= 0.5) {
+        ids[ax] += std::format("{} ", i + 1);
+      }
+    }
+  }
+  static constexpr const char *kGroup[] = {"eon_fx", "eon_fy", "eon_fz"};
+  static constexpr const char *kFix[] = {
+      "fix eon_fx eon_fx setforce 0.0 NULL NULL",
+      "fix eon_fy eon_fy setforce NULL 0.0 NULL",
+      "fix eon_fz eon_fz setforce NULL NULL 0.0"};
+  for (int ax = 0; ax < 3; ++ax) {
+    if (ids[ax].empty()) {
+      continue;
+    }
+    lmp.command(LAMMPSObj,
+                ("group " + std::string(kGroup[ax]) + " id " + ids[ax]).c_str());
+    lmp.command(LAMMPSObj, kFix[ax]);
+  }
+}
 
 void LAMMPSPot::cleanMemory() {
 #if !defined(EONMPI) && !defined(IS_WINDOWS)
   stopWorker();
 #endif
   if (LAMMPSObj != nullptr) {
-    eonc::LammpsLoader::instance().close(LAMMPSObj);
+    loader_.close(LAMMPSObj);
     LAMMPSObj = nullptr;
   }
 }
@@ -210,6 +282,12 @@ void LAMMPSPot::runWorkerLoop() {
                    sizeof(double) * static_cast<size_t>(3 * N))) {
       _exit(1);
     }
+    std::vector<double> mask(static_cast<size_t>(3 * N), 0.0);
+    if (!readExact(reqFd, mask.data(),
+                   sizeof(double) * static_cast<size_t>(3 * N))) {
+      _exit(1);
+    }
+    setFixedMask(N, mask.data());
 
     std::vector<double> F(static_cast<size_t>(3 * N), 0.0);
     double U = 0.0;
@@ -290,10 +368,16 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
   }
   ensureWorker();
 
+  std::vector<double> mask(static_cast<size_t>(3 * N), 0.0);
+  if (maskN_ == N && fixedMask_.size() == static_cast<size_t>(3 * N)) {
+    mask = fixedMask_;
+  }
   if (!writeExact(reqFd, &N, sizeof(N)) ||
       !writeExact(reqFd, atomicNrs, sizeof(int) * static_cast<size_t>(N)) ||
       !writeExact(reqFd, box, sizeof(double) * 9) ||
-      !writeExact(reqFd, R, sizeof(double) * static_cast<size_t>(3 * N))) {
+      !writeExact(reqFd, R, sizeof(double) * static_cast<size_t>(3 * N)) ||
+      !writeExact(reqFd, mask.data(),
+                  sizeof(double) * static_cast<size_t>(3 * N))) {
     // A worker stopped by an earlier rejected geometry leaves the request
     // pipe closed, so the first send after it fails. Respawning happens on
     // the next evaluation; reject this one rather than end the client.
@@ -394,7 +478,7 @@ void LAMMPSPot::forceLocal(long N, const double *R, const int *atomicNrs,
   eonc::FPEHandler fpeh;
   fpeh.eat_fpe();
   try {
-    auto &lmp = eonc::LammpsLoader::instance();
+    auto &lmp = loader_;
 
     bool newLammps = false;
     for (int i = 0; i < 9; i++) {
@@ -411,19 +495,37 @@ void LAMMPSPot::forceLocal(long N, const double *R, const int *atomicNrs,
     }
 
     lmp.scatter_atoms(LAMMPSObj, "x", 1, 3, const_cast<double *>(R));
-    lmp.command(LAMMPSObj, "run 1 pre no post no");
+    applySetforce(N);
+    // New instance / box change: rebuild neighbors. create_atoms sits at
+    // the origin; pre no would evaluate on that neighbor list.
+    if (newLammps) {
+      lmp.command(LAMMPSObj, "run 1 pre yes post no");
+    } else {
+      lmp.command(LAMMPSObj, "run 1 pre no post no");
+    }
 
     auto *pe =
         static_cast<double *>(lmp.extract_variable(LAMMPSObj, "pe", nullptr));
-    *U = *pe;
-    free(pe);
-
     auto *fx =
         static_cast<double *>(lmp.extract_variable(LAMMPSObj, "fx", "all"));
     auto *fy =
         static_cast<double *>(lmp.extract_variable(LAMMPSObj, "fy", "all"));
     auto *fz =
         static_cast<double *>(lmp.extract_variable(LAMMPSObj, "fz", "all"));
+    if (!pe || !fx || !fy || !fz) {
+      if (pe)
+        free(pe);
+      if (fx)
+        free(fx);
+      if (fy)
+        free(fy);
+      if (fz)
+        free(fz);
+      throw std::runtime_error(
+          "LAMMPS: extract_variable returned null (pe/fx/fy/fz)");
+    }
+    *U = *pe;
+    free(pe);
 
     for (long i = 0; i < N; i++) {
       F[3 * i + 0] = fx[i];
@@ -452,13 +554,13 @@ void LAMMPSPot::forceLocal(long N, const double *R, const int *atomicNrs,
 
 void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
                               const double *box) {
-  auto &lmp = eonc::LammpsLoader::instance();
+  auto &lmp = loader_;
 
   numberOfAtoms = N;
   std::memcpy(oldBox, box, 9 * sizeof(double));
 
   if (LAMMPSObj != nullptr) {
-    eonc::LammpsLoader::instance().close(LAMMPSObj);
+    loader_.close(LAMMPSObj);
     LAMMPSObj = nullptr;
   }
 
@@ -508,8 +610,12 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
       }
     }
   } else {
-    EONC_LOG_ERROR("[LAMMPS] in.lammps not found in working directory");
-    return;
+    if (LAMMPSObj != nullptr) {
+      lmp.close(LAMMPSObj);
+      LAMMPSObj = nullptr;
+    }
+    throw std::runtime_error(
+        "LAMMPS: in.lammps not found in working directory");
   }
 
   if (realunits) {
@@ -522,7 +628,14 @@ void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
   lmp.command(LAMMPSObj, "atom_modify map array sort 0 0");
   lmp.command(LAMMPSObj, "neigh_modify delay 1");
 
-  // Define periodic cell (prism for non-orthorhombic)
+  // LAMMPS restricted triclinic: (ax, by, cz, bx, cx, cy).
+  // Row-major Matter cell also has ay, az, bz at box[1], box[2], box[5].
+  constexpr double kTiltCut = 1.0e-8;
+  if (std::abs(box[1]) > kTiltCut || std::abs(box[2]) > kTiltCut ||
+      std::abs(box[5]) > kTiltCut) {
+    throw std::runtime_error(
+        "LAMMPS: cell is not restricted triclinic (ay/az/bz must be ~0)");
+  }
   std::string region_cmd =
       std::format("region cell prism 0 {} 0 {} 0 {} {} {} {} units box", box[0],
                   box[4], box[8], box[3], box[6], box[7]);

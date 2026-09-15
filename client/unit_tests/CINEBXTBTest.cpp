@@ -25,30 +25,30 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 // 6e8461c3).
 TEST_CASE("CI-NEB XTB regression", "[neb][xtb]") {
   Parameters params;
-  params.potential_options.potential = PotType::XTB;
-  params.xtb_options.paramset = "GFN2xTB";
-  params.xtb_options.acc = 1.0;
-  params.xtb_options.elec_temperature = 300.0;
-  params.xtb_options.maxiter = 250;
+  ParametersLoadAccess::potential_options(params).potential = PotType::XTB;
+  ParametersLoadAccess::xtb_options(params).paramset = "GFN2xTB";
+  ParametersLoadAccess::xtb_options(params).acc = 1.0;
+  ParametersLoadAccess::xtb_options(params).elec_temperature = 300.0;
+  ParametersLoadAccess::xtb_options(params).maxiter = 250;
 
-  params.neb_options.image_count = 10;
-  params.neb_options.spring.weighting.enabled = true;
-  params.neb_options.spring.weighting.k_min = 0.972;
-  params.neb_options.spring.weighting.k_max = 9.72;
-  params.neb_options.spring.weighting.trigger = 0.5;
-  params.neb_options.initialization.method = NEBInit::LINEAR;
-  params.neb_options.endpoints.minimize = false;
-  params.neb_options.climbing_image.enabled = true;
-  params.neb_options.climbing_image.converged_only = true;
-  params.neb_options.climbing_image.trigger_force = 0.5;
-  params.neb_options.climbing_image.trigger_factor = 0.8;
-  params.neb_options.force_tolerance = 0.0514221;
-  params.optimizer_options.method = OptType::LBFGS;
-  params.optimizer_options.max_iterations = 100;
-  params.optimizer_options.max_move = 0.1;
+  ParametersLoadAccess::neb_options(params).image_count = 10;
+  params.neb_options().spring.weighting.enabled = true;
+  params.neb_options().spring.weighting.k_min = 0.972;
+  params.neb_options().spring.weighting.k_max = 9.72;
+  params.neb_options().spring.weighting.trigger = 0.5;
+  params.neb_options().initialization.method = NEBInit::LINEAR;
+  params.neb_options().endpoints.minimize = false;
+  params.neb_options().climbing_image.enabled = true;
+  params.neb_options().climbing_image.converged_only = true;
+  params.neb_options().climbing_image.trigger_force = 0.5;
+  params.neb_options().climbing_image.trigger_factor = 0.8;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 0.0514221;
+  ParametersLoadAccess::optimizer_options(params).method = OptType::LBFGS;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 100;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.1;
 
   auto pot =
-      eonc::helpers::makePotential(params.potential_options.potential, params);
+      eonc::helpers::makePotential(params.potential_options().potential, params);
   auto initial = std::make_shared<Matter>(pot, params);
   auto final_state = std::make_shared<Matter>(pot, params);
 

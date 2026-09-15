@@ -43,9 +43,9 @@ std::filesystem::path makeAseWorkDir(const char *prefix) {
 
 } // namespace
 
-// TODO(rg): Clean this up.
-ASENwchemPot::ASENwchemPot(const Parameters &a_params)
-    : Potential(PotType::ASE_NWCHEM, a_params) {
+ASENwchemPot::ASENwchemPot(const eonc::Parameters &a_params)
+    : eonc::Potential(eonc::PotType::ASE_NWCHEM, a_params) {
+  using namespace pybind11::literals;
   eonc::ensure_interpreter();
   counter = 0;
   py::module_ sys = py::module_::import("sys");
@@ -58,29 +58,26 @@ ASENwchemPot::ASENwchemPot(const Parameters &a_params)
   py::module_ ase_nwchem = py::module_::import("ase.calculators.nwchem");
   py::module_ psutil = py::module_::import("psutil");
   std::string nwchempth = eonc::helpers::get_value_from_env_or_param(
-      "NWCHEM_COMMAND", a_params.ase_nwchem_options.path, "", "", true);
+      "NWCHEM_COMMAND", a_params.ase_nwchem_options().path, "", "", true);
   std::string nwc_mult = eonc::helpers::get_value_from_env_or_param(
-      "NWCHEM_MULTIPLICITY", a_params.ase_nwchem_options.multiplicity, "1",
+      "NWCHEM_MULTIPLICITY", a_params.ase_nwchem_options().multiplicity, "1",
       "Using 1 as a default multiplicity, i.e. an RHF calculation suitable for "
       "closed shell molecules, set multiplicity or the "
       "environment variable NWCHEM_MULTIPLICITY.\n");
 
-  // Set up NWCHEM arguments
-  // TODO(rg): Stop hardcoding these
   py::object NWCHEM = ase_nwchem.attr("NWChem");
   size_t nproc{0};
   auto mult = std::stoi(nwc_mult); // 1 for singlet, 2 for doublet
 
-  // TODO(rg): Use
-  if (a_params.ase_nwchem_options.nproc == "auto") {
+  if (a_params.ase_nwchem_options().nproc == "auto") {
     nproc = py::cast<int>(psutil.attr("cpu_count")(false));
   } else {
-    nproc = std::stoi(a_params.ase_nwchem_options.nproc);
+    nproc = std::stoi(a_params.ase_nwchem_options().nproc);
   }
 
   // dont_verify so we always get an energy and gradient
   // mpi_launcher: mpirun (default) or srun on Slurm nodes (issue #193)
-  const std::string &launcher = a_params.ase_nwchem_options.mpi_launcher;
+  const std::string &launcher = a_params.ase_nwchem_options().mpi_launcher;
   std::string mpi_cmd;
   if (launcher == "srun") {
     // srun uses -n for tasks; avoid OpenMPI-specific flags.
@@ -105,11 +102,13 @@ ASENwchemPot::ASENwchemPot(const Parameters &a_params)
   py::dict nwchem_params = py::dict(
       "label"_a = "_eonpot_engrad",
       "set"_a = py::dict("geom:dont_verify"_a = true),
-      "command"_a = py::str(mpi_cmd), "memory"_a = py::str("2 gb"),
+      "command"_a = py::str(mpi_cmd),
+      "memory"_a = py::str(a_params.ase_nwchem_options().memory),
       "scf"_a = py::dict("nopen"_a = mult - 1,
-                         "thresh"_a = a_params.ase_nwchem_options.scf_thresh,
-                         "maxiter"_a = a_params.ase_nwchem_options.scf_maxiter),
-      "basis"_a = py::str("3-21G"), "task"_a = py::str("gradient"),
+                         "thresh"_a = a_params.ase_nwchem_options().scf_thresh,
+                         "maxiter"_a = a_params.ase_nwchem_options().scf_maxiter),
+      "basis"_a = py::str(a_params.ase_nwchem_options().basis),
+      "task"_a = py::str("gradient"),
       "directory"_a = workDir.string());
 
   // Set flag for doublet (mult == 2)
@@ -139,6 +138,7 @@ ASENwchemPot::~ASENwchemPot() {
 void ASENwchemPot::force(long nAtoms, const double *R, const int *atomicNrs,
                          double *F, double *U, double *variance,
                          const double *box) {
+  using namespace pybind11::literals;
   variance = nullptr;
   try {
     AtomMatrix positions = AtomMatrix::Map(const_cast<double *>(R), nAtoms, 3);

@@ -21,10 +21,10 @@ University of Iceland
 #include "spce_ccl.hpp"
 #include "tip4p_ccl.hpp"
 
-class Tip4p : public Potential, private forcefields::Tip4p {
+class Tip4p : public eonc::Potential, private forcefields::Tip4p {
 public:
-  Tip4p(const Parameters &params)
-      : Potential(params),
+  Tip4p(const eonc::Parameters &params)
+      : eonc::Potential(params),
         forcefields::Tip4p(8.5, 1.0) {};
   // Functions
   // constructor and destructor
@@ -35,10 +35,10 @@ public:
              double *U, double *variance, const double *box) override;
 };
 
-class SpceCcl : public Potential, private forcefields::SpceCcl {
+class SpceCcl : public eonc::Potential, private forcefields::SpceCcl {
 public:
-  SpceCcl(const Parameters &params)
-      : Potential(params),
+  SpceCcl(const eonc::Parameters &params)
+      : eonc::Potential(params),
         forcefields::SpceCcl(8.5, 1.0) {}
   // Functions
   // constructor and destructor

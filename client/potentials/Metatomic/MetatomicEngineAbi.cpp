@@ -36,9 +36,9 @@ RgpotMtaPot *rgpot_mta_create(const RgpotMtaConfig *cfg, char *errbuf,
     return nullptr;
   }
   try {
-    Parameters p;
-    p.potential_options.potential = PotType::METATOMIC;
-    auto &o = p.metatomic_options;
+    eonc::Parameters p;
+    ParametersLoadAccess::potential_options(p).potential = eonc::PotType::METATOMIC;
+    auto &o = p.metatomic_options();
     o.model_path = cfg->model_path;
     o.device = nz(cfg->device)[0] ? cfg->device : "cpu";
     o.length_unit = nz(cfg->length_unit)[0] ? cfg->length_unit : "angstrom";

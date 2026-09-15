@@ -18,7 +18,9 @@ behaviour is unchanged from legacy MCAMC.
 """
 from __future__ import annotations
 
+import json
 import logging
+import os
 from typing import Any, Mapping
 
 logger = logging.getLogger("superbasin.amsel_gate")
@@ -136,9 +138,21 @@ def discover_decide_for_superbasin(
         )
     except Exception as exc:
         logger.warning("amsel discover_decide_status failed: %s", exc)
+        policy = str(getattr(config, "amsel_on_error", "fallback_single") or "fallback_single")
+        if policy == "raise":
+            raise
+        if policy == "unavailable_mcamc":
+            return {
+                "available": False,
+                "status": "unavailable",
+                "primary_transient": None,
+                "raw": None,
+                "reason": f"{type(exc).__name__}: {exc}",
+            }
+        # fallback_single: do not look like a successful AMSEl skip
         return {
             "available": True,
-            "status": "unavailable",
+            "status": "fallback_single",
             "primary_transient": None,
             "raw": None,
             "reason": f"{type(exc).__name__}: {exc}",
@@ -161,6 +175,37 @@ def discover_decide_for_superbasin(
     }
 
 
+def _split_cache_path(superbasin: Any) -> str | None:
+    path = getattr(superbasin, "path", None)
+    if not path:
+        return None
+    return str(path) + ".amsel_split.json"
+
+
+def load_persisted_split(superbasin: Any) -> list[int] | None:
+    cache = _split_cache_path(superbasin)
+    if not cache or not os.path.isfile(cache):
+        return None
+    try:
+        with open(cache, encoding="utf-8") as fh:
+            data = json.load(fh)
+        keep = [int(x) for x in data.get("keep", [])]
+        return keep or None
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
+        return None
+
+
+def persist_split(superbasin: Any, keep: list[int]) -> None:
+    cache = _split_cache_path(superbasin)
+    if not cache:
+        return
+    try:
+        with open(cache, "w", encoding="utf-8") as fh:
+            json.dump({"keep": [int(x) for x in keep]}, fh)
+    except OSError as exc:
+        logger.warning("amsel persist_split failed: %s", exc)
+
+
 def apply_gate_to_superbasin(
     superbasin: Any,
     entry_state: Any,
@@ -171,8 +216,20 @@ def apply_gate_to_superbasin(
     Returns the status string for logging.
     """
     status = str(decision.get("status", "unavailable"))
-    if not decision.get("available") or status in ("unavailable", "accepted", "retightened"):
+    if not decision.get("available") or status in (
+        "unavailable",
+        "accepted",
+        "retightened",
+        "fallback_single",
+    ):
         return status
+    cached = load_persisted_split(superbasin)
+    if cached:
+        keep = [n for n in superbasin.state_numbers if int(n) in set(cached)]
+        if keep and keep != list(superbasin.state_numbers):
+            superbasin.state_numbers = keep
+            superbasin.states = [superbasin.state_dict[n] for n in keep]
+        return "split_cached"
     if status == "split_required":
         primary = decision.get("primary_transient") or []
         if not primary:
@@ -209,6 +266,7 @@ def apply_gate_to_superbasin(
                 superbasin.write_data()
             except Exception as exc:
                 logger.warning("amsel split: write_data failed: %s", exc)
+        persist_split(superbasin, [int(n) for n in keep])
         return status
     if status in ("rejected_no_metastable_basin", "rejected"):
         raise AmselSuperbasinReject(

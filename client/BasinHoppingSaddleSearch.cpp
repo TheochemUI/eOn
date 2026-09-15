@@ -19,22 +19,24 @@
 #include <cmath>
 #include <cstdio>
 
+namespace eonc {
+
 int BasinHoppingSaddleSearch::run() {
   // minimize "saddle"
   saddle->relax(false, true, false, "displacementmin");
   product = std::make_shared<Matter>(pot, params);
   *product = *saddle;
   // accept or reject based on boltzman
-  // exp(-de/(kB*params.main_options.temperature))
+  // exp(-de/(kB*params.main_options().temperature))
   double eproduct, ereactant, de;
   eproduct = product->getPotentialEnergy();
   ereactant = reactant->getPotentialEnergy();
   de = eproduct - ereactant;
-  double kB = params.constants.kB;
-  double Temperature = params.main_options.temperature;
+  double kB = params.constants().kB;
+  double Temperature = params.main_options().temperature;
   double arg = -de / (kB * Temperature);
   double p = std::exp(arg);
-  double r = eonc::helpers::random();
+  double r = eonc::rng::random();
   if (ereactant < eproduct) {
     if (r > p) { // reject
       return 1;
@@ -82,3 +84,5 @@ int BasinHoppingSaddleSearch::run() {
 double BasinHoppingSaddleSearch::getEigenvalue() { return eigenvalue; }
 
 AtomMatrix BasinHoppingSaddleSearch::getEigenvector() { return eigenvector; }
+
+} // namespace eonc

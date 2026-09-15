@@ -77,27 +77,27 @@ eonc::Parameters route_minmode_params(eonc::Parameters params,
           "\"). Use DimerSpec / method=\"improved\" — not classic/lanczos/"
           "davidson.");
     }
-    params.saddle_search_options.minmode_method =
+    ParametersLoadAccess::saddle_search_options(params).minmode_method =
         eonc::LowestEigenmode::MINMODE_GPRDIMER;
-    params.dimer_options.improved = true;
+    ParametersLoadAccess::dimer_options(params).improved = true;
     return params;
 #endif
   }
 
   if (method == "classic") {
-    params.saddle_search_options.minmode_method =
+    ParametersLoadAccess::saddle_search_options(params).minmode_method =
         eonc::LowestEigenmode::MINMODE_DIMER;
-    params.dimer_options.improved = false;
+    ParametersLoadAccess::dimer_options(params).improved = false;
   } else if (method == "improved" || method == "dimer" || method.empty()) {
     // Default and "dimer" synonym: improved dimer
-    params.saddle_search_options.minmode_method =
+    ParametersLoadAccess::saddle_search_options(params).minmode_method =
         eonc::LowestEigenmode::MINMODE_DIMER;
-    params.dimer_options.improved = true;
+    ParametersLoadAccess::dimer_options(params).improved = true;
   } else if (method == "lanczos") {
-    params.saddle_search_options.minmode_method =
+    ParametersLoadAccess::saddle_search_options(params).minmode_method =
         eonc::LowestEigenmode::MINMODE_LANCZOS;
   } else if (method == "davidson") {
-    params.saddle_search_options.minmode_method =
+    ParametersLoadAccess::saddle_search_options(params).minmode_method =
         eonc::LowestEigenmode::MINMODE_DAVIDSON;
   } else {
     throw std::runtime_error(
@@ -146,35 +146,17 @@ struct PyDimer {
     return matrix_to_numpy(eonc::eigenmodeGetEigenvector(*strategy));
   }
 
-  long total_force_calls() const {
-    return std::visit([](const auto &impl) { return impl.totalForceCalls; },
-                      *strategy);
-  }
+  long total_force_calls() const { return strategy->totalForceCalls; }
 
-  long total_iterations() const {
-    return std::visit([](const auto &impl) { return impl.totalIterations; },
-                      *strategy);
-  }
+  long total_iterations() const { return strategy->totalIterations; }
 
-  double stats_torque() const {
-    return std::visit([](const auto &impl) { return impl.statsTorque; },
-                      *strategy);
-  }
+  double stats_torque() const { return strategy->statsTorque; }
 
-  double stats_curvature() const {
-    return std::visit([](const auto &impl) { return impl.statsCurvature; },
-                      *strategy);
-  }
+  double stats_curvature() const { return strategy->statsCurvature; }
 
-  double stats_angle() const {
-    return std::visit([](const auto &impl) { return impl.statsAngle; },
-                      *strategy);
-  }
+  double stats_angle() const { return strategy->statsAngle; }
 
-  long stats_rotations() const {
-    return std::visit([](const auto &impl) { return impl.statsRotations; },
-                      *strategy);
-  }
+  long stats_rotations() const { return strategy->statsRotations; }
 };
 
 template <typename Class>

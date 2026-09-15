@@ -30,10 +30,10 @@ protected:
       : params{},
         pot{nullptr},
         matter{nullptr} {
-    params.potential_options.potential = PotType::LJ;
-    params.main_options.temperature = 300.0;
-    params.main_options.randomSeed = 42;
-    eonc::helpers::random(42);
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+    ParametersLoadAccess::main_options(params).temperature = 300.0;
+    ParametersLoadAccess::main_options(params).randomSeed = 42;
+    eonc::rng::random(42);
 
     pot = eonc::helpers::makePotential(PotType::LJ, params);
     matter = new Matter(pot, params);
@@ -64,7 +64,7 @@ TEST_CASE_METHOD(DynamicsFixture,
                  "Dynamics 5 steps with fixed seed is deterministic",
                  "[dynamics]") {
   // Run 5 steps, record final energy
-  eonc::helpers::random(42); // reset seed
+  eonc::rng::random(42); // reset seed
   Dynamics dyn(matter, params);
   dyn.setTemperature(100.0);
   dyn.setThermalVelocity();
@@ -77,7 +77,7 @@ TEST_CASE_METHOD(DynamicsFixture,
 
   // Reset and run again with same seed
   matter->con2matter(std::string("reactant.con"));
-  eonc::helpers::random(42);
+  eonc::rng::random(42);
   Dynamics dyn2(matter, params);
   dyn2.setTemperature(100.0);
   dyn2.setThermalVelocity();
@@ -137,7 +137,7 @@ TEST_CASE_METHOD(DynamicsFixture,
 TEST_CASE_METHOD(DynamicsFixture,
                  "Dynamics Nose-Hoover thermostat runs without crash",
                  "[dynamics][nose_hoover]") {
-  params.thermostat_options.kind = "nose_hoover";
+  ParametersLoadAccess::thermostat_options(params).kind = "nose_hoover";
   Dynamics dyn(matter, params);
   dyn.setTemperature(300.0);
   dyn.setThermalVelocity();
@@ -148,13 +148,27 @@ TEST_CASE_METHOD(DynamicsFixture,
 
   double E = matter->getPotentialEnergy();
   REQUIRE(std::isfinite(E));
+  REQUIRE(std::isfinite(matter->getKineticEnergy()));
+  REQUIRE(matter->getKineticEnergy() > 0.0);
+}
+
+TEST_CASE_METHOD(DynamicsFixture, "Dynamics run with steps=0 does not move",
+                 "[dynamics][steps]") {
+  ParametersLoadAccess::dynamics_options(params).steps = 0;
+  AtomMatrix before = matter->getPositions();
+  Dynamics dyn(matter, params);
+  dyn.setTemperature(300.0);
+  dyn.setThermalVelocity();
+  dyn.run();
+  AtomMatrix after = matter->getPositions();
+  REQUIRE((after - before).norm() == Catch::Approx(0.0).margin(1e-15));
 }
 
 TEST_CASE_METHOD(DynamicsFixture,
                  "Dynamics Langevin thermostat runs without crash",
                  "[dynamics][langevin]") {
-  params.thermostat_options.kind = "langevin";
-  params.thermostat_options.langevin_friction = 0.01;
+  ParametersLoadAccess::thermostat_options(params).kind = "langevin";
+  ParametersLoadAccess::thermostat_options(params).langevin_friction = 0.01;
   Dynamics dyn(matter, params);
   dyn.setTemperature(300.0);
   dyn.setThermalVelocity();

@@ -14,6 +14,8 @@
 
 #include <cmath>
 
+namespace eonc {
+
 Eigen::VectorXd ConjugateGradients::getStep() {
   double a = std::fabs(m_force.dot(m_forceOld));
   double b = m_forceOld.squaredNorm();
@@ -146,11 +148,11 @@ int ConjugateGradients::single_step(double a_maxMove) {
   if (!m_optConfig.opts.cg.no_overshooting) {
     if (m_optConfig.bowlBreakout) {
       // max displacement is based on system not single atom
-      pos += eonc::helpers::maxMotionAppliedV(stepSize * m_directionNorm,
-                                              a_maxMove);
+      pos += eonc::geometry::maxMotionAppliedV(stepSize * m_directionNorm,
+                                               a_maxMove);
     } else {
-      pos += eonc::helpers::maxAtomMotionAppliedV(stepSize * m_directionNorm,
-                                                  a_maxMove);
+      pos += eonc::geometry::maxAtomMotionAppliedV(stepSize * m_directionNorm,
+                                                   a_maxMove);
     }
     m_objf->setPositions(pos);
   } else {
@@ -160,7 +162,7 @@ int ConjugateGradients::single_step(double a_maxMove) {
     double forceChange = 0.;
     while (passedMinimum < 0.0 &&
            0.1 * std::fabs(projectedForce1) < std::fabs(projectedForce2)) {
-      posStep = pos + eonc::helpers::maxAtomMotionAppliedV(
+      posStep = pos + eonc::geometry::maxAtomMotionAppliedV(
                           stepSize * m_directionNorm, a_maxMove);
       m_objf->setPositions(posStep);
       forceAfterStep = -m_objf->getGradient(true);
@@ -191,9 +193,11 @@ int ConjugateGradients::single_step(double a_maxMove) {
 
 int ConjugateGradients::run(size_t a_maxIterations, double a_maxMove) {
   size_t iterations = 0;
-  while (!m_objf->isConverged() && iterations <= a_maxIterations) {
+  while (!m_objf->isConverged() && iterations < a_maxIterations) {
     step(a_maxMove);
     iterations++;
   }
   return m_objf->isConverged() ? 1 : 0;
 }
+
+} // namespace eonc

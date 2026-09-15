@@ -47,6 +47,7 @@
   "Listed atoms are all frozen".
 
 
+
 ## [3.2.0](https://github.com/TheochemUI/eOn/tree/3.2.0) - 2026-08-16
 
 ### Added

@@ -47,6 +47,27 @@ figures (full history, 1:1 reaction-valley panel, structure strip), see
 - The energy weighted varying springs method of {cite:t}`neb-asgeirssonNudgedElasticBand2021`.
 ```
 
+## Dimer seeds from every band peak
+
+After the band is written, eOn walks **all** spline maxima (not only the
+climbing image). Each interior maximum more than `mmf_peak_tolerance` above
+the reactant is written as `peakNN_pos.con` plus `peakNN_mode.dat` (the
+interpolated tangent). That is the native gen-dimer seed: run a
+`saddle_search` from each pair. `setup_mmf_peaks` defaults to true; set it
+false to skip the files.
+
+```ini
+[Nudged Elastic Band]
+setup_mmf_peaks = true
+mmf_peak_tolerance = 0.05
+```
+
+Isomer endpoints with scrambled atom order can be aligned before
+interpolation with `match_endpoints = true` (default off). The `ira`
+method rigid-rotates and permutes the reactant onto the product via
+IRACompare. Hungarian assignment is not in-tree; `match_method =
+hungarian` currently uses IRA.
+
 ```{note}
 `eOn`, like many other codes after {cite:t}`neb-sheppardOptimizationMethodsFinding2008` uses one optimizer instance for moving the whole band of images.
 ```
@@ -76,11 +97,30 @@ Following (dimer) search on the climbing image after it stabilizes, using
 hessian eigenmode alignment to refine the saddle point to higher accuracy
 without additional NEB iterations. Enable with `ci_mmf = true`.
 
+`climbing_image_converged_only` (default true) compares the climbing image
+to `converged_force`. That is not a band-wide certificate: a SIDPP path
+that lands two images on the same point can put the climber on a
+stationary artifact while the rest of the band is still at 2 eV/Å.
+`climbing_image_band_slack` (default 10) refuses that report. The job is
+not converged while any image exceeds slack times the tolerance. SIDPP
+itself throws if adjacent images collapse below \(10^{-6}\) Å.
+
+```{code-block} ini
+[Nudged Elastic Band]
+climbing_image_method = true
+climbing_image_converged_only = true
+climbing_image_band_slack = 10.0
+```
+
 ### Parallel evaluation
 
-When compiled with TBB support (`-Dwith_parallel_neb=true`), image forces are
-evaluated in parallel. Python-based potentials automatically fall back to serial
-evaluation.
+When compiled with TBB (`-Dwith_parallel_neb=true`) or nvc++
+(`-Dstdpar=cpu` / `-Dstdpar=gpu`), dirty-image force calls use
+`std::execution::par`. nvc++ does not need TBB; see {doc}`stdpar`.
+Without those flags, `parallel = true` still fans out with one
+`std::thread` per image. Python-based potentials fall back to serial
+evaluation unless they report thread-safe shared instances or per-image
+copies. Morse and other host potentials stay on the CPU.
 
 ## Configuration
 

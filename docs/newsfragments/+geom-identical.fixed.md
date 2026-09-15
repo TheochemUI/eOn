@@ -1,0 +1,1 @@
+`geometry::identical` will not assign two left atoms to the same right partner.

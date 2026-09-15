@@ -131,7 +131,7 @@ dimerRotationAngle: 0.0050000000000000001
 dimerImproved: true
 dimerConvergedAngle: 5
 dimerMaxIterations: 1000
-dimerOptMethod: cg
+dimerOptMethod: CG
 dimerRotationsMax: 10
 dimerRotationsMin: 1
 dimerTorqueMax: 1

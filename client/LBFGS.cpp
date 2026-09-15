@@ -16,6 +16,8 @@
 
 #include <cmath>
 
+namespace eonc {
+
 Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
   double H0 = m_optConfig.opts.lbfgs.inverse_curvature;
   Eigen::VectorXd r = m_objf->getPositions();
@@ -30,7 +32,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
           m_log, "[LBFGS] Negative curvature: {:.4f} eV/A^2 take max move step",
           C);
       reset();
-      return eonc::helpers::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
+      return eonc::geometry::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
     }
 
     if (m_optConfig.opts.lbfgs.auto_scale) {
@@ -53,7 +55,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
                         "eV/A^2, take max move step",
                         C);
       reset();
-      return eonc::helpers::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
+      return eonc::geometry::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
     } else {
       QUILL_LOG_DEBUG(m_log,
                       "[LBFGS] Curvature calculated via FD: {:.4e} eV/A^2", C);
@@ -79,13 +81,13 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
 
   Eigen::VectorXd d = -z;
 
-  double distance = eonc::helpers::maxAtomMotionV(d);
+  double distance = eonc::geometry::maxAtomMotionV(d);
   if (distance >= a_maxMove && m_optConfig.opts.lbfgs.distance_reset) {
     QUILL_LOG_DEBUG(m_log,
                     "[LBFGS] reset memory, proposed step too large: {:.4f}",
                     distance);
     reset();
-    return eonc::helpers::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
+    return eonc::geometry::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
   }
 
   double vd = eonc::safemath::safe_normalized(d).dot(
@@ -101,10 +103,10 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
                     "force too large: {:.4f}",
                     angle);
     reset();
-    return eonc::helpers::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
+    return eonc::geometry::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
   }
 
-  return eonc::helpers::maxAtomMotionAppliedV(d, a_maxMove);
+  return eonc::geometry::maxAtomMotionAppliedV(d, a_maxMove);
 }
 
 void LBFGS::reset() {
@@ -120,11 +122,11 @@ int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
   // y0 is the change in the gradient, not the force
   Eigen::VectorXd y0 = a_f0 - a_f1;
 
-  // Skip degenerate curvature update (reset memory instead of aborting)
-  if (std::abs(s0.dot(y0)) < LBFGS_EPS) {
-    QUILL_LOG_WARNING(m_log,
-                      "[LBFGS] s0.y0 too small ({:.4e}), resetting memory",
-                      s0.dot(y0));
+  // Skip degenerate or negative curvature (Powell / Nocedal).
+  const double sy = s0.dot(y0);
+  if (sy <= LBFGS_EPS) {
+    QUILL_LOG_WARNING(
+        m_log, "[LBFGS] s0.y0 not positive ({:.4e}), resetting memory", sy);
     reset();
     return 0;
   }
@@ -173,3 +175,5 @@ int LBFGS::run(size_t a_maxSteps, double a_maxMove) {
   }
   return m_objf->isConverged() ? 1 : 0;
 }
+
+} // namespace eonc

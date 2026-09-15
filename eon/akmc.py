@@ -106,7 +106,6 @@ def akmc(config: ConfigClass = None, steps=0):
         # explore the state with the lowest confidence.
         if sb:
             explore_state = sb.get_lowest_confidence_state()
-            previous_state = explore_state # TODO: perhaps there is a better value for previous_state?
         else:
             explore_state = current_state
     else:
@@ -344,7 +343,7 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
             dynamics.append(current_state.number, proc_id_out, next_state.number, step_time, time, proc['barrier'], proc['rate'], current_state.get_energy())
             logger.info("KMC step from state %i through process %i to state %i ", current_state.number, rate_table[nsid][0], next_state.number)
         else:
-            #XXX The proc_out_id was -1, which means there's a bug or this was a superbasin step.
+            # Superbasin hop: process id is not a single-state table row.
             dynamics.append_sb(current_state.number, sb_proc_id_out, next_state.number, step_time, time, sb_id, 1.0/mean_time, current_state.get_energy())
             logger.info("SB step from state %i through process %i to state %i ", current_state.number, sb_proc_id_out, next_state.number)
 
@@ -589,10 +588,7 @@ def main(config: ConfigClass = None):
                 if len(res)>0 and res[0] == 'y':
                     # remove directory superbasins
                     if os.path.isdir(config.sb_path):
-                        shutil.rmtree(config.sb_path)
-                        #XXX: ugly way to remove all empty directories containing this one
-                        os.mkdir(config.sb_path)
-                        os.removedirs(config.sb_path)
+                        io.remove_tree_and_empty_parents(config.sb_path)
 
                     # remove superbasins files from states dirctories
                     state_dirs = os.listdir(config.path_states)
@@ -635,12 +631,9 @@ def main(config: ConfigClass = None):
                     steps >= config.akmc_max_kmc_steps):
                     break
                 wait()
-            # In MPI mode we need to signal exit to all processes.
-            # TODO: This is the sledgehammer method, it would be cleaner to
-            #       communicate to all clients that they should exit.
             if config.comm_type == 'mpi':
-                from mpi4py import MPI
-                MPI.COMM_WORLD.Abort(0)
+                comm = communicator.get_communicator(config)
+                comm.stop_clients()
         else:
             akmc(config)
     else:

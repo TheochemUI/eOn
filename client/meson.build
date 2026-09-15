@@ -13,6 +13,10 @@ fs = import('fs')
 add_languages('c', required: true)
 cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
+# PGI/nvc++ cannot link_whole a static inih into a shared eonclib.
+if cppc.get_id() in ['nvidia_hpc', 'pgi'] and get_option('default_library') == 'shared'
+    error('nvc++ PGI linker has no link_whole; configure with -Ddefault_library=static')
+endif
 
 # eOn compiles no Fortran of its own: the kernels live in librgpot. The
 # language is still detected rather than required, because a wrap build
@@ -212,8 +216,6 @@ if use_fortran == true
             '-Wno-deprecated',
             '-Wno-unused-label',
             # Common
-            '-w',
-            # ^--- Silence.. TODO(rg): Seriously a very bad idea long term
             '-Wno-maybe-uninitialized',
             '-Wno-uninitialized',
             '-Wno-unused-but-set-parameter',
@@ -365,7 +367,14 @@ _deps += nlohmann_json_dep
 
 # Highway SIMD (optional, for vectorized potentials)
 hwy_dep = dependency('libhwy', required: false)
-if not hwy_dep.found() and host_machine.system() != 'windows'
+# cmake.subproject imports hwy_list_targets. Meson PGICompiler (nvc++)
+# has no get_pie_args, so that exe dies ninja-write (eOn-jqgs).
+_cxx_id = cppc.get_id()
+if (
+    not hwy_dep.found()
+    and host_machine.system() != 'windows'
+    and _cxx_id not in ['nvidia_hpc', 'pgi']
+)
     # cmake subproject produces .a archives that MSVC link.exe cannot read
     message('Highway: system libhwy not found, trying cmake subproject...')
     hwy_opts = cmake.subproject_options()
@@ -422,9 +431,6 @@ if not _rgpot_pkg.found()
         # engines stay runtime dlopen; do not force fat metatomic/xtb link
         'with_xtb': false,
         'with_metatomic': false,
-        # rgpot 3.1 Expr (Lepton wrap). D3/D4 wraps pull s-dftd3/dftd4
-        # tests into meson test and break isolated wheel builds.
-        'with_expr': true,
         # SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe, CuH2, and TIP4P-H are
         # Fortran kernels inside librgpot.
         'with_fortran_pots': 'enabled',
@@ -622,10 +628,13 @@ eonclib_sources = [
     'ReplicaExchangeJob.cpp',
     'BondBoost.cpp',
     'Job.cpp',
+    'JobRegistry.cpp',
+    'TestJob.cpp',
     'OHTSTJob.cpp',
     'GleThermostat.cpp',
     'GlobalOptimization.cpp',
     'LowestEigenmode.cpp',
+    'EigenmodeStrategy.cpp',
     'MinModeSaddleSearch.cpp',
     'StructureComparisonJob.cpp',
     'SteepestDescent.cpp',
@@ -678,6 +687,8 @@ eonclib_sources = [
     'EpiCenters.cpp',
     'SaddleSearchJob.cpp',
     'BasinHoppingSaddleSearch.cpp',
+    # Stubs when -Dwith_ira=false; NudgedElasticBand always calls IRACompare.
+    'IRACompare.cpp',
 ]
 
 eonclient_sources = ['ClientEON.cpp', 'CommandLine.cpp']
@@ -1056,10 +1067,44 @@ for name in ("metatensor", "metatensor_torch", "metatomic", "vesin"):
     potentials += [metatomic_pot]
 endif
 
-if get_option('with_parallel_neb')
-    tbb_dep = dependency('tbb', required : true)
-    _deps += [tbb_dep]
+# NEB image-force std::execution::par.
+# GCC/Clang: -Dwith_parallel_neb=true pulls TBB (libstdc++ backend).
+# nvc++: -Dstdpar=cpu|gpu adds -stdpar=multicore|gpu and does not need TBB.
+# The potential is the cost. Do not wrap Morse / LJ atom loops in
+# std::for_each(std::execution::par); that is cargo-cult vs the surf-notes
+# nvc++ / -mp=gpu / QMC_GPU=openmp;cuda path (QMCPACK, not eOn).
+stdpar = get_option('stdpar')
+if stdpar != 'none'
+    cxx = meson.get_compiler('cpp')
+    cxx_id = cxx.get_id()
+    if cxx_id != 'nvidia_hpc' and cxx_id != 'pgi'
+        error('stdpar=@0@ requires nvc++ (compiler id nvidia_hpc or pgi); got @1@'.format(stdpar, cxx_id))
+    endif
+    if stdpar == 'gpu'
+        _args += ['-stdpar=gpu']
+        _linkargs += ['-stdpar=gpu']
+        # surf-notes: name the arch. QMCPACK uses QMC_GPU_ARCHS=sm_80;sm_90
+        # on Snellius/Elja. nvc++ wants -gpu=cc80,cc90, not that CMake string.
+        gpu_cc = get_option('stdpar_gpu_cc').strip()
+        if gpu_cc != '' and gpu_cc != 'native'
+            _args += ['-gpu=' + gpu_cc]
+            _linkargs += ['-gpu=' + gpu_cc]
+        endif
+    else
+        _args += ['-stdpar=multicore']
+        _linkargs += ['-stdpar=multicore']
+    endif
     _args += ['-DEON_PARALLEL_NEB']
+endif
+
+if get_option('with_parallel_neb')
+    if stdpar == 'none'
+        tbb_dep = dependency('tbb', required : true)
+        _deps += [tbb_dep]
+    endif
+    if '-DEON_PARALLEL_NEB' not in _args
+        _args += ['-DEON_PARALLEL_NEB']
+    endif
 endif
 
 if get_option('with_artn')
@@ -1167,7 +1212,6 @@ if get_option('with_ira')
     endif
     _deps += [ira_dep]
     _args += ['-DWITH_IRA']
-    eonclib_sources += ['IRACompare.cpp']
     eonclib_sources += ['libs/IRA/IRAResource.cpp']
 endif
 
@@ -1188,9 +1232,11 @@ _linkto += potentials
 # the meson subproject when the system package is not available. Upstreaming
 # this removes the need for use_readcon_pkgconfig.patch on the feedstock.
 # ConFileIO needs 0.13+ (clone, bulk set_*_from_flat, compression_from_extension).
+# Wrap tag v0.14.10 still ships Cargo.toml 0.14.9 (eOn-aqmi / feedstock #31).
+# Accept the crate version so cargo-c pkg-config does not fail the check.
 readcon_dep = dependency(
     'readcon-core',
-    version: '>=0.14.10',
+    version: '>=0.14.9',
     method: 'pkg-config',
     required: false,
 )
@@ -1198,7 +1244,7 @@ readcon_order_srcs = []
 if not readcon_dep.found()
     readcon_proj = subproject(
         'readcon-core',
-        version: '>=0.14.10',
+        version: '>=0.14.9',
         default_options: {
             'with_tests': false,
             'with_examples': false,
@@ -1349,6 +1395,7 @@ ec = executable(
     link_args: _linkargs,
     build_rpath: ':'.join(_runtime_rpath),
     install_rpath: ':'.join(_runtime_rpath),
+    pie: false,
     # Standalone pyeonclient wheels only need the extension + shared libs.
     install: get_option('install_eon_server'),
 )

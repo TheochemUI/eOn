@@ -13,12 +13,15 @@
 #include "EonLogger.h"
 
 #include "Eigen.h"
-#include "Parameters.h"
 #include "PotRegistry.h"
 #include <atomic>
 #include <memory>
+#include <span>
+#include <stdexcept>
 
 namespace eonc {
+
+class Parameters;
 
 class Potential {
 protected:
@@ -27,23 +30,18 @@ protected:
 private:
   uint64_t m_registry_id;
   PotRegistry::TimePoint m_created_at;
+  bool force_serial_{false};
 
 public:
   std::atomic<size_t> forceCallCounter;
 
   // Main Constructor (no Parameters dependency)
   explicit Potential(PotType a_ptype)
-      : ptype{a_ptype},
-        m_registry_id{PotRegistry::get().on_created(a_ptype)},
-        m_created_at{PotRegistry::Clock::now()},
-        forceCallCounter{0} {}
+      : ptype{a_ptype}, m_registry_id{PotRegistry::get().on_created(a_ptype)},
+        m_created_at{PotRegistry::Clock::now()}, forceCallCounter{0} {}
 
-  // Convenience constructor from Parameters (for backward compat)
-  Potential(PotType a_ptype, const Parameters &)
-      : Potential(a_ptype) {}
-
-  Potential(const Parameters &a_params)
-      : Potential(a_params.potential_options.potential) {}
+  Potential(PotType a_ptype, const Parameters &p);
+  Potential(const Parameters &a_params);
 
   virtual ~Potential() {
     PotRegistry::get().on_destroyed(m_registry_id, ptype, forceCallCounter,
@@ -55,6 +53,27 @@ public:
   void virtual force(long nAtoms, const double *positions, const int *atomicNrs,
                      double *forces, double *energy, double *variance,
                      const double *box) = 0;
+
+  /// C++ call site: size-checked view over the raw FFI force().
+  void force(std::span<const double> positions, std::span<const int> atomicNrs,
+             std::span<double> forces, double *energy, double *variance,
+             std::span<const double> box) {
+    if (positions.size() % 3 != 0 ||
+        positions.size() / 3 != atomicNrs.size() ||
+        forces.size() != positions.size() || box.size() != 9) {
+      throw std::invalid_argument("Potential::force span size mismatch");
+    }
+    force(static_cast<long>(atomicNrs.size()), positions.data(),
+          atomicNrs.data(), forces.data(), energy, variance, box.data());
+  }
+
+  /// Optional frozen-atom mask (nAtoms*3, 1.0 = fixed). Default no-op.
+  /// Matter calls this immediately before force() so wrappers that need
+  /// it (LAMMPS setforce) see Atom.fixed without changing force().
+  virtual void setFixedMask(long nAtoms, const double *isFixed) {
+    (void)nAtoms;
+    (void)isFixed;
+  }
 
   std::tuple<double, AtomMatrix>
   get_ef(const AtomMatrix &pos, const VectorXi &atmnrs, const Matrix3d &box);
@@ -78,11 +97,23 @@ public:
   /// separate instances would enable true parallelism.
   [[nodiscard]] virtual bool isThreadSafe() const noexcept { return true; }
 
+  /// How the pot is executed (eOn-12x7). Combine with bitwise or.
+  enum class PotLayout : unsigned {
+    InProcess = 1u << 0,
+    NeedsWorkingDirectory = 1u << 1,
+    Subprocess = 1u << 2,
+  };
+  [[nodiscard]] virtual unsigned layoutFlags() const noexcept {
+    return static_cast<unsigned>(PotLayout::InProcess);
+  }
+
   /// Conservative gate for sharing one Potential instance across threads.
   /// Defaults to isThreadSafe(); backends whose state lives outside the
   /// wrapper instance (global/common-block Fortran entry points) override
   /// this to false on their own classes.
   [[nodiscard]] virtual bool isSharedInstanceThreadSafe() const noexcept {
+    if (force_serial_)
+      return false;
     return isThreadSafe();
   }
 
@@ -93,6 +124,12 @@ public:
   /// MetatomicPotential).
   [[nodiscard]] virtual bool needsPerImageInstance() const noexcept {
     return false;
+  }
+
+  /// Independent instance that does not reload from disk. nullptr means
+  /// the caller should use makePotential().
+  [[nodiscard]] virtual std::shared_ptr<Potential> clonePotential() const {
+    return nullptr;
   }
 
   /// Whether this potential supports batched evaluation of N systems in a
@@ -129,5 +166,3 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 } // namespace helpers
 
 } // namespace eonc
-
-using eonc::Potential;

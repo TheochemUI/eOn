@@ -104,15 +104,14 @@ void bind_matter(nb::module_ &m) {
               nb::gil_scoped_release release;
               (void)self.getForces(); // ensure force cache
             }
-            return view_n3(matter_forces_ptr(self), self.numberOfAtoms());
+            return view_n3_readonly(matter_forces_ptr(self),
+                                    self.numberOfAtoms());
           },
           nb::rv_policy::reference_internal,
-          "Forces with fixed atoms zeroed (zero-copy view of cache). The view "
-          "aliases Matter's maskedForces cache, which the next force "
-          "evaluation overwrites in place, and resize()/con2matter() "
-          "reallocate it. Take np.array(...) of it to keep a value. Matter "
-          "serialises nothing: on a free-threaded build two threads driving "
-          "one Matter race on this cache.")
+          "Forces with fixed atoms zeroed (read-only view of cache). "
+          "In-place += cannot skip set_forces(). The next force evaluation "
+          "overwrites the cache; resize()/con2matter() reallocate it. "
+          "Take np.array(...) of it to keep a value.")
       .def_prop_ro(
           "forces_raw",
           [](Matter &self) {
@@ -120,11 +119,12 @@ void bind_matter(nb::module_ &m) {
               nb::gil_scoped_release release;
               (void)self.getForcesRaw();
             }
-            return view_n3(matter_forces_raw_ptr(self), self.numberOfAtoms());
+            return view_n3_readonly(matter_forces_raw_ptr(self),
+                                    self.numberOfAtoms());
           },
           nb::rv_policy::reference_internal,
-          "Forces without the fixed-atom mask (zero-copy view). Same "
-          "invalidation and threading caveats as forces.")
+          "Forces without the fixed-atom mask (read-only view). Same "
+          "invalidation as forces.")
       .def_prop_ro(
           "forces_free",
           [](Matter &self) {

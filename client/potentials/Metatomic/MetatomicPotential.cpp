@@ -22,7 +22,30 @@
 #include <string>
 #include <vector>
 
-using namespace std::string_literals;
+namespace {
+
+// metatensor-torch 0.10.3 Module::to() walks every attribute when
+// `_mts_buffer_names` is missing. Exported PET-MAD stores mixed dicts as
+// ordinary attrs; empty containers count as non-metatensor and throw.
+// Weights already moved. Swallow only that mixed-dict error. Do not
+// register `_mts_buffer_names` on scripted modules (JIT slot assert).
+bool is_mixed_mts_to_error(const c10::Error &e) {
+  const std::string w = e.what_without_backtrace();
+  return w.find("metatensor and non-metatensor") != std::string::npos;
+}
+
+void move_atomistic_model(metatensor_torch::Module &model,
+                          torch::Device device) {
+  try {
+    model.to(device);
+  } catch (const c10::Error &e) {
+    if (!is_mixed_mts_to_error(e)) {
+      throw;
+    }
+  }
+}
+
+} // namespace
 
 namespace {
 
@@ -55,9 +78,9 @@ static torch::optional<std::string> normalize_variant(const std::string &s) {
   return s;
 }
 
-MetatomicPotential::MetatomicPotential(const Parameters &params)
-    : Potential(PotType::METATOMIC),
-      m_metatomic_opts{params.metatomic_options},
+MetatomicPotential::MetatomicPotential(const eonc::Parameters &params)
+    : eonc::Potential(eonc::PotType::METATOMIC),
+      m_metatomic_opts{params.metatomic_options()},
       model_(torch::jit::Module()),
       device_type_(c10::DeviceType::CPU),
       device_(torch::Device(device_type_)) {
@@ -196,6 +219,14 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
     QUILL_LOG_INFO(
         m_log, "[MetatomicPotential] Per-call random SO(3) rotation enabled");
   }
+  if ((this->random_rotation_ || this->n_symmetry_rotations_ > 0) &&
+      params.main_options().randomSeed > 0) {
+    torch::manual_seed(static_cast<uint64_t>(params.main_options().randomSeed));
+    QUILL_LOG_INFO(m_log,
+                   "[MetatomicPotential] torch RNG seeded from "
+                   "main.randomSeed={}",
+                   params.main_options().randomSeed);
+  }
 
   if (!outputs.contains(this->energy_key_)) {
     QUILL_LOG_ERROR(
@@ -293,6 +324,31 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   fpeh.restore_fpe();
 }
 
+MetatomicPotential::MetatomicPotential(const MetatomicPotential &src, CloneTag)
+    : eonc::Potential(eonc::PotType::METATOMIC),
+      m_metatomic_opts{src.m_metatomic_opts},
+      model_(src.model_.clone(/*inplace=*/false)),
+      capabilities_{src.capabilities_},
+      nl_requests_{src.nl_requests_},
+      evaluations_options_{src.evaluations_options_},
+      dtype_{src.dtype_},
+      device_type_{src.device_type_},
+      device_{src.device_},
+      check_consistency_{src.check_consistency_},
+      energy_key_{src.energy_key_},
+      energy_uncertainty_key_{src.energy_uncertainty_key_},
+      nc_forces_key_{src.nc_forces_key_},
+      non_conservative_{src.non_conservative_},
+      random_rotation_{src.random_rotation_},
+      n_symmetry_rotations_{src.n_symmetry_rotations_},
+      uncertainty_threshold_{src.uncertainty_threshold_} {
+  QUILL_LOG_INFO(m_log, "[MetatomicPotential] Cloned loaded model (no disk)");
+}
+
+std::shared_ptr<Potential> MetatomicPotential::clonePotential() const {
+  return std::shared_ptr<Potential>(new MetatomicPotential(*this, CloneTag{}));
+}
+
 // --- helpers for random / symmetry rotations (#287, #292) ---
 
 namespace {
@@ -333,9 +389,6 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
         "[MetatomicPotential] `atomicNrs` must be provided.");
   }
 
-  const long n_avg = this->n_symmetry_rotations_ > 0
-                         ? this->n_symmetry_rotations_
-                         : (this->random_rotation_ ? 1 : 1);
   const bool use_rotation =
       this->random_rotation_ || this->n_symmetry_rotations_ > 0;
   // n_symmetry_rotations averages; random_rotation alone is one rotated eval
@@ -490,10 +543,23 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
                           .toCustomClass<metatensor_torch::TensorMapHolder>();
         auto nc_block =
             metatensor_torch::TensorMapHolder::block_by_id(nc_map, 0);
-        forces_tensor = nc_block->values()
-                            .reshape({nAtoms, 3})
-                            .to(torch::kCPU)
-                            .to(torch::kFloat64);
+        auto nc_vals = nc_block->values();
+        if (nc_vals.numel() != nAtoms * 3) {
+          throw std::runtime_error("[MetatomicPotential] NC force block has " +
+                                   std::to_string(nc_vals.numel()) +
+                                   " values, expected " +
+                                   std::to_string(nAtoms * 3));
+        }
+        auto nc_samples = nc_block->samples();
+        if (nc_samples->size() > 0 && nc_samples->names().size() > 1) {
+          auto atom_col = nc_samples->column("atom").to(torch::kCPU);
+          if (atom_col.size(0) != nAtoms) {
+            throw std::runtime_error(
+                "[MetatomicPotential] NC force samples atom count mismatch");
+          }
+        }
+        forces_tensor =
+            nc_vals.reshape({nAtoms, 3}).to(torch::kCPU).to(torch::kFloat64);
       } else {
         energy_tensor.backward(torch::ones_like(energy_tensor));
         auto positions_grad = system->positions().grad();
@@ -517,7 +583,6 @@ void MetatomicPotential::force(long nAtoms, const double *positions,
   *energy = energy_acc * inv_n;
   forces_acc = forces_acc * inv_n;
   (void)variance_set;
-  (void)n_avg;
 
   std::memcpy(forces, forces_acc.contiguous().data_ptr<double>(),
               nAtoms * 3 * sizeof(double));
@@ -624,9 +689,20 @@ void MetatomicPotential::forceBatch(long nSystems, long nAtoms,
                                     double *const *forces, double *energies,
                                     double *variances,
                                     const double *const *boxes) {
-  // Sequential evaluation through force() -- numerically identical to
-  // N individual computePotential() calls. The mutex inside force()
-  // serializes, and all calls share the same model instance + JIT state.
+  if (nSystems > 1) {
+    try {
+      forceBatchNative(nSystems, nAtoms, positions, atomicNrs, forces, energies,
+                       variances, boxes);
+      forceCallCounter += nSystems;
+      PotRegistry::get().on_force_call(ptype);
+      return;
+    } catch (const std::exception &e) {
+      QUILL_LOG_WARNING(m_log,
+                        "[MetatomicPotential] batched forward failed ({}); "
+                        "falling back to sequential force()",
+                        e.what());
+    }
+  }
   for (long s = 0; s < nSystems; s++) {
     double var = 0;
     force(nAtoms, positions[s], atomicNrs[s], forces[s], &energies[s], &var,
@@ -638,16 +714,12 @@ void MetatomicPotential::forceBatch(long nSystems, long nAtoms,
   }
 }
 
-// --- True batched forward (future optimization) ---
-// model.forward({sys0..sysN}) verified identical in Python.
-// C++ energy extraction needs work to match single-system path exactly.
-#if 0
 void MetatomicPotential::forceBatchNative(long nSystems, long nAtoms,
-                                     const double *const *positions,
-                                     const int *const *atomicNrs,
-                                     double *const *forces, double *energies,
-                                     double *variances,
-                                     const double *const *boxes) {
+                                          const double *const *positions,
+                                          const int *const *atomicNrs,
+                                          double *const *forces,
+                                          double *energies, double *variances,
+                                          const double *const *boxes) {
   std::lock_guard<std::mutex> lock(inference_mutex_);
 
   eonc::FPEHandler fpeh;
@@ -662,12 +734,11 @@ void MetatomicPotential::forceBatchNative(long nSystems, long nAtoms,
   pos_tensors.reserve(static_cast<size_t>(nSystems));
 
   for (long s = 0; s < nSystems; s++) {
-    auto torch_positions =
-        torch::from_blob(const_cast<double *>(positions[s]), {nAtoms, 3},
-                         f64_options)
-            .to(this->dtype_)
-            .to(this->device_)
-            .set_requires_grad(true);
+    auto torch_positions = torch::from_blob(const_cast<double *>(positions[s]),
+                                            {nAtoms, 3}, f64_options)
+                               .to(this->dtype_)
+                               .to(this->device_)
+                               .set_requires_grad(true);
     pos_tensors.push_back(torch_positions);
 
     auto torch_cell =
@@ -695,9 +766,9 @@ void MetatomicPotential::forceBatchNative(long nSystems, long nAtoms,
     // Compute and register neighbor lists for this system
     for (const auto &request : this->nl_requests_) {
       auto neighbors = this->computeNeighbors(request, nAtoms, positions[s],
-                                               boxes[s], periodic);
+                                              boxes[s], periodic);
       metatomic_torch::register_autograd_neighbors(system, neighbors,
-                                                    this->check_consistency_);
+                                                   this->check_consistency_);
       system->add_neighbor_list(request, neighbors);
     }
 
@@ -762,8 +833,7 @@ void MetatomicPotential::forceBatchNative(long nSystems, long nAtoms,
   // Extract per-system forces from position gradients
   for (long s = 0; s < nSystems; s++) {
     auto positions_grad = pos_tensors[s].grad();
-    auto forces_tensor =
-        -positions_grad.to(torch::kCPU).to(torch::kFloat64);
+    auto forces_tensor = -positions_grad.to(torch::kCPU).to(torch::kFloat64);
     std::memcpy(forces[s], forces_tensor.contiguous().data_ptr<double>(),
                 nAtoms * 3 * sizeof(double));
   }
@@ -777,4 +847,3 @@ void MetatomicPotential::forceBatchNative(long nSystems, long nAtoms,
 
   fpeh.restore_fpe();
 }
-#endif

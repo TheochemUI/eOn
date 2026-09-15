@@ -144,6 +144,10 @@ def structure_to_ase(structure: Any, *, pbc: bool = True) -> "AseAtoms":
         constraints.append(FixAtoms(indices=fully_fixed))
     if constraints:
         atoms.set_constraint(constraints)
+    if hasattr(structure, "ids_or_sequential"):
+        atoms.arrays["id"] = np.asarray(
+            structure.ids_or_sequential(), dtype=np.int64
+        )
     return atoms
 
 
@@ -162,6 +166,12 @@ def ase_to_structure(atoms: "AseAtoms") -> Any:
     s.mass = np.asarray(atoms.get_masses(), dtype=float).copy()
     z = np.asarray(atoms.get_atomic_numbers(), dtype=int)
     s.names = [_z_to_symbol(int(zi)) for zi in z]
+    if "id" in atoms.arrays:
+        s.atom_ids = np.asarray(atoms.arrays["id"], dtype=np.uint64).reshape(-1)
+    elif hasattr(atoms, "get_tags"):
+        tags = np.asarray(atoms.get_tags(), dtype=np.int64).reshape(-1)
+        if tags.size == n and np.unique(tags).size == n and np.all(tags > 0):
+            s.atom_ids = tags.astype(np.uint64)
 
     free = np.ones((n, 3), dtype=float)
     for c in atoms.constraints:
@@ -171,6 +181,11 @@ def ase_to_structure(atoms: "AseAtoms") -> Any:
             idx = int(c.a)
             mask = np.asarray(c.mask, dtype=bool).reshape(-1)
             free[idx, mask] = 0.0
+        else:
+            raise ValueError(
+                "ase_to_structure: unsupported ASE constraint "
+                f"{type(c).__name__!r}; only FixAtoms and FixCartesian"
+            )
     s.free = free
     return s
 

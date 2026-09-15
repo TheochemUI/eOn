@@ -25,5 +25,3 @@ private:
 };
 
 } // namespace eonc
-
-using eonc::GlobalOptimization;

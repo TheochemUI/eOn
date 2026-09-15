@@ -114,11 +114,3 @@ void serveFromConfig(const Parameters &params);
 std::vector<ServeEndpoint> parseServeSpec(const std::string &spec);
 
 } // namespace eonc
-
-using eonc::parseServeSpec;
-using eonc::ServeEndpoint;
-using eonc::serveFromConfig;
-using eonc::serveGateway;
-using eonc::serveMode;
-using eonc::serveMultiple;
-using eonc::serveReplicated;

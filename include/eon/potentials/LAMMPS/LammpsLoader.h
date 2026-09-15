@@ -29,9 +29,9 @@
 namespace eonc {
 
 // ---------------------------------------------------------------------------
-// LammpsLoader: singleton that loads liblammps function pointers at runtime
+// ILammpsLoader: injectable ABI. Production uses LammpsLoader::instance().
 // ---------------------------------------------------------------------------
-class LammpsLoader {
+class ILammpsLoader {
 public:
   // LAMMPS C API function pointer types (from library.h)
   using open_no_mpi_fn = void *(*)(int, char **, void **);
@@ -44,10 +44,6 @@ public:
   using open_mpi_fn = void *(*)(int, char **, MPI_Comm, void **);
 #endif
 
-  /// Thread-safe singleton accessor (Meyer's pattern). Does not dlopen.
-  static LammpsLoader &instance();
-
-  // Loaded function pointers (null if library not found)
   open_no_mpi_fn open_no_mpi{nullptr};
   close_fn close{nullptr};
   command_fn command{nullptr};
@@ -58,27 +54,50 @@ public:
   open_mpi_fn open_mpi{nullptr};
 #endif
 
-  /// True if liblammps was successfully dlopened and the C ABI resolved.
-  [[nodiscard]] bool is_loaded() const noexcept { return m_loaded; }
+  virtual ~ILammpsLoader() = default;
+  virtual void require_loaded() = 0;
+  [[nodiscard]] virtual bool is_loaded() const noexcept = 0;
+  [[nodiscard]] virtual bool available() const = 0;
+  [[nodiscard]] virtual const std::string &last_error() const noexcept = 0;
+
+  ILammpsLoader(const ILammpsLoader &) = delete;
+  ILammpsLoader &operator=(const ILammpsLoader &) = delete;
+
+protected:
+  ILammpsLoader() = default;
+};
+
+// ---------------------------------------------------------------------------
+// LammpsLoader: process-default loader (Meyer's singleton). Does not dlopen
+// until require_loaded().
+// ---------------------------------------------------------------------------
+class LammpsLoader : public ILammpsLoader {
+public:
+  /// Thread-safe singleton accessor (Meyer's pattern). Does not dlopen.
+  static LammpsLoader &instance();
+
+  [[nodiscard]] bool is_loaded() const noexcept override { return m_loaded; }
 
   /// Filesystem probe: a candidate liblammps file is visible without
   /// dlopen, so LAMMPS static initializers (the banner) do not run.
-  [[nodiscard]] bool available() const;
+  [[nodiscard]] bool available() const override;
 
   /// Why the last ensure_loaded() failed. Empty if unused or loaded.
-  [[nodiscard]] const std::string &last_error() const noexcept {
+  [[nodiscard]] const std::string &last_error() const noexcept override {
     return m_last_error;
   }
 
   /// Load on first use, then throw if liblammps is not available.
-  void require_loaded();
+  void require_loaded() override;
 
   LammpsLoader(const LammpsLoader &) = delete;
   LammpsLoader &operator=(const LammpsLoader &) = delete;
 
 private:
   LammpsLoader() = default;
-  ~LammpsLoader();
+  ~LammpsLoader() override;
+
+  void ensure_loaded();
 
   void ensure_loaded();
 

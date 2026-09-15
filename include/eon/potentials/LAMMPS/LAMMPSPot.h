@@ -17,20 +17,32 @@
 #include "eon/Potential.h"
 
 #include <mutex>
+#include <vector>
 
-class LAMMPSPot : public Potential {
+namespace eonc {
+class ILammpsLoader;
+}
+
+class LAMMPSPot : public eonc::Potential {
 
 public:
   [[nodiscard]] bool needsPerImageInstance() const noexcept override {
     return true;
   }
-  LAMMPSPot(const Parameters &p);
+  /// Production: process-default LammpsLoader and POSIX worker isolation.
+  explicit LAMMPSPot(const eonc::Parameters &p);
+  /// Test seam: injected loader, no worker fork, no process-default load.
+  LAMMPSPot(const eonc::Parameters &p, eonc::ILammpsLoader &loader);
   ~LAMMPSPot();
   void cleanMemory();
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
+  void setFixedMask(long nAtoms, const double *isFixed) override;
 
 private:
+  LAMMPSPot(const eonc::Parameters &p, eonc::ILammpsLoader &loader,
+            bool isolate_worker);
+  eonc::ILammpsLoader &loader_;
   int lammpsThr{0};
 #ifdef EONMPI
   MPI_Comm mpiComm;
@@ -40,7 +52,10 @@ private:
   void *LAMMPSObj{nullptr};
   void makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
                      const double *box);
+  void applySetforce(long N);
   bool realunits{false};
+  std::vector<double> fixedMask_;
+  long maskN_{0};
 
 #if !defined(EONMPI) && !defined(IS_WINDOWS)
   // Process-per-image evaluation.  NEB drives intermediate images on separate

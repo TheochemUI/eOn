@@ -12,9 +12,15 @@
 
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/IDPPObjectiveFunction.hpp"
+#include "eon/NEBInitialPaths.hpp"
+#include "eon/NEBOcinebController.h"
 #include "eon/NudgedElasticBand.h"
+#include "eon/PotCapabilities.h"
 #include "eon/PotRegistry.h"
+#include "eon/api.h"
 #include <fstream>
+#include <stdexcept>
 #include <thread>
 #include <vector>
 
@@ -36,7 +42,7 @@ protected:
         pot{nullptr},
         reactant{nullptr},
         product{nullptr} {
-    params.potential_options.potential = PotType::LJ;
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
     pot = eonc::helpers::makePotential(PotType::LJ, params);
     reactant = std::make_shared<Matter>(pot, params);
     product = std::make_shared<Matter>(pot, params);
@@ -50,14 +56,14 @@ protected:
     pos(0, 2) += 0.2;
     product->setPositions(pos);
 
-    params.optimizer_options.max_iterations = 500;
-    params.optimizer_options.method = OptType::LBFGS;
-    params.optimizer_options.max_move = 0.2;
-    params.neb_options.image_count = 5;
-    params.neb_options.force_tolerance = 0.01;
-    params.neb_options.initialization.method = NEBInit::LINEAR;
-    params.neb_options.endpoints.minimize = false;
-    params.neb_options.climbing_image.enabled = false;
+    ParametersLoadAccess::optimizer_options(params).max_iterations = 500;
+    ParametersLoadAccess::optimizer_options(params).method = OptType::LBFGS;
+    ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
+    ParametersLoadAccess::neb_options(params).image_count = 5;
+    ParametersLoadAccess::neb_options(params).force_tolerance = 0.01;
+    params.neb_options().initialization.method = NEBInit::LINEAR;
+    params.neb_options().endpoints.minimize = false;
+    params.neb_options().climbing_image.enabled = false;
   }
 
   auto makeNEB() {
@@ -66,6 +72,13 @@ protected:
 };
 
 // --- Construction tests ---
+
+TEST_CASE_METHOD(NEBLJFixture, "NEB path constructor rejects a short path",
+                 "[neb][construction][lk6g]") {
+  std::vector<Matter> shortPath{*reactant, *product};
+  REQUIRE_THROWS_AS(NudgedElasticBand(shortPath, params, pot),
+                    std::invalid_argument);
+}
 
 TEST_CASE_METHOD(NEBLJFixture, "NEB construction and basic state",
                  "[neb][construction]") {
@@ -138,7 +151,7 @@ TEST_CASE_METHOD(NEBLJFixture, "updateForces computes tangents and forces",
 
 TEST_CASE_METHOD(NEBLJFixture, "convergenceForce norm metric",
                  "[neb][convergenceForce][norm]") {
-  params.optimizer_options.convergence_metric = "norm";
+  ParametersLoadAccess::optimizer_options(params).convergence_metric = "norm";
   auto neb = makeNEB();
   neb->updateForces();
 
@@ -149,7 +162,7 @@ TEST_CASE_METHOD(NEBLJFixture, "convergenceForce norm metric",
 
 TEST_CASE_METHOD(NEBLJFixture, "convergenceForce max_atom metric",
                  "[neb][convergenceForce][max_atom]") {
-  params.optimizer_options.convergence_metric = "max_atom";
+  ParametersLoadAccess::optimizer_options(params).convergence_metric = "max_atom";
   auto neb = makeNEB();
   neb->updateForces();
 
@@ -160,7 +173,7 @@ TEST_CASE_METHOD(NEBLJFixture, "convergenceForce max_atom metric",
 
 TEST_CASE_METHOD(NEBLJFixture, "convergenceForce max_component metric",
                  "[neb][convergenceForce][max_component]") {
-  params.optimizer_options.convergence_metric = "max_component";
+  ParametersLoadAccess::optimizer_options(params).convergence_metric = "max_component";
   auto neb = makeNEB();
   neb->updateForces();
 
@@ -173,8 +186,8 @@ TEST_CASE_METHOD(NEBLJFixture, "convergenceForce max_component metric",
 
 TEST_CASE_METHOD(NEBLJFixture, "Uniform spring forces",
                  "[neb][spring_uniform]") {
-  params.neb_options.spring.weighting.enabled = false;
-  params.neb_options.spring.constant = 5.0;
+  params.neb_options().spring.weighting.enabled = false;
+  params.neb_options().spring.constant = 5.0;
   auto neb = makeNEB();
   neb->updateForces();
 
@@ -187,8 +200,8 @@ TEST_CASE_METHOD(NEBLJFixture, "Uniform spring forces",
 
 TEST_CASE_METHOD(NEBLJFixture, "Energy-weighted springs differ from uniform",
                  "[neb][spring_energy_weighted]") {
-  params.neb_options.spring.weighting.enabled = false;
-  params.neb_options.spring.constant = 5.0;
+  params.neb_options().spring.weighting.enabled = false;
+  params.neb_options().spring.constant = 5.0;
   auto neb_uniform = makeNEB();
   neb_uniform->updateForces();
 
@@ -197,9 +210,9 @@ TEST_CASE_METHOD(NEBLJFixture, "Energy-weighted springs differ from uniform",
     uniform_norms.push_back(neb_uniform->projectedForce[i]->norm());
   }
 
-  params.neb_options.spring.weighting.enabled = true;
-  params.neb_options.spring.weighting.k_min = 1.0;
-  params.neb_options.spring.weighting.k_max = 10.0;
+  params.neb_options().spring.weighting.enabled = true;
+  params.neb_options().spring.weighting.k_min = 1.0;
+  params.neb_options().spring.weighting.k_max = 10.0;
   auto neb_weighted = makeNEB();
   neb_weighted->updateForces();
 
@@ -216,8 +229,8 @@ TEST_CASE_METHOD(NEBLJFixture, "Energy-weighted springs differ from uniform",
 
 TEST_CASE_METHOD(NEBLJFixture, "Doubly nudged elastic band springs",
                  "[neb][spring_doubly_nudged]") {
-  params.neb_options.spring.doubly_nudged = true;
-  params.neb_options.spring.constant = 5.0;
+  params.neb_options().spring.doubly_nudged = true;
+  params.neb_options().spring.constant = 5.0;
   auto neb = makeNEB();
   neb->updateForces();
 
@@ -228,7 +241,7 @@ TEST_CASE_METHOD(NEBLJFixture, "Doubly nudged elastic band springs",
 
 TEST_CASE_METHOD(NEBLJFixture, "Old tangent scheme produces valid tangents",
                  "[neb][tangent_old]") {
-  params.neb_options.climbing_image.use_old_tangent = true;
+  params.neb_options().climbing_image.use_old_tangent = true;
   auto neb = makeNEB();
   neb->updateForces();
 
@@ -240,8 +253,8 @@ TEST_CASE_METHOD(NEBLJFixture, "Old tangent scheme produces valid tangents",
 
 TEST_CASE_METHOD(NEBLJFixture, "Elastic band spring forces",
                  "[neb][spring_elastic_band]") {
-  params.neb_options.spring.use_elastic_band = true;
-  params.neb_options.spring.constant = 5.0;
+  params.neb_options().spring.use_elastic_band = true;
+  params.neb_options().spring.constant = 5.0;
   auto neb = makeNEB();
   neb->updateForces();
 
@@ -255,11 +268,11 @@ TEST_CASE_METHOD(NEBLJFixture, "Elastic band spring forces",
 
 TEST_CASE_METHOD(NEBLJFixture, "Climbing image activation",
                  "[neb][climbing_image]") {
-  params.neb_options.climbing_image.enabled = true;
-  params.neb_options.climbing_image.trigger_force = 1e10;
-  params.neb_options.climbing_image.trigger_factor = 1.0;
-  params.optimizer_options.max_iterations = 500;
-  params.neb_options.force_tolerance = 0.05;
+  params.neb_options().climbing_image.enabled = true;
+  params.neb_options().climbing_image.trigger_force = 1e10;
+  params.neb_options().climbing_image.trigger_factor = 1.0;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 500;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 0.05;
 
   auto neb = makeNEB();
   neb->compute();
@@ -271,15 +284,15 @@ TEST_CASE_METHOD(NEBLJFixture, "Climbing image activation",
 
 TEST_CASE_METHOD(NEBLJFixture, "NEB converges with LJ potential",
                  "[neb][compute]") {
-  params.optimizer_options.max_iterations = 5000;
-  params.neb_options.force_tolerance = 0.05;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 5000;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 0.05;
 
   auto neb = makeNEB();
   auto status = neb->compute();
 
   REQUIRE(static_cast<int>(status) ==
           static_cast<int>(NudgedElasticBand::NEBStatus::GOOD));
-  REQUIRE(neb->convergenceForce() < params.neb_options.force_tolerance);
+  REQUIRE(neb->convergenceForce() < params.neb_options().force_tolerance);
 }
 
 TEST_CASE_METHOD(NEBLJFixture, "NEB respects max iterations",
@@ -291,8 +304,8 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB respects max iterations",
   pos(0, 2) += 2.5;
   product->setPositions(pos);
 
-  params.optimizer_options.max_iterations = 1;
-  params.neb_options.force_tolerance = 1e-15;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 1;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 1e-15;
 
   auto neb = makeNEB();
   auto status = neb->compute();
@@ -305,8 +318,8 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB respects max iterations",
 
 TEST_CASE_METHOD(NEBLJFixture, "findExtrema identifies extrema",
                  "[neb][findExtrema]") {
-  params.optimizer_options.max_iterations = 5000;
-  params.neb_options.force_tolerance = 0.05;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 5000;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 0.05;
 
   auto neb = makeNEB();
   auto status = neb->compute();
@@ -375,8 +388,8 @@ TEST_CASE_METHOD(NEBLJFixture, "NEBObjectiveFunction interface",
 
 TEST_CASE_METHOD(NEBLJFixture, "NEB with single image does not crash",
                  "[neb][single_image]") {
-  params.neb_options.image_count = 1;
-  params.optimizer_options.max_iterations = 10;
+  ParametersLoadAccess::neb_options(params).image_count = 1;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 10;
 
   auto neb = makeNEB();
   REQUIRE(neb->numImages == 1);
@@ -389,11 +402,51 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB with single image does not crash",
 
 // --- Potential thread safety tests ---
 
+TEST_CASE("OCI-NEB shouldTrigger uses 2*ftol not trigger_force", "[neb][awc]") {
+  Parameters p;
+  ParametersLoadAccess::neb_options(p).force_tolerance = 0.01;
+  p.neb_options().climbing_image.ocineb.use_mmf = true;
+  p.neb_options().climbing_image.ocineb.trigger_factor = 0.0;
+  p.neb_options().climbing_image.ocineb.trigger_force = 100.0;
+  p.neb_options().climbing_image.ocineb.ci_stability_count = 0;
+  auto cfg = eonc::neb::OCINEBController::fromParams(p);
+  eonc::neb::OCINEBController ctl(cfg);
+  ctl.initBaseline(1.0);
+  REQUIRE(ctl.threshold() == Catch::Approx(0.02).margin(1e-12));
+  REQUIRE(ctl.shouldTrigger(0.015, true, 1, 5, 1));
+  REQUIRE_FALSE(ctl.shouldTrigger(0.05, true, 1, 5, 1));
+}
+
+TEST_CASE("NEB match_endpoints is off by default", "[neb][srlq]") {
+  Parameters params;
+  REQUIRE_FALSE(params.neb_options().match_endpoints);
+  REQUIRE(params.neb_options().match_method == "ira");
+}
+
+TEST_CASE("NEB writes MMF peak seeds by default", "[neb][xr04]") {
+  Parameters params;
+  REQUIRE(params.neb_options().mmf_peaks.enabled);
+  REQUIRE(params.neb_options().mmf_peaks.tolerance ==
+          Catch::Approx(0.05).margin(1e-12));
+}
+
 TEST_CASE("Potential isThreadSafe defaults to true",
           "[potential][thread_safety]") {
   Parameters params;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   REQUIRE(pot->isThreadSafe() == true);
+  REQUIRE(pot->isSharedInstanceThreadSafe() == true);
+  REQUIRE(eonc::potIsThreadSafe(*pot));
+  REQUIRE(eonc::potAllowsSharedInstance(*pot));
+}
+
+TEST_CASE("Potential thread_safe=false forces serial sharing",
+          "[potential][thread_safety][gjg]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).thread_safe = false;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  REQUIRE(pot->isThreadSafe() == true);
+  REQUIRE(pot->isSharedInstanceThreadSafe() == false);
 }
 
 TEST_CASE("Potential forceCallCounter is atomic",
@@ -484,8 +537,8 @@ TEST_CASE_METHOD(NEBLJFixture,
                  "NEB produces same result with sequential force evaluation",
                  "[neb][parallel][regression]") {
   // Run NEB to convergence
-  params.optimizer_options.max_iterations = 5000;
-  params.neb_options.force_tolerance = 0.05;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 5000;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 0.05;
   auto neb = makeNEB();
   auto status = neb->compute();
 
@@ -542,8 +595,8 @@ TEST_CASE("PotRegistry write_summary empty when potential alive",
 
 TEST_CASE_METHOD(NEBLJFixture, "IDPP initialization produces valid path",
                  "[neb][idpp]") {
-  params.neb_options.initialization.method = NEBInit::IDPP;
-  params.neb_options.initialization.max_iterations = 100;
+  params.neb_options().initialization.method = NEBInit::IDPP;
+  params.neb_options().initialization.max_iterations = 100;
   auto neb = makeNEB();
 
   // IDPP should produce a path different from linear interpolation
@@ -564,12 +617,12 @@ TEST_CASE_METHOD(NEBLJFixture, "IDPP initialization produces valid path",
 TEST_CASE_METHOD(NEBLJFixture, "IDPP path differs from linear interpolation",
                  "[neb][idpp]") {
   // Build linear path
-  params.neb_options.initialization.method = NEBInit::LINEAR;
+  params.neb_options().initialization.method = NEBInit::LINEAR;
   auto neb_lin = makeNEB();
 
   // Build IDPP path
-  params.neb_options.initialization.method = NEBInit::IDPP;
-  params.neb_options.initialization.max_iterations = 100;
+  params.neb_options().initialization.method = NEBInit::IDPP;
+  params.neb_options().initialization.max_iterations = 100;
   auto neb_idpp = makeNEB();
 
   // At least one interior image should differ from linear
@@ -589,9 +642,9 @@ TEST_CASE_METHOD(NEBLJFixture, "IDPP path differs from linear interpolation",
 
 TEST_CASE_METHOD(NEBLJFixture, "NEB with climbing image enabled runs",
                  "[neb][climbing_image]") {
-  params.neb_options.climbing_image.enabled = true;
-  params.neb_options.climbing_image.converged_only = false;
-  params.neb_options.climbing_image.trigger_force = 0.0;
+  params.neb_options().climbing_image.enabled = true;
+  params.neb_options().climbing_image.converged_only = false;
+  params.neb_options().climbing_image.trigger_force = 0.0;
   auto neb = makeNEB();
 
   // Run a few iterations with climbing image
@@ -604,8 +657,8 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB with climbing image enabled runs",
 
 TEST_CASE_METHOD(NEBLJFixture, "NEB compute converges or hits max iterations",
                  "[neb][compute]") {
-  params.optimizer_options.max_iterations = 50;
-  params.neb_options.force_tolerance = 0.01;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 50;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 0.01;
   auto neb = makeNEB();
 
   auto status = neb->compute();
@@ -614,10 +667,31 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB compute converges or hits max iterations",
            status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS));
 }
 
+TEST_CASE_METHOD(NEBLJFixture, "converged_only does not ignore a hot band",
+                 "[neb][converged_only][bghy]") {
+  params.neb_options().climbing_image.enabled = true;
+  params.neb_options().climbing_image.converged_only = true;
+  params.neb_options().climbing_image.band_slack = 10.0;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 0.01;
+  auto neb = makeNEB();
+  neb->updateForces();
+  neb->setCIEnabled(true);
+  neb->climbingImage = 1;
+  REQUIRE(neb->convergenceForce() > 10.0 * params.neb_options().force_tolerance);
+}
+
+TEST_CASE_METHOD(NEBLJFixture, "SIDPP rejects a collapsed adjacent pair",
+                 "[neb][sidpp][bghy]") {
+  std::vector<Matter> path{*reactant, *reactant, *product};
+  REQUIRE_THROWS_AS(
+      eonc::helpers::neb_paths::ensureDistinctAdjacentImages(path, 1e-6),
+      std::runtime_error);
+}
+
 TEST_CASE_METHOD(NEBLJFixture, "SIDPP initialization produces valid path",
                  "[neb][sidpp]") {
-  params.neb_options.initialization.method = NEBInit::SIDPP;
-  params.neb_options.initialization.max_iterations = 50;
+  params.neb_options().initialization.method = NEBInit::SIDPP;
+  params.neb_options().initialization.max_iterations = 50;
   auto neb = makeNEB();
 
   auto reactPos = neb->path[0]->getPositions();
@@ -632,8 +706,8 @@ TEST_CASE_METHOD(NEBLJFixture, "SIDPP initialization produces valid path",
 
 TEST_CASE_METHOD(NEBLJFixture, "IDPP collective initialization",
                  "[neb][idpp_collective]") {
-  params.neb_options.initialization.method = NEBInit::IDPP_COLLECTIVE;
-  params.neb_options.initialization.max_iterations = 50;
+  params.neb_options().initialization.method = NEBInit::IDPP_COLLECTIVE;
+  params.neb_options().initialization.max_iterations = 50;
   auto neb = makeNEB();
 
   for (long i = 1; i <= neb->numImages; i++) {
@@ -641,16 +715,52 @@ TEST_CASE_METHOD(NEBLJFixture, "IDPP collective initialization",
   }
 }
 
+TEST_CASE("Collective IDPP lastMaxForce ignores frozen atoms",
+          "[neb][idpp_collective][lyqe]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  params.neb_options().spring.constant = 0.0;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+
+  auto makeImage = [&](double xFree) {
+    Matter m(pot, params);
+    m.resize(3);
+    m.setAtomicNr(0, 1);
+    m.setAtomicNr(1, 1);
+    m.setAtomicNr(2, 1);
+    AtomMatrix p(3, 3);
+    p << xFree, 0.0, 0.0, -2.0, 0.0, 0.0, 10.0, 0.0, 0.0;
+    m.setPositions(p);
+    m.setCell(Matrix3d::Identity() * 40.0);
+    m.setPeriodic(false);
+    m.setFixed(1, true);
+    m.setFixed(2, true);
+    return m;
+  };
+
+  // Midpoint is not the linear interpolation of the free atom, so the
+  // two frozen neighbours carry large uncancelled pair residuals.
+  Matter reactant = makeImage(0.0);
+  Matter mid = makeImage(0.5);
+  Matter product = makeImage(4.0);
+  std::vector<Matter> path{reactant, mid, product};
+  CollectiveIDPPObjectiveFunction of(path, params);
+  VectorXd g = of.getGradient();
+  REQUIRE(g.size() == 3);
+  REQUIRE(of.getConvergence() ==
+          Catch::Approx(g.lpNorm<Eigen::Infinity>()).margin(1e-12));
+}
+
 TEST_CASE_METHOD(NEBLJFixture, "NEB with OCINEB hybrid dimer",
                  "[neb][ocineb]") {
-  params.neb_options.climbing_image.enabled = true;
-  params.neb_options.climbing_image.converged_only = false;
-  params.neb_options.climbing_image.trigger_force = 0.0;
-  params.neb_options.climbing_image.ocineb.use_mmf = true;
-  params.neb_options.climbing_image.ocineb.trigger_force = 100.0;
-  params.neb_options.climbing_image.ocineb.max_steps = 5;
-  params.optimizer_options.max_iterations = 20;
-  params.neb_options.force_tolerance = 0.1;
+  params.neb_options().climbing_image.enabled = true;
+  params.neb_options().climbing_image.converged_only = false;
+  params.neb_options().climbing_image.trigger_force = 0.0;
+  params.neb_options().climbing_image.ocineb.use_mmf = true;
+  params.neb_options().climbing_image.ocineb.trigger_factor = 100.0;
+  params.neb_options().climbing_image.ocineb.max_steps = 5;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 20;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 0.1;
 
   auto neb = makeNEB();
   auto status = neb->compute();
@@ -661,8 +771,8 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB with OCINEB hybrid dimer",
 
 TEST_CASE_METHOD(NEBLJFixture, "NEB spring switching",
                  "[neb][spring_switching]") {
-  params.neb_options.spring.use_switching = true;
-  params.neb_options.spring.constant = 5.0;
+  params.neb_options().spring.use_switching = true;
+  params.neb_options().spring.constant = 5.0;
   auto neb = makeNEB();
   neb->updateForces();
 
@@ -673,11 +783,11 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB spring switching",
 
 TEST_CASE_METHOD(NEBLJFixture, "NEB Onsager-Machlup spring",
                  "[neb][spring_om]") {
-  params.neb_options.spring.om.enabled = true;
-  params.neb_options.spring.om.k_scale = 1.0;
-  params.neb_options.spring.om.k_min = 0.1;
-  params.neb_options.spring.om.k_max = 20.0;
-  params.neb_options.spring.constant = 5.0;
+  params.neb_options().spring.om.enabled = true;
+  params.neb_options().spring.om.k_scale = 1.0;
+  params.neb_options().spring.om.k_min = 0.1;
+  params.neb_options().spring.om.k_max = 20.0;
+  params.neb_options().spring.constant = 5.0;
   auto neb = makeNEB();
   neb->updateForces();
 

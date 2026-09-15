@@ -26,8 +26,11 @@
 #include "eon/Potential.h"
 #include "eon/SafeMath.h"
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
+
+namespace eonc {
 
 Lanczos::Lanczos(std::shared_ptr<Matter> matter, const Parameters &params,
                  std::shared_ptr<Potential> pot)
@@ -39,7 +42,7 @@ Lanczos::Lanczos(std::shared_ptr<Matter> matter, const Parameters &params,
 
 void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   const VectorXi mobile =
-      resolveMobileAtoms(matter.get(), params.lanczos_options.phva_atoms);
+      resolveMobileAtoms(matter.get(), params.lanczos_options().phva_atoms);
   compute(std::move(matter), std::move(direction), mobile);
 }
 
@@ -57,7 +60,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
     return;
   }
 
-  const long maxIters = params.lanczos_options.max_iterations;
+  const long maxIters = std::max(1L, params.lanczos_options().max_iterations);
   MatrixXd T(size, maxIters), Q(size, maxIters);
   T.setZero();
   VectorXd u(size), r = packMobileRows(direction, mobile);
@@ -68,7 +71,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
     return;
   }
   double ew = 0, ewOld = 0, ewAbsRelErr;
-  const double dr = params.main_options.finiteDifference;
+  const double dr = params.main_options().finiteDifference;
   VectorXd evEst, evT, evOldEst;
 
   auto tmpMatter = std::make_unique<Matter>(*matter);
@@ -132,9 +135,9 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
                      "{:10.6f} {:7.3f} {:5} n_mobile={}",
                      "----", "----", "----", "----", ew, ewAbsRelErr,
                      statsAngle, i, mobile.size());
-      if (ewAbsRelErr < params.lanczos_options.tolerance) {
+      if (ewAbsRelErr < params.lanczos_options().tolerance) {
         QUILL_LOG_INFO(log, "[ILanczos] Tolerance reached: {}",
-                       params.lanczos_options.tolerance);
+                       params.lanczos_options().tolerance);
         break;
       }
     } else {
@@ -142,22 +145,22 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
       ewOld = ew;
       evEst = Q.col(0);
       evOldEst = Q.col(0);
-      if (lowestEw != 0.0 && params.lanczos_options.quit_early) {
+      if (lowestEw != 0.0 && params.lanczos_options().quit_early) {
         double Cprev = lowestEw;
         double Cnew = u.dot(Q.col(i));
         ewAbsRelErr = eonc::safemath::safe_div(std::fabs(Cnew - Cprev),
                                                std::fabs(Cprev), 1.0);
-        if (ewAbsRelErr <= params.lanczos_options.tolerance) {
+        if (ewAbsRelErr <= params.lanczos_options().tolerance) {
           statsAngle = 0.0;
           statsTorque = ewAbsRelErr;
           QUILL_LOG_INFO(log, "[ILanczos] Tolerance reached: {}",
-                         params.lanczos_options.tolerance);
+                         params.lanczos_options().tolerance);
           break;
         }
       }
     }
 
-    if (i >= params.lanczos_options.max_iterations - 1) {
+    if (i >= params.lanczos_options().max_iterations - 1) {
       QUILL_LOG_ERROR(log, "[ILanczos] Max iterations");
       break;
     }
@@ -175,3 +178,5 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
 double Lanczos::getEigenvalue() { return lowestEw; }
 
 AtomMatrix Lanczos::getEigenvector() { return lowestEv; }
+
+} // namespace eonc

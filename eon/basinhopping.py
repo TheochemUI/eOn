@@ -299,10 +299,7 @@ def main(config: ConfigClass = None):
                 rmdirs = [config.path_jobs_out, config.path_jobs_in, config.path_scratch,  config.path_states]
                 for i in rmdirs:
                     if os.path.isdir(i):
-                        shutil.rmtree(i)
-                        #XXX: ugly way to remove all empty directories containing this one
-                        os.mkdir(i)
-                        os.removedirs(i)
+                        io.remove_tree_and_empty_parents(i)
                 log_path = os.path.join(config.path_results, "bh.log")
                 wuid_path = os.path.join(config.path_results, "wuid.dat")
                 prng_path = io.prng_state_path(config)

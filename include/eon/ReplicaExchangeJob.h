@@ -40,5 +40,3 @@ private:
 };
 
 } // namespace eonc
-
-using eonc::ReplicaExchangeJob;

@@ -11,46 +11,51 @@
 */
 
 #include "eon/potentials/AMS/AMS.h"
+#include <algorithm>
+#include <cctype>
 #include <cstddef>
+#include <cstdint>
 #include <format>
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <ranges>
+#include <readcon-core.hpp>
 #include <stdexcept>
 #include <vector>
 
 namespace bp = boost::process;
 
-AMS::AMS(const Parameters &p)
-    : Potential(PotType::AMS, p) {
+AMS::AMS(const eonc::Parameters &p)
+    : eonc::Potential(eonc::PotType::AMS, p) {
   // Get the values from the configuration
   // All the parameter values convert to lowercase in generate_run
-  this->engine = p.ams_options.engine;
-  this->forcefield = p.ams_options.forcefield;
-  this->model = p.ams_options.model;
-  this->xc = p.ams_options.xc;
-  this->resources = p.ams_options.resources;
-  this->basis = p.ams_options.basis;
+  this->engine = p.ams_options().engine;
+  this->forcefield = p.ams_options().forcefield;
+  this->model = p.ams_options().model;
+  this->xc = p.ams_options().xc;
+  this->resources = p.ams_options().resources;
+  this->basis = p.ams_options().basis;
   this->engine_setup = generate_run(p);
   // Environment
   // TODO: Add more checks for how this can be set
-  if (p.ams_options.env.amshome.empty() &&
-      p.ams_options.env.scm_tmpdir.empty() &&
-      p.ams_options.env.scmlicense.empty() &&
-      p.ams_options.env.scm_pythondir.empty() &&
-      p.ams_options.env.amsbin.empty() &&
-      p.ams_options.env.amsresources.empty()) {
+  if (p.ams_options().env.amshome.empty() &&
+      p.ams_options().env.scm_tmpdir.empty() &&
+      p.ams_options().env.scmlicense.empty() &&
+      p.ams_options().env.scm_pythondir.empty() &&
+      p.ams_options().env.amsbin.empty() &&
+      p.ams_options().env.amsresources.empty()) {
     nativenv = boost::this_process::environment();
   } else {
     nativenv = boost::this_process::environment();
     // Some of these can derive from the others
-    nativenv["AMSHOME"] = p.ams_options.env.amshome;
-    nativenv["SCM_TMPDIR"] = p.ams_options.env.scm_tmpdir;
-    nativenv["SCMLICENSE"] = p.ams_options.env.scmlicense;
-    nativenv["SCM_PYTHONDIR"] = p.ams_options.env.scm_pythondir;
-    nativenv["AMSBIN"] = p.ams_options.env.amsbin;
-    nativenv["AMSRESOURCES"] = p.ams_options.env.amsresources;
-    nativenv["PATH"] += p.ams_options.env.amsbin;
+    nativenv["AMSHOME"] = p.ams_options().env.amshome;
+    nativenv["SCM_TMPDIR"] = p.ams_options().env.scm_tmpdir;
+    nativenv["SCMLICENSE"] = p.ams_options().env.scmlicense;
+    nativenv["SCM_PYTHONDIR"] = p.ams_options().env.scm_pythondir;
+    nativenv["AMSBIN"] = p.ams_options().env.amsbin;
+    nativenv["AMSRESOURCES"] = p.ams_options().env.amsresources;
+    nativenv["PATH"] += p.ams_options().env.amsbin;
   }
   // Do not pass "" in the config files
   // std::cout<<nativenv["PATH"].to_string()<<std::endl;
@@ -81,41 +86,12 @@ namespace {
 // The driver script, written afresh before every AMS invocation.
 constexpr const char *kRunScript = "run_AMS.sh";
 
-const char *elementArray[] = {
-    "Unknown", "H",  "He", "Li", "Be", "B",  "C",  "N",  "O",  "F",  "Ne", "Na",
-    "Mg",      "Al", "Si", "P",  "S",  "Cl", "Ar", "K",  "Ca", "Sc", "Ti", "V",
-    "Cr",      "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br",
-    "Kr",      "Rb", "Sr", "Y",  "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag",
-    "Cd",      "In", "Sn", "Sb", "Te", "I",  "Xe", "Cs", "Ba", "La", "Ce", "Pr",
-    "Nd",      "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu",
-    "Hf",      "Ta", "W",  "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi",
-    "Po",      "At", "Rn", "Fr", "Ra", "Ac", "Th", "Pa", "U",  NULL};
-
-// guess the atom type from the atomic mass,
-std::string mass2atom(double atomicmass) {
-  return elementArray[int(atomicmass + .5)];
-}
-
-int symbol2atomicNumber(char const *symbol) {
-  int i = 0;
-
-  while (elementArray[i] != NULL) {
-    if (strcmp(symbol, elementArray[i]) == 0) {
-      return i;
-    }
-    i++;
-  }
-  // invalid symbol
-  return -1;
-}
-
-char const *atomicNumber2symbol(int n) {
-  // The trailing NULL terminates the table, so it bounds the valid range.
-  if (n < 0 || static_cast<std::size_t>(n) + 1 >= std::size(elementArray)) {
+std::string symbol_for_z(int n) {
+  if (n <= 0) {
     throw std::runtime_error(
         std::format("AMS knows no element symbol for atomic number {}", n));
   }
-  return elementArray[n];
+  return readcon::z_to_symbol(static_cast<uint64_t>(n));
 }
 } // namespace
 
@@ -456,7 +432,7 @@ void AMS::passToSystem(long N, const double *R, const int *atomicNrs,
   out << " Atoms\n";
   for (long i = 0; i < N; i++) {
     out << std::format("  {}\t{:.19f}\t{:.19f}\t{:.19f}\n",
-                       atomicNumber2symbol(atomicNrs[i]), R[i * 3 + 0],
+                       symbol_for_z(atomicNrs[i]), R[i * 3 + 0],
                        R[i * 3 + 1], R[i * 3 + 2]);
   }
   out << " End\n";
@@ -519,22 +495,30 @@ void AMS::finishRunScript(std::ofstream &out) {
   }
 }
 
-std::string AMS::generate_run(const Parameters &p) {
+std::string AMS::generate_run(const eonc::Parameters &p) {
   std::string engine_block; // Shadows the class variable
   // TODO: Use args everywhere, cleaner logic
   // Ensure capitals and existence
-  engine.empty()
-      ? throw std::runtime_error("AMS Engine is required \n")
-      : std::transform(engine.begin(), engine.end(), engine.begin(), ::toupper);
+  if (engine.empty()) {
+    throw std::runtime_error("AMS Engine is required \n");
+  }
+  std::ranges::transform(engine, engine.begin(), [](unsigned char c) {
+    return static_cast<char>(std::toupper(c));
+  });
   // engine functions uniquely, it serves as a filename, so we store
   // engine_lower as a lowercase version too
   engine_lower = engine;
-  std::transform(engine.begin(), engine.end(), engine_lower.begin(), ::tolower);
+  std::ranges::transform(engine, engine_lower.begin(), [](unsigned char c) {
+    return static_cast<char>(std::tolower(c));
+  });
   // Prepare the block
   if (engine == "MOPAC") {
-    model.empty()
-        ? throw std::runtime_error("MOPAC needs a model\n")
-        : std::transform(model.begin(), model.end(), model.begin(), ::toupper);
+    if (model.empty()) {
+      throw std::runtime_error("MOPAC needs a model\n");
+    }
+    std::ranges::transform(model, model.begin(), [](unsigned char c) {
+      return static_cast<char>(std::toupper(c));
+    });
     std::string engine_formatter = R"(
  Engine {}
   Model {}
@@ -543,11 +527,18 @@ std::string AMS::generate_run(const Parameters &p) {
     engine_block = std::format(engine_formatter, engine, model);
     return engine_block;
   } else if (engine == "ADF" || engine == "BAND") {
-    basis.empty()
-        ? throw std::runtime_error("ADF/BAND need a basis\n")
-        : std::transform(basis.begin(), basis.end(), basis.begin(), ::toupper);
-    xc.empty() ? throw std::runtime_error("ADF/BAND need a functional\n")
-               : std::transform(xc.begin(), xc.end(), xc.begin(), ::toupper);
+    if (basis.empty()) {
+      throw std::runtime_error("ADF/BAND need a basis\n");
+    }
+    std::ranges::transform(basis, basis.begin(), [](unsigned char c) {
+      return static_cast<char>(std::toupper(c));
+    });
+    if (xc.empty()) {
+      throw std::runtime_error("ADF/BAND need a functional\n");
+    }
+    std::ranges::transform(xc, xc.begin(), [](unsigned char c) {
+      return static_cast<char>(std::toupper(c));
+    });
     std::string engine_formatter = R"(
    Engine {}
      Basis
@@ -562,9 +553,12 @@ std::string AMS::generate_run(const Parameters &p) {
     engine_block = std::format(engine_formatter, engine, basis, xc);
     return engine_block;
   } else if (engine == "DFTB") {
-    resources.empty() ? throw std::runtime_error("DFTB need resources\n")
-                      : std::transform(resources.begin(), resources.end(),
-                                       resources.begin(), ::toupper);
+    if (resources.empty()) {
+      throw std::runtime_error("DFTB need resources\n");
+    }
+    std::ranges::transform(resources, resources.begin(), [](unsigned char c) {
+      return static_cast<char>(std::toupper(c));
+    });
     std::string engine_formatter = R"(
    Engine {}
      ResourcesDir {}
@@ -573,9 +567,12 @@ std::string AMS::generate_run(const Parameters &p) {
     engine_block = std::format(engine_formatter, engine, resources);
     return engine_block;
   } else if (engine == "reaxff") {
-    forcefield.empty() ? throw std::runtime_error("REAXFF needs a forcefield\n")
-                       : std::transform(forcefield.begin(), forcefield.end(),
-                                        forcefield.begin(), ::toupper);
+    if (forcefield.empty()) {
+      throw std::runtime_error("REAXFF needs a forcefield\n");
+    }
+    std::ranges::transform(forcefield, forcefield.begin(), [](unsigned char c) {
+      return static_cast<char>(std::toupper(c));
+    });
 
     std::string engine_formatter = R"(
    Engine {}

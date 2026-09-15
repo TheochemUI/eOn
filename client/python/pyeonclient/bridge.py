@@ -243,6 +243,10 @@ def structure_to_matter(
     for i, name in enumerate(structure.names):
         z[i] = _symbol_to_z(name)
     m.atomic_numbers = z
+    if hasattr(structure, "atom_ids"):
+        ids = np.asarray(structure.atom_ids).reshape(-1)
+        for i in range(n):
+            m.set_atom_index(i, int(ids[i]))
     return m
 
 
@@ -262,6 +266,9 @@ def matter_to_structure(matter: Any) -> Any:
         s.free = np.where(fixed != 0, 0.0, 1.0)
     z = np.asarray(matter.atomic_numbers, dtype=np.int64).reshape(-1)
     s.names = [_z_to_symbol(int(z[i])) for i in range(n)]
+    s.atom_ids = np.array(
+        [int(matter.get_atom_index(i)) for i in range(n)], dtype=np.uint64
+    )
     return s
 
 

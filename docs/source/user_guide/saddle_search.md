@@ -69,10 +69,13 @@ server:
 
 - `random` — uniform random atom
 - `last_atom` — the last atom in the configuration
-- `min_coordinated` — the atom with the fewest neighbours
-- `not_fcc_or_hcp` — an atom whose local structure is neither FCC nor HCP
-- `listed_atoms` — an atom from `displace_atom_list` (parsed from the INI
-  config; no server displacement file needed)
+- `least_coordinated` — the atom with the fewest neighbours
+- `not_fcc_hcp_coordinated` — an atom whose local structure is neither FCC nor HCP
+- `listed_atoms` — pick via `listedAtomEpiCenter` from `displace_atom_list`
+  (CON file-order, remapped; lone `-1` is every free atom) and apply a
+  `displace_radius` / `displace_magnitude` kick. No server displacement
+  file needed. `random`, `last_atom`, and `least_coordinated` use the
+  same client helper.
 - `load` — read a displacement vector from a file written by the server
 
 ## Configuration

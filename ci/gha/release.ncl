@@ -90,6 +90,9 @@ in
 let job_gh_release = {
   needs = ["gate", "tarball"],
   "runs-on" = P.ubuntu,
+  permissions = {
+    contents = "write",
+  },
   steps = [
     S.checkout_default,
     {
@@ -155,7 +158,7 @@ let job_pypi = {
   },
   steps = [
     S.checkout_full,
-    S.setup_python_default,
+    S.setup_python_nocache,
     S.run_script "Install build frontend" "python3 -m pip install --upgrade pip build",
     S.run_script "Install sdist build deps" m%"
       set -euo pipefail
@@ -199,8 +202,7 @@ in
   name = "Release",
   on = { push = { tags = ["v*"] } },
   permissions = {
-    contents = "write",
-    "id-token" = "write",
+    contents = "read",
   },
   concurrency = {
     group = "release-${{ github.ref }}",

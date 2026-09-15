@@ -24,6 +24,30 @@ namespace eonc {
 
 IRACompare::MatchResult IRACompare::match(const Matter &m1, const Matter &m2,
                                           double distThreshold) {
+  const int nat1 = m1.numberOfAtoms();
+  const int nat2 = m2.numberOfAtoms();
+  if (nat1 <= 0 || nat2 <= 0) {
+    MatchResult result;
+    result.error = -1;
+    return result;
+  }
+  std::vector<int> typ1(static_cast<size_t>(nat1)),
+      typ2(static_cast<size_t>(nat2));
+  auto nrs1 = m1.getAtomicNrs();
+  auto nrs2 = m2.getAtomicNrs();
+  for (int i = 0; i < nat1; i++)
+    typ1[static_cast<size_t>(i)] = nrs1[i];
+  for (int i = 0; i < nat2; i++)
+    typ2[static_cast<size_t>(i)] = nrs2[i];
+  return matchArrays(nat1, typ1.data(), m1.getPositions().data(), nat2,
+                     typ2.data(), m2.getPositions().data(), distThreshold);
+}
+
+IRACompare::MatchResult IRACompare::matchArrays(int nat1, const int *typ1,
+                                                const double *pos1, int nat2,
+                                                const int *typ2,
+                                                const double *pos2,
+                                                double distThreshold) {
   MatchResult result;
 #ifdef WITH_IRA
   auto &res = get_ira_resource();
@@ -38,26 +62,16 @@ IRACompare::MatchResult IRACompare::match(const Matter &m1, const Matter &m2,
     return result;
   }
 
-  const int nat1 = m1.numberOfAtoms();
-  const int nat2 = m2.numberOfAtoms();
-
-  // Prepare type arrays
-  std::vector<int> typ1(nat1), typ2(nat2);
-  auto nrs1 = m1.getAtomicNrs();
-  auto nrs2 = m2.getAtomicNrs();
-  for (int i = 0; i < nat1; i++)
-    typ1[i] = nrs1[i];
-  for (int i = 0; i < nat2; i++)
-    typ2[i] = nrs2[i];
-
-  // Prepare coordinates using the new Eigen helper - use direct data access
-  const AtomMatrix &pos1 = m1.getPositions();
-  const AtomMatrix &pos2 = m2.getPositions();
+  if (nat1 <= 0 || nat2 <= 0 || typ1 == nullptr || typ2 == nullptr ||
+      pos1 == nullptr || pos2 == nullptr) {
+    result.error = -1;
+    return result;
+  }
 
   // Use Eigen::Map to reinterpret the row-major data as column-major for
   // Fortran
-  Eigen::Map<const AtomMatrixF> coords1_map(pos1.data(), 3, nat1);
-  Eigen::Map<const AtomMatrixF> coords2_map(pos2.data(), 3, nat2);
+  Eigen::Map<const AtomMatrixF> coords1_map(pos1, 3, nat1);
+  Eigen::Map<const AtomMatrixF> coords2_map(pos2, 3, nat2);
 
   // Candidate arrays: -1 means "use geometric center as origin" (good
   // initial guess for translation with equal-size structures)
@@ -84,9 +98,9 @@ IRACompare::MatchResult IRACompare::match(const Matter &m1, const Matter &m2,
   double *tr_ptr = tr_buf.data();
   int *perm_ptr = perm_buf.data();
 
-  res.get_match_fn()(nat1, typ1.data(), coords1_map.data(), cand1.data(), nat2,
-                     typ2.data(), coords2_map.data(), cand2.data(),
-                     distThreshold, &rmat_ptr, &tr_ptr, &perm_ptr, &hd, &ierr);
+  res.get_match_fn()(nat1, typ1, coords1_map.data(), cand1.data(), nat2, typ2,
+                     coords2_map.data(), cand2.data(), distThreshold, &rmat_ptr,
+                     &tr_ptr, &perm_ptr, &hd, &ierr);
 
   result.error = ierr;
   if (ierr == 0) {
@@ -134,6 +148,10 @@ IRACompare::MatchResult IRACompare::matchPBC(const Matter &m1, const Matter &m2,
 
   const int nat1 = m1.numberOfAtoms();
   const int nat2 = m2.numberOfAtoms();
+  if (nat1 <= 0 || nat2 <= 0) {
+    result.error = -1;
+    return result;
+  }
 
   std::vector<int> typ1(nat1), typ2(nat2);
   auto nrs1 = m1.getAtomicNrs();
@@ -295,6 +313,47 @@ IRACompare::findSymmetry(const Matter &m, double threshold, bool prescreenIh) {
 #else
   result.error = -1;
 #endif
+  return result;
+}
+
+IRACompare::MatchResult
+IRACompare::alignReactantToProduct(Matter &reactant, const Matter &product,
+                                   double distThreshold) {
+  MatchResult result = match(reactant, product, distThreshold);
+  if (result.error != 0) {
+    return result;
+  }
+  const long n = reactant.numberOfAtoms();
+  if (n != product.numberOfAtoms() ||
+      static_cast<long>(result.permutation.size()) != n) {
+    result.error = -2;
+    return result;
+  }
+  AtomMatrix pos = reactant.getPositionsCopy();
+  for (long i = 0; i < n; ++i) {
+    Eigen::Vector3d p = pos.row(i);
+    pos.row(i) = (result.rotation * p + result.translation).transpose();
+  }
+  bool oneBased = false;
+  for (int idx : result.permutation) {
+    if (idx == n) {
+      oneBased = true;
+      break;
+    }
+  }
+  AtomMatrix reordered = pos;
+  for (long i = 0; i < n; ++i) {
+    int src = result.permutation[static_cast<size_t>(i)];
+    if (oneBased) {
+      --src;
+    }
+    if (src < 0 || src >= n) {
+      result.error = -3;
+      return result;
+    }
+    reordered.row(i) = pos.row(src);
+  }
+  reactant.setPositions(reordered);
   return result;
 }
 

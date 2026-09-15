@@ -24,13 +24,13 @@
 #include <cmath>
 #include <limits>
 
-using namespace eonc::helpers;
+namespace eonc {
 
 LORRotation::LORRotation(std::shared_ptr<Matter> matter,
                          const Parameters &params,
                          std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
-  auto x1Pot = (pot->needsPerImageInstance() && params.main_options.parallel)
+  auto x1Pot = (pot->needsPerImageInstance() && params.main_options().parallel)
                    ? eonc::helpers::makePotential(params)
                    : pot;
   x0 = std::make_shared<Matter>(pot, params);
@@ -90,17 +90,17 @@ void LORRotation::compute(std::shared_ptr<Matter> matter,
   *x0 = *matter;
   *x1 = *matter;
   const VectorXd x0_r = x0->getPositionsV();
-  const double delta = params.main_options.finiteDifference;
+  const double delta = params.main_options().finiteDifference;
 
   // rotations_max <= 0 → Parameters default (10); no silent upper clamp.
-  const long rotBudget = params.dimer_options.rotations_max > 0
-                             ? params.dimer_options.rotations_max
+  const long rotBudget = params.dimer_options().rotations_max > 0
+                             ? params.dimer_options().rotations_max
                              : 10;
   const int rotmax = static_cast<int>(std::max<long>(1, rotBudget));
 
   // Dedicated LOR residual tolerance (not classical torque_min).
   const double residualTol =
-      std::max(1e-3, params.dimer_options.lor_residual_tol);
+      std::max(1e-3, params.dimer_options().lor_residual_tol);
   auto relativeResidual = [](double fnorm, double cn) {
     return fnorm / (std::abs(cn) + 1.0);
   };
@@ -400,3 +400,5 @@ void LORRotation::compute(std::shared_ptr<Matter> matter,
                  statsRotations, totalForceCalls, eigenvalue,
                  convergedOnResidual);
 }
+
+} // namespace eonc

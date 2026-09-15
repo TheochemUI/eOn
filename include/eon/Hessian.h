@@ -41,5 +41,3 @@ private:
 };
 
 } // namespace eonc
-
-using eonc::Hessian;

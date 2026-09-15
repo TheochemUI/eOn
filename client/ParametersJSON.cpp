@@ -48,120 +48,137 @@ json to_json(const Parameters &p) {
 
   // [Main]
   j["Main"] = {
-      {"job", enum_to_json(p.main_options.job)},
-      {"random_seed", p.main_options.randomSeed},
-      {"temperature", p.main_options.temperature},
-      {"quiet", p.main_options.quiet},
-      {"write_log", p.main_options.writeLog},
-      {"checkpoint", p.main_options.checkpoint},
-      {"ini_filename", p.main_options.iniFilename},
-      {"con_filename", p.main_options.conFilename},
-      {"finite_difference", p.main_options.finiteDifference},
-      {"max_force_calls", p.main_options.maxForceCalls},
-      {"remove_net_force", p.main_options.removeNetForce},
-      {"write_con_forces", p.main_options.writeConForces},
+      {"job", enum_to_json(ParametersLoadAccess::main_options(p).job)},
+      {"random_seed", ParametersLoadAccess::main_options(p).randomSeed},
+      {"temperature", ParametersLoadAccess::main_options(p).temperature},
+      {"quiet", ParametersLoadAccess::main_options(p).quiet},
+      {"write_log", ParametersLoadAccess::main_options(p).writeLog},
+      {"checkpoint", ParametersLoadAccess::main_options(p).checkpoint},
+      {"ini_filename", ParametersLoadAccess::main_options(p).iniFilename},
+      {"con_filename", ParametersLoadAccess::main_options(p).conFilename},
+      {"finite_difference", ParametersLoadAccess::main_options(p).finiteDifference},
+      {"max_force_calls", ParametersLoadAccess::main_options(p).maxForceCalls},
+      {"remove_net_force", ParametersLoadAccess::main_options(p).removeNetForce},
+      {"write_con_forces", ParametersLoadAccess::main_options(p).writeConForces},
   };
 
   // [Potential]
   j["Potential"] = {
-      {"potential", enum_to_json(p.potential_options.potential)},
-      {"mpi_poll_period", p.potential_options.MPIPollPeriod},
-      {"lammps_logging", p.potential_options.LAMMPSLogging},
-      {"lammps_threads", p.potential_options.LAMMPSThreads},
-      {"emt_rasmussen", p.potential_options.EMTRasmussen},
-      {"log_potential", p.potential_options.LogPotential},
-      {"ext_pot_path", p.potential_options.extPotPath},
-      {"potentials_path", p.potential_options.potentialsPath},
+      {"potential", enum_to_json(ParametersLoadAccess::potential_options(p).potential)},
+      {"mpi_poll_period", ParametersLoadAccess::potential_options(p).MPIPollPeriod},
+      {"lammps_logging", ParametersLoadAccess::potential_options(p).LAMMPSLogging},
+      {"lammps_threads", ParametersLoadAccess::potential_options(p).LAMMPSThreads},
+      {"emt_rasmussen", ParametersLoadAccess::potential_options(p).EMTRasmussen},
+      {"log_potential", ParametersLoadAccess::potential_options(p).LogPotential},
+      {"ext_pot_path", ParametersLoadAccess::potential_options(p).extPotPath},
+      {"potentials_path", ParametersLoadAccess::potential_options(p).potentialsPath},
   };
 
   // [Structure Comparison]
   j["Structure Comparison"] = {
       {"distance_difference",
-       p.structure_comparison_options.distance_difference},
-      {"neighbor_cutoff", p.structure_comparison_options.neighbor_cutoff},
-      {"check_rotation", p.structure_comparison_options.check_rotation},
+       ParametersLoadAccess::structure_comparison_options(p).distance_difference},
+      {"neighbor_cutoff", ParametersLoadAccess::structure_comparison_options(p).neighbor_cutoff},
+      {"check_rotation", ParametersLoadAccess::structure_comparison_options(p).check_rotation},
       {"indistinguishable_atoms",
-       p.structure_comparison_options.indistinguishable_atoms},
-      {"energy_difference", p.structure_comparison_options.energy_difference},
-      {"remove_translation", p.structure_comparison_options.remove_translation},
+       ParametersLoadAccess::structure_comparison_options(p).indistinguishable_atoms},
+      {"energy_difference", ParametersLoadAccess::structure_comparison_options(p).energy_difference},
+      {"remove_translation", ParametersLoadAccess::structure_comparison_options(p).remove_translation},
   };
 
   // [Optimizer]
   j["Optimizer"] = {
-      {"opt_method", enum_to_json(p.optimizer_options.method)},
-      {"convergence_metric", p.optimizer_options.convergence_metric},
-      {"max_iterations", p.optimizer_options.max_iterations},
-      {"max_move", p.optimizer_options.max_move},
-      {"converged_force", p.optimizer_options.converged_force},
-      {"time_step", p.optimizer_options.time_step_input},
-      {"max_time_step", p.optimizer_options.max_time_step_input},
+      {"opt_method", enum_to_json(ParametersLoadAccess::optimizer_options(p).method)},
+      {"convergence_metric", ParametersLoadAccess::optimizer_options(p).convergence_metric},
+      {"max_iterations", ParametersLoadAccess::optimizer_options(p).max_iterations},
+      {"max_move", ParametersLoadAccess::optimizer_options(p).max_move},
+      {"converged_force", ParametersLoadAccess::optimizer_options(p).converged_force},
+      {"time_step", ParametersLoadAccess::optimizer_options(p).time_step_input},
+      {"max_time_step", ParametersLoadAccess::optimizer_options(p).max_time_step_input},
   };
   j["Optimizer"]["LBFGS"] = {
-      {"memory", p.optimizer_options.lbfgs.memory},
-      {"inverse_curvature", p.optimizer_options.lbfgs.inverse_curvature},
-      {"auto_scale", p.optimizer_options.lbfgs.auto_scale},
-      {"angle_reset", p.optimizer_options.lbfgs.angle_reset},
-      {"distance_reset", p.optimizer_options.lbfgs.distance_reset},
+      {"memory", ParametersLoadAccess::optimizer_options(p).lbfgs.memory},
+      {"inverse_curvature", ParametersLoadAccess::optimizer_options(p).lbfgs.inverse_curvature},
+      {"auto_scale", ParametersLoadAccess::optimizer_options(p).lbfgs.auto_scale},
+      {"angle_reset", ParametersLoadAccess::optimizer_options(p).lbfgs.angle_reset},
+      {"distance_reset", ParametersLoadAccess::optimizer_options(p).lbfgs.distance_reset},
   };
 
   // [Dynamics]
   j["Dynamics"] = {
-      {"time_step", p.dynamics_options.time_step_input},
-      {"time", p.dynamics_options.time_input},
+      {"time_step", ParametersLoadAccess::dynamics_options(p).time_step_input},
+      {"time", ParametersLoadAccess::dynamics_options(p).time_input},
   };
 
   // [Thermostat]
   j["Thermostat"] = {
-      {"kind", p.thermostat_options.kind},
-      {"andersen_alpha", p.thermostat_options.andersen_alpha},
-      {"andersen_collision_period", p.thermostat_options.andersen_tcol_input},
-      {"nose_mass", p.thermostat_options.nose_mass},
-      {"langevin_friction", p.thermostat_options.langevin_friction_input},
+      {"kind", ParametersLoadAccess::thermostat_options(p).kind},
+      {"andersen_alpha", ParametersLoadAccess::thermostat_options(p).andersen_alpha},
+      {"andersen_collision_period", ParametersLoadAccess::thermostat_options(p).andersen_tcol_input},
+      {"nose_mass", ParametersLoadAccess::thermostat_options(p).nose_mass},
+      {"langevin_friction", ParametersLoadAccess::thermostat_options(p).langevin_friction_input},
   };
 
   // [Nudged Elastic Band]
   j["Nudged Elastic Band"] = {
-      {"images", p.neb_options.image_count},
-      {"max_iterations", p.neb_options.max_iterations},
-      {"opt_method", enum_to_json(p.neb_options.opt_method)},
-      {"converged_force", p.neb_options.force_tolerance},
+      {"images", ParametersLoadAccess::neb_options(p).image_count},
+      {"max_iterations", ParametersLoadAccess::neb_options(p).max_iterations},
+      {"opt_method", enum_to_json(ParametersLoadAccess::neb_options(p).opt_method)},
+      {"converged_force", ParametersLoadAccess::neb_options(p).force_tolerance},
   };
   j["Nudged Elastic Band"]["spring"] = {
-      {"constant", p.neb_options.spring.constant},
-      {"elastic_band", p.neb_options.spring.use_elastic_band},
-      {"doubly_nudged", p.neb_options.spring.doubly_nudged},
+      {"constant", ParametersLoadAccess::neb_options(p).spring.constant},
+      {"elastic_band", ParametersLoadAccess::neb_options(p).spring.use_elastic_band},
+      {"doubly_nudged", ParametersLoadAccess::neb_options(p).spring.doubly_nudged},
   };
   j["Nudged Elastic Band"]["climbing_image"] = {
-      {"enabled", p.neb_options.climbing_image.enabled},
-      {"converged_only", p.neb_options.climbing_image.converged_only},
+      {"enabled", ParametersLoadAccess::neb_options(p).climbing_image.enabled},
+      {"converged_only", ParametersLoadAccess::neb_options(p).climbing_image.converged_only},
+      {"band_slack", ParametersLoadAccess::neb_options(p).climbing_image.band_slack},
   };
 
   // [Dimer]
   j["Dimer"] = {
-      {"rotation_angle", p.dimer_options.rotation_angle},
-      {"improved", p.dimer_options.improved},
-      {"converged_angle", p.dimer_options.converged_angle},
-      {"max_iterations", p.dimer_options.max_iterations},
-      {"opt_method", p.dimer_options.opt_method},
-      {"rotation_backend", enum_to_json(p.dimer_options.rotation_backend)},
-      {"lor_residual_tol", p.dimer_options.lor_residual_tol},
+      {"rotation_angle", ParametersLoadAccess::dimer_options(p).rotation_angle},
+      {"improved", ParametersLoadAccess::dimer_options(p).improved},
+      {"converged_angle", ParametersLoadAccess::dimer_options(p).converged_angle},
+      {"max_iterations", ParametersLoadAccess::dimer_options(p).max_iterations},
+      {"opt_method", enum_to_json(ParametersLoadAccess::dimer_options(p).opt_method)},
+      {"rotation_backend", enum_to_json(ParametersLoadAccess::dimer_options(p).rotation_backend)},
+      {"lor_residual_tol", ParametersLoadAccess::dimer_options(p).lor_residual_tol},
   };
 
   // [Saddle Search]
   j["Saddle Search"] = {
-      {"method", p.saddle_search_options.method},
-      {"min_mode_method", p.saddle_search_options.minmode_method},
-      {"max_energy", p.saddle_search_options.max_energy},
-      {"max_iterations", p.saddle_search_options.max_iterations},
-      {"displace_magnitude", p.saddle_search_options.displace_magnitude},
-      {"displace_radius", p.saddle_search_options.displace_radius},
+      {"method", ParametersLoadAccess::saddle_search_options(p).method},
+      {"min_mode_method", ParametersLoadAccess::saddle_search_options(p).minmode_method},
+      {"max_energy", ParametersLoadAccess::saddle_search_options(p).max_energy},
+      {"max_iterations", ParametersLoadAccess::saddle_search_options(p).max_iterations},
+      {"displace_magnitude", ParametersLoadAccess::saddle_search_options(p).displace_magnitude},
+      {"displace_radius", ParametersLoadAccess::saddle_search_options(p).displace_radius},
   };
 
   // [Prefactor]
   j["Prefactor"] = {
-      {"default_value", p.prefactor_options.default_value},
-      {"max_value", p.prefactor_options.max_value},
-      {"min_value", p.prefactor_options.min_value},
+      {"default_value", ParametersLoadAccess::prefactor_options(p).default_value},
+      {"max_value", ParametersLoadAccess::prefactor_options(p).max_value},
+      {"min_value", ParametersLoadAccess::prefactor_options(p).min_value},
+  };
+
+  // [Lanczos]
+  j["Lanczos"] = {
+      {"tolerance", ParametersLoadAccess::lanczos_options(p).tolerance},
+      {"max_iterations", ParametersLoadAccess::lanczos_options(p).max_iterations},
+      {"quit_early", ParametersLoadAccess::lanczos_options(p).quit_early},
+      {"phva_atoms", ParametersLoadAccess::lanczos_options(p).phva_atoms},
+  };
+
+  // [Davidson]
+  j["Davidson"] = {
+      {"tolerance", ParametersLoadAccess::davidson_options(p).tolerance},
+      {"max_iterations", ParametersLoadAccess::davidson_options(p).max_iterations},
+      {"diagonal_preconditioner", ParametersLoadAccess::davidson_options(p).diagonal_preconditioner},
+      {"phva_atoms", ParametersLoadAccess::davidson_options(p).phva_atoms},
   };
 
   // [Lanczos]
@@ -182,27 +199,27 @@ json to_json(const Parameters &p) {
 
   // [Hessian]
   j["Hessian"] = {
-      {"phva_atoms", p.hessian_options.phva_atoms},
-      {"zero_freq_value", p.hessian_options.zero_freq_value},
-      {"fd_scheme", p.hessian_options.fd_scheme},
-      {"resume", p.hessian_options.resume},
-      {"checkpoint_path", p.hessian_options.checkpoint_path},
+      {"phva_atoms", ParametersLoadAccess::hessian_options(p).phva_atoms},
+      {"zero_freq_value", ParametersLoadAccess::hessian_options(p).zero_freq_value},
+      {"fd_scheme", ParametersLoadAccess::hessian_options(p).fd_scheme},
+      {"resume", ParametersLoadAccess::hessian_options(p).resume},
+      {"checkpoint_path", ParametersLoadAccess::hessian_options(p).checkpoint_path},
   };
 
   // [Debug]
   j["Debug"] = {
-      {"write_movies", p.debug_options.write_movies},
-      {"write_movies_interval", p.debug_options.write_movies_interval},
-      {"write_deprecated_outs", p.debug_options.write_deprecated_outs},
+      {"write_movies", ParametersLoadAccess::debug_options(p).write_movies},
+      {"write_movies_interval", ParametersLoadAccess::debug_options(p).write_movies_interval},
+      {"write_deprecated_outs", ParametersLoadAccess::debug_options(p).write_deprecated_outs},
   };
 
   // [Serve]
   j["Serve"] = {
-      {"host", p.serve_options.host},
-      {"port", p.serve_options.port},
-      {"replicas", p.serve_options.replicas},
-      {"gateway_port", p.serve_options.gateway_port},
-      {"endpoints", p.serve_options.endpoints},
+      {"host", ParametersLoadAccess::serve_options(p).host},
+      {"port", ParametersLoadAccess::serve_options(p).port},
+      {"replicas", ParametersLoadAccess::serve_options(p).replicas},
+      {"gateway_port", ParametersLoadAccess::serve_options(p).gateway_port},
+      {"endpoints", ParametersLoadAccess::serve_options(p).endpoints},
   };
 
   return j;
@@ -213,180 +230,183 @@ void from_json(const json &j, Parameters &p) {
   if (j.contains("Main")) {
     auto &m = j.at("Main");
     if (m.contains("job"))
-      p.main_options.job = enum_from_json(m.at("job"), p.main_options.job);
-    JSON_OPT(m, "random_seed", p.main_options.randomSeed);
-    JSON_OPT(m, "temperature", p.main_options.temperature);
-    JSON_OPT(m, "quiet", p.main_options.quiet);
-    JSON_OPT(m, "write_log", p.main_options.writeLog);
-    JSON_OPT(m, "checkpoint", p.main_options.checkpoint);
-    JSON_OPT(m, "ini_filename", p.main_options.iniFilename);
-    JSON_OPT(m, "con_filename", p.main_options.conFilename);
-    JSON_OPT(m, "finite_difference", p.main_options.finiteDifference);
-    JSON_OPT(m, "max_force_calls", p.main_options.maxForceCalls);
-    JSON_OPT(m, "remove_net_force", p.main_options.removeNetForce);
-    JSON_OPT(m, "write_con_forces", p.main_options.writeConForces);
+      ParametersLoadAccess::main_options(p).job = enum_from_json(m.at("job"), ParametersLoadAccess::main_options(p).job);
+    JSON_OPT(m, "random_seed", ParametersLoadAccess::main_options(p).randomSeed);
+    JSON_OPT(m, "temperature", ParametersLoadAccess::main_options(p).temperature);
+    JSON_OPT(m, "quiet", ParametersLoadAccess::main_options(p).quiet);
+    JSON_OPT(m, "write_log", ParametersLoadAccess::main_options(p).writeLog);
+    JSON_OPT(m, "checkpoint", ParametersLoadAccess::main_options(p).checkpoint);
+    JSON_OPT(m, "ini_filename", ParametersLoadAccess::main_options(p).iniFilename);
+    JSON_OPT(m, "con_filename", ParametersLoadAccess::main_options(p).conFilename);
+    JSON_OPT(m, "finite_difference", ParametersLoadAccess::main_options(p).finiteDifference);
+    JSON_OPT(m, "max_force_calls", ParametersLoadAccess::main_options(p).maxForceCalls);
+    JSON_OPT(m, "remove_net_force", ParametersLoadAccess::main_options(p).removeNetForce);
+    JSON_OPT(m, "write_con_forces", ParametersLoadAccess::main_options(p).writeConForces);
   }
 
   // [Potential]
   if (j.contains("Potential")) {
     auto &s = j.at("Potential");
     if (s.contains("potential"))
-      p.potential_options.potential =
-          enum_from_json(s.at("potential"), p.potential_options.potential);
-    JSON_OPT(s, "mpi_poll_period", p.potential_options.MPIPollPeriod);
-    JSON_OPT(s, "lammps_logging", p.potential_options.LAMMPSLogging);
-    JSON_OPT(s, "lammps_threads", p.potential_options.LAMMPSThreads);
-    JSON_OPT(s, "emt_rasmussen", p.potential_options.EMTRasmussen);
-    JSON_OPT(s, "log_potential", p.potential_options.LogPotential);
-    JSON_OPT(s, "ext_pot_path", p.potential_options.extPotPath);
-    JSON_OPT(s, "potentials_path", p.potential_options.potentialsPath);
+      ParametersLoadAccess::potential_options(p).potential =
+          enum_from_json(s.at("potential"), ParametersLoadAccess::potential_options(p).potential);
+    JSON_OPT(s, "mpi_poll_period", ParametersLoadAccess::potential_options(p).MPIPollPeriod);
+    JSON_OPT(s, "lammps_logging", ParametersLoadAccess::potential_options(p).LAMMPSLogging);
+    JSON_OPT(s, "lammps_threads", ParametersLoadAccess::potential_options(p).LAMMPSThreads);
+    JSON_OPT(s, "emt_rasmussen", ParametersLoadAccess::potential_options(p).EMTRasmussen);
+    JSON_OPT(s, "log_potential", ParametersLoadAccess::potential_options(p).LogPotential);
+    JSON_OPT(s, "ext_pot_path", ParametersLoadAccess::potential_options(p).extPotPath);
+    JSON_OPT(s, "potentials_path", ParametersLoadAccess::potential_options(p).potentialsPath);
   }
 
   // [Structure Comparison]
   if (j.contains("Structure Comparison")) {
     auto &s = j.at("Structure Comparison");
     JSON_OPT(s, "distance_difference",
-             p.structure_comparison_options.distance_difference);
+             ParametersLoadAccess::structure_comparison_options(p).distance_difference);
     JSON_OPT(s, "neighbor_cutoff",
-             p.structure_comparison_options.neighbor_cutoff);
+             ParametersLoadAccess::structure_comparison_options(p).neighbor_cutoff);
     JSON_OPT(s, "check_rotation",
-             p.structure_comparison_options.check_rotation);
+             ParametersLoadAccess::structure_comparison_options(p).check_rotation);
     JSON_OPT(s, "indistinguishable_atoms",
-             p.structure_comparison_options.indistinguishable_atoms);
+             ParametersLoadAccess::structure_comparison_options(p).indistinguishable_atoms);
     JSON_OPT(s, "energy_difference",
-             p.structure_comparison_options.energy_difference);
+             ParametersLoadAccess::structure_comparison_options(p).energy_difference);
     JSON_OPT(s, "remove_translation",
-             p.structure_comparison_options.remove_translation);
+             ParametersLoadAccess::structure_comparison_options(p).remove_translation);
   }
 
   // [Optimizer]
   if (j.contains("Optimizer")) {
     auto &s = j.at("Optimizer");
     if (s.contains("opt_method"))
-      p.optimizer_options.method =
-          enum_from_json(s.at("opt_method"), p.optimizer_options.method);
-    JSON_OPT(s, "convergence_metric", p.optimizer_options.convergence_metric);
-    for (char &c : p.optimizer_options.convergence_metric) {
+      ParametersLoadAccess::optimizer_options(p).method =
+          enum_from_json(s.at("opt_method"), ParametersLoadAccess::optimizer_options(p).method);
+    JSON_OPT(s, "convergence_metric", ParametersLoadAccess::optimizer_options(p).convergence_metric);
+    for (char &c : ParametersLoadAccess::optimizer_options(p).convergence_metric) {
       c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
     }
     if (auto label = eonc::helpers::convergenceMetricLabel(
-            p.optimizer_options.convergence_metric)) {
-      p.optimizer_options.convergence_metric_label = std::string(*label);
+            ParametersLoadAccess::optimizer_options(p).convergence_metric)) {
+      ParametersLoadAccess::optimizer_options(p).convergence_metric_label = std::string(*label);
     } else {
       throw std::invalid_argument(
           std::format("unknown convergence_metric: {}",
-                      p.optimizer_options.convergence_metric));
+                      ParametersLoadAccess::optimizer_options(p).convergence_metric));
     }
-    JSON_OPT(s, "max_iterations", p.optimizer_options.max_iterations);
-    JSON_OPT(s, "max_move", p.optimizer_options.max_move);
-    JSON_OPT(s, "converged_force", p.optimizer_options.converged_force);
-    JSON_OPT(s, "time_step", p.optimizer_options.time_step_input);
-    JSON_OPT(s, "max_time_step", p.optimizer_options.max_time_step_input);
+    JSON_OPT(s, "max_iterations", ParametersLoadAccess::optimizer_options(p).max_iterations);
+    JSON_OPT(s, "max_move", ParametersLoadAccess::optimizer_options(p).max_move);
+    JSON_OPT(s, "converged_force", ParametersLoadAccess::optimizer_options(p).converged_force);
+    JSON_OPT(s, "time_step", ParametersLoadAccess::optimizer_options(p).time_step_input);
+    JSON_OPT(s, "max_time_step", ParametersLoadAccess::optimizer_options(p).max_time_step_input);
     if (s.contains("LBFGS")) {
       auto &l = s.at("LBFGS");
-      JSON_OPT(l, "memory", p.optimizer_options.lbfgs.memory);
+      JSON_OPT(l, "memory", ParametersLoadAccess::optimizer_options(p).lbfgs.memory);
       JSON_OPT(l, "inverse_curvature",
-               p.optimizer_options.lbfgs.inverse_curvature);
-      JSON_OPT(l, "auto_scale", p.optimizer_options.lbfgs.auto_scale);
-      JSON_OPT(l, "angle_reset", p.optimizer_options.lbfgs.angle_reset);
-      JSON_OPT(l, "distance_reset", p.optimizer_options.lbfgs.distance_reset);
+               ParametersLoadAccess::optimizer_options(p).lbfgs.inverse_curvature);
+      JSON_OPT(l, "auto_scale", ParametersLoadAccess::optimizer_options(p).lbfgs.auto_scale);
+      JSON_OPT(l, "angle_reset", ParametersLoadAccess::optimizer_options(p).lbfgs.angle_reset);
+      JSON_OPT(l, "distance_reset", ParametersLoadAccess::optimizer_options(p).lbfgs.distance_reset);
     }
   }
 
   // [Dynamics]
   if (j.contains("Dynamics")) {
     auto &s = j.at("Dynamics");
-    JSON_OPT(s, "time_step", p.dynamics_options.time_step_input);
-    JSON_OPT(s, "time", p.dynamics_options.time_input);
+    JSON_OPT(s, "time_step", ParametersLoadAccess::dynamics_options(p).time_step_input);
+    JSON_OPT(s, "time", ParametersLoadAccess::dynamics_options(p).time_input);
   }
 
   // [Thermostat]
   if (j.contains("Thermostat")) {
     auto &s = j.at("Thermostat");
-    JSON_OPT(s, "kind", p.thermostat_options.kind);
-    JSON_OPT(s, "andersen_alpha", p.thermostat_options.andersen_alpha);
+    JSON_OPT(s, "kind", ParametersLoadAccess::thermostat_options(p).kind);
+    JSON_OPT(s, "andersen_alpha", ParametersLoadAccess::thermostat_options(p).andersen_alpha);
     JSON_OPT(s, "andersen_collision_period",
-             p.thermostat_options.andersen_tcol_input);
-    JSON_OPT(s, "nose_mass", p.thermostat_options.nose_mass);
+             ParametersLoadAccess::thermostat_options(p).andersen_tcol_input);
+    JSON_OPT(s, "nose_mass", ParametersLoadAccess::thermostat_options(p).nose_mass);
     JSON_OPT(s, "langevin_friction",
-             p.thermostat_options.langevin_friction_input);
+             ParametersLoadAccess::thermostat_options(p).langevin_friction_input);
   }
 
   // [Nudged Elastic Band]
   if (j.contains("Nudged Elastic Band")) {
     auto &s = j.at("Nudged Elastic Band");
-    JSON_OPT(s, "images", p.neb_options.image_count);
-    JSON_OPT(s, "max_iterations", p.neb_options.max_iterations);
+    JSON_OPT(s, "images", ParametersLoadAccess::neb_options(p).image_count);
+    JSON_OPT(s, "max_iterations", ParametersLoadAccess::neb_options(p).max_iterations);
     if (s.contains("opt_method"))
-      p.neb_options.opt_method =
-          enum_from_json(s.at("opt_method"), p.neb_options.opt_method);
-    JSON_OPT(s, "converged_force", p.neb_options.force_tolerance);
+      ParametersLoadAccess::neb_options(p).opt_method =
+          enum_from_json(s.at("opt_method"), ParametersLoadAccess::neb_options(p).opt_method);
+    JSON_OPT(s, "converged_force", ParametersLoadAccess::neb_options(p).force_tolerance);
     if (s.contains("spring")) {
       auto &sp = s.at("spring");
-      JSON_OPT(sp, "constant", p.neb_options.spring.constant);
-      JSON_OPT(sp, "elastic_band", p.neb_options.spring.use_elastic_band);
-      JSON_OPT(sp, "doubly_nudged", p.neb_options.spring.doubly_nudged);
+      JSON_OPT(sp, "constant", ParametersLoadAccess::neb_options(p).spring.constant);
+      JSON_OPT(sp, "elastic_band", ParametersLoadAccess::neb_options(p).spring.use_elastic_band);
+      JSON_OPT(sp, "doubly_nudged", ParametersLoadAccess::neb_options(p).spring.doubly_nudged);
     }
     if (s.contains("climbing_image")) {
       auto &ci = s.at("climbing_image");
-      JSON_OPT(ci, "enabled", p.neb_options.climbing_image.enabled);
+      JSON_OPT(ci, "enabled", ParametersLoadAccess::neb_options(p).climbing_image.enabled);
       JSON_OPT(ci, "converged_only",
-               p.neb_options.climbing_image.converged_only);
+               ParametersLoadAccess::neb_options(p).climbing_image.converged_only);
+      JSON_OPT(ci, "band_slack", ParametersLoadAccess::neb_options(p).climbing_image.band_slack);
     }
   }
 
   // [Dimer]
   if (j.contains("Dimer")) {
     auto &s = j.at("Dimer");
-    JSON_OPT(s, "rotation_angle", p.dimer_options.rotation_angle);
-    JSON_OPT(s, "improved", p.dimer_options.improved);
-    JSON_OPT(s, "converged_angle", p.dimer_options.converged_angle);
-    JSON_OPT(s, "max_iterations", p.dimer_options.max_iterations);
-    JSON_OPT(s, "opt_method", p.dimer_options.opt_method);
+    JSON_OPT(s, "rotation_angle", ParametersLoadAccess::dimer_options(p).rotation_angle);
+    JSON_OPT(s, "improved", ParametersLoadAccess::dimer_options(p).improved);
+    JSON_OPT(s, "converged_angle", ParametersLoadAccess::dimer_options(p).converged_angle);
+    JSON_OPT(s, "max_iterations", ParametersLoadAccess::dimer_options(p).max_iterations);
+    if (s.contains("opt_method"))
+      ParametersLoadAccess::dimer_options(p).opt_method =
+          enum_from_json(s.at("opt_method"), ParametersLoadAccess::dimer_options(p).opt_method);
     if (s.contains("rotation_backend"))
-      p.dimer_options.rotation_backend = enum_from_json(
-          s.at("rotation_backend"), p.dimer_options.rotation_backend);
-    JSON_OPT(s, "lor_residual_tol", p.dimer_options.lor_residual_tol);
+      ParametersLoadAccess::dimer_options(p).rotation_backend = enum_from_json(
+          s.at("rotation_backend"), ParametersLoadAccess::dimer_options(p).rotation_backend);
+    JSON_OPT(s, "lor_residual_tol", ParametersLoadAccess::dimer_options(p).lor_residual_tol);
   }
 
   // [Saddle Search]
   if (j.contains("Saddle Search")) {
     auto &s = j.at("Saddle Search");
-    JSON_OPT(s, "method", p.saddle_search_options.method);
-    JSON_OPT(s, "min_mode_method", p.saddle_search_options.minmode_method);
-    JSON_OPT(s, "max_energy", p.saddle_search_options.max_energy);
-    JSON_OPT(s, "max_iterations", p.saddle_search_options.max_iterations);
+    JSON_OPT(s, "method", ParametersLoadAccess::saddle_search_options(p).method);
+    JSON_OPT(s, "min_mode_method", ParametersLoadAccess::saddle_search_options(p).minmode_method);
+    JSON_OPT(s, "max_energy", ParametersLoadAccess::saddle_search_options(p).max_energy);
+    JSON_OPT(s, "max_iterations", ParametersLoadAccess::saddle_search_options(p).max_iterations);
     JSON_OPT(s, "displace_magnitude",
-             p.saddle_search_options.displace_magnitude);
-    JSON_OPT(s, "displace_radius", p.saddle_search_options.displace_radius);
+             ParametersLoadAccess::saddle_search_options(p).displace_magnitude);
+    JSON_OPT(s, "displace_radius", ParametersLoadAccess::saddle_search_options(p).displace_radius);
   }
 
   // [Serve]
   if (j.contains("Serve")) {
     auto &s = j.at("Serve");
-    JSON_OPT(s, "host", p.serve_options.host);
+    JSON_OPT(s, "host", ParametersLoadAccess::serve_options(p).host);
     if (s.contains("port"))
-      p.serve_options.port = s.at("port").get<uint16_t>();
+      ParametersLoadAccess::serve_options(p).port = s.at("port").get<uint16_t>();
     if (s.contains("replicas"))
-      p.serve_options.replicas = s.at("replicas").get<size_t>();
+      ParametersLoadAccess::serve_options(p).replicas = s.at("replicas").get<size_t>();
     if (s.contains("gateway_port"))
-      p.serve_options.gateway_port = s.at("gateway_port").get<uint16_t>();
-    JSON_OPT(s, "endpoints", p.serve_options.endpoints);
+      ParametersLoadAccess::serve_options(p).gateway_port = s.at("gateway_port").get<uint16_t>();
+    JSON_OPT(s, "endpoints", ParametersLoadAccess::serve_options(p).endpoints);
   }
 
   // [Debug]
   if (j.contains("Debug")) {
     auto &s = j.at("Debug");
-    JSON_OPT(s, "write_movies", p.debug_options.write_movies);
-    JSON_OPT(s, "write_movies_interval", p.debug_options.write_movies_interval);
-    JSON_OPT(s, "write_deprecated_outs", p.debug_options.write_deprecated_outs);
+    JSON_OPT(s, "write_movies", ParametersLoadAccess::debug_options(p).write_movies);
+    JSON_OPT(s, "write_movies_interval", ParametersLoadAccess::debug_options(p).write_movies_interval);
+    JSON_OPT(s, "write_deprecated_outs", ParametersLoadAccess::debug_options(p).write_deprecated_outs);
   }
 
   // Resolve computed fields
   validate_and_link(p);
 }
 
-int load_json(const std::string &json_str, Parameters &params) {
+int load_json(std::string_view json_str, Parameters &params) {
   try {
     auto j = json::parse(json_str);
     from_json(j, params);

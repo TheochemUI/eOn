@@ -22,12 +22,12 @@
 /// EAM (Embedded Atom Method) potential with cell list neighbor finding.
 class EAM
 #ifndef EAM_STANDALONE
-    : public Potential
+    : public eonc::Potential
 #endif
 {
 public:
-  explicit EAM(const Parameters &params)
-      : Potential(PotType::EAM_AL, params),
+  explicit EAM(const eonc::Parameters &params)
+      : eonc::Potential(eonc::PotType::EAM_AL, params),
         rc_{6.0, 6.0, 6.0} {}
 
   ~EAM() override = default;
@@ -35,6 +35,11 @@ public:
   void cleanMemory();
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *fullbox) override;
+
+  /// Cell lists live on the instance; two threads cannot share one EAM.
+  [[nodiscard]] bool isSharedInstanceThreadSafe() const noexcept override {
+    return false;
+  }
 
 private:
   struct element_parameters {

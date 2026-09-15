@@ -19,6 +19,7 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <stdexcept>
+#include <string_view>
 
 namespace tests {
 
@@ -26,35 +27,35 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 TEST_CASE("Parameters round-trips through JSON", "[params][json]") {
   Parameters p1;
-  p1.potential_options.potential = PotType::MORSE_PT;
-  p1.main_options.job = JobType::Minimization;
-  p1.main_options.temperature = 500.0;
-  p1.main_options.randomSeed = 12345;
-  p1.optimizer_options.method = OptType::LBFGS;
-  p1.optimizer_options.converged_force = 0.005;
-  p1.optimizer_options.max_iterations = 999;
-  p1.neb_options.image_count = 7;
-  p1.neb_options.force_tolerance = 0.02;
+  ParametersLoadAccess::potential_options(p1).potential = PotType::MORSE_PT;
+  ParametersLoadAccess::main_options(p1).job = JobType::Minimization;
+  ParametersLoadAccess::main_options(p1).temperature = 500.0;
+  ParametersLoadAccess::main_options(p1).randomSeed = 12345;
+  ParametersLoadAccess::optimizer_options(p1).method = OptType::LBFGS;
+  ParametersLoadAccess::optimizer_options(p1).converged_force = 0.005;
+  ParametersLoadAccess::optimizer_options(p1).max_iterations = 999;
+  ParametersLoadAccess::neb_options(p1).image_count = 7;
+  ParametersLoadAccess::neb_options(p1).force_tolerance = 0.02;
 
   auto j = eonc::config::to_json(p1);
 
   Parameters p2;
   eonc::config::from_json(j, p2);
 
-  REQUIRE(p2.potential_options.potential == PotType::MORSE_PT);
-  REQUIRE(p2.main_options.job == JobType::Minimization);
-  REQUIRE(p2.main_options.temperature == Catch::Approx(500.0));
-  REQUIRE(p2.main_options.randomSeed == 12345);
-  REQUIRE(p2.optimizer_options.method == OptType::LBFGS);
-  REQUIRE(p2.optimizer_options.converged_force == Catch::Approx(0.005));
-  REQUIRE(p2.optimizer_options.max_iterations == 999);
-  REQUIRE(p2.neb_options.image_count == 7);
+  REQUIRE(p2.potential_options().potential == PotType::MORSE_PT);
+  REQUIRE(p2.main_options().job == JobType::Minimization);
+  REQUIRE(p2.main_options().temperature == Catch::Approx(500.0));
+  REQUIRE(p2.main_options().randomSeed == 12345);
+  REQUIRE(p2.optimizer_options().method == OptType::LBFGS);
+  REQUIRE(p2.optimizer_options().converged_force == Catch::Approx(0.005));
+  REQUIRE(p2.optimizer_options().max_iterations == 999);
+  REQUIRE(p2.neb_options().image_count == 7);
 }
 
 TEST_CASE("JSON to_json produces valid JSON string", "[params][json]") {
   Parameters p;
-  p.potential_options.potential = PotType::LJ;
-  p.main_options.job = JobType::Point;
+  ParametersLoadAccess::potential_options(p).potential = PotType::LJ;
+  ParametersLoadAccess::main_options(p).job = JobType::Point;
 
   auto j = eonc::config::to_json(p);
   std::string s = j.dump(2);
@@ -72,28 +73,28 @@ TEST_CASE("JSON from_json handles missing keys gracefully", "[params][json]") {
   Parameters p;
   eonc::config::from_json(j, p);
 
-  REQUIRE(p.main_options.job == JobType::Point);
-  REQUIRE(p.potential_options.potential == PotType::LJ);
+  REQUIRE(p.main_options().job == JobType::Point);
+  REQUIRE(p.potential_options().potential == PotType::LJ);
 }
 
 TEST_CASE("JSON round-trip preserves saddle search options", "[params][json]") {
   Parameters p1;
-  p1.saddle_search_options.max_energy = 15.0;
-  p1.saddle_search_options.max_iterations = 42;
-  p1.saddle_search_options.displace_radius = 4.5;
+  ParametersLoadAccess::saddle_search_options(p1).max_energy = 15.0;
+  ParametersLoadAccess::saddle_search_options(p1).max_iterations = 42;
+  ParametersLoadAccess::saddle_search_options(p1).displace_radius = 4.5;
 
   auto j = eonc::config::to_json(p1);
   Parameters p2;
   eonc::config::from_json(j, p2);
 
-  REQUIRE(p2.saddle_search_options.max_energy == Catch::Approx(15.0));
-  REQUIRE(p2.saddle_search_options.max_iterations == 42);
-  REQUIRE(p2.saddle_search_options.displace_radius == Catch::Approx(4.5));
+  REQUIRE(p2.saddle_search_options().max_energy == Catch::Approx(15.0));
+  REQUIRE(p2.saddle_search_options().max_iterations == 42);
+  REQUIRE(p2.saddle_search_options().displace_radius == Catch::Approx(4.5));
 }
 
 TEST_CASE("JSON to_json includes dynamics section", "[params][json]") {
   Parameters p1;
-  p1.dynamics_options.time = 500.0;
+  ParametersLoadAccess::dynamics_options(p1).time = 500.0;
 
   auto j = eonc::config::to_json(p1);
   std::string s = j.dump();
@@ -103,37 +104,37 @@ TEST_CASE("JSON to_json includes dynamics section", "[params][json]") {
 TEST_CASE("JSON round-trip preserves dimer rotation_backend",
           "[params][json][lor]") {
   Parameters p1;
-  p1.dimer_options.rotation_backend = DimerRotationBackend::LOR;
+  ParametersLoadAccess::dimer_options(p1).rotation_backend = DimerRotationBackend::LOR;
 
   auto j = eonc::config::to_json(p1);
   REQUIRE(j["Dimer"].contains("rotation_backend"));
 
   Parameters p2;
   eonc::config::from_json(j, p2);
-  REQUIRE(p2.dimer_options.rotation_backend == DimerRotationBackend::LOR);
+  REQUIRE(p2.dimer_options().rotation_backend == DimerRotationBackend::LOR);
 
   // Case-insensitive load (serve / Python schema use lowercase tokens)
   nlohmann::json j_lor = {{"Dimer", {{"rotation_backend", "lor"}}}};
   Parameters p3;
   eonc::config::from_json(j_lor, p3);
-  REQUIRE(p3.dimer_options.rotation_backend == DimerRotationBackend::LOR);
+  REQUIRE(p3.dimer_options().rotation_backend == DimerRotationBackend::LOR);
 }
 
 TEST_CASE("JSON round-trip preserves debug compatibility flags",
           "[params][json]") {
   Parameters p1;
-  p1.debug_options.write_movies = true;
-  p1.debug_options.write_movies_interval = 4;
-  p1.debug_options.write_deprecated_outs = true;
+  ParametersLoadAccess::debug_options(p1).write_movies = true;
+  ParametersLoadAccess::debug_options(p1).write_movies_interval = 4;
+  ParametersLoadAccess::debug_options(p1).write_deprecated_outs = true;
 
   auto j = eonc::config::to_json(p1);
   Parameters p2;
   eonc::config::from_json(j, p2);
 
   REQUIRE(j["Debug"]["write_deprecated_outs"] == true);
-  REQUIRE(p2.debug_options.write_movies == true);
-  REQUIRE(p2.debug_options.write_movies_interval == 4);
-  REQUIRE(p2.debug_options.write_deprecated_outs == true);
+  REQUIRE(p2.debug_options().write_movies == true);
+  REQUIRE(p2.debug_options().write_movies_interval == 4);
+  REQUIRE(p2.debug_options().write_deprecated_outs == true);
 }
 
 TEST_CASE("Parameters INI load handles all sections", "[params][ini]") {
@@ -208,20 +209,31 @@ neighbor_cutoff = 4.0
   Parameters p;
   p.load(tmpfile);
 
-  REQUIRE(p.main_options.job == JobType::Saddle_Search);
-  REQUIRE(p.main_options.temperature == Catch::Approx(500.0));
-  REQUIRE(p.main_options.randomSeed == 12345);
-  REQUIRE(p.potential_options.potential == PotType::MORSE_PT);
-  REQUIRE(p.optimizer_options.method == OptType::LBFGS);
-  REQUIRE(p.optimizer_options.converged_force == Catch::Approx(0.005));
-  REQUIRE(p.optimizer_options.max_iterations == 999);
-  REQUIRE(p.saddle_search_options.max_energy == Catch::Approx(15.0));
-  REQUIRE(p.neb_options.image_count == 7);
-  REQUIRE(p.neb_options.spring.constant == Catch::Approx(3.0));
-  REQUIRE(p.structure_comparison_options.distance_difference ==
+  REQUIRE(p.main_options().job == JobType::Saddle_Search);
+  REQUIRE(p.main_options().temperature == Catch::Approx(500.0));
+  REQUIRE(p.main_options().randomSeed == 12345);
+  REQUIRE(p.potential_options().potential == PotType::MORSE_PT);
+  REQUIRE(p.optimizer_options().method == OptType::LBFGS);
+  REQUIRE(p.optimizer_options().converged_force == Catch::Approx(0.005));
+  REQUIRE(p.optimizer_options().max_iterations == 999);
+  REQUIRE(p.saddle_search_options().max_energy == Catch::Approx(15.0));
+  REQUIRE(p.neb_options().image_count == 7);
+  REQUIRE(p.neb_options().spring.constant == Catch::Approx(3.0));
+  REQUIRE(p.structure_comparison_options().distance_difference ==
           Catch::Approx(0.2));
 
   std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE("Parameters load APIs accept string_view", "[params][ini]") {
+  constexpr std::string_view ini = "[Main]\njob = point\n";
+  Parameters p;
+  REQUIRE(p.load_ini_text(ini) == 0);
+  REQUIRE(p.main_options().job == JobType::Point);
+
+  constexpr std::string_view js = R"({"Main":{"job":"minimization"}})";
+  REQUIRE(p.load_json(js) == 0);
+  REQUIRE(p.main_options().job == JobType::Minimization);
 }
 
 TEST_CASE("JSON from_json rejects unknown convergence_metric",
@@ -238,8 +250,8 @@ TEST_CASE("JSON from_json accepts known convergence_metric", "[params][json]") {
   j["Optimizer"]["convergence_metric"] = "Max_Atom";
   Parameters p;
   eonc::config::from_json(j, p);
-  REQUIRE(p.optimizer_options.convergence_metric == "max_atom");
-  REQUIRE(p.optimizer_options.convergence_metric_label == "Max atom force");
+  REQUIRE(p.optimizer_options().convergence_metric == "max_atom");
+  REQUIRE(p.optimizer_options().convergence_metric_label == "Max atom force");
 }
 
 TEST_CASE("Parameters.load rejects unknown enumerated strings",

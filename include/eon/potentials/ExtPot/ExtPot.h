@@ -16,10 +16,10 @@
 #include <filesystem>
 #include <string>
 
-class ExtPot : public Potential {
+class ExtPot : public eonc::Potential {
 
 public:
-  ExtPot(const Parameters &p);
+  ExtPot(const eonc::Parameters &p);
   ~ExtPot();
   void cleanMemory(void);
   void force(long N, const double *R, const int *atomicNrs, double *F,
@@ -31,6 +31,11 @@ public:
   /// a directory of its own, so separate instances are independent.
   [[nodiscard]] bool needsPerImageInstance() const noexcept override {
     return true;
+  }
+  [[nodiscard]] unsigned layoutFlags() const noexcept override {
+    return static_cast<unsigned>(eonc::Potential::PotLayout::Subprocess) |
+           static_cast<unsigned>(
+               eonc::Potential::PotLayout::NeedsWorkingDirectory);
   }
 
 private:

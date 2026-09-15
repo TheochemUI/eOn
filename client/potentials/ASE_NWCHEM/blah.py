@@ -3,13 +3,16 @@ from ase.calculators.socketio import *
 import os
 import copy
 import psutil
+import shutil
 import sys
 from pathlib import Path
 
 run_path = Path.cwd() / "runs"  # Where things are run
 scratch_path = Path.cwd() / "nwchem_aux"  # scratch from NWChem
 nwchem_path = (
-    "/home/rgoswami/Git/Github/TheochemUI/nwchem_and_more/nwchem/bin/LINUX64/nwchem "
+    os.environ.get("NWCHEM_COMMAND", "").strip()
+    or shutil.which("nwchem")
+    or "nwchem"
 )
 memory = "2 gb"  # Probably needs no change
 # Multiplicity of the molecule. 1 for singlets, 2 for doublets.

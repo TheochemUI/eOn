@@ -39,6 +39,7 @@
 #include <filesystem>
 
 #ifdef EONMPI
+#include "eon/ParametersMpi.h"
 #include <Python.h>
 #include <cstdlib>
 #include <fcntl.h>
@@ -48,10 +49,6 @@
 
 #if defined WITH_ASE_ORCA || EMBED_PYTHON || WITH_ASE_NWCHEM
 #include "eon/PyGuard.h"
-#endif
-
-#ifdef EONMPIBGP
-#include <libgen.h>
 #endif
 
 // Includes for FPE trapping
@@ -178,7 +175,7 @@ static int eonClientMain(int argc, char **argv) {
           "%(message)\n[end %(log_level)]"},
       quill::ClockSourceType::System);
   //--- End logging setup
-  Parameters parameters;
+  eonc::Parameters parameters;
 
 #if defined WITH_ASE_ORCA || EMBED_PYTHON || WITH_ASE_NWCHEM
   eonc::ensure_interpreter();
@@ -224,8 +221,8 @@ static int eonClientMain(int argc, char **argv) {
     error = parameters.load(config_file);
   } else {
     QUILL_LOG_INFO(logger, "Loading parameter file {}",
-                   parameters.main_options.iniFilename);
-    error = parameters.load(parameters.main_options.iniFilename);
+                   parameters.main_options().iniFilename);
+    error = parameters.load(parameters.main_options().iniFilename);
   }
   if (error) {
     QUILL_LOG_ERROR(logger, "problem loading parameter file");
@@ -280,7 +277,7 @@ static int eonClientMain(int argc, char **argv) {
   }
   clients = number_of_clients;
 
-  if (parameters.potential_options.potential == PotType::MPI) {
+  if (parameters.potential_options().potential == eonc::PotType::MPI) {
     std::vector<int> potential_ranks(potentials);
     int j;
     for (i = 0, j = 0; i < isize; i++) {
@@ -302,13 +299,12 @@ static int eonClientMain(int argc, char **argv) {
     }
 
     if (my_client_number < number_of_clients) {
-      parameters.potential_options.MPIPotentialRank =
-          potential_ranks[my_client_number * potential_group_size];
+      parameters.set_mpi_potential_rank(potential_ranks[my_client_number * potential_group_size]);
     }
   }
 
   // LAMMPS MPI communicator setup (runtime check, not compile-time)
-  if (parameters.potential_options.potential == PotType::LAMMPS) {
+  if (parameters.potential_options().potential == eonc::PotType::LAMMPS) {
     for (i = 0; i < static_cast<int>(client_ranks.size()); i++) {
       MPI_Group world_group, new_group;
       MPI_Comm_group(MPI_COMM_WORLD, &world_group);
@@ -317,7 +313,7 @@ static int eonClientMain(int argc, char **argv) {
       MPI_Comm new_comm;
       MPI_Comm_create(MPI_COMM_WORLD, new_group, &new_comm);
       if (new_comm != MPI_COMM_NULL) {
-        parameters.potential_options.MPIClientComm = new_comm;
+        eonc::setMpiClientComm(parameters, new_comm);
       }
       QUILL_LOG_INFO(logger, "creating group with ranks: {}", r);
     }
@@ -406,15 +402,13 @@ static int eonClientMain(int argc, char **argv) {
 
     printSystemInfo();
 
-    // XXX(rg): Be more gentle here
     bool bundlingEnabled = false;
-    int bundleSize = -1; // eonc::getBundleSize();
-    if (bundleSize == 0) {
-      bundleSize = 1;
-    } else if (bundleSize == -1) {
-      // Not using bundling
+    int bundleSize = eonc::getBundleSize();
+    if (bundleSize <= 0) {
       bundleSize = 1;
       bundlingEnabled = false;
+    } else {
+      bundlingEnabled = true;
     }
 
     std::vector<std::string> bundledFilenames;
@@ -429,25 +423,24 @@ static int eonClientMain(int argc, char **argv) {
       // check to see if parameters file exists before loading
       int error = 0;
       std::string config_file =
-          eonc::helpers::getRelevantFile(parameters.main_options.iniFilename);
+          eonc::helpers::getRelevantFile(parameters.main_options().iniFilename);
       QUILL_LOG_INFO(logger, "Loading parameter file {}", config_file);
       error = parameters.load(config_file);
 
       if (error) {
         QUILL_LOG_ERROR(logger, "problem loading parameter file, stopping");
         logger->flush_log();
-        exit(1);
-        abort();
+        return 1;
       }
 
       // Determine what type of job we are running according to the parameters
       // file.
-      auto job =
-          eonc::helpers::makeJob(std::make_unique<Parameters>(parameters));
+      auto job = eonc::helpers::makeJob(
+          std::make_unique<eonc::Parameters>(parameters));
       if (job == nullptr) {
         QUILL_LOG_ERROR(logger, "error: Unknown job: {}",
-                        std::string{magic_enum::enum_name<JobType>(
-                            parameters.main_options.job)});
+                        std::string{magic_enum::enum_name<eonc::JobType>(
+                            parameters.main_options().job)});
         logger->flush_log();
         return 1;
       }
@@ -458,6 +451,7 @@ static int eonClientMain(int argc, char **argv) {
       } catch (int e) {
         QUILL_LOG_CRITICAL(logger, "[ERROR] job exited on error {}", e);
         logger->flush_log();
+        return EXIT_FAILURE;
       } catch (const std::exception &e) {
         QUILL_LOG_CRITICAL(logger, "[ERROR] unhandled exception: {}", e.what());
         logger->flush_log();

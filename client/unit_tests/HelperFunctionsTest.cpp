@@ -16,21 +16,43 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Eigen.h"
+#include "eon/EpiCenters.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
+#include "eon/RandomNumbers.h"
 
+#include <atomic>
 #include <cmath>
 #include <cstdio>
+#include <filesystem>
+#include <fstream>
 #include <stdexcept>
 #include <string>
+#include <thread>
+#include <vector>
 
 namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
+TEST_CASE("getRelevantFile accepts a name with no extension", "[helpers]") {
+  namespace fs = std::filesystem;
+  const auto dir = fs::temp_directory_path() / "eon_relevant_file";
+  fs::create_directories(dir);
+  const auto old = fs::current_path();
+  fs::current_path(dir);
+  REQUIRE(eonc::helpers::getRelevantFile("config") == "config");
+  {
+    std::ofstream{dir / "config_cp"};
+  }
+  REQUIRE(eonc::helpers::getRelevantFile("config") == "config_cp");
+  fs::current_path(old);
+  fs::remove_all(dir);
+}
+
 TEST_CASE("HelperFunctions: random() returns value in [0,1)", "[helpers]") {
-  double r = eonc::helpers::random();
+  double r = eonc::rng::random();
   REQUIRE_FALSE(std::isnan(r));
   REQUIRE(std::isfinite(r));
   REQUIRE(r >= 0.0);
@@ -38,7 +60,7 @@ TEST_CASE("HelperFunctions: random() returns value in [0,1)", "[helpers]") {
 }
 
 TEST_CASE("HelperFunctions: random(seed) returns value in [0,1)", "[helpers]") {
-  double r = eonc::helpers::random(42);
+  double r = eonc::rng::random(42);
   REQUIRE_FALSE(std::isnan(r));
   REQUIRE(std::isfinite(r));
   REQUIRE(r >= 0.0);
@@ -47,7 +69,7 @@ TEST_CASE("HelperFunctions: random(seed) returns value in [0,1)", "[helpers]") {
 
 TEST_CASE("HelperFunctions: randomDouble() returns value in [0,1)",
           "[helpers]") {
-  double r = eonc::helpers::randomDouble();
+  double r = eonc::rng::randomDouble();
   REQUIRE_FALSE(std::isnan(r));
   REQUIRE(std::isfinite(r));
   REQUIRE(r >= 0.0);
@@ -58,16 +80,17 @@ TEST_CASE("HelperFunctions: loadOrSynthesizeDisplacement from mode (#189/#79)",
           "[helpers][displacement]") {
   // Standalone saddle_search needs displacement without AKMC (#189).
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter initial(pot, params);
   REQUIRE(eonc::io::io_ok(initial.con2matter(std::string("reactant.con"))));
   const long nAtoms = initial.numberOfAtoms();
   REQUIRE(nAtoms > 0);
 
-  const std::string modePath = "test_mode_for_synth.dat";
+  const auto tmp =
+      std::filesystem::temp_directory_path() / "eon_mode_for_synth.dat";
   {
-    FILE *f = fopen(modePath.c_str(), "w");
+    FILE *f = fopen(tmp.c_str(), "w");
     REQUIRE(f != nullptr);
     for (long i = 0; i < nAtoms; ++i) {
       if (initial.getFixed(i)) {
@@ -82,15 +105,48 @@ TEST_CASE("HelperFunctions: loadOrSynthesizeDisplacement from mode (#189/#79)",
   const double scale = 0.1;
   AtomMatrix before = initial.getPositionsCopy();
   REQUIRE(eonc::helpers::loadOrSynthesizeDisplacement(
-      target, initial, "missing_displacement.con", modePath, scale));
+      target, initial, "missing_displacement.con", tmp.string(), scale));
   // At least one free atom should move from the synthesized mode
   REQUIRE((target.getPositions() - before).norm() > 1e-6);
-  std::remove(modePath.c_str());
+  std::filesystem::remove(tmp);
+}
+
+TEST_CASE("loadOrSynthesizeDisplacement keeps reactant atom ids",
+          "[helpers][displacement][mtxr]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter initial(pot, params);
+  REQUIRE(eonc::io::io_ok(initial.con2matter(std::string("reactant.con"))));
+  const long nAtoms = initial.numberOfAtoms();
+  for (long i = 0; i < nAtoms; ++i) {
+    initial.setAtomIndex(i, 700 + i);
+  }
+  const auto disp =
+      std::filesystem::temp_directory_path() / "eon_disp_mtxr.con";
+  Matter written(pot, params);
+  written = initial;
+  REQUIRE(eonc::io::io_ok(written.matter2con(disp.string())));
+  // Rewrite with sequential ids so the load path cannot cheat off the file.
+  Matter sequential(pot, params);
+  REQUIRE(eonc::io::io_ok(sequential.con2matter(disp.string())));
+  for (long i = 0; i < nAtoms; ++i) {
+    sequential.setAtomIndex(i, i);
+  }
+  REQUIRE(eonc::io::io_ok(sequential.matter2con(disp.string())));
+
+  Matter target(pot, params);
+  REQUIRE(eonc::helpers::loadOrSynthesizeDisplacement(
+      target, initial, disp.string(), "missing_mode.dat", 0.1));
+  for (long i = 0; i < nAtoms; ++i) {
+    REQUIRE(target.getAtomIndex(i) == 700 + i);
+  }
+  std::filesystem::remove(disp);
 }
 
 TEST_CASE("HelperFunctions: randomDouble(max) respects upper bound",
           "[helpers]") {
-  double r = eonc::helpers::randomDouble(5.0);
+  double r = eonc::rng::randomDouble(5.0);
   REQUIRE(std::isfinite(r));
   REQUIRE(r >= 0.0);
   REQUIRE(r <= 5.0);
@@ -98,16 +154,82 @@ TEST_CASE("HelperFunctions: randomDouble(max) respects upper bound",
 
 TEST_CASE("HelperFunctions: randomInt(lo, hi) respects bounds", "[helpers]") {
   for (int trial = 0; trial < 100; trial++) {
-    long r = eonc::helpers::randomInt(1, 4);
+    long r = eonc::rng::randomInt(1, 4);
     REQUIRE(r >= 1);
     REQUIRE(r <= 4);
   }
 }
 
+TEST_CASE("ran2 streams are independent across threads", "[helpers][rng]") {
+  std::atomic<int> bad{0};
+  auto worker = [&](long seed) {
+    eonc::rng::random(seed);
+    for (int i = 0; i < 2000; ++i) {
+      const double r = eonc::rng::random();
+      if (!(r > 0.0 && r < 1.0)) {
+        ++bad;
+      }
+    }
+  };
+  std::thread a(worker, 11);
+  std::thread b(worker, 17);
+  a.join();
+  b.join();
+  REQUIRE(bad.load() == 0);
+}
+
+TEST_CASE("SaddleSearchJob listed_atoms moves a free atom",
+          "[helpers][job][listed_atoms]") {
+  // SaddleSearchJob / ProcessSearchJob call applyClientDisplacement
+  // when client_displace_type = listed_atoms.
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::saddle_search_options(params).displace_type =
+      std::string(eonc::EpiCenters::DISP_LISTED_ATOMS);
+  ParametersLoadAccess::saddle_search_options(params).displace_atom_list = {0};
+  ParametersLoadAccess::saddle_search_options(params).displace_radius = 0.0;
+  ParametersLoadAccess::saddle_search_options(params).displace_magnitude = 0.2;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter initial(pot, params);
+  initial.resize(2);
+  AtomMatrix pos(2, 3);
+  pos << 0.0, 0.0, 0.0, 5.0, 0.0, 0.0;
+  initial.setPositions(pos);
+  initial.setFixed(1, 1);
+  Matrix3d cell = Matrix3d::Identity() * 20.0;
+  initial.setCell(cell);
+
+  Matter target(pot, params);
+  AtomMatrix mode;
+  REQUIRE(
+      eonc::helpers::applyClientDisplacement(target, initial, params, &mode));
+  const AtomMatrix delta = target.getPositions() - initial.getPositions();
+  REQUIRE(delta.row(0).norm() > 0.0);
+  REQUIRE(delta.row(1).norm() == Catch::Approx(0.0));
+  REQUIRE_FALSE(initial.getFixed(0));
+}
+
+TEST_CASE("applyClientDisplacement load type is a no-op",
+          "[helpers][listed_atoms]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::saddle_search_options(params).displace_type =
+      std::string(eonc::EpiCenters::DISP_LOAD);
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter initial(pot, params);
+  initial.resize(1);
+  AtomMatrix pos(1, 3);
+  pos << 0.0, 0.0, 0.0;
+  initial.setPositions(pos);
+  Matter target(pot, params);
+  REQUIRE_FALSE(
+      eonc::helpers::applyClientDisplacement(target, initial, params, nullptr));
+}
+
 TEST_CASE("HelperFunctions: gaussRandom() produces finite values",
           "[helpers]") {
   double avg = 1.0, sd = 0.1;
-  double r = eonc::helpers::gaussRandom(avg, sd);
+  double r = eonc::rng::gaussRandom(avg, sd);
   REQUIRE(std::isfinite(r));
   // Within 6 sigma (extremely unlikely to fail)
   REQUIRE(r > avg - 6.0 * sd);
@@ -130,7 +252,7 @@ TEST_CASE("HelperFunctions: split_string_int empty string", "[helpers]") {
 TEST_CASE("HelperFunctions: maxAtomMotionV", "[helpers]") {
   Eigen::VectorXd v(6);
   v << 1.0, 0.0, 0.0, 0.0, 3.0, 4.0;
-  double maxMotion = eonc::helpers::maxAtomMotionV(v);
+  double maxMotion = eonc::geometry::maxAtomMotionV(v);
   REQUIRE(maxMotion == Catch::Approx(5.0));
 }
 

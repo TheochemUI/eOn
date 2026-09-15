@@ -22,6 +22,13 @@ namespace eonc::neb {
 
 namespace {
 
+void normalizeOrZero(AtomMatrix &v) {
+  const double n = v.norm();
+  if (n > 1e-10) {
+    v /= n;
+  }
+}
+
 eonc::io::ConFrameMetadata neb_frame_metadata(
     const std::vector<std::shared_ptr<Matter>> &path,
     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
@@ -37,7 +44,7 @@ eonc::io::ConFrameMetadata neb_frame_metadata(
   } else {
     tang = *tangent[imageIndex];
   }
-  tang.normalize();
+  normalizeOrZero(tang);
 
   const double reference_energy = path[0]->getPotentialEnergy();
   const double absolute_energy = path[imageIndex]->getPotentialEnergy();
@@ -88,7 +95,7 @@ findSplineExtrema(const std::vector<std::shared_ptr<Matter>> &path,
     if (i == 0) {
       tangentEndpoint =
           path[i]->pbc(path[1]->getPositions() - path[0]->getPositions());
-      tangentEndpoint.normalize();
+      normalizeOrZero(tangentEndpoint);
       F1 = matDot(path[i]->getForces(), tangentEndpoint) * dist;
     } else {
       F1 = matDot(path[i]->getForces(), *tangent[i]) * dist;
@@ -96,7 +103,7 @@ findSplineExtrema(const std::vector<std::shared_ptr<Matter>> &path,
     if (i == numImages) {
       tangentEndpoint = path[i + 1]->pbc(path[numImages + 1]->getPositions() -
                                          path[numImages]->getPositions());
-      tangentEndpoint.normalize();
+      normalizeOrZero(tangentEndpoint);
       F2 = matDot(path[i + 1]->getForces(), tangentEndpoint) * dist;
     } else {
       F2 = matDot(path[i + 1]->getForces(), *tangent[i + 1]) * dist;
@@ -185,8 +192,8 @@ void printImageData(
                          "energy", "f_para");
   }
 
-  tangentStart.normalize();
-  tangentEnd.normalize();
+  normalizeOrZero(tangentStart);
+  normalizeOrZero(tangentEnd);
 
   std::ofstream fileLogger;
   if (writeToFile) {

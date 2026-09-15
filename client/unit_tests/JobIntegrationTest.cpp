@@ -17,6 +17,7 @@
 
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/BaseStructures.h"
 #include "eon/Job.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
@@ -126,10 +127,12 @@ protected:
       return false;
     }
     for (auto &entry : fs::directory_iterator(src)) {
-      if (entry.is_regular_file()) {
-        fs::copy_file(entry.path(), workdir / entry.path().filename(),
-                      fs::copy_options::overwrite_existing);
+      std::error_code ec;
+      if (!entry.is_regular_file(ec) || ec) {
+        continue;
       }
+      fs::copy_file(entry.path(), workdir / entry.path().filename(),
+                    fs::copy_options::overwrite_existing, ec);
     }
     return true;
   }
@@ -363,6 +366,31 @@ potential = lj
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
+                 "HessianJob reports FAIL when no mobile atoms remain",
+                 "[job][hessian][fail]") {
+  EON_REQUIRE_TEST_DATA(".");
+  writeConfig(R"(
+[Main]
+job = hessian
+random_seed = 42
+
+[Potential]
+potential = lj
+
+[Hessian]
+phva_atoms = none
+)");
+
+  std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+
+  auto results = runJob();
+  REQUIRE(results.count("termination_reason") > 0);
+  REQUIRE(std::stoi(results["termination_reason"]) ==
+          static_cast<int>(eonc::RunStatus::FAIL_POTENTIAL_FAILED));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
                  "HessianJob writes hessian.dat when quiet=true",
                  "[job][hessian][integration]") {
   EON_REQUIRE_TEST_DATA(".");
@@ -438,14 +466,50 @@ max_energy = 10.0
   // Force calls must be <= SVN (39)
   REQUIRE(forceCalls_ <= 39);
 
-  // Eigenvalue must be negative (true saddle point)
+  // Eigenvalue must be negative (true saddle point).
+  // SVN printed -1.014995. Dimer::rotate now updates the plane from the
+  // pre-rotation direction (eOn-00lg); the FD curvature on this fixture
+  // is -1.010564. Energy still matches the SVN saddle.
   double eigenvalue = std::stod(results["final_eigenvalue"]);
   REQUIRE(eigenvalue < 0.0);
-  REQUIRE(eigenvalue == Catch::Approx(-1.014995).epsilon(1e-3));
+  REQUIRE(eigenvalue == Catch::Approx(-1.010564).epsilon(1e-3));
 
   // Reactant energy must match
   double reactantE = std::stod(results["potential_energy_reactant"]);
   REQUIRE(reactantE == Catch::Approx(-1462.166782).epsilon(1e-4));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "SaddleSearchJob listed_atoms displaces without load files",
+                 "[job][saddle_search][listed_atoms][integration]") {
+  EON_REQUIRE_TEST_DATA("../saddle_search");
+  std::filesystem::remove(workdir / "displacement.con");
+  std::filesystem::remove(workdir / "direction.dat");
+  writeConfig(R"(
+[Main]
+job = saddle_search
+random_seed = 706253457
+
+[Potential]
+potential = morse_pt
+
+[Optimizer]
+converged_force = 0.001
+max_iterations = 1
+
+[Saddle Search]
+client_displace_type = listed_atoms
+displace_atom_list = 0
+displace_radius = 0.0
+displace_magnitude = 0.05
+min_mode_method = dimer
+max_iterations = 1
+max_energy = 10.0
+)");
+
+  auto results = runJob();
+  REQUIRE(results.count("termination_reason") > 0);
+  REQUIRE(std::filesystem::exists(workdir / "saddle.con"));
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
@@ -734,21 +798,11 @@ andersen_alpha = 1.0
   std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
                              std::filesystem::copy_options::overwrite_existing);
 
-  // DynamicsJob does not write results.dat, just final.con
-  auto oldDir = std::filesystem::current_path();
-  std::filesystem::current_path(workdir);
-
-  params = std::make_unique<Parameters>();
-  params->load("config.ini");
-
-  auto job = eonc::helpers::makeJob(std::move(params));
-  job->run();
-
-  std::filesystem::current_path(oldDir);
-
-  // Verify final.con was produced
+  auto results = runJob();
   REQUIRE(std::filesystem::exists(workdir / "final.con"));
-  // Verify final.con has content (atoms moved)
+  REQUIRE(results["job_type"] == "dynamics");
+  REQUIRE(results.count("potential_energy") > 0);
+  REQUIRE(std::isfinite(std::stod(results["potential_energy"])));
   auto fsize = std::filesystem::file_size(workdir / "final.con");
   REQUIRE(fsize > 100);
 }
@@ -1083,8 +1137,9 @@ max_energy = 10.0
   int status = std::stoi(results["termination_reason"]);
   REQUIRE(status == 0);
 
-  // Force calls must be <= SVN (67)
-  REQUIRE(forceCalls_ <= 67);
+  // SVN printed 67 force calls. The corrected dimer rotate (eOn-00lg)
+  // takes two extra evaluations on this fixture; energies still match.
+  REQUIRE(forceCalls_ <= 69);
 
   // Energies must match SVN exactly
   double saddleE = std::stod(results["potential_energy_saddle"]);
@@ -1345,12 +1400,12 @@ max_iterations = 1000
   std::filesystem::current_path(originalDir);
 
   // Verify ARTn parameters are parsed
-  REQUIRE(params->artn_options.push_step_size == 0.5);
+  REQUIRE(params->artn_options().push_step_size == 0.5);
   // ninit default is -1 (sentinel = "keep pARTn's own default"); test does
   // not set it in the INI above, so the sentinel must round-trip unchanged.
-  REQUIRE(params->artn_options.ninit == -1);
-  REQUIRE(params->artn_options.force_threshold == 0.1);
-  REQUIRE(params->artn_options.max_iterations == 1000);
+  REQUIRE(params->artn_options().ninit == -1);
+  REQUIRE(params->artn_options().force_threshold == 0.1);
+  REQUIRE(params->artn_options().max_iterations == 1000);
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture, "IRA parameters parsed correctly",
@@ -1371,9 +1426,9 @@ use_pbc = true
   std::filesystem::current_path(originalDir);
 
   // Verify IRA parameters are parsed
-  REQUIRE(params->ira_options.distance_threshold == 0.5);
-  REQUIRE(params->ira_options.symmetry_threshold == 0.2);
-  REQUIRE(params->ira_options.use_pbc == true);
+  REQUIRE(params->ira_options().distance_threshold == 0.5);
+  REQUIRE(params->ira_options().symmetry_threshold == 0.2);
+  REQUIRE(params->ira_options().use_pbc == true);
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
@@ -1487,11 +1542,12 @@ steps = 5
 // generic LJ clusters). Needs proper metallic test system on cosmolab.
 
 TEST_CASE_METHOD(JobIntegrationFixture,
-                 "StructureComparisonJob runs without crash",
+                 "StructureComparisonJob matches identical structures",
                  "[job][structure_comparison][integration]") {
   EON_REQUIRE_TEST_DATA("../Pt_Heptamer_FrozenLayers");
-  // StructureComparison needs matter1.con
   std::filesystem::copy_file(workdir / "pos.con", workdir / "matter1.con",
+                             std::filesystem::copy_options::overwrite_existing);
+  std::filesystem::copy_file(workdir / "pos.con", workdir / "matter2.con",
                              std::filesystem::copy_options::overwrite_existing);
   writeConfig(R"(
 [Main]
@@ -1506,15 +1562,12 @@ distance_difference = 0.1
 energy_difference = 0.01
 )");
 
-  // StructureComparisonJob is minimal; just verify it doesn't crash
-  auto oldDir = std::filesystem::current_path();
-  std::filesystem::current_path(workdir);
-  auto p = std::make_unique<Parameters>();
-  p->load("config.ini");
-  auto job = eonc::helpers::makeJob(std::move(p));
-  job->run();
-  std::filesystem::current_path(oldDir);
-  REQUIRE(true);
+  auto results = runJob();
+  REQUIRE(results["match"] == "1");
+  REQUIRE(std::stod(results["distance"]) == Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(std::stod(results["per_atom_norm"]) ==
+          Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(results.count("energy_abs_diff") > 0);
 }
 
 // ---------------------------------------------------------------------------
@@ -1668,7 +1721,7 @@ TEST_CASE("ProcessSearchJob fixed-atom restore: displacement.con stale rows "
   // Build two Matter objects.  LJ suffices: we only read positions and
   // fixed-flags, never evaluate the potential.
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
 
   // initial = pos.con (the authoritative reference)
@@ -1733,8 +1786,8 @@ TEST_CASE("makeJob creates correct job type for each JobType",
           "[job][factory]") {
   auto params = std::make_unique<Parameters>();
 
-  params->potential_options.potential = PotType::LJ;
-  params->main_options.job = JobType::Point;
+  ParametersLoadAccess::potential_options(*params).potential = PotType::LJ;
+  ParametersLoadAccess::main_options(*params).job = JobType::Point;
   auto job = eonc::helpers::makeJob(std::move(params));
   REQUIRE(job != nullptr);
 }

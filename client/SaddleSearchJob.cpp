@@ -24,12 +24,14 @@
 #include <stdexcept>
 #include <string>
 
+namespace eonc {
+
 std::vector<std::string> SaddleSearchJob::run() {
   std::string reactantFilename("pos.con");
   std::string displacementFilename("displacement.con");
   std::string modeFilename("direction.dat");
 
-  if (params.main_options.checkpoint) {
+  if (params.main_options().checkpoint) {
     if (std::filesystem::exists("displacement_cp.con") &&
         std::filesystem::exists("mode_cp.dat")) {
       displacementFilename = "displacement_cp.con";
@@ -49,33 +51,60 @@ std::vector<std::string> SaddleSearchJob::run() {
     throw std::runtime_error("failed to load " + reactantFilename);
   }
 
-  const bool standaloneARTn = params.saddle_search_options.method == "artn";
+  const bool standaloneARTn = params.saddle_search_options().method == "artn";
 
-  if (!standaloneARTn && params.saddle_search_options.displace_type ==
+  AtomMatrix mode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
+  if (!standaloneARTn && params.saddle_search_options().displace_type ==
                              eonc::EpiCenters::DISP_LOAD) {
     // Load displacement.con, or synthesize from pos.con + direction.dat (#79).
     if (!eonc::helpers::loadOrSynthesizeDisplacement(
             *saddle, *initial, displacementFilename, modeFilename,
-            params.saddle_search_options.displace_magnitude)) {
+            params.saddle_search_options().displace_magnitude)) {
       EONC_LOG_CRITICAL("Failed to load {} (and no usable {})",
                         displacementFilename, modeFilename);
       throw std::runtime_error("missing displacement.con and direction.dat");
     }
+    if (std::filesystem::exists(modeFilename)) {
+      mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
+    }
+  } else if (!standaloneARTn && eonc::helpers::applyClientDisplacement(
+                                    *saddle, *initial, params, &mode)) {
+    // listed_atoms / random / last_atom / least_coordinated / not_fcc_hcp
   } else {
     *saddle = *initial;
   }
 
-  AtomMatrix mode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
-  const bool canLoadMode =
-      params.saddle_search_options.displace_type == eonc::EpiCenters::DISP_LOAD;
-  if (canLoadMode && std::filesystem::exists(modeFilename)) {
+  if (standaloneARTn && std::filesystem::exists(modeFilename)) {
     mode = eonc::helpers::loadMode(modeFilename, initial->numberOfAtoms());
   }
 
-  const bool useStandaloneARTn = params.saddle_search_options.method == "artn";
+  (void)runPrepared(mode);
+  return returnFiles;
+}
+
+std::shared_ptr<Matter>
+SaddleSearchJob::runFromMatter(std::shared_ptr<Matter> seed) {
+  if (!seed) {
+    throw std::runtime_error("SaddleSearchJob::runFromMatter: null Matter");
+  }
+  initial = seed;
+  initial->setPotential(pot);
+  displacement = std::make_shared<Matter>(pot, params);
+  saddle = std::make_shared<Matter>(pot, params);
+  AtomMatrix mode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
+  if (!eonc::helpers::applyClientDisplacement(*saddle, *initial, params,
+                                              &mode)) {
+    *saddle = *initial;
+  }
+  *displacement = *saddle;
+  return runPrepared(mode);
+}
+
+std::shared_ptr<Matter> SaddleSearchJob::runPrepared(const AtomMatrix &mode) {
+  const bool useStandaloneARTn = params.saddle_search_options().method == "artn";
   const bool useARTnAsMinMode =
-      params.saddle_search_options.method == "min_mode" &&
-      params.saddle_search_options.minmode_method == "artn";
+      params.saddle_search_options().method == "min_mode" &&
+      params.saddle_search_options().minmode_method == "artn";
 
 #ifdef WITH_ARTN
   if (useStandaloneARTn || useARTnAsMinMode) {
@@ -103,11 +132,10 @@ std::vector<std::string> SaddleSearchJob::run() {
   printEndState(status);
   saveData(status);
 
-  return returnFiles;
+  return saddle;
 }
 
 int SaddleSearchJob::doSaddleSearch() {
-  Matter matterTemp(pot, params);
   long status;
   int f1{0};
   f1 = this->pot->forceCallCounter;
@@ -120,13 +148,16 @@ int SaddleSearchJob::doSaddleSearch() {
       printf("unknown exception: %i\n", e);
       throw e;
     }
+  } catch (const std::exception &e) {
+    QUILL_LOG_ERROR(log, "Saddle search potential failed: {}", e.what());
+    status = MinModeSaddleSearch::STATUS_POTENTIAL_FAILED;
   }
 
-  if (params.saddle_search_options.method == "min_mode" &&
-      params.saddle_search_options.minmode_method ==
+  if (params.saddle_search_options().method == "min_mode" &&
+      params.saddle_search_options().minmode_method ==
           LowestEigenmode::MINMODE_GPRDIMER) {
     fCallsSaddle = saddleSearch->getForceCalls();
-  } else if (params.saddle_search_options.method == "artn") {
+  } else if (params.saddle_search_options().method == "artn") {
     fCallsSaddle = saddleSearch->getForceCalls();
   } else {
     fCallsSaddle += this->pot->forceCallCounter - f1;
@@ -145,10 +176,10 @@ void SaddleSearchJob::saveData(int status) {
     out << std::format("{} termination_reason_text\n",
                        saddleSearch->describeStatus(status));
     out << "saddle_search job_type\n";
-    out << std::format("{} random_seed\n", params.main_options.randomSeed);
+    out << std::format("{} random_seed\n", params.main_options().randomSeed);
     out << std::format(
         "{} potential_type\n",
-        magic_enum::enum_name<PotType>(params.potential_options.potential));
+        magic_enum::enum_name<PotType>(params.potential_options().potential));
     out << std::format("{} total_force_calls\n",
                        this->pot->forceCallCounter.load());
     out << std::format("{} force_calls_saddle\n", fCallsSaddle);
@@ -182,3 +213,5 @@ void SaddleSearchJob::printEndState(int status) {
     QUILL_LOG_WARNING(log, "[Saddle Search] {}", msg);
   }
 }
+
+} // namespace eonc

@@ -18,10 +18,13 @@
 #include <cassert>
 #include <cmath>
 #include <cstring>
+#include <stdexcept>
 
 #include "subprojects/gpr_optim/gpr/AtomicDimer.h"
 #include "subprojects/gpr_optim/gpr/auxiliary/ProblemSetUp.h"
 #include "subprojects/gpr_optim/structures/Structures.h"
+
+namespace eonc {
 
 namespace {
 
@@ -44,6 +47,9 @@ AtomicGPDimer::AtomicGPDimer(std::shared_ptr<Matter> matter,
                              const Parameters &params,
                              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
+  if (!matter) {
+    throw std::invalid_argument("AtomicGPDimer: null Matter");
+  }
   matterCenter = std::make_shared<Matter>(pot, params);
   *matterCenter = *matter;
   p = eonc::helpers::eon_parameters_to_gpr(params);
@@ -61,7 +67,7 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
   init_middle_point.R = R_init;
   init_observations.clear();
   problem_setup.activateFrozenAtoms(
-      R_init, params.gpr_dimer_options.active_radius, atoms_config);
+      R_init, params.gpr_dimer_options().active_radius, atoms_config);
   AtomMatrix freeOrient(matterCenter->numberOfFreeAtoms(), 3);
   int j = 0;
   for (int i = 0; i < matterCenter->numberOfAtoms(); i++) {
@@ -101,6 +107,23 @@ double AtomicGPDimer::getEigenvalue() {
 
 AtomMatrix AtomicGPDimer::getEigenvector() {
   const gpr::Coord &orient = atomic_dimer.getFinalOrientation();
-  long nFree = matterCenter->numberOfFreeAtoms();
-  return Eigen::Map<const AtomMatrix>(orient.data(), nFree, 3);
+  const long nFree = matterCenter->numberOfFreeAtoms();
+  const long nAtoms = matterCenter->numberOfAtoms();
+  if (nFree <= 0 || orient.size() != 3 * nFree) {
+    return AtomMatrix::Zero(nAtoms, 3);
+  }
+  AtomMatrix freeMode = Eigen::Map<const AtomMatrix>(orient.data(), nFree, 3);
+  if (nFree == nAtoms) {
+    return freeMode;
+  }
+  AtomMatrix full = AtomMatrix::Zero(nAtoms, 3);
+  long k = 0;
+  for (long i = 0; i < nAtoms; ++i) {
+    if (!matterCenter->getFixed(i)) {
+      full.row(i) = freeMode.row(k++);
+    }
+  }
+  return full;
 }
+
+} // namespace eonc

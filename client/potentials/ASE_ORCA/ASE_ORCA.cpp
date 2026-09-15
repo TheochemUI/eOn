@@ -55,11 +55,9 @@ std::filesystem::path makeAseWorkDir(const char *prefix) {
 
 } // namespace
 
-// XXX: This always assumes that charge is 0, mult is 1
-// ASE default ----------------------------^ ---------^
-// See also: https://gitlab.com/ase/ase/-/issues/1357
-ASEOrcaPot::ASEOrcaPot(const Parameters &a_params)
-    : Potential(PotType::ASE_ORCA, a_params) {
+ASEOrcaPot::ASEOrcaPot(const eonc::Parameters &a_params)
+    : eonc::Potential(eonc::PotType::ASE_ORCA, a_params) {
+  using namespace pybind11::literals;
   eonc::ensure_interpreter();
   counter = 0;
   py::module_ sys = py::module_::import("sys");
@@ -72,9 +70,9 @@ ASEOrcaPot::ASEOrcaPot(const Parameters &a_params)
   py::module_ ase_orca = py::module_::import("ase.calculators.orca");
   py::module_ psutil = py::module_::import("psutil");
   std::string orcpth = eonc::helpers::get_value_from_env_or_param(
-      "ORCA_COMMAND", a_params.ase_orca_options.path, "", "", true);
+      "ORCA_COMMAND", a_params.ase_orca_options().path, "", "", true);
   std::string orca_simpleinput = eonc::helpers::get_value_from_env_or_param(
-      "ORCA_SIMPLEINPUT", a_params.ase_orca_options.simpleinput, "ENGRAD HF-3c",
+      "ORCA_SIMPLEINPUT", a_params.ase_orca_options().simpleinput, "ENGRAD HF-3c",
       "Using ENGRAD HF-3c as a default input, set simpleinput or the "
       "environment variable ORCA_SIMPLEINPUT.\n");
 
@@ -83,10 +81,10 @@ ASEOrcaPot::ASEOrcaPot(const Parameters &a_params)
   py::object ORCA = ase_orca.attr("ORCA");
   size_t nproc{0};
 
-  if (a_params.ase_orca_options.nproc == "auto") {
+  if (a_params.ase_orca_options().nproc == "auto") {
     nproc = py::cast<int>(psutil.attr("cpu_count")(false));
   } else {
-    nproc = std::stoi(a_params.ase_orca_options.nproc);
+    nproc = std::stoi(a_params.ase_orca_options().nproc);
   }
 
   // One directory per calculator instance so two LocalInProcess jobs in
@@ -119,6 +117,7 @@ ASEOrcaPot::~ASEOrcaPot() {
 void ASEOrcaPot::force(long nAtoms, const double *R, const int *atomicNrs,
                        double *F, double *U, double *variance,
                        const double *box) {
+  using namespace pybind11::literals;
   variance = nullptr;
   try {
     AtomMatrix positions = AtomMatrix::Map(const_cast<double *>(R), nAtoms, 3);
@@ -126,7 +125,8 @@ void ASEOrcaPot::force(long nAtoms, const double *R, const int *atomicNrs,
     Eigen::VectorXi atmnmrs =
         Eigen::Map<Eigen::VectorXi>(const_cast<int *>(atomicNrs), nAtoms);
     py::object atoms = this->ase.attr("Atoms")(
-        "symbols"_a = atmnmrs, "positions"_a = positions, "cell"_a = boxx);
+        "symbols"_a = atmnmrs, "positions"_a = positions, "cell"_a = boxx,
+        "charge"_a = params.ase_orca_options().charge);
     atoms.attr("set_calculator")(this->calc);
     atoms.attr("set_pbc")(std::tuple<bool, bool, bool>(true, true, true));
     double py_e = py::cast<double>(atoms.attr("get_potential_energy")());

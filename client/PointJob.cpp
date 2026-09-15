@@ -11,18 +11,19 @@
 */
 #include "eon/PointJob.h"
 #include "eon/BaseStructures.h"
+#include "eon/HelperFunctions.h"
+#include "eon/JobResult.h"
 #include "eon/Matter.h"
 #include "eon/PotRegistry.h"
-#include "magic_enum/magic_enum.hpp"
 
-#include <format>
-#include <fstream>
 #include <sstream>
 #include <stdexcept>
 
+namespace eonc {
+
 std::vector<std::string> PointJob::run() {
   std::vector<std::string> returnFiles;
-  std::string posInFilename("pos.con");
+  std::string posInFilename = eonc::helpers::getRelevantFile("pos.con");
   std::string resultsFilename("results.dat");
 
   auto pos = std::make_unique<Matter>(pot, params);
@@ -37,34 +38,19 @@ std::vector<std::string> PointJob::run() {
   QUILL_LOG_DEBUG(log, "(free) Forces:\n{}", freeForcesStream.str());
   QUILL_LOG_DEBUG(log, "Max atom force: {:.12f}", pos->maxForce());
 
-  std::ofstream outFile(resultsFilename, std::ios::binary);
-  if (!outFile) {
-    QUILL_LOG_CRITICAL(log, "Failed to open {}", resultsFilename);
-    throw std::runtime_error("failed to open " + resultsFilename);
-  }
   // Energy and Max_Force are the SVN reference format (see
   // data/reference/point_*.dat); the rest is the key set every other job
   // writes and eon.explorer reads.
-  outFile << std::format("{} termination_reason\n",
-                         static_cast<int>(RunStatus::GOOD));
-  outFile << std::format("{} termination_reason_text\n",
-                         magic_enum::enum_name<RunStatus>(RunStatus::GOOD));
-  outFile << "point job_type\n";
-  outFile << std::format(
-      "{} potential_type\n",
-      magic_enum::enum_name<PotType>(params.potential_options.potential));
-  outFile << std::format("{} total_force_calls\n",
-                         PotRegistry::get().total_force_calls());
-  outFile << std::format("{:.12f} potential_energy\n",
-                         pos->getPotentialEnergy());
-  outFile << std::format("{:.12f} Energy\n", pos->getPotentialEnergy());
-  outFile << std::format("{:.12f} Max_Force\n", pos->maxForce());
-  outFile.close();
-  if (!outFile) {
-    QUILL_LOG_CRITICAL(log, "Failed to write {}", resultsFilename);
-    throw std::runtime_error("failed to write " + resultsFilename);
-  }
+  auto env = JobResultEnvelope::fromMinimization(
+      RunStatus::GOOD, params.potential_options().potential,
+      PotRegistry::get().total_force_calls(), true, pos->getPotentialEnergy());
+  env.job_type = "point";
+  env.extras.emplace_back("Energy", pos->getPotentialEnergy());
+  env.extras.emplace_back("Max_Force", pos->maxForce());
+  env.writeResultsDat(resultsFilename);
   returnFiles.push_back(resultsFilename);
 
   return returnFiles;
 }
+
+} // namespace eonc

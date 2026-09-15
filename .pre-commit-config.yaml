@@ -1,5 +1,4 @@
-# See https://pre-commit.com for more information
-# See https://pre-commit.com/hooks.html for more hooks
+# prek reads this file. See https://pre-commit.com
 fail_fast: false
 exclude: |
   (?x)(
@@ -13,57 +12,21 @@ exclude: |
   )
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.4.0
+  rev: v6.0.0
   hooks:
-  -   id: trailing-whitespace
-  -   id: end-of-file-fixer
-  -   id: check-yaml
-  -   id: check-added-large-files
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-yaml
+  - id: check-added-large-files
 - repo: https://github.com/pre-commit/mirrors-clang-format
   rev: v20.1.7
   hooks:
   - id: clang-format
     types_or: [c, c++, cuda]
     args: ["-fallback-style=none", "-style=file", "-i"]
-# - repo: local
-#   hooks:
-    # - id: cppcheck
-    #   name: cppcheck
-    #   entry: cppcheck
-    #   language: system
-    #   types_or: [c++, c]
-    #   args: [
-    #   "--error-exitcode=1",
-    #   "--std=c++20",
-    #   "--language=c++",
-    #   "--check-level=exhaustive",
-    #   ]
-    # - id: cpplint
-    #   name: cpplint
-    #   entry: cpplint
-    #   language: system
-    #   types_or: [c++, c]
-    #   args: [
-    #   "--filter=-whitespace/comments,
-    #   -runtime/references,
-    #   -whitespace/indent,
-    #   -whitespace/parens,
-    #   -whitespace/braces,
-    #   -whitespace/line_length,
-    #   -whitespace/newline,
-    #   -build/include_order,
-    #   -readability/todo,
-    #   -build/namespaces,"
-    #   ]
-    # - id: ruff-lint-fixes
-    #   name: ruff check
-    #   entry: ruff
-    #   language: system
-    #   types_or: [ python, pyi, jupyter ]
-    #   args: ["check", "--fix", "--unsafe-fixes", "."]
-    # - id: ruff-format
-    #   name: ruff format
-    #   entry: ruff
-    #   language: system
-    #   types_or: [ python, pyi, jupyter ]
-    #   args: ["format", "."]
+- repo: https://github.com/zizmorcore/zizmor-pre-commit
+  rev: v1.30.1
+  hooks:
+  - id: zizmor
+    files: ^\.github/workflows/
+    args: ["--min-severity=medium"]

@@ -23,13 +23,13 @@
 #include <algorithm>
 #include <cmath>
 
-using namespace eonc::helpers;
+namespace eonc {
 
 std::vector<std::string> GlobalOptimizationJob::run() {
   // int status;
   GlobalOptimization globopt = GlobalOptimization(params);
   std::string reactant_passed =
-      eonc::helpers::getRelevantFile(params.main_options.conFilename);
+      eonc::helpers::getRelevantFile(params.main_options().conFilename);
   std::vector<std::string> returnFiles;
   // returnFiles.push_back(reactant_output);
   auto matter_cur = std::make_unique<Matter>(pot, params);
@@ -39,7 +39,7 @@ std::vector<std::string> GlobalOptimizationJob::run() {
     throw std::runtime_error("failed to load " + reactant_passed);
   }
   bool converged;
-  long nstep = params.global_optimization_options.steps;
+  long nstep = params.global_optimization_options().steps;
   AtomMatrix rat_t(matter_cur->numberOfAtoms(), 3);
   // double epot_hop;
   // std::vector<double> earr;
@@ -50,8 +50,8 @@ std::vector<std::string> GlobalOptimizationJob::run() {
   QUILL_LOG_TRACE_L1(log, "fcalls= {}", matter_cur->getForceCalls());
   QUILL_LOG_TRACE_L1(log, "epot= {:24.15E}", matter_cur->getPotentialEnergy());
   converged =
-      matter_cur->relax(false, params.debug_options.write_movies,
-                        params.main_options.checkpoint, "min", "matter_cur");
+      matter_cur->relax(false, params.debug_options().write_movies,
+                        params.main_options().checkpoint, "min", "matter_cur");
   QUILL_LOG_DEBUG(log, "converged {}", (converged) ? "TRUE" : "FALSE");
   // nlmin=0;
   // if(nlmin==0)
@@ -68,7 +68,7 @@ std::vector<std::string> GlobalOptimizationJob::run() {
     // reporting useful information about this hop
     report(*matter_hop);
     if (matter_cur->getPotentialEnergy() <
-        params.global_optimization_options.target_energy)
+        params.global_optimization_options().target_energy)
       break;
   }
   for (size_t i = 0; i < earr.size(); i++) {
@@ -95,7 +95,7 @@ void GlobalOptimizationJob::analyze(Matter &matter_cur, Matter &matter_hop) {
   size_t jlo = hunt(epot);
   QUILL_LOG_TRACE_L1(log, "REZA: {}", jlo);
   if (std::abs(epot - earr[jlo]) <
-      params.structure_comparison_options.energy_difference) {
+      params.structure_comparison_options().energy_difference) {
     hoppingResult = "already_visited";
   } else {
     hoppingResult = "new";
@@ -131,7 +131,7 @@ void GlobalOptimizationJob::examineEscape(Matter &matter_cur,
   epot = matter_cur.getPotentialEnergy();
   epot_hop = matter_hop.getPotentialEnergy();
   if (std::abs(epot_hop - epot) <
-      params.structure_comparison_options.energy_difference) {
+      params.structure_comparison_options().energy_difference) {
     escapeResult = "failure";
   } else {
     escapeResult = "success";
@@ -194,8 +194,8 @@ void GlobalOptimizationJob::report(Matter &matter_hop) {
     C2 = '-';
   }
   double epot_hop = matter_hop.getPotentialEnergy();
-  double temp = (2.0 * ekin_p / params.constants.kB);
-  double dt = params.dynamics_options.time_step;
+  double temp = (2.0 * ekin_p / params.constants().kB);
+  double dt = params.dynamics_options().time_step;
   monfile << std::format(
       "{:15.5f}  {:15.5f}  {:11}  {:12.2f}         {}{}  {:5}  {:5}", epot_hop,
       ediff, static_cast<size_t>(temp), dt, C1, C2, fcallsMove, fcallsRelax);
@@ -209,10 +209,10 @@ void GlobalOptimizationJob::decisionStep(Matter &matter_cur,
     // matter_hop[0] = matter_cur[0];
     return;
   }
-  if (params.global_optimization_options.decision_method == "npew") {
+  if (params.global_optimization_options().decision_method == "npew") {
     acceptRejectNPEW(matter_cur, matter_hop);
     // GlobalOptimizationJob::update_minhop_param(matter_hop);
-  } else if (params.global_optimization_options.decision_method ==
+  } else if (params.global_optimization_options().decision_method ==
              "boltzmann") {
     acceptRejectBoltzmann(matter_cur, matter_hop);
   } else {
@@ -221,7 +221,7 @@ void GlobalOptimizationJob::decisionStep(Matter &matter_cur,
         log, "ERROR: accept/reject method not specified. client stops.");
     throw std::invalid_argument(
         std::format("[Global Optimization] unknown decision_method: {}",
-                    params.global_optimization_options.decision_method));
+                    params.global_optimization_options().decision_method));
   }
   applyDecisionFeedback();
 }
@@ -240,19 +240,22 @@ void GlobalOptimizationJob::acceptRejectNPEW(Matter &matter_cur,
 void GlobalOptimizationJob::acceptRejectBoltzmann(Matter &matter_cur,
                                                   Matter &matter_hop) {
   double eTrial = matter_hop.getPotentialEnergy();
-  double eCurrent = matter_hop.getPotentialEnergy();
+  double eCurrent = matter_cur.getPotentialEnergy();
 
   double deltaE = eTrial - eCurrent;
-  double kB = 8.6173324e-5;
+  const double kB = params.constants().kB;
+  const double T = params.main_options().temperature;
 
   double p;
   if (deltaE <= 0.0) {
     p = 1.0;
+  } else if (!(T > 0.0) || !(kB > 0.0)) {
+    p = 0.0;
   } else {
-    p = std::exp(-deltaE / params.main_options.temperature * kB);
+    p = std::exp(-deltaE / (kB * T));
   }
 
-  if (randomDouble(1.0) < p) {
+  if (eonc::rng::randomDouble(1.0) < p) {
     decisionResult = "accepted";
   } else {
     decisionResult = "rejected";
@@ -264,17 +267,17 @@ void GlobalOptimizationJob::hoppingStep(long istep, Matter &matter_cur,
   bool converged;
   matter_hop = matter_cur;
   long fcalls1 = matter_hop.getForceCalls();
-  if (params.global_optimization_options.move_method == "md") {
+  if (params.global_optimization_options().move_method == "md") {
     applyMoveFeedbackMD();
     mdescape(matter_hop);
-  } else if (params.global_optimization_options.move_method == "random") {
+  } else if (params.global_optimization_options().move_method == "random") {
     randomMove(matter_hop);
   }
   long fcalls2 = matter_hop.getForceCalls();
   hoppingResult = "unknown";
   converged =
-      matter_hop.relax(true, params.debug_options.write_movies,
-                       params.main_options.checkpoint, "min", "matter_hop");
+      matter_hop.relax(true, params.debug_options().write_movies,
+                       params.main_options().checkpoint, "min", "matter_hop");
   QUILL_LOG_DEBUG(log, "converged {}", (converged) ? "TRUE" : "FALSE");
   long fcalls3 = matter_hop.getForceCalls();
   fcallsMove = fcalls2 - fcalls1;
@@ -289,21 +292,21 @@ void GlobalOptimizationJob::randomMove(Matter &matter) {
   int num = matter.numberOfAtoms();
 
   for (int i = 0; i < num; i++) {
-    double disp = params.basin_hopping_options.displacement;
+    double disp = params.basin_hopping_options().displacement;
     if (!matter.getFixed(i)) {
       for (int j = 0; j < 3; j++) {
-        if (params.basin_hopping_options.displacement_distribution ==
+        if (params.basin_hopping_options().displacement_distribution ==
             "uniform") {
-          displacement(i, j) = randomDouble(2 * disp) - disp;
-        } else if (params.basin_hopping_options.displacement_distribution ==
+          displacement(i, j) = eonc::rng::randomDouble(2 * disp) - disp;
+        } else if (params.basin_hopping_options().displacement_distribution ==
                    "gaussian") {
-          displacement(i, j) = gaussRandom(0.0, disp);
+          displacement(i, j) = eonc::rng::gaussRandom(0.0, disp);
         } else {
           log = eonc::log::traceback();
           QUILL_LOG_CRITICAL(log, "Unknown displacement_distribution");
           throw std::invalid_argument(std::format(
               "[Global Optimization] unknown displacement_distribution: {}",
-              params.basin_hopping_options.displacement_distribution));
+              params.basin_hopping_options().displacement_distribution));
         }
       }
     }
@@ -357,13 +360,13 @@ void GlobalOptimizationJob::mdescape(Matter &matter) {
   if (md_presumably_escaped) {
     devcon = devcon / static_cast<double>(matter.numberOfFreeAtoms() * 3);
     if (devcon / ekin < 2.E-3) {
-      params.dynamics_options.time_step *= 1.1;
+      ParametersLoadAccess::dynamics_options(params).time_step *= 1.1;
     } else {
-      params.dynamics_options.time_step /= 1.1;
+      ParametersLoadAccess::dynamics_options(params).time_step /= 1.1;
     }
   } else {
     QUILL_LOG_DEBUG(log, "TOO MANY MD STEPS  ");
-    params.dynamics_options.time_step *= 2.0;
+    ParametersLoadAccess::dynamics_options(params).time_step *= 2.0;
   }
 }
 
@@ -376,9 +379,9 @@ void GlobalOptimizationJob::velopt(Matter &matter) {
   vtot[1] = 0.0;
   vtot[2] = 0.0;
   for (iat = 0; iat < matter.numberOfAtoms(); iat++) {
-    tt1 = randomDouble();
-    tt2 = randomDouble();
-    tt3 = randomDouble();
+    tt1 = eonc::rng::randomDouble();
+    tt2 = eonc::rng::randomDouble();
+    tt3 = eonc::rng::randomDouble();
     vat(iat, 0) = (tt1 - 0.5) * 2.0;
     vat(iat, 1) = (tt2 - 0.5) * 2.0;
     vat(iat, 2) = (tt3 - 0.5) * 2.0;
@@ -398,9 +401,16 @@ void GlobalOptimizationJob::velopt(Matter &matter) {
   }
   matter.setVelocities(vat);
   long nFreeCoords = matter.numberOfFreeAtoms() * 3;
+  if (nFreeCoords <= 0) {
+    throw std::invalid_argument("GlobalOptimizationJob::velopt: no free atoms");
+  }
   double kinE = matter.getKineticEnergy();
-  double kB = params.constants.kB;
+  double kB = params.constants().kB;
   double kinT = (2.0 * kinE / nFreeCoords / kB);
+  if (!(kinT > 0.0)) {
+    throw std::runtime_error(
+        "GlobalOptimizationJob::velopt: zero kinetic temperature");
+  }
   double temperature = (2.0 * ekin / kB);
   matter.setVelocities(vat * std::sqrt(temperature / kinT));
 }
@@ -426,7 +436,7 @@ void GlobalOptimizationJob::insert(Matter &matter) {
   // it=earr.begin()+jlo;
   // epot_hop.push_back(epot);
   if (!(std::abs(epot - earr[jlo]) <
-        params.structure_comparison_options.energy_difference)) {
+        params.structure_comparison_options().energy_difference)) {
     // earr.insert(it,epot_hop.begin(),epot_hop.end());
     jlo_insert = jlo;
     if (epot > earr[jlo])
@@ -450,7 +460,9 @@ size_t GlobalOptimizationJob::hunt(double epot) {
     if (std::abs(epot - earr[jlo - 1]) < de)
       jlo--; //{jlo--;de=abs(epot-earr[jlo]);}
   // if(jlo!=earr.size()-1)
-  // if(abs(epot-earr[jlo+1])<params.structure_comparison_options.energy_difference)
+  // if(abs(epot-earr[jlo+1])<params.structure_comparison_options().energy_difference)
   // jlo++;
   return jlo;
 }
+
+} // namespace eonc

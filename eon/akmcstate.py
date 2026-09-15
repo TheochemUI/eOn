@@ -230,6 +230,7 @@ class AKMCState(state.State):
                  resultdata["force_calls_prefactors"],
                  comment))
         f.close()
+        self.info.set("MetaData", "searches", self.get_number_of_searches() + 1)
         #except:
         #    logger.warning("Failed to append search result.")
 
@@ -632,16 +633,17 @@ class AKMCState(state.State):
             return dict([int(temp), float(time)] for temp, time in self.info.items("SearchTime", raw=True))
 
     def get_number_of_searches(self):
-        # TODO: this is inefficient!
-        f = open(self.search_result_path)
-        try:
-            n = 0
-            f.readline()
-            f.readline()
-            for line in f:
-                n += 1
-        finally:
-            f.close()
+        n = self.info.get("MetaData", "searches", None)
+        if n is not None:
+            return int(n)
+        n = 0
+        if os.path.isfile(self.search_result_path):
+            with open(self.search_result_path) as f:
+                f.readline()
+                f.readline()
+                for line in f:
+                    n += 1
+        self.info.set("MetaData", "searches", n)
         return n
 
     def get_total_saddle_count(self):

@@ -26,7 +26,7 @@
 
 /** EMT potential. Inspect the EMT_parms.h to see what the EMT potential is
  * hardcoded to describe.*/
-class EffectiveMediumTheory : public Potential {
+class EffectiveMediumTheory : public eonc::Potential {
 
 private:
   bool emtRasmussen{false};
@@ -38,13 +38,18 @@ private:
   SuperCell *SuperCellObj{nullptr};
 
 public:
-  EffectiveMediumTheory(const Parameters &p)
-      : Potential(p),
-        emtRasmussen{p.potential_options.EMTRasmussen} {}
+  EffectiveMediumTheory(const eonc::Parameters &p)
+      : eonc::Potential(p),
+        emtRasmussen{p.potential_options().EMTRasmussen} {}
   ~EffectiveMediumTheory() { cleanMemory(); }
   void cleanMemory();
 
   // To satify interface
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box);
+
+  /// ASAP Atoms/EMT objects are mutated in force(); do not share one instance.
+  [[nodiscard]] bool isSharedInstanceThreadSafe() const noexcept override {
+    return false;
+  }
 };

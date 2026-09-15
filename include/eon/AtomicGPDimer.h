@@ -34,9 +34,10 @@ public:
                 std::shared_ptr<Potential> pot);
   ~AtomicGPDimer() = default;
 
-  void compute(std::shared_ptr<Matter> matter, AtomMatrix initialDirection);
-  double getEigenvalue();
-  AtomMatrix getEigenvector();
+  void compute(std::shared_ptr<Matter> matter,
+               AtomMatrix initialDirection) override;
+  double getEigenvalue() override;
+  AtomMatrix getEigenvector() override;
 
 private:
   std::shared_ptr<Matter> matterCenter; // initial center of the dimer
@@ -52,5 +53,3 @@ private:
 };
 
 } // namespace eonc
-
-using eonc::AtomicGPDimer;

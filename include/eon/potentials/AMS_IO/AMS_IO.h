@@ -16,10 +16,10 @@
 
 #include <string>
 
-class AMS_IO : public Potential {
+class AMS_IO : public eonc::Potential {
 
 public:
-  AMS_IO(const Parameters &p);
+  AMS_IO(const eonc::Parameters &p);
   ~AMS_IO();
   void initialize() {};
   void cleanMemory(void);

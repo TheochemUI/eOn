@@ -14,11 +14,57 @@
 #include "eon/BondBoost.h"
 #include "eon/GeometryAnalysis.h"
 #include "eon/HelperFunctions.h"
+#include "eon/Parameters.h"
 #include "eon/SurrogatePotential.h"
 
 #include "eon/EonLogger.h"
+#include <cmath>
 #include <memory>
+#include <span>
 #include <stdexcept>
+#include <string>
+
+namespace eonc {
+
+Matter::Matter(std::shared_ptr<Potential> pot, const Parameters &params)
+    : potential{pot},
+      usePeriodicBoundaries{!(pot && pot->requiresIsolatedMoleculeLayout())},
+      pbcConvention{PbcConvention::Legacy},
+      recomputePotential{true},
+      forceCalls{0},
+      removeNetForce{params.main_options().removeNetForce},
+      structComp{params.structure_comparison_options()},
+      parameters{&params},
+      nAtoms{0},
+      positions{MatrixXd::Zero(0, 3)},
+      velocities{MatrixXd::Zero(0, 3)},
+      forces{MatrixXd::Zero(0, 3)},
+      biasForces{MatrixXd::Zero(0, 3)},
+      biasPotential{nullptr},
+      masses{Eigen::VectorXd::Zero(0)},
+      atomicNrs{Eigen::VectorXi::Zero(0)},
+      isFixed{AtomMatrix::Zero(0, 3)},
+      cell{Matrix3d::Zero()},
+      cellInverse{Matrix3d::Zero()},
+      energyVariance{0.0},
+      potentialEnergy{0.0} {}
+
+bool Matter::getWriteConForces() const noexcept {
+  return parameters != nullptr && parameters->main_options().writeConForces;
+}
+
+namespace {
+void checkAtom(long nAtoms, long indexAtom, const char *fn) {
+  if (indexAtom < 0 || indexAtom >= nAtoms) {
+    throw std::out_of_range(std::string(fn) + ": atom index out of range");
+  }
+}
+void checkAxis(int axis, const char *fn) {
+  if (axis < 0 || axis > 2) {
+    throw std::out_of_range(std::string(fn) + ": axis out of range");
+  }
+}
+} // namespace
 
 Matter::Matter(const Matter &matter) { operator=(matter); }
 
@@ -35,6 +81,7 @@ const Matter &Matter::operator=(const Matter &matter) {
   atomicNrs = matter.atomicNrs;
   isFixed = matter.isFixed;
   atomIndex = matter.atomIndex;
+  fileToMatter = matter.fileToMatter;
   cell = matter.cell;
   cellInverse = matter.cellInverse;
   velocities = matter.velocities;
@@ -97,6 +144,7 @@ Matter &Matter::operator=(Matter &&other) noexcept {
   atomicNrs = std::move(other.atomicNrs);
   isFixed = std::move(other.isFixed);
   atomIndex = std::move(other.atomIndex);
+  fileToMatter = std::move(other.fileToMatter);
   freeMask = std::move(other.freeMask);
   maskedForces = std::move(other.maskedForces);
   freeIndices = std::move(other.freeIndices);
@@ -118,7 +166,7 @@ Matter &Matter::operator=(Matter &&other) noexcept {
 // The == comparison considers identity. This is crucial for process search.
 // bool Matter::operator==(const Matter& matter) {
 //     if(structComp.check_rotation) {
-//         return eonc::helpers::rotationMatch(this, &matter,
+//         return eonc::geometry::rotationMatch(this, &matter,
 //         structComp.distance_difference);
 //     }else{
 //         return (structComp.distance_difference)
@@ -130,19 +178,19 @@ bool Matter::compare(const Matter &matter, bool indistinguishable) {
   if (nAtoms != matter.numberOfAtoms())
     return false;
   if (structComp.check_rotation && indistinguishable) {
-    return eonc::helpers::sortedR(*this, matter,
-                                  structComp.distance_difference);
+    return eonc::geometry::sortedR(*this, matter,
+                                   structComp.distance_difference);
   } else if (indistinguishable) {
     if (this->numberOfFixedAtoms() == 0 and structComp.remove_translation)
-      eonc::helpers::translationRemove(*this, matter);
-    return eonc::helpers::identical(*this, matter,
-                                    structComp.distance_difference);
+      eonc::geometry::translationRemove(*this, matter);
+    return eonc::geometry::identical(*this, matter,
+                                     structComp.distance_difference);
   } else if (structComp.check_rotation) {
-    return eonc::helpers::rotationMatch(*this, matter,
-                                        structComp.distance_difference);
+    return eonc::geometry::rotationMatch(*this, matter,
+                                         structComp.distance_difference);
   } else {
     if (this->numberOfFixedAtoms() == 0 and structComp.remove_translation)
-      eonc::helpers::translationRemove(*this, matter);
+      eonc::geometry::translationRemove(*this, matter);
     return (structComp.distance_difference) > perAtomNorm(matter);
   }
 }
@@ -153,6 +201,9 @@ bool Matter::compare(const Matter &matter, bool indistinguishable) {
 
 // Returns the distance to the given matter object.
 double Matter::distanceTo(const Matter &matter) {
+  if (matter.numberOfAtoms() != nAtoms) {
+    throw std::invalid_argument("Matter::distanceTo: size mismatch");
+  }
   return pbc(positions - matter.positions).norm();
 }
 
@@ -173,6 +224,42 @@ double Matter::perAtomNorm(const Matter &matter) {
 void Matter::resize(const long int length) {
   if (length < 0) {
     throw std::invalid_argument("Matter::resize: negative atom count");
+  }
+  // Same-N resize still zeros coordinates. Keep .con column-5 ids and
+  // the file-order map so a later matter2con does not stamp 1..N.
+  const bool keepAtomIds = (length == nAtoms && atomIndex.size() == length &&
+                            fileToMatter.size() == static_cast<size_t>(length));
+  // Zero is a real size: leaving nAtoms at the old value there sends
+  // setMasses and every other nAtoms loop off the end of an empty array.
+  nAtoms = length;
+  positions.resize(length, 3);
+  positions.setZero();
+
+  velocities.resize(length, 3);
+  velocities.setZero();
+
+  biasForces.resize(length, 3);
+  biasForces.setZero();
+
+  forces.resize(length, 3);
+  forces.setZero();
+
+  masses.resize(length);
+  masses.setZero();
+
+  atomicNrs.resize(length);
+  atomicNrs.setZero();
+
+  isFixed.resize(length, 3);
+  isFixed.setZero();
+
+  if (!keepAtomIds) {
+    atomIndex.resize(length);
+    fileToMatter.resize(static_cast<size_t>(length));
+    for (long i = 0; i < length; i++) {
+      atomIndex(i) = static_cast<std::int64_t>(i); // default: sequential
+      fileToMatter[static_cast<size_t>(i)] = i;
+    }
   }
   // Zero is a real size: leaving nAtoms at the old value there sends
   // setMasses and every other nAtoms loop off the end of an empty array.
@@ -218,10 +305,14 @@ void Matter::setCell(const Matrix3d &newCell) {
 }
 
 double Matter::getPosition(long int indexAtom, int axis) const {
+  checkAtom(nAtoms, indexAtom, "Matter::getPosition");
+  checkAxis(axis, "Matter::getPosition");
   return positions(indexAtom, axis);
 }
 
 void Matter::setPosition(long int indexAtom, int axis, double position) {
+  checkAtom(nAtoms, indexAtom, "Matter::setPosition");
+  checkAxis(axis, "Matter::setPosition");
   positions(indexAtom, axis) = position;
   if (usePeriodicBoundaries) {
     applyPeriodicBoundary();
@@ -231,6 +322,8 @@ void Matter::setPosition(long int indexAtom, int axis, double position) {
 }
 
 void Matter::setVelocity(long int indexAtom, int axis, double vel) {
+  checkAtom(nAtoms, indexAtom, "Matter::setVelocity");
+  checkAxis(axis, "Matter::setVelocity");
   velocities(indexAtom, axis) = vel;
 }
 
@@ -253,7 +346,12 @@ AtomMatrix Matter::getPositionsFree() const {
 }
 
 VectorXi Matter::getAtomicNrsFree() const {
-  return this->atomicNrs.array() * getFreeV().cast<int>().array();
+  getFree();
+  VectorXi ret(static_cast<Eigen::Index>(freeIndices.size()));
+  for (size_t j = 0; j < freeIndices.size(); j++) {
+    ret[static_cast<Eigen::Index>(j)] = atomicNrs[freeIndices[j]];
+  }
+  return ret;
 }
 
 bool Matter::relax(bool quiet, bool writeMovie, bool checkpoint,
@@ -273,6 +371,9 @@ VectorXd Matter::getPositionsFreeV() const {
 
 // update Matter with the new positions of the free atoms given in array 'pos'
 void Matter::setPositions(const AtomMatrix &pos) {
+  if (pos.rows() != nAtoms) {
+    throw std::invalid_argument("Matter::setPositions: row count mismatch");
+  }
   positions = pos;
   if (usePeriodicBoundaries) {
     applyPeriodicBoundary();
@@ -360,12 +461,17 @@ VectorXd Matter::getForcesFreeV() const {
 
 // return distance between the atoms with index1 and index2
 double Matter::distance(long index1, long index2) const {
+  checkAtom(nAtoms, index1, "Matter::distance");
+  checkAtom(nAtoms, index2, "Matter::distance");
   return pbc(positions.row(index1) - positions.row(index2)).norm();
 }
 
 // return projected distance between the atoms with index1 and index2 on asix
 // (0-x,1-y,2-z)
 double Matter::pdistance(long index1, long index2, int axis) const {
+  checkAtom(nAtoms, index1, "Matter::pdistance");
+  checkAtom(nAtoms, index2, "Matter::pdistance");
+  checkAxis(axis, "Matter::pdistance");
   Matrix<double, 1, 3> ret;
   ret.setZero();
   ret(0, axis) = positions(index1, axis) - positions(index2, axis);
@@ -376,19 +482,26 @@ double Matter::pdistance(long index1, long index2, int axis) const {
 // return the distance atom with index has moved between the current Matter
 // object and the Matter object passed as argument
 double Matter::distance(const Matter &matter, long index) const {
+  checkAtom(nAtoms, index, "Matter::distance");
+  checkAtom(matter.nAtoms, index, "Matter::distance");
   return pbc(positions.row(index) - matter.getPositions().row(index)).norm();
 }
 
-double Matter::getMass(long int indexAtom) const { return (masses[indexAtom]); }
+double Matter::getMass(long int indexAtom) const {
+  checkAtom(nAtoms, indexAtom, "Matter::getMass");
+  return (masses[indexAtom]);
+}
 
 void Matter::setMass(long int indexAtom, double mass) {
+  checkAtom(nAtoms, indexAtom, "Matter::setMass");
   masses[indexAtom] = mass;
 }
 
 void Matter::setMasses(const VectorXd &massesIn) {
-  for (int i = 0; i < nAtoms; i++) {
-    masses[i] = massesIn[i];
+  if (massesIn.size() != nAtoms) {
+    throw std::invalid_argument("Matter::setMasses: size mismatch");
   }
+  masses = massesIn;
 }
 
 long Matter::getAtomicNr(long int indexAtom) const {
@@ -402,6 +515,7 @@ void Matter::setAtomicNr(long int indexAtom, long atomicNr) {
 }
 
 int Matter::getFixed(long int indexAtom) const {
+  checkAtom(nAtoms, indexAtom, "Matter::getFixed");
   return (isFixed(indexAtom, 0) > 0.5 && isFixed(indexAtom, 1) > 0.5 &&
           isFixed(indexAtom, 2) > 0.5)
              ? 1
@@ -409,15 +523,19 @@ int Matter::getFixed(long int indexAtom) const {
 }
 
 int Matter::getFixed(long int indexAtom, int axis) const {
+  checkAtom(nAtoms, indexAtom, "Matter::getFixed");
+  checkAxis(axis, "Matter::getFixed");
   return isFixed(indexAtom, axis) > 0.5 ? 1 : 0;
 }
 
 std::array<bool, 3> Matter::getFixedMask(long int indexAtom) const {
+  checkAtom(nAtoms, indexAtom, "Matter::getFixedMask");
   return {isFixed(indexAtom, 0) > 0.5, isFixed(indexAtom, 1) > 0.5,
           isFixed(indexAtom, 2) > 0.5};
 }
 
 void Matter::setFixed(long int indexAtom, int isFixed_passed) {
+  checkAtom(nAtoms, indexAtom, "Matter::setFixed");
   const double v = isFixed_passed ? 1.0 : 0.0;
   isFixed(indexAtom, 0) = v;
   isFixed(indexAtom, 1) = v;
@@ -427,12 +545,15 @@ void Matter::setFixed(long int indexAtom, int isFixed_passed) {
 }
 
 void Matter::setFixed(long int indexAtom, int axis, int isFixed_passed) {
+  checkAtom(nAtoms, indexAtom, "Matter::setFixed");
+  checkAxis(axis, "Matter::setFixed");
   isFixed(indexAtom, axis) = isFixed_passed ? 1.0 : 0.0;
   recomputeFreeMask = true;
   recomputeMaskedForces = true;
 }
 
 void Matter::setFixedMask(long int indexAtom, std::array<bool, 3> mask) {
+  checkAtom(nAtoms, indexAtom, "Matter::setFixedMask");
   isFixed(indexAtom, 0) = mask[0] ? 1.0 : 0.0;
   isFixed(indexAtom, 1) = mask[1] ? 1.0 : 0.0;
   isFixed(indexAtom, 2) = mask[2] ? 1.0 : 0.0;
@@ -522,15 +643,26 @@ void Matter::computePotential() const {
       // Hot path: call force() directly into member storage.
       // No intermediate allocation, no tuple, no copy.
       double var{0};
-      potential->force(nAtoms, positions.data(), atomicNrs.data(),
-                       forces.data(), &potentialEnergy, &var, cell.data());
+      potential->setFixedMask(nAtoms, isFixed.data());
+      const auto n = static_cast<size_t>(nAtoms);
+      potential->force(std::span<const double>(positions.data(), n * 3),
+                       std::span<const int>(atomicNrs.data(), n),
+                       std::span<double>(forces.data(), n * 3),
+                       &potentialEnergy, &var,
+                       std::span<const double>(cell.data(), 9));
       potential->forceCallCounter++;
       PotRegistry::get().on_force_call(potential->getType());
+    }
+    if (!std::isfinite(potentialEnergy) || !forces.allFinite()) {
+      throw std::runtime_error(
+          "Potential returned non-finite energy or forces");
     }
     forceCalls = forceCalls + 1;
     recomputePotential = false;
 
-    if (isFixed.maxCoeff() < 0.5 && removeNetForce) {
+    // One free atom: subtracting the mean force is identically zero
+    // (eOn-zjri). NEB would then report immediate GOOD.
+    if (isFixed.maxCoeff() < 0.5 && removeNetForce && nAtoms > 1) {
       Vector3d tempForce = forces.colwise().sum() / nAtoms;
       for (long int i = 0; i < nAtoms; i++) {
         forces.row(i) -= tempForce.transpose();
@@ -576,6 +708,8 @@ void Matter::setAtomicNrs(const VectorXi &atmnrs) {
         "Vector of atomic numbers not equal to the number of atoms");
   } else {
     this->atomicNrs = atmnrs;
+    recomputePotential = true;
+    recomputeMaskedForces = true;
   }
 }
 
@@ -609,7 +743,9 @@ void Matter::setVelocities(const AtomMatrix &v) {
 
 void Matter::setForces(const AtomMatrix &f) {
   forces = f.array() * getFree().array();
-  recomputeMaskedForces = true;
+  maskedForces = forces;
+  recomputeMaskedForces = false;
+  recomputePotential = false;
 }
 
 AtomMatrix Matter::getAccelerations() {
@@ -651,7 +787,7 @@ void Matter::setComputedPotential(double energy, double variance) {
   forceCalls++;
 
   // Apply the same net force removal as computePotential()
-  if (isFixed.maxCoeff() < 0.5 && removeNetForce) {
+  if (isFixed.maxCoeff() < 0.5 && removeNetForce && nAtoms > 1) {
     Vector3d tempForce = forces.colwise().sum() / nAtoms;
     for (long int i = 0; i < nAtoms; i++) {
       forces.row(i) -= tempForce.transpose();
@@ -672,3 +808,5 @@ double Matter::getEnergyVariance() const { return this->energyVariance; }
 // double Matter::getMaxVariance() { return this->variance.maxCoeff(); }
 
 std::shared_ptr<Potential> Matter::getPotential() { return this->potential; }
+
+} // namespace eonc

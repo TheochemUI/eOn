@@ -1,0 +1,1 @@
+The point job opens `pos.con` through `getRelevantFile`, so `pos_cp.con` / `pos_in.con` are used when present.

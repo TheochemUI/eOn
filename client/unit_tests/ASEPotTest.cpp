@@ -33,11 +33,11 @@ public:
         matter{nullptr},
         pot{nullptr},
         threshold{1e-6} {
-    params.potential_options.potential = PotType::ASE_POT;
+    ParametersLoadAccess::potential_options(params).potential = PotType::ASE_POT;
     auto script = std::filesystem::canonical("ase_lj.py").string();
-    params.potential_options.extPotPath = script;
+    ParametersLoadAccess::potential_options(params).extPotPath = script;
 
-    pot = eonc::helpers::makePotential(params.potential_options.potential,
+    pot = eonc::helpers::makePotential(params.potential_options().potential,
                                        params);
     matter = std::make_shared<Matter>(pot, params);
 
@@ -76,6 +76,31 @@ TEST_CASE_METHOD(ASEPotTest, "ASE LJ energy and forces match reference",
   auto matEq =
       std::bind(eonc::helpers::eigenEquality<AtomMatrix>, _1, _2, threshold);
   REQUIRE(matEq(calculated_forces, expected_forces));
+}
+
+TEST_CASE_METHOD(ASEPotTest, "ASE forceBatch hook matches two force calls",
+                 "[PotTest][ASE]") {
+  REQUIRE(pot->supportsBatchEvaluation());
+  const long n = matter->numberOfAtoms();
+  AtomMatrix f0 = MatrixXd::Zero(n, 3);
+  AtomMatrix f1 = MatrixXd::Zero(n, 3);
+  double e0 = 0.0;
+  const double *pos[2] = {matter->getPositions().data(),
+                          matter->getPositions().data()};
+  const int *z[2] = {matter->getAtomicNrs().data(),
+                     matter->getAtomicNrs().data()};
+  double *frc[2] = {f0.data(), f1.data()};
+  double energies[2] = {0.0, 0.0};
+  const double *boxes[2] = {matter->getCell().data(), matter->getCell().data()};
+
+  pot->force(n, pos[0], z[0], f0.data(), &e0, nullptr, boxes[0]);
+  pot->forceBatch(2, n, pos, z, frc, energies, nullptr, boxes);
+
+  REQUIRE_THAT(energies[0], WithinAbs(e0, threshold));
+  REQUIRE_THAT(energies[1], WithinAbs(e0, threshold));
+  auto matEq =
+      std::bind(eonc::helpers::eigenEquality<AtomMatrix>, _1, _2, threshold);
+  REQUIRE(matEq(f0, f1));
 }
 
 } // namespace tests

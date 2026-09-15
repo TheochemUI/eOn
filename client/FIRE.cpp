@@ -16,6 +16,8 @@
 #include <format>
 #include <stdexcept>
 
+namespace eonc {
+
 int FIRE::step(double a_maxMove) {
   double P = 0;
   // Check convergence.
@@ -30,11 +32,15 @@ int FIRE::step(double a_maxMove) {
   m_vel += f * m_dt;
   Eigen::VectorXd dx = m_vel * m_dt;
 
-  dx = eonc::helpers::maxAtomMotionAppliedV(dx, m_max_move);
+  dx = eonc::geometry::maxAtomMotionAppliedV(dx, a_maxMove);
   m_objf->setPositions(x + dx);
 
   f = -m_objf->getGradient();
-  Eigen::VectorXd f_unit = f / f.norm();
+  const double fnorm = f.norm();
+  Eigen::VectorXd f_unit = Eigen::VectorXd::Zero(f.size());
+  if (fnorm > 0.0) {
+    f_unit = f / fnorm;
+  }
 
   // FIRE
   P = f.dot(m_vel);
@@ -73,3 +79,5 @@ int FIRE::run(size_t a_maxIterations, double a_maxMove) {
   }
   return m_objf->isConverged() ? 1 : 0;
 }
+
+} // namespace eonc

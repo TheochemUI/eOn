@@ -63,6 +63,7 @@ nickel = ">=1.9.0,<2"
 gen-gha = { cmd = "bash ci/gha/gen.sh", description = "Export release/prepare/towncrier workflows from ci/gha/*.ncl" }
 gha-drift = { cmd = "bash ci/gha/check-drift.sh", description = "Fail if committed .github/workflows release trio diverges from Nickel" }
 nickel-fmt = { cmd = "bash ci/gha/format.sh", description = "nickel format ci/gha/*.ncl and lib/*.ncl" }
+zizmor = { cmd = "uvx zizmor@1.30.1 .github", description = "Static analysis for GitHub Actions / Dependabot / pre-commit" }
 
 [environments]
 cigen = { features = ["cigen"] }
@@ -176,8 +177,8 @@ sphinxcontrib-spelling = "*"
 autodoc-pydantic = "*"
 sphinx-autodoc2 = "*"
 # Plot stack: 1:1 (s,d) landscapes, full NEB strips, titled min plots (plt-min/plt-neb).
-rgpycrumbs = { version = ">=1.9.9,<2", extras = ["analysis"] }
-chemparseplot = { version = ">=1.9.7,<2", extras = ["neb", "plot"] }
+rgpycrumbs = ">=1.10.4,<2"
+chemparseplot = { version = ">=1.9.17,<2", extras = ["neb", "plot"] }
 adjustText = "*"
 
 [feature.docs.tasks.fetch-doxyyoda]

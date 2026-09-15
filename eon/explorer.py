@@ -20,6 +20,40 @@ from eon import eon_kdb as kdb
 
 from eon.config import ConfigClass # Typing
 
+def _archive_debug_result(config, result):
+    """Write a result-dict job into debug_results_path (keep_all_result_files)."""
+    if not config.debug_keep_all_results:
+        return
+    name = str(result.get("name", result.get("id", "job")))
+    dest = os.path.join(config.path_root, config.debug_results_path, name)
+    os.makedirs(dest, exist_ok=True)
+    blob = result.get("results.dat")
+    if blob is not None:
+        path = os.path.join(dest, "results.dat")
+        if hasattr(blob, "getvalue"):
+            with open(path, "w") as f:
+                f.write(blob.getvalue())
+        elif hasattr(blob, "read"):
+            pos = blob.tell()
+            blob.seek(0)
+            with open(path, "w") as f:
+                f.write(blob.read())
+            blob.seek(pos)
+    for key in ("min.con", "pos.con", "saddle.con", "product.con"):
+        payload = result.get(key)
+        if payload is None:
+            continue
+        path = os.path.join(dest, key)
+        if hasattr(payload, "getvalue"):
+            with open(path, "w") as f:
+                f.write(payload.getvalue())
+        elif hasattr(payload, "read"):
+            pos = payload.tell()
+            payload.seek(0)
+            with open(path, "w") as f:
+                f.write(payload.read())
+            payload.seek(pos)
+
 def get_minmodexplorer(config: ConfigClass):
     if config.akmc_server_side_process_search:
         return ServerMinModeExplorer
@@ -112,6 +146,8 @@ class MinModeExplorer(Explorer):
             atom_list_str = str(self.state.info.get("Saddle Search", "displace_atom_list", ""))
             if atom_list_str:
                 self.config.disp_listed_atoms = utl.parse_atom_list_str(atom_list_str)
+                # Script saw savecon(Structure); do not remap as file-order.
+                self.config.disp_listed_from_script = True
                 # Ensure the listed-atom displacement method is active
                 if self.config.displace_listed_atom_weight == 0.0:
                     self.config.displace_listed_atom_weight = 1.0
@@ -294,19 +330,10 @@ class ClientMinModeExplorer(MinModeExplorer):
             #
             # The reactant, product, and mode are passed as lines of the files because
             # the information contained in them is not needed for registering results
-            if self.config.debug_keep_all_results:
-                #XXX: We should only do these checks once to speed things up,
-                #     but at the same time debug options don't have to be fast
-                # save_path = os.path.join(self.config.path_root, "old_searches")
-                # if not os.path.isdir(save_path):
-                #    os.mkdir(save_path)
-                # shutil.copytree(result_path, os.path.join(save_path, i))
-                # XXX: This is currently broken by the new result passing
-                #      scheme. Should it be done in communicator?
-                pass
+            _archive_debug_result(self.config, result)
             if len(result) == 0: continue
             state_num = int(result['name'].split("_")[0])
-            id = int(result['name'].split("_")[1]) + result['number']
+            id = int(result['name'].split("_")[1])
             searchdata_id = "%d_%d" % (state_num, id)
             # Store information about the search into result_data for the
             # search_results.txt file in the state directory.
@@ -413,11 +440,8 @@ class ServerMinModeExplorer(MinModeExplorer):
         f.close()
 
     def explore(self):
-        if not os.path.isdir(self.config.path_jobs_in): #XXX: does this condition ever happen?
+        if not os.path.isdir(self.config.path_jobs_in):
             os.makedirs(self.config.path_jobs_in)
-            if self.state.get_confidence(self.superbasin) >= self.config.akmc_confidence:
-                self.process_searches = {}
-                self.save()
 
         MinModeExplorer.explore(self)
 
@@ -444,9 +468,9 @@ class ServerMinModeExplorer(MinModeExplorer):
 
         num_registered = 0
         for result in self.comm.get_results(self.config.path_jobs_in, keep_result):
+            _archive_debug_result(self.config, result)
             state_num = int(result['name'].split("_")[0])
-            # XXX: doesn't this doesn't give the correct id wrt bundling
-            id = int(result['name'].split("_")[1]) + result['number']
+            id = int(result['name'].split("_")[1])
             searchdata_id = "%d_%d" % (state_num, id)
 
             if id not in self.wuid_to_search_id:
@@ -648,8 +672,6 @@ class ProcessSearch:
 
     def process_result(self, result):
         results_dat = io.parse_results(result['results.dat'])
-        #XXX: can remove this line now
-        result['results.dat'].seek(0)
         job_type = results_dat['job_type']
         termination_code = results_dat['termination_reason']
 

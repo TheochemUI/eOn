@@ -56,12 +56,12 @@ protected:
 
 public:
   Job(std::unique_ptr<Parameters> parameters)
-      : jtype{parameters->main_options.job},
+      : jtype{parameters->main_options().job},
         params{*std::move(parameters)},
-        pot{helpers::makePotential(params.potential_options.potential,
+        pot{helpers::makePotential(params.potential_options().potential,
                                    params)} {}
   Job(std::shared_ptr<Potential> potPassed, const Parameters &parameters)
-      : jtype{parameters.main_options.job},
+      : jtype{parameters.main_options().job},
         params{parameters},
         pot{potPassed} {}
   virtual ~Job() = default;
@@ -75,5 +75,3 @@ std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params);
 } // namespace helpers
 
 } // namespace eonc
-
-using eonc::Job;

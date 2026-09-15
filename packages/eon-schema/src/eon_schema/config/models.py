@@ -723,9 +723,7 @@ class RgpotPot(BaseModel):
     theory: str = Field(
         default="scf", description="Theory level for the NWChem backend."
     )
-    scf_type: str = Field(
-        default="rhf", description="SCF type for the NWChem backend."
-    )
+    scf_type: str = Field(default="rhf", description="SCF type for the NWChem backend.")
     functional: str = Field(
         default="BLYP", description="XC functional for the CPMD backend."
     )
@@ -775,9 +773,7 @@ class RgpotPot(BaseModel):
         default="GFN2xTB",
         description="XTB paramset when backend=xtb.",
     )
-    accuracy: float = Field(
-        default=1.0, description="XTB accuracy when backend=xtb."
-    )
+    accuracy: float = Field(default=1.0, description="XTB accuracy when backend=xtb.")
     electronic_temperature: float = Field(
         default=300.0,
         description="XTB electronic temperature (K) when backend=xtb.",
@@ -785,9 +781,7 @@ class RgpotPot(BaseModel):
     max_iterations: int = Field(
         default=250, description="XTB max iterations when backend=xtb."
     )
-    uhf: int = Field(
-        default=0, description="XTB unpaired electrons when backend=xtb."
-    )
+    uhf: int = Field(default=0, description="XTB unpaired electrons when backend=xtb.")
     engine_root: str = Field(
         default="", description="Engine installation root (NWCHEM_ROOT / CPMD_ROOT)."
     )
@@ -906,6 +900,12 @@ class ASE_NWCHEM(BaseModel):
     scf_maxiter: int = Field(
         default=200, description="Maximum number of SCF iterations for NWChem."
     )
+    basis: str = Field(
+        default="3-21G", description="NWChem basis set passed to the ASE calculator."
+    )
+    memory: str = Field(
+        default="2 gb", description="NWChem memory string passed to the ASE calculator."
+    )
 
 
 class ASE_ORCA(BaseModel):
@@ -1003,9 +1003,9 @@ class SaddleSearchConfig(BaseModel):
         relaxation internally. ``direction.dat`` is optional and only biases
         the initial push when present.
     """
-    min_mode_method: Literal[
-        "dimer", "lanczos", "davidson", "gprdimer", "artn"
-    ] = Field(default="dimer", description="Min-mode method to use.")
+    min_mode_method: Literal["dimer", "lanczos", "davidson", "gprdimer", "artn"] = (
+        Field(default="dimer", description="Min-mode method to use.")
+    )
     """
     Options:
      - ``dimer``: Use the dimer min-mode method from :cite:t:`ss-henkelmanDimerMethodFinding1999`
@@ -1071,18 +1071,24 @@ class SaddleSearchConfig(BaseModel):
         default=0.0,
         description="Relative probability to displace with an epicenter listed in displace_atom_list.",
     )
-    displace_atom_list: Union[str, list[int]] = Field(
+    displace_atom_list: Union[str, list[int], int] = Field(
         default="0",
-        description="0-based atom indices to use as displacement epicenters, separated by commas. "
-        "Example: 10, 20, -1 would be atoms 10, 20, and the last atom. "
-        "When displace_atom_kmc_state_script is set, this list is populated dynamically "
-        "per AKMC state from the script's output.",
+        description="CON file-order rows (the order atoms appear in the .con) used as "
+        "displacement epicenters, comma-separated. After load, Structure/Matter "
+        "sort unique atom_ids; the list is remapped through that sort. "
+        'Lone -1 (int, [-1], or "-1") means every free atom. A mixed list '
+        "does not treat -1 as the last atom or as a wrap. Example: 0, 1, 2 "
+        "is the first three file rows. When displace_atom_kmc_state_script is "
+        "set, the script prints Structure-row indices of the temp .con "
+        "(atom_id order); those are not remapped as original file-order.",
     )
     displace_atom_kmc_state_script: str = Field(
         default="",
         description="Path to a Python script that determines which atoms to displace. "
-        "The script receives the path to a .con file as its sole positional argument "
-        "and must print a comma-separated list of 0-based atom indices to stdout. "
+        "The script receives a temp .con written by savecon(Structure) (atom_id / "
+        "Structure order) and must print a comma-separated list of 0-based Structure-row "
+        "indices of that file to stdout. Those indices are not remapped as original "
+        "user .con file-order. "
         "It is executed once per new AKMC state; the result is cached in state.info. "
         "The path can be relative (resolved against the eOn root directory) or absolute. "
         "See the displacement scripts tutorial for worked examples.",
@@ -1125,8 +1131,7 @@ class SaddleSearchConfig(BaseModel):
         description="When the maximum force (in eV/A) on any one atom is smaller than this value, the structure is considered converged onto a saddle point.",
     )
     max_iterations: int = Field(
-        default=1000,
-        description="The maximum number of translation steps to be taken."
+        default=1000, description="The maximum number of translation steps to be taken."
     )
     nonlocal_count_abort: int = Field(
         default=0,
@@ -1150,7 +1155,8 @@ class SaddleSearchConfig(BaseModel):
         "'last_atom': the last atom in the configuration. "
         "'least_coordinated': the atom with the fewest neighbours. "
         "'not_fcc_hcp_coordinated': an atom whose local structure is neither FCC nor HCP. "
-        "'listed_atoms': an atom from displace_atom_list (parsed from config, no server displacement file needed). "
+        "'listed_atoms': pick a free atom from displace_atom_list and apply "
+        "a client-side radius/magnitude displacement (no server displacement file). "
         "'load': read a displacement vector from a file written by the server.",
     )
     stdev_translation: float = Field(
@@ -1256,6 +1262,7 @@ class SaddleSearchConfig(BaseModel):
         default=30,
         description="The minimum number of active atoms for confining the positive region of the PES, undocumented.",
     )
+
 
 class KDBConfig(BaseModel):
     model_config = ConfigDict(use_attribute_docstrings=True)
@@ -1735,7 +1742,18 @@ class NudgedElasticBandConfig(BaseModel):
     )
     neb_climbing_image_converged_only: bool = Field(
         default=True,
-        description="Indicates if only the climbing image converged is used.",
+        description=(
+            "If true, NEB convergence compares the climbing image to the force "
+            "tolerance, but only after the rest of the band is within "
+            "climbing_image_band_slack times that tolerance."
+        ),
+    )
+    neb_climbing_image_band_slack: float = Field(
+        default=10.0,
+        description=(
+            "When climbing_image_converged_only is true, reject convergence if "
+            "any non-CI image exceeds this multiple of the force tolerance."
+        ),
     )
     neb_doubly_nudged: bool = Field(
         default=False, description="Indicates if the doubly nudged method is used."

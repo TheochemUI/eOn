@@ -22,6 +22,11 @@
 #include <string>
 #include <vector>
 
+#ifndef _WIN32
+#include <stdlib.h>
+#include <unistd.h>
+#endif
+
 namespace eonc::pybind {
 namespace nb = nanobind;
 
@@ -72,14 +77,34 @@ con_frames_to_python(const std::vector<readcon::ConFrame> &frames) {
     return nb::list();
   }
   namespace fs = std::filesystem;
+  // Exclusive temp file (eOn-srwt): no guessable world-writable name.
+#ifdef _WIN32
   const auto tmp =
       fs::temp_directory_path() /
-      std::format("eon_path_frames_{}_{}.con",
-                  static_cast<unsigned>(std::random_device{}() % 1000000u),
-                  reinterpret_cast<uintptr_t>(frames.data()));
-  if (!eonc::io::io_ok(eonc::io::writeConFrames(tmp.string(), frames))) {
-    throw std::runtime_error("path_frames: failed to serialize ConFrames");
+      std::format("eon_frames_{}.con",
+                  static_cast<unsigned long long>(std::random_device{}()));
+  {
+    nb::gil_scoped_release release;
+    if (!eonc::io::io_ok(eonc::io::writeConFrames(tmp.string(), frames))) {
+      throw std::runtime_error("path_frames: failed to serialize ConFrames");
+    }
   }
+#else
+  char tmpl[] = "/tmp/eon_frames_XXXXXX.con";
+  const int fd = mkstemps(tmpl, 4);
+  if (fd < 0) {
+    throw std::runtime_error("path_frames: mkstemps failed");
+  }
+  ::close(fd);
+  const fs::path tmp(tmpl);
+  {
+    nb::gil_scoped_release release;
+    if (!eonc::io::io_ok(eonc::io::writeConFrames(tmp.string(), frames))) {
+      fs::remove(tmp);
+      throw std::runtime_error("path_frames: failed to serialize ConFrames");
+    }
+  }
+#endif
   try {
     nb::object readcon = nb::module_::import_("readcon");
     nb::object py_frames = readcon.attr("read_con")(tmp.string());

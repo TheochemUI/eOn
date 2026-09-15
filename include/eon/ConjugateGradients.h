@@ -97,5 +97,3 @@ private:
 };
 
 } // namespace eonc
-
-using eonc::ConjugateGradients;

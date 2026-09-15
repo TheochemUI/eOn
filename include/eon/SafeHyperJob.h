@@ -31,5 +31,3 @@ private:
 };
 
 } // namespace eonc
-
-using eonc::SafeHyperJob;

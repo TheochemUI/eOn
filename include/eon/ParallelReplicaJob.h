@@ -39,5 +39,3 @@ private:
 };
 
 } // namespace eonc
-
-using eonc::ParallelReplicaJob;

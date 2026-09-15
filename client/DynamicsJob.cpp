@@ -12,32 +12,45 @@
 #include <stdexcept>
 #include <string>
 
+#include "eon/BaseStructures.h"
 #include "eon/Dynamics.h"
 #include "eon/DynamicsJob.h"
 #include "eon/EonLogger.h"
 #include "eon/HelperFunctions.h"
+#include "eon/JobResult.h"
 #include "eon/Parameters.h"
+#include "eon/PotRegistry.h"
 #include "eon/Potential.h"
+
+namespace eonc {
 
 std::vector<std::string> DynamicsJob::run(void) {
   auto R = std::make_shared<Matter>(pot, params);
-  auto F = std::make_shared<Matter>(pot, params);
-  if (!eonc::io::io_ok(R->con2matter("pos.con"))) {
-    EONC_LOG_CRITICAL("Failed to load pos.con");
-    throw std::runtime_error("failed to load pos.con");
+  const std::string posFile = eonc::helpers::getRelevantFile("pos.con");
+  if (!eonc::io::io_ok(R->con2matter(posFile))) {
+    EONC_LOG_CRITICAL("Failed to load {}", posFile);
+    throw std::runtime_error("failed to load " + posFile);
   }
-  *F = *R;
 
   auto d = std::make_unique<Dynamics>(R.get(), params);
   d->run();
 
-  *F = *R;
   std::string productFilename("final.con");
-  if (!eonc::io::io_ok(F->matter2con(productFilename))) {
+  if (!eonc::io::io_ok(R->matter2con(productFilename))) {
     EONC_LOG_ERROR("Failed to write {}", productFilename);
   }
 
+  const std::string resultsFilename("results.dat");
+  auto env = JobResultEnvelope::fromMinimization(
+      RunStatus::GOOD, params.potential_options().potential,
+      PotRegistry::get().total_force_calls(), true, R->getPotentialEnergy());
+  env.job_type = "dynamics";
+  env.writeResultsDat(resultsFilename);
+
   std::vector<std::string> returnFiles;
   returnFiles.push_back(productFilename);
+  returnFiles.push_back(resultsFilename);
   return returnFiles;
 }
+
+} // namespace eonc

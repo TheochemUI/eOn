@@ -25,9 +25,10 @@ public:
         std::shared_ptr<Potential> pot);
   ~Dimer() = default;
 
-  void compute(std::shared_ptr<Matter> matter, AtomMatrix initialDirection);
-  [[nodiscard]] double getEigenvalue();
-  [[nodiscard]] AtomMatrix getEigenvector();
+  void compute(std::shared_ptr<Matter> matter,
+               AtomMatrix initialDirection) override;
+  [[nodiscard]] double getEigenvalue() override;
+  [[nodiscard]] AtomMatrix getEigenvector() override;
 
 private:
   eonc::log::FileScoped log{"dimer", "dimer.log"};
@@ -52,5 +53,3 @@ private:
 };
 
 } // namespace eonc
-
-using eonc::Dimer;

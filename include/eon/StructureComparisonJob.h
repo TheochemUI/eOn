@@ -25,5 +25,3 @@ public:
 };
 
 } // namespace eonc
-
-using eonc::StructureComparisonJob;

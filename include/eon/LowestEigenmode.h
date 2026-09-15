@@ -18,10 +18,8 @@
 namespace eonc {
 
 /// Base for eigenmode solvers. Holds shared state (pot, params, stats).
-/// Concrete classes (Dimer, ImprovedDimer, Lanczos, AtomicGPDimer) inherit
-/// this and provide compute(), getEigenvalue(), getEigenvector() as regular
-/// (non-virtual) member functions. Dispatch is via std::variant
-/// (EigenmodeStrategy) rather than virtual dispatch.
+/// Dispatch is virtual so EigenmodeStrategy does not change layout when
+/// WITH_GPRD adds AtomicGPDimer.
 class LowestEigenmode {
 protected:
   std::shared_ptr<Potential> pot;
@@ -43,9 +41,12 @@ public:
                   const Parameters &parameters)
       : pot{potPassed},
         params{parameters} {}
-  ~LowestEigenmode() = default;
+  virtual ~LowestEigenmode() = default;
+
+  virtual void compute(std::shared_ptr<Matter> matter,
+                       AtomMatrix initialDirection) = 0;
+  virtual double getEigenvalue() = 0;
+  virtual AtomMatrix getEigenvector() = 0;
 };
 
 } // namespace eonc
-
-using eonc::LowestEigenmode;

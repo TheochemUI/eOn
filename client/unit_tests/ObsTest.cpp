@@ -24,6 +24,7 @@
 #include "eon/HelperFunctions.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
+#include "eonc_test_aliases.hpp"
 
 namespace tests {
 
@@ -38,7 +39,7 @@ ObsTest::~ObsTest() {
 TEST_F(ObsTest, TestMatter) {
   string confile("pos.con");
   Parameters parameters;
-  parameters.potential_options.potential = PotType::MORSE_PT;
+  ParametersLoadAccess::potential_options(parameters).potential = PotType::MORSE_PT;
   auto pot = eonc::helpers::makePotential(parameters);
   auto matter = std::make_shared<Matter>(pot, parameters);
   matter->con2matter(confile);

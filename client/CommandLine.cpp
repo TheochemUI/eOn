@@ -30,13 +30,10 @@
 #include <sstream>
 #include <string>
 
-using namespace Argum;
+constexpr auto colorScheme = Argum::basicDefaultColorScheme<char>;
+Argum::BasicColorizer<char> colorizer(colorScheme);
 
-// Create a colorizer with default color scheme
-constexpr auto colorScheme = basicDefaultColorScheme<char>;
-BasicColorizer<char> colorizer(colorScheme);
-
-void singlePoint(std::unique_ptr<Matter> matter) {
+void singlePoint(std::unique_ptr<eonc::Matter> matter) {
   std::cout << "Energy:         " << std::fixed << std::setprecision(15)
             << matter->getPotentialEnergy() << std::endl;
   std::cout << "(free) Forces:         \n" << matter->getForcesFree() << "\n";
@@ -44,13 +41,14 @@ void singlePoint(std::unique_ptr<Matter> matter) {
             << std::endl;
 }
 
-void minimize(std::unique_ptr<Matter> matter, const std::string &confileout) {
+void minimize(std::unique_ptr<eonc::Matter> matter,
+              const std::string &confileout) {
   matter->relax(false, false);
-  if (!confileout.empty()) {
-    std::cout << "Saving relaxed structure to " << confileout << std::endl;
-  } else {
+  if (confileout.empty()) {
     std::cout << "No output file specified, not saving" << std::endl;
+    return;
   }
+  std::cout << "Saving relaxed structure to " << confileout << std::endl;
   if (!eonc::io::io_ok(matter->matter2con(confileout))) {
     std::cerr << "Failed to write " << confileout << std::endl;
   }
@@ -111,9 +109,9 @@ void commandLine(int argc, char **argv) {
 
   const char *progname = (argc ? argv[0] : "eonclient");
 
-  Parser parser;
+  Argum::Parser parser;
 
-  parser.add(Option("--help", "-h")
+  parser.add(Argum::Option("--help", "-h")
                  .help("show this help message and exit")
                  .handler([&]() {
                    // Format help with color
@@ -124,7 +122,7 @@ void commandLine(int argc, char **argv) {
                    std::exit(EXIT_SUCCESS);
                  }));
 
-  parser.add(Option("--version", "-v")
+  parser.add(Argum::Option("--version", "-v")
                  .help("Print version information")
                  .handler([&]() {
                    std::cout << VERSION_STRING << std::endl;
@@ -132,45 +130,45 @@ void commandLine(int argc, char **argv) {
                  }));
 
   parser.add(
-      Option("--features").help("Print compile-time features").handler([&]() {
+      Argum::Option("--features").help("Print compile-time features").handler([&]() {
         printFeatures();
         std::exit(EXIT_SUCCESS);
       }));
 
-  parser.add(Option("--minimize", "-m")
+  parser.add(Argum::Option("--minimize", "-m")
                  .help("Minimization of inputConfile saves to outputConfile")
                  .handler([&]() { mflag = true; }));
 
-  parser.add(Option("--single", "-s")
+  parser.add(Argum::Option("--single", "-s")
                  .help("Single point energy of inputConfile")
                  .handler([&]() { sflag = true; }));
 
-  parser.add(Option("--compare", "-c")
+  parser.add(Argum::Option("--compare", "-c")
                  .help("Compare structures of inputConfile to outputConfile")
                  .handler([&]() { cflag = true; }));
 
   parser.add(
-      Option("--optimizer", "-o")
+      Argum::Option("--optimizer", "-o")
           .argName("METHOD")
           .help("Optimization method")
           .handler([&](const std::string_view &value) { optimizer = value; }));
 
-  parser.add(Option("--force", "-f")
+  parser.add(Argum::Option("--force", "-f")
                  .argName("VALUE")
                  .help("Convergence force")
                  .handler([&](const std::string_view &value) {
                    optConvergedForce = parseFloatingPoint<double>(value);
                  }));
 
-  parser.add(Option("--tolerance", "-t")
+  parser.add(Argum::Option("--tolerance", "-t")
                  .argName("VALUE")
                  .help("Distance tolerance")
                  .handler([&](const std::string_view &value) {
-                   params.structure_comparison_options.distance_difference =
+                   ParametersLoadAccess::structure_comparison_options(params).distance_difference =
                        parseFloatingPoint<double>(value);
                  }));
 
-  parser.add(Option("--potential", "-p")
+  parser.add(Argum::Option("--potential", "-p")
                  .argName("POTENTIAL")
                  .help("The potential (e.g. qsc, lj, eam_al)")
                  .handler([&](const std::string_view &value) {
@@ -180,38 +178,38 @@ void commandLine(int argc, char **argv) {
 
 #ifdef WITH_SERVE_MODE
   parser.add(
-      Option("--serve")
+      Argum::Option("--serve")
           .argName("SPEC")
           .help("Serve potential(s) over rgpot Cap'n Proto RPC. "
                 "Spec: 'potential:port' or 'pot1:port1,pot2:port2'")
           .handler([&](const std::string_view &value) { serve_spec = value; }));
 
   parser.add(
-      Option("--serve-host")
+      Argum::Option("--serve-host")
           .argName("HOST")
           .help("Host to bind RPC server(s) to")
           .handler([&](const std::string_view &value) { serve_host = value; }));
 
-  parser.add(Option("--serve-port")
+  parser.add(Argum::Option("--serve-port")
                  .argName("PORT")
                  .help("Port for single-potential serve mode (used with -p)")
                  .handler([&](const std::string_view &value) {
                    serve_port = parseIntegral<uint16_t>(value);
                  }));
 
-  parser.add(Option("--replicas")
+  parser.add(Argum::Option("--replicas")
                  .argName("N")
                  .help("Number of replicated server instances (used with -p)")
                  .handler([&](const std::string_view &value) {
                    replicas = parseIntegral<size_t>(value);
                  }));
 
-  parser.add(Option("--gateway")
+  parser.add(Argum::Option("--gateway")
                  .help("Run a single gateway port backed by N pool instances "
                        "(use with -p and --replicas)")
                  .handler([&]() { gateway = true; }));
 
-  parser.add(Option("--config")
+  parser.add(Argum::Option("--config")
                  .argName("FILE")
                  .help("Config file for potential parameters (INI format, "
                        "e.g. [Metatomic] model_path=model.pt)")
@@ -224,20 +222,20 @@ void commandLine(int argc, char **argv) {
   // every remaining argument, which leaves confileout empty and overwrites
   // confile with the last one.
   parser.add(
-      Positional("confile")
+      Argum::Positional("confile")
           .help("Input structure file")
-          .occurs(zeroOrOneTime)
+          .occurs(Argum::zeroOrOneTime)
           .handler([&](const std::string_view &value) { confile = value; }));
 
   parser.add(
-      Positional("confileout")
+      Argum::Positional("confileout")
           .help("Output structure file (optional)")
-          .occurs(zeroOrOneTime)
+          .occurs(Argum::zeroOrOneTime)
           .handler([&](const std::string_view &value) { confileout = value; }));
 
   try {
     parser.parse(argc, argv);
-  } catch (const ParsingException &ex) {
+  } catch (const Argum::ParsingException &ex) {
     std::cerr << colorizer.error(ex.message()) << '\n';
     std::cerr << colorizer.warning(parser.formatUsage(progname)) << '\n';
     std::exit(EXIT_FAILURE);
@@ -293,7 +291,7 @@ void commandLine(int argc, char **argv) {
     for (auto &ch : potential) {
       ch = std::tolower(static_cast<unsigned char>(ch));
     }
-    params.potential_options.potential =
+    ParametersLoadAccess::potential_options(params).potential =
         magic_enum::enum_cast<PotType>(potential, magic_enum::case_insensitive)
             .value_or(PotType::UNKNOWN);
     auto host = serve_host.value_or("localhost");
@@ -314,9 +312,9 @@ void commandLine(int argc, char **argv) {
   // Config-driven serve (no -p or --serve, just --config with [Serve])
   if (!pflag && !sflag && !mflag && !cflag && config_path.has_value() &&
       !serve_spec.has_value() &&
-      (!params.serve_options.endpoints.empty() ||
-       params.serve_options.gateway_port > 0 ||
-       params.serve_options.replicas > 1)) {
+      (!ParametersLoadAccess::serve_options(params).endpoints.empty() ||
+       ParametersLoadAccess::serve_options(params).gateway_port > 0 ||
+       ParametersLoadAccess::serve_options(params).replicas > 1)) {
     serveFromConfig(params);
     std::exit(EXIT_SUCCESS);
   }
@@ -337,16 +335,22 @@ void commandLine(int argc, char **argv) {
   }
 
   if (!cflag) {
-    params.potential_options.potential =
+    ParametersLoadAccess::potential_options(params).potential =
         magic_enum::enum_cast<PotType>(potential, magic_enum::case_insensitive)
             .value_or(PotType::UNKNOWN);
   }
 
   if (!sflag) {
-    params.optimizer_options.method =
+    ParametersLoadAccess::optimizer_options(params).method =
         magic_enum::enum_cast<OptType>(optimizer, magic_enum::case_insensitive)
             .value_or(OptType::CG);
-    params.optimizer_options.converged_force = optConvergedForce;
+    ParametersLoadAccess::optimizer_options(params).converged_force = optConvergedForce;
+  }
+
+  if (cflag) {
+    // Matter copies structure_comparison_options into its own structComp in
+    // the constructor, so the flag has to be set before the two below.
+    ParametersLoadAccess::structure_comparison_options(params).check_rotation = true;
   }
 
   if (cflag) {

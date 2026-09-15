@@ -1,6 +1,7 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/MatrixHelpers.hpp"
 #include "eon/Matter.h"
+#include "eonc_test_aliases.hpp"
 #include <cmath>
 #include <cstdlib>
 #include <memory>
@@ -33,16 +34,16 @@ TEST_CASE("RgpotPot in-process nwchemc force (no potserv)",
   }
 
   Parameters params{};
-  params.potential_options.potential = PotType::RGPOT;
-  params.rgpot_options.backend = "nwchemc";
-  params.rgpot_options.basis = "sto-3g";
-  params.rgpot_options.theory = "scf";
-  params.rgpot_options.scf_type = "rhf";
-  params.rgpot_options.charge = 0;
-  params.rgpot_options.multiplicity = 1;
+  ParametersLoadAccess::potential_options(params).potential = PotType::RGPOT;
+  ParametersLoadAccess::rgpot_options(params).backend = "nwchemc";
+  ParametersLoadAccess::rgpot_options(params).basis = "sto-3g";
+  ParametersLoadAccess::rgpot_options(params).theory = "scf";
+  ParametersLoadAccess::rgpot_options(params).scf_type = "rhf";
+  ParametersLoadAccess::rgpot_options(params).charge = 0;
+  ParametersLoadAccess::rgpot_options(params).multiplicity = 1;
 
   auto pot =
-      eonc::helpers::makePotential(params.potential_options.potential, params);
+      eonc::helpers::makePotential(params.potential_options().potential, params);
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::RGPOT);
 
@@ -83,15 +84,15 @@ TEST_CASE("RgpotPot in-process cpmdc force (no potserv)",
   }
 
   Parameters params{};
-  params.potential_options.potential = PotType::RGPOT;
-  params.rgpot_options.backend = "cpmdc";
-  params.rgpot_options.functional = "BLYP";
-  params.rgpot_options.cutoff_ry = 70.0;
-  params.rgpot_options.charge = 0;
-  params.rgpot_options.multiplicity = 1;
+  ParametersLoadAccess::potential_options(params).potential = PotType::RGPOT;
+  ParametersLoadAccess::rgpot_options(params).backend = "cpmdc";
+  ParametersLoadAccess::rgpot_options(params).functional = "BLYP";
+  ParametersLoadAccess::rgpot_options(params).cutoff_ry = 70.0;
+  ParametersLoadAccess::rgpot_options(params).charge = 0;
+  ParametersLoadAccess::rgpot_options(params).multiplicity = 1;
 
   auto pot =
-      eonc::helpers::makePotential(params.potential_options.potential, params);
+      eonc::helpers::makePotential(params.potential_options().potential, params);
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::RGPOT);
 

@@ -20,7 +20,7 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 TEST_CASE("EMT energy matches SVN on Cu FCC cluster", "[pot][emt][cu]") {
   Parameters params;
-  params.potential_options.potential = PotType::EMT;
+  ParametersLoadAccess::potential_options(params).potential = PotType::EMT;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
@@ -35,7 +35,7 @@ TEST_CASE("EMT energy matches SVN on Cu FCC cluster", "[pot][emt][cu]") {
 
 TEST_CASE("EMT forces are conservative on Cu FCC", "[pot][emt][cu]") {
   Parameters params;
-  params.potential_options.potential = PotType::EMT;
+  ParametersLoadAccess::potential_options(params).potential = PotType::EMT;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
@@ -50,10 +50,10 @@ TEST_CASE("EMT forces are conservative on Cu FCC", "[pot][emt][cu]") {
 
 TEST_CASE("EMT minimization converges on Cu FCC", "[pot][emt][cu]") {
   Parameters params;
-  params.potential_options.potential = PotType::EMT;
-  params.optimizer_options.method = OptType::LBFGS;
-  params.optimizer_options.converged_force = 0.01;
-  params.optimizer_options.max_iterations = 50;
+  ParametersLoadAccess::potential_options(params).potential = PotType::EMT;
+  ParametersLoadAccess::optimizer_options(params).method = OptType::LBFGS;
+  ParametersLoadAccess::optimizer_options(params).converged_force = 0.01;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 50;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
@@ -64,6 +64,14 @@ TEST_CASE("EMT minimization converges on Cu FCC", "[pot][emt][cu]") {
 
   REQUIRE(std::isfinite(e_after));
   REQUIRE(e_after <= e_before + 1e-10);
+}
+
+TEST_CASE("EMT opts out of shared-instance threading",
+          "[pot][emt][cu][thread_safety][gjg]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::EMT;
+  auto pot = eonc::helpers::makePotential(params);
+  REQUIRE_FALSE(pot->isSharedInstanceThreadSafe());
 }
 
 } /* namespace tests */

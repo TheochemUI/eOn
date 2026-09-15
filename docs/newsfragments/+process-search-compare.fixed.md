@@ -1,0 +1,1 @@
+Process search opens `pos.con` through `getRelevantFile`, throws on a failed load, and compares a copy so `Matter::compare` cannot translate `initial`.

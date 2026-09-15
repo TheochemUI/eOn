@@ -1,0 +1,1 @@
+A failed `hessian.dat` write now fails the Hessian calculation instead of returning a successful eigen solve.

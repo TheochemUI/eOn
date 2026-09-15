@@ -3,10 +3,12 @@
 #include "eon/IDPPObjectiveFunction.hpp"
 #include "eon/Optimizer.h"
 #include "eon/Parameters.h"
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <memory>
 #include <span>
+#include <stdexcept>
 #include <vector>
 
 #include "eon/EonLogger.h"
@@ -17,11 +19,11 @@ namespace eonc::helpers::neb_paths {
 // Forward declaration of ZBL setup helper to keep code clean
 std::shared_ptr<Potential> createZBLPotential() {
   auto zbl_params = Parameters{};
-  zbl_params.potential_options.potential = PotType::ZBL;
+  ParametersLoadAccess::potential_options(zbl_params).potential = PotType::ZBL;
   // Strong short-range repulsion
-  zbl_params.zbl_options.cut_inner = 0.5;
+  ParametersLoadAccess::zbl_options(zbl_params).cut_inner = 0.5;
   // Cutoff sufficient to push overlapping atoms apart
-  zbl_params.zbl_options.cut_global = 3.0;
+  ParametersLoadAccess::zbl_options(zbl_params).cut_global = 3.0;
   return eonc::helpers::makePotential(PotType::ZBL, zbl_params);
 }
 
@@ -137,12 +139,12 @@ std::vector<Matter> idppPath(const Matter &initImg, const Matter &finalImg,
     // Create an Optimizer
     // Defaults to taking the same one as optimizer
     auto idpp_optim = eonc::helpers::create::mkOptim(
-        idpp_objf, params.neb_options.opt_method, params);
+        idpp_objf, params.neb_options().opt_method, params);
 
     // Run the optimization
     int status =
-        idpp_optim->run(params.neb_options.initialization.max_iterations,
-                        params.neb_options.initialization.max_move);
+        idpp_optim->run(params.neb_options().initialization.max_iterations,
+                        params.neb_options().initialization.max_move);
 
     // Log progress
     double residual = idpp_objf->getConvergence();
@@ -180,14 +182,14 @@ std::vector<Matter> idppCollectivePath(const Matter &initImg,
   }
 
   auto optim = eonc::helpers::create::mkOptim(
-      idpp_objf, params.neb_options.initialization.opt_method, params);
+      idpp_objf, params.neb_options().initialization.opt_method, params);
 
-  int maxSteps = params.neb_options.initialization.max_iterations;
+  int maxSteps = params.neb_options().initialization.max_iterations;
   int currentStep = 0;
   int checkInterval = 40;
 
   while (currentStep < maxSteps) {
-    optim->run(checkInterval, params.optimizer_options.max_move);
+    optim->run(checkInterval, params.optimizer_options().max_move);
     currentStep += checkInterval;
 
     if (idpp_objf->isConverged()) {
@@ -221,7 +223,7 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
                               bool use_zbl) {
 
   auto log = eonc::log::get();
-  const auto &init = params.neb_options.initialization;
+  const auto &init = params.neb_options().initialization;
   QUILL_LOG_INFO(log,
                  "Generating initial path using S-IDPP{} ({} images, "
                  "alpha={:.2f}, frontier_tol={:.4f})...",
@@ -323,7 +325,28 @@ std::vector<Matter> sidppPath(const Matter &initImg, const Matter &finalImg,
   double finalResidual = relaxPath(init.max_iterations);
   QUILL_LOG_INFO(log, "S-IDPP: Final residual: {:.4f}", finalResidual);
 
+  ensureDistinctAdjacentImages(path, 1.0e-6);
   return path;
+}
+
+void ensureDistinctAdjacentImages(const std::vector<Matter> &path,
+                                  double min_sep) {
+  if (path.size() < 2) {
+    return;
+  }
+  if (!(min_sep > 0.0)) {
+    throw std::invalid_argument(
+        "NEB path: min adjacent image separation must be positive");
+  }
+  for (size_t i = 1; i < path.size(); ++i) {
+    const AtomMatrix diff =
+        path[i].pbc(path[i].getPositions() - path[i - 1].getPositions());
+    const double d = diff.norm();
+    if (!(d > min_sep) || !std::isfinite(d)) {
+      throw std::runtime_error(
+          "NEB path: adjacent images are degenerate (SIDPP collapse)");
+    }
+  }
 }
 
 AtomMatrix cubicInterpolate(const AtomMatrix &P0, const AtomMatrix &T0,

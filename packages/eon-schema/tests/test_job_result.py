@@ -1,7 +1,11 @@
 from eon_schema.jobs import (
     dict_to_results_dat,
     job_result_capnp_path,
+    job_result_dumps,
+    job_result_from_wire,
+    job_result_loads,
     job_result_scalars_from_results_dat,
+    job_result_to_wire,
     results_dat_to_dict,
 )
 
@@ -15,6 +19,13 @@ def test_job_result_capnp_exists():
     assert "struct JobRequest" in text
     assert "positions" in text
     assert "statusCode" in text
+    assert "enum TerminationCode" in text
+    assert "dimerRestoredBest @21" in text
+    assert "termination @30" in text
+    assert "body :union" in text
+    assert "struct MinimizationBody" in text
+    assert "struct NEBBody" in text
+    assert "struct ProcessSearchBody" in text
 
 
 def test_results_dat_roundtrip_scalars():
@@ -47,3 +58,25 @@ def test_results_dat_roundtrip_scalars():
     )
     assert "0 termination_reason" in again
     assert "42 total_force_calls" in again
+
+
+def test_job_result_wire_roundtrip():
+    src = {
+        "job_type": "minimization",
+        "status_code": 0,
+        "status_text": "good",
+        "potential_energy": 1.25,
+        "force_calls": {"total": 7, "minimization": 7},
+    }
+    wire = job_result_to_wire(src)
+    assert wire["jobType"] == "minimization"
+    assert wire["statusCode"] == 0
+    assert wire["forceCalls"]["total"] == 7
+    back = job_result_from_wire(wire)
+    assert back["job_type"] == "minimization"
+    assert back["status_code"] == 0
+    assert back["force_calls"]["total"] == 7
+    blob = job_result_dumps(src)
+    again = job_result_loads(blob)
+    assert again["job_type"] == "minimization"
+    assert again["force_calls"]["total"] == 7

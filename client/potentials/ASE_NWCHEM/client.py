@@ -1,12 +1,18 @@
 from ase.calculators.nwchem import NWChem
 from ase.calculators.socketio import SocketClient
+import os
 import psutil
+import shutil
 import sys
 from pathlib import Path
 
 run_path = Path.cwd() / "runs"  # Where things are run
 scratch_path = Path.cwd() / "nwchem_aux"  # scratch from NWChem
-nwchem_path = "/home/rgoswami/micromamba/envs/eongit/bin/nwchem"
+nwchem_path = (
+    os.environ.get("NWCHEM_COMMAND", "").strip()
+    or shutil.which("nwchem")
+    or "nwchem"
+)
 memory = "2 gb"  # Probably needs no change
 # Multiplicity of the molecule. 1 for singlets, 2 for doublets.
 mult = 1

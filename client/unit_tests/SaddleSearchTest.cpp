@@ -15,6 +15,7 @@
 #include "eon/Matter.h"
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/Parameters.h"
+#include <filesystem>
 
 namespace tests {
 
@@ -30,18 +31,18 @@ protected:
       : params{},
         pot{nullptr},
         matter{nullptr} {
-    params.potential_options.potential = PotType::LJ;
-    params.optimizer_options.method = OptType::CG;
-    params.optimizer_options.converged_force = 0.01;
-    params.optimizer_options.max_move = 0.1;
-    params.dimer_options.improved = true;
-    params.dimer_options.converged_angle = 0.01;
-    params.dimer_options.max_iterations = 50;
-    params.saddle_search_options.minmode_method =
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+    ParametersLoadAccess::optimizer_options(params).method = OptType::CG;
+    ParametersLoadAccess::optimizer_options(params).converged_force = 0.01;
+    ParametersLoadAccess::optimizer_options(params).max_move = 0.1;
+    ParametersLoadAccess::dimer_options(params).improved = true;
+    ParametersLoadAccess::dimer_options(params).converged_angle = 0.01;
+    ParametersLoadAccess::dimer_options(params).max_iterations = 50;
+    ParametersLoadAccess::saddle_search_options(params).minmode_method =
         LowestEigenmode::MINMODE_DIMER;
-    params.saddle_search_options.max_iterations = 100;
-    params.saddle_search_options.converged_force = 0.05;
-    params.saddle_search_options.max_energy = 20.0;
+    ParametersLoadAccess::saddle_search_options(params).max_iterations = 100;
+    ParametersLoadAccess::saddle_search_options(params).converged_force = 0.05;
+    ParametersLoadAccess::saddle_search_options(params).max_energy = 20.0;
 
     pot = eonc::helpers::makePotential(PotType::LJ, params);
     matter = std::make_shared<Matter>(pot, params);
@@ -92,8 +93,8 @@ TEST_CASE_METHOD(SaddleSearchFixture,
 TEST_CASE_METHOD(SaddleSearchFixture,
                  "MinModeSaddleSearch hits max iterations with low limit",
                  "[saddle_search]") {
-  params.saddle_search_options.max_iterations = 2;
-  params.saddle_search_options.converged_force = 1e-10;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 2;
+  ParametersLoadAccess::saddle_search_options(params).converged_force = 1e-10;
 
   long nAtoms = matter->numberOfAtoms();
   AtomMatrix mode = AtomMatrix::Random(nAtoms, 3);
@@ -106,6 +107,31 @@ TEST_CASE_METHOD(SaddleSearchFixture,
 
   // Should hit max iterations or some non-GOOD status
   REQUIRE(status != MinModeSaddleSearch::STATUS_GOOD);
+}
+
+TEST_CASE_METHOD(SaddleSearchFixture,
+                 "write_movies writes per-iteration mode files",
+                 "[saddle_search][ra6]") {
+  namespace fs = std::filesystem;
+  ParametersLoadAccess::debug_options(params).write_movies = true;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 2;
+  ParametersLoadAccess::saddle_search_options(params).converged_force = 1e-10;
+
+  const auto tmp = fs::temp_directory_path() / "eon_ra6_modes";
+  fs::create_directories(tmp);
+  const auto old = fs::current_path();
+  fs::current_path(tmp);
+
+  long nAtoms = matter->numberOfAtoms();
+  AtomMatrix mode = AtomMatrix::Random(nAtoms, 3);
+  mode.normalize();
+  MinModeSaddleSearch search(matter, mode, matter->getPotentialEnergy(), params,
+                             pot);
+  search.run();
+
+  REQUIRE(fs::exists("mode_000.dat"));
+  fs::current_path(old);
+  fs::remove_all(tmp);
 }
 
 // Issue #20: unfeasible / unconverged climb must not report STATUS_GOOD.
@@ -135,9 +161,9 @@ TEST_CASE_METHOD(
     "MinModeSaddleSearch run never returns STATUS_GOOD if unconverged (#20)",
     "[saddle_search][issue_20]") {
   // Force a non-converged climb: tiny iteration budget + absurd force target.
-  params.saddle_search_options.max_iterations = 1;
-  params.saddle_search_options.converged_force = 1e-20;
-  params.optimizer_options.converged_force = 1e-20;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 1;
+  ParametersLoadAccess::saddle_search_options(params).converged_force = 1e-20;
+  ParametersLoadAccess::optimizer_options(params).converged_force = 1e-20;
 
   long nAtoms = matter->numberOfAtoms();
   AtomMatrix mode = AtomMatrix::Random(nAtoms, 3);
@@ -180,9 +206,9 @@ TEST_CASE_METHOD(SaddleSearchFixture,
 TEST_CASE_METHOD(SaddleSearchFixture,
                  "MinModeSaddleSearch with Lanczos eigenmode",
                  "[saddle_search][lanczos]") {
-  params.saddle_search_options.minmode_method =
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
       LowestEigenmode::MINMODE_LANCZOS;
-  params.saddle_search_options.max_iterations = 50;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 50;
 
   long nAtoms = matter->numberOfAtoms();
   AtomMatrix mode = AtomMatrix::Random(nAtoms, 3);
@@ -199,8 +225,8 @@ TEST_CASE_METHOD(SaddleSearchFixture,
 
 TEST_CASE_METHOD(SaddleSearchFixture, "MinModeSaddleSearch with classic Dimer",
                  "[saddle_search][classic_dimer]") {
-  params.dimer_options.improved = false; // classic dimer, not improved
-  params.saddle_search_options.max_iterations = 50;
+  ParametersLoadAccess::dimer_options(params).improved = false; // classic dimer, not improved
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 50;
 
   long nAtoms = matter->numberOfAtoms();
   AtomMatrix mode = AtomMatrix::Random(nAtoms, 3);

@@ -9,6 +9,7 @@ from eon.structure import Structure
 from eon.geometry import (
     get_process_atoms,
     neighbor_list,
+    neighbor_list_pairs,
     neighbor_list_vectors,
     pbc,
     per_atom_norm,
@@ -57,6 +58,34 @@ def test_neighbor_list_vectors_pbc():
     for center, vlist in enumerate(vecs):
         for v in vlist:
             assert v.shape == (3,)
+
+
+def test_neighbor_list_pairs_matches_vesin_ijs():
+    p = _fcc(3, a=2.0)
+    cutoff = 2.1
+    i, j, S = neighbor_list_pairs(p, cutoff)
+    calc = VesinNL(cutoff=cutoff, full_list=True)
+    vi, vj, vS = calc.compute(p.r, p.box, periodic=True, quantities="ijS")
+    np.testing.assert_array_equal(i, vi)
+    np.testing.assert_array_equal(j, vj)
+    np.testing.assert_array_equal(S, vS)
+    D = p.r[j] - p.r[i] + S.astype(float) @ p.box
+    assert np.all(np.sum(D * D, axis=1) < cutoff * cutoff + 1e-12)
+
+
+def test_pbc_packed_matches_rowwise_numpy():
+    box = np.diag([10.0, 11.0, 12.0])
+    diffs = np.array(
+        [
+            [0.2, 0.0, 0.0],
+            [9.2, 0.0, 0.0],
+            [-9.2, 0.1, 0.0],
+            [4.9, 5.4, -5.9],
+        ]
+    )
+    packed = pbc(diffs, box)
+    rows = np.stack([pbc(row, box) for row in diffs])
+    np.testing.assert_allclose(packed, rows, atol=1e-12)
 
 
 def test_get_process_atoms_plain_ints_and_mobile():

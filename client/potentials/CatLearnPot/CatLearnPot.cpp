@@ -13,11 +13,12 @@
 #include "eon/potentials/CatLearnPot/CatLearnPot.h"
 #include "Eigen/src/Core/Matrix.h"
 
-CatLearnPot::CatLearnPot(const Parameters &a_params)
-    : SurrogatePotential(PotType::CatLearn, a_params) {
+CatLearnPot::CatLearnPot(const eonc::Parameters &a_params)
+    : eonc::SurrogatePotential(eonc::PotType::CatLearn, a_params) {
+  using namespace pybind11::literals;
   py::module_ sys = py::module_::import("sys");
   py::exec(
-      std::format("sys.path.insert(0, {})", a_params.catlearn_options.path));
+      std::format("sys.path.insert(0, {})", a_params.catlearn_options().path));
 
   py::module_ gp_module = py::module_::import(
       "catlearn.regression.gaussianprocess.calculator.mlmodel");
@@ -25,7 +26,7 @@ CatLearnPot::CatLearnPot(const Parameters &a_params)
   // Import the required modules
   // GP Model
   this->m_gpmod = gp_module.attr("get_default_model")(
-      "model"_a = a_params.catlearn_options.model);
+      "model"_a = a_params.catlearn_options().model);
 };
 
 void CatLearnPot::train_optimize(MatrixXd features, MatrixXd targets) {
@@ -36,6 +37,7 @@ void CatLearnPot::train_optimize(MatrixXd features, MatrixXd targets) {
 void CatLearnPot::force(long nAtoms, const double *positions,
                         const int *atomicNrs, double *forces, double *energy,
                         double *variance, const double *box) {
+  using namespace pybind11::literals;
   MatrixXd features =
       Eigen::Map<MatrixXd>(const_cast<double *>(positions), 1, nAtoms * 3);
   py::tuple ef_and_unc = (this->m_gpmod.attr("predict")(

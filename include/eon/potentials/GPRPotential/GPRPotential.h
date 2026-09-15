@@ -15,7 +15,7 @@
 #include "subprojects/gpr_optim/gpr/ml/GaussianProcessRegression.h"
 
 /** Template to use if user want to provide potential. */
-class GPRPotential : public Potential {
+class GPRPotential : public eonc::Potential {
 
 private:
   gpr::GaussianProcessRegression *gpr_model;
@@ -23,7 +23,7 @@ private:
 public:
   // Functions
   // constructor and destructor
-  GPRPotential(const Parameters &p);
+  GPRPotential(const eonc::Parameters &p);
 
   void registerGPRObject(gpr::GaussianProcessRegression *_gpr_model);
 

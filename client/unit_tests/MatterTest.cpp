@@ -12,10 +12,15 @@
 #include "eon/Matter.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/MonteCarlo.h"
 #include "eon/Parameters.h"
+#include "eon/Prefactor.h"
+#include <cmath>
+#include <filesystem>
 #include <memory>
 
 using namespace Catch::Matchers;
+using eonc::Potential;
 
 namespace tests {
 
@@ -24,7 +29,7 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 // Helper to create an LJ Matter loaded from reactant.con (13-atom H cluster)
 static std::pair<std::shared_ptr<Matter>, Parameters> makeLJCluster() {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
@@ -67,7 +72,7 @@ TEST_CASE("SetPotential changes energy", "[MatterTest]") {
   REQUIRE(std::isfinite(e_lj));
   REQUIRE(e_lj < 0.0); // LJ cluster has negative binding energy
 
-  params.potential_options.potential = PotType::MORSE_PT;
+  ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
   auto pot_morse = eonc::helpers::makePotential(PotType::MORSE_PT, params);
   REQUIRE(m1->getPotential() != pot_morse);
   m1->setPotential(pot_morse);
@@ -109,6 +114,51 @@ TEST_CASE("Copy constructor preserves positions, cell, and atomic numbers",
   REQUIRE(m2.getAtomicNrs() == m1->getAtomicNrs());
 }
 
+TEST_CASE("pbc is identity when periodic is off", "[MatterTest][acc]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter m(pot, params);
+  m.resize(2);
+  m.setAtomicNr(0, 1);
+  m.setAtomicNr(1, 1);
+  m.setCell(Matrix3d::Identity() * 20.0);
+  m.setPeriodic(false);
+  AtomMatrix d(2, 3);
+  d << 15.0, 0.0, 0.0, -15.0, 0.0, 0.0;
+  AtomMatrix wrapped = m.pbc(d);
+  REQUIRE(wrapped.isApprox(d, 1e-12));
+}
+
+TEST_CASE("removeNetForce is skipped for a single free atom",
+          "[MatterTest][zjri]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::main_options(params).removeNetForce = true;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter one(pot, params);
+  one.resize(1);
+  one.setAtomicNr(0, 18);
+  AtomMatrix p1(1, 3);
+  p1 << 0.1, 0.0, 0.0;
+  one.setPositions(p1);
+  one.setPeriodic(false);
+  REQUIRE_NOTHROW(one.getForces());
+  REQUIRE(std::isfinite(one.getForces().norm()));
+
+  Matter pair(pot, params);
+  pair.resize(2);
+  pair.setAtomicNr(0, 18);
+  pair.setAtomicNr(1, 18);
+  AtomMatrix p2(2, 3);
+  p2 << 0.0, 0.0, 0.0, 2.5, 0.0, 0.0;
+  pair.setPositions(p2);
+  pair.setPeriodic(false);
+  AtomMatrix Fp = pair.getForces();
+  REQUIRE(Fp.row(0).norm() > 0.0);
+  REQUIRE(Fp.row(1).norm() > 0.0);
+}
+
 TEST_CASE("setPositions marks forces stale", "[MatterTest][force_cache]") {
   auto [m1, params] = makeLJCluster();
 
@@ -136,6 +186,17 @@ TEST_CASE("getFree respects per-axis constraints", "[MatterTest][fixed]") {
   REQUIRE(m1->getFixed(0) == 0);
   REQUIRE(m1->getFixed(0, 0) == 1);
   REQUIRE(m1->getFixed(0, 1) == 0);
+}
+
+TEST_CASE("setForces persist until positions change", "[MatterTest][hfa4]") {
+  auto [m1, params] = makeLJCluster();
+  (void)m1->getPotentialEnergy();
+  AtomMatrix inj = m1->getForces();
+  inj.setConstant(0.123);
+  m1->setForces(inj);
+  AtomMatrix got = m1->getForces();
+  const AtomMatrix expect = inj.array() * m1->getFree().array();
+  REQUIRE((got - expect).cwiseAbs().maxCoeff() < 1e-12);
 }
 
 TEST_CASE("getForces zeroes fixed atoms", "[MatterTest][forces]") {
@@ -224,7 +285,7 @@ struct IsolatedMoleculePot final : Potential {
 TEST_CASE("isolated molecule pot hard-fails if PBC re-enabled (#188)",
           "[MatterTest][pbc][molecular]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = std::make_shared<IsolatedMoleculePot>();
   Matter m(pot, params);
   // Constructor turns PBC off for isolated-molecule pots.
@@ -326,11 +387,11 @@ TEST_CASE("getKineticEnergy returns finite value", "[MatterTest]") {
 
 TEST_CASE("relax converges LJ cluster", "[MatterTest][relax]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
-  params.optimizer_options.method = OptType::LBFGS;
-  params.optimizer_options.converged_force = 0.001;
-  params.optimizer_options.max_iterations = 50;
-  params.optimizer_options.max_move = 0.2;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::optimizer_options(params).method = OptType::LBFGS;
+  ParametersLoadAccess::optimizer_options(params).converged_force = 0.001;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 50;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m1 = std::make_shared<Matter>(pot, params);
   m1->con2matter(std::string("reactant.con"));
@@ -347,6 +408,80 @@ TEST_CASE("relax converges LJ cluster", "[MatterTest][relax]") {
   REQUIRE(E_after <= E_before);
   // SVN reference: -39.965352 for relaxed LJ cluster
   REQUIRE(E_after == Catch::Approx(-39.965352).epsilon(1e-4));
+}
+
+TEST_CASE("setMasses and distanceTo reject size mismatch", "[MatterTest]") {
+  auto [m1, params] = makeLJCluster();
+  VectorXd shortMasses(2);
+  shortMasses.setConstant(1.0);
+  REQUIRE_THROWS_AS(m1->setMasses(shortMasses), std::invalid_argument);
+
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto m2 = std::make_shared<Matter>(pot, params);
+  m2->resize(2);
+  REQUIRE_THROWS_AS(m1->distanceTo(*m2), std::invalid_argument);
+}
+
+TEST_CASE("getAtomicNrsFree matches free atom count", "[MatterTest]") {
+  auto [m1, params] = makeLJCluster();
+  m1->setFixed(0, true);
+  auto zfree = m1->getAtomicNrsFree();
+  REQUIRE(zfree.size() == m1->numberOfFreeAtoms());
+  REQUIRE(zfree.size() == m1->numberOfAtoms() - 1);
+}
+
+TEST_CASE("MonteCarlo uses caller args and leaves fixed atoms still",
+          "[MatterTest][montecarlo]") {
+  auto [m1, params] = makeLJCluster();
+  m1->setFixed(0, true);
+  const AtomMatrix before = m1->getPositions();
+  const auto cwd = std::filesystem::current_path();
+  const auto tmp = std::filesystem::temp_directory_path() / "eon_mc_test";
+  std::filesystem::create_directories(tmp);
+  std::filesystem::current_path(tmp);
+  MonteCarlo mc(m1, params);
+  mc.run(8, 50.0, 1e-9);
+  std::filesystem::current_path(cwd);
+  std::filesystem::remove_all(tmp);
+  const AtomMatrix after = m1->getPositions();
+  REQUIRE((after.row(0) - before.row(0)).norm() ==
+          Catch::Approx(0.0).margin(1e-15));
+  REQUIRE((after - before).norm() < 1e-6);
+}
+
+TEST_CASE("same-size resize keeps atom ids", "[MatterTest][mtxr]") {
+  auto [m1, params] = makeLJCluster();
+  const long n = m1->numberOfAtoms();
+  for (long i = 0; i < n; ++i) {
+    m1->setAtomIndex(i, 700 + i);
+  }
+  m1->resize(n);
+  for (long i = 0; i < n; ++i) {
+    REQUIRE(m1->getAtomIndex(i) == 700 + i);
+  }
+}
+
+TEST_CASE("movedAtomsPct skips atoms fixed in min1",
+          "[MatterTest][prefactor]") {
+  auto [min1, params] = makeLJCluster();
+  auto pot = min1->getPotential();
+  auto saddle = std::make_shared<Matter>(pot, params);
+  *saddle = *min1;
+  auto min2 = std::make_shared<Matter>(pot, params);
+  *min2 = *min1;
+  min1->setFixed(0, true);
+  saddle->setFixed(0, true);
+  min2->setFixed(0, true);
+  AtomMatrix pos = saddle->getPositions();
+  pos.row(1) += AtomMatrix::Constant(1, 3, 0.4).row(0);
+  saddle->setPositions(pos);
+  ParametersLoadAccess::prefactor_options(params).filter_fraction = 1.0;
+  ParametersLoadAccess::prefactor_options(params).within_radius = 0.0;
+  VectorXi moved = eonc::Prefactor::movedAtomsPct(params, min1.get(),
+                                                  saddle.get(), min2.get());
+  for (int i = 0; i < moved.size(); ++i) {
+    REQUIRE(moved[i] != 0);
+  }
 }
 
 } /* namespace tests */

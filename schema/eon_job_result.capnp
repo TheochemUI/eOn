@@ -72,6 +72,33 @@ struct ScalarExtra {
   value @1 :Float64;
 }
 
+# Historical results.dat termination_reason integers.
+# Ordinals match MinModeSaddleSearch::Status; do not reorder.
+enum TerminationCode {
+  good @0;
+  init @1;
+  badNoConvex @2;
+  badHighEnergy @3;
+  badMaxConcaveIterations @4;
+  badMaxIterations @5;
+  badNotConnected @6;
+  badPrefactor @7;
+  badHighBarrier @8;
+  badMinima @9;
+  failedPrefactor @10;
+  potentialFailed @11;
+  nonnegativeAbort @12;
+  nonlocalAbort @13;
+  negativeBarrier @14;
+  badMdTrajectoryTooShort @15;
+  badNoNegativeModeAtSaddle @16;
+  badNoBarrier @17;
+  zeromodeAbort @18;
+  optimizerError @19;
+  dimerLostMode @20;
+  dimerRestoredBest @21;
+}
+
 struct JobResult {
   jobId @0 :Text;
   jobType @1 :Text;
@@ -111,4 +138,29 @@ struct JobResult {
   systemTimeSeconds @27 :Float64 = 0.0;
   extras @28 :List(ScalarExtra);
   clientVersion @29 :Text;
+  # Typed copy of statusCode. statusCode stays the results.dat integer.
+  termination @30 :TerminationCode = good;
+  # Per-job payload. Shared scalars stay above; do not move them into
+  # the union (wire ordinals are API).
+  body :union {
+    unset @31 :Void;
+    minimization @32 :MinimizationBody;
+    neb @33 :NEBBody;
+    processSearch @34 :ProcessSearchBody;
+  }
+}
+
+struct MinimizationBody {
+  steps @0 :UInt32 = 0;
+  converged @1 :Bool = false;
+}
+
+struct NEBBody {
+  nImages @0 :UInt32 = 0;
+  nExtrema @1 :Int32 = 0;
+  climbingImage @2 :Int32 = -1;
+}
+
+struct ProcessSearchBody {
+  saddleStatus @0 :TerminationCode = good;
 }

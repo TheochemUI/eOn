@@ -17,6 +17,22 @@ import sys
 
 from eon.config import ConfigClass # Typing
 
+def bundled_job_name(bundle_dirname, slot):
+    """Job id for slot *slot* inside a bundle named after the first job.
+
+    Bundles live in a directory named ``{state}_{first_wuid}``. Jobs in
+    the chunk are consecutive wuids, so slot *n* is ``first_wuid + n``.
+    """
+    parts = str(bundle_dirname).split("_", 1)
+    if len(parts) != 2:
+        return str(bundle_dirname)
+    state, first = parts
+    try:
+        return f"{state}_{int(first) + int(slot)}"
+    except ValueError:
+        return str(bundle_dirname)
+
+
 def tryint(s):
     try:
         return int(s)
@@ -239,7 +255,10 @@ class Communicator:
                 #                     "Check its output for errors." % jobpath)
                 continue
 
-            results = [{'name': dirname} for i in range(bundle_size)]
+            results = [
+                {'name': bundled_job_name(dirname, i)}
+                for i in range(bundle_size)
+            ]
 
             if not is_bundle:
                 # Only a single task inside this job, no need to unbundle.
@@ -275,11 +294,14 @@ class Communicator:
                     results[index][key] = filedata
                     results[index]['number'] = index
 
-            # XXX: UGLY: We need a way to check if there are no results.
-            if not any([ filename.startswith('results') for filename in list(results[0].keys())]):
-                logger.warning("Failed to find a result.dat file for %s",results[0]['name'])
-                results = []
-            yield results
+            kept = []
+            for slot in results:
+                if any(str(k).startswith('results') for k in slot):
+                    kept.append(slot)
+                else:
+                    logger.warning("Failed to find a results.dat file for %s slot %s",
+                                   slot.get('name'), slot.get('number'))
+            yield kept
 
     def make_bundles(self, data, invariants):
         '''This method is a generator that bundles together multiple jobs into a single job.
@@ -421,9 +443,22 @@ class MPI(Communicator):
     def get_number_in_progress(self):
         return int(os.environ['EON_NUMBER_OF_CLIENTS'])
 
+    def stop_clients(self):
+        """Send STOPCAR to every ready client rank (ClientEON exits on that path)."""
+        n = 0
+        for rank in self.client_ranks:
+            if not self.comm.Iprobe(rank, tag=1):
+                continue
+            tmp = numpy.empty(1, dtype='i')
+            self.comm.Recv(tmp, source=rank, tag=1)
+            buf = array('b')
+            buf.frombytes(b'STOPCAR\0')
+            self.comm.Send(buf, rank)
+            n += 1
+        return n
+
     def cancel_state(self, state):
-        #XXX: how to support this...
-        return 0
+        return self.stop_clients()
 
 
 class Local(Communicator):

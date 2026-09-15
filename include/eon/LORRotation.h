@@ -59,5 +59,3 @@ public:
 };
 
 } // namespace eonc
-
-using eonc::LORRotation;

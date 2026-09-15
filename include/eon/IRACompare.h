@@ -45,6 +45,12 @@ public:
   static MatchResult match(const Matter &m1, const Matter &m2,
                            double distThreshold);
 
+  /// Same as match(), from packed (n,3) row-major coordinates and Z arrays.
+  /// Used by the Python server so rot_match does not need a dummy Potential.
+  static MatchResult matchArrays(int nat1, const int *typ1, const double *pos1,
+                                 int nat2, const int *typ2, const double *pos2,
+                                 double distThreshold);
+
   /// Atom assignment under periodic boundary conditions (CShDA only, no
   /// rotation/SVD). Returns permutation and per-atom distances.
   static MatchResult matchPBC(const Matter &m1, const Matter &m2,
@@ -53,8 +59,12 @@ public:
   /// Find all symmetry operations of a structure (SOFI algorithm).
   static SymmetryResult findSymmetry(const Matter &m, double threshold,
                                      bool prescreenIh = true);
+
+  /// Rigid-align + permute reactant onto product. Returns the match
+  /// (error != 0 means reactant was left unchanged).
+  static MatchResult alignReactantToProduct(Matter &reactant,
+                                            const Matter &product,
+                                            double distThreshold);
 };
 
 } // namespace eonc
-
-using eonc::IRACompare;

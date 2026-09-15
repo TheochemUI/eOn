@@ -42,6 +42,7 @@ def _neb_spec_cls() -> Any:
         # Climbing image
         climbing_image: bool = True
         climbing_converged_only: bool = True
+        climbing_band_slack: float = Field(default=10.0, gt=0.0)
         ci_after: float = Field(default=0.5, ge=0.0)
         ci_after_rel: float = Field(default=0.8, ge=0.0)
         # Energy-weighted springs
@@ -93,6 +94,7 @@ def _neb_spec_cls() -> Any:
             params.neb_minimize_endpoints = bool(self.minimize_endpoints)
             params.neb_climbing_image = bool(self.climbing_image)
             params.neb_climbing_converged_only = bool(self.climbing_converged_only)
+            params.neb_climbing_band_slack = float(self.climbing_band_slack)
             params.neb_ci_after = float(self.ci_after)
             params.neb_ci_after_rel = float(self.ci_after_rel)
             params.neb_energy_weighted = bool(self.energy_weighted)

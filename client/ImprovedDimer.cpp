@@ -16,6 +16,7 @@
 #include "eon/DimerRotationDispatch.h"
 #include "eon/HelperFunctions.h"
 #include "eon/LowestEigenmode.h"
+#include "eon/PotCapabilities.h"
 #include "eon/SafeMath.h"
 #include "eon/eonExceptions.hpp"
 
@@ -23,18 +24,15 @@
 #include <thread>
 
 #include "eon/EonLogger.h"
-using namespace eonc::helpers;
 
-const char ImprovedDimer::OPT_SD[] = "sd";
-const char ImprovedDimer::OPT_CG[] = "cg";
-const char ImprovedDimer::OPT_LBFGS[] = "lbfgs";
+namespace eonc {
 
 ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
                              const Parameters &params,
                              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
   // Each dimer image gets its own potential for lock-free parallel evaluation
-  auto x1Pot = (pot->needsPerImageInstance() && params.main_options.parallel)
+  auto x1Pot = (pot->needsPerImageInstance() && params.main_options().parallel)
                    ? eonc::helpers::makePotential(params)
                    : pot;
   x0 = std::make_shared<Matter>(pot, params);
@@ -45,7 +43,7 @@ ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
   tau.setZero();
   totalForceCalls = 0;
 
-  if (params.dimer_options.opt_method == OPT_CG) {
+  if (params.dimer_options().opt_method == OptType::CG) {
     init_cg = true;
   }
 }
@@ -91,7 +89,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   VectorXd x0_r = x0->getPositionsV();
   bestX0Positions = x0_r;
 
-  double delta = params.main_options.finiteDifference;
+  double delta = params.main_options().finiteDifference;
   x1->setPositionsV(x0_r + delta * tau);
 
   // If we stepped into a high-energy wall, flip the tangent immediately
@@ -104,7 +102,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
   // Optional: LOR / Lanczos / Davidson rotation backends (enum dispatch).
   if (auto alt = runAlternativeRotation(
-          params.dimer_options.rotation_backend, matter, params, pot,
+          params.dimer_options().rotation_backend, matter, params, pot,
           AtomMatrix::Map(tau.data(), matter->numberOfAtoms(), 3),
           static_cast<quill::Logger *>(log))) {
     C_tau = alt->eigenvalue;
@@ -122,16 +120,19 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     return;
   }
 
-  if (params.dimer_options.opt_method == OPT_LBFGS) {
+  if (params.dimer_options().opt_method == OptType::LBFGS) {
     s.clear();
     y.clear();
     rho.clear();
     init_lbfgs = true;
   }
+  if (params.dimer_options().opt_method == OptType::CG) {
+    init_cg = true;
+  }
 
   VectorXd x1_rp, x1_r, tau_prime, tau_Old, g1_prime;
   double phi_tol =
-      eonc::helpers::pi * (params.dimer_options.converged_angle / 180.0);
+      eonc::helpers::pi * (params.dimer_options().converged_angle / 180.0);
   double phi_prime = 0.0;
   double phi_min = 0.0;
 
@@ -141,12 +142,14 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   auto x1p = std::make_shared<Matter>(x1->getPotential(), params);
 
   // Melander, Laasonen, Jonsson, JCTC 11(3), 1055-1062, 2015
-  if (params.dimer_options.remove_rotation) {
-    rotationRemove(AtomMatrix::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
+  if (params.dimer_options().remove_rotation) {
+    eonc::geometry::rotationRemove(
+        AtomMatrix::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
     x1_r = x1->getPositionsV();
-    tau = x1_r - x0_r;
+    tau = x1->pbcV(x1_r - x0_r);
     eonc::safemath::safe_normalize_inplace(tau);
     x1_r = x0_r + tau * delta;
+    x1->setPositionsV(x1_r);
   }
 
   // Calculate gradients on x0 and x1.
@@ -156,7 +159,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   // wants per-image instances. Otherwise sequential.
   VectorXd g0, g1;
   bool canParallel =
-      pot->isSharedInstanceThreadSafe() || pot->needsPerImageInstance();
+      eonc::potAllowsSharedInstance(*pot) || pot->needsPerImageInstance();
   if (pot->supportsBatchEvaluation()) {
     long n = x0->numberOfAtoms();
     bool x0dirty = x0->needsForceUpdate();
@@ -191,7 +194,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     }
     g0 = -x0->getForcesV();
     g1 = -x1->getForcesV();
-  } else if (params.main_options.parallel && canParallel) {
+  } else if (params.main_options().parallel && canParallel) {
     // std::thread instead of std::jthread (Apple Clang libc++). Guard so an
     // exception from the foreground call still joins t0 before rethrow.
     std::thread t0([&] { g0 = -x0->getForcesV(); });
@@ -225,10 +228,10 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     statsTorque = eonc::safemath::safe_div(F_R.norm(), delta * 2.0, 0.0);
 
     // Determine step direction theta via selected optimizer
-    if (params.dimer_options.opt_method == OPT_SD) {
+    if (params.dimer_options().opt_method == OptType::SD) {
       theta = eonc::safemath::safe_normalized(F_R);
 
-    } else if (params.dimer_options.opt_method == OPT_CG) {
+    } else if (params.dimer_options().opt_method == OptType::CG) {
       if (init_cg) {
         init_cg = false;
         gamma = 0.0;
@@ -249,7 +252,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       eonc::safemath::safe_normalize_inplace(theta);
       F_R_Old = F_R;
 
-    } else if (params.dimer_options.opt_method == OPT_LBFGS) {
+    } else if (params.dimer_options().opt_method == OptType::LBFGS) {
       if (!init_lbfgs) {
         VectorXd s0 = tau - tau_Old;
         s.push_back(s0);
@@ -368,10 +371,10 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       x1_r = x0_r + tau * delta;
 
       // Melander, Laasonen, Jonsson, JCTC 11(3), 1055-1062, 2015
-      if (params.dimer_options.remove_rotation) {
+      if (params.dimer_options().remove_rotation) {
         x1->setPositionsV(x1_r);
-        rotationRemove(AtomMatrix::Map(x0_r.data(), x0->numberOfAtoms(), 3),
-                       x1);
+        eonc::geometry::rotationRemove(
+            AtomMatrix::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
         x1_r = x1->getPositionsV();
         tau = x1_r - x0_r;
         eonc::safemath::safe_normalize_inplace(tau);
@@ -405,8 +408,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
     }
 
     // Check for mode loss (OCINEB dimer refinement)
-    if (alignment < params.neb_options.climbing_image.ocineb.angle_tol &&
-        params.neb_options.climbing_image.ocineb.use_mmf) {
+    if (alignment < params.neb_options().climbing_image.ocineb.angle_tol &&
+        params.neb_options().climbing_image.ocineb.use_mmf) {
       QUILL_LOG_WARNING(
           log, "Terminating dimer due to lost mode (align {:.3f}).", alignment);
       rotationDidConverge = false;
@@ -430,7 +433,7 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
   } while (std::abs(phi_prime) > std::abs(phi_tol) &&
            std::abs(phi_min) > std::abs(phi_tol) &&
-           statsRotations < params.dimer_options.rotations_max);
+           statsRotations < params.dimer_options().rotations_max);
 }
 
 double ImprovedDimer::getEigenvalue() { return C_tau; }
@@ -438,3 +441,5 @@ double ImprovedDimer::getEigenvalue() { return C_tau; }
 AtomMatrix ImprovedDimer::getEigenvector() {
   return AtomMatrix::Map(tau.data(), x0->numberOfAtoms(), 3);
 }
+
+} // namespace eonc

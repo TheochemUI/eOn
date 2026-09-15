@@ -16,15 +16,17 @@
 
 #include <cmath>
 
+namespace eonc {
+
 void SafeHyperJob::reportResults() {
   if (newStateFlag) {
     QUILL_LOG_DEBUG(log, "Transition time: {:.2e} s",
-                    minCorrectedTime * 1.0e-15 * params.constants.timeUnit);
+                    minCorrectedTime * 1.0e-15 * params.constants().timeUnit);
   } else {
     QUILL_LOG_DEBUG(log,
                     "No new state was found in {} dynamics steps ({:.3e} s)",
-                    params.dynamics_options.steps,
-                    time * 1.0e-15 * params.constants.timeUnit);
+                    params.dynamics_options().steps,
+                    time * 1.0e-15 * params.constants().timeUnit);
   }
 }
 
@@ -37,7 +39,7 @@ int SafeHyperJob::dynamics() {
   long nCheck = 0, nRecord = 0, nBoost = 0, nState = 0;
   long StateCheckInterval, RecordInterval;
   double kinE, kinT, avgT, varT;
-  double kB = params.constants.kB;
+  double kB = params.constants().kB;
   double correctedTime = 0.0, sumCorrectedTime = 0.0, firstTransitionTime = 0.0;
   double Temp = 0.0, sumT = 0.0, sumT2 = 0.0;
   double sumboost = 0.0, boost = 1.0, boostPotential = 0.0;
@@ -45,16 +47,13 @@ int SafeHyperJob::dynamics() {
   AtomMatrix velocity;
 
   minCorrectedTime = 1.0e200;
-  StateCheckInterval =
-      static_cast<long>(params.parallel_replica_options.state_check_interval /
-                        params.dynamics_options.time_step);
-  RecordInterval =
-      static_cast<long>(params.parallel_replica_options.record_interval /
-                        params.dynamics_options.time_step);
-  Temp = params.main_options.temperature;
+  const auto clock = prdClock();
+  StateCheckInterval = clock.state_check;
+  RecordInterval = clock.record;
+  Temp = params.main_options().temperature;
   newStateFlag = metaStateFlag = false;
 
-  mdBufferLength = static_cast<long>(StateCheckInterval / RecordInterval);
+  mdBufferLength = clock.buffer;
   std::vector<std::shared_ptr<Matter>> mdBuffer(mdBufferLength);
   for (long i = 0; i < mdBufferLength; i++) {
     mdBuffer[i] = std::make_shared<Matter>(pot, params);
@@ -65,9 +64,10 @@ int SafeHyperJob::dynamics() {
   Dynamics safeHyper(current.get(), params);
   BondBoost bondBoost(current.get(), params);
 
-  if (params.hyperdynamics_options.bias_potential ==
+  if (params.hyperdynamics_options().bias_potential ==
       Hyperdynamics::BOND_BOOST) {
     bondBoost.initialize();
+    current->setBiasPotential(&bondBoost);
   }
 
   safeHyper.setThermalVelocity();
@@ -82,32 +82,38 @@ int SafeHyperJob::dynamics() {
       "Starting MD run\nTemperature: {:.2f} Kelvin\n"
       "Total Simulation Time: {:.2f} fs\nTime Step: {:.2f} fs\nTotal Steps: {}",
       Temp,
-      params.dynamics_options.steps * params.dynamics_options.time_step *
-          params.constants.timeUnit,
-      params.dynamics_options.time_step * params.constants.timeUnit,
-      params.dynamics_options.steps);
+      params.dynamics_options().steps * params.dynamics_options().time_step *
+          params.constants().timeUnit,
+      params.dynamics_options().time_step * params.constants().timeUnit,
+      params.dynamics_options().steps);
   QUILL_LOG_DEBUG(log, "MD buffer length: {}", mdBufferLength);
 
-  long tenthSteps = params.dynamics_options.steps / 10;
+  long tenthSteps = params.dynamics_options().steps / 10;
   if (tenthSteps == 0) {
-    tenthSteps = params.dynamics_options.steps;
+    tenthSteps = params.dynamics_options().steps;
   }
 
   while (!stopFlag) {
-    if ((params.hyperdynamics_options.bias_potential ==
+    boost = 1.0;
+    boostPotential = 0.0;
+    if ((params.hyperdynamics_options().bias_potential ==
          Hyperdynamics::BOND_BOOST) &&
         !newStateFlag) {
       bondBoost.advance();
       boostPotential = bondBoost.boost();
       QUILL_LOG_TRACE_L1(log, "step= {} , boost = {:.5f}", step,
                          boostPotential);
-      boost = std::exp(boostPotential / kB / Temp);
-      time += params.dynamics_options.time_step * boost;
+      if (Temp > 0.0 && kB > 0.0) {
+        boost = std::exp(boostPotential / kB / Temp);
+      } else {
+        boost = 1.0;
+      }
       if (boost > 1.0) {
         sumboost += boost;
         nBoost++;
       }
     }
+    time += params.dynamics_options().time_step * boost;
 
     kinE = current->getKineticEnergy();
     kinT = (2.0 * kinE / nFreeCoord / kB);
@@ -122,7 +128,7 @@ int SafeHyperJob::dynamics() {
     step++;
     QUILL_LOG_TRACE_L1(log, "step = {:4}, time = {:10.4f}", step, time);
 
-    if (params.parallel_replica_options.refine_transition && recordFlag &&
+    if (params.parallel_replica_options().refine_transition && recordFlag &&
         !newStateFlag) {
       if (nCheck % RecordInterval == 0) {
         *mdBuffer[nRecord] = *current;
@@ -152,43 +158,54 @@ int SafeHyperJob::dynamics() {
 
     if (transitionFlag) {
       QUILL_LOG_TRACE_L1(log, "Refining transition time.");
-      {
+      const bool can_refine =
+          params.parallel_replica_options().refine_transition && nRecord >= 2;
+      if (can_refine) {
         eonc::ForceCallTimer timer(refineFCalls);
         refineStep = refine(mdBuffer, reactant.get());
+        transitionStep =
+            newStateStep - StateCheckInterval + refineStep * RecordInterval;
+        transitionTime_current = timeBuffer[static_cast<size_t>(refineStep)];
+        transitionPot = biasBuffer[static_cast<size_t>(refineStep)];
+        const long prev = refineStep > 0 ? refineStep - 1 : 0;
+        *current = *mdBuffer[static_cast<size_t>(prev)];
+      } else {
+        refineStep = 0;
+        transitionTime_current = time;
+        transitionPot = boostPotential;
       }
-
-      transitionStep =
-          newStateStep - StateCheckInterval + refineStep * RecordInterval;
-      transitionTime_current = timeBuffer[refineStep];
       transitionTime = transitionTime_current - transitionTime_pre;
       transitionTime_pre = transitionTime_current;
-      transitionPot = biasBuffer[refineStep];
       correctedTime =
-          transitionTime * std::exp((-1) * transitionPot / kB / Temp);
+          (Temp > 0.0 && kB > 0.0)
+              ? transitionTime * std::exp((-1) * transitionPot / kB / Temp)
+              : transitionTime;
       sumCorrectedTime += correctedTime;
       if (nState == 1) {
         firstTransitionTime = transitionTime;
       }
-
-      *current = *mdBuffer[refineStep - 1];
       velocity = current->getVelocities();
       velocity = velocity * (-1);
       current->setVelocities(velocity);
 
       if (correctedTime < minCorrectedTime) {
         minCorrectedTime = correctedTime;
-        *saddle = *mdBuffer[refineStep];
+        if (can_refine) {
+          *saddle = *mdBuffer[static_cast<size_t>(refineStep)];
+        } else {
+          *saddle = *current;
+        }
         *finalState = *finalStateTmp;
       }
       QUILL_LOG_DEBUG(log,
                       "tranisitonTime= {:.3e} s, biasPot= {:.3f} eV, "
                       "correctedTime= {:.3e} s, "
                       "sumCorrectedTime= {:.3e} s, minCorTime= {:.3e} s",
-                      transitionTime * 1e-15 * params.constants.timeUnit,
+                      transitionTime * 1e-15 * params.constants().timeUnit,
                       transitionPot,
-                      correctedTime * 1e-15 * params.constants.timeUnit,
-                      sumCorrectedTime * 1e-15 * params.constants.timeUnit,
-                      minCorrectedTime * 1.0e-15 * params.constants.timeUnit);
+                      correctedTime * 1e-15 * params.constants().timeUnit,
+                      sumCorrectedTime * 1e-15 * params.constants().timeUnit,
+                      minCorrectedTime * 1.0e-15 * params.constants().timeUnit);
 
       transitionFlag = false;
     }
@@ -198,17 +215,17 @@ int SafeHyperJob::dynamics() {
       newStateFlag = true;
     }
 
-    if ((step % tenthSteps == 0) || (step == params.dynamics_options.steps)) {
+    if ((step % tenthSteps == 0) || (step == params.dynamics_options().steps)) {
       double maxAtomDistance = current->perAtomNorm(*reactant);
       QUILL_LOG_DEBUG(
           log, "progress: {:.0f}%, max displacement: {:.3f}, step {} / {}",
-          static_cast<double>(100.0 * step / params.dynamics_options.steps),
-          maxAtomDistance, step, params.dynamics_options.steps);
+          static_cast<double>(100.0 * step / params.dynamics_options().steps),
+          maxAtomDistance, step, params.dynamics_options().steps);
     }
 
     // Honor dynamics step budget (parity with TADJob); without this the
     // loop only exits on a confidence-gated transition and can run forever.
-    if (step >= params.dynamics_options.steps) {
+    if (step >= params.dynamics_options().steps) {
       stopFlag = true;
     }
   }
@@ -234,6 +251,8 @@ int SafeHyperJob::dynamics() {
   }
 
   // finalState is only filled on transition; keep product valid otherwise.
+  current->setBiasPotential(nullptr);
+
   if (newStateFlag && finalState) {
     *product = *finalState;
   } else if (current) {
@@ -246,3 +265,5 @@ int SafeHyperJob::dynamics() {
     return 0;
   }
 }
+
+} // namespace eonc

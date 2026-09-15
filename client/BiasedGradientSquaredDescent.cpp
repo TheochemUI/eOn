@@ -16,12 +16,15 @@
 #include "eon/ObjectiveFunction.h"
 #include "eon/Optimizer.h"
 #include "eon/SaddleSearchMethod.h"
+#include "eon/SafeMath.h"
 
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <map>
+
+namespace eonc {
 
 class BGSDObjectiveFunction : public ObjectiveFunction {
   Matter &matter;
@@ -43,27 +46,29 @@ public:
     double Henergy = 0.5 * Vforce.dot(Vforce) +
                      0.5 * bgsdAlpha *
                          (matter.getPotentialEnergy() -
-                          (reactantEnergy + params.bgsd_options.beta)) *
+                          (reactantEnergy + params.bgsd_options().beta)) *
                          (matter.getPotentialEnergy() -
-                          (reactantEnergy + params.bgsd_options.beta));
+                          (reactantEnergy + params.bgsd_options().beta));
     return Henergy;
   }
 
   VectorXd getGradient(bool fdstep = false) {
+    (void)fdstep;
     VectorXd Vforce = matter.getForcesFreeV();
-    double magVforce = Vforce.norm();
-    VectorXd normVforce = Vforce / magVforce;
-    VectorXd Vpositions = matter.getPositionsFreeV();
-    matter.setPositionsFreeV(
-        matter.getPositionsFreeV() -
-        normVforce * params.bgsd_options.gradient_finite_difference);
+    const double magVforce = Vforce.norm();
+    const double fd = params.bgsd_options().gradient_finite_difference;
+    if (!(magVforce > 0.0) || !std::isfinite(magVforce) || !(fd > 0.0)) {
+      return VectorXd::Zero(Vforce.size());
+    }
+    const VectorXd normVforce = Vforce / magVforce;
+    const VectorXd Vpositions = matter.getPositionsFreeV();
+    matter.setPositionsFreeV(Vpositions - normVforce * fd);
     VectorXd Vforcenew = matter.getForcesFreeV();
     matter.setPositionsFreeV(Vpositions);
-    VectorXd Hforce = magVforce * (Vforcenew - Vforce) /
-                          params.bgsd_options.gradient_finite_difference +
+    VectorXd Hforce = magVforce * (Vforcenew - Vforce) / fd +
                       bgsdAlpha *
                           (matter.getPotentialEnergy() -
-                           (reactantEnergy + params.bgsd_options.beta)) *
+                           (reactantEnergy + params.bgsd_options().beta)) *
                           Vforce;
     return -Hforce;
   }
@@ -79,16 +84,16 @@ public:
   int degreesOfFreedom() { return 3 * matter.numberOfFreeAtoms(); }
   bool isConverged() { return isConvergedH() && isConvergedV(); }
   bool isConvergedH() {
-    return getConvergenceH() < params.bgsd_options.h_force_convergence;
+    return getConvergenceH() < params.bgsd_options().h_force_convergence;
   }
   bool isConvergedV() {
-    return getConvergenceV() < params.bgsd_options.grad2energy_convergence;
+    return getConvergenceV() < params.bgsd_options().grad2energy_convergence;
   }
   bool isConvergedIP() {
-    return getConvergenceH() < params.bgsd_options.grad2force_convergence;
+    return getConvergenceH() < params.bgsd_options().grad2force_convergence;
   }
 
-  double getConvergence() { return getEnergy() && getGradient().norm(); }
+  double getConvergence() { return getGradient().norm(); }
   double getConvergenceH() { return getGradient().norm(); }
   double getConvergenceV() { return getEnergy(); }
   VectorXd difference(const VectorXd &a, const VectorXd &b) {
@@ -102,16 +107,20 @@ private:
 
 int BiasedGradientSquaredDescent::run() {
   auto objf = std::make_shared<BGSDObjectiveFunction>(
-      *saddle, reactantEnergy, params.bgsd_options.alpha, params);
+      *saddle, reactantEnergy, params.bgsd_options().alpha, params);
   auto optim = eonc::helpers::create::mkOptim(
-      objf, params.optimizer_options.method, params);
+      objf, params.optimizer_options().method, params);
   int iteration = 0;
+  const int max_iter = params.optimizer_options().max_iterations;
   QUILL_LOG_DEBUG(
       log,
       "starting optimization of H with params alpha and beta: {:.2f} {:.2f}",
-      params.bgsd_options.alpha, params.bgsd_options.beta);
-  while (!objf->isConvergedH() || iteration == 0) {
-    optim->step(params.optimizer_options.max_move);
+      params.bgsd_options().alpha, params.bgsd_options().beta);
+  while (iteration < max_iter && (!objf->isConvergedH() || iteration == 0)) {
+    if (!std::isfinite(objf->getEnergy())) {
+      break;
+    }
+    optim->step(params.optimizer_options().max_move);
     QUILL_LOG_DEBUG(log,
                     "iteration {} Henergy, gradientHnorm, and Venergy: "
                     "{:.8f} {:.8f} {:.8f}",
@@ -122,18 +131,20 @@ int BiasedGradientSquaredDescent::run() {
   auto objf2 = std::make_shared<BGSDObjectiveFunction>(*saddle, reactantEnergy,
                                                        0.0, params);
   auto optim2 = eonc::helpers::create::mkOptim(
-      objf2, params.optimizer_options.method, params);
-  while (!objf2->isConvergedV() || iteration == 0) {
-    if (objf2->isConvergedIP()) {
+      objf2, params.optimizer_options().method, params);
+  int iter2 = 0;
+  while (iter2 < max_iter && (!objf2->isConvergedV() || iter2 == 0)) {
+    if (objf2->isConvergedIP() || !std::isfinite(objf2->getEnergy())) {
       break;
-    };
-    optim2->step(params.optimizer_options.max_move);
+    }
+    optim2->step(params.optimizer_options().max_move);
     QUILL_LOG_DEBUG(log,
                     "gradient squared iteration {} Henergy, gradientHnorm, "
                     "and Venergy: {:.8f} {:.8f} {:.8f}",
                     iteration, objf2->getEnergy(), objf2->getGradientnorm(),
                     saddle->getPotentialEnergy());
-    iteration++;
+    ++iteration;
+    ++iter2;
   }
 
   auto minModeMethod = eonc::buildEigenmodeStrategy(saddle, params, pot);
@@ -146,7 +157,7 @@ int BiasedGradientSquaredDescent::run() {
       };
     }
   }
-  eigenvector.normalize();
+  eonc::safemath::safe_normalize_inplace(eigenvector);
   eonc::eigenmodeCompute(*minModeMethod, saddle, eigenvector);
   eigenvector = eonc::eigenmodeGetEigenvector(*minModeMethod);
   eigenvalue = eonc::eigenmodeGetEigenvalue(*minModeMethod);
@@ -165,3 +176,5 @@ double BiasedGradientSquaredDescent::getEigenvalue() { return eigenvalue; }
 AtomMatrix BiasedGradientSquaredDescent::getEigenvector() {
   return eigenvector;
 }
+
+} // namespace eonc

@@ -11,6 +11,7 @@
 */
 
 #include "eon/potentials/XTBPot/XTBPot.h"
+#include <cmath>
 #include <cstddef>
 #include <vector>
 
@@ -28,8 +29,8 @@ void XTBPot::force(long N, const double *R, const int *atomicNrs, double *F,
                    double *U, double *variance, const double *box) {
   variance = nullptr;
   int intN = static_cast<int>(N);
-  // TODO: Periodicity shouldn't crash
-  const bool periodicity[3]{false, false, false};
+  const bool periodicity[3]{std::abs(box[0]) > 1e-8, std::abs(box[4]) > 1e-8,
+                            std::abs(box[8]) > 1e-8};
   double box_bohr[3 * 3];
 
   // Allocate memory for converted positions

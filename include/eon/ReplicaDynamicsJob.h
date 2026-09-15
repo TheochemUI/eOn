@@ -70,11 +70,20 @@ protected:
   bool checkState(Matter *current, Matter *reactant);
 
   /// Binary search for the transition frame in a snapshot buffer.
+  /// Returns an index in [1, buff.size()) so `refineStep - 1` is in range.
   long refine(const std::vector<std::shared_ptr<Matter>> &buff,
               Matter *reactant);
 
   /// Dephase the trajectory to ensure thermal independence.
   void dephase();
+
+  /// Clamped PRD clock: state_check, record, and buffer length are all >= 1.
+  struct PrdClock {
+    long state_check{1};
+    long record{1};
+    long buffer{1};
+  };
+  PrdClock prdClock() const;
 
   /// Write results.dat and structure con files.
   void saveData(int status);
@@ -92,5 +101,3 @@ protected:
 };
 
 } // namespace eonc
-
-using eonc::ReplicaDynamicsJob;

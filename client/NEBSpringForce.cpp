@@ -11,6 +11,8 @@
 */
 #include "eon/NEBSpringForce.h"
 
+#include <stdexcept>
+
 namespace eonc::neb {
 
 // --- UniformSpring ---
@@ -30,6 +32,10 @@ UniformSpring::compute(long i, const AtomMatrix &tangent, double distNext,
 
 SpringResult WeightedSpring::compute(long i, const AtomMatrix &tangent,
                                      double distNext, double distPrev) const {
+  if (i < 1 || static_cast<size_t>(i) >= springConstants.size()) {
+    throw std::invalid_argument(
+        "WeightedSpring::compute: image index out of range");
+  }
   double kspNext = springConstants[i];
   double kspPrev = springConstants[i - 1];
 
@@ -66,10 +72,10 @@ buildSpringStrategy(const Parameters &params,
                     const std::vector<std::shared_ptr<Matter>> &path,
                     long numImages, int atoms, double maxEnergy, double E_ref) {
 
-  if (params.neb_options.spring.om.enabled) {
-    double base_k = params.neb_options.spring.constant;
+  if (params.neb_options().spring.om.enabled) {
+    double base_k = params.neb_options().spring.constant;
 
-    if (params.neb_options.spring.om.optimize_k) {
+    if (params.neb_options().spring.om.optimize_k) {
       double avgPotForce = 0.0;
       double avgPathCurvature = 0.0;
       int count = 0;
@@ -83,10 +89,10 @@ buildSpringStrategy(const Parameters &params,
         count++;
       }
       if (count > 0 && avgPathCurvature > 1e-6) {
-        double scale = params.neb_options.spring.om.k_scale;
+        double scale = params.neb_options().spring.om.k_scale;
         base_k = scale * (avgPotForce / avgPathCurvature);
-        base_k = std::max(base_k, params.neb_options.spring.om.k_min);
-        base_k = std::min(base_k, params.neb_options.spring.om.k_max);
+        base_k = std::max(base_k, params.neb_options().spring.om.k_min);
+        base_k = std::min(base_k, params.neb_options().spring.om.k_max);
       }
     }
 
@@ -107,9 +113,9 @@ buildSpringStrategy(const Parameters &params,
 
     return OnsagerMachlupSpring{base_k, std::move(L_vecs)};
 
-  } else if (params.neb_options.spring.weighting.enabled) {
-    double k_l = params.neb_options.spring.weighting.k_min;
-    double k_u = params.neb_options.spring.weighting.k_max;
+  } else if (params.neb_options().spring.weighting.enabled) {
+    double k_l = params.neb_options().spring.weighting.k_min;
+    double k_u = params.neb_options().spring.weighting.k_max;
     std::vector<double> springConstants(numImages + 2, k_l);
 
     double energyRange = maxEnergy - E_ref;
@@ -132,7 +138,7 @@ buildSpringStrategy(const Parameters &params,
     return WeightedSpring{std::move(springConstants)};
 
   } else {
-    return UniformSpring{params.neb_options.spring.constant};
+    return UniformSpring{params.neb_options().spring.constant};
   }
 }
 

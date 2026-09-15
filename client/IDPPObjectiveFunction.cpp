@@ -15,6 +15,8 @@
 #include <algorithm>
 #include <cmath>
 
+namespace eonc {
+
 namespace {
 VectorXd packFree(const Matter &m, const AtomMatrix &forces) {
   const long nfree = m.numberOfFreeAtoms();
@@ -156,11 +158,14 @@ VectorXd CollectiveIDPPObjectiveFunction::getGradient(bool fdstep) {
     AtomMatrix nextPos = path[i + 1].getPositions();
     AtomMatrix prevPos = path[i - 1].getPositions();
     tangents[i] = path[i].pbc(nextPos - prevPos);
-    tangents[i].normalize(); // Unit tangent
+    const double tnorm = tangents[i].norm();
+    if (tnorm > 1e-10) {
+      tangents[i] /= tnorm;
+    }
   }
 
   // 2. Project Forces and Add Springs (The "NEB" part of IDPP-NEB)
-  double k = params.neb_options.spring.constant;
+  double k = params.neb_options().spring.constant;
 
   for (size_t i = 1; i <= nImgs; ++i) {
     AtomMatrix f = rawForces[i];
@@ -177,13 +182,17 @@ VectorXd CollectiveIDPPObjectiveFunction::getGradient(bool fdstep) {
 
     AtomMatrix f_neb = f_perp + f_spring;
 
+    VectorXd freeForce = packFree(path[i], f_neb);
     totalGradient.segment(3 * nfree * static_cast<int>(i - 1), 3 * nfree) =
-        packFree(path[i], f_neb) * -1.0;
+        freeForce * -1.0;
 
-    // Tracking convergence
-    maxForce = std::max(maxForce, f_neb.template lpNorm<Eigen::Infinity>());
+    // Free-atom residuals only. Frozen pair rows stay in f_neb for
+    // Newton's third law and must not pin lastMaxForce.
+    maxForce = std::max(maxForce, freeForce.lpNorm<Eigen::Infinity>());
   }
 
   lastMaxForce = maxForce;
   return totalGradient;
 }
+
+} // namespace eonc

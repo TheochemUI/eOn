@@ -109,7 +109,8 @@ void bind_enums(nb::module_ &m) {
       .value("Structure_Comparison", eonc::JobType::Structure_Comparison)
       .value("Monte_Carlo", eonc::JobType::Monte_Carlo)
       .value("Test", eonc::JobType::Test)
-      .value("GP_Surrogate", eonc::JobType::GP_Surrogate);
+      .value("GP_Surrogate", eonc::JobType::GP_Surrogate)
+      .value("OH_TST", eonc::JobType::OH_TST);
 
   m.def(
       "job_type_from_name",

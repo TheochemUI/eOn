@@ -14,9 +14,13 @@
 
 #include "eon/EonLogger.h"
 
+namespace eonc {
+
 GlobalOptimization::GlobalOptimization(const Parameters &params)
     : parameters{params} {}
 
 GlobalOptimization::~GlobalOptimization() = default;
 
 void GlobalOptimization::run() { EONC_LOG_INFO("HELLO FROM GO\n"); }
+
+} // namespace eonc

@@ -11,12 +11,16 @@
 */
 #include "eon/HelperFunctions.h"
 #include "eon/EonLogger.h"
+#include "eon/EpiCenters.h"
 #include "eon/GeometryAnalysis.h"
 #include "eon/ObjectiveFunction.h"
 #include "eon/Optimizer.h"
+#include "eon/Parameters.h"
 #include "eon/SafeMath.h"
 
 #include <cassert>
+#include <cerrno>
+#include <chrono>
 #include <cmath>
 #include <cstring>
 #include <ctime>
@@ -27,14 +31,12 @@
 #include <memory>
 #include <sstream>
 #include <stdexcept>
+#include <utility>
 
 #ifndef _WIN32
 #include <sys/resource.h>
 #include <sys/time.h>
 #endif
-using std::ifstream;
-using std::string;
-
 // Vector functions.
 // Make v1 orthogonal to v2
 AtomMatrix eonc::helpers::makeOrthogonal(const AtomMatrix v1,
@@ -43,10 +45,11 @@ AtomMatrix eonc::helpers::makeOrthogonal(const AtomMatrix v1,
 }
 
 void eonc::helpers::getTime(double *real, double *user, double *sys) {
-  // Wall-clock time via C++11 chrono (portable)
   using namespace std::chrono;
   auto now = steady_clock::now();
-  *real = duration<double>(now.time_since_epoch()).count();
+  if (real) {
+    *real = duration<double>(now.time_since_epoch()).count();
+  }
 
 #ifdef _WIN32
   if (user)
@@ -69,34 +72,29 @@ void eonc::helpers::getTime(double *real, double *user, double *sys) {
 #endif
 }
 
-bool eonc::helpers::existsFile(string filename) {
+bool eonc::helpers::existsFile(std::string filename) {
   return std::filesystem::exists(filename);
 }
 
-string eonc::helpers::getRelevantFile(string filename) {
-  string filenameRelevant;
-  string filenamePrefix;
-  string filenamePostfix;
-
-  // check if the _cp version of the file is present
-  int i = filename.rfind(".");
-  filenamePrefix.assign(filename, 0, i);
-  filenamePostfix.assign(filename, i, filename.size());
-  filenameRelevant = filenamePrefix + "_cp" + filenamePostfix;
+std::string eonc::helpers::getRelevantFile(std::string filename) {
+  const auto dot = filename.rfind('.');
+  const std::string prefix =
+      (dot == std::string::npos) ? filename : filename.substr(0, dot);
+  const std::string postfix =
+      (dot == std::string::npos) ? std::string{} : filename.substr(dot);
+  std::string filenameRelevant = prefix + "_cp" + postfix;
   if (existsFile(filenameRelevant)) {
     return filenameRelevant;
   }
-  // check if the _in version of the file is present
-  filenameRelevant = filenamePrefix + "_in" + filenamePostfix;
+  filenameRelevant = prefix + "_in" + postfix;
   if (existsFile(filenameRelevant)) {
     return filenameRelevant;
   }
-  // otherwise return original filename
   return filename;
 }
 
-VectorXd eonc::helpers::loadMasses(string filename, int nAtoms) {
-  ifstream massFile(filename.c_str());
+VectorXd eonc::helpers::loadMasses(std::string filename, int nAtoms) {
+  std::ifstream massFile(filename.c_str());
   if (!massFile.is_open()) {
     EONC_LOG_CRITICAL("File {} was not found", filename);
     throw std::runtime_error(std::format("cannot open {}", filename));
@@ -133,7 +131,7 @@ AtomMatrix eonc::helpers::loadMode(FILE *modeFile, int nAtoms) {
   return mode;
 }
 
-AtomMatrix eonc::helpers::loadMode(string filename, int nAtoms) {
+AtomMatrix eonc::helpers::loadMode(std::string filename, int nAtoms) {
   // Unique FILE* with RAII cleanup
   auto closer = [](FILE *f) {
     if (f)
@@ -159,14 +157,19 @@ bool eonc::helpers::loadOrSynthesizeDisplacement(
       return false;
     }
     // displacement.con may carry stale fixed-atom coordinates from a prior run.
+    // It also usually has sequential column-5 ids; keep the reactant's.
     const AtomMatrix &initPos = initial.getPositions();
     AtomMatrix pos = target.getPositionsCopy();
     const long n = initial.numberOfAtoms();
+    std::vector<long> fileMap(static_cast<size_t>(n));
     for (long i = 0; i < n; i++) {
       if (initial.getFixed(i)) {
         pos.row(i) = initPos.row(i);
       }
+      target.setAtomIndex(i, initial.getAtomIndex(i));
+      fileMap[static_cast<size_t>(i)] = initial.mapFileRow(i);
     }
+    target.setFileToMatter(std::move(fileMap));
     target.setPositions(pos);
     return true;
   }
@@ -194,6 +197,65 @@ bool eonc::helpers::loadOrSynthesizeDisplacement(
   EONC_LOG_INFO("Synthesized displacement from pos.con + scale {:.6g} * unit "
                 "mode in {} (missing {})",
                 scale, modePath, displacementPath);
+  return true;
+}
+
+bool eonc::helpers::applyClientDisplacement(Matter &target,
+                                            const Matter &initial,
+                                            const Parameters &params,
+                                            AtomMatrix *modeOut) {
+  using namespace eonc::EpiCenters;
+  const auto &opt = params.saddle_search_options();
+  const std::string &dtype = opt.displace_type;
+  if (dtype == DISP_LOAD) {
+    return false;
+  }
+
+  long epicenter = -1;
+  const double cutoff = params.structure_comparison_options().neighbor_cutoff;
+  if (dtype == DISP_LISTED_ATOMS) {
+    epicenter = listedAtomEpiCenter(&initial, opt.displace_atom_list);
+  } else if (dtype == DISP_RANDOM) {
+    epicenter = randomFreeAtomEpiCenter(&initial);
+  } else if (dtype == DISP_LAST_ATOM) {
+    epicenter = lastAtom(&initial);
+  } else if (dtype == DISP_MIN_COORDINATED) {
+    epicenter = minCoordinatedEpiCenter(&initial, cutoff);
+  } else if (dtype == DISP_NOT_FCC_OR_HCP) {
+    epicenter = cnaEpiCenter(&initial, cutoff);
+  } else {
+    return false;
+  }
+
+  target = initial;
+  const long n = initial.numberOfAtoms();
+  const double radius = opt.displace_radius;
+  const double mag = opt.displace_magnitude;
+  AtomMatrix pos = initial.getPositionsCopy();
+  AtomMatrix mode = AtomMatrix::Zero(n, 3);
+  for (long i = 0; i < n; ++i) {
+    if (initial.getFixed(i)) {
+      continue;
+    }
+    const double dist = (i == epicenter) ? 0.0 : initial.distance(epicenter, i);
+    if (dist <= radius) {
+      for (int a = 0; a < 3; ++a) {
+        mode(i, a) = eonc::rng::gaussRandom(0.0, mag);
+      }
+    }
+  }
+  const double norm = mode.norm();
+  if (norm > 0.0) {
+    pos += mode;
+    mode /= norm;
+  } else if (epicenter >= 0 && epicenter < n && !initial.getFixed(epicenter)) {
+    mode(epicenter, 0) = 1.0;
+    pos(epicenter, 0) += mag;
+  }
+  target.setPositions(pos);
+  if (modeOut != nullptr) {
+    *modeOut = std::move(mode);
+  }
   return true;
 }
 
@@ -270,14 +332,15 @@ void eonc::helpers::requireKnownConvergenceMetric(std::string_view metric,
 }
 
 namespace {
-class MatterObjectiveFunction : public ObjectiveFunction {
-  Matter &m_matter; // non-owning reference, avoids copy
+class MatterObjectiveFunction : public eonc::ObjectiveFunction {
+  eonc::Matter &m_matter; // non-owning reference, avoids copy
 public:
-  MatterObjectiveFunction(Matter &mat, const Parameters &parametersPassed)
-      : ObjectiveFunction(parametersPassed),
+  MatterObjectiveFunction(eonc::Matter &mat,
+                          const eonc::Parameters &parametersPassed)
+      : eonc::ObjectiveFunction(parametersPassed),
         m_matter{mat} {
     eonc::helpers::requireKnownConvergenceMetric(
-        params.optimizer_options.convergence_metric, "[Matter]");
+        params.optimizer_options().convergence_metric, "[Matter]");
   }
   ~MatterObjectiveFunction() = default;
   double getEnergy() { return m_matter.getPotentialEnergy(); }
@@ -288,21 +351,21 @@ public:
   VectorXd getPositions() { return m_matter.getPositionsFreeV(); }
   int degreesOfFreedom() { return 3 * m_matter.numberOfFreeAtoms(); }
   bool isConverged() {
-    return getConvergence() < params.optimizer_options.converged_force;
+    return getConvergence() < params.optimizer_options().converged_force;
   }
   double getConvergence() {
-    if (params.optimizer_options.convergence_metric == "norm") {
+    if (params.optimizer_options().convergence_metric == "norm") {
       return m_matter.getForcesFreeV().norm();
-    } else if (params.optimizer_options.convergence_metric == "max_atom") {
+    } else if (params.optimizer_options().convergence_metric == "max_atom") {
       return m_matter.maxForce();
-    } else if (params.optimizer_options.convergence_metric == "max_component") {
-      return m_matter.getForces().maxCoeff();
+    } else if (params.optimizer_options().convergence_metric == "max_component") {
+      return m_matter.getForces().cwiseAbs().maxCoeff();
     } else {
       EONC_LOG_CRITICAL("{} Unknown opt_convergence_metric: {}", "[Matter]",
-                        params.optimizer_options.convergence_metric);
+                        params.optimizer_options().convergence_metric);
       throw std::invalid_argument(
           std::format("[Matter] unknown convergence_metric: {}",
-                      params.optimizer_options.convergence_metric));
+                      params.optimizer_options().convergence_metric));
     }
   }
   VectorXd difference(const VectorXd &a, const VectorXd &b) {
@@ -319,7 +382,7 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
   eonc::log::Scoped m_log;
   auto objf = std::make_shared<MatterObjectiveFunction>(matter, params);
   auto optim = eonc::helpers::create::mkOptim(
-      objf, params.optimizer_options.method, params);
+      objf, params.optimizer_options().method, params);
 
   std::ostringstream min;
   min << prefixMovie;
@@ -340,7 +403,7 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
       }
     }
 
-    if (params.debug_options.write_deprecated_outs) {
+    if (params.debug_options().write_deprecated_outs) {
       std::ofstream minDat(minDatFilename,
                            append ? (std::ios::binary | std::ios::app)
                                   : std::ios::binary);
@@ -362,7 +425,7 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
   if (!quiet) {
     QUILL_LOG_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n", "[Matter]",
                     "Iter", "Step size",
-                    params.optimizer_options.convergence_metric_label,
+                    params.optimizer_options().convergence_metric_label,
                     "Energy");
     QUILL_LOG_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}\n",
                     "[Matter]", iteration, 0.0, objf->getConvergence(),
@@ -370,11 +433,11 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
   }
 
   while (!objf->isConverged() &&
-         iteration < params.optimizer_options.max_iterations) {
+         iteration < params.optimizer_options().max_iterations) {
 
     AtomMatrix pos = matter.getPositions();
 
-    optim->step(params.optimizer_options.max_move);
+    optim->step(params.optimizer_options().max_move);
     iteration++;
 
     double stepSize =
