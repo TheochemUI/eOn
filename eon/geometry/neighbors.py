@@ -82,17 +82,53 @@ def neighbor_list_vectors(
     cutoff: float,
     brute: bool = False,
 ) -> List[List[np.ndarray]]:
-    """Neighbor list with minimum-image vectors from center → neighbor."""
+    """Neighbor list with minimum-image vectors from center → neighbor.
+
+    Unique-index adjacency is the historical eOn contract. Vectors are
+    one MIC wrap of ``r[j] - r[center]`` per neighbour index, computed
+    in one :func:`eon.geometry.pbc` call (minimage ``wrap_many`` when
+    installed). Multi-image pair lists belong on
+    :func:`neighbor_list_pairs`.
+    """
     nl = neighbor_list(p, cutoff, brute=brute)
     r, box = _positions_box(p)
     ibox = np.linalg.inv(box)
-    out: List[List[np.ndarray]] = []
-    for center, neighs in enumerate(nl):
-        vecs = []
-        for j in neighs:
-            vecs.append(pbc(r[j] - r[center], box, ibox))
-        out.append(vecs)
+    pairs = [(center, j) for center, neighs in enumerate(nl) for j in neighs]
+    if not pairs:
+        return [[] for _ in nl]
+    diffs = np.empty((len(pairs), 3), dtype=float)
+    for k, (center, j) in enumerate(pairs):
+        diffs[k] = r[j] - r[center]
+    wrapped = np.atleast_2d(pbc(diffs, box, ibox))
+    out: List[List[np.ndarray]] = [[] for _ in nl]
+    for k, (center, _j) in enumerate(pairs):
+        out[center].append(np.asarray(wrapped[k], dtype=float))
     return out
+
+
+def neighbor_list_pairs(
+    p: StructureLike,
+    cutoff: float,
+):
+    """Vesin pair list with cell shifts (ASE/tonari ``ijS``).
+
+    Returns ``(i, j, S)`` with one row per atom-image pair. Unlike
+    :func:`neighbor_list`, this does not unique-index or apply a
+    minimum-image reduction. Displacement is
+    ``r[j] - r[i] + S @ box``.
+    """
+    r, box = _positions_box(p)
+    n = r.shape[0]
+    empty = (
+        np.zeros(0, dtype=np.int64),
+        np.zeros(0, dtype=np.int64),
+        np.zeros((0, 3), dtype=np.int32),
+    )
+    if n == 0 or cutoff <= 0:
+        return empty
+    calc = VesinNeighborList(cutoff=float(cutoff), full_list=True)
+    i, j, S = calc.compute(r, box, periodic=True, quantities="ijS")
+    return np.asarray(i), np.asarray(j), np.asarray(S)
 
 
 def neighbor_list_linkcell(

@@ -100,6 +100,7 @@ def test_linkcell_knn_matches_vesin_sorted_by_minimage():
     k = 4
     cutoff = 20.0
     vesin = neighbor_list(p, cutoff)
+    lc = neighbor_list_linkcell(p, cutoff=cutoff, k=k)
     cell = minimage.Cell.ortho(12.0, 12.0, 12.0)
     for i in range(n):
         d2 = []
@@ -107,7 +108,6 @@ def test_linkcell_knn_matches_vesin_sorted_by_minimage():
             d2.append((float(cell.dist2(r[i].tolist(), r[j].tolist())), j))
         d2.sort()
         expect = [j for _d, j in d2[:k]]
-        lc = neighbor_list_linkcell(p, cutoff=cutoff, k=k)
         assert set(expect) == set(lc[i])
 
 

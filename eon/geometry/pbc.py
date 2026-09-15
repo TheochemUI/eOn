@@ -18,9 +18,10 @@ def _pbc_numpy(r, box, ibox: Optional[np.ndarray]) -> np.ndarray:
 def pbc(r, box, ibox: Optional[np.ndarray] = None) -> np.ndarray:
     """Minimum-image convention for displacement(s).
 
-    The kernel is :mod:`minimage` (same wrap linkcell uses). The numpy
-    path remains as :func:`pbc_eon_legacy` for the eOn/GROMACS/LAMMPS
-    agreement tests.
+    The kernel is :mod:`minimage` (same wrap linkcell uses). Packed
+    ``(N, 3)`` rows go through ``Cell.wrap_many`` when that method
+    exists. The numpy path remains as :func:`pbc_eon_legacy` for the
+    eOn/GROMACS/LAMMPS agreement tests.
 
     Parameters
     ----------
@@ -38,12 +39,19 @@ def pbc(r, box, ibox: Optional[np.ndarray] = None) -> np.ndarray:
 
         cell = minimage.Cell.from_vesin(box.tolist())
         if r.ndim == 1:
+            wrap = getattr(cell, "wrap", None)
+            if wrap is not None:
+                return np.asarray(wrap(r.tolist()), dtype=float)
             return np.asarray(
                 cell.displacement([0.0, 0.0, 0.0], r.tolist()), dtype=float
             )
-        out = np.empty_like(r, dtype=float)
+        rows = np.atleast_2d(r)
+        wrap_many = getattr(cell, "wrap_many", None)
+        if wrap_many is not None:
+            return np.asarray(wrap_many(rows), dtype=float)
+        out = np.empty_like(rows, dtype=float)
         zero = [0.0, 0.0, 0.0]
-        for i, row in enumerate(np.atleast_2d(r)):
+        for i, row in enumerate(rows):
             out[i] = cell.displacement(zero, row.tolist())
         return out
     except ImportError:
