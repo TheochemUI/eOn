@@ -24,7 +24,7 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 TEST_CASE("Adapter LJ matches the pinned reference", "[pot][rgpot-adapter]") {
   Parameters params;
-  params.potential_options().potential = PotType::LJ;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
@@ -38,7 +38,7 @@ TEST_CASE("Adapter LJ matches the pinned reference", "[pot][rgpot-adapter]") {
 TEST_CASE("Adapter LJCluster matches the pinned reference",
           "[pot][rgpot-adapter]") {
   Parameters params;
-  params.potential_options().potential = PotType::LJCLUSTER;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJCLUSTER;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
@@ -50,7 +50,7 @@ TEST_CASE("Adapter LJCluster matches the pinned reference",
 TEST_CASE("Adapter Morse evaluates and reports shared-safe",
           "[pot][rgpot-adapter]") {
   Parameters params;
-  params.potential_options().potential = PotType::MORSE_PT;
+  ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
   auto pot = eonc::helpers::makePotential(params);
 
   REQUIRE(pot->isThreadSafe());
@@ -66,9 +66,9 @@ TEST_CASE("Adapter Morse evaluates and reports shared-safe",
 TEST_CASE("Adapter ZBL maps config.ini cutoffs through",
           "[pot][rgpot-adapter]") {
   Parameters params;
-  params.potential_options().potential = PotType::ZBL;
-  params.zbl_options().cut_inner = 2.0;
-  params.zbl_options().cut_global = 2.5;
+  ParametersLoadAccess::potential_options(params).potential = PotType::ZBL;
+  ParametersLoadAccess::zbl_options(params).cut_inner = 2.0;
+  ParametersLoadAccess::zbl_options(params).cut_global = 2.5;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
@@ -82,7 +82,7 @@ TEST_CASE("Adapter ZBL maps config.ini cutoffs through",
 TEST_CASE("Adapter forceBatch agrees with per-system force calls",
           "[pot][rgpot-adapter]") {
   Parameters params;
-  params.potential_options().potential = PotType::LJ;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(params);
 
   // Checked, because the displacement below indexes the first atom: an

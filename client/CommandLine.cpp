@@ -164,7 +164,7 @@ void commandLine(int argc, char **argv) {
                  .argName("VALUE")
                  .help("Distance tolerance")
                  .handler([&](const std::string_view &value) {
-                   params.structure_comparison_options().distance_difference =
+                   ParametersLoadAccess::structure_comparison_options(params).distance_difference =
                        parseFloatingPoint<double>(value);
                  }));
 
@@ -291,7 +291,7 @@ void commandLine(int argc, char **argv) {
     for (auto &ch : potential) {
       ch = std::tolower(static_cast<unsigned char>(ch));
     }
-    params.potential_options().potential =
+    ParametersLoadAccess::potential_options(params).potential =
         magic_enum::enum_cast<PotType>(potential, magic_enum::case_insensitive)
             .value_or(PotType::UNKNOWN);
     auto host = serve_host.value_or("localhost");
@@ -312,9 +312,9 @@ void commandLine(int argc, char **argv) {
   // Config-driven serve (no -p or --serve, just --config with [Serve])
   if (!pflag && !sflag && !mflag && !cflag && config_path.has_value() &&
       !serve_spec.has_value() &&
-      (!params.serve_options().endpoints.empty() ||
-       params.serve_options().gateway_port > 0 ||
-       params.serve_options().replicas > 1)) {
+      (!ParametersLoadAccess::serve_options(params).endpoints.empty() ||
+       ParametersLoadAccess::serve_options(params).gateway_port > 0 ||
+       ParametersLoadAccess::serve_options(params).replicas > 1)) {
     serveFromConfig(params);
     std::exit(EXIT_SUCCESS);
   }
@@ -335,22 +335,22 @@ void commandLine(int argc, char **argv) {
   }
 
   if (!cflag) {
-    params.potential_options().potential =
+    ParametersLoadAccess::potential_options(params).potential =
         magic_enum::enum_cast<PotType>(potential, magic_enum::case_insensitive)
             .value_or(PotType::UNKNOWN);
   }
 
   if (!sflag) {
-    params.optimizer_options().method =
+    ParametersLoadAccess::optimizer_options(params).method =
         magic_enum::enum_cast<OptType>(optimizer, magic_enum::case_insensitive)
             .value_or(OptType::CG);
-    params.optimizer_options().converged_force = optConvergedForce;
+    ParametersLoadAccess::optimizer_options(params).converged_force = optConvergedForce;
   }
 
   if (cflag) {
     // Matter copies structure_comparison_options into its own structComp in
     // the constructor, so the flag has to be set before the two below.
-    params.structure_comparison_options().check_rotation = true;
+    ParametersLoadAccess::structure_comparison_options(params).check_rotation = true;
   }
 
   auto pot = eonc::helpers::makePotential(params);

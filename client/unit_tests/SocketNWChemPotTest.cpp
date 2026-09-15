@@ -17,9 +17,9 @@ public:
         matter{nullptr},
         pot_socket{nullptr},
         threshold{1e-5} {
-    params.potential_options().potential = PotType::SocketNWChem;
-    params.socket_nwchem_options().unix_socket_mode = true;
-    params.socket_nwchem_options().unix_socket_path = "eon_nwchem_test_socket";
+    ParametersLoadAccess::potential_options(params).potential = PotType::SocketNWChem;
+    ParametersLoadAccess::socket_nwchem_options(params).unix_socket_mode = true;
+    ParametersLoadAccess::socket_nwchem_options(params).unix_socket_path = "eon_nwchem_test_socket";
 
     pot_socket = eonc::helpers::makePotential(
         params.potential_options().potential, params);

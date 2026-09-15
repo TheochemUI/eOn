@@ -43,12 +43,12 @@ namespace {
 
 void ensure_dynamics_steps(eonc::Parameters &params, long default_steps) {
   if (params.dynamics_options().steps <= 0)
-    params.dynamics_options().steps = default_steps;
+    ParametersLoadAccess::dynamics_options(params).steps = default_steps;
   if (params.dynamics_options().time_step <= 0.0) {
-    params.dynamics_options().time_step =
+    ParametersLoadAccess::dynamics_options(params).time_step =
         params.dynamics_options().time_step_input / params.constants().timeUnit;
     if (params.dynamics_options().time_step <= 0.0)
-      params.dynamics_options().time_step = 1.0 / params.constants().timeUnit;
+      ParametersLoadAccess::dynamics_options(params).time_step = 1.0 / params.constants().timeUnit;
   }
 }
 

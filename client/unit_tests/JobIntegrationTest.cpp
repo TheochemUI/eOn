@@ -1721,7 +1721,7 @@ TEST_CASE("ProcessSearchJob fixed-atom restore: displacement.con stale rows "
   // Build two Matter objects.  LJ suffices: we only read positions and
   // fixed-flags, never evaluate the potential.
   Parameters params;
-  params.potential_options().potential = PotType::LJ;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
 
   // initial = pos.con (the authoritative reference)
@@ -1786,8 +1786,8 @@ TEST_CASE("makeJob creates correct job type for each JobType",
           "[job][factory]") {
   auto params = std::make_unique<Parameters>();
 
-  params->potential_options().potential = PotType::LJ;
-  params->main_options().job = JobType::Point;
+  ParametersLoadAccess::potential_options(*params).potential = PotType::LJ;
+  ParametersLoadAccess::main_options(*params).job = JobType::Point;
   auto job = eonc::helpers::makeJob(std::move(params));
   REQUIRE(job != nullptr);
 }

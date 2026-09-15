@@ -29,11 +29,11 @@ protected:
       : params{},
         pot{nullptr},
         matter{nullptr} {
-    params.potential_options().potential = PotType::LJ;
-    params.optimizer_options().method = OptType::LBFGS;
-    params.optimizer_options().converged_force = 0.01;
-    params.optimizer_options().max_iterations = 500;
-    params.optimizer_options().max_move = 0.2;
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+    ParametersLoadAccess::optimizer_options(params).method = OptType::LBFGS;
+    ParametersLoadAccess::optimizer_options(params).converged_force = 0.01;
+    ParametersLoadAccess::optimizer_options(params).max_iterations = 500;
+    ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
 
     pot = eonc::helpers::makePotential(PotType::LJ, params);
     matter = std::make_shared<Matter>(pot, params);

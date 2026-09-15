@@ -32,10 +32,10 @@ public:
         matter{nullptr},
         pot_ext{nullptr},
         threshold{1e-6} {
-    params.potential_options().potential = PotType::EXT_POT;
+    ParametersLoadAccess::potential_options(params).potential = PotType::EXT_POT;
     // Use absolute path so the test works regardless of cwd
     auto ext_pot_script = std::filesystem::canonical("ext_pot").string();
-    params.potential_options().extPotPath = ext_pot_script;
+    ParametersLoadAccess::potential_options(params).extPotPath = ext_pot_script;
 
     pot_ext = eonc::helpers::makePotential(params.potential_options().potential,
                                            params);

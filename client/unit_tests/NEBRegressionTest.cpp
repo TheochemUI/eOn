@@ -35,7 +35,7 @@ protected:
         pot{nullptr},
         reactant{nullptr},
         product{nullptr} {
-    params.potential_options().potential = PotType::LJ;
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
     pot = eonc::helpers::makePotential(PotType::LJ, params);
     reactant = std::make_shared<Matter>(pot, params);
     product = std::make_shared<Matter>(pot, params);
@@ -48,11 +48,11 @@ protected:
     pos(0, 2) += 0.2;
     product->setPositions(pos);
 
-    params.optimizer_options().max_iterations = 5000;
-    params.optimizer_options().method = OptType::LBFGS;
-    params.optimizer_options().max_move = 0.2;
-    params.neb_options().image_count = 5;
-    params.neb_options().force_tolerance = 0.01;
+    ParametersLoadAccess::optimizer_options(params).max_iterations = 5000;
+    ParametersLoadAccess::optimizer_options(params).method = OptType::LBFGS;
+    ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
+    ParametersLoadAccess::neb_options(params).image_count = 5;
+    ParametersLoadAccess::neb_options(params).force_tolerance = 0.01;
     params.neb_options().initialization.method = NEBInit::LINEAR;
     params.neb_options().endpoints.minimize = false;
     params.neb_options().climbing_image.enabled = false;
@@ -113,7 +113,7 @@ TEST_CASE_METHOD(NEBRegressionFixture,
   // Uniform springs
   params.neb_options().spring.weighting.enabled = false;
   params.neb_options().spring.constant = 5.0;
-  params.neb_options().force_tolerance = 0.05;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 0.05;
   auto neb_uniform =
       std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
   neb_uniform->compute();
@@ -145,7 +145,7 @@ TEST_CASE_METHOD(NEBRegressionFixture,
                  "[neb][regression]") {
   // Plain NEB
   params.neb_options().climbing_image.enabled = false;
-  params.neb_options().force_tolerance = 0.05;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 0.05;
   auto neb_plain =
       std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
   neb_plain->compute();
@@ -208,10 +208,10 @@ TEST_CASE_METHOD(NEBRegressionFixture,
                  "Parallel NEB produces identical results to sequential",
                  "[neb][regression][parallel]") {
   params.neb_options().climbing_image.enabled = false;
-  params.neb_options().force_tolerance = 0.05;
+  ParametersLoadAccess::neb_options(params).force_tolerance = 0.05;
 
   // Run with parallel disabled
-  params.main_options().parallel = false;
+  ParametersLoadAccess::main_options(params).parallel = false;
   auto neb_seq =
       std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
   auto status_seq = neb_seq->compute();
@@ -221,7 +221,7 @@ TEST_CASE_METHOD(NEBRegressionFixture,
   double F_seq = neb_seq->convergenceForce();
 
   // Run with parallel enabled
-  params.main_options().parallel = true;
+  ParametersLoadAccess::main_options(params).parallel = true;
   auto neb_par =
       std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
   auto status_par = neb_par->compute();

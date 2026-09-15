@@ -44,40 +44,40 @@ int load_ini(INIReader &ini, Parameters &params) {
 
   // [Main] //
 
-  params.main_options().job =
+  ParametersLoadAccess::main_options(params).job =
       magic_enum::enum_cast<JobType>(ini.Get("Main", "job", ""),
                                      magic_enum::case_insensitive)
           .value_or(JobType::Unknown);
-  params.main_options().temperature =
-      ini.GetReal("Main", "temperature", params.main_options().temperature);
-  params.main_options().randomSeed =
-      ini.GetInteger("Main", "random_seed", params.main_options().randomSeed);
-  params.main_options().checkpoint =
-      ini.GetBoolean("Main", "checkpoint", params.main_options().checkpoint);
-  params.main_options().quiet =
-      ini.GetBoolean("Main", "quiet", params.main_options().quiet);
-  params.main_options().writeLog =
-      ini.GetBoolean("Main", "write_log", params.main_options().writeLog);
-  params.main_options().writeConForces = ini.GetBoolean(
-      "Main", "write_con_forces", params.main_options().writeConForces);
+  ParametersLoadAccess::main_options(params).temperature =
+      ini.GetReal("Main", "temperature", ParametersLoadAccess::main_options(params).temperature);
+  ParametersLoadAccess::main_options(params).randomSeed =
+      ini.GetInteger("Main", "random_seed", ParametersLoadAccess::main_options(params).randomSeed);
+  ParametersLoadAccess::main_options(params).checkpoint =
+      ini.GetBoolean("Main", "checkpoint", ParametersLoadAccess::main_options(params).checkpoint);
+  ParametersLoadAccess::main_options(params).quiet =
+      ini.GetBoolean("Main", "quiet", ParametersLoadAccess::main_options(params).quiet);
+  ParametersLoadAccess::main_options(params).writeLog =
+      ini.GetBoolean("Main", "write_log", ParametersLoadAccess::main_options(params).writeLog);
+  ParametersLoadAccess::main_options(params).writeConForces = ini.GetBoolean(
+      "Main", "write_con_forces", ParametersLoadAccess::main_options(params).writeConForces);
   // Process-wide io mode; same pattern as the RNG seeding below.
-  eonc::io::set_write_con_forces(params.main_options().writeConForces);
-  params.main_options().finiteDifference = ini.GetReal(
-      "Main", "finite_difference", params.main_options().finiteDifference);
+  eonc::io::set_write_con_forces(ParametersLoadAccess::main_options(params).writeConForces);
+  ParametersLoadAccess::main_options(params).finiteDifference = ini.GetReal(
+      "Main", "finite_difference", ParametersLoadAccess::main_options(params).finiteDifference);
   // Initialize random generator
-  if (params.main_options().randomSeed < 0) {
+  if (ParametersLoadAccess::main_options(params).randomSeed < 0) {
     unsigned i = static_cast<unsigned>(std::time(nullptr));
-    params.main_options().randomSeed = i;
+    ParametersLoadAccess::main_options(params).randomSeed = i;
     eonc::rng::random(i);
   } else {
-    eonc::rng::random(params.main_options().randomSeed);
+    eonc::rng::random(ParametersLoadAccess::main_options(params).randomSeed);
   }
-  params.main_options().maxForceCalls = ini.GetInteger(
-      "Main", "max_force_calls", params.main_options().maxForceCalls);
-  params.main_options().removeNetForce = ini.GetBoolean(
-      "Main", "remove_net_force", params.main_options().removeNetForce);
-  params.main_options().parallel =
-      ini.GetBoolean("Main", "parallel", params.main_options().parallel);
+  ParametersLoadAccess::main_options(params).maxForceCalls = ini.GetInteger(
+      "Main", "max_force_calls", ParametersLoadAccess::main_options(params).maxForceCalls);
+  ParametersLoadAccess::main_options(params).removeNetForce = ini.GetBoolean(
+      "Main", "remove_net_force", ParametersLoadAccess::main_options(params).removeNetForce);
+  ParametersLoadAccess::main_options(params).parallel =
+      ini.GetBoolean("Main", "parallel", ParametersLoadAccess::main_options(params).parallel);
 
   // [Potential] //
 
@@ -87,96 +87,96 @@ int load_ini(INIReader &ini, Parameters &params) {
   if (potTok == "ase_nwcem" || potTok == "ASE_NWCEM") {
     potTok = "ase_nwchem";
   }
-  params.potential_options().potential =
+  ParametersLoadAccess::potential_options(params).potential =
       magic_enum::enum_cast<PotType>(potTok, magic_enum::case_insensitive)
           .value_or(PotType::UNKNOWN);
-  params.potential_options().MPIPollPeriod = ini.GetReal(
-      "Potential", "mpi_poll_period", params.potential_options().MPIPollPeriod);
-  params.potential_options().LAMMPSLogging = ini.GetBoolean(
-      "Potential", "lammps_logging", params.potential_options().LAMMPSLogging);
-  params.potential_options().LAMMPSThreads = static_cast<int>(ini.GetInteger(
-      "Potential", "lammps_threads", params.potential_options().LAMMPSThreads));
-  params.potential_options().EMTRasmussen = ini.GetBoolean(
-      "Potential", "emt_rasmussen", params.potential_options().EMTRasmussen);
-  params.potential_options().extPotPath =
-      ini.Get("Potential", "ext_pot_path", params.potential_options().extPotPath);
-  params.potential_options().potentialsPath = ini.Get(
-      "Potential", "potentials_path", params.potential_options().potentialsPath);
+  ParametersLoadAccess::potential_options(params).MPIPollPeriod = ini.GetReal(
+      "Potential", "mpi_poll_period", ParametersLoadAccess::potential_options(params).MPIPollPeriod);
+  ParametersLoadAccess::potential_options(params).LAMMPSLogging = ini.GetBoolean(
+      "Potential", "lammps_logging", ParametersLoadAccess::potential_options(params).LAMMPSLogging);
+  ParametersLoadAccess::potential_options(params).LAMMPSThreads = static_cast<int>(ini.GetInteger(
+      "Potential", "lammps_threads", ParametersLoadAccess::potential_options(params).LAMMPSThreads));
+  ParametersLoadAccess::potential_options(params).EMTRasmussen = ini.GetBoolean(
+      "Potential", "emt_rasmussen", ParametersLoadAccess::potential_options(params).EMTRasmussen);
+  ParametersLoadAccess::potential_options(params).extPotPath =
+      ini.Get("Potential", "ext_pot_path", ParametersLoadAccess::potential_options(params).extPotPath);
+  ParametersLoadAccess::potential_options(params).potentialsPath = ini.Get(
+      "Potential", "potentials_path", ParametersLoadAccess::potential_options(params).potentialsPath);
 
   if (params.potential_options().potential == PotType::MPI ||
       params.potential_options().potential == PotType::VASP) {
-    params.potential_options().LogPotential = true;
+    ParametersLoadAccess::potential_options(params).LogPotential = true;
   } else {
-    params.potential_options().LogPotential = false;
+    ParametersLoadAccess::potential_options(params).LogPotential = false;
   }
-  params.potential_options().LogPotential = ini.GetBoolean(
-      "Potential", "log_potential", params.potential_options().LogPotential);
-  params.potential_options().thread_safe = ini.GetBoolean(
-      "Potential", "thread_safe", params.potential_options().thread_safe);
+  ParametersLoadAccess::potential_options(params).LogPotential = ini.GetBoolean(
+      "Potential", "log_potential", ParametersLoadAccess::potential_options(params).LogPotential);
+  ParametersLoadAccess::potential_options(params).thread_safe = ini.GetBoolean(
+      "Potential", "thread_safe", ParametersLoadAccess::potential_options(params).thread_safe);
 
   // [AMS]
   if (params.potential_options().potential == PotType::AMS) {
-    params.ams_options().engine =
-        ini.Get("AMS", "engine", params.ams_options().engine);
-    params.ams_options().forcefield =
-        ini.Get("AMS", "forcefield", params.ams_options().forcefield);
-    params.ams_options().resources =
-        ini.Get("AMS", "resources", params.ams_options().resources);
-    params.ams_options().model =
-        ini.Get("AMS", "model", params.ams_options().model);
-    params.ams_options().xc = ini.Get("AMS", "xc", params.ams_options().xc);
-    params.ams_options().basis =
-        ini.Get("AMS", "basis", params.ams_options().basis);
+    ParametersLoadAccess::ams_options(params).engine =
+        ini.Get("AMS", "engine", ParametersLoadAccess::ams_options(params).engine);
+    ParametersLoadAccess::ams_options(params).forcefield =
+        ini.Get("AMS", "forcefield", ParametersLoadAccess::ams_options(params).forcefield);
+    ParametersLoadAccess::ams_options(params).resources =
+        ini.Get("AMS", "resources", ParametersLoadAccess::ams_options(params).resources);
+    ParametersLoadAccess::ams_options(params).model =
+        ini.Get("AMS", "model", ParametersLoadAccess::ams_options(params).model);
+    ParametersLoadAccess::ams_options(params).xc = ini.Get("AMS", "xc", ParametersLoadAccess::ams_options(params).xc);
+    ParametersLoadAccess::ams_options(params).basis =
+        ini.Get("AMS", "basis", ParametersLoadAccess::ams_options(params).basis);
   }
   // [AMS_IO]
   if (params.potential_options().potential == PotType::AMS_IO) {
-    params.ams_options().engine =
-        ini.Get("AMS_IO", "engine", params.ams_options().engine);
-    params.ams_options().forcefield =
-        ini.Get("AMS_IO", "forcefield", params.ams_options().forcefield);
-    params.ams_options().model =
-        ini.Get("AMS_IO", "model", params.ams_options().model);
-    params.ams_options().xc = ini.Get("AMS_IO", "xc", params.ams_options().xc);
+    ParametersLoadAccess::ams_options(params).engine =
+        ini.Get("AMS_IO", "engine", ParametersLoadAccess::ams_options(params).engine);
+    ParametersLoadAccess::ams_options(params).forcefield =
+        ini.Get("AMS_IO", "forcefield", ParametersLoadAccess::ams_options(params).forcefield);
+    ParametersLoadAccess::ams_options(params).model =
+        ini.Get("AMS_IO", "model", ParametersLoadAccess::ams_options(params).model);
+    ParametersLoadAccess::ams_options(params).xc = ini.Get("AMS_IO", "xc", ParametersLoadAccess::ams_options(params).xc);
   }
   // [AMS_ENV]
   if (params.potential_options().potential == PotType::AMS_IO ||
       params.potential_options().potential == PotType::AMS) {
-    params.ams_options().env.amshome =
-        ini.Get("AMS_ENV", "amshome", params.ams_options().env.amshome);
-    params.ams_options().env.scm_tmpdir =
-        ini.Get("AMS_ENV", "scm_tmpdir", params.ams_options().env.scm_tmpdir);
-    params.ams_options().env.scmlicense =
-        ini.Get("AMS_ENV", "scmlicense", params.ams_options().env.scmlicense);
-    params.ams_options().env.scm_pythondir = ini.Get(
-        "AMS_ENV", "scm_pythondir", params.ams_options().env.scm_pythondir);
-    params.ams_options().env.amsbin =
-        ini.Get("AMS_ENV", "amsbin", params.ams_options().env.amsbin);
-    params.ams_options().env.amsresources =
-        ini.Get("AMS_ENV", "amsresources", params.ams_options().env.amsresources);
+    ParametersLoadAccess::ams_options(params).env.amshome =
+        ini.Get("AMS_ENV", "amshome", ParametersLoadAccess::ams_options(params).env.amshome);
+    ParametersLoadAccess::ams_options(params).env.scm_tmpdir =
+        ini.Get("AMS_ENV", "scm_tmpdir", ParametersLoadAccess::ams_options(params).env.scm_tmpdir);
+    ParametersLoadAccess::ams_options(params).env.scmlicense =
+        ini.Get("AMS_ENV", "scmlicense", ParametersLoadAccess::ams_options(params).env.scmlicense);
+    ParametersLoadAccess::ams_options(params).env.scm_pythondir = ini.Get(
+        "AMS_ENV", "scm_pythondir", ParametersLoadAccess::ams_options(params).env.scm_pythondir);
+    ParametersLoadAccess::ams_options(params).env.amsbin =
+        ini.Get("AMS_ENV", "amsbin", ParametersLoadAccess::ams_options(params).env.amsbin);
+    ParametersLoadAccess::ams_options(params).env.amsresources =
+        ini.Get("AMS_ENV", "amsresources", ParametersLoadAccess::ams_options(params).env.amsresources);
   }
   // [XTBPot]
   if (params.potential_options().potential == PotType::XTB) {
-    params.xtb_options().paramset =
-        ini.Get("XTBPot", "paramset", params.xtb_options().paramset);
-    params.xtb_options().acc =
-        ini.GetReal("XTBPot", "accuracy", params.xtb_options().acc);
-    params.xtb_options().elec_temperature =
+    ParametersLoadAccess::xtb_options(params).paramset =
+        ini.Get("XTBPot", "paramset", ParametersLoadAccess::xtb_options(params).paramset);
+    ParametersLoadAccess::xtb_options(params).acc =
+        ini.GetReal("XTBPot", "accuracy", ParametersLoadAccess::xtb_options(params).acc);
+    ParametersLoadAccess::xtb_options(params).elec_temperature =
         ini.GetReal("XTBPot", "electronic_temperature",
-                    params.xtb_options().elec_temperature);
-    params.xtb_options().maxiter =
-        ini.GetInteger("XTBPot", "max_iterations", params.xtb_options().maxiter);
-    params.xtb_options().uhf =
-        ini.GetInteger("XTBPot", "uhf", params.xtb_options().uhf);
-    params.xtb_options().charge =
-        ini.GetReal("XTBPot", "charge", params.xtb_options().charge);
+                    ParametersLoadAccess::xtb_options(params).elec_temperature);
+    ParametersLoadAccess::xtb_options(params).maxiter =
+        ini.GetInteger("XTBPot", "max_iterations", ParametersLoadAccess::xtb_options(params).maxiter);
+    ParametersLoadAccess::xtb_options(params).uhf =
+        ini.GetInteger("XTBPot", "uhf", ParametersLoadAccess::xtb_options(params).uhf);
+    ParametersLoadAccess::xtb_options(params).charge =
+        ini.GetReal("XTBPot", "charge", ParametersLoadAccess::xtb_options(params).charge);
   }
   // [ZBLPot]
   if (params.potential_options().potential == PotType::ZBL) {
-    params.zbl_options().cut_inner =
-        ini.GetReal("ZBLPot", "cut_inner", params.zbl_options().cut_inner);
-    params.zbl_options().cut_global =
-        ini.GetReal("ZBLPot", "cut_global", params.zbl_options().cut_global);
-    if (params.zbl_options().cut_inner > params.zbl_options().cut_global) {
+    ParametersLoadAccess::zbl_options(params).cut_inner =
+        ini.GetReal("ZBLPot", "cut_inner", ParametersLoadAccess::zbl_options(params).cut_inner);
+    ParametersLoadAccess::zbl_options(params).cut_global =
+        ini.GetReal("ZBLPot", "cut_global", ParametersLoadAccess::zbl_options(params).cut_global);
+    if (ParametersLoadAccess::zbl_options(params).cut_inner > ParametersLoadAccess::zbl_options(params).cut_global) {
       throw std::runtime_error(
           "Switching function must begin before the global cutoff!");
     }
@@ -184,53 +184,53 @@ int load_ini(INIReader &ini, Parameters &params) {
   // [D3Pot] / [D4Pot]: rgpot 3.1 Grimme DFT-D
   if (params.potential_options().potential == PotType::DFTD3 ||
       params.potential_options().potential == PotType::DFTD4) {
-    params.dftd_options().functional =
+    ParametersLoadAccess::dftd_options(params).functional =
         ini.Get("D3Pot", "functional",
-                ini.Get("D4Pot", "functional", params.dftd_options().functional));
-    params.dftd_options().atm =
+                ini.Get("D4Pot", "functional", ParametersLoadAccess::dftd_options(params).functional));
+    ParametersLoadAccess::dftd_options(params).atm =
         ini.GetBoolean("D3Pot", "atm",
-                       ini.GetBoolean("D4Pot", "atm", params.dftd_options().atm));
-    params.dftd_options().d3_damping =
-        ini.Get("D3Pot", "damping", params.dftd_options().d3_damping);
-    params.dftd_options().d4_charge =
-        ini.GetReal("D4Pot", "charge", params.dftd_options().d4_charge);
+                       ini.GetBoolean("D4Pot", "atm", ParametersLoadAccess::dftd_options(params).atm));
+    ParametersLoadAccess::dftd_options(params).d3_damping =
+        ini.Get("D3Pot", "damping", ParametersLoadAccess::dftd_options(params).d3_damping);
+    ParametersLoadAccess::dftd_options(params).d4_charge =
+        ini.GetReal("D4Pot", "charge", ParametersLoadAccess::dftd_options(params).d4_charge);
   }
   if (params.potential_options().potential == PotType::EXPR) {
-    params.expr_options().expression =
-        ini.Get("ExprPot", "expression", params.expr_options().expression);
-    params.expr_options().terms =
-        ini.Get("ExprPot", "terms", params.expr_options().terms);
+    ParametersLoadAccess::expr_options(params).expression =
+        ini.Get("ExprPot", "expression", ParametersLoadAccess::expr_options(params).expression);
+    ParametersLoadAccess::expr_options(params).terms =
+        ini.Get("ExprPot", "terms", ParametersLoadAccess::expr_options(params).terms);
   }
   if (params.potential_options().potential == PotType::MOPAC) {
-    params.mopac_options().charge = static_cast<int>(
-        ini.GetInteger("MOPACPot", "charge", params.mopac_options().charge));
-    params.mopac_options().spin = static_cast<int>(
-        ini.GetInteger("MOPACPot", "spin", params.mopac_options().spin));
-    params.mopac_options().model = static_cast<int>(
-        ini.GetInteger("MOPACPot", "model", params.mopac_options().model));
-    params.mopac_options().engine_path =
-        ini.Get("MOPACPot", "engine_path", params.mopac_options().engine_path);
+    ParametersLoadAccess::mopac_options(params).charge = static_cast<int>(
+        ini.GetInteger("MOPACPot", "charge", ParametersLoadAccess::mopac_options(params).charge));
+    ParametersLoadAccess::mopac_options(params).spin = static_cast<int>(
+        ini.GetInteger("MOPACPot", "spin", ParametersLoadAccess::mopac_options(params).spin));
+    ParametersLoadAccess::mopac_options(params).model = static_cast<int>(
+        ini.GetInteger("MOPACPot", "model", ParametersLoadAccess::mopac_options(params).model));
+    ParametersLoadAccess::mopac_options(params).engine_path =
+        ini.Get("MOPACPot", "engine_path", ParametersLoadAccess::mopac_options(params).engine_path);
   }
   // [SocketNWChemPot]
   if (params.potential_options().potential == PotType::SocketNWChem) {
-    params.socket_nwchem_options().host =
-        ini.Get("SocketNWChemPot", "host", params.socket_nwchem_options().host);
-    params.socket_nwchem_options().port = ini.GetInteger(
-        "SocketNWChemPot", "port", params.socket_nwchem_options().port);
-    params.socket_nwchem_options().mem_in_gb = ini.GetInteger(
-        "SocketNWChemPot", "mem_in_gb", params.socket_nwchem_options().mem_in_gb);
-    params.socket_nwchem_options().nwchem_settings =
+    ParametersLoadAccess::socket_nwchem_options(params).host =
+        ini.Get("SocketNWChemPot", "host", ParametersLoadAccess::socket_nwchem_options(params).host);
+    ParametersLoadAccess::socket_nwchem_options(params).port = ini.GetInteger(
+        "SocketNWChemPot", "port", ParametersLoadAccess::socket_nwchem_options(params).port);
+    ParametersLoadAccess::socket_nwchem_options(params).mem_in_gb = ini.GetInteger(
+        "SocketNWChemPot", "mem_in_gb", ParametersLoadAccess::socket_nwchem_options(params).mem_in_gb);
+    ParametersLoadAccess::socket_nwchem_options(params).nwchem_settings =
         ini.Get("SocketNWChemPot", "nwchem_settings",
-                params.socket_nwchem_options().nwchem_settings);
-    params.socket_nwchem_options().unix_socket_path =
+                ParametersLoadAccess::socket_nwchem_options(params).nwchem_settings);
+    ParametersLoadAccess::socket_nwchem_options(params).unix_socket_path =
         ini.Get("SocketNWChemPot", "unix_socket_path",
-                params.socket_nwchem_options().unix_socket_path);
-    params.socket_nwchem_options().unix_socket_mode =
+                ParametersLoadAccess::socket_nwchem_options(params).unix_socket_path);
+    ParametersLoadAccess::socket_nwchem_options(params).unix_socket_mode =
         ini.GetBoolean("SocketNWChemPot", "unix_socket_mode",
-                       params.socket_nwchem_options().unix_socket_mode);
-    params.socket_nwchem_options().make_template_input =
+                       ParametersLoadAccess::socket_nwchem_options(params).unix_socket_mode);
+    ParametersLoadAccess::socket_nwchem_options(params).make_template_input =
         ini.GetBoolean("SocketNWChemPot", "make_template_input",
-                       params.socket_nwchem_options().make_template_input);
+                       ParametersLoadAccess::socket_nwchem_options(params).make_template_input);
   }
 
   // [RgpotPot] — in-process NWChemPot/CPMDPot (also accept legacy [RGPot] keys)
@@ -238,142 +238,142 @@ int load_ini(INIReader &ini, Parameters &params) {
     const char *sec = "RgpotPot";
     // Prefer [RgpotPot]; fall back to [RGPot] field names used by direct-link
     // design
-    params.rgpot_options().backend =
-        ini.Get(sec, "backend", params.rgpot_options().backend);
-    params.rgpot_options().basis = ini.Get(
-        sec, "basis", ini.Get(sec, "nwchem_basis", params.rgpot_options().basis));
-    params.rgpot_options().theory =
+    ParametersLoadAccess::rgpot_options(params).backend =
+        ini.Get(sec, "backend", ParametersLoadAccess::rgpot_options(params).backend);
+    ParametersLoadAccess::rgpot_options(params).basis = ini.Get(
+        sec, "basis", ini.Get(sec, "nwchem_basis", ParametersLoadAccess::rgpot_options(params).basis));
+    ParametersLoadAccess::rgpot_options(params).theory =
         ini.Get(sec, "theory",
-                ini.Get(sec, "nwchem_theory", params.rgpot_options().theory));
-    params.rgpot_options().scf_type =
+                ini.Get(sec, "nwchem_theory", ParametersLoadAccess::rgpot_options(params).theory));
+    ParametersLoadAccess::rgpot_options(params).scf_type =
         ini.Get(sec, "scf_type",
-                ini.Get(sec, "nwchem_scf_type", params.rgpot_options().scf_type));
-    params.rgpot_options().functional = ini.Get(
+                ini.Get(sec, "nwchem_scf_type", ParametersLoadAccess::rgpot_options(params).scf_type));
+    ParametersLoadAccess::rgpot_options(params).functional = ini.Get(
         sec, "functional",
-        ini.Get(sec, "cpmd_functional", params.rgpot_options().functional));
-    params.rgpot_options().cutoff_ry = ini.GetReal(
+        ini.Get(sec, "cpmd_functional", ParametersLoadAccess::rgpot_options(params).functional));
+    ParametersLoadAccess::rgpot_options(params).cutoff_ry = ini.GetReal(
         sec, "cutoff_ry",
-        ini.GetReal(sec, "cpmd_cut_off_ry", params.rgpot_options().cutoff_ry));
-    params.rgpot_options().charge = ini.GetInteger(
+        ini.GetReal(sec, "cpmd_cut_off_ry", ParametersLoadAccess::rgpot_options(params).cutoff_ry));
+    ParametersLoadAccess::rgpot_options(params).charge = ini.GetInteger(
         sec, "charge",
-        ini.GetInteger(sec, "nwchem_charge", params.rgpot_options().charge));
-    params.rgpot_options().multiplicity =
+        ini.GetInteger(sec, "nwchem_charge", ParametersLoadAccess::rgpot_options(params).charge));
+    ParametersLoadAccess::rgpot_options(params).multiplicity =
         ini.GetInteger(sec, "multiplicity",
                        ini.GetInteger(sec, "nwchem_multiplicity",
-                                      params.rgpot_options().multiplicity));
-    params.rgpot_options().engine_path =
-        ini.Get(sec, "engine_path", params.rgpot_options().engine_path);
-    params.rgpot_options().engine_library =
-        ini.Get(sec, "engine_library", params.rgpot_options().engine_library);
-    params.rgpot_options().engine_root =
-        ini.Get(sec, "engine_root", params.rgpot_options().engine_root);
-    params.rgpot_options().title =
-        ini.Get(sec, "title", params.rgpot_options().title);
-    params.rgpot_options().memory_mb =
-        ini.GetInteger(sec, "memory_mb", params.rgpot_options().memory_mb);
-    params.rgpot_options().scratch_dir =
-        ini.Get(sec, "scratch_dir", params.rgpot_options().scratch_dir);
-    params.rgpot_options().input_block =
-        ini.Get(sec, "input_block", params.rgpot_options().input_block);
-    params.rgpot_options().model_path =
-        ini.Get(sec, "model_path", params.rgpot_options().model_path);
-    params.rgpot_options().device =
-        ini.Get(sec, "device", params.rgpot_options().device);
-    params.rgpot_options().length_unit =
-        ini.Get(sec, "length_unit", params.rgpot_options().length_unit);
-    params.rgpot_options().extensions_directory = ini.Get(
-        sec, "extensions_directory", params.rgpot_options().extensions_directory);
-    params.rgpot_options().check_consistency = ini.GetBoolean(
-        sec, "check_consistency", params.rgpot_options().check_consistency);
-    params.rgpot_options().uncertainty_threshold =
+                                      ParametersLoadAccess::rgpot_options(params).multiplicity));
+    ParametersLoadAccess::rgpot_options(params).engine_path =
+        ini.Get(sec, "engine_path", ParametersLoadAccess::rgpot_options(params).engine_path);
+    ParametersLoadAccess::rgpot_options(params).engine_library =
+        ini.Get(sec, "engine_library", ParametersLoadAccess::rgpot_options(params).engine_library);
+    ParametersLoadAccess::rgpot_options(params).engine_root =
+        ini.Get(sec, "engine_root", ParametersLoadAccess::rgpot_options(params).engine_root);
+    ParametersLoadAccess::rgpot_options(params).title =
+        ini.Get(sec, "title", ParametersLoadAccess::rgpot_options(params).title);
+    ParametersLoadAccess::rgpot_options(params).memory_mb =
+        ini.GetInteger(sec, "memory_mb", ParametersLoadAccess::rgpot_options(params).memory_mb);
+    ParametersLoadAccess::rgpot_options(params).scratch_dir =
+        ini.Get(sec, "scratch_dir", ParametersLoadAccess::rgpot_options(params).scratch_dir);
+    ParametersLoadAccess::rgpot_options(params).input_block =
+        ini.Get(sec, "input_block", ParametersLoadAccess::rgpot_options(params).input_block);
+    ParametersLoadAccess::rgpot_options(params).model_path =
+        ini.Get(sec, "model_path", ParametersLoadAccess::rgpot_options(params).model_path);
+    ParametersLoadAccess::rgpot_options(params).device =
+        ini.Get(sec, "device", ParametersLoadAccess::rgpot_options(params).device);
+    ParametersLoadAccess::rgpot_options(params).length_unit =
+        ini.Get(sec, "length_unit", ParametersLoadAccess::rgpot_options(params).length_unit);
+    ParametersLoadAccess::rgpot_options(params).extensions_directory = ini.Get(
+        sec, "extensions_directory", ParametersLoadAccess::rgpot_options(params).extensions_directory);
+    ParametersLoadAccess::rgpot_options(params).check_consistency = ini.GetBoolean(
+        sec, "check_consistency", ParametersLoadAccess::rgpot_options(params).check_consistency);
+    ParametersLoadAccess::rgpot_options(params).uncertainty_threshold =
         ini.GetReal(sec, "uncertainty_threshold",
-                    params.rgpot_options().uncertainty_threshold);
-    params.rgpot_options().torch_determinism_strict =
+                    ParametersLoadAccess::rgpot_options(params).uncertainty_threshold);
+    ParametersLoadAccess::rgpot_options(params).torch_determinism_strict =
         ini.GetBoolean(sec, "torch_determinism_strict",
-                       params.rgpot_options().torch_determinism_strict);
+                       ParametersLoadAccess::rgpot_options(params).torch_determinism_strict);
     // XTB dlopen knobs (also accept [XTBPot] when backend=xtb)
-    params.rgpot_options().xtb_paramset = ini.Get(
+    ParametersLoadAccess::rgpot_options(params).xtb_paramset = ini.Get(
         sec, "paramset",
-        ini.Get(sec, "xtb_paramset", params.rgpot_options().xtb_paramset));
-    params.rgpot_options().xtb_accuracy = ini.GetReal(
+        ini.Get(sec, "xtb_paramset", ParametersLoadAccess::rgpot_options(params).xtb_paramset));
+    ParametersLoadAccess::rgpot_options(params).xtb_accuracy = ini.GetReal(
         sec, "accuracy",
-        ini.GetReal(sec, "xtb_accuracy", params.rgpot_options().xtb_accuracy));
-    params.rgpot_options().xtb_electronic_temperature = ini.GetReal(
+        ini.GetReal(sec, "xtb_accuracy", ParametersLoadAccess::rgpot_options(params).xtb_accuracy));
+    ParametersLoadAccess::rgpot_options(params).xtb_electronic_temperature = ini.GetReal(
         sec, "electronic_temperature",
         ini.GetReal(sec, "xtb_electronic_temperature",
-                    params.rgpot_options().xtb_electronic_temperature));
-    params.rgpot_options().xtb_max_iterations = static_cast<int>(ini.GetInteger(
+                    ParametersLoadAccess::rgpot_options(params).xtb_electronic_temperature));
+    ParametersLoadAccess::rgpot_options(params).xtb_max_iterations = static_cast<int>(ini.GetInteger(
         sec, "max_iterations",
         ini.GetInteger(sec, "xtb_max_iterations",
-                       params.rgpot_options().xtb_max_iterations)));
-    params.rgpot_options().xtb_charge = ini.GetReal(
-        sec, "xtb_charge", static_cast<double>(params.rgpot_options().charge));
-    params.rgpot_options().xtb_uhf = static_cast<int>(ini.GetInteger(
+                       ParametersLoadAccess::rgpot_options(params).xtb_max_iterations)));
+    ParametersLoadAccess::rgpot_options(params).xtb_charge = ini.GetReal(
+        sec, "xtb_charge", static_cast<double>(ParametersLoadAccess::rgpot_options(params).charge));
+    ParametersLoadAccess::rgpot_options(params).xtb_uhf = static_cast<int>(ini.GetInteger(
         sec, "uhf",
-        ini.GetInteger(sec, "xtb_uhf", params.rgpot_options().xtb_uhf)));
-    const std::string be = toLowerCase(params.rgpot_options().backend);
+        ini.GetInteger(sec, "xtb_uhf", ParametersLoadAccess::rgpot_options(params).xtb_uhf)));
+    const std::string be = toLowerCase(ParametersLoadAccess::rgpot_options(params).backend);
     if (be == "xtb" || be == "xtbpot" || be == "gfn" || be == "gfnxtb") {
-      params.rgpot_options().xtb_paramset =
-          ini.Get("XTBPot", "paramset", params.rgpot_options().xtb_paramset);
-      params.rgpot_options().xtb_accuracy =
-          ini.GetReal("XTBPot", "accuracy", params.rgpot_options().xtb_accuracy);
-      params.rgpot_options().xtb_electronic_temperature =
+      ParametersLoadAccess::rgpot_options(params).xtb_paramset =
+          ini.Get("XTBPot", "paramset", ParametersLoadAccess::rgpot_options(params).xtb_paramset);
+      ParametersLoadAccess::rgpot_options(params).xtb_accuracy =
+          ini.GetReal("XTBPot", "accuracy", ParametersLoadAccess::rgpot_options(params).xtb_accuracy);
+      ParametersLoadAccess::rgpot_options(params).xtb_electronic_temperature =
           ini.GetReal("XTBPot", "electronic_temperature",
-                      params.rgpot_options().xtb_electronic_temperature);
-      params.rgpot_options().xtb_max_iterations = static_cast<int>(ini.GetInteger(
-          "XTBPot", "max_iterations", params.rgpot_options().xtb_max_iterations));
-      params.rgpot_options().xtb_uhf = static_cast<int>(
-          ini.GetInteger("XTBPot", "uhf", params.rgpot_options().xtb_uhf));
-      params.rgpot_options().xtb_charge =
-          ini.GetReal("XTBPot", "charge", params.rgpot_options().xtb_charge);
+                      ParametersLoadAccess::rgpot_options(params).xtb_electronic_temperature);
+      ParametersLoadAccess::rgpot_options(params).xtb_max_iterations = static_cast<int>(ini.GetInteger(
+          "XTBPot", "max_iterations", ParametersLoadAccess::rgpot_options(params).xtb_max_iterations));
+      ParametersLoadAccess::rgpot_options(params).xtb_uhf = static_cast<int>(
+          ini.GetInteger("XTBPot", "uhf", ParametersLoadAccess::rgpot_options(params).xtb_uhf));
+      ParametersLoadAccess::rgpot_options(params).xtb_charge =
+          ini.GetReal("XTBPot", "charge", ParametersLoadAccess::rgpot_options(params).xtb_charge);
     }
   }
 
   // [Debug] //
 
-  params.debug_options().write_movies = ini.GetBoolean(
-      "Debug", "write_movies", params.debug_options().write_movies);
-  params.debug_options().write_movies_interval =
+  ParametersLoadAccess::debug_options(params).write_movies = ini.GetBoolean(
+      "Debug", "write_movies", ParametersLoadAccess::debug_options(params).write_movies);
+  ParametersLoadAccess::debug_options(params).write_movies_interval =
       ini.GetInteger("Debug", "write_movies_interval",
-                     params.debug_options().write_movies_interval);
-  params.debug_options().write_deprecated_outs =
+                     ParametersLoadAccess::debug_options(params).write_movies_interval);
+  ParametersLoadAccess::debug_options(params).write_deprecated_outs =
       ini.GetBoolean("Debug", "write_deprecated_outs",
-                     params.debug_options().write_deprecated_outs);
-  params.debug_options().estimate_neb_eigenvalues =
+                     ParametersLoadAccess::debug_options(params).write_deprecated_outs);
+  ParametersLoadAccess::debug_options(params).estimate_neb_eigenvalues =
       ini.GetBoolean("Debug", "estimate_neb_eigenvalues",
-                     params.debug_options().estimate_neb_eigenvalues);
-  params.debug_options().neb_mmf = toLowerCase(
-      ini.Get("Debug", "neb_mmf_estimator", params.debug_options().neb_mmf));
+                     ParametersLoadAccess::debug_options(params).estimate_neb_eigenvalues);
+  ParametersLoadAccess::debug_options(params).neb_mmf = toLowerCase(
+      ini.Get("Debug", "neb_mmf_estimator", ParametersLoadAccess::debug_options(params).neb_mmf));
 
   // [Structure Comparison] //
 
-  params.structure_comparison_options().distance_difference =
+  ParametersLoadAccess::structure_comparison_options(params).distance_difference =
       ini.GetReal("Structure Comparison", "distance_difference",
-                  params.structure_comparison_options().distance_difference);
-  params.structure_comparison_options().neighbor_cutoff =
+                  ParametersLoadAccess::structure_comparison_options(params).distance_difference);
+  ParametersLoadAccess::structure_comparison_options(params).neighbor_cutoff =
       ini.GetReal("Structure Comparison", "neighbor_cutoff",
-                  params.structure_comparison_options().neighbor_cutoff);
-  params.structure_comparison_options().check_rotation =
+                  ParametersLoadAccess::structure_comparison_options(params).neighbor_cutoff);
+  ParametersLoadAccess::structure_comparison_options(params).check_rotation =
       ini.GetBoolean("Structure Comparison", "check_rotation",
-                     params.structure_comparison_options().check_rotation);
-  params.structure_comparison_options().energy_difference =
+                     ParametersLoadAccess::structure_comparison_options(params).check_rotation);
+  ParametersLoadAccess::structure_comparison_options(params).energy_difference =
       ini.GetReal("Structure Comparison", "energy_difference",
-                  params.structure_comparison_options().energy_difference);
-  params.structure_comparison_options().indistinguishable_atoms = ini.GetBoolean(
+                  ParametersLoadAccess::structure_comparison_options(params).energy_difference);
+  ParametersLoadAccess::structure_comparison_options(params).indistinguishable_atoms = ini.GetBoolean(
       "Structure Comparison", "indistinguishable_atoms",
-      params.structure_comparison_options().indistinguishable_atoms);
-  params.structure_comparison_options().remove_translation =
+      ParametersLoadAccess::structure_comparison_options(params).indistinguishable_atoms);
+  ParametersLoadAccess::structure_comparison_options(params).remove_translation =
       ini.GetBoolean("Structure Comparison", "remove_translation",
-                     params.structure_comparison_options().remove_translation);
+                     ParametersLoadAccess::structure_comparison_options(params).remove_translation);
 
   // [Process Search] //
 
-  params.process_search_options().minimize_first =
+  ParametersLoadAccess::process_search_options(params).minimize_first =
       ini.GetBoolean("Process Search", "minimize_first",
-                     params.process_search_options().minimize_first);
-  params.process_search_options().minimization_offset =
+                     ParametersLoadAccess::process_search_options(params).minimize_first);
+  ParametersLoadAccess::process_search_options(params).minimization_offset =
       ini.GetReal("Process Search", "minimization_offset",
-                  params.process_search_options().minimization_offset);
+                  ParametersLoadAccess::process_search_options(params).minimization_offset);
 
   // [Optimizers] //
   auto inp_optMethod =
@@ -381,148 +381,148 @@ int load_ini(INIReader &ini, Parameters &params) {
                                      magic_enum::case_insensitive)
           .value_or(OptType::Unknown);
   if (inp_optMethod != OptType::None) {
-    params.optimizer_options().method = inp_optMethod;
+    ParametersLoadAccess::optimizer_options(params).method = inp_optMethod;
   }
 
-  params.optimizer_options().convergence_metric =
+  ParametersLoadAccess::optimizer_options(params).convergence_metric =
       toLowerCase(ini.Get("Optimizer", "convergence_metric",
-                          params.optimizer_options().convergence_metric));
+                          ParametersLoadAccess::optimizer_options(params).convergence_metric));
   if (auto label = eonc::helpers::convergenceMetricLabel(
-          params.optimizer_options().convergence_metric)) {
-    params.optimizer_options().convergence_metric_label = *label;
+          ParametersLoadAccess::optimizer_options(params).convergence_metric)) {
+    ParametersLoadAccess::optimizer_options(params).convergence_metric_label = *label;
   } else {
     EONC_LOG_ERROR("unknown convergence_metric {}",
-                   params.optimizer_options().convergence_metric);
+                   ParametersLoadAccess::optimizer_options(params).convergence_metric);
     error = 1;
   }
 
   if (ini.HasSection("Refine")) {
-    params.optimizer_options().refine.method =
+    ParametersLoadAccess::optimizer_options(params).refine.method =
         magic_enum::enum_cast<OptType>(ini.Get("Refine", "opt_method", ""),
                                        magic_enum::case_insensitive)
             .value_or(OptType::None);
-    params.optimizer_options().refine.threshold = ini.GetReal(
-        "Refine", "threshold", params.optimizer_options().refine.threshold);
+    ParametersLoadAccess::optimizer_options(params).refine.threshold = ini.GetReal(
+        "Refine", "threshold", ParametersLoadAccess::optimizer_options(params).refine.threshold);
   }
 
-  params.optimizer_options().converged_force = ini.GetReal(
-      "Optimizer", "converged_force", params.optimizer_options().converged_force);
-  params.optimizer_options().max_iterations = static_cast<size_t>(ini.GetInteger(
-      "Optimizer", "max_iterations", params.optimizer_options().max_iterations));
-  params.optimizer_options().max_move =
-      ini.GetReal("Optimizer", "max_move", params.optimizer_options().max_move);
+  ParametersLoadAccess::optimizer_options(params).converged_force = ini.GetReal(
+      "Optimizer", "converged_force", ParametersLoadAccess::optimizer_options(params).converged_force);
+  ParametersLoadAccess::optimizer_options(params).max_iterations = static_cast<size_t>(ini.GetInteger(
+      "Optimizer", "max_iterations", ParametersLoadAccess::optimizer_options(params).max_iterations));
+  ParametersLoadAccess::optimizer_options(params).max_move =
+      ini.GetReal("Optimizer", "max_move", ParametersLoadAccess::optimizer_options(params).max_move);
   // Handle each optimizer separately
   if (ini.HasSection("QuickMin")) {
-    params.optimizer_options().time_step_input = ini.GetReal(
-        "QuickMin", "time_step", params.optimizer_options().time_step_input);
-    params.optimizer_options().time_step =
-        params.optimizer_options().time_step_input / params.constants().timeUnit;
-    params.optimizer_options().quickmin.steepest_descent =
+    ParametersLoadAccess::optimizer_options(params).time_step_input = ini.GetReal(
+        "QuickMin", "time_step", ParametersLoadAccess::optimizer_options(params).time_step_input);
+    ParametersLoadAccess::optimizer_options(params).time_step =
+        ParametersLoadAccess::optimizer_options(params).time_step_input / ParametersLoadAccess::constants(params).timeUnit;
+    ParametersLoadAccess::optimizer_options(params).quickmin.steepest_descent =
         ini.GetBoolean("Optimizer", "qm_steepest_descent",
-                       params.optimizer_options().quickmin.steepest_descent);
+                       ParametersLoadAccess::optimizer_options(params).quickmin.steepest_descent);
   }
   if (ini.HasSection("FIRE")) {
     EONC_LOG_WARNING("Overwriting QuickMin timestep with Fire timestep!!");
-    params.optimizer_options().time_step_input = ini.GetReal(
-        "FIRE", "time_step", params.optimizer_options().time_step_input);
-    params.optimizer_options().time_step =
-        params.optimizer_options().time_step_input / params.constants().timeUnit;
-    params.optimizer_options().max_time_step_input = ini.GetReal(
-        "FIRE", "time_step_max", params.optimizer_options().max_time_step_input);
-    params.optimizer_options().max_time_step =
-        params.optimizer_options().max_time_step_input /
-        params.constants().timeUnit;
+    ParametersLoadAccess::optimizer_options(params).time_step_input = ini.GetReal(
+        "FIRE", "time_step", ParametersLoadAccess::optimizer_options(params).time_step_input);
+    ParametersLoadAccess::optimizer_options(params).time_step =
+        ParametersLoadAccess::optimizer_options(params).time_step_input / ParametersLoadAccess::constants(params).timeUnit;
+    ParametersLoadAccess::optimizer_options(params).max_time_step_input = ini.GetReal(
+        "FIRE", "time_step_max", ParametersLoadAccess::optimizer_options(params).max_time_step_input);
+    ParametersLoadAccess::optimizer_options(params).max_time_step =
+        ParametersLoadAccess::optimizer_options(params).max_time_step_input /
+        ParametersLoadAccess::constants(params).timeUnit;
   }
   if (ini.HasSection("LBFGS")) {
-    params.optimizer_options().lbfgs.memory = ini.GetInteger(
-        "LBFGS", "lbfgs_memory", params.optimizer_options().lbfgs.memory);
-    params.optimizer_options().lbfgs.inverse_curvature =
+    ParametersLoadAccess::optimizer_options(params).lbfgs.memory = ini.GetInteger(
+        "LBFGS", "lbfgs_memory", ParametersLoadAccess::optimizer_options(params).lbfgs.memory);
+    ParametersLoadAccess::optimizer_options(params).lbfgs.inverse_curvature =
         ini.GetReal("LBFGS", "lbfgs_inverse_curvature",
-                    params.optimizer_options().lbfgs.inverse_curvature);
-    params.optimizer_options().lbfgs.max_inverse_curvature =
+                    ParametersLoadAccess::optimizer_options(params).lbfgs.inverse_curvature);
+    ParametersLoadAccess::optimizer_options(params).lbfgs.max_inverse_curvature =
         ini.GetReal("LBFGS", "lbfgs_max_inverse_curvature",
-                    params.optimizer_options().lbfgs.max_inverse_curvature);
-    params.optimizer_options().lbfgs.auto_scale = ini.GetBoolean(
-        "LBFGS", "lbfgs_auto_scale", params.optimizer_options().lbfgs.auto_scale);
-    params.optimizer_options().lbfgs.angle_reset =
+                    ParametersLoadAccess::optimizer_options(params).lbfgs.max_inverse_curvature);
+    ParametersLoadAccess::optimizer_options(params).lbfgs.auto_scale = ini.GetBoolean(
+        "LBFGS", "lbfgs_auto_scale", ParametersLoadAccess::optimizer_options(params).lbfgs.auto_scale);
+    ParametersLoadAccess::optimizer_options(params).lbfgs.angle_reset =
         ini.GetBoolean("LBFGS", "lbfgs_angle_reset",
-                       params.optimizer_options().lbfgs.angle_reset);
-    params.optimizer_options().lbfgs.distance_reset =
+                       ParametersLoadAccess::optimizer_options(params).lbfgs.angle_reset);
+    ParametersLoadAccess::optimizer_options(params).lbfgs.distance_reset =
         ini.GetBoolean("LBFGS", "lbfgs_distance_reset",
-                       params.optimizer_options().lbfgs.distance_reset);
+                       ParametersLoadAccess::optimizer_options(params).lbfgs.distance_reset);
   }
   if (ini.HasSection("CG")) {
-    params.optimizer_options().cg.no_overshooting =
+    ParametersLoadAccess::optimizer_options(params).cg.no_overshooting =
         ini.GetBoolean("CG", "cg_no_overshooting",
-                       params.optimizer_options().cg.no_overshooting);
-    params.optimizer_options().cg.knock_out_max_move =
+                       ParametersLoadAccess::optimizer_options(params).cg.no_overshooting);
+    ParametersLoadAccess::optimizer_options(params).cg.knock_out_max_move =
         ini.GetBoolean("CG", "cg_knock_out_max_move",
-                       params.optimizer_options().cg.knock_out_max_move);
-    params.optimizer_options().cg.line_search = ini.GetBoolean(
-        "CG", "cg_line_search", params.optimizer_options().cg.line_search);
-    params.optimizer_options().cg.line_converged = ini.GetReal(
-        "CG", "cg_line_converged", params.optimizer_options().cg.line_converged);
-    params.optimizer_options().cg.max_iter_before_reset =
+                       ParametersLoadAccess::optimizer_options(params).cg.knock_out_max_move);
+    ParametersLoadAccess::optimizer_options(params).cg.line_search = ini.GetBoolean(
+        "CG", "cg_line_search", ParametersLoadAccess::optimizer_options(params).cg.line_search);
+    ParametersLoadAccess::optimizer_options(params).cg.line_converged = ini.GetReal(
+        "CG", "cg_line_converged", ParametersLoadAccess::optimizer_options(params).cg.line_converged);
+    ParametersLoadAccess::optimizer_options(params).cg.max_iter_before_reset =
         ini.GetInteger("CG", "cg_max_iter_before_reset",
-                       params.optimizer_options().cg.max_iter_before_reset);
-    params.optimizer_options().cg.line_search_max_iter =
+                       ParametersLoadAccess::optimizer_options(params).cg.max_iter_before_reset);
+    ParametersLoadAccess::optimizer_options(params).cg.line_search_max_iter =
         ini.GetInteger("CG", "cg_max_iter_line_search",
-                       params.optimizer_options().cg.line_search_max_iter);
+                       ParametersLoadAccess::optimizer_options(params).cg.line_search_max_iter);
   }
   if (ini.HasSection("SD")) {
-    params.optimizer_options().sd.alpha =
-        ini.GetReal("SD", "sd_alpha", params.optimizer_options().sd.alpha);
-    params.optimizer_options().sd.two_point = ini.GetBoolean(
-        "SD", "sd_twopoint", params.optimizer_options().sd.two_point);
+    ParametersLoadAccess::optimizer_options(params).sd.alpha =
+        ini.GetReal("SD", "sd_alpha", ParametersLoadAccess::optimizer_options(params).sd.alpha);
+    ParametersLoadAccess::optimizer_options(params).sd.two_point = ini.GetBoolean(
+        "SD", "sd_twopoint", ParametersLoadAccess::optimizer_options(params).sd.two_point);
   }
 
   // [Dimer] //
 
-  params.dimer_options().rotation_angle =
-      ini.GetReal("Dimer", "finite_angle", params.dimer_options().rotation_angle);
-  params.dimer_options().improved =
-      ini.GetBoolean("Dimer", "improved", params.dimer_options().improved);
-  params.dimer_options().converged_angle = ini.GetReal(
-      "Dimer", "converged_angle", params.dimer_options().converged_angle);
-  params.dimer_options().max_iterations = ini.GetInteger(
-      "Dimer", "max_iterations", params.dimer_options().max_iterations);
+  ParametersLoadAccess::dimer_options(params).rotation_angle =
+      ini.GetReal("Dimer", "finite_angle", ParametersLoadAccess::dimer_options(params).rotation_angle);
+  ParametersLoadAccess::dimer_options(params).improved =
+      ini.GetBoolean("Dimer", "improved", ParametersLoadAccess::dimer_options(params).improved);
+  ParametersLoadAccess::dimer_options(params).converged_angle = ini.GetReal(
+      "Dimer", "converged_angle", ParametersLoadAccess::dimer_options(params).converged_angle);
+  ParametersLoadAccess::dimer_options(params).max_iterations = ini.GetInteger(
+      "Dimer", "max_iterations", ParametersLoadAccess::dimer_options(params).max_iterations);
   if (auto dimerOpt = magic_enum::enum_cast<OptType>(
           ini.Get("Dimer", "opt_method", "cg"), magic_enum::case_insensitive);
       dimerOpt && *dimerOpt != OptType::Unknown && *dimerOpt != OptType::None) {
-    params.dimer_options().opt_method = *dimerOpt;
+    ParametersLoadAccess::dimer_options(params).opt_method = *dimerOpt;
   }
-  params.dimer_options().rotations_min = ini.GetInteger(
-      "Dimer", "rotations_min", params.dimer_options().rotations_min);
-  params.dimer_options().rotations_max = ini.GetInteger(
-      "Dimer", "rotations_max", params.dimer_options().rotations_max);
-  params.dimer_options().torque_min =
-      ini.GetReal("Dimer", "torque_min", params.dimer_options().torque_min);
-  params.dimer_options().torque_max =
-      ini.GetReal("Dimer", "torque_max", params.dimer_options().torque_max);
-  params.dimer_options().remove_rotation = ini.GetBoolean(
-      "Dimer", "remove_rotation", params.dimer_options().remove_rotation);
-  params.dimer_options().lor_residual_tol = ini.GetReal(
-      "Dimer", "lor_residual_tol", params.dimer_options().lor_residual_tol);
+  ParametersLoadAccess::dimer_options(params).rotations_min = ini.GetInteger(
+      "Dimer", "rotations_min", ParametersLoadAccess::dimer_options(params).rotations_min);
+  ParametersLoadAccess::dimer_options(params).rotations_max = ini.GetInteger(
+      "Dimer", "rotations_max", ParametersLoadAccess::dimer_options(params).rotations_max);
+  ParametersLoadAccess::dimer_options(params).torque_min =
+      ini.GetReal("Dimer", "torque_min", ParametersLoadAccess::dimer_options(params).torque_min);
+  ParametersLoadAccess::dimer_options(params).torque_max =
+      ini.GetReal("Dimer", "torque_max", ParametersLoadAccess::dimer_options(params).torque_max);
+  ParametersLoadAccess::dimer_options(params).remove_rotation = ini.GetBoolean(
+      "Dimer", "remove_rotation", ParametersLoadAccess::dimer_options(params).remove_rotation);
+  ParametersLoadAccess::dimer_options(params).lor_residual_tol = ini.GetReal(
+      "Dimer", "lor_residual_tol", ParametersLoadAccess::dimer_options(params).lor_residual_tol);
   {
     const auto rotTok =
         toLowerCase(ini.Get("Dimer", "rotation_backend", "classical"));
-    params.dimer_options().rotation_backend =
+    ParametersLoadAccess::dimer_options(params).rotation_backend =
         magic_enum::enum_cast<DimerRotationBackend>(
             rotTok, magic_enum::case_insensitive)
             .value_or(DimerRotationBackend::Classical);
   }
 
   // GP Surrogate Parameters
-  params.gp_surrogate_options().enabled =
+  ParametersLoadAccess::gp_surrogate_options(params).enabled =
       ini.GetBoolean("Surrogate", "use_surrogate", false);
-  if (params.gp_surrogate_options().enabled) {
-    params.gp_surrogate_options().sub_job = params.main_options().job;
-    params.main_options().job = JobType::GP_Surrogate;
+  if (ParametersLoadAccess::gp_surrogate_options(params).enabled) {
+    ParametersLoadAccess::gp_surrogate_options(params).sub_job = ParametersLoadAccess::main_options(params).job;
+    ParametersLoadAccess::main_options(params).job = JobType::GP_Surrogate;
   }
-  params.gp_surrogate_options().uncertainty = ini.GetReal(
-      "Surrogate", "gp_uncertainty", params.gp_surrogate_options().uncertainty);
+  ParametersLoadAccess::gp_surrogate_options(params).uncertainty = ini.GetReal(
+      "Surrogate", "gp_uncertainty", ParametersLoadAccess::gp_surrogate_options(params).uncertainty);
   if (ini.HasSection("Surrogate")) {
-    params.gp_surrogate_options().potential =
+    ParametersLoadAccess::gp_surrogate_options(params).potential =
         magic_enum::enum_cast<PotType>(ini.Get("Surrogate", "potential", ""),
                                        magic_enum::case_insensitive)
             .value_or(PotType::UNKNOWN);
@@ -532,75 +532,75 @@ int load_ini(INIReader &ini, Parameters &params) {
   }
   // [CatLearn]
   if (ini.HasSection("CatLearn")) {
-    params.catlearn_options().path = ini.Get("CatLearn", "catl_path", "");
-    params.catlearn_options().model = ini.Get("CatLearn", "model", "catl_model");
-    params.catlearn_options().prior = ini.Get("CatLearn", "prior", "catl_prior");
-    params.catlearn_options().use_deriv =
+    ParametersLoadAccess::catlearn_options(params).path = ini.Get("CatLearn", "catl_path", "");
+    ParametersLoadAccess::catlearn_options(params).model = ini.Get("CatLearn", "model", "catl_model");
+    ParametersLoadAccess::catlearn_options(params).prior = ini.Get("CatLearn", "prior", "catl_prior");
+    ParametersLoadAccess::catlearn_options(params).use_deriv =
         ini.GetBoolean("CatLearn", "use_derivatives", "catl_deriv");
-    params.catlearn_options().use_fingerprint =
+    ParametersLoadAccess::catlearn_options(params).use_fingerprint =
         ini.GetBoolean("CatLearn", "use_fingerprint", "catl_fingerprint");
-    params.catlearn_options().parallel = ini.GetBoolean(
+    ParametersLoadAccess::catlearn_options(params).parallel = ini.GetBoolean(
         "CatLearn", "parallel_hyperparameter_opt", "catl_parallel");
   }
   // [ASE_ORCA]
   if (ini.HasSection("ASE_ORCA")) {
-    params.ase_orca_options().path = ini.Get("ASE_ORCA", "orca_path", "");
-    params.ase_orca_options().nproc = ini.Get("ASE_ORCA", "nproc", "1");
-    params.ase_orca_options().simpleinput =
+    ParametersLoadAccess::ase_orca_options(params).path = ini.Get("ASE_ORCA", "orca_path", "");
+    ParametersLoadAccess::ase_orca_options(params).nproc = ini.Get("ASE_ORCA", "nproc", "1");
+    ParametersLoadAccess::ase_orca_options(params).simpleinput =
         ini.Get("ASE_ORCA", "simpleinput", "");
-    params.ase_orca_options().charge =
+    ParametersLoadAccess::ase_orca_options(params).charge =
         static_cast<int>(ini.GetInteger("ASE_ORCA", "charge", 0));
-    params.ase_orca_options().multiplicity =
+    ParametersLoadAccess::ase_orca_options(params).multiplicity =
         static_cast<int>(ini.GetInteger("ASE_ORCA", "multiplicity", 1));
   }
   // [ASE_NWCHEM]
   if (ini.HasSection("ASE_NWCHEM")) {
-    params.ase_nwchem_options().path = ini.Get("ASE_NWCHEM", "nwchem_path", "");
-    params.ase_nwchem_options().nproc = ini.Get("ASE_NWCHEM", "nproc", "1");
-    params.ase_nwchem_options().mpi_launcher = ini.Get(
-        "ASE_NWCHEM", "mpi_launcher", params.ase_nwchem_options().mpi_launcher);
-    params.ase_nwchem_options().multiplicity =
+    ParametersLoadAccess::ase_nwchem_options(params).path = ini.Get("ASE_NWCHEM", "nwchem_path", "");
+    ParametersLoadAccess::ase_nwchem_options(params).nproc = ini.Get("ASE_NWCHEM", "nproc", "1");
+    ParametersLoadAccess::ase_nwchem_options(params).mpi_launcher = ini.Get(
+        "ASE_NWCHEM", "mpi_launcher", ParametersLoadAccess::ase_nwchem_options(params).mpi_launcher);
+    ParametersLoadAccess::ase_nwchem_options(params).multiplicity =
         ini.Get("ASE_NWCHEM", "multiplicity", "");
-    params.ase_nwchem_options().scf_thresh =
+    ParametersLoadAccess::ase_nwchem_options(params).scf_thresh =
         ini.GetReal("ASE_NWCHEM", "scf_thresh", 1e-5);
-    params.ase_nwchem_options().scf_maxiter =
+    ParametersLoadAccess::ase_nwchem_options(params).scf_maxiter =
         ini.GetInteger("ASE_NWCHEM", "scf_maxiter", 200);
-    params.ase_nwchem_options().basis =
-        ini.Get("ASE_NWCHEM", "basis", params.ase_nwchem_options().basis);
-    params.ase_nwchem_options().memory =
-        ini.Get("ASE_NWCHEM", "memory", params.ase_nwchem_options().memory);
+    ParametersLoadAccess::ase_nwchem_options(params).basis =
+        ini.Get("ASE_NWCHEM", "basis", ParametersLoadAccess::ase_nwchem_options(params).basis);
+    ParametersLoadAccess::ase_nwchem_options(params).memory =
+        ini.Get("ASE_NWCHEM", "memory", ParametersLoadAccess::ase_nwchem_options(params).memory);
   }
   // [Metatomic]
   if (ini.HasSection("Metatomic")) {
-    params.metatomic_options().model_path =
+    ParametersLoadAccess::metatomic_options(params).model_path =
         ini.Get("Metatomic", "model_path", "");
-    params.metatomic_options().device = ini.Get("Metatomic", "device", "cpu");
-    params.metatomic_options().length_unit =
+    ParametersLoadAccess::metatomic_options(params).device = ini.Get("Metatomic", "device", "cpu");
+    ParametersLoadAccess::metatomic_options(params).length_unit =
         ini.Get("Metatomic", "length_unit", "angstrom");
-    params.metatomic_options().extensions_directory =
+    ParametersLoadAccess::metatomic_options(params).extensions_directory =
         ini.Get("Metatomic", "extensions_directory", "");
-    params.metatomic_options().check_consistency =
+    ParametersLoadAccess::metatomic_options(params).check_consistency =
         ini.GetBoolean("Metatomic", "check_consistency", false);
-    params.metatomic_options().uncertainty_threshold =
+    ParametersLoadAccess::metatomic_options(params).uncertainty_threshold =
         ini.GetReal("Metatomic", "uncertainty_threshold", -1.0);
-    params.metatomic_options().energy_output = ini.Get(
-        "Metatomic", "energy_output", params.metatomic_options().energy_output);
-    params.metatomic_options().energy_uncertainty_output =
+    ParametersLoadAccess::metatomic_options(params).energy_output = ini.Get(
+        "Metatomic", "energy_output", ParametersLoadAccess::metatomic_options(params).energy_output);
+    ParametersLoadAccess::metatomic_options(params).energy_uncertainty_output =
         ini.Get("Metatomic", "energy_uncertainty_output",
-                params.metatomic_options().energy_uncertainty_output);
-    params.metatomic_options().force_output = ini.Get(
-        "Metatomic", "force_output", params.metatomic_options().force_output);
-    params.metatomic_options().non_conservative =
+                ParametersLoadAccess::metatomic_options(params).energy_uncertainty_output);
+    ParametersLoadAccess::metatomic_options(params).force_output = ini.Get(
+        "Metatomic", "force_output", ParametersLoadAccess::metatomic_options(params).force_output);
+    ParametersLoadAccess::metatomic_options(params).non_conservative =
         ini.GetBoolean("Metatomic", "non_conservative", false);
-    params.metatomic_options().random_rotation =
+    ParametersLoadAccess::metatomic_options(params).random_rotation =
         ini.GetBoolean("Metatomic", "random_rotation", false);
-    params.metatomic_options().n_symmetry_rotations = static_cast<long>(
+    ParametersLoadAccess::metatomic_options(params).n_symmetry_rotations = static_cast<long>(
         ini.GetInteger("Metatomic", "n_symmetry_rotations", 0));
-    params.metatomic_options().deterministic =
+    ParametersLoadAccess::metatomic_options(params).deterministic =
         ini.GetBoolean("Metatomic", "deterministic", true);
-    params.metatomic_options().deterministic_strict =
+    ParametersLoadAccess::metatomic_options(params).deterministic_strict =
         ini.GetBoolean("Metatomic", "deterministic_strict", false);
-    auto &_variant = params.metatomic_options().variant;
+    auto &_variant = ParametersLoadAccess::metatomic_options(params).variant;
     _variant.base = ini.Get("Metatomic", "variant_base", "");
     _variant.energy = ini.Get("Metatomic", "variant_energy", "");
     _variant.energy_uncertainty =
@@ -609,322 +609,322 @@ int load_ini(INIReader &ini, Parameters &params) {
   }
   // [Serve]
   if (ini.HasSection("Serve")) {
-    params.serve_options().host =
-        ini.Get("Serve", "host", params.serve_options().host);
-    params.serve_options().port = static_cast<uint16_t>(
-        ini.GetInteger("Serve", "port", params.serve_options().port));
-    params.serve_options().replicas = static_cast<size_t>(
-        ini.GetInteger("Serve", "replicas", params.serve_options().replicas));
-    params.serve_options().gateway_port = static_cast<uint16_t>(ini.GetInteger(
-        "Serve", "gateway_port", params.serve_options().gateway_port));
-    params.serve_options().endpoints =
-        ini.Get("Serve", "endpoints", params.serve_options().endpoints);
+    ParametersLoadAccess::serve_options(params).host =
+        ini.Get("Serve", "host", ParametersLoadAccess::serve_options(params).host);
+    ParametersLoadAccess::serve_options(params).port = static_cast<uint16_t>(
+        ini.GetInteger("Serve", "port", ParametersLoadAccess::serve_options(params).port));
+    ParametersLoadAccess::serve_options(params).replicas = static_cast<size_t>(
+        ini.GetInteger("Serve", "replicas", ParametersLoadAccess::serve_options(params).replicas));
+    ParametersLoadAccess::serve_options(params).gateway_port = static_cast<uint16_t>(ini.GetInteger(
+        "Serve", "gateway_port", ParametersLoadAccess::serve_options(params).gateway_port));
+    ParametersLoadAccess::serve_options(params).endpoints =
+        ini.Get("Serve", "endpoints", ParametersLoadAccess::serve_options(params).endpoints);
   }
 
   // GP_NEB only
-  params.gp_surrogate_options().linear_path_always =
+  ParametersLoadAccess::gp_surrogate_options(params).linear_path_always =
       ini.GetBoolean("Surrogate", "gp_linear_path_always",
-                     params.gp_surrogate_options().linear_path_always);
+                     ParametersLoadAccess::gp_surrogate_options(params).linear_path_always);
   // [Lanczos] //
 
-  params.lanczos_options().tolerance =
-      ini.GetReal("Lanczos", "tolerance", params.lanczos_options().tolerance);
-  params.lanczos_options().max_iterations = ini.GetInteger(
-      "Lanczos", "max_iterations", params.lanczos_options().max_iterations);
-  params.lanczos_options().quit_early = ini.GetBoolean(
-      "Lanczos", "quit_early", params.lanczos_options().quit_early);
+  ParametersLoadAccess::lanczos_options(params).tolerance =
+      ini.GetReal("Lanczos", "tolerance", ParametersLoadAccess::lanczos_options(params).tolerance);
+  ParametersLoadAccess::lanczos_options(params).max_iterations = ini.GetInteger(
+      "Lanczos", "max_iterations", ParametersLoadAccess::lanczos_options(params).max_iterations);
+  ParametersLoadAccess::lanczos_options(params).quit_early = ini.GetBoolean(
+      "Lanczos", "quit_early", ParametersLoadAccess::lanczos_options(params).quit_early);
   if (ini.HasValue("Lanczos", "phva_atoms")) {
-    params.lanczos_options().phva_atoms =
+    ParametersLoadAccess::lanczos_options(params).phva_atoms =
         toLowerCase(ini.Get("Lanczos", "phva_atoms", "All"));
   }
 
   // [Davidson] //
-  params.davidson_options().tolerance =
-      ini.GetReal("Davidson", "tolerance", params.davidson_options().tolerance);
-  params.davidson_options().max_iterations = ini.GetInteger(
-      "Davidson", "max_iterations", params.davidson_options().max_iterations);
-  params.davidson_options().diagonal_preconditioner =
+  ParametersLoadAccess::davidson_options(params).tolerance =
+      ini.GetReal("Davidson", "tolerance", ParametersLoadAccess::davidson_options(params).tolerance);
+  ParametersLoadAccess::davidson_options(params).max_iterations = ini.GetInteger(
+      "Davidson", "max_iterations", ParametersLoadAccess::davidson_options(params).max_iterations);
+  ParametersLoadAccess::davidson_options(params).diagonal_preconditioner =
       ini.GetBoolean("Davidson", "diagonal_preconditioner",
-                     params.davidson_options().diagonal_preconditioner);
+                     ParametersLoadAccess::davidson_options(params).diagonal_preconditioner);
   if (ini.HasValue("Davidson", "phva_atoms")) {
-    params.davidson_options().phva_atoms =
+    ParametersLoadAccess::davidson_options(params).phva_atoms =
         toLowerCase(ini.Get("Davidson", "phva_atoms", "All"));
   }
 
   // [ARTn] //
-  params.artn_options().push_step_size =
-      ini.GetReal("ARTn", "push_step_size", params.artn_options().push_step_size);
-  params.artn_options().force_threshold = ini.GetReal(
-      "ARTn", "force_threshold", params.artn_options().force_threshold);
-  params.artn_options().max_iterations = ini.GetInteger(
-      "ARTn", "max_iterations", params.artn_options().max_iterations);
-  params.artn_options().ninit =
-      ini.GetInteger("ARTn", "ninit", params.artn_options().ninit);
-  params.artn_options().nperp_limitation =
-      ini.Get("ARTn", "nperp_limitation", params.artn_options().nperp_limitation);
-  params.artn_options().lanczos_min_size = ini.GetInteger(
-      "ARTn", "lanczos_min_size", params.artn_options().lanczos_min_size);
-  params.artn_options().nsmooth =
-      ini.GetInteger("ARTn", "nsmooth", params.artn_options().nsmooth);
-  params.artn_options().filin =
-      ini.Get("ARTn", "filin", params.artn_options().filin);
+  ParametersLoadAccess::artn_options(params).push_step_size =
+      ini.GetReal("ARTn", "push_step_size", ParametersLoadAccess::artn_options(params).push_step_size);
+  ParametersLoadAccess::artn_options(params).force_threshold = ini.GetReal(
+      "ARTn", "force_threshold", ParametersLoadAccess::artn_options(params).force_threshold);
+  ParametersLoadAccess::artn_options(params).max_iterations = ini.GetInteger(
+      "ARTn", "max_iterations", ParametersLoadAccess::artn_options(params).max_iterations);
+  ParametersLoadAccess::artn_options(params).ninit =
+      ini.GetInteger("ARTn", "ninit", ParametersLoadAccess::artn_options(params).ninit);
+  ParametersLoadAccess::artn_options(params).nperp_limitation =
+      ini.Get("ARTn", "nperp_limitation", ParametersLoadAccess::artn_options(params).nperp_limitation);
+  ParametersLoadAccess::artn_options(params).lanczos_min_size = ini.GetInteger(
+      "ARTn", "lanczos_min_size", ParametersLoadAccess::artn_options(params).lanczos_min_size);
+  ParametersLoadAccess::artn_options(params).nsmooth =
+      ini.GetInteger("ARTn", "nsmooth", ParametersLoadAccess::artn_options(params).nsmooth);
+  ParametersLoadAccess::artn_options(params).filin =
+      ini.Get("ARTn", "filin", ParametersLoadAccess::artn_options(params).filin);
 
   // [IRA] //
-  params.ira_options().distance_threshold = ini.GetReal(
-      "IRA", "distance_threshold", params.ira_options().distance_threshold);
-  params.ira_options().symmetry_threshold = ini.GetReal(
-      "IRA", "symmetry_threshold", params.ira_options().symmetry_threshold);
-  params.ira_options().use_pbc =
-      ini.GetBoolean("IRA", "use_pbc", params.ira_options().use_pbc);
+  ParametersLoadAccess::ira_options(params).distance_threshold = ini.GetReal(
+      "IRA", "distance_threshold", ParametersLoadAccess::ira_options(params).distance_threshold);
+  ParametersLoadAccess::ira_options(params).symmetry_threshold = ini.GetReal(
+      "IRA", "symmetry_threshold", ParametersLoadAccess::ira_options(params).symmetry_threshold);
+  ParametersLoadAccess::ira_options(params).use_pbc =
+      ini.GetBoolean("IRA", "use_pbc", ParametersLoadAccess::ira_options(params).use_pbc);
 
   // [GPR Dimer] //
-  params.gpr_dimer_options().rotation_angle = ini.GetReal(
-      "GPR Dimer", "finite_angle", params.gpr_dimer_options().rotation_angle);
-  params.gpr_dimer_options().converged_angle = ini.GetReal(
-      "GPR Dimer", "converged_angle", params.gpr_dimer_options().converged_angle);
-  params.gpr_dimer_options().relax_conv_angle =
+  ParametersLoadAccess::gpr_dimer_options(params).rotation_angle = ini.GetReal(
+      "GPR Dimer", "finite_angle", ParametersLoadAccess::gpr_dimer_options(params).rotation_angle);
+  ParametersLoadAccess::gpr_dimer_options(params).converged_angle = ini.GetReal(
+      "GPR Dimer", "converged_angle", ParametersLoadAccess::gpr_dimer_options(params).converged_angle);
+  ParametersLoadAccess::gpr_dimer_options(params).relax_conv_angle =
       ini.GetReal("GPR Dimer", "relaxation_converged_angle",
-                  params.gpr_dimer_options().relax_conv_angle);
-  params.gpr_dimer_options().init_rotations_max = static_cast<long>(
+                  ParametersLoadAccess::gpr_dimer_options(params).relax_conv_angle);
+  ParametersLoadAccess::gpr_dimer_options(params).init_rotations_max = static_cast<long>(
       ini.GetInteger("GPR Dimer", "max_initial_rotation_iterations",
-                     params.gpr_dimer_options().init_rotations_max));
-  params.gpr_dimer_options().relax_rotations_max = static_cast<long>(
+                     ParametersLoadAccess::gpr_dimer_options(params).init_rotations_max));
+  ParametersLoadAccess::gpr_dimer_options(params).relax_rotations_max = static_cast<long>(
       ini.GetInteger("GPR Dimer", "max_relaxation_rotation_iterations",
-                     params.gpr_dimer_options().relax_rotations_max));
-  params.gpr_dimer_options().divisor_t_dimer_gp = static_cast<long>(
+                     ParametersLoadAccess::gpr_dimer_options(params).relax_rotations_max));
+  ParametersLoadAccess::gpr_dimer_options(params).divisor_t_dimer_gp = static_cast<long>(
       ini.GetInteger("GPR Dimer", "divisor_t_dimer",
-                     params.gpr_dimer_options().divisor_t_dimer_gp));
-  params.gpr_dimer_options().max_outer_iterations = static_cast<long>(
+                     ParametersLoadAccess::gpr_dimer_options(params).divisor_t_dimer_gp));
+  ParametersLoadAccess::gpr_dimer_options(params).max_outer_iterations = static_cast<long>(
       ini.GetInteger("GPR Dimer", "max_outer_iterations",
-                     params.gpr_dimer_options().max_outer_iterations));
-  params.gpr_dimer_options().max_inner_iterations = static_cast<long>(
+                     ParametersLoadAccess::gpr_dimer_options(params).max_outer_iterations));
+  ParametersLoadAccess::gpr_dimer_options(params).max_inner_iterations = static_cast<long>(
       ini.GetInteger("GPR Dimer", "max_inner_iterations",
-                     params.gpr_dimer_options().max_inner_iterations));
-  params.gpr_dimer_options().midpoint_max_disp =
+                     ParametersLoadAccess::gpr_dimer_options(params).max_inner_iterations));
+  ParametersLoadAccess::gpr_dimer_options(params).midpoint_max_disp =
       ini.GetReal("GPR Dimer", "max_midpoint_displacement",
-                  params.gpr_dimer_options().midpoint_max_disp);
-  params.gpr_dimer_options().rot_opt_method =
+                  ParametersLoadAccess::gpr_dimer_options(params).midpoint_max_disp);
+  ParametersLoadAccess::gpr_dimer_options(params).rot_opt_method =
       ini.Get("GPR Dimer", "rotation_opt_method",
-              params.gpr_dimer_options().rot_opt_method);
-  params.gpr_dimer_options().trans_opt_method =
+              ParametersLoadAccess::gpr_dimer_options(params).rot_opt_method);
+  ParametersLoadAccess::gpr_dimer_options(params).trans_opt_method =
       ini.Get("GPR Dimer", "translation_opt_method",
-              params.gpr_dimer_options().trans_opt_method);
-  params.gpr_dimer_options().active_radius = ini.GetReal(
-      "GPR Dimer", "active_radius", params.gpr_dimer_options().active_radius);
-  params.gpr_dimer_options().dimer_sep = ini.GetReal(
-      "GPR Dimer", "dimer_separation", params.gpr_dimer_options().dimer_sep);
-  params.gpr_dimer_options().conv_step =
+              ParametersLoadAccess::gpr_dimer_options(params).trans_opt_method);
+  ParametersLoadAccess::gpr_dimer_options(params).active_radius = ini.GetReal(
+      "GPR Dimer", "active_radius", ParametersLoadAccess::gpr_dimer_options(params).active_radius);
+  ParametersLoadAccess::gpr_dimer_options(params).dimer_sep = ini.GetReal(
+      "GPR Dimer", "dimer_separation", ParametersLoadAccess::gpr_dimer_options(params).dimer_sep);
+  ParametersLoadAccess::gpr_dimer_options(params).conv_step =
       ini.GetReal("GPR Dimer", "convex_region_step_size",
-                  params.gpr_dimer_options().conv_step);
-  params.gpr_dimer_options().max_step = ini.GetReal(
-      "GPR Dimer", "max_step_size", params.gpr_dimer_options().max_step);
-  params.gpr_dimer_options().ratio_at_limit = ini.GetReal(
-      "GPR Dimer", "ratio_at_limit", params.gpr_dimer_options().ratio_at_limit);
-  params.gpr_dimer_options().init_rot_gp =
+                  ParametersLoadAccess::gpr_dimer_options(params).conv_step);
+  ParametersLoadAccess::gpr_dimer_options(params).max_step = ini.GetReal(
+      "GPR Dimer", "max_step_size", ParametersLoadAccess::gpr_dimer_options(params).max_step);
+  ParametersLoadAccess::gpr_dimer_options(params).ratio_at_limit = ini.GetReal(
+      "GPR Dimer", "ratio_at_limit", ParametersLoadAccess::gpr_dimer_options(params).ratio_at_limit);
+  ParametersLoadAccess::gpr_dimer_options(params).init_rot_gp =
       ini.GetBoolean("GPR Dimer", "nogp_initial_rotations",
-                     params.gpr_dimer_options().init_rot_gp);
-  params.gpr_dimer_options().init_trans_gp =
+                     ParametersLoadAccess::gpr_dimer_options(params).init_rot_gp);
+  ParametersLoadAccess::gpr_dimer_options(params).init_trans_gp =
       ini.GetBoolean("GPR Dimer", "nogp_init_translations",
-                     params.gpr_dimer_options().init_trans_gp);
-  params.gpr_dimer_options().many_iterations =
+                     ParametersLoadAccess::gpr_dimer_options(params).init_trans_gp);
+  ParametersLoadAccess::gpr_dimer_options(params).many_iterations =
       ini.GetBoolean("GPR Dimer", "has_many_iterations",
-                     params.gpr_dimer_options().many_iterations);
+                     ParametersLoadAccess::gpr_dimer_options(params).many_iterations);
   // GPR Params
-  params.gpr_dimer_options().gpr_params.hyper_opt_method =
+  ParametersLoadAccess::gpr_dimer_options(params).gpr_params.hyper_opt_method =
       ini.Get("GPR Dimer", "hyperparameter_opt_method",
-              params.gpr_dimer_options().gpr_params.hyper_opt_method);
-  params.gpr_dimer_options().gpr_params.sigma2 = ini.GetReal(
-      "GPR Dimer", "gpr_variance", params.gpr_dimer_options().gpr_params.sigma2);
-  params.gpr_dimer_options().gpr_params.jitter_sigma2 =
+              ParametersLoadAccess::gpr_dimer_options(params).gpr_params.hyper_opt_method);
+  ParametersLoadAccess::gpr_dimer_options(params).gpr_params.sigma2 = ini.GetReal(
+      "GPR Dimer", "gpr_variance", ParametersLoadAccess::gpr_dimer_options(params).gpr_params.sigma2);
+  ParametersLoadAccess::gpr_dimer_options(params).gpr_params.jitter_sigma2 =
       ini.GetReal("GPR Dimer", "gpr_jitter_variance",
-                  params.gpr_dimer_options().gpr_params.jitter_sigma2);
-  params.gpr_dimer_options().gpr_params.noise_sigma2 =
+                  ParametersLoadAccess::gpr_dimer_options(params).gpr_params.jitter_sigma2);
+  ParametersLoadAccess::gpr_dimer_options(params).gpr_params.noise_sigma2 =
       ini.GetReal("GPR Dimer", "gpr_noise_variance",
-                  params.gpr_dimer_options().gpr_params.noise_sigma2);
-  params.gpr_dimer_options().gpr_params.prior_mu = ini.GetReal(
-      "GPR Dimer", "prior_mean", params.gpr_dimer_options().gpr_params.prior_mu);
-  params.gpr_dimer_options().gpr_params.prior_sigma2 =
+                  ParametersLoadAccess::gpr_dimer_options(params).gpr_params.noise_sigma2);
+  ParametersLoadAccess::gpr_dimer_options(params).gpr_params.prior_mu = ini.GetReal(
+      "GPR Dimer", "prior_mean", ParametersLoadAccess::gpr_dimer_options(params).gpr_params.prior_mu);
+  ParametersLoadAccess::gpr_dimer_options(params).gpr_params.prior_sigma2 =
       ini.GetReal("GPR Dimer", "prior_variance",
-                  params.gpr_dimer_options().gpr_params.prior_sigma2);
-  params.gpr_dimer_options().gpr_params.prior_nu =
+                  ParametersLoadAccess::gpr_dimer_options(params).gpr_params.prior_sigma2);
+  ParametersLoadAccess::gpr_dimer_options(params).gpr_params.prior_nu =
       ini.GetReal("GPR Dimer", "prior_degrees_of_freedom",
-                  params.gpr_dimer_options().gpr_params.prior_nu);
+                  ParametersLoadAccess::gpr_dimer_options(params).gpr_params.prior_nu);
   // GPR Optimization Parameters
-  params.gpr_dimer_options().opt_params.check_derivatives =
+  ParametersLoadAccess::gpr_dimer_options(params).opt_params.check_derivatives =
       ini.GetBoolean("GPR Dimer", "check_derivatives",
-                     params.gpr_dimer_options().opt_params.check_derivatives);
-  params.gpr_dimer_options().opt_params.max_iterations = static_cast<int>(
+                     ParametersLoadAccess::gpr_dimer_options(params).opt_params.check_derivatives);
+  ParametersLoadAccess::gpr_dimer_options(params).opt_params.max_iterations = static_cast<int>(
       ini.GetInteger("GPR Dimer", "opt_max_iterations",
-                     params.gpr_dimer_options().opt_params.max_iterations));
-  params.gpr_dimer_options().opt_params.tol_func =
+                     ParametersLoadAccess::gpr_dimer_options(params).opt_params.max_iterations));
+  ParametersLoadAccess::gpr_dimer_options(params).opt_params.tol_func =
       ini.GetReal("GPR Dimer", "opt_tol_func",
-                  params.gpr_dimer_options().opt_params.tol_func);
-  params.gpr_dimer_options().opt_params.tol_sol = ini.GetReal(
-      "GPR Dimer", "opt_tol_sol", params.gpr_dimer_options().opt_params.tol_sol);
-  params.gpr_dimer_options().opt_params.lambda_limit =
+                  ParametersLoadAccess::gpr_dimer_options(params).opt_params.tol_func);
+  ParametersLoadAccess::gpr_dimer_options(params).opt_params.tol_sol = ini.GetReal(
+      "GPR Dimer", "opt_tol_sol", ParametersLoadAccess::gpr_dimer_options(params).opt_params.tol_sol);
+  ParametersLoadAccess::gpr_dimer_options(params).opt_params.lambda_limit =
       ini.GetReal("GPR Dimer", "opt_lambda_limit",
-                  params.gpr_dimer_options().opt_params.lambda_limit);
-  params.gpr_dimer_options().opt_params.lambda_init =
+                  ParametersLoadAccess::gpr_dimer_options(params).opt_params.lambda_limit);
+  ParametersLoadAccess::gpr_dimer_options(params).opt_params.lambda_init =
       ini.GetReal("GPR Dimer", "opt_lambda_init",
-                  params.gpr_dimer_options().opt_params.lambda_init);
+                  ParametersLoadAccess::gpr_dimer_options(params).opt_params.lambda_init);
   // GPR Debugging Parameters
-  params.gpr_dimer_options().debug_params.report_level = static_cast<int>(
+  ParametersLoadAccess::gpr_dimer_options(params).debug_params.report_level = static_cast<int>(
       ini.GetInteger("GPR Dimer", "report_level",
-                     params.gpr_dimer_options().debug_params.report_level));
-  params.gpr_dimer_options().debug_params.debug_level = static_cast<int>(
+                     ParametersLoadAccess::gpr_dimer_options(params).debug_params.report_level));
+  ParametersLoadAccess::gpr_dimer_options(params).debug_params.debug_level = static_cast<int>(
       ini.GetInteger("GPR Dimer", "debug_level",
-                     params.gpr_dimer_options().debug_params.debug_level));
-  params.gpr_dimer_options().debug_params.out_dir =
+                     ParametersLoadAccess::gpr_dimer_options(params).debug_params.debug_level));
+  ParametersLoadAccess::gpr_dimer_options(params).debug_params.out_dir =
       ini.Get("GPR Dimer", "debug_output_directory",
-              params.gpr_dimer_options().debug_params.out_dir);
-  params.gpr_dimer_options().debug_params.pos_file =
+              ParametersLoadAccess::gpr_dimer_options(params).debug_params.out_dir);
+  ParametersLoadAccess::gpr_dimer_options(params).debug_params.pos_file =
       ini.Get("GPR Dimer", "debug_position_basename",
-              params.gpr_dimer_options().debug_params.pos_file);
-  params.gpr_dimer_options().debug_params.energy_file =
+              ParametersLoadAccess::gpr_dimer_options(params).debug_params.pos_file);
+  ParametersLoadAccess::gpr_dimer_options(params).debug_params.energy_file =
       ini.Get("GPR Dimer", "debug_energy_basename",
-              params.gpr_dimer_options().debug_params.energy_file);
-  params.gpr_dimer_options().debug_params.grad_file =
+              ParametersLoadAccess::gpr_dimer_options(params).debug_params.energy_file);
+  ParametersLoadAccess::gpr_dimer_options(params).debug_params.grad_file =
       ini.Get("GPR Dimer", "debug_gradient_basename",
-              params.gpr_dimer_options().debug_params.grad_file);
-  params.gpr_dimer_options().debug_params.offset_mid_point =
+              ParametersLoadAccess::gpr_dimer_options(params).debug_params.grad_file);
+  ParametersLoadAccess::gpr_dimer_options(params).debug_params.offset_mid_point =
       ini.GetReal("GPR Dimer", "debug_midpoint_offset",
-                  params.gpr_dimer_options().debug_params.offset_mid_point);
-  params.gpr_dimer_options().debug_params.dy = ini.GetReal(
-      "GPR Dimer", "debug_y_step", params.gpr_dimer_options().debug_params.dy);
-  params.gpr_dimer_options().debug_params.dz = ini.GetReal(
-      "GPR Dimer", "debug_z_step", params.gpr_dimer_options().debug_params.dz);
+                  ParametersLoadAccess::gpr_dimer_options(params).debug_params.offset_mid_point);
+  ParametersLoadAccess::gpr_dimer_options(params).debug_params.dy = ini.GetReal(
+      "GPR Dimer", "debug_y_step", ParametersLoadAccess::gpr_dimer_options(params).debug_params.dy);
+  ParametersLoadAccess::gpr_dimer_options(params).debug_params.dz = ini.GetReal(
+      "GPR Dimer", "debug_z_step", ParametersLoadAccess::gpr_dimer_options(params).debug_params.dz);
   // GPR Prune
-  params.gpr_dimer_options().prune_params.use_prune =
+  ParametersLoadAccess::gpr_dimer_options(params).prune_params.use_prune =
       ini.GetBoolean("GPR Dimer", "use_prune",
-                     params.gpr_dimer_options().prune_params.use_prune);
-  params.gpr_dimer_options().prune_params.begin = static_cast<int>(
+                     ParametersLoadAccess::gpr_dimer_options(params).prune_params.use_prune);
+  ParametersLoadAccess::gpr_dimer_options(params).prune_params.begin = static_cast<int>(
       ini.GetInteger("GPR Dimer", "start_prune_at",
-                     params.gpr_dimer_options().prune_params.begin));
-  params.gpr_dimer_options().prune_params.n_vals = static_cast<int>(
+                     ParametersLoadAccess::gpr_dimer_options(params).prune_params.begin));
+  ParametersLoadAccess::gpr_dimer_options(params).prune_params.n_vals = static_cast<int>(
       ini.GetInteger("GPR Dimer", "nprune_vals",
-                     params.gpr_dimer_options().prune_params.n_vals));
-  params.gpr_dimer_options().prune_params.threshold =
+                     ParametersLoadAccess::gpr_dimer_options(params).prune_params.n_vals));
+  ParametersLoadAccess::gpr_dimer_options(params).prune_params.threshold =
       ini.GetReal("GPR Dimer", "prune_threshold",
-                  params.gpr_dimer_options().prune_params.threshold);
+                  ParametersLoadAccess::gpr_dimer_options(params).prune_params.threshold);
 
   // [Prefactor] //
 
-  params.prefactor_options().default_value = ini.GetReal(
-      "Prefactor", "default_value", params.prefactor_options().default_value);
-  params.prefactor_options().max_value =
-      ini.GetReal("Prefactor", "max_value", params.prefactor_options().max_value);
-  params.prefactor_options().min_value =
-      ini.GetReal("Prefactor", "min_value", params.prefactor_options().min_value);
-  params.prefactor_options().within_radius = ini.GetReal(
-      "Prefactor", "within_radius", params.prefactor_options().within_radius);
-  params.prefactor_options().min_displacement =
+  ParametersLoadAccess::prefactor_options(params).default_value = ini.GetReal(
+      "Prefactor", "default_value", ParametersLoadAccess::prefactor_options(params).default_value);
+  ParametersLoadAccess::prefactor_options(params).max_value =
+      ini.GetReal("Prefactor", "max_value", ParametersLoadAccess::prefactor_options(params).max_value);
+  ParametersLoadAccess::prefactor_options(params).min_value =
+      ini.GetReal("Prefactor", "min_value", ParametersLoadAccess::prefactor_options(params).min_value);
+  ParametersLoadAccess::prefactor_options(params).within_radius = ini.GetReal(
+      "Prefactor", "within_radius", ParametersLoadAccess::prefactor_options(params).within_radius);
+  ParametersLoadAccess::prefactor_options(params).min_displacement =
       ini.GetReal("Prefactor", "min_displacement",
-                  params.prefactor_options().min_displacement);
-  params.prefactor_options().rate = toLowerCase(
-      ini.Get("Prefactor", "rate_estimation", params.prefactor_options().rate));
-  params.prefactor_options().configuration = toLowerCase(ini.Get(
-      "Prefactor", "configuration", params.prefactor_options().configuration));
-  params.prefactor_options().all_free_atoms = ini.GetBoolean(
-      "Prefactor", "all_free_atoms", params.prefactor_options().all_free_atoms);
-  params.prefactor_options().filter_scheme = toLowerCase(ini.Get(
-      "Prefactor", "filter_scheme", params.prefactor_options().filter_scheme));
-  params.prefactor_options().filter_fraction = ini.GetReal(
-      "Prefactor", "filter_fraction", params.prefactor_options().filter_fraction);
+                  ParametersLoadAccess::prefactor_options(params).min_displacement);
+  ParametersLoadAccess::prefactor_options(params).rate = toLowerCase(
+      ini.Get("Prefactor", "rate_estimation", ParametersLoadAccess::prefactor_options(params).rate));
+  ParametersLoadAccess::prefactor_options(params).configuration = toLowerCase(ini.Get(
+      "Prefactor", "configuration", ParametersLoadAccess::prefactor_options(params).configuration));
+  ParametersLoadAccess::prefactor_options(params).all_free_atoms = ini.GetBoolean(
+      "Prefactor", "all_free_atoms", ParametersLoadAccess::prefactor_options(params).all_free_atoms);
+  ParametersLoadAccess::prefactor_options(params).filter_scheme = toLowerCase(ini.Get(
+      "Prefactor", "filter_scheme", ParametersLoadAccess::prefactor_options(params).filter_scheme));
+  ParametersLoadAccess::prefactor_options(params).filter_fraction = ini.GetReal(
+      "Prefactor", "filter_fraction", ParametersLoadAccess::prefactor_options(params).filter_fraction);
 
   // [Hessian] //
   // Prefer phva_atoms; accept legacy atom_list when phva_atoms is absent.
   if (ini.HasValue("Hessian", "phva_atoms")) {
-    params.hessian_options().phva_atoms =
+    ParametersLoadAccess::hessian_options(params).phva_atoms =
         toLowerCase(ini.Get("Hessian", "phva_atoms", "All"));
   } else if (ini.HasValue("Hessian", "atom_list")) {
-    params.hessian_options().phva_atoms =
+    ParametersLoadAccess::hessian_options(params).phva_atoms =
         toLowerCase(ini.Get("Hessian", "atom_list", "All"));
   }
-  params.hessian_options().zero_freq_value = ini.GetReal(
-      "Hessian", "zero_freq_value", params.hessian_options().zero_freq_value);
-  params.hessian_options().fd_scheme = toLowerCase(
-      ini.Get("Hessian", "fd_scheme", params.hessian_options().fd_scheme));
-  params.hessian_options().resume =
-      ini.GetBoolean("Hessian", "resume", params.hessian_options().resume);
-  params.hessian_options().checkpoint_path = ini.Get(
-      "Hessian", "checkpoint_path", params.hessian_options().checkpoint_path);
+  ParametersLoadAccess::hessian_options(params).zero_freq_value = ini.GetReal(
+      "Hessian", "zero_freq_value", ParametersLoadAccess::hessian_options(params).zero_freq_value);
+  ParametersLoadAccess::hessian_options(params).fd_scheme = toLowerCase(
+      ini.Get("Hessian", "fd_scheme", ParametersLoadAccess::hessian_options(params).fd_scheme));
+  ParametersLoadAccess::hessian_options(params).resume =
+      ini.GetBoolean("Hessian", "resume", ParametersLoadAccess::hessian_options(params).resume);
+  ParametersLoadAccess::hessian_options(params).checkpoint_path = ini.Get(
+      "Hessian", "checkpoint_path", ParametersLoadAccess::hessian_options(params).checkpoint_path);
 
   // [Nudged Elastic Band] //
   const std::string neb_section = "Nudged Elastic Band";
 
-  params.neb_options().image_count =
-      ini.GetInteger(neb_section, "images", params.neb_options().image_count);
-  params.neb_options().max_iterations = ini.GetInteger(
-      neb_section, "max_iterations", params.optimizer_options().max_iterations);
-  params.neb_options().force_tolerance = ini.GetReal(
-      neb_section, "converged_force", params.optimizer_options().converged_force);
+  ParametersLoadAccess::neb_options(params).image_count =
+      ini.GetInteger(neb_section, "images", ParametersLoadAccess::neb_options(params).image_count);
+  ParametersLoadAccess::neb_options(params).max_iterations = ini.GetInteger(
+      neb_section, "max_iterations", ParametersLoadAccess::optimizer_options(params).max_iterations);
+  ParametersLoadAccess::neb_options(params).force_tolerance = ini.GetReal(
+      neb_section, "converged_force", ParametersLoadAccess::optimizer_options(params).converged_force);
   auto neb_optMethod =
       magic_enum::enum_cast<OptType>(ini.Get(neb_section, "opt_method", "none"),
                                      magic_enum::case_insensitive)
           .value_or(OptType::Unknown);
   if (neb_optMethod != OptType::None) {
-    params.neb_options().opt_method = neb_optMethod;
+    ParametersLoadAccess::neb_options(params).opt_method = neb_optMethod;
   }
-  params.neb_options().mmf_peaks.enabled = ini.GetBoolean(
-      neb_section, "setup_mmf_peaks", params.neb_options().mmf_peaks.enabled);
-  params.neb_options().mmf_peaks.tolerance =
+  ParametersLoadAccess::neb_options(params).mmf_peaks.enabled = ini.GetBoolean(
+      neb_section, "setup_mmf_peaks", ParametersLoadAccess::neb_options(params).mmf_peaks.enabled);
+  ParametersLoadAccess::neb_options(params).mmf_peaks.tolerance =
       ini.GetReal(neb_section, "mmf_peak_tolerance",
-                  params.neb_options().mmf_peaks.tolerance);
-  params.neb_options().match_endpoints = ini.GetBoolean(
-      neb_section, "match_endpoints", params.neb_options().match_endpoints);
-  params.neb_options().match_method = toLowerCase(
-      ini.Get(neb_section, "match_method", params.neb_options().match_method));
+                  ParametersLoadAccess::neb_options(params).mmf_peaks.tolerance);
+  ParametersLoadAccess::neb_options(params).match_endpoints = ini.GetBoolean(
+      neb_section, "match_endpoints", ParametersLoadAccess::neb_options(params).match_endpoints);
+  ParametersLoadAccess::neb_options(params).match_method = toLowerCase(
+      ini.Get(neb_section, "match_method", ParametersLoadAccess::neb_options(params).match_method));
 
-  params.neb_options().spring.constant =
-      ini.GetReal(neb_section, "spring", params.neb_options().spring.constant);
-  params.neb_options().spring.use_elastic_band = ini.GetBoolean(
-      neb_section, "elastic_band", params.neb_options().spring.use_elastic_band);
-  params.neb_options().spring.doubly_nudged = ini.GetBoolean(
-      neb_section, "doubly_nudged", params.neb_options().spring.doubly_nudged);
-  params.neb_options().spring.use_switching =
+  ParametersLoadAccess::neb_options(params).spring.constant =
+      ini.GetReal(neb_section, "spring", ParametersLoadAccess::neb_options(params).spring.constant);
+  ParametersLoadAccess::neb_options(params).spring.use_elastic_band = ini.GetBoolean(
+      neb_section, "elastic_band", ParametersLoadAccess::neb_options(params).spring.use_elastic_band);
+  ParametersLoadAccess::neb_options(params).spring.doubly_nudged = ini.GetBoolean(
+      neb_section, "doubly_nudged", ParametersLoadAccess::neb_options(params).spring.doubly_nudged);
+  ParametersLoadAccess::neb_options(params).spring.use_switching =
       ini.GetBoolean(neb_section, "doubly_nudged_switching",
-                     params.neb_options().spring.use_switching);
+                     ParametersLoadAccess::neb_options(params).spring.use_switching);
 
-  params.neb_options().spring.weighting.enabled =
+  ParametersLoadAccess::neb_options(params).spring.weighting.enabled =
       ini.GetBoolean(neb_section, "energy_weighted",
-                     params.neb_options().spring.weighting.enabled);
-  params.neb_options().spring.weighting.trigger = ini.GetReal(
-      neb_section, "ew_trigger", params.neb_options().spring.weighting.trigger);
-  params.neb_options().spring.weighting.k_min = ini.GetReal(
-      neb_section, "ew_ksp_min", params.neb_options().spring.weighting.k_min);
-  params.neb_options().spring.weighting.k_max = ini.GetReal(
-      neb_section, "ew_ksp_max", params.neb_options().spring.weighting.k_max);
+                     ParametersLoadAccess::neb_options(params).spring.weighting.enabled);
+  ParametersLoadAccess::neb_options(params).spring.weighting.trigger = ini.GetReal(
+      neb_section, "ew_trigger", ParametersLoadAccess::neb_options(params).spring.weighting.trigger);
+  ParametersLoadAccess::neb_options(params).spring.weighting.k_min = ini.GetReal(
+      neb_section, "ew_ksp_min", ParametersLoadAccess::neb_options(params).spring.weighting.k_min);
+  ParametersLoadAccess::neb_options(params).spring.weighting.k_max = ini.GetReal(
+      neb_section, "ew_ksp_max", ParametersLoadAccess::neb_options(params).spring.weighting.k_max);
 
-  params.neb_options().spring.om.enabled = ini.GetBoolean(
-      neb_section, "onsager_machlup", params.neb_options().spring.om.enabled);
-  params.neb_options().spring.om.optimize_k = ini.GetBoolean(
-      neb_section, "om_optimize_k", params.neb_options().spring.om.optimize_k);
-  params.neb_options().spring.om.k_scale = ini.GetReal(
-      neb_section, "om_k_scale", params.neb_options().spring.om.k_scale);
-  params.neb_options().spring.om.k_min =
-      ini.GetReal(neb_section, "om_k_min", params.neb_options().spring.om.k_min);
-  params.neb_options().spring.om.k_max =
-      ini.GetReal(neb_section, "om_k_max", params.neb_options().spring.om.k_max);
+  ParametersLoadAccess::neb_options(params).spring.om.enabled = ini.GetBoolean(
+      neb_section, "onsager_machlup", ParametersLoadAccess::neb_options(params).spring.om.enabled);
+  ParametersLoadAccess::neb_options(params).spring.om.optimize_k = ini.GetBoolean(
+      neb_section, "om_optimize_k", ParametersLoadAccess::neb_options(params).spring.om.optimize_k);
+  ParametersLoadAccess::neb_options(params).spring.om.k_scale = ini.GetReal(
+      neb_section, "om_k_scale", ParametersLoadAccess::neb_options(params).spring.om.k_scale);
+  ParametersLoadAccess::neb_options(params).spring.om.k_min =
+      ini.GetReal(neb_section, "om_k_min", ParametersLoadAccess::neb_options(params).spring.om.k_min);
+  ParametersLoadAccess::neb_options(params).spring.om.k_max =
+      ini.GetReal(neb_section, "om_k_max", ParametersLoadAccess::neb_options(params).spring.om.k_max);
 
-  params.neb_options().climbing_image.enabled =
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled =
       ini.GetBoolean(neb_section, "climbing_image_method",
-                     params.neb_options().climbing_image.enabled);
-  params.neb_options().climbing_image.converged_only =
+                     ParametersLoadAccess::neb_options(params).climbing_image.enabled);
+  ParametersLoadAccess::neb_options(params).climbing_image.converged_only =
       ini.GetBoolean(neb_section, "climbing_image_converged_only",
-                     params.neb_options().climbing_image.converged_only);
-  params.neb_options().climbing_image.band_slack =
+                     ParametersLoadAccess::neb_options(params).climbing_image.converged_only);
+  ParametersLoadAccess::neb_options(params).climbing_image.band_slack =
       ini.GetReal(neb_section, "climbing_image_band_slack",
-                  params.neb_options().climbing_image.band_slack);
-  params.neb_options().climbing_image.use_old_tangent =
+                  ParametersLoadAccess::neb_options(params).climbing_image.band_slack);
+  ParametersLoadAccess::neb_options(params).climbing_image.use_old_tangent =
       ini.GetBoolean(neb_section, "old_tangent",
-                     params.neb_options().climbing_image.use_old_tangent);
-  params.neb_options().climbing_image.trigger_force = ini.GetReal(
-      neb_section, "ci_after", params.neb_options().climbing_image.trigger_force);
-  params.neb_options().climbing_image.trigger_factor =
+                     ParametersLoadAccess::neb_options(params).climbing_image.use_old_tangent);
+  ParametersLoadAccess::neb_options(params).climbing_image.trigger_force = ini.GetReal(
+      neb_section, "ci_after", ParametersLoadAccess::neb_options(params).climbing_image.trigger_force);
+  ParametersLoadAccess::neb_options(params).climbing_image.trigger_factor =
       ini.GetReal(neb_section, "ci_after_rel",
-                  params.neb_options().climbing_image.trigger_factor);
+                  ParametersLoadAccess::neb_options(params).climbing_image.trigger_factor);
 
-  auto &oci = params.neb_options().climbing_image.ocineb;
+  auto &oci = ParametersLoadAccess::neb_options(params).climbing_image.ocineb;
   oci.use_mmf = ini.GetBoolean(neb_section, "ci_mmf", oci.use_mmf);
   oci.trigger_force =
       ini.GetReal(neb_section, "ci_mmf_after", oci.trigger_force);
@@ -935,7 +935,7 @@ int load_ini(INIReader &ini, Parameters &params) {
       neb_section, "ci_mmf_ci_stability_count", oci.ci_stability_count);
   oci.angle_tol = ini.GetReal(neb_section, "ci_mmf_angle", oci.angle_tol);
 
-  auto &init = params.neb_options().initialization;
+  auto &init = ParametersLoadAccess::neb_options(params).initialization;
   init.method =
       magic_enum::enum_cast<NEBInit>(ini.Get(neb_section, "initializer", ""),
                                      magic_enum::case_insensitive)
@@ -961,191 +961,191 @@ int load_ini(INIReader &ini, Parameters &params) {
           magic_enum::case_insensitive)
           .value_or(OptType::Unknown);
   if (neb_ipath_optMethod != OptType::None) {
-    params.neb_options().initialization.opt_method = neb_ipath_optMethod;
+    ParametersLoadAccess::neb_options(params).initialization.opt_method = neb_ipath_optMethod;
   }
   init.oversampling =
       ini.GetBoolean(neb_section, "oversampling", init.oversampling);
   init.oversampling_factor = ini.GetInteger(neb_section, "oversampling_factor",
                                             init.oversampling_factor);
 
-  params.neb_options().endpoints.minimize = ini.GetBoolean(
-      neb_section, "minimize_endpoints", params.neb_options().endpoints.minimize);
-  params.neb_options().endpoints.use_path_file =
+  ParametersLoadAccess::neb_options(params).endpoints.minimize = ini.GetBoolean(
+      neb_section, "minimize_endpoints", ParametersLoadAccess::neb_options(params).endpoints.minimize);
+  ParametersLoadAccess::neb_options(params).endpoints.use_path_file =
       ini.GetBoolean(neb_section, "minimize_endpoints_for_ipath",
-                     params.neb_options().endpoints.use_path_file);
+                     ParametersLoadAccess::neb_options(params).endpoints.use_path_file);
 
   // [Dynamics] //
 
-  params.dynamics_options().time_step_input = ini.GetReal(
-      "Dynamics", "time_step", params.dynamics_options().time_step_input);
-  params.dynamics_options().time_step =
-      params.dynamics_options().time_step_input / params.constants().timeUnit;
-  params.dynamics_options().time_input =
-      ini.GetReal("Dynamics", "time", params.dynamics_options().time_input);
-  params.dynamics_options().time =
-      params.dynamics_options().time_input / params.constants().timeUnit;
-  if (params.dynamics_options().time_step > 0.0) {
-    params.dynamics_options().steps = static_cast<long>(std::floor(
-        params.dynamics_options().time / params.dynamics_options().time_step +
+  ParametersLoadAccess::dynamics_options(params).time_step_input = ini.GetReal(
+      "Dynamics", "time_step", ParametersLoadAccess::dynamics_options(params).time_step_input);
+  ParametersLoadAccess::dynamics_options(params).time_step =
+      ParametersLoadAccess::dynamics_options(params).time_step_input / ParametersLoadAccess::constants(params).timeUnit;
+  ParametersLoadAccess::dynamics_options(params).time_input =
+      ini.GetReal("Dynamics", "time", ParametersLoadAccess::dynamics_options(params).time_input);
+  ParametersLoadAccess::dynamics_options(params).time =
+      ParametersLoadAccess::dynamics_options(params).time_input / ParametersLoadAccess::constants(params).timeUnit;
+  if (ParametersLoadAccess::dynamics_options(params).time_step > 0.0) {
+    ParametersLoadAccess::dynamics_options(params).steps = static_cast<long>(std::floor(
+        ParametersLoadAccess::dynamics_options(params).time / ParametersLoadAccess::dynamics_options(params).time_step +
         0.5));
   } else {
-    params.dynamics_options().steps = 0;
+    ParametersLoadAccess::dynamics_options(params).steps = 0;
   }
-  params.thermostat_options().kind =
+  ParametersLoadAccess::thermostat_options(params).kind =
       toLowerCase(ini.Get("Dynamics", "thermostat", "andersen"));
-  params.thermostat_options().andersen_alpha = ini.GetReal(
-      "Dynamics", "andersen_alpha", params.thermostat_options().andersen_alpha);
-  params.thermostat_options().andersen_tcol_input =
+  ParametersLoadAccess::thermostat_options(params).andersen_alpha = ini.GetReal(
+      "Dynamics", "andersen_alpha", ParametersLoadAccess::thermostat_options(params).andersen_alpha);
+  ParametersLoadAccess::thermostat_options(params).andersen_tcol_input =
       ini.GetReal("Dynamics", "andersen_collision_period",
-                  params.thermostat_options().andersen_tcol_input);
-  params.thermostat_options().andersen_tcol =
-      params.thermostat_options().andersen_tcol_input / params.constants().timeUnit;
-  params.thermostat_options().nose_mass =
-      ini.GetReal("Dynamics", "nose_mass", params.thermostat_options().nose_mass);
-  params.thermostat_options().langevin_friction_input =
+                  ParametersLoadAccess::thermostat_options(params).andersen_tcol_input);
+  ParametersLoadAccess::thermostat_options(params).andersen_tcol =
+      ParametersLoadAccess::thermostat_options(params).andersen_tcol_input / ParametersLoadAccess::constants(params).timeUnit;
+  ParametersLoadAccess::thermostat_options(params).nose_mass =
+      ini.GetReal("Dynamics", "nose_mass", ParametersLoadAccess::thermostat_options(params).nose_mass);
+  ParametersLoadAccess::thermostat_options(params).langevin_friction_input =
       ini.GetReal("Dynamics", "langevin_friction",
-                  params.thermostat_options().langevin_friction_input);
-  params.thermostat_options().langevin_friction =
-      params.thermostat_options().langevin_friction_input *
-      params.constants().timeUnit;
+                  ParametersLoadAccess::thermostat_options(params).langevin_friction_input);
+  ParametersLoadAccess::thermostat_options(params).langevin_friction =
+      ParametersLoadAccess::thermostat_options(params).langevin_friction_input *
+      ParametersLoadAccess::constants(params).timeUnit;
 
   // [Parallel Replica]
 
-  params.parallel_replica_options().auto_stop =
+  ParametersLoadAccess::parallel_replica_options(params).auto_stop =
       ini.GetBoolean("Parallel Replica", "stop_after_transition",
-                     params.parallel_replica_options().auto_stop);
-  params.parallel_replica_options().refine_transition =
+                     ParametersLoadAccess::parallel_replica_options(params).auto_stop);
+  ParametersLoadAccess::parallel_replica_options(params).refine_transition =
       ini.GetBoolean("Parallel Replica", "refine_transition",
-                     params.parallel_replica_options().refine_transition);
-  params.parallel_replica_options().dephase_loop_stop =
+                     ParametersLoadAccess::parallel_replica_options(params).refine_transition);
+  ParametersLoadAccess::parallel_replica_options(params).dephase_loop_stop =
       ini.GetBoolean("Parallel Replica", "dephase_loop_stop",
-                     params.parallel_replica_options().dephase_loop_stop);
-  params.parallel_replica_options().dephase_time_input =
+                     ParametersLoadAccess::parallel_replica_options(params).dephase_loop_stop);
+  ParametersLoadAccess::parallel_replica_options(params).dephase_time_input =
       ini.GetReal("Parallel Replica", "dephase_time",
-                  params.parallel_replica_options().dephase_time_input);
-  params.parallel_replica_options().dephase_time =
-      params.parallel_replica_options().dephase_time_input /
-      params.constants().timeUnit;
-  params.parallel_replica_options().dephase_loop_max =
+                  ParametersLoadAccess::parallel_replica_options(params).dephase_time_input);
+  ParametersLoadAccess::parallel_replica_options(params).dephase_time =
+      ParametersLoadAccess::parallel_replica_options(params).dephase_time_input /
+      ParametersLoadAccess::constants(params).timeUnit;
+  ParametersLoadAccess::parallel_replica_options(params).dephase_loop_max =
       ini.GetInteger("Parallel Replica", "dephase_loop_max",
-                     params.parallel_replica_options().dephase_loop_max);
-  params.parallel_replica_options().state_check_interval_input =
+                     ParametersLoadAccess::parallel_replica_options(params).dephase_loop_max);
+  ParametersLoadAccess::parallel_replica_options(params).state_check_interval_input =
       ini.GetReal("Parallel Replica", "state_check_interval",
-                  params.parallel_replica_options().state_check_interval_input);
-  params.parallel_replica_options().state_check_interval =
-      params.parallel_replica_options().state_check_interval_input /
-      params.constants().timeUnit;
-  params.parallel_replica_options().record_interval_input = ini.GetReal(
+                  ParametersLoadAccess::parallel_replica_options(params).state_check_interval_input);
+  ParametersLoadAccess::parallel_replica_options(params).state_check_interval =
+      ParametersLoadAccess::parallel_replica_options(params).state_check_interval_input /
+      ParametersLoadAccess::constants(params).timeUnit;
+  ParametersLoadAccess::parallel_replica_options(params).record_interval_input = ini.GetReal(
       "Parallel Replica", "state_save_interval",
-      0.1 * params.parallel_replica_options().state_check_interval_input);
-  params.parallel_replica_options().record_interval =
-      params.parallel_replica_options().record_interval_input /
-      params.constants().timeUnit;
-  params.parallel_replica_options().corr_time_input =
+      0.1 * ParametersLoadAccess::parallel_replica_options(params).state_check_interval_input);
+  ParametersLoadAccess::parallel_replica_options(params).record_interval =
+      ParametersLoadAccess::parallel_replica_options(params).record_interval_input /
+      ParametersLoadAccess::constants(params).timeUnit;
+  ParametersLoadAccess::parallel_replica_options(params).corr_time_input =
       ini.GetReal("Parallel Replica", "post_transition_time",
-                  params.parallel_replica_options().corr_time_input);
-  params.parallel_replica_options().corr_time =
-      params.parallel_replica_options().corr_time_input /
-      params.constants().timeUnit;
+                  ParametersLoadAccess::parallel_replica_options(params).corr_time_input);
+  ParametersLoadAccess::parallel_replica_options(params).corr_time =
+      ParametersLoadAccess::parallel_replica_options(params).corr_time_input /
+      ParametersLoadAccess::constants(params).timeUnit;
 
   // [Temperature Accelerated Dynamics] //
 
-  params.tad_options().low_temperature =
-      ini.GetReal("TAD", "low_temperature", params.tad_options().low_temperature);
-  params.tad_options().min_prefactor =
-      ini.GetReal("TAD", "min_prefactor", params.tad_options().min_prefactor);
-  params.tad_options().confidence =
-      ini.GetReal("TAD", "confidence", params.tad_options().confidence);
+  ParametersLoadAccess::tad_options(params).low_temperature =
+      ini.GetReal("TAD", "low_temperature", ParametersLoadAccess::tad_options(params).low_temperature);
+  ParametersLoadAccess::tad_options(params).min_prefactor =
+      ini.GetReal("TAD", "min_prefactor", ParametersLoadAccess::tad_options(params).min_prefactor);
+  ParametersLoadAccess::tad_options(params).confidence =
+      ini.GetReal("TAD", "confidence", ParametersLoadAccess::tad_options(params).confidence);
 
   // [Replica Exchange] //
 
-  params.replica_exchange_options().temperature_distribution = toLowerCase(
+  ParametersLoadAccess::replica_exchange_options(params).temperature_distribution = toLowerCase(
       ini.Get("Replica Exchange", "temperature_distribution",
-              params.replica_exchange_options().temperature_distribution));
-  params.replica_exchange_options().replicas = ini.GetInteger(
-      "Replica Exchange", "replicas", params.replica_exchange_options().replicas);
-  params.replica_exchange_options().exchange_trials =
+              ParametersLoadAccess::replica_exchange_options(params).temperature_distribution));
+  ParametersLoadAccess::replica_exchange_options(params).replicas = ini.GetInteger(
+      "Replica Exchange", "replicas", ParametersLoadAccess::replica_exchange_options(params).replicas);
+  ParametersLoadAccess::replica_exchange_options(params).exchange_trials =
       ini.GetInteger("Replica Exchange", "exchange_trials",
-                     params.replica_exchange_options().exchange_trials);
-  params.replica_exchange_options().sampling_time_input =
+                     ParametersLoadAccess::replica_exchange_options(params).exchange_trials);
+  ParametersLoadAccess::replica_exchange_options(params).sampling_time_input =
       ini.GetReal("Replica Exchange", "sampling_time",
-                  params.replica_exchange_options().sampling_time_input);
-  params.replica_exchange_options().sampling_time =
-      params.replica_exchange_options().sampling_time_input /
-      params.constants().timeUnit;
-  params.replica_exchange_options().temperature_low = ini.GetReal(
-      "Replica Exchange", "temperature_low", params.main_options().temperature);
-  params.replica_exchange_options().temperature_high =
+                  ParametersLoadAccess::replica_exchange_options(params).sampling_time_input);
+  ParametersLoadAccess::replica_exchange_options(params).sampling_time =
+      ParametersLoadAccess::replica_exchange_options(params).sampling_time_input /
+      ParametersLoadAccess::constants(params).timeUnit;
+  ParametersLoadAccess::replica_exchange_options(params).temperature_low = ini.GetReal(
+      "Replica Exchange", "temperature_low", ParametersLoadAccess::main_options(params).temperature);
+  ParametersLoadAccess::replica_exchange_options(params).temperature_high =
       ini.GetReal("Replica Exchange", "temperature_high",
-                  params.replica_exchange_options().temperature_high);
-  params.replica_exchange_options().exchange_period_input =
+                  ParametersLoadAccess::replica_exchange_options(params).temperature_high);
+  ParametersLoadAccess::replica_exchange_options(params).exchange_period_input =
       ini.GetReal("Replica Exchange", "exchange_period",
-                  params.replica_exchange_options().exchange_period_input);
-  params.replica_exchange_options().exchange_period =
-      params.replica_exchange_options().exchange_period_input /
-      params.constants().timeUnit;
+                  ParametersLoadAccess::replica_exchange_options(params).exchange_period_input);
+  ParametersLoadAccess::replica_exchange_options(params).exchange_period =
+      ParametersLoadAccess::replica_exchange_options(params).exchange_period_input /
+      ParametersLoadAccess::constants(params).timeUnit;
 
   // [Hyperdynamics] //
 
-  params.hyperdynamics_options().rmd_time_input =
+  ParametersLoadAccess::hyperdynamics_options(params).rmd_time_input =
       ini.GetReal("Hyperdynamics", "bb_rmd_time",
-                  params.hyperdynamics_options().rmd_time_input);
-  params.hyperdynamics_options().rmd_time =
-      params.hyperdynamics_options().rmd_time_input / params.constants().timeUnit;
-  params.hyperdynamics_options().boost_atom_list =
+                  ParametersLoadAccess::hyperdynamics_options(params).rmd_time_input);
+  ParametersLoadAccess::hyperdynamics_options(params).rmd_time =
+      ParametersLoadAccess::hyperdynamics_options(params).rmd_time_input / ParametersLoadAccess::constants(params).timeUnit;
+  ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list =
       toLowerCase(ini.Get("Hyperdynamics", "bb_boost_atomlist",
-                          params.hyperdynamics_options().boost_atom_list));
-  params.hyperdynamics_options().dvmax = ini.GetReal(
-      "Hyperdynamics", "bb_dvmax", params.hyperdynamics_options().dvmax);
-  params.hyperdynamics_options().qrr =
+                          ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list));
+  ParametersLoadAccess::hyperdynamics_options(params).dvmax = ini.GetReal(
+      "Hyperdynamics", "bb_dvmax", ParametersLoadAccess::hyperdynamics_options(params).dvmax);
+  ParametersLoadAccess::hyperdynamics_options(params).qrr =
       ini.GetReal("Hyperdynamics", "bb_stretch_threshold",
-                  params.hyperdynamics_options().qrr);
-  params.hyperdynamics_options().prr = ini.GetReal(
-      "Hyperdynamics", "bb_ds_curvature", params.hyperdynamics_options().prr);
-  params.hyperdynamics_options().qcut = ini.GetReal(
-      "Hyperdynamics", "bb_rcut", params.hyperdynamics_options().qcut);
-  params.hyperdynamics_options().bias_potential =
+                  ParametersLoadAccess::hyperdynamics_options(params).qrr);
+  ParametersLoadAccess::hyperdynamics_options(params).prr = ini.GetReal(
+      "Hyperdynamics", "bb_ds_curvature", ParametersLoadAccess::hyperdynamics_options(params).prr);
+  ParametersLoadAccess::hyperdynamics_options(params).qcut = ini.GetReal(
+      "Hyperdynamics", "bb_rcut", ParametersLoadAccess::hyperdynamics_options(params).qcut);
+  ParametersLoadAccess::hyperdynamics_options(params).bias_potential =
       toLowerCase(ini.Get("Hyperdynamics", "bias_potential",
-                          params.hyperdynamics_options().bias_potential));
+                          ParametersLoadAccess::hyperdynamics_options(params).bias_potential));
 
   // [Saddle Search] //
 
-  params.saddle_search_options().method = toLowerCase(
-      ini.Get("Saddle Search", "method", params.saddle_search_options().method));
-  params.saddle_search_options().minmode_method =
+  ParametersLoadAccess::saddle_search_options(params).method = toLowerCase(
+      ini.Get("Saddle Search", "method", ParametersLoadAccess::saddle_search_options(params).method));
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
       toLowerCase(ini.Get("Saddle Search", "min_mode_method",
-                          params.saddle_search_options().minmode_method));
-  params.saddle_search_options().displace_magnitude =
+                          ParametersLoadAccess::saddle_search_options(params).minmode_method));
+  ParametersLoadAccess::saddle_search_options(params).displace_magnitude =
       ini.GetReal("Saddle Search", "displace_magnitude",
-                  params.saddle_search_options().displace_magnitude);
-  params.saddle_search_options().displace_radius =
+                  ParametersLoadAccess::saddle_search_options(params).displace_magnitude);
+  ParametersLoadAccess::saddle_search_options(params).displace_radius =
       ini.GetReal("Saddle Search", "displace_radius",
-                  params.saddle_search_options().displace_radius);
-  params.saddle_search_options().max_energy = ini.GetReal(
-      "Saddle Search", "max_energy", params.saddle_search_options().max_energy);
-  params.saddle_search_options().max_iterations =
+                  ParametersLoadAccess::saddle_search_options(params).displace_radius);
+  ParametersLoadAccess::saddle_search_options(params).max_energy = ini.GetReal(
+      "Saddle Search", "max_energy", ParametersLoadAccess::saddle_search_options(params).max_energy);
+  ParametersLoadAccess::saddle_search_options(params).max_iterations =
       ini.GetInteger("Saddle Search", "max_iterations",
-                     params.optimizer_options().max_iterations);
-  params.saddle_search_options().nonnegative_displacement_abort = ini.GetBoolean(
+                     ParametersLoadAccess::optimizer_options(params).max_iterations);
+  ParametersLoadAccess::saddle_search_options(params).nonnegative_displacement_abort = ini.GetBoolean(
       "Saddle Search", "nonnegative_displacement_abort",
-      params.saddle_search_options().nonnegative_displacement_abort);
-  params.saddle_search_options().max_single_displace =
+      ParametersLoadAccess::saddle_search_options(params).nonnegative_displacement_abort);
+  ParametersLoadAccess::saddle_search_options(params).max_single_displace =
       ini.GetReal("Saddle Search", "max_single_displace",
-                  params.saddle_search_options().max_single_displace);
-  params.saddle_search_options().converged_force =
+                  ParametersLoadAccess::saddle_search_options(params).max_single_displace);
+  ParametersLoadAccess::saddle_search_options(params).converged_force =
       ini.GetReal("Saddle Search", "converged_force",
-                  params.optimizer_options().converged_force);
-  params.saddle_search_options().perp_force_ratio =
+                  ParametersLoadAccess::optimizer_options(params).converged_force);
+  ParametersLoadAccess::saddle_search_options(params).perp_force_ratio =
       ini.GetReal("Saddle Search", "perp_force_ratio",
-                  params.saddle_search_options().perp_force_ratio);
-  params.saddle_search_options().displace_type = toLowerCase(ini.Get(
+                  ParametersLoadAccess::saddle_search_options(params).perp_force_ratio);
+  ParametersLoadAccess::saddle_search_options(params).displace_type = toLowerCase(ini.Get(
       "Saddle Search", "client_displace_type", eonc::EpiCenters::DISP_LOAD));
-  params.saddle_search_options().nonlocal_count_abort =
+  ParametersLoadAccess::saddle_search_options(params).nonlocal_count_abort =
       ini.GetInteger("Saddle Search", "nonlocal_count_abort",
-                     params.saddle_search_options().nonlocal_count_abort);
-  params.saddle_search_options().nonlocal_distance_abort =
+                     ParametersLoadAccess::saddle_search_options(params).nonlocal_count_abort);
+  ParametersLoadAccess::saddle_search_options(params).nonlocal_distance_abort =
       ini.GetReal("Saddle Search", "nonlocal_distance_abort",
-                  params.saddle_search_options().nonlocal_distance_abort);
+                  ParametersLoadAccess::saddle_search_options(params).nonlocal_distance_abort);
   if (params.saddle_search_options().displace_type !=
           eonc::EpiCenters::DISP_NOT_FCC_OR_HCP &&
       params.saddle_search_options().displace_type !=
@@ -1156,7 +1156,7 @@ int load_ini(INIReader &ini, Parameters &params) {
           eonc::EpiCenters::DISP_RANDOM &&
       params.saddle_search_options().displace_type !=
           eonc::EpiCenters::DISP_LISTED_ATOMS) {
-    params.saddle_search_options().displace_type = eonc::EpiCenters::DISP_LOAD;
+    ParametersLoadAccess::saddle_search_options(params).displace_type = eonc::EpiCenters::DISP_LOAD;
   }
   // Parse comma-separated atom list
   {
@@ -1169,277 +1169,277 @@ int load_ini(INIReader &ini, Parameters &params) {
         size_t start = token.find_first_not_of(" \t");
         size_t end = token.find_last_not_of(" \t");
         if (start != std::string::npos) {
-          params.saddle_search_options().displace_atom_list.push_back(
+          ParametersLoadAccess::saddle_search_options(params).displace_atom_list.push_back(
               std::stol(token.substr(start, end - start + 1)));
         }
       }
     }
   }
-  params.saddle_search_options().confine_positive.enabled =
+  ParametersLoadAccess::saddle_search_options(params).confine_positive.enabled =
       ini.GetBoolean("Saddle Search", "confine_positive",
-                     params.saddle_search_options().confine_positive.enabled);
-  if (params.saddle_search_options().confine_positive.enabled) {
-    params.saddle_search_options().confine_positive.bowl_breakout =
+                     ParametersLoadAccess::saddle_search_options(params).confine_positive.enabled);
+  if (ParametersLoadAccess::saddle_search_options(params).confine_positive.enabled) {
+    ParametersLoadAccess::saddle_search_options(params).confine_positive.bowl_breakout =
         ini.GetBoolean(
             "Saddle Search", "bowl_breakout",
-            params.saddle_search_options().confine_positive.bowl_breakout);
-    params.saddle_search_options().confine_positive.bowl_active = ini.GetInteger(
+            ParametersLoadAccess::saddle_search_options(params).confine_positive.bowl_breakout);
+    ParametersLoadAccess::saddle_search_options(params).confine_positive.bowl_active = ini.GetInteger(
         "Saddle Search", "bowl_active_atoms",
-        params.saddle_search_options().confine_positive.bowl_active);
-    params.saddle_search_options().confine_positive.min_force =
+        ParametersLoadAccess::saddle_search_options(params).confine_positive.bowl_active);
+    ParametersLoadAccess::saddle_search_options(params).confine_positive.min_force =
         ini.GetReal("Saddle Search", "confine_positive_min_move",
-                    params.saddle_search_options().confine_positive.min_force);
-    params.saddle_search_options().confine_positive.scale_ratio =
+                    ParametersLoadAccess::saddle_search_options(params).confine_positive.min_force);
+    ParametersLoadAccess::saddle_search_options(params).confine_positive.scale_ratio =
         ini.GetReal("Saddle Search", "confine_positive_scale_ratio",
-                    params.saddle_search_options().confine_positive.scale_ratio);
-    params.saddle_search_options().confine_positive.boost =
+                    ParametersLoadAccess::saddle_search_options(params).confine_positive.scale_ratio);
+    ParametersLoadAccess::saddle_search_options(params).confine_positive.boost =
         ini.GetReal("Saddle Search", "confine_positive_boost",
-                    params.saddle_search_options().confine_positive.boost);
-    params.saddle_search_options().confine_positive.min_active = ini.GetInteger(
+                    ParametersLoadAccess::saddle_search_options(params).confine_positive.boost);
+    ParametersLoadAccess::saddle_search_options(params).confine_positive.min_active = ini.GetInteger(
         "Saddle Search", "confine_positive_min_active",
-        params.saddle_search_options().confine_positive.min_active);
+        ParametersLoadAccess::saddle_search_options(params).confine_positive.min_active);
   }
-  params.saddle_search_options().dynamics.temperature =
-      params.main_options().temperature;
-  params.saddle_search_options().dynamics.temperature =
+  ParametersLoadAccess::saddle_search_options(params).dynamics.temperature =
+      ParametersLoadAccess::main_options(params).temperature;
+  ParametersLoadAccess::saddle_search_options(params).dynamics.temperature =
       ini.GetReal("Saddle Search", "dynamics_temperature",
-                  params.saddle_search_options().dynamics.temperature);
-  params.saddle_search_options().dynamics.state_check_interval_input =
+                  ParametersLoadAccess::saddle_search_options(params).dynamics.temperature);
+  ParametersLoadAccess::saddle_search_options(params).dynamics.state_check_interval_input =
       ini.GetReal(
           "Saddle Search", "dynamics_state_check_interval",
-          params.saddle_search_options().dynamics.state_check_interval_input);
-  params.saddle_search_options().dynamics.state_check_interval =
-      params.saddle_search_options().dynamics.state_check_interval_input /
-      params.constants().timeUnit;
-  params.saddle_search_options().dynamics.record_interval_input =
+          ParametersLoadAccess::saddle_search_options(params).dynamics.state_check_interval_input);
+  ParametersLoadAccess::saddle_search_options(params).dynamics.state_check_interval =
+      ParametersLoadAccess::saddle_search_options(params).dynamics.state_check_interval_input /
+      ParametersLoadAccess::constants(params).timeUnit;
+  ParametersLoadAccess::saddle_search_options(params).dynamics.record_interval_input =
       ini.GetReal("Saddle Search", "dynamics_record_interval",
-                  params.saddle_search_options().dynamics.record_interval_input);
-  params.saddle_search_options().dynamics.record_interval =
-      params.saddle_search_options().dynamics.record_interval_input /
-      params.constants().timeUnit;
-  params.saddle_search_options().dynamics.linear_interpolation = ini.GetBoolean(
+                  ParametersLoadAccess::saddle_search_options(params).dynamics.record_interval_input);
+  ParametersLoadAccess::saddle_search_options(params).dynamics.record_interval =
+      ParametersLoadAccess::saddle_search_options(params).dynamics.record_interval_input /
+      ParametersLoadAccess::constants(params).timeUnit;
+  ParametersLoadAccess::saddle_search_options(params).dynamics.linear_interpolation = ini.GetBoolean(
       "Saddle Search", "dynamics_linear_interpolation",
-      params.saddle_search_options().dynamics.linear_interpolation);
-  params.saddle_search_options().remove_rotation =
+      ParametersLoadAccess::saddle_search_options(params).dynamics.linear_interpolation);
+  ParametersLoadAccess::saddle_search_options(params).remove_rotation =
       ini.GetBoolean("Saddle Search", "remove_rotation",
-                     params.saddle_search_options().remove_rotation);
-  params.saddle_search_options().dynamics.max_init_curvature =
+                     ParametersLoadAccess::saddle_search_options(params).remove_rotation);
+  ParametersLoadAccess::saddle_search_options(params).dynamics.max_init_curvature =
       ini.GetReal("Saddle Search", "dynamics_max_init_curvature",
-                  params.saddle_search_options().dynamics.max_init_curvature);
-  params.saddle_search_options().zero_mode_abort_curvature =
+                  ParametersLoadAccess::saddle_search_options(params).dynamics.max_init_curvature);
+  ParametersLoadAccess::saddle_search_options(params).zero_mode_abort_curvature =
       ini.GetReal("Saddle Search", "zero_mode_abort_curvature",
-                  params.saddle_search_options().zero_mode_abort_curvature);
+                  ParametersLoadAccess::saddle_search_options(params).zero_mode_abort_curvature);
 
   // [Basin Hopping] //
 
-  params.basin_hopping_options().displacement =
+  ParametersLoadAccess::basin_hopping_options(params).displacement =
       ini.GetReal("Basin Hopping", "displacement",
-                  params.basin_hopping_options().displacement);
-  params.basin_hopping_options().push_apart_distance =
+                  ParametersLoadAccess::basin_hopping_options(params).displacement);
+  ParametersLoadAccess::basin_hopping_options(params).push_apart_distance =
       ini.GetReal("Basin Hopping", "push_apart_distance",
-                  params.basin_hopping_options().push_apart_distance);
-  params.basin_hopping_options().initial_random_structure_probability =
+                  ParametersLoadAccess::basin_hopping_options(params).push_apart_distance);
+  ParametersLoadAccess::basin_hopping_options(params).initial_random_structure_probability =
       ini.GetReal(
           "Basin Hopping", "initial_random_structure_probability",
-          params.basin_hopping_options().initial_random_structure_probability);
-  params.basin_hopping_options().steps = ini.GetInteger(
-      "Basin Hopping", "steps", params.basin_hopping_options().steps);
-  params.basin_hopping_options().quenching_steps =
+          ParametersLoadAccess::basin_hopping_options(params).initial_random_structure_probability);
+  ParametersLoadAccess::basin_hopping_options(params).steps = ini.GetInteger(
+      "Basin Hopping", "steps", ParametersLoadAccess::basin_hopping_options(params).steps);
+  ParametersLoadAccess::basin_hopping_options(params).quenching_steps =
       ini.GetInteger("Basin Hopping", "quenching_steps",
-                     params.basin_hopping_options().quenching_steps);
-  params.basin_hopping_options().single_atom_displace =
+                     ParametersLoadAccess::basin_hopping_options(params).quenching_steps);
+  ParametersLoadAccess::basin_hopping_options(params).single_atom_displace =
       ini.GetBoolean("Basin Hopping", "single_atom_displace",
-                     params.basin_hopping_options().single_atom_displace);
-  params.basin_hopping_options().significant_structure =
+                     ParametersLoadAccess::basin_hopping_options(params).single_atom_displace);
+  ParametersLoadAccess::basin_hopping_options(params).significant_structure =
       ini.GetBoolean("Basin Hopping", "significant_structure",
-                     params.basin_hopping_options().significant_structure);
-  params.basin_hopping_options().displacement_algorithm =
+                     ParametersLoadAccess::basin_hopping_options(params).significant_structure);
+  ParametersLoadAccess::basin_hopping_options(params).displacement_algorithm =
       toLowerCase(ini.Get("Basin Hopping", "displacement_algorithm",
-                          params.basin_hopping_options().displacement_algorithm));
+                          ParametersLoadAccess::basin_hopping_options(params).displacement_algorithm));
   if (params.basin_hopping_options().displacement_algorithm != "standard" &&
       params.basin_hopping_options().displacement_algorithm != "linear" &&
       params.basin_hopping_options().displacement_algorithm != "quadratic") {
     EONC_LOG_ERROR("unknown displacement_algorithm {}",
-                   params.basin_hopping_options().displacement_algorithm);
+                   ParametersLoadAccess::basin_hopping_options(params).displacement_algorithm);
     error = 1;
   }
-  params.basin_hopping_options().displacement_distribution = toLowerCase(
+  ParametersLoadAccess::basin_hopping_options(params).displacement_distribution = toLowerCase(
       ini.Get("Basin Hopping", "displacement_distribution",
-              params.basin_hopping_options().displacement_distribution));
+              ParametersLoadAccess::basin_hopping_options(params).displacement_distribution));
   if (params.basin_hopping_options().displacement_distribution != "uniform" &&
       params.basin_hopping_options().displacement_distribution != "gaussian") {
     EONC_LOG_ERROR("unknown displacement_distribution {}",
-                   params.basin_hopping_options().displacement_distribution);
+                   ParametersLoadAccess::basin_hopping_options(params).displacement_distribution);
     error = 1;
   }
-  params.basin_hopping_options().swap_probability =
+  ParametersLoadAccess::basin_hopping_options(params).swap_probability =
       ini.GetReal("Basin Hopping", "swap_probability",
-                  params.basin_hopping_options().swap_probability);
-  params.basin_hopping_options().jump_max = ini.GetInteger(
-      "Basin Hopping", "jump_max", params.basin_hopping_options().jump_max);
-  params.basin_hopping_options().jump_steps = ini.GetInteger(
-      "Basin Hopping", "jump_steps", params.basin_hopping_options().jump_steps);
-  params.basin_hopping_options().adjust_displacement =
+                  ParametersLoadAccess::basin_hopping_options(params).swap_probability);
+  ParametersLoadAccess::basin_hopping_options(params).jump_max = ini.GetInteger(
+      "Basin Hopping", "jump_max", ParametersLoadAccess::basin_hopping_options(params).jump_max);
+  ParametersLoadAccess::basin_hopping_options(params).jump_steps = ini.GetInteger(
+      "Basin Hopping", "jump_steps", ParametersLoadAccess::basin_hopping_options(params).jump_steps);
+  ParametersLoadAccess::basin_hopping_options(params).adjust_displacement =
       ini.GetBoolean("Basin Hopping", "adjust_displacement",
-                     params.basin_hopping_options().adjust_displacement);
-  params.basin_hopping_options().adjust_period =
+                     ParametersLoadAccess::basin_hopping_options(params).adjust_displacement);
+  ParametersLoadAccess::basin_hopping_options(params).adjust_period =
       ini.GetInteger("Basin Hopping", "adjust_period",
-                     params.basin_hopping_options().adjust_period);
-  params.basin_hopping_options().adjust_fraction =
+                     ParametersLoadAccess::basin_hopping_options(params).adjust_period);
+  ParametersLoadAccess::basin_hopping_options(params).adjust_fraction =
       ini.GetReal("Basin Hopping", "adjust_fraction",
-                  params.basin_hopping_options().adjust_fraction);
-  params.basin_hopping_options().target_ratio =
+                  ParametersLoadAccess::basin_hopping_options(params).adjust_fraction);
+  ParametersLoadAccess::basin_hopping_options(params).target_ratio =
       ini.GetReal("Basin Hopping", "target_ratio",
-                  params.basin_hopping_options().target_ratio);
-  params.basin_hopping_options().write_unique =
+                  ParametersLoadAccess::basin_hopping_options(params).target_ratio);
+  ParametersLoadAccess::basin_hopping_options(params).write_unique =
       ini.GetBoolean("Basin Hopping", "write_unique",
-                     params.basin_hopping_options().write_unique);
-  params.basin_hopping_options().stop_energy = ini.GetReal(
-      "Basin Hopping", "stop_energy", params.basin_hopping_options().stop_energy);
+                     ParametersLoadAccess::basin_hopping_options(params).write_unique);
+  ParametersLoadAccess::basin_hopping_options(params).stop_energy = ini.GetReal(
+      "Basin Hopping", "stop_energy", ParametersLoadAccess::basin_hopping_options(params).stop_energy);
 
   // [Global Optimization] //
 
-  params.global_optimization_options().move_method =
+  ParametersLoadAccess::global_optimization_options(params).move_method =
       toLowerCase(ini.Get("Global Optimization", "move_method",
-                          params.global_optimization_options().move_method));
-  params.global_optimization_options().decision_method =
+                          ParametersLoadAccess::global_optimization_options(params).move_method));
+  ParametersLoadAccess::global_optimization_options(params).decision_method =
       toLowerCase(ini.Get("Global Optimization", "decision_method",
-                          params.global_optimization_options().decision_method));
+                          ParametersLoadAccess::global_optimization_options(params).decision_method));
   if (params.global_optimization_options().decision_method != "npew" &&
       params.global_optimization_options().decision_method != "boltzmann") {
     EONC_LOG_ERROR("unknown decision_method {}",
-                   params.global_optimization_options().decision_method);
+                   ParametersLoadAccess::global_optimization_options(params).decision_method);
     error = 1;
   }
-  params.global_optimization_options().steps = ini.GetInteger(
-      "Global Optimization", "steps", params.global_optimization_options().steps);
-  params.global_optimization_options().beta = ini.GetReal(
-      "Global Optimization", "beta", params.global_optimization_options().beta);
-  params.global_optimization_options().alpha = ini.GetReal(
-      "Global Optimization", "alpha", params.global_optimization_options().alpha);
-  params.global_optimization_options().mdmin = ini.GetInteger(
-      "Global Optimization", "mdmin", params.global_optimization_options().mdmin);
-  params.global_optimization_options().target_energy =
+  ParametersLoadAccess::global_optimization_options(params).steps = ini.GetInteger(
+      "Global Optimization", "steps", ParametersLoadAccess::global_optimization_options(params).steps);
+  ParametersLoadAccess::global_optimization_options(params).beta = ini.GetReal(
+      "Global Optimization", "beta", ParametersLoadAccess::global_optimization_options(params).beta);
+  ParametersLoadAccess::global_optimization_options(params).alpha = ini.GetReal(
+      "Global Optimization", "alpha", ParametersLoadAccess::global_optimization_options(params).alpha);
+  ParametersLoadAccess::global_optimization_options(params).mdmin = ini.GetInteger(
+      "Global Optimization", "mdmin", ParametersLoadAccess::global_optimization_options(params).mdmin);
+  ParametersLoadAccess::global_optimization_options(params).target_energy =
       ini.GetReal("Global Optimization", "target_energy",
-                  params.global_optimization_options().target_energy);
+                  ParametersLoadAccess::global_optimization_options(params).target_energy);
 
   // [BGSD] //
 
-  params.bgsd_options().alpha =
-      ini.GetReal("BGSD", "alpha", params.bgsd_options().alpha);
-  params.bgsd_options().beta =
-      ini.GetReal("BGSD", "beta", params.bgsd_options().beta);
-  params.bgsd_options().gradient_finite_difference =
+  ParametersLoadAccess::bgsd_options(params).alpha =
+      ini.GetReal("BGSD", "alpha", ParametersLoadAccess::bgsd_options(params).alpha);
+  ParametersLoadAccess::bgsd_options(params).beta =
+      ini.GetReal("BGSD", "beta", ParametersLoadAccess::bgsd_options(params).beta);
+  ParametersLoadAccess::bgsd_options(params).gradient_finite_difference =
       ini.GetReal("BGSD", "gradientfinitedifference",
-                  params.bgsd_options().gradient_finite_difference);
-  params.bgsd_options().grad2energy_convergence =
+                  ParametersLoadAccess::bgsd_options(params).gradient_finite_difference);
+  ParametersLoadAccess::bgsd_options(params).grad2energy_convergence =
       ini.GetReal("BGSD", "grad2energyconvergence",
-                  params.bgsd_options().grad2energy_convergence);
-  params.bgsd_options().grad2force_convergence =
+                  ParametersLoadAccess::bgsd_options(params).grad2energy_convergence);
+  ParametersLoadAccess::bgsd_options(params).grad2force_convergence =
       ini.GetReal("BGSD", "grad2forceconvergence",
-                  params.bgsd_options().grad2force_convergence);
+                  ParametersLoadAccess::bgsd_options(params).grad2force_convergence);
 
   // [Monte Carlo] //
 
-  params.monte_carlo_options().step_size = ini.GetReal(
-      "Monte Carlo", "step_size", params.monte_carlo_options().step_size);
-  params.monte_carlo_options().steps = static_cast<int>(
-      ini.GetInteger("Monte Carlo", "steps", params.monte_carlo_options().steps));
+  ParametersLoadAccess::monte_carlo_options(params).step_size = ini.GetReal(
+      "Monte Carlo", "step_size", ParametersLoadAccess::monte_carlo_options(params).step_size);
+  ParametersLoadAccess::monte_carlo_options(params).steps = static_cast<int>(
+      ini.GetInteger("Monte Carlo", "steps", ParametersLoadAccess::monte_carlo_options(params).steps));
 
   // [OH_TST] //
 
-  params.oh_tst_options().reactant_filename = ini.Get(
-      "OH_TST", "reactant_filename", params.oh_tst_options().reactant_filename);
-  params.oh_tst_options().product_filename = ini.Get(
-      "OH_TST", "product_filename", params.oh_tst_options().product_filename);
-  params.oh_tst_options().time_step =
-      ini.GetReal("OH_TST", "time_step", params.oh_tst_options().time_step);
-  params.oh_tst_options().equil_steps = ini.GetInteger(
-      "OH_TST", "equil_steps", params.oh_tst_options().equil_steps);
-  params.oh_tst_options().sample_steps = ini.GetInteger(
-      "OH_TST", "sample_steps", params.oh_tst_options().sample_steps);
-  params.oh_tst_options().max_planes =
-      ini.GetInteger("OH_TST", "max_planes", params.oh_tst_options().max_planes);
-  params.oh_tst_options().plane_mass =
-      ini.GetReal("OH_TST", "plane_mass", params.oh_tst_options().plane_mass);
-  params.oh_tst_options().alpha_rot =
-      ini.GetReal("OH_TST", "alpha_rot", params.oh_tst_options().alpha_rot);
-  params.oh_tst_options().plane_time_step = ini.GetReal(
-      "OH_TST", "plane_time_step", params.oh_tst_options().plane_time_step);
-  params.oh_tst_options().ds_max =
-      ini.GetReal("OH_TST", "ds_max", params.oh_tst_options().ds_max);
-  params.oh_tst_options().dtheta_max =
-      ini.GetReal("OH_TST", "dtheta_max", params.oh_tst_options().dtheta_max);
-  params.oh_tst_options().force_tol =
-      ini.GetReal("OH_TST", "force_tol", params.oh_tst_options().force_tol);
-  params.oh_tst_options().s_init =
-      ini.GetReal("OH_TST", "s_init", params.oh_tst_options().s_init);
-  params.oh_tst_options().reactant_md_steps = ini.GetInteger(
-      "OH_TST", "reactant_md_steps", params.oh_tst_options().reactant_md_steps);
-  params.oh_tst_options().symmetry_products = ini.Get(
-      "OH_TST", "symmetry_products", params.oh_tst_options().symmetry_products);
-  params.oh_tst_options().max_delta_a =
-      ini.GetReal("OH_TST", "max_delta_a", params.oh_tst_options().max_delta_a);
-  params.oh_tst_options().thermostat = toLowerCase(
-      ini.Get("OH_TST", "thermostat", params.oh_tst_options().thermostat));
-  params.oh_tst_options().gle_a_file =
-      ini.Get("OH_TST", "gle_a_file", params.oh_tst_options().gle_a_file);
-  params.oh_tst_options().pmf_scan =
-      ini.GetBoolean("OH_TST", "pmf_scan", params.oh_tst_options().pmf_scan);
-  params.oh_tst_options().scan_planes = ini.GetInteger(
-      "OH_TST", "scan_planes", params.oh_tst_options().scan_planes);
+  ParametersLoadAccess::oh_tst_options(params).reactant_filename = ini.Get(
+      "OH_TST", "reactant_filename", ParametersLoadAccess::oh_tst_options(params).reactant_filename);
+  ParametersLoadAccess::oh_tst_options(params).product_filename = ini.Get(
+      "OH_TST", "product_filename", ParametersLoadAccess::oh_tst_options(params).product_filename);
+  ParametersLoadAccess::oh_tst_options(params).time_step =
+      ini.GetReal("OH_TST", "time_step", ParametersLoadAccess::oh_tst_options(params).time_step);
+  ParametersLoadAccess::oh_tst_options(params).equil_steps = ini.GetInteger(
+      "OH_TST", "equil_steps", ParametersLoadAccess::oh_tst_options(params).equil_steps);
+  ParametersLoadAccess::oh_tst_options(params).sample_steps = ini.GetInteger(
+      "OH_TST", "sample_steps", ParametersLoadAccess::oh_tst_options(params).sample_steps);
+  ParametersLoadAccess::oh_tst_options(params).max_planes =
+      ini.GetInteger("OH_TST", "max_planes", ParametersLoadAccess::oh_tst_options(params).max_planes);
+  ParametersLoadAccess::oh_tst_options(params).plane_mass =
+      ini.GetReal("OH_TST", "plane_mass", ParametersLoadAccess::oh_tst_options(params).plane_mass);
+  ParametersLoadAccess::oh_tst_options(params).alpha_rot =
+      ini.GetReal("OH_TST", "alpha_rot", ParametersLoadAccess::oh_tst_options(params).alpha_rot);
+  ParametersLoadAccess::oh_tst_options(params).plane_time_step = ini.GetReal(
+      "OH_TST", "plane_time_step", ParametersLoadAccess::oh_tst_options(params).plane_time_step);
+  ParametersLoadAccess::oh_tst_options(params).ds_max =
+      ini.GetReal("OH_TST", "ds_max", ParametersLoadAccess::oh_tst_options(params).ds_max);
+  ParametersLoadAccess::oh_tst_options(params).dtheta_max =
+      ini.GetReal("OH_TST", "dtheta_max", ParametersLoadAccess::oh_tst_options(params).dtheta_max);
+  ParametersLoadAccess::oh_tst_options(params).force_tol =
+      ini.GetReal("OH_TST", "force_tol", ParametersLoadAccess::oh_tst_options(params).force_tol);
+  ParametersLoadAccess::oh_tst_options(params).s_init =
+      ini.GetReal("OH_TST", "s_init", ParametersLoadAccess::oh_tst_options(params).s_init);
+  ParametersLoadAccess::oh_tst_options(params).reactant_md_steps = ini.GetInteger(
+      "OH_TST", "reactant_md_steps", ParametersLoadAccess::oh_tst_options(params).reactant_md_steps);
+  ParametersLoadAccess::oh_tst_options(params).symmetry_products = ini.Get(
+      "OH_TST", "symmetry_products", ParametersLoadAccess::oh_tst_options(params).symmetry_products);
+  ParametersLoadAccess::oh_tst_options(params).max_delta_a =
+      ini.GetReal("OH_TST", "max_delta_a", ParametersLoadAccess::oh_tst_options(params).max_delta_a);
+  ParametersLoadAccess::oh_tst_options(params).thermostat = toLowerCase(
+      ini.Get("OH_TST", "thermostat", ParametersLoadAccess::oh_tst_options(params).thermostat));
+  ParametersLoadAccess::oh_tst_options(params).gle_a_file =
+      ini.Get("OH_TST", "gle_a_file", ParametersLoadAccess::oh_tst_options(params).gle_a_file);
+  ParametersLoadAccess::oh_tst_options(params).pmf_scan =
+      ini.GetBoolean("OH_TST", "pmf_scan", ParametersLoadAccess::oh_tst_options(params).pmf_scan);
+  ParametersLoadAccess::oh_tst_options(params).scan_planes = ini.GetInteger(
+      "OH_TST", "scan_planes", ParametersLoadAccess::oh_tst_options(params).scan_planes);
 
   return error;
 }
 
 void validate_and_link(Parameters &params) {
   // Time unit conversions
-  double tu = params.constants().timeUnit;
-  params.optimizer_options().time_step =
-      params.optimizer_options().time_step_input / tu;
-  params.optimizer_options().max_time_step =
-      params.optimizer_options().max_time_step_input / tu;
+  double tu = ParametersLoadAccess::constants(params).timeUnit;
+  ParametersLoadAccess::optimizer_options(params).time_step =
+      ParametersLoadAccess::optimizer_options(params).time_step_input / tu;
+  ParametersLoadAccess::optimizer_options(params).max_time_step =
+      ParametersLoadAccess::optimizer_options(params).max_time_step_input / tu;
 
-  params.dynamics_options().time_step =
-      params.dynamics_options().time_step_input / tu;
-  params.dynamics_options().time = params.dynamics_options().time_input / tu;
-  if (params.dynamics_options().time_step > 0.0) {
-    params.dynamics_options().steps = static_cast<long>(std::floor(
-        params.dynamics_options().time / params.dynamics_options().time_step +
+  ParametersLoadAccess::dynamics_options(params).time_step =
+      ParametersLoadAccess::dynamics_options(params).time_step_input / tu;
+  ParametersLoadAccess::dynamics_options(params).time = ParametersLoadAccess::dynamics_options(params).time_input / tu;
+  if (ParametersLoadAccess::dynamics_options(params).time_step > 0.0) {
+    ParametersLoadAccess::dynamics_options(params).steps = static_cast<long>(std::floor(
+        ParametersLoadAccess::dynamics_options(params).time / ParametersLoadAccess::dynamics_options(params).time_step +
         0.5));
   } else {
-    params.dynamics_options().steps = 0;
+    ParametersLoadAccess::dynamics_options(params).steps = 0;
   }
 
-  params.thermostat_options().langevin_friction =
-      params.thermostat_options().langevin_friction_input * tu;
+  ParametersLoadAccess::thermostat_options(params).langevin_friction =
+      ParametersLoadAccess::thermostat_options(params).langevin_friction_input * tu;
 
-  params.parallel_replica_options().dephase_time =
-      params.parallel_replica_options().dephase_time_input / tu;
-  params.parallel_replica_options().state_check_interval =
-      params.parallel_replica_options().state_check_interval_input / tu;
-  params.parallel_replica_options().record_interval =
-      params.parallel_replica_options().record_interval_input / tu;
-  params.parallel_replica_options().corr_time =
-      params.parallel_replica_options().corr_time_input / tu;
+  ParametersLoadAccess::parallel_replica_options(params).dephase_time =
+      ParametersLoadAccess::parallel_replica_options(params).dephase_time_input / tu;
+  ParametersLoadAccess::parallel_replica_options(params).state_check_interval =
+      ParametersLoadAccess::parallel_replica_options(params).state_check_interval_input / tu;
+  ParametersLoadAccess::parallel_replica_options(params).record_interval =
+      ParametersLoadAccess::parallel_replica_options(params).record_interval_input / tu;
+  ParametersLoadAccess::parallel_replica_options(params).corr_time =
+      ParametersLoadAccess::parallel_replica_options(params).corr_time_input / tu;
 
-  params.replica_exchange_options().sampling_time =
-      params.replica_exchange_options().sampling_time_input / tu;
-  params.replica_exchange_options().exchange_trials =
-      params.replica_exchange_options().replicas;
+  ParametersLoadAccess::replica_exchange_options(params).sampling_time =
+      ParametersLoadAccess::replica_exchange_options(params).sampling_time_input / tu;
+  ParametersLoadAccess::replica_exchange_options(params).exchange_trials =
+      ParametersLoadAccess::replica_exchange_options(params).replicas;
 
-  params.hyperdynamics_options().rmd_time =
-      params.hyperdynamics_options().rmd_time_input / tu;
+  ParametersLoadAccess::hyperdynamics_options(params).rmd_time =
+      ParametersLoadAccess::hyperdynamics_options(params).rmd_time_input / tu;
 
-  params.saddle_search_options().dynamics.state_check_interval =
-      params.saddle_search_options().dynamics.state_check_interval_input / tu;
-  params.saddle_search_options().dynamics.record_interval =
-      params.saddle_search_options().dynamics.record_interval_input / tu;
+  ParametersLoadAccess::saddle_search_options(params).dynamics.state_check_interval =
+      ParametersLoadAccess::saddle_search_options(params).dynamics.state_check_interval_input / tu;
+  ParametersLoadAccess::saddle_search_options(params).dynamics.record_interval =
+      ParametersLoadAccess::saddle_search_options(params).dynamics.record_interval_input / tu;
 
   // Cross-group defaults
-  params.process_search_options().minimization_offset =
-      params.optimizer_options().max_move;
-  params.neb_options().force_tolerance = params.optimizer_options().converged_force;
+  ParametersLoadAccess::process_search_options(params).minimization_offset =
+      ParametersLoadAccess::optimizer_options(params).max_move;
+  ParametersLoadAccess::neb_options(params).force_tolerance = ParametersLoadAccess::optimizer_options(params).converged_force;
 }
 
 } // namespace eonc::config

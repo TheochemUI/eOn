@@ -51,12 +51,12 @@ protected:
       : params{},
         pot{nullptr},
         matter{nullptr} {
-    params.potential_options().potential = PotType::LJ;
-    params.optimizer_options().method = OptType::CG;
-    params.optimizer_options().converged_force = 0.001;
-    params.dimer_options().converged_angle = 0.01;
-    params.dimer_options().max_iterations = 50;
-    params.saddle_search_options().minmode_method =
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+    ParametersLoadAccess::optimizer_options(params).method = OptType::CG;
+    ParametersLoadAccess::optimizer_options(params).converged_force = 0.001;
+    ParametersLoadAccess::dimer_options(params).converged_angle = 0.01;
+    ParametersLoadAccess::dimer_options(params).max_iterations = 50;
+    ParametersLoadAccess::saddle_search_options(params).minmode_method =
         LowestEigenmode::MINMODE_DIMER;
 
     pot = eonc::helpers::makePotential(PotType::LJ, params);
@@ -78,7 +78,7 @@ protected:
 TEST_CASE_METHOD(DimerFixture,
                  "Classic Dimer computes eigenvalue on displaced cluster",
                  "[dimer][eigenmode]") {
-  params.dimer_options().improved = false;
+  ParametersLoadAccess::dimer_options(params).improved = false;
   auto dimer = std::make_unique<Dimer>(matter, params, pot);
   dimer->compute(matter, mode);
 
@@ -91,7 +91,7 @@ TEST_CASE_METHOD(DimerFixture,
 
 TEST_CASE_METHOD(DimerFixture, "ImprovedDimer computes negative eigenvalue",
                  "[dimer][eigenmode][improved]") {
-  params.dimer_options().improved = true;
+  ParametersLoadAccess::dimer_options(params).improved = true;
   auto dimer = std::make_unique<ImprovedDimer>(matter, params, pot);
   dimer->compute(matter, mode);
 
@@ -104,7 +104,7 @@ TEST_CASE_METHOD(DimerFixture, "ImprovedDimer computes negative eigenvalue",
 
 TEST_CASE_METHOD(DimerFixture, "Lanczos computes negative eigenvalue",
                  "[lanczos][eigenmode]") {
-  params.saddle_search_options().minmode_method =
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
       LowestEigenmode::MINMODE_LANCZOS;
   auto lanczos = std::make_unique<Lanczos>(matter, params, pot);
   lanczos->compute(matter, mode);
@@ -116,7 +116,7 @@ TEST_CASE_METHOD(DimerFixture, "Lanczos computes negative eigenvalue",
 
 TEST_CASE_METHOD(DimerFixture, "Davidson computes negative eigenvalue",
                  "[davidson][eigenmode]") {
-  params.saddle_search_options().minmode_method =
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
       LowestEigenmode::MINMODE_DAVIDSON;
   auto davidson = std::make_unique<Davidson>(matter, params, pot);
   davidson->compute(matter, mode);
@@ -128,13 +128,13 @@ TEST_CASE_METHOD(DimerFixture, "Davidson computes negative eigenvalue",
 
 TEST_CASE_METHOD(DimerFixture, "Davidson and Lanczos agree on lowest mode sign",
                  "[davidson][lanczos][eigenmode]") {
-  params.saddle_search_options().minmode_method =
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
       LowestEigenmode::MINMODE_LANCZOS;
   Lanczos lanczos(matter, params, pot);
   lanczos.compute(matter, mode);
   const double ewL = lanczos.getEigenvalue();
 
-  params.saddle_search_options().minmode_method =
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
       LowestEigenmode::MINMODE_DAVIDSON;
   Davidson davidson(matter, params, pot);
   davidson.compute(matter, mode);
@@ -156,8 +156,8 @@ TEST_CASE_METHOD(DimerFixture, "Davidson and Lanczos agree on lowest mode sign",
 TEST_CASE_METHOD(DimerFixture,
                  "buildEigenmodeStrategy returns ImprovedDimer by default",
                  "[eigenmode][strategy]") {
-  params.dimer_options().improved = true;
-  params.saddle_search_options().minmode_method = LowestEigenmode::MINMODE_DIMER;
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::saddle_search_options(params).minmode_method = LowestEigenmode::MINMODE_DIMER;
 
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   REQUIRE(strategy != nullptr);
@@ -167,8 +167,8 @@ TEST_CASE_METHOD(DimerFixture,
 TEST_CASE_METHOD(DimerFixture,
                  "buildEigenmodeStrategy returns Dimer when improved=false",
                  "[eigenmode][strategy]") {
-  params.dimer_options().improved = false;
-  params.saddle_search_options().minmode_method = LowestEigenmode::MINMODE_DIMER;
+  ParametersLoadAccess::dimer_options(params).improved = false;
+  ParametersLoadAccess::saddle_search_options(params).minmode_method = LowestEigenmode::MINMODE_DIMER;
 
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   REQUIRE(strategy != nullptr);
@@ -177,7 +177,7 @@ TEST_CASE_METHOD(DimerFixture,
 
 TEST_CASE_METHOD(DimerFixture, "buildEigenmodeStrategy returns Lanczos variant",
                  "[eigenmode][strategy]") {
-  params.saddle_search_options().minmode_method =
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
       LowestEigenmode::MINMODE_LANCZOS;
 
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
@@ -188,7 +188,7 @@ TEST_CASE_METHOD(DimerFixture, "buildEigenmodeStrategy returns Lanczos variant",
 TEST_CASE_METHOD(DimerFixture,
                  "buildEigenmodeStrategy returns Davidson variant",
                  "[eigenmode][strategy][davidson]") {
-  params.saddle_search_options().minmode_method =
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
       LowestEigenmode::MINMODE_DAVIDSON;
 
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
@@ -200,7 +200,7 @@ TEST_CASE_METHOD(DimerFixture,
 TEST_CASE_METHOD(DimerFixture,
                  "gprdimer does not silently become ImprovedDimer",
                  "[eigenmode][strategy][gprdimer]") {
-  params.saddle_search_options().minmode_method =
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
       LowestEigenmode::MINMODE_GPRDIMER;
   REQUIRE_THROWS_WITH(eonc::buildEigenmodeStrategy(matter, params, pot),
                       Catch::Matchers::ContainsSubstring("with_gprd"));
@@ -208,7 +208,7 @@ TEST_CASE_METHOD(DimerFixture,
 #else
 TEST_CASE_METHOD(DimerFixture, "gprdimer constructs AtomicGPDimer in place",
                  "[eigenmode][strategy][gprdimer][m9q]") {
-  params.saddle_search_options().minmode_method =
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
       LowestEigenmode::MINMODE_GPRDIMER;
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   REQUIRE(strategy != nullptr);
@@ -221,8 +221,8 @@ TEST_CASE_METHOD(DimerFixture, "gprdimer constructs AtomicGPDimer in place",
 TEST_CASE_METHOD(DimerFixture,
                  "asImprovedDimer returns non-null for ImprovedDimer variant",
                  "[eigenmode][strategy]") {
-  params.dimer_options().improved = true;
-  params.saddle_search_options().minmode_method = LowestEigenmode::MINMODE_DIMER;
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::saddle_search_options(params).minmode_method = LowestEigenmode::MINMODE_DIMER;
 
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   auto *ptr = eonc::asImprovedDimer(*strategy);
@@ -232,8 +232,8 @@ TEST_CASE_METHOD(DimerFixture,
 TEST_CASE_METHOD(DimerFixture,
                  "asImprovedDimer returns null for classic Dimer variant",
                  "[eigenmode][strategy]") {
-  params.dimer_options().improved = false;
-  params.saddle_search_options().minmode_method = LowestEigenmode::MINMODE_DIMER;
+  ParametersLoadAccess::dimer_options(params).improved = false;
+  ParametersLoadAccess::saddle_search_options(params).minmode_method = LowestEigenmode::MINMODE_DIMER;
 
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   auto *ptr = eonc::asImprovedDimer(*strategy);
@@ -245,8 +245,8 @@ TEST_CASE_METHOD(DimerFixture,
 TEST_CASE_METHOD(DimerFixture,
                  "eigenmodeCompute dispatches correctly via variant",
                  "[eigenmode][strategy]") {
-  params.dimer_options().improved = true;
-  params.saddle_search_options().minmode_method = LowestEigenmode::MINMODE_DIMER;
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::saddle_search_options(params).minmode_method = LowestEigenmode::MINMODE_DIMER;
 
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   eonc::eigenmodeCompute(*strategy, matter, mode);
@@ -274,12 +274,12 @@ protected:
       : params{},
         pot{nullptr},
         matter{nullptr} {
-    params.potential_options().potential = PotType::LJ;
-    params.optimizer_options().method = OptType::CG;
-    params.optimizer_options().converged_force = 0.001;
-    params.dimer_options().converged_angle = 0.01;
-    params.dimer_options().max_iterations = 50;
-    params.saddle_search_options().minmode_method =
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+    ParametersLoadAccess::optimizer_options(params).method = OptType::CG;
+    ParametersLoadAccess::optimizer_options(params).converged_force = 0.001;
+    ParametersLoadAccess::dimer_options(params).converged_angle = 0.01;
+    ParametersLoadAccess::dimer_options(params).max_iterations = 50;
+    ParametersLoadAccess::saddle_search_options(params).minmode_method =
         LowestEigenmode::MINMODE_DIMER;
 
     pot = eonc::helpers::makePotential(PotType::LJ, params);
@@ -304,7 +304,7 @@ protected:
 TEST_CASE_METHOD(DimerFixedAtomFixture,
                  "ImprovedDimer forces on fixed atoms are zero",
                  "[dimer][fixed_atoms]") {
-  params.dimer_options().improved = true;
+  ParametersLoadAccess::dimer_options(params).improved = true;
   auto dimer = std::make_unique<ImprovedDimer>(matter, params, pot);
   dimer->compute(matter, mode);
 
@@ -320,7 +320,7 @@ TEST_CASE_METHOD(DimerFixedAtomFixture,
 TEST_CASE_METHOD(DimerFixedAtomFixture,
                  "Dimer eigenvalue is finite with fixed atoms",
                  "[dimer][fixed_atoms]") {
-  params.dimer_options().improved = true;
+  ParametersLoadAccess::dimer_options(params).improved = true;
   auto dimer = std::make_unique<ImprovedDimer>(matter, params, pot);
   dimer->compute(matter, mode);
 
@@ -332,10 +332,10 @@ TEST_CASE_METHOD(DimerFixedAtomFixture,
 
 TEST_CASE_METHOD(DimerFixture, "LOR rotation finds finite lowest curvature",
                  "[dimer][lor][eigenmode]") {
-  params.dimer_options().improved = true;
-  params.dimer_options().rotation_backend = DimerRotationBackend::LOR;
-  params.dimer_options().max_iterations = 20;
-  params.dimer_options().rotations_max = 20;
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).rotation_backend = DimerRotationBackend::LOR;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 20;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 20;
   // Deterministic seed into a soft basin (random mode can be mostly positive).
   AtomMatrix seed = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
   seed(0, 0) = 1.0;
@@ -354,13 +354,13 @@ TEST_CASE_METHOD(DimerFixture, "LOR rotation finds finite lowest curvature",
 TEST_CASE_METHOD(DimerFixture,
                  "LOR curvature history is non-increasing within tolerance",
                  "[dimer][lor][eigenmode]") {
-  params.dimer_options().improved = true;
-  params.dimer_options().max_iterations = 20;
-  params.dimer_options().rotations_max = 20;
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 20;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 20;
   // Start from Lanczos softest mode so LOR operates in a negative-C basin.
   Lanczos lanczos(matter, params, pot);
   lanczos.compute(matter, mode);
-  params.dimer_options().rotation_backend = DimerRotationBackend::LOR;
+  ParametersLoadAccess::dimer_options(params).rotation_backend = DimerRotationBackend::LOR;
   LORRotation lor(matter, params, pot);
   lor.compute(matter, lanczos.getEigenvector());
 
@@ -382,16 +382,16 @@ TEST_CASE_METHOD(
     DimerFixture,
     "LOR mode agrees with classical ImprovedDimer (sign-insensitive)",
     "[dimer][lor][eigenmode]") {
-  params.dimer_options().improved = true;
-  params.dimer_options().max_iterations = 50;
-  params.dimer_options().rotations_max = 30;
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 50;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 30;
 
   // Shared deterministic seed (not Lanczos output — avoids self-agreement).
   AtomMatrix seed = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
   seed(0, 0) = 1.0;
   seed.normalize();
 
-  params.dimer_options().rotation_backend = DimerRotationBackend::Classical;
+  ParametersLoadAccess::dimer_options(params).rotation_backend = DimerRotationBackend::Classical;
   ImprovedDimer classical(matter, params, pot);
   classical.compute(matter, seed);
   AtomMatrix mClass = classical.getEigenvector();
@@ -400,7 +400,7 @@ TEST_CASE_METHOD(
   lanczos.compute(matter, seed);
   AtomMatrix mLanc = lanczos.getEigenvector();
 
-  params.dimer_options().rotation_backend = DimerRotationBackend::LOR;
+  ParametersLoadAccess::dimer_options(params).rotation_backend = DimerRotationBackend::LOR;
   LORRotation lor(matter, params, pot);
   lor.compute(matter, seed);
   AtomMatrix mLor = lor.getEigenvector();
@@ -434,9 +434,9 @@ TEST_CASE_METHOD(
 TEST_CASE_METHOD(DimerFixture,
                  "ImprovedDimer rotation_backend=lor is live path",
                  "[dimer][lor][eigenmode]") {
-  params.dimer_options().improved = true;
-  params.dimer_options().rotation_backend = DimerRotationBackend::LOR;
-  params.dimer_options().rotations_max = 20;
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).rotation_backend = DimerRotationBackend::LOR;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 20;
   ImprovedDimer dimer(matter, params, pot);
   dimer.compute(matter, mode);
   REQUIRE(std::isfinite(dimer.getEigenvalue()));
@@ -447,16 +447,16 @@ TEST_CASE_METHOD(DimerFixture,
 TEST_CASE_METHOD(DimerFixture,
                  "rotation_backend lanczos/davidson report force calls",
                  "[dimer][lor][force_calls]") {
-  params.dimer_options().improved = true;
-  params.dimer_options().rotations_max = 20;
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 20;
 
-  params.dimer_options().rotation_backend = DimerRotationBackend::Lanczos;
+  ParametersLoadAccess::dimer_options(params).rotation_backend = DimerRotationBackend::Lanczos;
   ImprovedDimer dimL(matter, params, pot);
   dimL.compute(matter, mode);
   REQUIRE(dimL.totalForceCalls > 0);
   REQUIRE(std::isfinite(dimL.getEigenvalue()));
 
-  params.dimer_options().rotation_backend = DimerRotationBackend::Davidson;
+  ParametersLoadAccess::dimer_options(params).rotation_backend = DimerRotationBackend::Davidson;
   ImprovedDimer dimD(matter, params, pot);
   dimD.compute(matter, mode);
   REQUIRE(dimD.totalForceCalls > 0);
@@ -473,18 +473,18 @@ TEST_CASE_METHOD(DimerFixture,
 
 TEST_CASE_METHOD(DimerFixture, "LOR residual convergence flag via dispatch",
                  "[dimer][lor][convergence]") {
-  params.dimer_options().improved = true;
-  params.dimer_options().rotation_backend = DimerRotationBackend::LOR;
+  ParametersLoadAccess::dimer_options(params).improved = true;
+  ParametersLoadAccess::dimer_options(params).rotation_backend = DimerRotationBackend::LOR;
   // Impossible residual with minimal budget → not convergedOnResidual.
-  params.dimer_options().lor_residual_tol = 1e-15;
-  params.dimer_options().rotations_max = 2;
+  ParametersLoadAccess::dimer_options(params).lor_residual_tol = 1e-15;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 2;
   ImprovedDimer tight(matter, params, pot);
   tight.compute(matter, mode);
   REQUIRE_FALSE(tight.rotationDidConverge);
 
   // Loose residual → converges on residual when budget allows.
-  params.dimer_options().lor_residual_tol = 10.0;
-  params.dimer_options().rotations_max = 20;
+  ParametersLoadAccess::dimer_options(params).lor_residual_tol = 10.0;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 20;
   ImprovedDimer loose(matter, params, pot);
   loose.compute(matter, mode);
   REQUIRE(loose.rotationDidConverge);
@@ -493,7 +493,7 @@ TEST_CASE_METHOD(DimerFixture, "LOR residual convergence flag via dispatch",
 
 TEST_CASE_METHOD(DimerFixture, "classical rotation_backend skips alt dispatch",
                  "[dimer][lor][dispatch]") {
-  params.dimer_options().rotation_backend = DimerRotationBackend::Classical;
+  ParametersLoadAccess::dimer_options(params).rotation_backend = DimerRotationBackend::Classical;
   auto none = eonc::runAlternativeRotation(DimerRotationBackend::Classical,
                                            matter, params, pot, mode);
   REQUIRE_FALSE(none.has_value());
@@ -501,9 +501,9 @@ TEST_CASE_METHOD(DimerFixture, "classical rotation_backend skips alt dispatch",
 
 TEST_CASE_METHOD(DimerFixture, "non-improved Dimer uses LOR rotation_backend",
                  "[dimer][lor][eigenmode]") {
-  params.dimer_options().improved = false;
-  params.dimer_options().rotation_backend = DimerRotationBackend::LOR;
-  params.dimer_options().rotations_max = 20;
+  ParametersLoadAccess::dimer_options(params).improved = false;
+  ParametersLoadAccess::dimer_options(params).rotation_backend = DimerRotationBackend::LOR;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 20;
   Dimer dimer(matter, params, pot);
   dimer.compute(matter, mode);
   REQUIRE(std::isfinite(dimer.getEigenvalue()));
@@ -588,8 +588,8 @@ TEST_CASE_METHOD(DimerFixture,
   REQUIRE(matter->numberOfFreeAtoms() == matter->numberOfAtoms());
   REQUIRE(matter->numberOfFreeAtoms() > 3);
 
-  params.lanczos_options().max_iterations = 30;
-  params.lanczos_options().tolerance = 1e-4;
+  ParametersLoadAccess::lanczos_options(params).max_iterations = 30;
+  ParametersLoadAccess::lanczos_options(params).tolerance = 1e-4;
   Lanczos lanczos(matter, params, pot);
   AtomMatrix dir = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
   dir(0, 0) = 1.0;
@@ -617,10 +617,10 @@ TEST_CASE_METHOD(DimerFixture,
                  "Davidson active subset matches Lanczos free-default sign",
                  "[davidson][mobile][eigenmode]") {
   // Default path (phva_atoms All) still finds negative curvature on fixture.
-  params.lanczos_options().phva_atoms = "All";
-  params.davidson_options().phva_atoms = "All";
-  params.lanczos_options().max_iterations = 30;
-  params.davidson_options().max_iterations = 30;
+  ParametersLoadAccess::lanczos_options(params).phva_atoms = "All";
+  ParametersLoadAccess::davidson_options(params).phva_atoms = "All";
+  ParametersLoadAccess::lanczos_options(params).max_iterations = 30;
+  ParametersLoadAccess::davidson_options(params).max_iterations = 30;
 
   Lanczos lanczos(matter, params, pot);
   lanczos.compute(matter, mode);
@@ -636,8 +636,8 @@ TEST_CASE_METHOD(
     "Lanczos phva_atoms param restricts without changing free mask",
     "[lanczos][mobile][eigenmode]") {
   const long nFreeBefore = matter->numberOfFreeAtoms();
-  params.lanczos_options().phva_atoms = "0,1,2";
-  params.lanczos_options().max_iterations = 30;
+  ParametersLoadAccess::lanczos_options(params).phva_atoms = "0,1,2";
+  ParametersLoadAccess::lanczos_options(params).max_iterations = 30;
   Lanczos lanczos(matter, params, pot);
   AtomMatrix dir = AtomMatrix::Zero(matter->numberOfAtoms(), 3);
   dir(0, 0) = 1.0;
@@ -651,8 +651,8 @@ TEST_CASE_METHOD(
 
 TEST_CASE_METHOD(DimerFixture, "Lanczos All equals explicit free list",
                  "[lanczos][mobile][eigenmode]") {
-  params.lanczos_options().max_iterations = 25;
-  params.lanczos_options().tolerance = 1e-3;
+  ParametersLoadAccess::lanczos_options(params).max_iterations = 25;
+  ParametersLoadAccess::lanczos_options(params).tolerance = 1e-3;
   VectorXi free = eonc::freeAtomIndices(matter.get());
 
   Lanczos a(matter, params, pot);
