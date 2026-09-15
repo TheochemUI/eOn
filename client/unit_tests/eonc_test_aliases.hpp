@@ -12,17 +12,25 @@
 #pragma once
 
 #include "eon/BaseStructures.h"
+#include "eon/ImprovedDimer.h"
+#include "eon/LowestEigenmode.h"
 #include "eon/Matter.h"
 #include "eon/MonteCarlo.h"
 #include "eon/Parameters.h"
+#include "eon/Potential.h"
+#include "eon/PotRegistry.h"
 
 using eonc::DimerRotationBackend;
+using eonc::ImprovedDimer;
 using eonc::JobType;
+using eonc::LowestEigenmode;
 using eonc::Matter;
 using eonc::MonteCarlo;
 using eonc::NEBInit;
 using eonc::OptType;
 using eonc::Parameters;
 using eonc::ParametersLoadAccess;
+using eonc::Potential;
+using eonc::PotRegistry;
 using eonc::PotType;
 using eonc::RunStatus;
