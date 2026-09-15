@@ -203,7 +203,6 @@ add_project_arguments(
     language: 'cpp',
 )
 
-# TODO(rg): use fc.get_supported_arguments and add more compiler support
 if use_fortran == true
     _fargs += fc.get_supported_arguments(
         [

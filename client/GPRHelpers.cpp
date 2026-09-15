@@ -99,7 +99,8 @@ void copyAtomMatrixToCoord(const AtomMatrix &src, gpr::Coord &dst) {
 
 } // namespace
 
-// FIXME: Take in the active / inactive pairs / atomtypes
+// gpr_optim pairtype is an n_species × n_species matrix indexed 0..n-1.
+// Matter stores real Z; remap here rather than changing the GPR kernel.
 gpr::AtomsConfiguration eonc::helpers::eon_matter_to_atmconf(Matter *matter) {
   if (!matter) {
     throw std::invalid_argument("eon_matter_to_atmconf: null Matter");
@@ -153,10 +154,7 @@ gpr::AtomsConfiguration eonc::helpers::eon_matter_to_atmconf(Matter *matter) {
     atoms_config.atoms_mov.resize(number_of_mov_atoms);
     atoms_config.atoms_froz_inactive.resize(number_of_fro_atoms);
 
-    //!> Does a horrible to ensure that this is filled correctly. Essentially we
-    //! use the Map of <eOn atomtype, GPR faketype> to generate the fully filled
-    //! vectors for moving and frozen_inactive
-    //! FIXME: We should really just use the eOn atomtype everywhere
+    // Dense GPR types from the Z→0..n-1 map.
     if (atype_to_gprd_atype.size() > 1) {
       int mov_counter = 0;
       int froz_inactive_counter = 0;
@@ -203,7 +201,7 @@ gpr::AtomsConfiguration eonc::helpers::eon_matter_to_atmconf(Matter *matter) {
     //! Everything is almost exactly the same, only we don't have frozen atoms
     atoms_config.atoms_mov.resize(number_of_mov_atoms);
 
-    //!> FIXME: Same caveats as documented above
+    // Dense GPR types from the Z→0..n-1 map.
     if (atype_to_gprd_atype.size() > 1) {
       int mov_counter = 0;
       for (auto i = 0; i < nAtoms; i++) {
