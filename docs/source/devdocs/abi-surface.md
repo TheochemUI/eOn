@@ -1,8 +1,11 @@
 # Public C++ surface
 
-The installed `include/eon` tree still ships internal headers. Until
-Parameters pimpl and the Job factory land, treat only these as the
-extension contract:
+The installed `include/eon` tree still ships internal headers. The
+Job factory has landed. `Parameters` now has a private load-state
+`Impl` (`last_load_source` / `last_load_error`); option-group layout
+stays in the installed header and is **not** ABI-stable. `Matter`
+still exposes Eigen members in the header (accessors return Eigen
+types). Treat only these as the extension contract:
 
 | Type | Pure virtuals | Notes |
 |---|---|---|

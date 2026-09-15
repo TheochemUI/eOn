@@ -14,6 +14,7 @@
 #include "BaseStructures.h"
 #include "ParametersOptions.h"
 #include <cstdio>
+#include <memory>
 #include <string>
 #include <string_view>
 
@@ -35,13 +36,22 @@ class Parameters {
 
 public:
   Parameters();
-  ~Parameters() = default;
-  Parameters(const Parameters &) = default;
+  ~Parameters();
+  Parameters(const Parameters &);
+  Parameters(Parameters &&) noexcept;
+  Parameters &operator=(const Parameters &);
+  Parameters &operator=(Parameters &&) noexcept;
   int load(std::string_view filename);
   int load(FILE *file);
   int load_ini_text(std::string_view ini_text);
   int load_json(std::string_view json_str);
   std::string to_json() const;
+
+  /// Last load source recorded by load / load_ini_text / load_json.
+  /// Empty before the first load. Moved-from objects return empty.
+  [[nodiscard]] std::string_view last_load_source() const;
+  /// Last load return code (0 ok). Zero before the first load.
+  [[nodiscard]] int last_load_error() const;
 
   using constants_t = eonc::constants_t;
   using main_options_t = eonc::main_options_t;
@@ -229,6 +239,12 @@ private:
   ira_options_t ira_options_{};
   debug_options_t debug_options_{};
   oh_tst_options_t oh_tst_options_{};
+
+  /// Load-state pimpl (source + last error). Option-group layout stays in
+  /// this header and is not ABI-stable; see include/eon/api.h.
+  struct Impl;
+  std::unique_ptr<Impl> impl_;
+  void record_load(std::string_view source, int error);
 };
 
 /// Write hole for INI/JSON loaders and nanobind property setters.
