@@ -45,6 +45,19 @@ def remove_tree_and_empty_parents(path):
         pass
 
 
+def info_txt_path(config):
+    """Simulation metadata file under path_results."""
+    return Path(config.path_results) / "info.txt"
+
+
+def write_info_txt(config, parser):
+    """Write a ConfigParser to info.txt, creating path_results if needed."""
+    path = info_txt_path(config)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w") as fh:
+        parser.write(fh)
+
+
 def prng_state_path(config):
     '''Path of the persisted numpy PRNG pickle.
 

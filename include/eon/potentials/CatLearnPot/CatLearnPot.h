@@ -33,8 +33,5 @@ public:
              double *forces, double *energy, double *variance,
              const double *box) override;
   [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
-  // Variables [public]
   py::object m_gpmod;
-  MatrixXd
-      variance; // XXX: This is a hacky way to populate and use this variable
 };
