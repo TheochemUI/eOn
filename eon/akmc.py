@@ -588,10 +588,7 @@ def main(config: ConfigClass = None):
                 if len(res)>0 and res[0] == 'y':
                     # remove directory superbasins
                     if os.path.isdir(config.sb_path):
-                        shutil.rmtree(config.sb_path)
-                        #XXX: ugly way to remove all empty directories containing this one
-                        os.mkdir(config.sb_path)
-                        os.removedirs(config.sb_path)
+                        io.remove_tree_and_empty_parents(config.sb_path)
 
                     # remove superbasins files from states dirctories
                     state_dirs = os.listdir(config.path_states)

@@ -333,7 +333,7 @@ class ClientMinModeExplorer(MinModeExplorer):
             _archive_debug_result(self.config, result)
             if len(result) == 0: continue
             state_num = int(result['name'].split("_")[0])
-            id = int(result['name'].split("_")[1]) + result['number']
+            id = int(result['name'].split("_")[1])
             searchdata_id = "%d_%d" % (state_num, id)
             # Store information about the search into result_data for the
             # search_results.txt file in the state directory.
@@ -471,7 +471,7 @@ class ServerMinModeExplorer(MinModeExplorer):
             _archive_debug_result(self.config, result)
             state_num = int(result['name'].split("_")[0])
             # XXX: doesn't this doesn't give the correct id wrt bundling
-            id = int(result['name'].split("_")[1]) + result['number']
+            id = int(result['name'].split("_")[1])
             searchdata_id = "%d_%d" % (state_num, id)
 
             if id not in self.wuid_to_search_id:
