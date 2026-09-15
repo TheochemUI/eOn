@@ -900,6 +900,12 @@ class ASE_NWCHEM(BaseModel):
     scf_maxiter: int = Field(
         default=200, description="Maximum number of SCF iterations for NWChem."
     )
+    basis: str = Field(
+        default="3-21G", description="NWChem basis set passed to the ASE calculator."
+    )
+    memory: str = Field(
+        default="2 gb", description="NWChem memory string passed to the ASE calculator."
+    )
 
 
 class ASE_ORCA(BaseModel):

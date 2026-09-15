@@ -66,13 +66,10 @@ ASENwchemPot::ASENwchemPot(const eonc::Parameters &a_params)
       "closed shell molecules, set multiplicity or the "
       "environment variable NWCHEM_MULTIPLICITY.\n");
 
-  // Set up NWCHEM arguments
-  // TODO(rg): Stop hardcoding these
   py::object NWCHEM = ase_nwchem.attr("NWChem");
   size_t nproc{0};
   auto mult = std::stoi(nwc_mult); // 1 for singlet, 2 for doublet
 
-  // TODO(rg): Use
   if (a_params.ase_nwchem_options.nproc == "auto") {
     nproc = py::cast<int>(psutil.attr("cpu_count")(false));
   } else {
@@ -106,11 +103,13 @@ ASENwchemPot::ASENwchemPot(const eonc::Parameters &a_params)
   py::dict nwchem_params = py::dict(
       "label"_a = "_eonpot_engrad",
       "set"_a = py::dict("geom:dont_verify"_a = true),
-      "command"_a = py::str(mpi_cmd), "memory"_a = py::str("2 gb"),
+      "command"_a = py::str(mpi_cmd),
+      "memory"_a = py::str(a_params.ase_nwchem_options.memory),
       "scf"_a = py::dict("nopen"_a = mult - 1,
                          "thresh"_a = a_params.ase_nwchem_options.scf_thresh,
                          "maxiter"_a = a_params.ase_nwchem_options.scf_maxiter),
-      "basis"_a = py::str("3-21G"), "task"_a = py::str("gradient"),
+      "basis"_a = py::str(a_params.ase_nwchem_options.basis),
+      "task"_a = py::str("gradient"),
       "directory"_a = workDir.string());
 
   // Set flag for doublet (mult == 2)
