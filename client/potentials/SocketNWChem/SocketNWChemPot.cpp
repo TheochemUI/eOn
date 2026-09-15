@@ -1,4 +1,5 @@
 #include "eon/potentials/SocketNWChem/SocketNWChemPot.h"
+#include "eon/Parameters.h"
 
 #include <cctype>
 #include <cstring>

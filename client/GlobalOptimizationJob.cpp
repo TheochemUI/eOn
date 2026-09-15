@@ -360,13 +360,13 @@ void GlobalOptimizationJob::mdescape(Matter &matter) {
   if (md_presumably_escaped) {
     devcon = devcon / static_cast<double>(matter.numberOfFreeAtoms() * 3);
     if (devcon / ekin < 2.E-3) {
-      params.dynamics_options().time_step *= 1.1;
+      ParametersLoadAccess::dynamics_options(params).time_step *= 1.1;
     } else {
-      params.dynamics_options().time_step /= 1.1;
+      ParametersLoadAccess::dynamics_options(params).time_step /= 1.1;
     }
   } else {
     QUILL_LOG_DEBUG(log, "TOO MANY MD STEPS  ");
-    params.dynamics_options().time_step *= 2.0;
+    ParametersLoadAccess::dynamics_options(params).time_step *= 2.0;
   }
 }
 

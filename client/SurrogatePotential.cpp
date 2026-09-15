@@ -13,6 +13,8 @@
 
 #include <span>
 
+namespace eonc {
+
 std::tuple<double, AtomMatrix, double>
 SurrogatePotential::get_ef_var(const AtomMatrix pos, const VectorXi atmnrs,
                                const Matrix3d box) {
@@ -26,4 +28,6 @@ SurrogatePotential::get_ef_var(const AtomMatrix pos, const VectorXi atmnrs,
               std::span<double>(forces.data(), n * 3), &energy, &var,
               std::span<const double>(box.data(), 9));
   return std::make_tuple(energy, forces, var);
-};
+}
+
+} // namespace eonc
