@@ -17,6 +17,7 @@
 #include "eon/potentials/LAMMPS/LammpsLoader.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/potentials/LAMMPS/LAMMPSPot.h"
 #include "eon/potentials/PluginLoader.h"
 
 #include <filesystem>
@@ -27,6 +28,32 @@
 namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
+
+namespace {
+class MockLammpsLoader : public eonc::ILammpsLoader {
+public:
+  int require_calls{0};
+  void require_loaded() override { ++require_calls; }
+  [[nodiscard]] bool is_loaded() const noexcept override { return true; }
+  [[nodiscard]] bool available() const override { return true; }
+  [[nodiscard]] const std::string &last_error() const noexcept override {
+    return err_;
+  }
+
+private:
+  std::string err_{};
+};
+} // namespace
+
+TEST_CASE("LAMMPSPot constructs with injected loader mock",
+          "[lammps][loader][inject]") {
+  const bool singleton_loaded = eonc::LammpsLoader::instance().is_loaded();
+  MockLammpsLoader mock;
+  eonc::Parameters params;
+  LAMMPSPot pot(params, mock);
+  REQUIRE(mock.require_calls == 1);
+  REQUIRE(eonc::LammpsLoader::instance().is_loaded() == singleton_loaded);
+}
 
 TEST_CASE("LammpsLoader: singleton returns consistent instance",
           "[lammps][loader]") {

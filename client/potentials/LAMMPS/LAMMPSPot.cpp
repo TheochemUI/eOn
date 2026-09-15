@@ -40,7 +40,15 @@
 #endif
 
 LAMMPSPot::LAMMPSPot(const eonc::Parameters &p)
+    : LAMMPSPot(p, eonc::LammpsLoader::instance(), true) {}
+
+LAMMPSPot::LAMMPSPot(const eonc::Parameters &p, eonc::ILammpsLoader &loader)
+    : LAMMPSPot(p, loader, false) {}
+
+LAMMPSPot::LAMMPSPot(const eonc::Parameters &p, eonc::ILammpsLoader &loader,
+                     bool isolate_worker)
     : eonc::Potential(p),
+      loader_{loader},
       lammpsThr{p.potential_options().LAMMPSThreads}
 #ifdef EONMPI
       ,
@@ -48,8 +56,11 @@ LAMMPSPot::LAMMPSPot(const eonc::Parameters &p)
 #endif
 {
   // Fail fast if LAMMPS library not available
-  eonc::LammpsLoader::instance().require_loaded();
+  loader_.require_loaded();
 #if !defined(EONMPI) && !defined(IS_WINDOWS)
+  if (!isolate_worker) {
+    return;
+  }
   // Fork the worker NOW, at construction, before this process ever opens a
   // LAMMPS instance (and thus before liblammps initialises MPI).  Open MPI
   // does not support using MPI in a process that called MPI_Init before fork,
@@ -57,6 +68,8 @@ LAMMPSPot::LAMMPSPot(const eonc::Parameters &p)
   // LAMMPSPot -- endpoints and per-image alike -- runs its LAMMPS in its own
   // child process, so the parent never initialises MPI at all.
   ensureWorker();
+#else
+  (void)isolate_worker;
 #endif
 }
 
@@ -76,7 +89,7 @@ void LAMMPSPot::applySetforce(long N) {
   if (LAMMPSObj == nullptr || maskN_ != N || fixedMask_.empty()) {
     return;
   }
-  auto &lmp = eonc::LammpsLoader::instance();
+  auto &lmp = loader_;
   static constexpr const char *kUnfix[] = {
       "unfix eon_fx", "unfix eon_fy", "unfix eon_fz", "unfix eon_freeze"};
   static constexpr const char *kUngroup[] = {
@@ -124,7 +137,7 @@ void LAMMPSPot::cleanMemory() {
   stopWorker();
 #endif
   if (LAMMPSObj != nullptr) {
-    eonc::LammpsLoader::instance().close(LAMMPSObj);
+    loader_.close(LAMMPSObj);
     LAMMPSObj = nullptr;
   }
 }
@@ -465,7 +478,7 @@ void LAMMPSPot::forceLocal(long N, const double *R, const int *atomicNrs,
   eonc::FPEHandler fpeh;
   fpeh.eat_fpe();
   try {
-    auto &lmp = eonc::LammpsLoader::instance();
+    auto &lmp = loader_;
 
     bool newLammps = false;
     for (int i = 0; i < 9; i++) {
@@ -541,13 +554,13 @@ void LAMMPSPot::forceLocal(long N, const double *R, const int *atomicNrs,
 
 void LAMMPSPot::makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
                               const double *box) {
-  auto &lmp = eonc::LammpsLoader::instance();
+  auto &lmp = loader_;
 
   numberOfAtoms = N;
   std::memcpy(oldBox, box, 9 * sizeof(double));
 
   if (LAMMPSObj != nullptr) {
-    eonc::LammpsLoader::instance().close(LAMMPSObj);
+    loader_.close(LAMMPSObj);
     LAMMPSObj = nullptr;
   }
 
