@@ -61,6 +61,44 @@ LAMMPSPot::LAMMPSPot(const Parameters &p)
 
 LAMMPSPot::~LAMMPSPot() { cleanMemory(); }
 
+void LAMMPSPot::setFixedMask(long nAtoms, const double *isFixed) {
+  if (nAtoms <= 0 || isFixed == nullptr) {
+    fixedMask_.clear();
+    maskN_ = 0;
+    return;
+  }
+  fixedMask_.assign(isFixed, isFixed + 3 * nAtoms);
+  maskN_ = nAtoms;
+}
+
+void LAMMPSPot::applySetforce(long N) {
+  if (LAMMPSObj == nullptr || maskN_ != N || fixedMask_.empty()) {
+    return;
+  }
+  auto &lmp = eonc::LammpsLoader::instance();
+  try {
+    lmp.command(LAMMPSObj, "unfix eon_freeze");
+  } catch (...) {
+  }
+  try {
+    lmp.command(LAMMPSObj, "group eon_frozen delete");
+  } catch (...) {
+  }
+  std::string ids;
+  for (long i = 0; i < N; ++i) {
+    if (fixedMask_[static_cast<size_t>(3 * i)] >= 0.5 &&
+        fixedMask_[static_cast<size_t>(3 * i + 1)] >= 0.5 &&
+        fixedMask_[static_cast<size_t>(3 * i + 2)] >= 0.5) {
+      ids += std::format("{} ", i + 1);
+    }
+  }
+  if (ids.empty()) {
+    return;
+  }
+  lmp.command(LAMMPSObj, ("group eon_frozen id " + ids).c_str());
+  lmp.command(LAMMPSObj, "fix eon_freeze eon_frozen setforce 0.0 0.0 0.0");
+}
+
 void LAMMPSPot::cleanMemory() {
 #if !defined(EONMPI) && !defined(IS_WINDOWS)
   stopWorker();
@@ -211,6 +249,12 @@ void LAMMPSPot::runWorkerLoop() {
                    sizeof(double) * static_cast<size_t>(3 * N))) {
       _exit(1);
     }
+    std::vector<double> mask(static_cast<size_t>(3 * N), 0.0);
+    if (!readExact(reqFd, mask.data(),
+                   sizeof(double) * static_cast<size_t>(3 * N))) {
+      _exit(1);
+    }
+    setFixedMask(N, mask.data());
 
     std::vector<double> F(static_cast<size_t>(3 * N), 0.0);
     double U = 0.0;
@@ -291,10 +335,16 @@ void LAMMPSPot::force(long N, const double *R, const int *atomicNrs, double *F,
   }
   ensureWorker();
 
+  std::vector<double> mask(static_cast<size_t>(3 * N), 0.0);
+  if (maskN_ == N && fixedMask_.size() == static_cast<size_t>(3 * N)) {
+    mask = fixedMask_;
+  }
   if (!writeExact(reqFd, &N, sizeof(N)) ||
       !writeExact(reqFd, atomicNrs, sizeof(int) * static_cast<size_t>(N)) ||
       !writeExact(reqFd, box, sizeof(double) * 9) ||
-      !writeExact(reqFd, R, sizeof(double) * static_cast<size_t>(3 * N))) {
+      !writeExact(reqFd, R, sizeof(double) * static_cast<size_t>(3 * N)) ||
+      !writeExact(reqFd, mask.data(),
+                  sizeof(double) * static_cast<size_t>(3 * N))) {
     // A worker stopped by an earlier rejected geometry leaves the request
     // pipe closed, so the first send after it fails. Respawning happens on
     // the next evaluation; reject this one rather than end the client.
@@ -412,6 +462,7 @@ void LAMMPSPot::forceLocal(long N, const double *R, const int *atomicNrs,
     }
 
     lmp.scatter_atoms(LAMMPSObj, "x", 1, 3, const_cast<double *>(R));
+    applySetforce(N);
     // New instance / box change: rebuild neighbors. create_atoms sits at
     // the origin; pre no would evaluate on that neighbor list.
     if (newLammps) {

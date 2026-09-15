@@ -586,6 +586,7 @@ void Matter::computePotential() const {
       // Hot path: call force() directly into member storage.
       // No intermediate allocation, no tuple, no copy.
       double var{0};
+      potential->setFixedMask(nAtoms, isFixed.data());
       potential->force(nAtoms, positions.data(), atomicNrs.data(),
                        forces.data(), &potentialEnergy, &var, cell.data());
       potential->forceCallCounter++;

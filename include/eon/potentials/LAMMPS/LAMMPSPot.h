@@ -17,6 +17,7 @@
 #include "eon/Potential.h"
 
 #include <mutex>
+#include <vector>
 
 class LAMMPSPot : public Potential {
 
@@ -29,6 +30,7 @@ public:
   void cleanMemory();
   void force(long N, const double *R, const int *atomicNrs, double *F,
              double *U, double *variance, const double *box) override;
+  void setFixedMask(long nAtoms, const double *isFixed) override;
 
 private:
   int lammpsThr{0};
@@ -40,7 +42,10 @@ private:
   void *LAMMPSObj{nullptr};
   void makeNewLAMMPS(long N, const double *R, const int *atomicNrs,
                      const double *box);
+  void applySetforce(long N);
   bool realunits{false};
+  std::vector<double> fixedMask_;
+  long maskN_{0};
 
 #if !defined(EONMPI) && !defined(IS_WINDOWS)
   // Process-per-image evaluation.  NEB drives intermediate images on separate
