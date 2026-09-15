@@ -1,10 +1,9 @@
-import subprocess
-import os
-import shutil
-import signal
-import glob
-import numpy
 import logging
+import shutil
+from pathlib import Path
+
+import numpy
+
 logger = logging.getLogger('kdb')
 
 from eon import fileio as io
@@ -36,36 +35,37 @@ def query(state, config):
     except Exception:
         logger.error('Python module kdb not found, kdb will not be used.')
         return
-    if os.path.isdir(os.path.join(config.kdb_scratch_path, "kdbmatches")):
-        shutil.rmtree(os.path.join(config.kdb_scratch_path, "kdbmatches"))
-    os.makedirs(os.path.join(config.kdb_scratch_path, "kdbmatches"))
-    kdbpath = os.path.abspath(os.path.join(config.path_root, config.kdb_path))
+    matches = Path(config.kdb_scratch_path) / "kdbmatches"
+    if matches.is_dir():
+        shutil.rmtree(matches)
+    matches.mkdir(parents=True)
     if state.number == 0:
-        reactant = aselite.read_any(os.path.abspath(os.path.join(config.path_root, "pos.con")))
+        reactant = aselite.read_any(str((Path(config.path_root) / "pos.con").resolve()))
     else:
-        reactant = aselite.read_any(os.path.abspath(state.reactant_path))
+        reactant = aselite.read_any(str(Path(state.reactant_path).resolve()))
     db = local_db.LocalDB(config.kdb_name)
     params = db.get_params()
     query_sub_class = local_query.LocalQuery()
-    query_sub_class.query(reactant, os.path.join(config.kdb_scratch_path, "kdbmatches"),
+    query_sub_class.query(reactant, str(matches),
                           nodupes = config.kdb_nodupes, kdbname=config.kdb_name,
                           dc=params['dc'], nf=params['nf'])
 
 def make_suggestion(config):
-    if os.path.isdir(os.path.join(config.kdb_scratch_path, "kdbmatches")):
-        dones = glob.glob(os.path.join(config.kdb_scratch_path, "kdbmatches",".done_*"))
-        if len(dones) > 0:
-            number = dones[0].split("_")[1]
+    matches = Path(config.kdb_scratch_path) / "kdbmatches"
+    if matches.is_dir():
+        dones = sorted(matches.glob(".done_*"))
+        if dones:
+            number = dones[0].name.split("_")[1]
+            saddle = matches / ("SADDLE_%s" % number)
             try:
-                displacement = io.loadcon(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s" % number))
+                displacement = io.loadcon(str(saddle))
             except OSError:
                 # readcon reports a parse failure as an OSError subclass; the
                 # match may be a POSCAR instead.
-                displacement = io.loadposcar(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s" % number))
-            mode = io.load_mode(os.path.join(config.kdb_scratch_path, "kdbmatches",
-                                             "MODE_%s" % number))
-            os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", ".done_%s" % number))
-            os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", "SADDLE_%s" % number))
-            os.remove(os.path.join(config.kdb_scratch_path, "kdbmatches", "MODE_%s" % number))
+                displacement = io.loadposcar(str(saddle))
+            mode = io.load_mode(str(matches / ("MODE_%s" % number)))
+            dones[0].unlink()
+            saddle.unlink()
+            (matches / ("MODE_%s" % number)).unlink()
             return displacement, mode
     return None, None

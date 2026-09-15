@@ -160,14 +160,6 @@ class SuperbasinScheme:
 
     def __del__(self):
         self.write_data()
-    #def get_superbasins(self):
-    #    if self.superbasins is not None:
-    #        return self.superbasins
-    #    else:
-    #        dirs = os.listdir(self.path)
-    #        for i in dirs:
-    #            path = os.path.join(self.path, i)
-    #            self.superbasins[int(i)] = superbasin.Superbasin(path, config=self.config)
 
 
 class TransitionCounting(SuperbasinScheme):

@@ -1,6 +1,7 @@
 
-import os
 import shutil
+from pathlib import Path
+
 import numpy
 from eon import fileio as io
 from eon.mcamc import mcamc
@@ -24,10 +25,10 @@ class Superbasin:
             raise TypeError("Superbasin requires a ConfigClass instance")
         self.config = config
         self.id = int(id)
-        self.path = os.path.join(path, str(self.id))
+        self.path = str(Path(path) / str(self.id))
         # Get the states.
         if state_list is not None:
-            if os.path.isfile(self.path):
+            if Path(self.path).is_file():
                 raise IOError("Superbasin file '%s' already exists!" % self.path)
             self.states = state_list
             self.state_numbers = [state.number for state in state_list]
@@ -168,11 +169,11 @@ class Superbasin:
     def delete(self, storage=None):
         if storage is None:
             logger.debug('deleting %s' % self.path)
-            os.remove(self.path)
+            Path(self.path).unlink()
         else:
             logger.debug('storing %s' % self.path)
-            path_storage = os.path.join(storage, str(self.id))
-            shutil.move(self.path, path_storage)
+            path_storage = Path(storage) / str(self.id)
+            shutil.move(self.path, str(path_storage))
         self.states = None
 
     def _get_filtered_states(self):
