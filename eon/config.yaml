@@ -321,7 +321,7 @@ Nudged Elastic Band:
 
         minimize_endpoints:
             kind: boolean
-            default: true
+            default: false
 
         minimize_endpoints_for_ipath:
             kind: boolean

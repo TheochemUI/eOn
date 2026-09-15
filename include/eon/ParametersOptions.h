@@ -473,8 +473,7 @@ struct neb_options_t {
   long image_count{5};
   long max_iterations{1000};
   OptType opt_method{OptType::LBFGS};
-  double force_tolerance{
-      0.01}; // resolved to optimizer_options.converged_force
+  double force_tolerance{0.01}; // resolved to optimizer_options.converged_force
   struct mmf_peak_options_t {
     bool enabled{true};
     double tolerance{0.05};
@@ -543,10 +542,9 @@ struct neb_options_t {
   } initialization;
 
   struct endpoint_options_t {
-    bool minimize{true};
+    bool minimize{false};
     bool use_path_file{false};
   } endpoints;
-
 };
 
 // [Molecular Dynamics] //
