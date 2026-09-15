@@ -19,6 +19,9 @@
 #include <cmath>
 #include <cstdio>
 
+
+namespace eonc {
+
 int BasinHoppingSaddleSearch::run() {
   // minimize "saddle"
   saddle->relax(false, true, false, "displacementmin");
@@ -82,3 +85,5 @@ int BasinHoppingSaddleSearch::run() {
 double BasinHoppingSaddleSearch::getEigenvalue() { return eigenvalue; }
 
 AtomMatrix BasinHoppingSaddleSearch::getEigenvector() { return eigenvector; }
+
+} // namespace eonc

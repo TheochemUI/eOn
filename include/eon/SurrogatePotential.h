@@ -30,4 +30,3 @@ public:
 
 } // namespace eonc
 
-using eonc::SurrogatePotential;

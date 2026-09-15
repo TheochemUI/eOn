@@ -15,6 +15,9 @@
 #include <algorithm>
 #include <cmath>
 
+
+namespace eonc {
+
 namespace {
 VectorXd packFree(const Matter &m, const AtomMatrix &forces) {
   const long nfree = m.numberOfFreeAtoms();
@@ -192,3 +195,5 @@ VectorXd CollectiveIDPPObjectiveFunction::getGradient(bool fdstep) {
   lastMaxForce = maxForce;
   return totalGradient;
 }
+
+} // namespace eonc

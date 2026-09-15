@@ -14,6 +14,9 @@
 #include <cmath>
 #include <stdexcept>
 
+
+namespace eonc {
+
 void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
   if (numSteps <= 0) {
     throw std::invalid_argument("MonteCarlo: steps must be positive");
@@ -63,3 +66,5 @@ void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
   }
   QUILL_LOG_INFO(log, "accepts: {}", accepts);
 }
+
+} // namespace eonc

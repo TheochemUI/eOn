@@ -73,4 +73,3 @@ private:
 
 } // namespace eonc
 
-using eonc::GleThermostat;

@@ -208,6 +208,3 @@ public:
 
 } // namespace eonc
 
-using eonc::CollectiveIDPPObjectiveFunction;
-using eonc::IDPPObjectiveFunction;
-using eonc::ZBLRepulsiveIDPPObjective;

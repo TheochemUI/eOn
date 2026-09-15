@@ -19,6 +19,9 @@
 #include <sstream>
 #include <string>
 
+
+namespace eonc {
+
 namespace {
 
 // phva_atoms entries are *mobile / displaced* atoms for FD (hybrid/PHVA-class
@@ -311,3 +314,5 @@ VectorXd Hessian::removeZeroFreqs(const VectorXd &freqs) {
   }
   return newfreqs.head(size - nremoved);
 }
+
+} // namespace eonc

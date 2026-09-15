@@ -79,5 +79,3 @@ public:
 
 } // namespace eonc
 
-using eonc::BondBoost;
-using eonc::Hyperdynamics;

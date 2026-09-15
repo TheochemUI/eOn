@@ -35,4 +35,3 @@ public:
 
 } // namespace eonc
 
-using eonc::ObjectiveFunction;

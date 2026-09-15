@@ -71,4 +71,3 @@ public:
 
 } // namespace eonc
 
-using eonc::PotRegistry;

@@ -23,6 +23,9 @@
 #include <unordered_set>
 #include <vector>
 
+
+namespace eonc {
+
 const char Hyperdynamics::NONE[] = "none";
 const char Hyperdynamics::BOND_BOOST[] = "bond_boost";
 
@@ -290,3 +293,5 @@ long BondBoost::BondSelect() {
   }
   return nSelected;
 }
+
+} // namespace eonc

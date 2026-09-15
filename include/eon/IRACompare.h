@@ -63,4 +63,3 @@ public:
 
 } // namespace eonc
 
-using eonc::IRACompare;

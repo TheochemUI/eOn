@@ -21,6 +21,9 @@
 #include <limits>
 #include <stdexcept>
 
+
+namespace eonc {
+
 int DynamicsSaddleSearch::run() {
   std::vector<std::shared_ptr<Matter>> mdSnapshots;
   std::vector<double> mdTimes;
@@ -341,3 +344,5 @@ int DynamicsSaddleSearch::refineTransition(
 double DynamicsSaddleSearch::getEigenvalue() { return eigenvalue; }
 
 AtomMatrix DynamicsSaddleSearch::getEigenvector() { return eigenvector; }
+
+} // namespace eonc
