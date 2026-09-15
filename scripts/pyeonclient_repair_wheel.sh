@@ -56,8 +56,9 @@ repair_one() {
     [[ -z "$found" ]] && continue
     search="${search}:$(dirname "$found")"
   done < <(find "${PYEONCLIENT_BUILD_ROOT:-$PWD}" /project \
-    \( -name 'libreadcon_core.so' -o -name 'libreadcon_core.so.*' \) \
-    2>/dev/null | head -20)
+    \( -name 'libreadcon_core.so' -o -name 'libreadcon_core.so.*' \
+       -o -name 'librgpot.so' -o -name 'librgpot.so.*' \) \
+    2>/dev/null | head -40)
   export LD_LIBRARY_PATH="$libs_dir:${search}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
   # Pull auditwheel / mesonpy lib packs into one dir so a single $ORIGIN rpath
