@@ -5,18 +5,18 @@ set -euo pipefail
 EXTRA_LIBS="$(
   python -c '
 import pathlib, sys
-# Only the active env. Walking sys.path also hits the manylinux image
-# site-packages (torch-2.3 .. 2.14) and dlopens the wrong ABI.
+import torch
+mm = ".".join(torch.__version__.split("+")[0].split(".")[:2])
 root = pathlib.Path(sys.prefix)
-dirs = []
-for pat in (
-    "libtorch.so*",
-    "libmetatensor*.so*",
-    "libmetatomic*.so*",
-    "libc10.so*",
-):
+torch_lib = pathlib.Path(torch.__file__).resolve().parent / "lib"
+dirs = [str(torch_lib)] if torch_lib.is_dir() else []
+# metatensor-torch ships one .so per torch minor. Only the matching
+# torch-X.Y tree is ABI-compatible.
+for pat in ("libmetatensor*.so*", "libmetatomic*.so*"):
     for so in root.rglob(pat):
-        dirs.append(str(so.resolve().parent))
+        p = str(so.resolve().parent).replace("\\\\", "/")
+        if f"torch-{mm}" in p:
+            dirs.append(str(so.resolve().parent))
 print(":".join(dict.fromkeys(dirs)))
 '
 )"
