@@ -187,3 +187,18 @@ py.install_sources(
     pure: false,
     subdir: 'pyeonclient',
 )
+
+# Wrap librgpot is not in the meson-python RECORD if we only copy it from
+# an install script into prefix/lib. custom_target+install ships the
+# SONAME next to _core.so so the wheel dlopens it.
+if not _rgpot_pkg.found()
+    _rgpot_for_py = custom_target(
+        'librgpot-so3-for-pyeonclient',
+        input: _rgpot_proj.get_variable('rgpot'),
+        output: 'librgpot.so.3',
+        command: [find_program('cp'), '-a', '@INPUT@', '@OUTPUT@'],
+        install: true,
+        install_dir: py.get_install_dir() / 'pyeonclient',
+        build_by_default: true,
+    )
+endif

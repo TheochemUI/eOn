@@ -16,7 +16,8 @@ from pathlib import Path
 def main() -> int:
     src = Path(sys.argv[1])
     prefix = Path(os.environ["MESON_INSTALL_DESTDIR_PREFIX"])
-    dest_dirs = [prefix / sys.argv[2]]
+    libdir_arg = Path(sys.argv[2])
+    dest_dirs = [libdir_arg if libdir_arg.is_absolute() else prefix / libdir_arg]
     # meson-python packs the extension dir, not prefix/lib. Drop a copy
     # next to _core*.so so the wheel carries the SONAME.
     dest_dirs.extend(
