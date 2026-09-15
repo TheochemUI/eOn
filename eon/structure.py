@@ -121,7 +121,16 @@ class Structure:
         scratch; whatever the file carried for one read off disk.
     """
 
-    __slots__ = ("r", "_free", "box", "names", "mass", "atom_ids", "file_to_struct")
+    __slots__ = (
+        "r",
+        "_free",
+        "box",
+        "names",
+        "mass",
+        "atom_ids",
+        "file_to_struct",
+        "periodic",
+    )
 
     def __init__(self, n_atoms: int = 0):
         self.r = np.zeros((n_atoms, 3), dtype=float)
@@ -131,6 +140,7 @@ class Structure:
         self.mass = np.zeros(n_atoms, dtype=float)
         self.atom_ids = np.arange(1, n_atoms + 1, dtype=np.uint64)
         self.file_to_struct = np.arange(n_atoms, dtype=np.int64)
+        self.periodic = np.ones(3, dtype=bool)
 
     @property
     def free(self) -> np.ndarray:
@@ -152,6 +162,7 @@ class Structure:
         p.mass = self.mass.copy()
         p.atom_ids = self.atom_ids.copy()
         p.file_to_struct = self.file_to_struct.copy()
+        p.periodic = np.array(self.periodic, dtype=bool, copy=True)
         return p
 
     def ids_or_sequential(self) -> np.ndarray:
