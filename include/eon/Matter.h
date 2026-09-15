@@ -241,7 +241,7 @@ public:
 
   double maxForce(void) const;
 
-  /// Parameters.main_options.writeConForces for this Matter, if bound.
+  /// Parameters.main_options().writeConForces for this Matter, if bound.
   [[nodiscard]] bool getWriteConForces() const noexcept;
 
   // I/O delegates to eonc::io free functions (IoStatus for bindings).

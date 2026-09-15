@@ -23,11 +23,11 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 TEST_CASE("BondBoost initializes on LJ cluster", "[bondboost]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
-  params.hyperdynamics_options.dvmax = 0.0;
-  params.hyperdynamics_options.qrr = 0.2;
-  params.hyperdynamics_options.prr = 0.95;
-  params.hyperdynamics_options.boost_atom_list = "All";
+  params.potential_options().potential = PotType::LJ;
+  params.hyperdynamics_options().dvmax = 0.0;
+  params.hyperdynamics_options().qrr = 0.2;
+  params.hyperdynamics_options().prr = 0.95;
+  params.hyperdynamics_options().boost_atom_list = "All";
 
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter matter(pot, params);
@@ -43,11 +43,11 @@ TEST_CASE("BondBoost initializes on LJ cluster", "[bondboost]") {
 
 TEST_CASE("BondBoost returns zero boost at equilibrium", "[bondboost]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
-  params.hyperdynamics_options.dvmax = 0.0;
-  params.hyperdynamics_options.qrr = 0.2;
-  params.hyperdynamics_options.prr = 0.95;
-  params.hyperdynamics_options.boost_atom_list = "All";
+  params.potential_options().potential = PotType::LJ;
+  params.hyperdynamics_options().dvmax = 0.0;
+  params.hyperdynamics_options().qrr = 0.2;
+  params.hyperdynamics_options().prr = 0.95;
+  params.hyperdynamics_options().boost_atom_list = "All";
 
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter matter(pot, params);
@@ -64,15 +64,15 @@ TEST_CASE("BondBoost returns zero boost at equilibrium", "[bondboost]") {
 TEST_CASE("BondBoost schedule advances only from advance(), not boost()",
           "[bondboost][schedule]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
-  params.dynamics_options.time_step = 1.0;
+  params.potential_options().potential = PotType::LJ;
+  params.dynamics_options().time_step = 1.0;
   // Four equilibration MD steps. Repeated boost() calls must not finish
   // this window: only advance() moves nReg.
-  params.hyperdynamics_options.rmd_time = 4.0;
-  params.hyperdynamics_options.dvmax = 0.0;
-  params.hyperdynamics_options.qrr = 0.2;
-  params.hyperdynamics_options.prr = 0.95;
-  params.hyperdynamics_options.boost_atom_list = "All";
+  params.hyperdynamics_options().rmd_time = 4.0;
+  params.hyperdynamics_options().dvmax = 0.0;
+  params.hyperdynamics_options().qrr = 0.2;
+  params.hyperdynamics_options().prr = 0.95;
+  params.hyperdynamics_options().boost_atom_list = "All";
 
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter matter(pot, params);
@@ -101,8 +101,8 @@ TEST_CASE("BondBoost schedule advances only from advance(), not boost()",
 
 TEST_CASE("BondBoost listed index out of range throws", "[bondboost][list]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
-  params.hyperdynamics_options.boost_atom_list = "999999";
+  params.potential_options().potential = PotType::LJ;
+  params.hyperdynamics_options().boost_atom_list = "999999";
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter matter(pot, params);
   matter.con2matter(std::string("reactant.con"));
@@ -112,8 +112,8 @@ TEST_CASE("BondBoost listed index out of range throws", "[bondboost][list]") {
 
 TEST_CASE("BondBoost garbage list is not treated as all", "[bondboost][list]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
-  params.hyperdynamics_options.boost_atom_list = "not-a-list";
+  params.potential_options().potential = PotType::LJ;
+  params.hyperdynamics_options().boost_atom_list = "not-a-list";
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter matter(pot, params);
   matter.con2matter(std::string("reactant.con"));

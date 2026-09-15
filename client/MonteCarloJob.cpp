@@ -29,7 +29,7 @@ std::vector<std::string> MonteCarloJob::run(void) {
   std::string posInFilename("pos.con");
   std::string posOutFilename("out.con");
 
-  if (params.main_options.checkpoint) {
+  if (params.main_options().checkpoint) {
     if (std::filesystem::exists("pos_cp.con")) {
       posInFilename = "pos_cp.con";
       QUILL_LOG_DEBUG(log, "Resuming from checkpoint\n");
@@ -47,8 +47,8 @@ std::vector<std::string> MonteCarloJob::run(void) {
   }
 
   MonteCarlo mc = MonteCarlo(matter, params);
-  mc.run(params.monte_carlo_options.steps, params.main_options.temperature,
-         params.monte_carlo_options.step_size);
+  mc.run(params.monte_carlo_options().steps, params.main_options().temperature,
+         params.monte_carlo_options().step_size);
 
   QUILL_LOG_DEBUG(log, "Saving result to {}", posOutFilename);
   if (eonc::io::io_ok(matter->matter2con(posOutFilename))) {
@@ -59,7 +59,7 @@ std::vector<std::string> MonteCarloJob::run(void) {
 
   std::string resultsFilename("results.dat");
   auto env = JobResultEnvelope::fromMinimization(
-      RunStatus::GOOD, params.potential_options.potential,
+      RunStatus::GOOD, params.potential_options().potential,
       PotRegistry::get().total_force_calls(), true,
       matter->getPotentialEnergy());
   env.job_type = "monte_carlo";

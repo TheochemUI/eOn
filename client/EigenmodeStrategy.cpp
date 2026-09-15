@@ -27,22 +27,22 @@ namespace eonc {
 std::shared_ptr<LowestEigenmode>
 buildEigenmodeStrategy(std::shared_ptr<Matter> matter, const Parameters &params,
                        std::shared_ptr<Potential> pot) {
-  if (params.saddle_search_options.minmode_method ==
+  if (params.saddle_search_options().minmode_method ==
       LowestEigenmode::MINMODE_DIMER) {
-    if (params.dimer_options.improved) {
+    if (params.dimer_options().improved) {
       return std::make_shared<ImprovedDimer>(matter, params, pot);
     }
     return std::make_shared<Dimer>(matter, params, pot);
   }
-  if (params.saddle_search_options.minmode_method ==
+  if (params.saddle_search_options().minmode_method ==
       LowestEigenmode::MINMODE_LANCZOS) {
     return std::make_shared<Lanczos>(matter, params, pot);
   }
-  if (params.saddle_search_options.minmode_method ==
+  if (params.saddle_search_options().minmode_method ==
       LowestEigenmode::MINMODE_DAVIDSON) {
     return std::make_shared<Davidson>(matter, params, pot);
   }
-  if (params.saddle_search_options.minmode_method ==
+  if (params.saddle_search_options().minmode_method ==
       LowestEigenmode::MINMODE_GPRDIMER) {
 #ifdef WITH_GPRD
     return std::make_shared<AtomicGPDimer>(matter, params, pot);

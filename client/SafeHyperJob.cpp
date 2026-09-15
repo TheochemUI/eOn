@@ -21,12 +21,12 @@ namespace eonc {
 void SafeHyperJob::reportResults() {
   if (newStateFlag) {
     QUILL_LOG_DEBUG(log, "Transition time: {:.2e} s",
-                    minCorrectedTime * 1.0e-15 * params.constants.timeUnit);
+                    minCorrectedTime * 1.0e-15 * params.constants().timeUnit);
   } else {
     QUILL_LOG_DEBUG(log,
                     "No new state was found in {} dynamics steps ({:.3e} s)",
-                    params.dynamics_options.steps,
-                    time * 1.0e-15 * params.constants.timeUnit);
+                    params.dynamics_options().steps,
+                    time * 1.0e-15 * params.constants().timeUnit);
   }
 }
 
@@ -39,7 +39,7 @@ int SafeHyperJob::dynamics() {
   long nCheck = 0, nRecord = 0, nBoost = 0, nState = 0;
   long StateCheckInterval, RecordInterval;
   double kinE, kinT, avgT, varT;
-  double kB = params.constants.kB;
+  double kB = params.constants().kB;
   double correctedTime = 0.0, sumCorrectedTime = 0.0, firstTransitionTime = 0.0;
   double Temp = 0.0, sumT = 0.0, sumT2 = 0.0;
   double sumboost = 0.0, boost = 1.0, boostPotential = 0.0;
@@ -50,7 +50,7 @@ int SafeHyperJob::dynamics() {
   const auto clock = prdClock();
   StateCheckInterval = clock.state_check;
   RecordInterval = clock.record;
-  Temp = params.main_options.temperature;
+  Temp = params.main_options().temperature;
   newStateFlag = metaStateFlag = false;
 
   mdBufferLength = clock.buffer;
@@ -64,7 +64,7 @@ int SafeHyperJob::dynamics() {
   Dynamics safeHyper(current.get(), params);
   BondBoost bondBoost(current.get(), params);
 
-  if (params.hyperdynamics_options.bias_potential ==
+  if (params.hyperdynamics_options().bias_potential ==
       Hyperdynamics::BOND_BOOST) {
     bondBoost.initialize();
     current->setBiasPotential(&bondBoost);
@@ -82,21 +82,21 @@ int SafeHyperJob::dynamics() {
       "Starting MD run\nTemperature: {:.2f} Kelvin\n"
       "Total Simulation Time: {:.2f} fs\nTime Step: {:.2f} fs\nTotal Steps: {}",
       Temp,
-      params.dynamics_options.steps * params.dynamics_options.time_step *
-          params.constants.timeUnit,
-      params.dynamics_options.time_step * params.constants.timeUnit,
-      params.dynamics_options.steps);
+      params.dynamics_options().steps * params.dynamics_options().time_step *
+          params.constants().timeUnit,
+      params.dynamics_options().time_step * params.constants().timeUnit,
+      params.dynamics_options().steps);
   QUILL_LOG_DEBUG(log, "MD buffer length: {}", mdBufferLength);
 
-  long tenthSteps = params.dynamics_options.steps / 10;
+  long tenthSteps = params.dynamics_options().steps / 10;
   if (tenthSteps == 0) {
-    tenthSteps = params.dynamics_options.steps;
+    tenthSteps = params.dynamics_options().steps;
   }
 
   while (!stopFlag) {
     boost = 1.0;
     boostPotential = 0.0;
-    if ((params.hyperdynamics_options.bias_potential ==
+    if ((params.hyperdynamics_options().bias_potential ==
          Hyperdynamics::BOND_BOOST) &&
         !newStateFlag) {
       bondBoost.advance();
@@ -113,7 +113,7 @@ int SafeHyperJob::dynamics() {
         nBoost++;
       }
     }
-    time += params.dynamics_options.time_step * boost;
+    time += params.dynamics_options().time_step * boost;
 
     kinE = current->getKineticEnergy();
     kinT = (2.0 * kinE / nFreeCoord / kB);
@@ -128,7 +128,7 @@ int SafeHyperJob::dynamics() {
     step++;
     QUILL_LOG_TRACE_L1(log, "step = {:4}, time = {:10.4f}", step, time);
 
-    if (params.parallel_replica_options.refine_transition && recordFlag &&
+    if (params.parallel_replica_options().refine_transition && recordFlag &&
         !newStateFlag) {
       if (nCheck % RecordInterval == 0) {
         *mdBuffer[nRecord] = *current;
@@ -159,7 +159,7 @@ int SafeHyperJob::dynamics() {
     if (transitionFlag) {
       QUILL_LOG_TRACE_L1(log, "Refining transition time.");
       const bool can_refine =
-          params.parallel_replica_options.refine_transition && nRecord >= 2;
+          params.parallel_replica_options().refine_transition && nRecord >= 2;
       if (can_refine) {
         eonc::ForceCallTimer timer(refineFCalls);
         refineStep = refine(mdBuffer, reactant.get());
@@ -201,11 +201,11 @@ int SafeHyperJob::dynamics() {
                       "tranisitonTime= {:.3e} s, biasPot= {:.3f} eV, "
                       "correctedTime= {:.3e} s, "
                       "sumCorrectedTime= {:.3e} s, minCorTime= {:.3e} s",
-                      transitionTime * 1e-15 * params.constants.timeUnit,
+                      transitionTime * 1e-15 * params.constants().timeUnit,
                       transitionPot,
-                      correctedTime * 1e-15 * params.constants.timeUnit,
-                      sumCorrectedTime * 1e-15 * params.constants.timeUnit,
-                      minCorrectedTime * 1.0e-15 * params.constants.timeUnit);
+                      correctedTime * 1e-15 * params.constants().timeUnit,
+                      sumCorrectedTime * 1e-15 * params.constants().timeUnit,
+                      minCorrectedTime * 1.0e-15 * params.constants().timeUnit);
 
       transitionFlag = false;
     }
@@ -215,17 +215,17 @@ int SafeHyperJob::dynamics() {
       newStateFlag = true;
     }
 
-    if ((step % tenthSteps == 0) || (step == params.dynamics_options.steps)) {
+    if ((step % tenthSteps == 0) || (step == params.dynamics_options().steps)) {
       double maxAtomDistance = current->perAtomNorm(*reactant);
       QUILL_LOG_DEBUG(
           log, "progress: {:.0f}%, max displacement: {:.3f}, step {} / {}",
-          static_cast<double>(100.0 * step / params.dynamics_options.steps),
-          maxAtomDistance, step, params.dynamics_options.steps);
+          static_cast<double>(100.0 * step / params.dynamics_options().steps),
+          maxAtomDistance, step, params.dynamics_options().steps);
     }
 
     // Honor dynamics step budget (parity with TADJob); without this the
     // loop only exits on a confidence-gated transition and can run forever.
-    if (step >= params.dynamics_options.steps) {
+    if (step >= params.dynamics_options().steps) {
       stopFlag = true;
     }
   }

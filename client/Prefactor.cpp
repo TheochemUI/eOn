@@ -33,7 +33,7 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   // determine which atoms moved in the process
   VectorXi atoms;
 
-  if (parameters.prefactor_options.filter_scheme ==
+  if (parameters.prefactor_options().filter_scheme ==
       eonc::Prefactor::FILTER_FRACTION) {
     atoms = movedAtomsPct(parameters, min1, saddle, min2);
   } else {
@@ -53,7 +53,7 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
     return -1;
   }
   // remove zero modes
-  if (parameters.structure_comparison_options.check_rotation) {
+  if (parameters.structure_comparison_options().check_rotation) {
     min1Freqs = hessian.removeZeroFreqs(min1Freqs);
   }
 
@@ -64,20 +64,20 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
     return -1;
   }
   // remove zero modes
-  if (parameters.structure_comparison_options.check_rotation) {
+  if (parameters.structure_comparison_options().check_rotation) {
     saddleFreqs = hessian.removeZeroFreqs(saddleFreqs);
   }
 
   // calculate min2 frequencies
   min2Freqs = hessian.getFreqs(min2, atoms);
   if (min2Freqs.size() == 0) {
-    if (!parameters.main_options.quiet) {
+    if (!parameters.main_options().quiet) {
       EONC_LOG_ERROR("[Prefactor] Bad hessian: min2");
     }
     return -1;
   }
   // remove zero modes
-  if (parameters.structure_comparison_options.check_rotation) {
+  if (parameters.structure_comparison_options().check_rotation) {
     min2Freqs = hessian.removeZeroFreqs(min2Freqs);
   }
 
@@ -85,7 +85,7 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   // BUG FIX: original checked min1 vs saddle twice, never min2
   if ((min1Freqs.size() != saddleFreqs.size()) ||
       (min2Freqs.size() != saddleFreqs.size())) {
-    if (!parameters.main_options.quiet) {
+    if (!parameters.main_options().quiet) {
       EONC_LOG_ERROR("[Prefactor] Bad prefactor: Hessian sizes do not match");
     }
     return -1;
@@ -137,7 +137,7 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   pref1 = 1.0;
   pref2 = 1.0;
 
-  if (parameters.prefactor_options.rate == eonc::Prefactor::RATE_HTST) {
+  if (parameters.prefactor_options().rate == eonc::Prefactor::RATE_HTST) {
 
     // products are calculated this way in order to avoid overflow
     for (int i = 0; i < saddleFreqs.size(); i++) {
@@ -150,9 +150,9 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
     }
     pref1 = std::sqrt(pref1) / (2 * eonc::helpers::pi * 10.18e-15);
     pref2 = std::sqrt(pref2) / (2 * eonc::helpers::pi * 10.18e-15);
-  } else if (parameters.prefactor_options.rate ==
+  } else if (parameters.prefactor_options().rate ==
              eonc::Prefactor::RATE_QQHTST) {
-    double kB_T = parameters.main_options.temperature * 8.617332e-5; // eV
+    double kB_T = parameters.main_options().temperature * 8.617332e-5; // eV
     double h_bar = 6.582119e-16;                                     // eV*s
     double h = 4.135667e-15;                                         // eV*s
     double temp = (h_bar / (2.0 * kB_T));
@@ -209,9 +209,9 @@ VectorXi eonc::Prefactor::movedAtoms(const Parameters &parameters, Matter *min1,
   int nMoved = 0;
   for (int i = 0; i < nAtoms; i++) {
     if ((diffMin1.row(i).norm() >
-         parameters.prefactor_options.min_displacement) ||
+         parameters.prefactor_options().min_displacement) ||
         (diffMin2.row(i).norm() >
-         parameters.prefactor_options.min_displacement)) {
+         parameters.prefactor_options().min_displacement)) {
       // Avoid Eigen Array == scalar in boolean context (C++20 / Eigen 3.3
       // manylinux toolchains reject Array comparison as bool).
       if (std::find(moved.data(), moved.data() + nMoved, i) ==
@@ -222,7 +222,7 @@ VectorXi eonc::Prefactor::movedAtoms(const Parameters &parameters, Matter *min1,
       for (int j = 0; j < nAtoms; j++) {
         double diffRSaddle = saddle->distance(i, j);
 
-        if (diffRSaddle < parameters.prefactor_options.within_radius &&
+        if (diffRSaddle < parameters.prefactor_options().within_radius &&
             (!saddle->getFixed(j))) {
           if (std::find(moved.data(), moved.data() + nMoved, j) ==
               moved.data() + nMoved) {
@@ -259,7 +259,7 @@ VectorXi eonc::Prefactor::movedAtomsPct(const Parameters &parameters,
   QUILL_LOG_DEBUG(
       eonc::log::get(),
       "[Prefactor] including all atoms that make up {:.3f}% of the motion",
-      parameters.prefactor_options.filter_fraction * 100);
+      parameters.prefactor_options().filter_fraction * 100);
   double sum = 0.0;
   int mini = 0;
   for (int i = 0; i < nAtoms; i++) {
@@ -278,7 +278,7 @@ VectorXi eonc::Prefactor::movedAtomsPct(const Parameters &parameters,
   double d = 0.0;
   while (
       nMoved < nFree &&
-      (sum <= 0.0 || d / sum < parameters.prefactor_options.filter_fraction)) {
+      (sum <= 0.0 || d / sum < parameters.prefactor_options().filter_fraction)) {
     int maxi = -1;
     for (int i = 0; i < nAtoms; i++) {
       if (min1->getFixed(i) || saddle->getFixed(i)) {
@@ -308,7 +308,7 @@ VectorXi eonc::Prefactor::movedAtomsPct(const Parameters &parameters,
 
       double diffRSaddle = saddle->distance(moved[i], j);
 
-      if (diffRSaddle < parameters.prefactor_options.within_radius &&
+      if (diffRSaddle < parameters.prefactor_options().within_radius &&
           (!saddle->getFixed(j))) {
 
         if (std::find(moved.data(), moved.data() + totalAtoms, j) ==

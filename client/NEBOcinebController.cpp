@@ -21,7 +21,7 @@ namespace eonc::neb {
 
 OCINEBController::Config
 OCINEBController::fromParams(const Parameters &params) {
-  auto &ci = params.neb_options.climbing_image;
+  auto &ci = params.neb_options().climbing_image;
   auto &r = ci.ocineb;
   return Config{
       r.use_mmf,
@@ -30,7 +30,7 @@ OCINEBController::fromParams(const Parameters &params) {
       r.max_steps,
       r.ci_stability_count,
       r.angle_tol,
-      params.neb_options.force_tolerance,
+      params.neb_options().force_tolerance,
   };
 }
 
@@ -127,8 +127,8 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
 
   bool shouldReset =
       (savedPositions - neb.path[neb.climbingImage]->getPositions()).norm() >
-      neb.params.optimizer_options.max_move *
-          neb.params.neb_options.image_count;
+      neb.params.optimizer_options().max_move *
+          neb.params.neb_options().image_count;
 
   if (shouldReset) {
     QUILL_LOG_DEBUG(log, "Resetting optimization history.");

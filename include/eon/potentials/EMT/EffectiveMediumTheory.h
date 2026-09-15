@@ -40,7 +40,7 @@ private:
 public:
   EffectiveMediumTheory(const eonc::Parameters &p)
       : eonc::Potential(p),
-        emtRasmussen{p.potential_options.EMTRasmussen} {}
+        emtRasmussen{p.potential_options().EMTRasmussen} {}
   ~EffectiveMediumTheory() { cleanMemory(); }
   void cleanMemory();
 

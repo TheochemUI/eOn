@@ -54,8 +54,8 @@ struct OptimizerConfig {
   bool bowlBreakout{false};
 
   static OptimizerConfig fromParams(const Parameters &p) {
-    return {p.optimizer_options, p.main_options.finiteDifference,
-            p.saddle_search_options.confine_positive.bowl_breakout};
+    return {p.optimizer_options(), p.main_options().finiteDifference,
+            p.saddle_search_options().confine_positive.bowl_breakout};
   }
 };
 

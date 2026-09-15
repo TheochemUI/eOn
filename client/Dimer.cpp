@@ -24,7 +24,7 @@ Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
   // Give matterDimer its own potential for parallel force evaluation
-  auto dimerPot = (pot->needsPerImageInstance() && params.main_options.parallel)
+  auto dimerPot = (pot->needsPerImageInstance() && params.main_options().parallel)
                       ? eonc::helpers::makePotential(params)
                       : pot;
   matterCenter = std::make_shared<Matter>(pot, params);
@@ -49,7 +49,7 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
 
   // Optional: LOR / Lanczos / Davidson (enum dispatch; classical falls
   // through).
-  if (auto alt = runAlternativeRotation(params.dimer_options.rotation_backend,
+  if (auto alt = runAlternativeRotation(params.dimer_options().rotation_backend,
                                         matter, params, pot, direction,
                                         static_cast<quill::Logger *>(log))) {
     eigenvalue = alt->eigenvalue;
@@ -96,30 +96,30 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
     assert(std::isfinite(torque));
 
     // Convergence: stop if torque is below threshold or max rotations reached
-    if ((torque > params.dimer_options.torque_max &&
-         rotations >= params.dimer_options.rotations_max) ||
-        (torque < params.dimer_options.torque_max &&
-         torque >= params.dimer_options.torque_min &&
-         rotations >= params.dimer_options.rotations_min) ||
-        (torque < params.dimer_options.torque_min)) {
+    if ((torque > params.dimer_options().torque_max &&
+         rotations >= params.dimer_options().rotations_max) ||
+        (torque < params.dimer_options().torque_max &&
+         torque >= params.dimer_options().torque_min &&
+         rotations >= params.dimer_options().rotations_min) ||
+        (torque < params.dimer_options().torque_min)) {
       doneRotating = true;
     }
 
     double rotForce1 = matDot(rotationalForce, rotationalPlane);
-    rotate(params.dimer_options.rotation_angle);
+    rotate(params.dimer_options().rotation_angle);
 
     if (!doneRotating) {
       curvature = calcRotationalForceReturnCurvature(rotationalForce);
       double rotForce2 = matDot(rotationalForce, rotationalPlane);
 
       double rotForceChange =
-          (rotForce1 - rotForce2) / params.dimer_options.rotation_angle;
+          (rotForce1 - rotForce2) / params.dimer_options().rotation_angle;
       double forceDimer = (rotForce1 + rotForce2) / 2.0;
 
       rotationAngle = eonc::safemath::safe_atan_ratio(2.0 * forceDimer,
                                                       rotForceChange, 0.0) /
                           2.0 -
-                      params.dimer_options.rotation_angle / 2.0;
+                      params.dimer_options().rotation_angle / 2.0;
 
       if (rotForceChange < 0) {
         rotationAngle += eonc::helpers::pi / 2.0;
@@ -163,16 +163,16 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce) {
 
   // Displace to get dimer configuration A
   AtomMatrix posDimer =
-      posCenter + direction * params.main_options.finiteDifference;
+      posCenter + direction * params.main_options().finiteDifference;
 
   // Optional rotation removal (Melander, Laasonen, Jonsson, JCTC 2015)
-  if (params.dimer_options.remove_rotation) {
+  if (params.dimer_options().remove_rotation) {
     matterDimer->setPositions(posDimer);
     eonc::geometry::rotationRemove(matterCenter, matterDimer);
     posDimer = matterDimer->getPositions();
     direction = matterCenter->pbc(posDimer - posCenter);
     eonc::safemath::safe_normalize_inplace(direction);
-    posDimer = posCenter + direction * params.main_options.finiteDifference;
+    posDimer = posCenter + direction * params.main_options().finiteDifference;
   }
 
   // Obtain forces for dimer and center
@@ -234,10 +234,10 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce) {
 
   // Rotational force = orthogonal force difference
   rotationalForce =
-      (forceA - forceB) / (2.0 * params.main_options.finiteDifference);
+      (forceA - forceB) / (2.0 * params.main_options().finiteDifference);
 
   // Curvature along the dimer
-  return (projB - projA) / (2.0 * params.main_options.finiteDifference);
+  return (projB - projA) / (2.0 * params.main_options().finiteDifference);
 }
 
 void Dimer::determineRotationalPlane(const AtomMatrix &rotationalForce,

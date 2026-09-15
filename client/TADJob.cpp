@@ -24,19 +24,19 @@ void TADJob::initExtra() {
   QUILL_LOG_DEBUG(log,
                   "High temperature MD simulation running at {:.2f} K to "
                   "simulate dynamics at {:.2f} K",
-                  params.main_options.temperature,
-                  params.tad_options.low_temperature);
+                  params.main_options().temperature,
+                  params.tad_options().low_temperature);
 }
 
 void TADJob::reportResults() {
   if (newStateFlag) {
     QUILL_LOG_DEBUG(log, "Transition time: {:.2e} s",
-                    minCorrectedTime * 1.0e-15 * params.constants.timeUnit);
+                    minCorrectedTime * 1.0e-15 * params.constants().timeUnit);
   } else {
     QUILL_LOG_DEBUG(log,
                     "No new state was found in {} dynamics steps ({:.3e} s)",
-                    params.dynamics_options.steps,
-                    time * 1.0e-15 * params.constants.timeUnit);
+                    params.dynamics_options().steps,
+                    time * 1.0e-15 * params.constants().timeUnit);
   }
 }
 
@@ -49,7 +49,7 @@ int TADJob::dynamics() {
   long nCheck = 0, nRecord = 0, nState = 0;
   long StateCheckInterval, RecordInterval;
   double kinE, kinT, avgT, varT;
-  double kB = params.constants.kB;
+  double kB = params.constants().kB;
   double correctedTime = 0.0;
   double stopTime = 0.0, sumSimulatedTime = 0.0;
   double Temp = 0.0, sumT = 0.0, sumT2 = 0.0;
@@ -60,15 +60,15 @@ int TADJob::dynamics() {
   AtomMatrix velocity;
 
   minCorrectedTime = 1.0e200;
-  lowT = params.tad_options.low_temperature;
-  highT = params.main_options.temperature;
-  delta = params.tad_options.confidence;
-  minmu = params.tad_options.min_prefactor;
+  lowT = params.tad_options().low_temperature;
+  highT = params.main_options().temperature;
+  delta = params.tad_options().confidence;
+  minmu = params.tad_options().min_prefactor;
   factor = std::log(1.0 / delta) / minmu;
   const auto clock = prdClock();
   StateCheckInterval = clock.state_check;
   RecordInterval = clock.record;
-  Temp = params.main_options.temperature;
+  Temp = params.main_options().temperature;
   newStateFlag = metaStateFlag = false;
 
   mdBufferLength = clock.buffer;
@@ -92,15 +92,15 @@ int TADJob::dynamics() {
       "Total Simulation Time: {:.2f} fs\nTime Step: {:.2f} fs\nTotal Steps: "
       "{}\n",
       Temp,
-      params.dynamics_options.steps * params.dynamics_options.time_step *
-          params.constants.timeUnit,
-      params.dynamics_options.time_step * params.constants.timeUnit,
-      params.dynamics_options.steps);
+      params.dynamics_options().steps * params.dynamics_options().time_step *
+          params.constants().timeUnit,
+      params.dynamics_options().time_step * params.constants().timeUnit,
+      params.dynamics_options().steps);
   QUILL_LOG_DEBUG(log, "MD buffer length: {}", mdBufferLength);
 
-  long tenthSteps = params.dynamics_options.steps / 10;
+  long tenthSteps = params.dynamics_options().steps / 10;
   if (tenthSteps == 0) {
-    tenthSteps = params.dynamics_options.steps;
+    tenthSteps = params.dynamics_options().steps;
   }
 
   while (!stopFlag) {
@@ -113,12 +113,12 @@ int TADJob::dynamics() {
     TAD.oneStep();
     mdFCalls++;
 
-    time += params.dynamics_options.time_step;
+    time += params.dynamics_options().time_step;
     nCheck++;
     step++;
     QUILL_LOG_TRACE_L1(log, "step = {:4d}, time= {:10.4f}", step, time);
 
-    if (params.parallel_replica_options.refine_transition && recordFlag &&
+    if (params.parallel_replica_options().refine_transition && recordFlag &&
         !newStateFlag) {
       if (nCheck % RecordInterval == 0) {
         *mdBuffer[nRecord] = *current;
@@ -148,7 +148,7 @@ int TADJob::dynamics() {
     if (transitionFlag) {
       QUILL_LOG_TRACE_L1(log, "Refining transition time.");
       const bool can_refine =
-          params.parallel_replica_options.refine_transition && nRecord >= 2;
+          params.parallel_replica_options().refine_transition && nRecord >= 2;
       if (can_refine) {
         eonc::ForceCallTimer timer(refineFCalls);
         refineStep = refine(mdBuffer, reactant.get());
@@ -189,11 +189,11 @@ int TADJob::dynamics() {
           "tranisitonTime= {:.3e} s, Barrier= {:.3f} eV, correctedTime= {:.3e} "
           "s, "
           "SimulatedTime= {:.3e} s, minCorTime= {:.3e} s, stopTime= {:.3e} s",
-          transitionTime * 1e-15 * params.constants.timeUnit, barrier,
-          correctedTime * 1e-15 * params.constants.timeUnit,
-          sumSimulatedTime * 1e-15 * params.constants.timeUnit,
-          minCorrectedTime * 1.0e-15 * params.constants.timeUnit,
-          stopTime * 1.0e-15 * params.constants.timeUnit);
+          transitionTime * 1e-15 * params.constants().timeUnit, barrier,
+          correctedTime * 1e-15 * params.constants().timeUnit,
+          sumSimulatedTime * 1e-15 * params.constants().timeUnit,
+          minCorrectedTime * 1.0e-15 * params.constants().timeUnit,
+          stopTime * 1.0e-15 * params.constants().timeUnit);
 
       transitionFlag = false;
     }
@@ -203,15 +203,15 @@ int TADJob::dynamics() {
       newStateFlag = true;
     }
 
-    if ((step % tenthSteps == 0) || (step == params.dynamics_options.steps)) {
+    if ((step % tenthSteps == 0) || (step == params.dynamics_options().steps)) {
       double maxAtomDistance = current->perAtomNorm(*reactant);
       QUILL_LOG_DEBUG(
           log, "progress: {:.0f}%, max displacement: {:.3f}, step {}/{}",
-          static_cast<double>(100.0 * step) / params.dynamics_options.steps,
-          maxAtomDistance, step, params.dynamics_options.steps);
+          static_cast<double>(100.0 * step) / params.dynamics_options().steps,
+          maxAtomDistance, step, params.dynamics_options().steps);
     }
 
-    if (step == params.dynamics_options.steps) {
+    if (step == params.dynamics_options().steps) {
       stopFlag = true;
       if (firstTransitFlag) {
         QUILL_LOG_DEBUG(log, "Detected one transition");
@@ -228,7 +228,7 @@ int TADJob::dynamics() {
                   "Temperature : Average = {} ; Stddev = {} ; Factor = {}; "
                   "Average_Boost = {}",
                   avgT, std::sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,
-                  minCorrectedTime / step / params.dynamics_options.time_step);
+                  minCorrectedTime / step / params.dynamics_options().time_step);
   if (std::isfinite(avgT) == 0) {
     QUILL_LOG_DEBUG(log, "Infinite average temperature, something went wrong!");
     newStateFlag = false;

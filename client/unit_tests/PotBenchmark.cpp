@@ -26,7 +26,7 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 static std::shared_ptr<Matter>
 loadMatter(PotType potType, const std::string &conFile = "reactant.con") {
   auto params = std::make_shared<Parameters>();
-  params->potential_options.potential = potType;
+  params->potential_options().potential = potType;
   auto pot = eonc::helpers::makePotential(*params);
   auto matter = std::make_shared<Matter>(pot, *params);
   matter->con2matter(conFile);

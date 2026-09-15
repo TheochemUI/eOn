@@ -75,48 +75,198 @@ public:
   using debug_options_t = eonc::debug_options_t;
   using oh_tst_options_t = eonc::oh_tst_options_t;
 
-  constants_t constants;
-  main_options_t main_options;
-  potential_options_t potential_options;
-  ams_options_t ams_options;
-  xtb_options_t xtb_options;
-  zbl_options_t zbl_options;
-  dftd_options_t dftd_options;
-  expr_options_t expr_options;
-  mopac_options_t mopac_options;
-  socket_nwchem_options_t socket_nwchem_options;
-  rgpot_options_t rgpot_options;
-  structure_comparison_options_t structure_comparison_options;
-  process_search_options_t process_search_options;
-  saddle_search_options_t saddle_search_options;
-  optimizer_options_t optimizer_options;
-  dimer_options_t dimer_options;
-  gpr_dimer_options_t gpr_dimer_options;
-  gp_surrogate_options_t gp_surrogate_options;
-  catlearn_options_t catlearn_options;
-  ase_orca_options_t ase_orca_options;
-  ase_nwchem_options_t ase_nwchem_options;
-  metatomic_options_t metatomic_options;
-  lanczos_options_t lanczos_options;
-  davidson_options_t davidson_options;
-  prefactor_options_t prefactor_options;
-  hessian_options_t hessian_options;
-  neb_options_t neb_options;
-  dynamics_options_t dynamics_options;
-  parallel_replica_options_t parallel_replica_options;
-  tad_options_t tad_options;
-  thermostat_options_t thermostat_options;
-  replica_exchange_options_t replica_exchange_options;
-  hyperdynamics_options_t hyperdynamics_options;
-  basin_hopping_options_t basin_hopping_options;
-  global_optimization_options_t global_optimization_options;
-  monte_carlo_options_t monte_carlo_options;
-  bgsd_options_t bgsd_options;
-  serve_options_t serve_options;
-  artn_options_t artn_options;
-  ira_options_t ira_options;
-  debug_options_t debug_options;
-  oh_tst_options_t oh_tst_options;
+  constants_t &constants() { return constants_; }
+  const constants_t &constants() const { return constants_; }
+  main_options_t &main_options() { return main_options_; }
+  const main_options_t &main_options() const { return main_options_; }
+  potential_options_t &potential_options() { return potential_options_; }
+  const potential_options_t &potential_options() const {
+    return potential_options_;
+  }
+  ams_options_t &ams_options() { return ams_options_; }
+  const ams_options_t &ams_options() const { return ams_options_; }
+  xtb_options_t &xtb_options() { return xtb_options_; }
+  const xtb_options_t &xtb_options() const { return xtb_options_; }
+  zbl_options_t &zbl_options() { return zbl_options_; }
+  const zbl_options_t &zbl_options() const { return zbl_options_; }
+  dftd_options_t &dftd_options() { return dftd_options_; }
+  const dftd_options_t &dftd_options() const { return dftd_options_; }
+  expr_options_t &expr_options() { return expr_options_; }
+  const expr_options_t &expr_options() const { return expr_options_; }
+  mopac_options_t &mopac_options() { return mopac_options_; }
+  const mopac_options_t &mopac_options() const { return mopac_options_; }
+  socket_nwchem_options_t &socket_nwchem_options() {
+    return socket_nwchem_options_;
+  }
+  const socket_nwchem_options_t &socket_nwchem_options() const {
+    return socket_nwchem_options_;
+  }
+  rgpot_options_t &rgpot_options() { return rgpot_options_; }
+  const rgpot_options_t &rgpot_options() const { return rgpot_options_; }
+  structure_comparison_options_t &structure_comparison_options() {
+    return structure_comparison_options_;
+  }
+  const structure_comparison_options_t &structure_comparison_options() const {
+    return structure_comparison_options_;
+  }
+  process_search_options_t &process_search_options() {
+    return process_search_options_;
+  }
+  const process_search_options_t &process_search_options() const {
+    return process_search_options_;
+  }
+  saddle_search_options_t &saddle_search_options() {
+    return saddle_search_options_;
+  }
+  const saddle_search_options_t &saddle_search_options() const {
+    return saddle_search_options_;
+  }
+  optimizer_options_t &optimizer_options() { return optimizer_options_; }
+  const optimizer_options_t &optimizer_options() const {
+    return optimizer_options_;
+  }
+  dimer_options_t &dimer_options() { return dimer_options_; }
+  const dimer_options_t &dimer_options() const { return dimer_options_; }
+  gpr_dimer_options_t &gpr_dimer_options() { return gpr_dimer_options_; }
+  const gpr_dimer_options_t &gpr_dimer_options() const {
+    return gpr_dimer_options_;
+  }
+  gp_surrogate_options_t &gp_surrogate_options() {
+    return gp_surrogate_options_;
+  }
+  const gp_surrogate_options_t &gp_surrogate_options() const {
+    return gp_surrogate_options_;
+  }
+  catlearn_options_t &catlearn_options() { return catlearn_options_; }
+  const catlearn_options_t &catlearn_options() const {
+    return catlearn_options_;
+  }
+  ase_orca_options_t &ase_orca_options() { return ase_orca_options_; }
+  const ase_orca_options_t &ase_orca_options() const {
+    return ase_orca_options_;
+  }
+  ase_nwchem_options_t &ase_nwchem_options() { return ase_nwchem_options_; }
+  const ase_nwchem_options_t &ase_nwchem_options() const {
+    return ase_nwchem_options_;
+  }
+  metatomic_options_t &metatomic_options() { return metatomic_options_; }
+  const metatomic_options_t &metatomic_options() const {
+    return metatomic_options_;
+  }
+  lanczos_options_t &lanczos_options() { return lanczos_options_; }
+  const lanczos_options_t &lanczos_options() const { return lanczos_options_; }
+  davidson_options_t &davidson_options() { return davidson_options_; }
+  const davidson_options_t &davidson_options() const {
+    return davidson_options_;
+  }
+  prefactor_options_t &prefactor_options() { return prefactor_options_; }
+  const prefactor_options_t &prefactor_options() const {
+    return prefactor_options_;
+  }
+  hessian_options_t &hessian_options() { return hessian_options_; }
+  const hessian_options_t &hessian_options() const { return hessian_options_; }
+  neb_options_t &neb_options() { return neb_options_; }
+  const neb_options_t &neb_options() const { return neb_options_; }
+  dynamics_options_t &dynamics_options() { return dynamics_options_; }
+  const dynamics_options_t &dynamics_options() const {
+    return dynamics_options_;
+  }
+  parallel_replica_options_t &parallel_replica_options() {
+    return parallel_replica_options_;
+  }
+  const parallel_replica_options_t &parallel_replica_options() const {
+    return parallel_replica_options_;
+  }
+  tad_options_t &tad_options() { return tad_options_; }
+  const tad_options_t &tad_options() const { return tad_options_; }
+  thermostat_options_t &thermostat_options() { return thermostat_options_; }
+  const thermostat_options_t &thermostat_options() const {
+    return thermostat_options_;
+  }
+  replica_exchange_options_t &replica_exchange_options() {
+    return replica_exchange_options_;
+  }
+  const replica_exchange_options_t &replica_exchange_options() const {
+    return replica_exchange_options_;
+  }
+  hyperdynamics_options_t &hyperdynamics_options() {
+    return hyperdynamics_options_;
+  }
+  const hyperdynamics_options_t &hyperdynamics_options() const {
+    return hyperdynamics_options_;
+  }
+  basin_hopping_options_t &basin_hopping_options() {
+    return basin_hopping_options_;
+  }
+  const basin_hopping_options_t &basin_hopping_options() const {
+    return basin_hopping_options_;
+  }
+  global_optimization_options_t &global_optimization_options() {
+    return global_optimization_options_;
+  }
+  const global_optimization_options_t &global_optimization_options() const {
+    return global_optimization_options_;
+  }
+  monte_carlo_options_t &monte_carlo_options() { return monte_carlo_options_; }
+  const monte_carlo_options_t &monte_carlo_options() const {
+    return monte_carlo_options_;
+  }
+  bgsd_options_t &bgsd_options() { return bgsd_options_; }
+  const bgsd_options_t &bgsd_options() const { return bgsd_options_; }
+  serve_options_t &serve_options() { return serve_options_; }
+  const serve_options_t &serve_options() const { return serve_options_; }
+  artn_options_t &artn_options() { return artn_options_; }
+  const artn_options_t &artn_options() const { return artn_options_; }
+  ira_options_t &ira_options() { return ira_options_; }
+  const ira_options_t &ira_options() const { return ira_options_; }
+  debug_options_t &debug_options() { return debug_options_; }
+  const debug_options_t &debug_options() const { return debug_options_; }
+  oh_tst_options_t &oh_tst_options() { return oh_tst_options_; }
+  const oh_tst_options_t &oh_tst_options() const { return oh_tst_options_; }
+
+private:
+  constants_t constants_{};
+  main_options_t main_options_{};
+  potential_options_t potential_options_{};
+  ams_options_t ams_options_{};
+  xtb_options_t xtb_options_{};
+  zbl_options_t zbl_options_{};
+  dftd_options_t dftd_options_{};
+  expr_options_t expr_options_{};
+  mopac_options_t mopac_options_{};
+  socket_nwchem_options_t socket_nwchem_options_{};
+  rgpot_options_t rgpot_options_{};
+  structure_comparison_options_t structure_comparison_options_{};
+  process_search_options_t process_search_options_{};
+  saddle_search_options_t saddle_search_options_{};
+  optimizer_options_t optimizer_options_{};
+  dimer_options_t dimer_options_{};
+  gpr_dimer_options_t gpr_dimer_options_{};
+  gp_surrogate_options_t gp_surrogate_options_{};
+  catlearn_options_t catlearn_options_{};
+  ase_orca_options_t ase_orca_options_{};
+  ase_nwchem_options_t ase_nwchem_options_{};
+  metatomic_options_t metatomic_options_{};
+  lanczos_options_t lanczos_options_{};
+  davidson_options_t davidson_options_{};
+  prefactor_options_t prefactor_options_{};
+  hessian_options_t hessian_options_{};
+  neb_options_t neb_options_{};
+  dynamics_options_t dynamics_options_{};
+  parallel_replica_options_t parallel_replica_options_{};
+  tad_options_t tad_options_{};
+  thermostat_options_t thermostat_options_{};
+  replica_exchange_options_t replica_exchange_options_{};
+  hyperdynamics_options_t hyperdynamics_options_{};
+  basin_hopping_options_t basin_hopping_options_{};
+  global_optimization_options_t global_optimization_options_{};
+  monte_carlo_options_t monte_carlo_options_{};
+  bgsd_options_t bgsd_options_{};
+  serve_options_t serve_options_{};
+  artn_options_t artn_options_{};
+  ira_options_t ira_options_{};
+  debug_options_t debug_options_{};
+  oh_tst_options_t oh_tst_options_{};
 };
 
 } // namespace eonc

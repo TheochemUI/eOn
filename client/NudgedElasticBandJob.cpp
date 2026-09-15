@@ -37,7 +37,7 @@ std::vector<std::string> NudgedElasticBandJob::run() {
   // Previously, any ts.con in CWD would silently override SIDPP/IDPP paths.
   bool tsInterpolate = false;
   std::shared_ptr<Matter> transitionState = nullptr;
-  if (params.neb_options.initialization.method == NEBInit::FILE &&
+  if (params.neb_options().initialization.method == NEBInit::FILE &&
       std::filesystem::exists("ts.con")) {
     std::string transitionStateFilename =
         eonc::helpers::getRelevantFile("ts.con");
@@ -57,12 +57,12 @@ std::vector<std::string> NudgedElasticBandJob::run() {
   // and last frames of that list — do not require reactant.con / product.con
   // (issue #278; buggy endpoint files were still loaded and could crash).
   const bool usePathEndpoints =
-      params.neb_options.initialization.method == NEBInit::FILE &&
-      !params.neb_options.initialization.input_path.empty();
+      params.neb_options().initialization.method == NEBInit::FILE &&
+      !params.neb_options().initialization.input_path.empty();
 
   if (usePathEndpoints) {
     const auto file_paths = eonc::helpers::neb_paths::readFilePaths(
-        params.neb_options.initialization.input_path);
+        params.neb_options().initialization.input_path);
     if (file_paths.size() < 2) {
       throw std::runtime_error(
           "NEB initial_path_in must list at least two frames "
@@ -93,27 +93,27 @@ std::vector<std::string> NudgedElasticBandJob::run() {
   }
 
   // Endpoint minimization logic:
-  // - If params.neb_options.endpoints.minimize is false: never minimize
+  // - If params.neb_options().endpoints.minimize is false: never minimize
   // endpoints.
-  // - If params.neb_options.endpoints.minimize is true and
-  // params.neb_options.initialization.input_path is empty: minimize endpoints.
+  // - If params.neb_options().endpoints.minimize is true and
+  // params.neb_options().initialization.input_path is empty: minimize endpoints.
   // - If params.nebMinimEP is true and params.nebIpath is NOT empty:
   //     -> minimize endpoints only if params.nebMinimEPIpath is true.
   // Log what decision was made so users can see behavior.
   bool shouldMinimizeEndpoints = false;
-  if (!params.neb_options.endpoints.minimize) {
+  if (!params.neb_options().endpoints.minimize) {
     QUILL_LOG_DEBUG(m_log,
                     "minimize_endpoints == false: not minimizing endpoints.");
     shouldMinimizeEndpoints = false;
   } else {
-    if (params.neb_options.initialization.input_path.empty()) {
+    if (params.neb_options().initialization.input_path.empty()) {
       QUILL_LOG_DEBUG(m_log, "minimize_endpoints == true and nebIpath "
                              "empty: minimizing endpoints.");
       shouldMinimizeEndpoints = true;
     } else {
       // nebIpath provided: only minimize if neb_options.endpoints.use_path_file
       // explicitly allowed.
-      if (params.neb_options.endpoints.use_path_file) {
+      if (params.neb_options().endpoints.use_path_file) {
         QUILL_LOG_DEBUG(
             m_log,
             "minimize_endpoints == true and nebIpath provided, but "
@@ -133,15 +133,15 @@ std::vector<std::string> NudgedElasticBandJob::run() {
     QUILL_LOG_DEBUG(m_log, "Minimizing reactant");
     // TODO(rg): Maybe when we have even more parameters, false can be set by
     // the user too..
-    initial->relax(false, params.debug_options.write_movies,
-                   params.main_options.checkpoint, "react_neb", "react_neb");
+    initial->relax(false, params.debug_options().write_movies,
+                   params.main_options().checkpoint, "react_neb", "react_neb");
     // TODO(rg): How do we report the total E/F now? Currently this is just the
     // total total, people might want "per-stage" totals (but they can also get
     // them from the log.)
     QUILL_LOG_DEBUG(m_log, "Minimized reactant in ");
     QUILL_LOG_DEBUG(m_log, "Minimizing product");
-    final_state->relax(false, params.debug_options.write_movies,
-                       params.main_options.checkpoint, "prod_neb", "prod_neb");
+    final_state->relax(false, params.debug_options().write_movies,
+                       params.main_options().checkpoint, "prod_neb", "prod_neb");
   }
 
   auto neb =
@@ -194,7 +194,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
         status == NudgedElasticBand::NEBStatus::GOOD
             ? RunStatus::GOOD
             : RunStatus::FAIL_MAX_ITERATIONS,
-        params.potential_options.potential,
+        params.potential_options().potential,
         PotRegistry::get().total_force_calls(), true,
         neb->path[0]->getPotentialEnergy());
     env.job_type = "neb";
@@ -239,7 +239,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   returnFiles.push_back(nebFilename);
   if (!eonc::io::io_ok(eonc::neb::writePathCon(
           neb->path, neb->tangent, neb->eigenmode_solvers, neb->numImages,
-          params.debug_options.estimate_neb_eigenvalues, nebFilename))) {
+          params.debug_options().estimate_neb_eigenvalues, nebFilename))) {
     QUILL_LOG_ERROR(m_log, "Failed to write {}", nebFilename);
   }
 
@@ -252,7 +252,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
   returnFiles.push_back(spFilename);
 
   // Setup Dimer Configurations for Each Spline Peak
-  if (params.neb_options.mmf_peaks.enabled && neb->numExtrema > 0) {
+  if (params.neb_options().mmf_peaks.enabled && neb->numExtrema > 0) {
     int peakCount = 0;
     for (long i = 0; i < neb->numExtrema; i++) {
       // Filter 1: Only look at maxima (negative curvature)
@@ -262,7 +262,7 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
           neb->extremumEnergy[i] - neb->path[0]->getPotentialEnergy();
 
       if (neb->extremumCurvature[i] < 0 &&
-          relativeEnergy > params.neb_options.mmf_peaks.tolerance) {
+          relativeEnergy > params.neb_options().mmf_peaks.tolerance) {
         double posFraction = neb->extremumPosition[i];
         int leftIdx = static_cast<int>(std::floor(posFraction));
         double f = posFraction - leftIdx;

@@ -20,8 +20,8 @@
 
 MPIPot::MPIPot(const eonc::Parameters &p)
     : eonc::Potential(p) {
-  potentialRank = p.potential_options.MPIPotentialRank;
-  poll_period = p.potential_options.MPIPollPeriod;
+  potentialRank = p.potential_options().MPIPotentialRank;
+  poll_period = p.potential_options().MPIPollPeriod;
   return;
 }
 

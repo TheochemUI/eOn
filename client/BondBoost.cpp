@@ -44,7 +44,7 @@ void BondBoost::initialize() {
   nReg = 1;
 
   const std::string &balString =
-      parameters.hyperdynamics_options.boost_atom_list;
+      parameters.hyperdynamics_options().boost_atom_list;
   std::string lowered = balString;
   std::ranges::transform(lowered, lowered.begin(), [](unsigned char c) {
     return static_cast<char>(std::tolower(c));
@@ -102,11 +102,11 @@ void BondBoost::initialize() {
 }
 
 long BondBoost::rmdSteps() const {
-  const double dt = parameters.dynamics_options.time_step;
+  const double dt = parameters.dynamics_options().time_step;
   if (!(dt > 0.0)) {
     return 0;
   }
-  return static_cast<long>(parameters.hyperdynamics_options.rmd_time / dt);
+  return static_cast<long>(parameters.hyperdynamics_options().rmd_time / dt);
 }
 
 void BondBoost::advance() {
@@ -148,9 +148,9 @@ double BondBoost::boost() {
 /// Compute bias potential and forces for bond-boost hyperdynamics.
 /// Returns the bias potential energy contribution.
 double BondBoost::Booststeps() {
-  const double QRR = parameters.hyperdynamics_options.qrr;
-  const double PRR = parameters.hyperdynamics_options.prr;
-  const double DVMAX = parameters.hyperdynamics_options.dvmax;
+  const double QRR = parameters.hyperdynamics_options().qrr;
+  const double PRR = parameters.hyperdynamics_options().prr;
+  const double DVMAX = parameters.hyperdynamics_options().dvmax;
   if (nBBs <= 0 || !(QRR > 0.0)) {
     return 0.0;
   }
@@ -269,7 +269,7 @@ Matrix<double, Eigen::Dynamic, 1> BondBoost::Rmdsteps() {
 
 /// Select bonds within cutoff distance for boosting.
 long BondBoost::BondSelect() {
-  const double qCutoff = parameters.hyperdynamics_options.qcut;
+  const double qCutoff = parameters.hyperdynamics_options().qcut;
 
   // Count bonds within cutoff
   long nSelected = 0;

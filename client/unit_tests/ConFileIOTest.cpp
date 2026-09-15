@@ -40,7 +40,7 @@ protected:
       : params{},
         pot{nullptr},
         original{nullptr} {
-    params.potential_options.potential = PotType::LJ;
+    params.potential_options().potential = PotType::LJ;
     pot = eonc::helpers::makePotential(PotType::LJ, params);
     original = std::make_shared<Matter>(pot, params);
     original->con2matter(std::string("reactant.con"));
@@ -159,7 +159,7 @@ TEST_CASE_METHOD(ConFileIOFixture,
 
 TEST_CASE("Con file preserves per-axis fixed mask", "[confileio][fixed]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter original(pot, params);
   original.resize(2);
@@ -209,7 +209,7 @@ TEST_CASE("Con file preserves per-axis fixed mask", "[confileio][fixed]") {
 
 TEST_CASE("Con write round-trips an x-only constraint", "[confileio][fixed]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter m(pot, params);
   m.resize(1);
@@ -234,7 +234,7 @@ TEST_CASE("Con write round-trips an x-only constraint", "[confileio][fixed]") {
 
 TEST_CASE("Con triclinic angles are alpha beta gamma", "[confileio][cell]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter original(pot, params);
   original.resize(1);
@@ -425,7 +425,7 @@ TEST_CASE_METHOD(ConFileIOFixture,
 
 TEST_CASE("ConFileIO handles velocity data", "[confileio][velocity]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
@@ -451,7 +451,7 @@ TEST_CASE("ConFileIO handles velocity data", "[confileio][velocity]") {
 TEST_CASE("ConFileIO multiple writes accumulate in append mode",
           "[confileio][append]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
@@ -473,7 +473,7 @@ TEST_CASE("ConFileIO multiple writes accumulate in append mode",
 TEST_CASE("ConFileIO embeds movie metadata in frame JSON",
           "[confileio][metadata]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
@@ -506,7 +506,7 @@ TEST_CASE("ConFileIO embeds movie metadata in frame JSON",
 TEST_CASE("ConFileIO preserves metadata across append-mode movie frames",
           "[confileio][append][metadata]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->resize(1);
@@ -559,7 +559,7 @@ TEST_CASE("ConFileIO preserves metadata across append-mode movie frames",
 TEST_CASE("ConFileIO append mode rejects corrupt existing files",
           "[confileio][append][errors]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
@@ -595,7 +595,7 @@ TEST_CASE("ConFileIO append mode rejects corrupt existing files",
 TEST_CASE("ConFileIO appends .con based on basename extension",
           "[confileio][paths]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
@@ -614,7 +614,7 @@ TEST_CASE("ConFileIO appends .con based on basename extension",
 TEST_CASE("NEB path writer embeds structured frame metadata",
           "[confileio][neb][metadata]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
 
   auto make_matter = [&]() {
@@ -669,7 +669,7 @@ TEST_CASE("NEB path writer embeds structured frame metadata",
 TEST_CASE("ConFileIO reads multi-component Pt system",
           "[confileio][multicomponent]") {
   Parameters params;
-  params.potential_options.potential = PotType::MORSE_PT;
+  params.potential_options().potential = PotType::MORSE_PT;
   auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("../Pt_Heptamer_FrozenLayers/pos.con"));
@@ -701,7 +701,7 @@ TEST_CASE("ConFileIO reads multi-component Pt system",
 
 TEST_CASE("ConFileIO reads Si diamond system", "[confileio][si]") {
   Parameters params;
-  params.potential_options.potential = PotType::SW_SI;
+  params.potential_options().potential = PotType::SW_SI;
   auto pot = eonc::helpers::makePotential(PotType::SW_SI, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("../si_diamond/pos.con"));
@@ -713,7 +713,7 @@ TEST_CASE("ConFileIO reads Si diamond system", "[confileio][si]") {
 TEST_CASE("ConFileIO convel round-trip preserves velocities",
           "[confileio][convel]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
@@ -747,7 +747,7 @@ TEST_CASE("ConFileIO convel round-trip preserves velocities",
 TEST_CASE("ConFileIO writeTibble produces valid output",
           "[confileio][tibble]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
@@ -768,7 +768,7 @@ TEST_CASE("ConFileIO writeTibble produces valid output",
 TEST_CASE("ConFileIO writeTibble uses atom ids and skips a dirty pot",
           "[confileio][tibble]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
@@ -806,7 +806,7 @@ TEST_CASE("ConFileIO writeTibble uses atom ids and skips a dirty pot",
 TEST_CASE("ConFileIO force and energy sections round-trip via readcon API",
           "[confileio][forces]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
@@ -843,8 +843,8 @@ TEST_CASE("ConFileIO force and energy sections round-trip via readcon API",
 TEST_CASE("ConFileIO writes forces from Parameters without the process flag",
           "[confileio][forces]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
-  params.main_options.writeConForces = true;
+  params.potential_options().potential = PotType::LJ;
+  params.main_options().writeConForces = true;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
@@ -864,7 +864,7 @@ TEST_CASE("ConFileIO writes forces from Parameters without the process flag",
 TEST_CASE("ConFileIO metadata.write_con_forces overrides process flag",
           "[confileio][forces]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
@@ -901,7 +901,7 @@ TEST_CASE("ConFileIO metadata.write_con_forces overrides process flag",
 TEST_CASE("ConFileIO metadata_from_frame exposes NEB and potential fields",
           "[confileio][metadata]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
@@ -945,7 +945,7 @@ std::string read_file_text(const std::string &path) {
 
 std::shared_ptr<Matter> make_reactant(Parameters &params,
                                       std::shared_ptr<Potential> &pot) {
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));

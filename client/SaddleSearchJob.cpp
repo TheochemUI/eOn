@@ -31,7 +31,7 @@ std::vector<std::string> SaddleSearchJob::run() {
   std::string displacementFilename("displacement.con");
   std::string modeFilename("direction.dat");
 
-  if (params.main_options.checkpoint) {
+  if (params.main_options().checkpoint) {
     if (std::filesystem::exists("displacement_cp.con") &&
         std::filesystem::exists("mode_cp.dat")) {
       displacementFilename = "displacement_cp.con";
@@ -51,15 +51,15 @@ std::vector<std::string> SaddleSearchJob::run() {
     throw std::runtime_error("failed to load " + reactantFilename);
   }
 
-  const bool standaloneARTn = params.saddle_search_options.method == "artn";
+  const bool standaloneARTn = params.saddle_search_options().method == "artn";
 
   AtomMatrix mode = AtomMatrix::Zero(initial->numberOfAtoms(), 3);
-  if (!standaloneARTn && params.saddle_search_options.displace_type ==
+  if (!standaloneARTn && params.saddle_search_options().displace_type ==
                              eonc::EpiCenters::DISP_LOAD) {
     // Load displacement.con, or synthesize from pos.con + direction.dat (#79).
     if (!eonc::helpers::loadOrSynthesizeDisplacement(
             *saddle, *initial, displacementFilename, modeFilename,
-            params.saddle_search_options.displace_magnitude)) {
+            params.saddle_search_options().displace_magnitude)) {
       EONC_LOG_CRITICAL("Failed to load {} (and no usable {})",
                         displacementFilename, modeFilename);
       throw std::runtime_error("missing displacement.con and direction.dat");
@@ -101,10 +101,10 @@ SaddleSearchJob::runFromMatter(std::shared_ptr<Matter> seed) {
 }
 
 std::shared_ptr<Matter> SaddleSearchJob::runPrepared(const AtomMatrix &mode) {
-  const bool useStandaloneARTn = params.saddle_search_options.method == "artn";
+  const bool useStandaloneARTn = params.saddle_search_options().method == "artn";
   const bool useARTnAsMinMode =
-      params.saddle_search_options.method == "min_mode" &&
-      params.saddle_search_options.minmode_method == "artn";
+      params.saddle_search_options().method == "min_mode" &&
+      params.saddle_search_options().minmode_method == "artn";
 
 #ifdef WITH_ARTN
   if (useStandaloneARTn || useARTnAsMinMode) {
@@ -153,11 +153,11 @@ int SaddleSearchJob::doSaddleSearch() {
     status = MinModeSaddleSearch::STATUS_POTENTIAL_FAILED;
   }
 
-  if (params.saddle_search_options.method == "min_mode" &&
-      params.saddle_search_options.minmode_method ==
+  if (params.saddle_search_options().method == "min_mode" &&
+      params.saddle_search_options().minmode_method ==
           LowestEigenmode::MINMODE_GPRDIMER) {
     fCallsSaddle = saddleSearch->getForceCalls();
-  } else if (params.saddle_search_options.method == "artn") {
+  } else if (params.saddle_search_options().method == "artn") {
     fCallsSaddle = saddleSearch->getForceCalls();
   } else {
     fCallsSaddle += this->pot->forceCallCounter - f1;
@@ -176,10 +176,10 @@ void SaddleSearchJob::saveData(int status) {
     out << std::format("{} termination_reason_text\n",
                        saddleSearch->describeStatus(status));
     out << "saddle_search job_type\n";
-    out << std::format("{} random_seed\n", params.main_options.randomSeed);
+    out << std::format("{} random_seed\n", params.main_options().randomSeed);
     out << std::format(
         "{} potential_type\n",
-        magic_enum::enum_name<PotType>(params.potential_options.potential));
+        magic_enum::enum_name<PotType>(params.potential_options().potential));
     out << std::format("{} total_force_calls\n",
                        this->pot->forceCallCounter.load());
     out << std::format("{} force_calls_saddle\n", fCallsSaddle);

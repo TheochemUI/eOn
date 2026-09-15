@@ -29,7 +29,7 @@ std::vector<std::string> ParallelReplicaJob::run() {
   reactant = std::make_shared<Matter>(pot, params);
   {
     const auto posIn =
-        eonc::helpers::getRelevantFile(params.main_options.conFilename);
+        eonc::helpers::getRelevantFile(params.main_options().conFilename);
     if (!eonc::io::io_ok(reactant->con2matter(posIn))) {
       QUILL_LOG_CRITICAL(log, "Failed to load {}", posIn);
       throw std::runtime_error("failed to load " + posIn);
@@ -58,7 +58,7 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
   Dynamics dynamics(trajectory.get(), params);
   BondBoost bondBoost(trajectory.get(), params);
 
-  if (params.hyperdynamics_options.bias_potential ==
+  if (params.hyperdynamics_options().bias_potential ==
       Hyperdynamics::BOND_BOOST) {
     bondBoost.initialize();
     trajectory->setBiasPotential(&bondBoost);
@@ -67,12 +67,12 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
   dephase(*trajectory);
 
   int stateCheckInterval = static_cast<int>(
-      std::floor(params.parallel_replica_options.state_check_interval /
-                     params.dynamics_options.time_step +
+      std::floor(params.parallel_replica_options().state_check_interval /
+                     params.dynamics_options().time_step +
                  0.5));
   int recordInterval = static_cast<int>(
-      std::floor(params.parallel_replica_options.record_interval /
-                     params.dynamics_options.time_step +
+      std::floor(params.parallel_replica_options().record_interval /
+                     params.dynamics_options().time_step +
                  0.5));
   if (stateCheckInterval < 1)
     stateCheckInterval = 1;
@@ -86,7 +86,7 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
   size_t refineForceCalls = 0;
 
   double simulationTime = 0.0;
-  if (params.hyperdynamics_options.bias_potential == Hyperdynamics::NONE) {
+  if (params.hyperdynamics_options().bias_potential == Hyperdynamics::NONE) {
     QUILL_LOG_DEBUG(
         log, "[ParallelReplica] {:>8} {:>12} {:>10} {:>12} {:>12} {:>10}",
         "Step", "Time (s)", "KE", "PE", "TE", "KinT");
@@ -97,8 +97,8 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
         "Step", "Time (s)", "Boost", "KE", "PE", "TE", "KinT");
   }
 
-  for (int step = 1; step <= params.dynamics_options.steps; step++) {
-    if (params.hyperdynamics_options.bias_potential ==
+  for (int step = 1; step <= params.dynamics_options().steps; step++) {
+    if (params.hyperdynamics_options().bias_potential ==
         Hyperdynamics::BOND_BOOST) {
       // oneStep() evaluates accelerations (and therefore boost()) more than
       // once. Advance the equilibration counter here, once per MD step, so
@@ -107,28 +107,28 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
     }
     dynamics.oneStep();
     double boost = 1.0;
-    if (params.hyperdynamics_options.bias_potential ==
+    if (params.hyperdynamics_options().bias_potential ==
         Hyperdynamics::BOND_BOOST) {
       double boostPotential = bondBoost.boost();
-      double kB = params.constants.kB;
-      boost = std::exp(boostPotential / kB / params.main_options.temperature);
-      simulationTime += params.dynamics_options.time_step * boost;
+      double kB = params.constants().kB;
+      boost = std::exp(boostPotential / kB / params.main_options().temperature);
+      simulationTime += params.dynamics_options().time_step * boost;
     } else {
-      simulationTime += params.dynamics_options.time_step;
+      simulationTime += params.dynamics_options().time_step;
     }
 
     double kinE = trajectory->getKineticEnergy();
     double potE = trajectory->getPotentialEnergy();
     double kinT = (2.0 * kinE / (trajectory->numberOfFreeAtoms() * 3) /
-                   params.constants.kB);
+                   params.constants().kB);
 
-    if (step % params.debug_options.write_movies_interval == 0) {
-      if (params.hyperdynamics_options.bias_potential == Hyperdynamics::NONE) {
+    if (step % params.debug_options().write_movies_interval == 0) {
+      if (params.hyperdynamics_options().bias_potential == Hyperdynamics::NONE) {
         QUILL_LOG_DEBUG(log,
                         "[ParallelReplica] {:>8} {:>12.4e} {:>10.4f} "
                         "{:>12.4f} {:>12.4f} {:>10.2f}",
                         step,
-                        simulationTime * params.constants.timeUnit * 1e-15,
+                        simulationTime * params.constants().timeUnit * 1e-15,
                         kinE, potE, kinE + potE, kinT);
       } else {
         double boostPotential = bondBoost.boost();
@@ -136,14 +136,14 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
             log,
             "[ParallelReplica] {:>8} {:>12.4e} {:>10.3e} "
             "{:>10.4f} {:>12.4f} {:>12.4f} {:>10.2f}",
-            step, simulationTime * params.constants.timeUnit * 1e-15, boost,
+            step, simulationTime * params.constants().timeUnit * 1e-15, boost,
             kinE, potE + boostPotential, kinE + potE + boostPotential, kinT);
       }
     }
 
     // Snapshots for refinement
     if (step % recordInterval == 0 &&
-        params.parallel_replica_options.refine_transition) {
+        params.parallel_replica_options().refine_transition) {
       auto snap = std::make_shared<Matter>(pot, params);
       *snap = *trajectory;
       mdSnapshots.push_back(std::move(snap));
@@ -152,7 +152,7 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
 
     // Check for transition
     if (step % stateCheckInterval == 0 ||
-        step == params.dynamics_options.steps) {
+        step == params.dynamics_options().steps) {
       QUILL_LOG_DEBUG(log, "[ParallelReplica] Checking for transition");
 
       Matter minimized(pot, params);
@@ -162,7 +162,7 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
       if (!minimized.compare(*reactant) && transitionTime == 0) {
         QUILL_LOG_DEBUG(log, "[ParallelReplica] Transition occurred");
 
-        if (params.parallel_replica_options.refine_transition &&
+        if (params.parallel_replica_options().refine_transition &&
             !mdSnapshots.empty() && !mdTimes.empty()) {
           QUILL_LOG_DEBUG(log, "[ParallelReplica] Refining transition time");
           int snapshotIndex;
@@ -183,14 +183,14 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
           transitionTime = simulationTime;
         }
         QUILL_LOG_DEBUG(log, "[ParallelReplica] Transition time: {:.3e} s",
-                        transitionTime * params.constants.timeUnit * 1e-15);
+                        transitionTime * params.constants().timeUnit * 1e-15);
         *trajectory = transitionStructure;
         break;
 
-      } else if (step + 1 == params.dynamics_options.steps &&
+      } else if (step + 1 == params.dynamics_options().steps &&
                  transitionTime == 0) {
         // Fake refinement to prevent force-call bias (only if snapshots exist)
-        if (params.parallel_replica_options.refine_transition &&
+        if (params.parallel_replica_options().refine_transition &&
             !mdSnapshots.empty()) {
           QUILL_LOG_DEBUG(
               log,
@@ -213,8 +213,8 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
   std::unique_ptr<Matter> product;
   if (transitionTime != 0) {
     int decorrelationSteps =
-        static_cast<int>(std::floor(params.parallel_replica_options.corr_time /
-                                        params.dynamics_options.time_step +
+        static_cast<int>(std::floor(params.parallel_replica_options().corr_time /
+                                        params.dynamics_options().time_step +
                                     0.5));
     if (decorrelationSteps < 0) {
       decorrelationSteps = 0;
@@ -240,8 +240,8 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
     if (out) {
       out << std::format(
           "{} potential_type\n",
-          magic_enum::enum_name<PotType>(params.potential_options.potential));
-      out << std::format("{} random_seed\n", params.main_options.randomSeed);
+          magic_enum::enum_name<PotType>(params.potential_options().potential));
+      out << std::format("{} random_seed\n", params.main_options().randomSeed);
       out << std::format("{:f} potential_energy_reactant\n",
                          reactant->getPotentialEnergy());
       out << std::format("{} force_calls_refine\n", refineForceCalls);
@@ -251,22 +251,22 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
       if (transitionTime == 0) {
         out << "0 transition_found\n";
         out << std::format("{:e} simulation_time_s\n",
-                           simulationTime * params.constants.timeUnit *
+                           simulationTime * params.constants().timeUnit *
                                1.0e-15);
       } else {
         out << "1 transition_found\n";
         out << std::format("{:e} transition_time_s\n",
-                           transitionTime * params.constants.timeUnit *
+                           transitionTime * params.constants().timeUnit *
                                1.0e-15);
         out << std::format("{:e} correlation_time_s\n",
-                           params.parallel_replica_options.corr_time *
-                               params.constants.timeUnit * 1.0e-15);
+                           params.parallel_replica_options().corr_time *
+                               params.constants().timeUnit * 1.0e-15);
         out << std::format("{:f} potential_energy_product\n",
                            product->getPotentialEnergy());
       }
       out << std::format("{:f} speedup\n",
-                         simulationTime / (params.dynamics_options.steps *
-                                           params.dynamics_options.time_step));
+                         simulationTime / (params.dynamics_options().steps *
+                                           params.dynamics_options().time_step));
     }
   }
 
@@ -282,17 +282,17 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
 void ParallelReplicaJob::dephase(Matter &trajectory) {
   Dynamics dynamics(&trajectory, params);
 
-  const double dt = params.dynamics_options.time_step;
+  const double dt = params.dynamics_options().time_step;
   if (!(dt > 0.0)) {
     throw std::invalid_argument(
         "ParallelReplicaJob::dephase: time_step must be positive");
   }
   int dephaseSteps = static_cast<int>(
-      std::floor(params.parallel_replica_options.dephase_time / dt + 0.5));
+      std::floor(params.parallel_replica_options().dephase_time / dt + 0.5));
   if (dephaseSteps < 1)
     dephaseSteps = 1;
   const long maxLoops =
-      std::max(1L, params.parallel_replica_options.dephase_loop_max);
+      std::max(1L, params.parallel_replica_options().dephase_loop_max);
   QUILL_LOG_DEBUG(log, "[ParallelReplica] Dephasing: {} steps (max {} loops)",
                   dephaseSteps, maxLoops);
 

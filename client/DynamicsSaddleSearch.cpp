@@ -41,16 +41,16 @@ int DynamicsSaddleSearch::run() {
   Dynamics dyn(saddle.get(), params);
   QUILL_LOG_DEBUG(
       log, "Initializing velocities from Maxwell-Boltzmann distribution");
-  dyn.setTemperature(params.saddle_search_options.dynamics.temperature);
+  dyn.setTemperature(params.saddle_search_options().dynamics.temperature);
   dyn.setThermalVelocity();
 
-  const double dt = params.dynamics_options.time_step;
+  const double dt = params.dynamics_options().time_step;
   if (!(dt > 0.0)) {
     throw std::invalid_argument(
         "DynamicsSaddleSearch: time_step must be positive");
   }
   int dephaseSteps = static_cast<int>(
-      std::floor(params.parallel_replica_options.dephase_time / dt + 0.5));
+      std::floor(params.parallel_replica_options().dephase_time / dt + 0.5));
 
   while (true) {
 
@@ -81,41 +81,41 @@ int DynamicsSaddleSearch::run() {
   }
 
   BondBoost bondBoost(saddle.get(), params);
-  if (params.hyperdynamics_options.bias_potential ==
+  if (params.hyperdynamics_options().bias_potential ==
       Hyperdynamics::BOND_BOOST) {
     QUILL_LOG_DEBUG(log, "Initializing Bond Boost");
     bondBoost.initialize();
   }
 
   int checkInterval = static_cast<int>(
-      params.saddle_search_options.dynamics.state_check_interval /
-          params.dynamics_options.time_step +
+      params.saddle_search_options().dynamics.state_check_interval /
+          params.dynamics_options().time_step +
       0.5);
   int recordInterval =
-      static_cast<int>(params.saddle_search_options.dynamics.record_interval /
-                           params.dynamics_options.time_step +
+      static_cast<int>(params.saddle_search_options().dynamics.record_interval /
+                           params.dynamics_options().time_step +
                        0.5);
 
-  if (params.debug_options.write_movies) {
+  if (params.debug_options().write_movies) {
     if (!eonc::io::io_ok(saddle->matter2con("dynamics", false))) {
       QUILL_LOG_WARNING(log, "Failed to write dynamics movie header");
     }
   }
 
-  for (int step = 1; step <= params.dynamics_options.steps; step++) {
+  for (int step = 1; step <= params.dynamics_options().steps; step++) {
     dyn.oneStep(step);
 
     if (recordInterval != 0 && step % recordInterval == 0) {
       QUILL_LOG_DEBUG(
           log, "recording configuration at step {} time {:.3f}", step,
-          step * params.dynamics_options.time_step * params.constants.timeUnit);
+          step * params.dynamics_options().time_step * params.constants().timeUnit);
       // BUG FIX: was sharing ownership with saddle instead of copying
       auto snapshot = std::make_shared<Matter>(*saddle);
       mdSnapshots.push_back(snapshot);
-      mdTimes.push_back(step * params.dynamics_options.time_step);
+      mdTimes.push_back(step * params.dynamics_options().time_step);
     }
 
-    if (params.debug_options.write_movies) {
+    if (params.debug_options().write_movies) {
       if (!eonc::io::io_ok(saddle->matter2con("dynamics", true))) {
         QUILL_LOG_WARNING(log, "Failed to append dynamics movie frame");
       }
@@ -134,17 +134,17 @@ int DynamicsSaddleSearch::run() {
         QUILL_LOG_DEBUG(log, "Found transition at snapshot image {}", image);
         for (int ii = 0; ii < static_cast<int>(mdTimes.size()); ii++) {
           QUILL_LOG_DEBUG(log, "MDTimes[{}] = {:.3f}", ii,
-                          mdTimes[ii] * params.constants.timeUnit);
+                          mdTimes[ii] * params.constants().timeUnit);
         }
         // Subtract half the record interval to avoid systematic bias
         time = mdTimes[image] -
-               params.saddle_search_options.dynamics.record_interval / 2.0;
+               params.saddle_search_options().dynamics.record_interval / 2.0;
         QUILL_LOG_DEBUG(log, "Transition time {:.2f} fs",
-                        time * params.constants.timeUnit);
+                        time * params.constants().timeUnit);
 
         NudgedElasticBand neb(reactant, product, params, pot);
 
-        if (!params.saddle_search_options.dynamics.linear_interpolation) {
+        if (!params.saddle_search_options().dynamics.linear_interpolation) {
           QUILL_LOG_DEBUG(
               log, "Interpolating initial band through MD transition state");
           AtomMatrix reactantToSaddle =
@@ -196,7 +196,7 @@ int DynamicsSaddleSearch::run() {
         }
 
         AtomMatrix mode;
-        if (params.neb_options.max_iterations > 0) {
+        if (params.neb_options().max_iterations > 0) {
           auto minModeMethod =
               eonc::buildEigenmodeStrategy(saddle, params, pot);
 
@@ -206,7 +206,7 @@ int DynamicsSaddleSearch::run() {
           int jExt = 0;
           for (jExt = 0; jExt < neb.numExtrema; jExt++) {
             if (neb.extremumCurvature[jExt] <
-                params.saddle_search_options.dynamics.max_init_curvature) {
+                params.saddle_search_options().dynamics.max_init_curvature) {
               extremumImage =
                   static_cast<int>(std::floor(neb.extremumPosition[jExt]));
               *saddle = *neb.path[extremumImage];
@@ -304,7 +304,7 @@ int DynamicsSaddleSearch::run() {
   }
 
   mdSnapshots.clear();
-  time = params.dynamics_options.steps * params.dynamics_options.time_step;
+  time = params.dynamics_options().steps * params.dynamics_options().time_step;
   return MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT;
 }
 

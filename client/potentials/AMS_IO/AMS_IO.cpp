@@ -49,10 +49,10 @@ constexpr double kHartreeBohrToEvAngstrom = 51.4220862;
 
 AMS_IO::AMS_IO(const eonc::Parameters &p)
     : eonc::Potential(eonc::PotType::AMS_IO, p) {
-  engine = p.ams_options.engine;
-  forcefield = p.ams_options.forcefield;
-  model = p.ams_options.model;
-  xc = p.ams_options.xc;
+  engine = p.ams_options().engine;
+  forcefield = p.ams_options().forcefield;
+  model = p.ams_options().model;
+  xc = p.ams_options().xc;
   return;
 }
 

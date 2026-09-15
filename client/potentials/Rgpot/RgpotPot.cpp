@@ -14,7 +14,7 @@
 RgpotPot::RgpotPot(const eonc::Parameters &p)
     : eonc::Potential(eonc::PotType::RGPOT, p) {
   RGPotEngineOptions opt;
-  const auto &o = p.rgpot_options;
+  const auto &o = p.rgpot_options();
   opt.backend = o.backend;
   opt.basis = o.basis;
   opt.theory = o.theory;
@@ -84,18 +84,18 @@ RgpotPot::RgpotPot(const eonc::Parameters &p)
     else if (const char *e = std::getenv("XTB_ENGINE"))
       opt.engine_path = e;
     if (opt.xtb_paramset.empty() || opt.xtb_paramset == "GFN2xTB") {
-      if (!p.xtb_options.paramset.empty())
-        opt.xtb_paramset = p.xtb_options.paramset;
+      if (!p.xtb_options().paramset.empty())
+        opt.xtb_paramset = p.xtb_options().paramset;
     }
   }
 
   // Dual-read [Metatomic] when RGPOT backend is metatomic
   if ((backend_lc.rfind("meta", 0) == 0 || backend_lc == "mta") &&
       opt.model_path.empty())
-    opt.model_path = p.metatomic_options.model_path;
+    opt.model_path = p.metatomic_options().model_path;
   if ((backend_lc.rfind("meta", 0) == 0 || backend_lc == "mta") &&
-      opt.device == "cpu" && !p.metatomic_options.device.empty())
-    opt.device = p.metatomic_options.device;
+      opt.device == "cpu" && !p.metatomic_options().device.empty())
+    opt.device = p.metatomic_options().device;
 
   impl_ = std::make_unique<RGPotEngine>(opt);
   backend_ = impl_->backend();

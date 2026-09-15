@@ -28,7 +28,7 @@ std::vector<std::string> GPSurrogateJob::run() {
   std::string reactantFilename = eonc::helpers::getRelevantFile("reactant.con");
   std::string productFilename = eonc::helpers::getRelevantFile("product.con");
   auto true_params = std::make_shared<Parameters>(params);
-  true_params->main_options.job = params.sub_job;
+  true_params->main_options().job = params.sub_job;
   auto initial = std::make_shared<Matter>(pot, *true_params);
   if (!eonc::io::io_ok(initial->con2matter(reactantFilename))) {
     EONC_LOG_CRITICAL("Failed to load {}", reactantFilename);
@@ -51,16 +51,16 @@ GPSurrogateJob::runFromMatter(std::shared_ptr<Matter> initial,
   }
   // Clone and setup "true" params
   auto true_params = std::make_shared<Parameters>(params);
-  true_params->main_options.job = params.sub_job;
+  true_params->main_options().job = params.sub_job;
   auto true_job =
       eonc::helpers::makeJob(std::make_unique<Parameters>(*true_params));
   auto pyparams = std::make_shared<Parameters>(params);
-  pyparams->potential_options.potential = PotType::CatLearn;
+  pyparams->potential_options().potential = PotType::CatLearn;
 
   initial->setPotential(pot);
   final_state->setPotential(pot);
   auto init_path = eonc::helpers::neb_paths::linearPath(
-      *initial, *final_state, params.neb_options.image_count);
+      *initial, *final_state, params.neb_options().image_count);
   auto init_data = eonc::helpers::surrogate::getMidSlice(init_path);
   auto features = eonc::helpers::surrogate::get_features(init_data);
   EONC_LOG_TRACE("Potential is {}",
@@ -69,7 +69,7 @@ GPSurrogateJob::runFromMatter(std::shared_ptr<Matter> initial,
 
   // Setup a GPR Potential
   auto surpot = eonc::helpers::create::makeSurrogatePotential(
-      params.gp_surrogate_options.potential, params);
+      params.gp_surrogate_options().potential, params);
   surpot->train_optimize(features, targets);
   auto neb = std::make_unique<NudgedElasticBand>(initial, final_state,
                                                  *pyparams, surpot);
@@ -92,8 +92,8 @@ GPSurrogateJob::runFromMatter(std::shared_ptr<Matter> initial,
     eonc::helpers::eigen::addVectorRow(targets, target);
     surpot->train_optimize(features, targets);
     pyparams->nebClimbingImageMethod = false;
-    pyparams->optimizer_options.converged_force =
-        params.optimizer_options.converged_force * 0.8;
+    pyparams->optimizer_options().converged_force =
+        params.optimizer_options().converged_force * 0.8;
     for (auto &&obj : neb->path) {
       obj->setPotential(surpot);
     }
@@ -111,7 +111,7 @@ GPSurrogateJob::runFromMatter(std::shared_ptr<Matter> initial,
     returnFiles.push_back(nebFilename);
     if (!eonc::io::io_ok(eonc::neb::writePathCon(
             neb->path, neb->tangent, neb->eigenmode_solvers, neb->numImages,
-            params.debug_options.estimate_neb_eigenvalues, nebFilename,
+            params.debug_options().estimate_neb_eigenvalues, nebFilename,
             static_cast<size_t>(n_gp)))) {
       throw std::runtime_error("Failed to write file: " + nebFilename);
     }
@@ -147,7 +147,7 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   fileResults << static_cast<int>(status) << " termination_reason\n";
   fileResults << magic_enum::enum_name(status) << " termination_reason_text\n";
   fileResults << magic_enum::enum_name<PotType>(
-                     params.potential_options.potential)
+                     params.potential_options().potential)
               << " potential_type\n";
   fileResults << std::format("{:.6f} energy_reference\n",
                              neb->path[0]->getPotentialEnergy());
@@ -179,7 +179,7 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
 
   if (!eonc::io::io_ok(eonc::neb::writePathCon(
           neb->path, neb->tangent, neb->eigenmode_solvers, neb->numImages,
-          params.debug_options.estimate_neb_eigenvalues, nebFilename))) {
+          params.debug_options().estimate_neb_eigenvalues, nebFilename))) {
     throw std::runtime_error("Failed to write file: " + nebFilename);
   }
 

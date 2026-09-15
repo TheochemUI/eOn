@@ -41,7 +41,7 @@
 
 LAMMPSPot::LAMMPSPot(const eonc::Parameters &p)
     : eonc::Potential(p),
-      lammpsThr{p.potential_options.LAMMPSThreads}
+      lammpsThr{p.potential_options().LAMMPSThreads}
 #ifdef EONMPI
       ,
       mpiComm{eonc::getMpiClientComm(p)}

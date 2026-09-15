@@ -42,7 +42,7 @@ protected:
   ARTnVsDimerFixture()
       : params{},
         pot{nullptr} {
-    params.potential_options.potential = PotType::LJ;
+    params.potential_options().potential = PotType::LJ;
     pot = eonc::helpers::makePotential(PotType::LJ, params);
 
     matter_dimer = std::make_shared<Matter>(pot, params);
@@ -66,17 +66,17 @@ protected:
     displacement.row(0).normalize();
 
     // Dimer parameters
-    params.saddle_search_options.max_iterations = 500;
-    params.saddle_search_options.displace_magnitude = 0.01;
-    params.saddle_search_options.displace_radius = 5.0;
-    params.saddle_search_options.converged_force = 0.01;
-    params.saddle_search_options.minmode_method =
+    params.saddle_search_options().max_iterations = 500;
+    params.saddle_search_options().displace_magnitude = 0.01;
+    params.saddle_search_options().displace_radius = 5.0;
+    params.saddle_search_options().converged_force = 0.01;
+    params.saddle_search_options().minmode_method =
         LowestEigenmode::MINMODE_DIMER;
 
     // ARTn parameters for LJ cluster
-    params.artn_options.push_step_size = 0.3;
-    params.artn_options.force_threshold = 0.05;
-    params.artn_options.max_iterations = 500;
+    params.artn_options().push_step_size = 0.3;
+    params.artn_options().force_threshold = 0.05;
+    params.artn_options().max_iterations = 500;
   }
 };
 
@@ -178,7 +178,7 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
   // nothing. Setting filin to a path that does not exist has to trip the
   // eager existence check in ARTnSaddleSearch::run(), before setup_artn gets
   // a chance to surface its own ERR_FILE, and return STATUS_BAD_ARTN_ERROR.
-  params.artn_options.filin = "this_artn_input_does_not_exist.in";
+  params.artn_options().filin = "this_artn_input_does_not_exist.in";
   auto artnSearch = std::make_unique<ARTnSaddleSearch>(matter_artn, pot,
                                                        displacement, params);
   REQUIRE(artnSearch->run() == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR);

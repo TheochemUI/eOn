@@ -36,18 +36,18 @@ struct DynamicsConfig {
   long write_movies_interval{1};
 
   static DynamicsConfig fromParams(const Parameters &p) {
-    return {p.dynamics_options.time_step,
-            p.dynamics_options.steps,
-            p.thermostat_options.kind,
-            p.thermostat_options.andersen_alpha,
-            p.thermostat_options.andersen_tcol,
-            p.thermostat_options.nose_mass,
-            p.thermostat_options.langevin_friction,
-            p.constants.kB,
-            p.constants.timeUnit,
-            p.main_options.temperature,
-            p.debug_options.write_movies,
-            p.debug_options.write_movies_interval};
+    return {p.dynamics_options().time_step,
+            p.dynamics_options().steps,
+            p.thermostat_options().kind,
+            p.thermostat_options().andersen_alpha,
+            p.thermostat_options().andersen_tcol,
+            p.thermostat_options().nose_mass,
+            p.thermostat_options().langevin_friction,
+            p.constants().kB,
+            p.constants().timeUnit,
+            p.main_options().temperature,
+            p.debug_options().write_movies,
+            p.debug_options().write_movies_interval};
   }
 };
 

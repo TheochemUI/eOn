@@ -59,9 +59,9 @@ ASENwchemPot::ASENwchemPot(const eonc::Parameters &a_params)
   py::module_ ase_nwchem = py::module_::import("ase.calculators.nwchem");
   py::module_ psutil = py::module_::import("psutil");
   std::string nwchempth = eonc::helpers::get_value_from_env_or_param(
-      "NWCHEM_COMMAND", a_params.ase_nwchem_options.path, "", "", true);
+      "NWCHEM_COMMAND", a_params.ase_nwchem_options().path, "", "", true);
   std::string nwc_mult = eonc::helpers::get_value_from_env_or_param(
-      "NWCHEM_MULTIPLICITY", a_params.ase_nwchem_options.multiplicity, "1",
+      "NWCHEM_MULTIPLICITY", a_params.ase_nwchem_options().multiplicity, "1",
       "Using 1 as a default multiplicity, i.e. an RHF calculation suitable for "
       "closed shell molecules, set multiplicity or the "
       "environment variable NWCHEM_MULTIPLICITY.\n");
@@ -70,15 +70,15 @@ ASENwchemPot::ASENwchemPot(const eonc::Parameters &a_params)
   size_t nproc{0};
   auto mult = std::stoi(nwc_mult); // 1 for singlet, 2 for doublet
 
-  if (a_params.ase_nwchem_options.nproc == "auto") {
+  if (a_params.ase_nwchem_options().nproc == "auto") {
     nproc = py::cast<int>(psutil.attr("cpu_count")(false));
   } else {
-    nproc = std::stoi(a_params.ase_nwchem_options.nproc);
+    nproc = std::stoi(a_params.ase_nwchem_options().nproc);
   }
 
   // dont_verify so we always get an energy and gradient
   // mpi_launcher: mpirun (default) or srun on Slurm nodes (issue #193)
-  const std::string &launcher = a_params.ase_nwchem_options.mpi_launcher;
+  const std::string &launcher = a_params.ase_nwchem_options().mpi_launcher;
   std::string mpi_cmd;
   if (launcher == "srun") {
     // srun uses -n for tasks; avoid OpenMPI-specific flags.
@@ -104,11 +104,11 @@ ASENwchemPot::ASENwchemPot(const eonc::Parameters &a_params)
       "label"_a = "_eonpot_engrad",
       "set"_a = py::dict("geom:dont_verify"_a = true),
       "command"_a = py::str(mpi_cmd),
-      "memory"_a = py::str(a_params.ase_nwchem_options.memory),
+      "memory"_a = py::str(a_params.ase_nwchem_options().memory),
       "scf"_a = py::dict("nopen"_a = mult - 1,
-                         "thresh"_a = a_params.ase_nwchem_options.scf_thresh,
-                         "maxiter"_a = a_params.ase_nwchem_options.scf_maxiter),
-      "basis"_a = py::str(a_params.ase_nwchem_options.basis),
+                         "thresh"_a = a_params.ase_nwchem_options().scf_thresh,
+                         "maxiter"_a = a_params.ase_nwchem_options().scf_maxiter),
+      "basis"_a = py::str(a_params.ase_nwchem_options().basis),
       "task"_a = py::str("gradient"),
       "directory"_a = workDir.string());
 

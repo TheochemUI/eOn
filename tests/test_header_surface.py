@@ -36,7 +36,9 @@ def test_parameters_h_is_the_aggregate():
     assert '#include "ParametersOptions.h"' in p
     assert "struct neb_options_t" not in p
     assert "using neb_options_t" in p
-    assert len(p.splitlines()) < 160
+    assert "private:" in p
+    assert "main_options_t main_options;" not in p
+    assert "main_options_t main_options_{};" in p
 
 
 def test_parameters_options_defines_job_and_pot_structs():

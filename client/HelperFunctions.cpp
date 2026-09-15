@@ -205,14 +205,14 @@ bool eonc::helpers::applyClientDisplacement(Matter &target,
                                             const Parameters &params,
                                             AtomMatrix *modeOut) {
   using namespace eonc::EpiCenters;
-  const auto &opt = params.saddle_search_options;
+  const auto &opt = params.saddle_search_options();
   const std::string &dtype = opt.displace_type;
   if (dtype == DISP_LOAD) {
     return false;
   }
 
   long epicenter = -1;
-  const double cutoff = params.structure_comparison_options.neighbor_cutoff;
+  const double cutoff = params.structure_comparison_options().neighbor_cutoff;
   if (dtype == DISP_LISTED_ATOMS) {
     epicenter = listedAtomEpiCenter(&initial, opt.displace_atom_list);
   } else if (dtype == DISP_RANDOM) {
@@ -340,7 +340,7 @@ public:
       : eonc::ObjectiveFunction(parametersPassed),
         m_matter{mat} {
     eonc::helpers::requireKnownConvergenceMetric(
-        params.optimizer_options.convergence_metric, "[Matter]");
+        params.optimizer_options().convergence_metric, "[Matter]");
   }
   ~MatterObjectiveFunction() = default;
   double getEnergy() { return m_matter.getPotentialEnergy(); }
@@ -351,21 +351,21 @@ public:
   VectorXd getPositions() { return m_matter.getPositionsFreeV(); }
   int degreesOfFreedom() { return 3 * m_matter.numberOfFreeAtoms(); }
   bool isConverged() {
-    return getConvergence() < params.optimizer_options.converged_force;
+    return getConvergence() < params.optimizer_options().converged_force;
   }
   double getConvergence() {
-    if (params.optimizer_options.convergence_metric == "norm") {
+    if (params.optimizer_options().convergence_metric == "norm") {
       return m_matter.getForcesFreeV().norm();
-    } else if (params.optimizer_options.convergence_metric == "max_atom") {
+    } else if (params.optimizer_options().convergence_metric == "max_atom") {
       return m_matter.maxForce();
-    } else if (params.optimizer_options.convergence_metric == "max_component") {
+    } else if (params.optimizer_options().convergence_metric == "max_component") {
       return m_matter.getForces().cwiseAbs().maxCoeff();
     } else {
       EONC_LOG_CRITICAL("{} Unknown opt_convergence_metric: {}", "[Matter]",
-                        params.optimizer_options.convergence_metric);
+                        params.optimizer_options().convergence_metric);
       throw std::invalid_argument(
           std::format("[Matter] unknown convergence_metric: {}",
-                      params.optimizer_options.convergence_metric));
+                      params.optimizer_options().convergence_metric));
     }
   }
   VectorXd difference(const VectorXd &a, const VectorXd &b) {
@@ -382,7 +382,7 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
   eonc::log::Scoped m_log;
   auto objf = std::make_shared<MatterObjectiveFunction>(matter, params);
   auto optim = eonc::helpers::create::mkOptim(
-      objf, params.optimizer_options.method, params);
+      objf, params.optimizer_options().method, params);
 
   std::ostringstream min;
   min << prefixMovie;
@@ -403,7 +403,7 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
       }
     }
 
-    if (params.debug_options.write_deprecated_outs) {
+    if (params.debug_options().write_deprecated_outs) {
       std::ofstream minDat(minDatFilename,
                            append ? (std::ios::binary | std::ios::app)
                                   : std::ios::binary);
@@ -425,7 +425,7 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
   if (!quiet) {
     QUILL_LOG_DEBUG(m_log, "{} {:10s}  {:14s}  {:18s}  {:13s}\n", "[Matter]",
                     "Iter", "Step size",
-                    params.optimizer_options.convergence_metric_label,
+                    params.optimizer_options().convergence_metric_label,
                     "Energy");
     QUILL_LOG_DEBUG(m_log, "{} {:10}  {:14.5e}  {:18.5e}  {:13.5f}\n",
                     "[Matter]", iteration, 0.0, objf->getConvergence(),
@@ -433,11 +433,11 @@ bool eonc::helpers::relaxMatter(Matter &matter, const Parameters &params,
   }
 
   while (!objf->isConverged() &&
-         iteration < params.optimizer_options.max_iterations) {
+         iteration < params.optimizer_options().max_iterations) {
 
     AtomMatrix pos = matter.getPositions();
 
-    optim->step(params.optimizer_options.max_move);
+    optim->step(params.optimizer_options().max_move);
     iteration++;
 
     double stepSize =

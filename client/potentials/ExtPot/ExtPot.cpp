@@ -119,7 +119,7 @@ std::string resolveCommand(const std::string &command) {
 
 ExtPot::ExtPot(const eonc::Parameters &p)
     : eonc::Potential(p),
-      eon_extpot_path{resolveCommand(p.potential_options.extPotPath)} {}
+      eon_extpot_path{resolveCommand(p.potential_options().extPotPath)} {}
 
 void ExtPot::cleanMemory(void) {
   if (exchangeDir.empty() || retainExchangeDir) {

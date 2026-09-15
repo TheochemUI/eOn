@@ -34,16 +34,16 @@ TEST_CASE("RgpotPot in-process nwchemc force (no potserv)",
   }
 
   Parameters params{};
-  params.potential_options.potential = PotType::RGPOT;
-  params.rgpot_options.backend = "nwchemc";
-  params.rgpot_options.basis = "sto-3g";
-  params.rgpot_options.theory = "scf";
-  params.rgpot_options.scf_type = "rhf";
-  params.rgpot_options.charge = 0;
-  params.rgpot_options.multiplicity = 1;
+  params.potential_options().potential = PotType::RGPOT;
+  params.rgpot_options().backend = "nwchemc";
+  params.rgpot_options().basis = "sto-3g";
+  params.rgpot_options().theory = "scf";
+  params.rgpot_options().scf_type = "rhf";
+  params.rgpot_options().charge = 0;
+  params.rgpot_options().multiplicity = 1;
 
   auto pot =
-      eonc::helpers::makePotential(params.potential_options.potential, params);
+      eonc::helpers::makePotential(params.potential_options().potential, params);
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::RGPOT);
 
@@ -84,15 +84,15 @@ TEST_CASE("RgpotPot in-process cpmdc force (no potserv)",
   }
 
   Parameters params{};
-  params.potential_options.potential = PotType::RGPOT;
-  params.rgpot_options.backend = "cpmdc";
-  params.rgpot_options.functional = "BLYP";
-  params.rgpot_options.cutoff_ry = 70.0;
-  params.rgpot_options.charge = 0;
-  params.rgpot_options.multiplicity = 1;
+  params.potential_options().potential = PotType::RGPOT;
+  params.rgpot_options().backend = "cpmdc";
+  params.rgpot_options().functional = "BLYP";
+  params.rgpot_options().cutoff_ry = 70.0;
+  params.rgpot_options().charge = 0;
+  params.rgpot_options().multiplicity = 1;
 
   auto pot =
-      eonc::helpers::makePotential(params.potential_options.potential, params);
+      eonc::helpers::makePotential(params.potential_options().potential, params);
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::RGPOT);
 

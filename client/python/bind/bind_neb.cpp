@@ -70,7 +70,7 @@ void bind_neb(nb::module_ &m) {
           nb::arg("potential"), nb::keep_alive<1, 2>(), nb::keep_alive<1, 3>(),
           nb::keep_alive<1, 4>(), nb::keep_alive<1, 5>(),
           "Build NEB from reactant/product Matter; path init follows "
-          "Parameters.neb_options.initialization")
+          "Parameters.neb_options().initialization")
       // --- construct from explicit path vector (copied into band) ---
       .def(
           "__init__",
@@ -311,7 +311,7 @@ void bind_neb(nb::module_ &m) {
       [](const Matter &initial, const Matter &final_state, long n_intermediate,
          const Parameters &params) {
         using eonc::NEBInit;
-        const auto method = params.neb_options.initialization.method;
+        const auto method = params.neb_options().initialization.method;
         const size_t n = static_cast<size_t>(n_intermediate);
         std::vector<Matter> path;
         switch (method) {
@@ -568,7 +568,7 @@ void bind_neb(nb::module_ &m) {
                              magic_enum::enum_name(status));
           out << std::format(
               "{} potential_type\n",
-              magic_enum::enum_name(params.potential_options.potential));
+              magic_enum::enum_name(params.potential_options().potential));
           out << std::format("{} total_force_calls\n",
                              PotRegistry::get().total_force_calls());
           out << std::format("{} force_calls_neb\n", force_calls_neb);
@@ -607,7 +607,7 @@ void bind_neb(nb::module_ &m) {
         const std::string nebFilename = "neb.con";
         if (!eonc::io::io_ok(eonc::neb::writePathCon(
                 neb.path, neb.tangent, neb.eigenmode_solvers, neb.numImages,
-                params.debug_options.estimate_neb_eigenvalues, nebFilename))) {
+                params.debug_options().estimate_neb_eigenvalues, nebFilename))) {
           throw std::runtime_error("neb_write_results: failed neb.con");
         }
         returnFiles.push_back(nebFilename);
@@ -619,13 +619,13 @@ void bind_neb(nb::module_ &m) {
         returnFiles.push_back(sp);
 
         // MMF peaks (same filters as NEBJob::saveData)
-        if (params.neb_options.mmf_peaks.enabled && neb.numExtrema > 0) {
+        if (params.neb_options().mmf_peaks.enabled && neb.numExtrema > 0) {
           int peakCount = 0;
           for (long i = 0; i < neb.numExtrema; i++) {
             double relativeEnergy = neb.extremumEnergy[static_cast<size_t>(i)] -
                                     neb.path[0]->getPotentialEnergy();
             if (!(neb.extremumCurvature[static_cast<size_t>(i)] < 0 &&
-                  relativeEnergy > params.neb_options.mmf_peaks.tolerance))
+                  relativeEnergy > params.neb_options().mmf_peaks.tolerance))
               continue;
             double posFraction = neb.extremumPosition[static_cast<size_t>(i)];
             int leftIdx = static_cast<int>(std::floor(posFraction));

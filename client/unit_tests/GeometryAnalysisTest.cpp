@@ -27,7 +27,7 @@ protected:
   std::shared_ptr<Matter> m2;
 
   GeomFixture() {
-    params.potential_options.potential = PotType::LJ;
+    params.potential_options().potential = PotType::LJ;
     pot = eonc::helpers::makePotential(PotType::LJ, params);
     m1 = std::make_shared<Matter>(pot, params);
     m2 = std::make_shared<Matter>(pot, params);

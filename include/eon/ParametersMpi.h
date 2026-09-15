@@ -27,12 +27,12 @@ inline void setMpiClientComm(Parameters &p, MPI_Comm comm) {
                 "MPI_Comm does not fit in uintptr_t");
   std::uintptr_t raw = 0;
   std::memcpy(&raw, &comm, sizeof(comm));
-  p.potential_options.MPIClientComm = raw;
+  p.potential_options().MPIClientComm = raw;
 }
 
 inline MPI_Comm getMpiClientComm(const Parameters &p) {
   MPI_Comm comm{};
-  std::memcpy(&comm, &p.potential_options.MPIClientComm, sizeof(comm));
+  std::memcpy(&comm, &p.potential_options().MPIClientComm, sizeof(comm));
   return comm;
 }
 

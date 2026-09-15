@@ -221,8 +221,8 @@ static int eonClientMain(int argc, char **argv) {
     error = parameters.load(config_file);
   } else {
     QUILL_LOG_INFO(logger, "Loading parameter file {}",
-                   parameters.main_options.iniFilename);
-    error = parameters.load(parameters.main_options.iniFilename);
+                   parameters.main_options().iniFilename);
+    error = parameters.load(parameters.main_options().iniFilename);
   }
   if (error) {
     QUILL_LOG_ERROR(logger, "problem loading parameter file");
@@ -277,7 +277,7 @@ static int eonClientMain(int argc, char **argv) {
   }
   clients = number_of_clients;
 
-  if (parameters.potential_options.potential == eonc::PotType::MPI) {
+  if (parameters.potential_options().potential == eonc::PotType::MPI) {
     std::vector<int> potential_ranks(potentials);
     int j;
     for (i = 0, j = 0; i < isize; i++) {
@@ -299,13 +299,13 @@ static int eonClientMain(int argc, char **argv) {
     }
 
     if (my_client_number < number_of_clients) {
-      parameters.potential_options.MPIPotentialRank =
+      parameters.potential_options().MPIPotentialRank =
           potential_ranks[my_client_number * potential_group_size];
     }
   }
 
   // LAMMPS MPI communicator setup (runtime check, not compile-time)
-  if (parameters.potential_options.potential == eonc::PotType::LAMMPS) {
+  if (parameters.potential_options().potential == eonc::PotType::LAMMPS) {
     for (i = 0; i < static_cast<int>(client_ranks.size()); i++) {
       MPI_Group world_group, new_group;
       MPI_Comm_group(MPI_COMM_WORLD, &world_group);
@@ -424,7 +424,7 @@ static int eonClientMain(int argc, char **argv) {
       // check to see if parameters file exists before loading
       int error = 0;
       std::string config_file =
-          eonc::helpers::getRelevantFile(parameters.main_options.iniFilename);
+          eonc::helpers::getRelevantFile(parameters.main_options().iniFilename);
       QUILL_LOG_INFO(logger, "Loading parameter file {}", config_file);
       error = parameters.load(config_file);
 
@@ -441,7 +441,7 @@ static int eonClientMain(int argc, char **argv) {
       if (job == nullptr) {
         QUILL_LOG_ERROR(logger, "error: Unknown job: {}",
                         std::string{magic_enum::enum_name<eonc::JobType>(
-                            parameters.main_options.job)});
+                            parameters.main_options().job)});
         logger->flush_log();
         return 1;
       }

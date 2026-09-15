@@ -13,7 +13,7 @@
 namespace eonc {
 
 static EonMtaConfig config_from_params(const Parameters &params) {
-  const auto &o = params.metatomic_options;
+  const auto &o = params.metatomic_options();
   EonMtaConfig c{};
   c.model_path = o.model_path.c_str();
   c.device = o.device.c_str();

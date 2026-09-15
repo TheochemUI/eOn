@@ -63,7 +63,7 @@ int ARTnSaddleSearch::run() {
   Eigen::Map<AtomMatrixF> disp_map(displacement.data(), 3, nat);
   Eigen::Map<AtomMatrixF> mode_map(mode.data(), 3, nat);
 
-  const double push_step = params.artn_options.push_step_size;
+  const double push_step = params.artn_options().push_step_size;
   const double mode_norm = mode.norm();
   AtomMatrixF mode_fort;
   if (mode_norm > 1e-10) {
@@ -100,7 +100,7 @@ int ARTnSaddleSearch::run() {
     }
 
     // Set parameters from eOn config
-    double push_step = params.artn_options.push_step_size;
+    double push_step = params.artn_options().push_step_size;
     int result_push =
         res.get_set_param_fn()("push_step_size", 0, &size0, &push_step);
     if (result_push != 0) {
@@ -108,7 +108,7 @@ int ARTnSaddleSearch::run() {
                       result_push);
     }
 
-    double force_thr = params.artn_options.force_threshold;
+    double force_thr = params.artn_options().force_threshold;
     int result_force =
         res.get_set_param_fn()("forc_thr", 0, &size0, &force_thr);
     if (result_force != 0) {
@@ -121,7 +121,7 @@ int ARTnSaddleSearch::run() {
     // an empty eOn config leaves pARTn reading no file at all. If the user
     // does set a path, surface a missing file before setup_artn runs so the
     // failure names the file instead of hiding inside pARTn's ERR_FILE code.
-    const std::string &filin = params.artn_options.filin;
+    const std::string &filin = params.artn_options().filin;
     if (!filin.empty()) {
       if (!std::filesystem::exists(filin)) {
         QUILL_LOG_ERROR(log, "artn_options.filin '{}' does not exist", filin);
@@ -150,8 +150,8 @@ int ARTnSaddleSearch::run() {
     // the displacement direction via push_init); >0 = push that many steps.
     // -1 sentinel means "leave pARTn's own default in place", so we only
     // call set_param when the user asked for a specific value.
-    if (params.artn_options.ninit >= 0) {
-      int ninit = params.artn_options.ninit;
+    if (params.artn_options().ninit >= 0) {
+      int ninit = params.artn_options().ninit;
       int result_ninit = res.get_set_param_fn()("ninit", 0, &size0, &ninit);
       if (result_ninit != 0) {
         QUILL_LOG_ERROR(log, "set_param(ninit) failed with code {}",
@@ -162,10 +162,10 @@ int ARTnSaddleSearch::run() {
     // nperp_limitation: controls perp-relax steps per Lanczos cycle.
     // pARTn defaults are tuned for exploration from minimum. For refinement
     // near a saddle, -1 (unlimited) or 20-30 (for ML potentials) is better.
-    if (params.artn_options.nperp_limitation != "default") {
+    if (params.artn_options().nperp_limitation != "default") {
       // Parse comma-separated integers into a vector
       std::vector<int> nperp_vals;
-      std::istringstream ss(params.artn_options.nperp_limitation);
+      std::istringstream ss(params.artn_options().nperp_limitation);
       std::string token;
       while (std::getline(ss, token, ',')) {
         nperp_vals.push_back(std::stoi(token));
@@ -183,14 +183,14 @@ int ARTnSaddleSearch::run() {
 
     // lanczos_min_size: minimum Lanczos iterations before convergence check.
     // Default 3 for exploration; 1 for refinement near a saddle.
-    if (params.artn_options.lanczos_min_size >= 0) {
-      int lms = params.artn_options.lanczos_min_size;
+    if (params.artn_options().lanczos_min_size >= 0) {
+      int lms = params.artn_options().lanczos_min_size;
       res.get_set_param_fn()("lanczos_min_size", 0, &size0, &lms);
     }
 
     // nsmooth: number of smooth interpolation steps. 0 disables.
-    if (params.artn_options.nsmooth >= 0) {
-      int ns = params.artn_options.nsmooth;
+    if (params.artn_options().nsmooth >= 0) {
+      int ns = params.artn_options().nsmooth;
       res.get_set_param_fn()("nsmooth", 0, &size0, &ns);
     }
 
@@ -200,8 +200,8 @@ int ARTnSaddleSearch::run() {
     // clusters where the eigenvalue can flip positive transiently before
     // the saddle direction stabilizes. eOn's default of 3 (Parameters.h)
     // gives Lanczos a few random-restart chances before giving up.
-    if (params.artn_options.nnewchance >= 0) {
-      int nnc = params.artn_options.nnewchance;
+    if (params.artn_options().nnewchance >= 0) {
+      int nnc = params.artn_options().nnewchance;
       res.get_set_param_fn()("nnewchance", 0, &size0, &nnc);
     }
 
@@ -248,7 +248,7 @@ int ARTnSaddleSearch::run() {
     for (int j = 0; j < 3; j++)
       box_f[j * 3 + i] = cell(i, j);
 
-  int maxIter = params.artn_options.max_iterations;
+  int maxIter = params.artn_options().max_iterations;
 
   // while-loop (not for) so `iteration` reports the index of the converged
   // step rather than one past it: on convergence during step k, we break

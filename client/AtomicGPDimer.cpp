@@ -67,7 +67,7 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
   init_middle_point.R = R_init;
   init_observations.clear();
   problem_setup.activateFrozenAtoms(
-      R_init, params.gpr_dimer_options.active_radius, atoms_config);
+      R_init, params.gpr_dimer_options().active_radius, atoms_config);
   AtomMatrix freeOrient(matterCenter->numberOfFreeAtoms(), 3);
   int j = 0;
   for (int i = 0; i < matterCenter->numberOfAtoms(); i++) {
