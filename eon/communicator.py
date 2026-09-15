@@ -322,6 +322,13 @@ class Communicator:
            Example usage:
                for jobpath in self.make_bundles(data, invariants):
                    do_stuff()'''
+        from eon import fileio as io
+
+        pot_invariants = io.load_potfiles(getattr(self.config, "path_pot", "") or "")
+        merged = dict(pot_invariants)
+        if invariants:
+            merged.update(invariants)
+        invariants = merged
 
         # Split jobpaths in to lists of size self.bundle_size.
         chunks = [ data[i:i+self.bundle_size] for i in range(0, len(data), self.bundle_size) ]
@@ -702,8 +709,7 @@ class Script(Communicator):
             jobid = int(output.strip())
             self.jobids[jobid] = eon_jobid
 
-            # XXX: It is probably slow to save after EVERY job submission,
-            #      but is slow better than losing jobs?
+            # Persist after each submit so a crash does not lose job ids.
             self.save_jobids()
 
     def cancel_state(self, state):
