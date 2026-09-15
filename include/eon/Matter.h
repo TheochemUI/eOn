@@ -13,8 +13,8 @@
 #include "ConFileIO.h"
 #include "Eigen.h"
 #include "EonLogger.h"
-#include "Parameters.h"
 #include "Potential.h"
+#include "StructureComparisonOptions.h"
 #include "SurrogatePotential.h"
 #include <array>
 #include <cmath>
@@ -26,6 +26,7 @@
 // This is a forward declaration of BondBoost to avoid a circular dependency.
 namespace eonc {
 class BondBoost;
+class Parameters;
 
 // Position / difference MIC conventions (issue #176). Legacy matches historical
 // applyPeriodicBoundary (fmod to [0,1) fractional). MinimumImage matches the
@@ -92,30 +93,7 @@ inline VectorXd applyV(const VectorXd &diffVector, const Matrix3d &cell,
 class Matter {
 public:
   ~Matter() = default;
-  Matter(std::shared_ptr<Potential> pot, const Parameters &params)
-      : potential{pot},
-        // Isolated molecular QM (NWChem/ORCA) must start with PBC off (#188).
-        usePeriodicBoundaries{!(pot && pot->requiresIsolatedMoleculeLayout())},
-        pbcConvention{PbcConvention::Legacy},
-        recomputePotential{true},
-        forceCalls{0},
-        removeNetForce{params.main_options.removeNetForce},
-        structComp{params.structure_comparison_options},
-        parameters{&params},
-        nAtoms{0},
-        positions{MatrixXd::Zero(0, 3)},
-        velocities{MatrixXd::Zero(0, 3)},
-        forces{MatrixXd::Zero(0, 3)},
-        biasForces{MatrixXd::Zero(0, 3)},
-        biasPotential{nullptr},
-        masses{Eigen::VectorXd::Zero(0)},
-        atomicNrs{Eigen::VectorXi::Zero(0)},
-        isFixed{AtomMatrix::Zero(0, 3)},
-        cell{Matrix3d::Zero()},
-        cellInverse{Matrix3d::Zero()},
-        energyVariance{0.0},
-        potentialEnergy{0.0} {} // the number of atoms shall be set later
-  // using resize()
+  Matter(std::shared_ptr<Potential> pot, const Parameters &params);
   Matter(const Matter &matter);                  // create a copy of matter
   const Matter &operator=(const Matter &matter); // copy the matter object
   /// Move: transfers retained movie ConFrames (move-only). User copy
@@ -264,9 +242,7 @@ public:
   double maxForce(void) const;
 
   /// Parameters.main_options.writeConForces for this Matter, if bound.
-  [[nodiscard]] bool getWriteConForces() const noexcept {
-    return parameters != nullptr && parameters->main_options.writeConForces;
-  }
+  [[nodiscard]] bool getWriteConForces() const noexcept;
 
   // I/O delegates to eonc::io free functions (IoStatus for bindings).
   [[nodiscard]] io::IoStatus writeTibble(std::string filename) {
@@ -378,7 +354,7 @@ private:
 
   // Narrowed from Parameters: only fields Matter actually reads
   bool removeNetForce{true};
-  Parameters::structure_comparison_options_t structComp;
+  StructureComparisonOptions structComp;
   // Full Parameters pointer retained solely for relax() delegation
   const Parameters *parameters;
   long nAtoms;

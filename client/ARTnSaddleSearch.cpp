@@ -11,6 +11,9 @@
  */
 #include "eon/ARTnSaddleSearch.h"
 #include "eon/Eigen.h"
+#ifdef WITH_ARTN
+#include "eon/libs/ARTn/ARTnResource.h"
+#endif
 
 #include <cstdlib>
 #include <filesystem>

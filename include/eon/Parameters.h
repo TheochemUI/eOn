@@ -12,14 +12,12 @@
 #pragma once
 
 #include "BaseStructures.h"
+#include "StructureComparisonOptions.h"
+#include <cstdint>
 #include <cstdio>
 #include <limits>
 #include <string>
 #include <vector>
-
-#ifdef EONMPI
-#include "mpi.h"
-#endif
 
 /** Contains all runtime parameters and results. No functionality just
  * bookkeeping.*/
@@ -78,9 +76,8 @@ public:
     std::string potentialsPath{
         ""}; // colon-separated dirs for Fortran potential .so files
     int MPIPotentialRank{-1};
-#ifdef EONMPI
-    MPI_Comm MPIClientComm;
-#endif
+    /// Opaque MPI_Comm bits. Read/write with ParametersMpi.h in MPI TUs.
+    std::uintptr_t MPIClientComm{0};
   } potential_options;
 
   // [AMS] and [AMS_IO] //
@@ -187,14 +184,8 @@ public:
   } rgpot_options;
 
   // [Structure Comparison] //
-  struct structure_comparison_options_t {
-    double distance_difference{0.1};
-    double neighbor_cutoff{3.3};
-    bool check_rotation{false};
-    bool indistinguishable_atoms{true};
-    double energy_difference{0.01};
-    bool remove_translation{true};
-  } structure_comparison_options;
+  using structure_comparison_options_t = StructureComparisonOptions;
+  StructureComparisonOptions structure_comparison_options;
 
   // [Process Search] //
   struct process_search_options_t {

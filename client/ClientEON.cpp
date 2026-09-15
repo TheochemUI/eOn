@@ -39,6 +39,7 @@
 #include <filesystem>
 
 #ifdef EONMPI
+#include "eon/ParametersMpi.h"
 #include <Python.h>
 #include <cstdlib>
 #include <fcntl.h>
@@ -313,7 +314,7 @@ static int eonClientMain(int argc, char **argv) {
       MPI_Comm new_comm;
       MPI_Comm_create(MPI_COMM_WORLD, new_group, &new_comm);
       if (new_comm != MPI_COMM_NULL) {
-        parameters.potential_options.MPIClientComm = new_comm;
+        eonc::setMpiClientComm(parameters, new_comm);
       }
       QUILL_LOG_INFO(logger, "creating group with ranks: {}", r);
     }

@@ -36,6 +36,7 @@
 
 #ifdef EONMPI
 #define LAMMPS_LIB_MPI
+#include "eon/ParametersMpi.h"
 #endif
 
 LAMMPSPot::LAMMPSPot(const eonc::Parameters &p)
@@ -43,7 +44,7 @@ LAMMPSPot::LAMMPSPot(const eonc::Parameters &p)
       lammpsThr{p.potential_options.LAMMPSThreads}
 #ifdef EONMPI
       ,
-      mpiComm{p.potential_options.MPIClientComm}
+      mpiComm{eonc::getMpiClientComm(p)}
 #endif
 {
   // Fail fast if LAMMPS library not available
