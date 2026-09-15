@@ -116,6 +116,12 @@ public:
     return false;
   }
 
+  /// Independent instance that does not reload from disk. nullptr means
+  /// the caller should use makePotential().
+  [[nodiscard]] virtual std::shared_ptr<Potential> clonePotential() const {
+    return nullptr;
+  }
+
   /// Whether this potential supports batched evaluation of N systems in a
   /// single call. When true, callers (NEB, Dimer) should use forceBatch()
   /// instead of N individual force() calls for better GPU utilization.

@@ -107,6 +107,8 @@ public:
    */
   ~MetatomicPotential() override = default;
 
+  [[nodiscard]] std::shared_ptr<Potential> clonePotential() const override;
+
   /**
    * @brief Calculates the energy and forces for a given atomic configuration.
    *
@@ -151,6 +153,8 @@ public:
                   const double *const *boxes) override;
 
 private:
+  struct CloneTag {};
+  MetatomicPotential(const MetatomicPotential &src, CloneTag);
   void forceBatchNative(long nSystems, long nAtoms,
                         const double *const *positions,
                         const int *const *atomicNrs, double *const *forces,
