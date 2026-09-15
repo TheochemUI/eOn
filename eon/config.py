@@ -1,10 +1,12 @@
 import ast
 import configparser
 import numpy
+import os
 import os.path
 import sys
 import string
 import yaml
+from pathlib import Path
 
 
 class ConfigSection:
@@ -376,6 +378,21 @@ class ConfigClass:
         self.mpi_poll_period = parser.getfloat('Potential', 'mpi_poll_period')
 
         del parser
+
+    def init_from_cli(self, args):
+        """Load config from the first positional path, or config.ini in CWD.
+
+        Does not rewrite sys.argv. If path_root is still '.', it becomes
+        the directory that contains the given config file.
+        """
+        if args:
+            cfg = Path(args[0])
+            self.init(str(cfg))
+            if str(self.path_root).strip() == ".":
+                self.path_root = str(cfg.resolve().parent)
+                os.chdir(self.path_root)
+        else:
+            self.init()
 
 # Process-edge default instance for CLI / ``python -m eon`` only.
 # Library code must take ConfigClass via parameter injection (see epic eOn-gmhl).
