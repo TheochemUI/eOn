@@ -12,7 +12,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # TODO(rg): Handle the windows-2022 later, issues linking fmt
         # TODO(rg): Handle the aarch64 macos later too
         # TODO(rg): Macos 12 seems to hang a lot, macos-12
         os: [ubuntu-22.04, windows-2022]
@@ -24,7 +23,9 @@ jobs:
         with:
           cache: true
           cache-write: true
-          activate-environment: true
+          # dev-xtb activation prepends PATH; setup-pixi refuses that on
+          # Windows. Steps use `pixi run`, so GITHUB_ENV activate is unused.
+          activate-environment: false
           environments: >-
             dev-xtb
       - name: Install cbindgen
