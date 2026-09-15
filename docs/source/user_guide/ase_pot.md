@@ -66,6 +66,11 @@ eOn imports this script at startup and calls two functions:
 - `ase_calc()` -- returns an initialized ASE calculator object.
 - `_calculate(R, atomicNrs, box, calc)` -- evaluates energy and forces.
 
+An optional `batch_calculate(Rs, atomicNrs, boxes, calc)` hook is the
+only thing that sets `supportsBatchEvaluation()`. Native MLIP batching
+still belongs in rgpot / metatomic. Without the hook, NEB and dimer use
+the default sequential `force()` loop.
+
 Edit `ase_calc()`. `_calculate` is the fixed eOn-ASE bridge.
 
 ### Template

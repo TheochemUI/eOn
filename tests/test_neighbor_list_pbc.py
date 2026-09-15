@@ -20,6 +20,15 @@ def _pair_across_x(box=10.0):
 def test_structure_defaults_all_periodic():
     p = Structure(1)
     assert p.periodic.tolist() == [True, True, True]
+    assert p.pbc.tolist() == [True, True, True]
+
+
+def test_pbc_alias_drives_neighbor_list():
+    p = _pair_across_x()
+    p.pbc = np.array([False, True, True])
+    nl = neighbor_list(p, cutoff=0.5)
+    assert nl[0] == []
+    assert nl[1] == []
 
 
 def test_wrap_pair_is_neighbor_when_periodic():
