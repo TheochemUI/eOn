@@ -17,8 +17,8 @@
 #include "eon/Matter.h"
 #include "eon/MonteCarlo.h"
 #include "eon/Parameters.h"
-#include "eon/Potential.h"
 #include "eon/PotRegistry.h"
+#include "eon/Potential.h"
 
 using eonc::DimerRotationBackend;
 using eonc::ImprovedDimer;
