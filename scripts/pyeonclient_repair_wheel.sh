@@ -24,6 +24,11 @@ is_system_lib() {
     libgfortran.so*|libquadmath.so*) return 0 ;;
     libz.so*|libbz2.so*|liblzma.so*|libzstd.so*) return 0 ;;
     libpython*.so*) return 0 ;;
+    # Pip-provided extras. Vendoring torch/CUDA inflates the wheel and
+    # still misses libtorch.so (only libtorch_cpu.so is on disk).
+    libtorch*.so*|libc10*.so*|libshm.so*) return 0 ;;
+    libmetatensor*.so*|libmetatomic*.so*) return 0 ;;
+    libcudart*.so*|libcupti*.so*|libcublas*.so*|libcudnn*.so*|libnvJitLink*.so*|libnvrtc*.so*) return 0 ;;
     *) return 1 ;;
   esac
 }
