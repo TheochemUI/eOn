@@ -5,19 +5,18 @@ set -euo pipefail
 EXTRA_LIBS="$(
   python -c '
 import pathlib, sys
+# Only the active env. Walking sys.path also hits the manylinux image
+# site-packages (torch-2.3 .. 2.14) and dlopens the wrong ABI.
+root = pathlib.Path(sys.prefix)
 dirs = []
-for root in sys.path:
-    r = pathlib.Path(root)
-    if not r.is_dir():
-        continue
-    for pat in (
-        "libtorch.so*",
-        "libmetatensor*.so*",
-        "libmetatomic*.so*",
-        "libc10.so*",
-    ):
-        for so in r.rglob(pat):
-            dirs.append(str(so.resolve().parent))
+for pat in (
+    "libtorch.so*",
+    "libmetatensor*.so*",
+    "libmetatomic*.so*",
+    "libc10.so*",
+):
+    for so in root.rglob(pat):
+        dirs.append(str(so.resolve().parent))
 print(":".join(dict.fromkeys(dirs)))
 '
 )"
