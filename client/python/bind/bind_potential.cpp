@@ -400,7 +400,8 @@ void bind_potential(nb::module_ &m) {
           [](eonc::Potential &self,
              nb::ndarray<nb::numpy, const double, nb::c_contig, nb::device::cpu>
                  pos,
-             nb::ndarray<nb::numpy, const int64_t, nb::c_contig, nb::device::cpu>
+             nb::ndarray<nb::numpy, const int64_t, nb::c_contig,
+                         nb::device::cpu>
                  z,
              nb::ndarray<nb::numpy, const double, nb::c_contig, nb::device::cpu>
                  box) {
