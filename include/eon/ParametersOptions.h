@@ -543,7 +543,7 @@ struct neb_options_t {
   } initialization;
 
   struct endpoint_options_t {
-    bool minimize{true};
+    bool minimize{false};
     bool use_path_file{false};
   } endpoints;
 
