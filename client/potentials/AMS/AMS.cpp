@@ -14,11 +14,13 @@
 #include <algorithm>
 #include <cctype>
 #include <cstddef>
+#include <cstdint>
 #include <format>
 #include <fstream>
 #include <iostream>
 #include <iterator>
 #include <ranges>
+#include <readcon-core.hpp>
 #include <stdexcept>
 #include <vector>
 
@@ -84,41 +86,12 @@ namespace {
 // The driver script, written afresh before every AMS invocation.
 constexpr const char *kRunScript = "run_AMS.sh";
 
-const char *elementArray[] = {
-    "Unknown", "H",  "He", "Li", "Be", "B",  "C",  "N",  "O",  "F",  "Ne", "Na",
-    "Mg",      "Al", "Si", "P",  "S",  "Cl", "Ar", "K",  "Ca", "Sc", "Ti", "V",
-    "Cr",      "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br",
-    "Kr",      "Rb", "Sr", "Y",  "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag",
-    "Cd",      "In", "Sn", "Sb", "Te", "I",  "Xe", "Cs", "Ba", "La", "Ce", "Pr",
-    "Nd",      "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu",
-    "Hf",      "Ta", "W",  "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi",
-    "Po",      "At", "Rn", "Fr", "Ra", "Ac", "Th", "Pa", "U",  NULL};
-
-// guess the atom type from the atomic mass,
-std::string mass2atom(double atomicmass) {
-  return elementArray[int(atomicmass + .5)];
-}
-
-int symbol2atomicNumber(char const *symbol) {
-  int i = 0;
-
-  while (elementArray[i] != NULL) {
-    if (strcmp(symbol, elementArray[i]) == 0) {
-      return i;
-    }
-    i++;
-  }
-  // invalid symbol
-  return -1;
-}
-
-char const *atomicNumber2symbol(int n) {
-  // The trailing NULL terminates the table, so it bounds the valid range.
-  if (n < 0 || static_cast<std::size_t>(n) + 1 >= std::size(elementArray)) {
+std::string symbol_for_z(int n) {
+  if (n <= 0) {
     throw std::runtime_error(
         std::format("AMS knows no element symbol for atomic number {}", n));
   }
-  return elementArray[n];
+  return readcon::z_to_symbol(static_cast<uint64_t>(n));
 }
 } // namespace
 
@@ -459,7 +432,7 @@ void AMS::passToSystem(long N, const double *R, const int *atomicNrs,
   out << " Atoms\n";
   for (long i = 0; i < N; i++) {
     out << std::format("  {}\t{:.19f}\t{:.19f}\t{:.19f}\n",
-                       atomicNumber2symbol(atomicNrs[i]), R[i * 3 + 0],
+                       symbol_for_z(atomicNrs[i]), R[i * 3 + 0],
                        R[i * 3 + 1], R[i * 3 + 2]);
   }
   out << " End\n";
