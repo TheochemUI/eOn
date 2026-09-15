@@ -208,9 +208,18 @@ jobs:
             bash scripts/pyeonclient_repair_wheel.sh {dest_dir}/pyeonclient-*.whl'
           CIBW_TEST_REQUIRES: ${{ matrix.variant == 'metatomic' && 'pytest numpy torch>=2.7 metatensor metatensor-torch metatomic-torch vesin' || 'pytest numpy' }}
           CIBW_TEST_COMMAND: |
-            TORCH_LIB=$(python -c 'import pathlib, torch; print(pathlib.Path(torch.__file__).resolve().parent / "lib")' 2>/dev/null || true)
-            if [ -n "$TORCH_LIB" ]; then
-              export LD_LIBRARY_PATH="${TORCH_LIB}:${LD_LIBRARY_PATH:-}"
+            EXTRA_LIBS=$(python -c 'import importlib, pathlib
+dirs=[]
+for n in ("torch","metatensor","metatensor.torch","metatomic.torch"):
+    try:
+        m=importlib.import_module(n)
+        p=pathlib.Path(m.__file__).resolve().parent
+        dirs += [str(p), str(p/"lib"), str(p.parent)]
+    except Exception:
+        pass
+print(":".join(dict.fromkeys(d for d in dirs if pathlib.Path(d).is_dir())))' 2>/dev/null || true)
+            if [ -n "$EXTRA_LIBS" ]; then
+              export LD_LIBRARY_PATH="${EXTRA_LIBS}:${LD_LIBRARY_PATH:-}"
             fi
             python -c "import pyeonclient as p, pathlib, subprocess; print(p.__version__, 'mta', p.built_with_metatomic(), 'rgpot', p.built_with_rgpot()); assert p.built_with_rgpot(); core=next(pathlib.Path(p.__file__).parent.glob('_core*.so')); out=subprocess.check_output(['readelf','-d',str(core)],text=True); assert 'libtorch' not in out or p.built_with_metatomic(); print('NEEDED_OK'); assert hasattr(p.NudgedElasticBand, 'path_frames')"
 
