@@ -15,6 +15,9 @@
 #include "eon/SteepestDescent.h"
 #include "eon/SafeMath.h"
 
+
+namespace eonc {
+
 int SteepestDescent::step(double a_maxMove) {
   Eigen::VectorXd r = m_objf->getPositions();
   Eigen::VectorXd f = -m_objf->getGradient();
@@ -50,3 +53,5 @@ int SteepestDescent::run(size_t a_maxIteration, double a_maxMove) {
   }
   return m_objf->isConverged() ? 1 : 0;
 }
+
+} // namespace eonc

@@ -14,6 +14,9 @@
 
 #include <cmath>
 
+
+namespace eonc {
+
 Eigen::VectorXd ConjugateGradients::getStep() {
   double a = std::fabs(m_force.dot(m_forceOld));
   double b = m_forceOld.squaredNorm();
@@ -197,3 +200,5 @@ int ConjugateGradients::run(size_t a_maxIterations, double a_maxMove) {
   }
   return m_objf->isConverged() ? 1 : 0;
 }
+
+} // namespace eonc

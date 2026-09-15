@@ -59,4 +59,3 @@ private:
 
 } // namespace eonc
 
-using eonc::LBFGS;

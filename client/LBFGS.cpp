@@ -16,6 +16,9 @@
 
 #include <cmath>
 
+
+namespace eonc {
+
 Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
   double H0 = m_optConfig.opts.lbfgs.inverse_curvature;
   Eigen::VectorXd r = m_objf->getPositions();
@@ -174,3 +177,5 @@ int LBFGS::run(size_t a_maxSteps, double a_maxMove) {
   }
   return m_objf->isConverged() ? 1 : 0;
 }
+
+} // namespace eonc
