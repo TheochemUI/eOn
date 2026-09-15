@@ -7,6 +7,7 @@ import io
 import os
 import sys
 import pickle as pickle
+from pathlib import Path
 from copy import copy
 import numpy
 
@@ -164,14 +165,13 @@ class MinModeExplorer(Explorer):
             logger.info("Cancelled %i workunits from state %i",
                         num_cancelled, self.state.number)
             if self.config.kdb_on:
-                marker = os.path.join(self.state.path, "kdb_inserted")
-                if not os.path.isfile(marker):
+                marker = Path(self.state.path) / "kdb_inserted"
+                if not marker.is_file():
                     logger.info("Adding relevant processes to kinetic database")
                     for process_id in self.state.get_process_ids():
                         output = kdb.insert(self.state, process_id, self.config)
                         logger.debug("kdb insert: %s", output)
-                    with open(marker, "w"):
-                        pass
+                    marker.write_text("")
 
     def generate_displacement(self):
         if self.config.recycling_on and self.state.number != 0:

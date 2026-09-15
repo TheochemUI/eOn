@@ -13,6 +13,7 @@ from io import StringIO
 import logging
 import numpy
 import os
+from pathlib import Path
 
 import pickle as pickle
 import readcon
@@ -29,15 +30,17 @@ logger = logging.getLogger('io')
 def remove_tree_and_empty_parents(path):
     """Remove *path* and any empty directories that contained it.
 
-    Reset paths recreate an empty *path* then call :func:`os.removedirs`
-    so empty parents are pruned. ``OSError`` is ignored when a parent is
-    not empty.
+    Recreates an empty *path* then unlinks it and walks up empty
+    parents. ``OSError`` is ignored when a parent is not empty.
     """
-    if os.path.isdir(path):
-        shutil.rmtree(path)
-    os.makedirs(path, exist_ok=True)
+    p = Path(path)
+    if p.is_dir():
+        shutil.rmtree(p)
+    p.mkdir(parents=True, exist_ok=True)
     try:
-        os.removedirs(path)
+        p.rmdir()
+        for parent in p.parents:
+            parent.rmdir()
     except OSError:
         pass
 
@@ -48,7 +51,7 @@ def prng_state_path(config):
     ConfigClass.init restores from this file under path_root, so every
     writer and reset must use the same location rather than the process CWD.
     '''
-    return os.path.join(config.path_root, 'prng.pkl')
+    return str(Path(config.path_root) / "prng.pkl")
 
 
 def save_prng_state(path):
@@ -598,15 +601,15 @@ def load_potfiles(pot_dir):
     a same-named entry in the process CWD.
     """
     ret = {}
-    if not pot_dir or not os.path.isdir(pot_dir):
+    if not pot_dir:
         return ret
-    for name in os.listdir(pot_dir):
-        path = os.path.join(pot_dir, name)
-        if os.path.isdir(path):
+    root = Path(pot_dir)
+    if not root.is_dir():
+        return ret
+    for path in root.iterdir():
+        if path.is_dir():
             continue
-        with open(path, "r") as fh:
-            data = StringIO(fh.read())
-        ret[name] = (data, os.stat(path).st_mode)
+        ret[path.name] = (StringIO(path.read_text()), path.stat().st_mode)
     return ret
 
 class TableException(Exception):
