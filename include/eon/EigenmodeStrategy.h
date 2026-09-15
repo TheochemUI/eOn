@@ -117,4 +117,3 @@ inline long eigenmodeTotalIterations(EigenmodeStrategy &s) {
 
 } // namespace eonc
 
-using eonc::EigenmodeStrategy;

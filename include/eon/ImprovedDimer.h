@@ -66,4 +66,3 @@ public:
 
 } // namespace eonc
 
-using eonc::ImprovedDimer;

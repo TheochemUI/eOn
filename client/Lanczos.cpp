@@ -30,6 +30,9 @@
 #include <cmath>
 #include <memory>
 
+
+namespace eonc {
+
 Lanczos::Lanczos(std::shared_ptr<Matter> matter, const Parameters &params,
                  std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
@@ -177,3 +180,5 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
 double Lanczos::getEigenvalue() { return lowestEw; }
 
 AtomMatrix Lanczos::getEigenvector() { return lowestEv; }
+
+} // namespace eonc

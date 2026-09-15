@@ -24,6 +24,9 @@
 #include <cmath>
 #include <limits>
 
+
+namespace eonc {
+
 LORRotation::LORRotation(std::shared_ptr<Matter> matter,
                          const Parameters &params,
                          std::shared_ptr<Potential> pot)
@@ -398,3 +401,5 @@ void LORRotation::compute(std::shared_ptr<Matter> matter,
                  statsRotations, totalForceCalls, eigenvalue,
                  convergedOnResidual);
 }
+
+} // namespace eonc

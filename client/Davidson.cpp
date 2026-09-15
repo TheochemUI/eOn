@@ -30,6 +30,9 @@
 #include <memory>
 #include <vector>
 
+
+namespace eonc {
+
 Davidson::Davidson(std::shared_ptr<Matter> matter, const Parameters &params,
                    std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
@@ -198,3 +201,5 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
 double Davidson::getEigenvalue() { return lowestEw; }
 
 AtomMatrix Davidson::getEigenvector() { return lowestEv; }
+
+} // namespace eonc

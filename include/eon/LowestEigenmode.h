@@ -48,4 +48,3 @@ public:
 
 } // namespace eonc
 
-using eonc::LowestEigenmode;
