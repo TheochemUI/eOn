@@ -193,7 +193,9 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
     // Endpoints (i=0, i=numImages+1) keep the shared pot -- they are only
     // evaluated once during initialization and never in parallel.
     if (perImagePotentials_ && i > 0 && i <= numImages) {
-      path[i]->setPotential(eonc::helpers::makePotential(params));
+      auto cloned = pot->clonePotential();
+      path[i]->setPotential(cloned ? cloned
+                                   : eonc::helpers::makePotential(params));
     }
 
     tangent[i] = std::make_shared<AtomMatrix>();

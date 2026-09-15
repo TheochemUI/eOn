@@ -301,6 +301,32 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
   fpeh.restore_fpe();
 }
 
+MetatomicPotential::MetatomicPotential(const MetatomicPotential &src, CloneTag)
+    : Potential(PotType::METATOMIC),
+      m_metatomic_opts{src.m_metatomic_opts},
+      model_(src.model_.clone(/*inplace=*/false)),
+      capabilities_{src.capabilities_},
+      nl_requests_{src.nl_requests_},
+      evaluations_options_{src.evaluations_options_},
+      dtype_{src.dtype_},
+      device_type_{src.device_type_},
+      device_{src.device_},
+      check_consistency_{src.check_consistency_},
+      energy_key_{src.energy_key_},
+      energy_uncertainty_key_{src.energy_uncertainty_key_},
+      nc_forces_key_{src.nc_forces_key_},
+      non_conservative_{src.non_conservative_},
+      random_rotation_{src.random_rotation_},
+      n_symmetry_rotations_{src.n_symmetry_rotations_},
+      uncertainty_threshold_{src.uncertainty_threshold_} {
+  QUILL_LOG_INFO(m_log, "[MetatomicPotential] Cloned loaded model (no disk)");
+}
+
+std::shared_ptr<Potential> MetatomicPotential::clonePotential() const {
+  return std::shared_ptr<Potential>(
+      new MetatomicPotential(*this, CloneTag{}));
+}
+
 // --- helpers for random / symmetry rotations (#287, #292) ---
 
 namespace {
