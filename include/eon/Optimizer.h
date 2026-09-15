@@ -52,10 +52,12 @@ struct OptimizerConfig {
   Parameters::optimizer_options_t opts;
   double finiteDifference{0.01};
   bool bowlBreakout{false};
+  PotType potential{PotType::LJ};
 
   static OptimizerConfig fromParams(const Parameters &p) {
     return {p.optimizer_options, p.main_options.finiteDifference,
-            p.saddle_search_options.confine_positive.bowl_breakout};
+            p.saddle_search_options.confine_positive.bowl_breakout,
+            p.potential_options.potential};
   }
 };
 

@@ -33,6 +33,7 @@ public:
     long ci_stability_count;
     double angle_tol;
     double force_tolerance;
+    bool restore_unhelpful;
   };
 
   static Config fromParams(const Parameters &params);
@@ -50,6 +51,14 @@ public:
   };
 
   MMFResult run(eonc::NudgedElasticBand &neb, double convForce);
+
+  // Help is the walked image's raw force, not band convergenceForce().
+  // After a downhill dimer step maxEnergyImage can hop; the band CI
+  // force is then a neighbor and is the wrong score for restore.
+  static bool walkHelped(double walkedForce, double convForce,
+                         int mmfStatus) {
+    return walkedForce < convForce && mmfStatus != -2;
+  }
 
   void resetStability() { ciStabilityCounter_ = 0; }
   void updateStability(long climbingImage);

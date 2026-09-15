@@ -1,0 +1,1 @@
+``[Xtsci] qn_step`` and ``precon`` are first-class (Cap'n Proto, INI, JSON, YAML, Pydantic). They drive ``xts_solver_set_qn_step`` and the host pair Hessian. Native ``[LBFGS]`` is unchanged; ``lbfgs_step`` / ``lbfgs_precon`` remain a fallback when the Xtsci fields are left at their defaults.

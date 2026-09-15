@@ -43,6 +43,84 @@ CATALOG = {
       "yaml_section": "Optimizer"
     },
     {
+      "default": "reset",
+      "flat_key": "lbfgs_curvature",
+      "ssot_path": "Optimizer.LBFGS.curvature",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": False,
+      "flat_key": "lbfgs_project_rigid",
+      "ssot_path": "Optimizer.LBFGS.project_rigid",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": "standard",
+      "flat_key": "lbfgs_secant",
+      "ssot_path": "Optimizer.LBFGS.secant",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": "none",
+      "flat_key": "lbfgs_precon",
+      "ssot_path": "Optimizer.LBFGS.precon",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": "sy_yy",
+      "flat_key": "lbfgs_h0",
+      "ssot_path": "Optimizer.LBFGS.h0",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": "none",
+      "flat_key": "lbfgs_accept",
+      "ssot_path": "Optimizer.LBFGS.accept",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": 0,
+      "flat_key": "lbfgs_extra_updates",
+      "ssot_path": "Optimizer.LBFGS.extra_updates",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": 1e-06,
+      "flat_key": "lbfgs_cautious_eps",
+      "ssot_path": "Optimizer.LBFGS.cautious_eps",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": 0.01,
+      "flat_key": "lbfgs_cautious_alpha",
+      "ssot_path": "Optimizer.LBFGS.cautious_alpha",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": 3.0,
+      "flat_key": "lbfgs_precon_A",
+      "ssot_path": "Optimizer.LBFGS.precon_A",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": 1.0,
+      "flat_key": "lbfgs_precon_mu",
+      "ssot_path": "Optimizer.LBFGS.precon_mu",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": 0.0,
+      "flat_key": "lbfgs_precon_rcut",
+      "ssot_path": "Optimizer.LBFGS.precon_rcut",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": "lbfgs",
+      "flat_key": "lbfgs_step",
+      "ssot_path": "Optimizer.LBFGS.step",
+      "yaml_section": "Optimizer"
+    },
+    {
       "default": False,
       "flat_key": "cg_no_overshooting",
       "ssot_path": "Optimizer.CG.no_overshooting",
@@ -94,6 +172,42 @@ CATALOG = {
       "default": False,
       "flat_key": "sd_two_point",
       "ssot_path": "Optimizer.SD.two_point",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": "lbfgs",
+      "flat_key": "xtsci_method",
+      "ssot_path": "Optimizer.Xtsci.method",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": "lbfgs",
+      "flat_key": "xtsci_qn_step",
+      "ssot_path": "Optimizer.Xtsci.qn_step",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": "none",
+      "flat_key": "xtsci_precon",
+      "ssot_path": "Optimizer.Xtsci.precon",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": "none",
+      "flat_key": "xtsci_accept",
+      "ssot_path": "Optimizer.Xtsci.accept",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": False,
+      "flat_key": "xtsci_highs",
+      "ssot_path": "Optimizer.Xtsci.highs",
+      "yaml_section": "Optimizer"
+    },
+    {
+      "default": "euclidean",
+      "flat_key": "xtsci_manifold",
+      "ssot_path": "Optimizer.Xtsci.manifold",
       "yaml_section": "Optimizer"
     }
   ],
@@ -277,6 +391,14 @@ CATALOG = {
           "ordinal": 10,
           "snake": "sd",
           "type": "OptimizerSdOptions"
+        },
+        {
+          "capnp": "xtsci",
+          "default": None,
+          "nested": True,
+          "ordinal": 11,
+          "snake": "xtsci",
+          "type": "OptimizerXtsciOptions"
         }
       ],
       "struct": "OptimizerOptions"
@@ -371,6 +493,97 @@ CATALOG = {
           "ordinal": 5,
           "snake": "distance_reset",
           "type": "Bool"
+        },
+        {
+          "capnp": "curvature",
+          "default": "reset",
+          "ordinal": 6,
+          "snake": "curvature",
+          "type": "Text"
+        },
+        {
+          "capnp": "projectRigid",
+          "default": False,
+          "ordinal": 7,
+          "snake": "project_rigid",
+          "type": "Bool"
+        },
+        {
+          "capnp": "secant",
+          "default": "standard",
+          "ordinal": 8,
+          "snake": "secant",
+          "type": "Text"
+        },
+        {
+          "capnp": "precon",
+          "default": "none",
+          "ordinal": 9,
+          "snake": "precon",
+          "type": "Text"
+        },
+        {
+          "capnp": "h0",
+          "default": "sy_yy",
+          "ordinal": 10,
+          "snake": "h0",
+          "type": "Text"
+        },
+        {
+          "capnp": "accept",
+          "default": "none",
+          "ordinal": 11,
+          "snake": "accept",
+          "type": "Text"
+        },
+        {
+          "capnp": "extraUpdates",
+          "default": 0,
+          "ordinal": 12,
+          "snake": "extra_updates",
+          "type": "Int64"
+        },
+        {
+          "capnp": "cautiousEps",
+          "default": 1e-06,
+          "ordinal": 13,
+          "snake": "cautious_eps",
+          "type": "Float64"
+        },
+        {
+          "capnp": "cautiousAlpha",
+          "default": 0.01,
+          "ordinal": 14,
+          "snake": "cautious_alpha",
+          "type": "Float64"
+        },
+        {
+          "capnp": "preconA",
+          "default": 3.0,
+          "ordinal": 15,
+          "snake": "precon_A",
+          "type": "Float64"
+        },
+        {
+          "capnp": "preconMu",
+          "default": 1.0,
+          "ordinal": 16,
+          "snake": "precon_mu",
+          "type": "Float64"
+        },
+        {
+          "capnp": "preconRcut",
+          "default": 0.0,
+          "ordinal": 17,
+          "snake": "precon_rcut",
+          "type": "Float64"
+        },
+        {
+          "capnp": "step",
+          "default": "lbfgs",
+          "ordinal": 18,
+          "snake": "step",
+          "type": "Text"
         }
       ],
       "struct": "OptimizerLbfgsOptions"
@@ -405,6 +618,53 @@ CATALOG = {
         }
       ],
       "struct": "OptimizerSdOptions"
+    },
+    "Optimizer.Xtsci": {
+      "fields": [
+        {
+          "capnp": "method",
+          "default": "lbfgs",
+          "ordinal": 0,
+          "snake": "method",
+          "type": "Text"
+        },
+        {
+          "capnp": "qnStep",
+          "default": "lbfgs",
+          "ordinal": 1,
+          "snake": "qn_step",
+          "type": "Text"
+        },
+        {
+          "capnp": "precon",
+          "default": "none",
+          "ordinal": 2,
+          "snake": "precon",
+          "type": "Text"
+        },
+        {
+          "capnp": "accept",
+          "default": "none",
+          "ordinal": 3,
+          "snake": "accept",
+          "type": "Text"
+        },
+        {
+          "capnp": "highs",
+          "default": False,
+          "ordinal": 4,
+          "snake": "highs",
+          "type": "Bool"
+        },
+        {
+          "capnp": "manifold",
+          "default": "euclidean",
+          "ordinal": 5,
+          "snake": "manifold",
+          "type": "Text"
+        }
+      ],
+      "struct": "OptimizerXtsciOptions"
     },
     "Potential": {
       "fields": [

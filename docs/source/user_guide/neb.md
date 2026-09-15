@@ -76,6 +76,19 @@ Following (dimer) search on the climbing image after it stabilizes, using
 hessian eigenmode alignment to refine the saddle point to higher accuracy
 without additional NEB iterations. Enable with `ci_mmf = true`.
 
+The Frontiers article
+([doi:10.3389/fchem.2026.1807063](https://doi.org/10.3389/fchem.2026.1807063))
+restores the climbing image only on positive curvature (Algorithm 1:
+curvature $> 0$). On alignment failure it keeps the most-negative-curvature
+point and raises the trigger with the linear penalty. That is
+`ci_mmf_restore_unhelpful = false`, the default.
+
+`ci_mmf_restore_unhelpful = true` also restores after an alignment reject
+or a force increase **on the image the dimer moved**. After a downhill
+walk `maxEnergyImage` can hop; the band CI force is then a neighbor and
+is not the restore score. That is an opt-in deviation from the published
+protocol. Do not turn it on by default.
+
 ### Parallel evaluation
 
 When compiled with TBB support (`-Dwith_parallel_neb=true`), image forces are

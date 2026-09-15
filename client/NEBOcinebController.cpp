@@ -31,6 +31,7 @@ OCINEBController::fromParams(const Parameters &params) {
       r.ci_stability_count,
       r.angle_tol,
       params.neb_options.force_tolerance,
+      r.restore_unhelpful,
   };
 }
 
@@ -76,8 +77,10 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
                   convForce, current_threshold_,
                   current_threshold_ / baseline_force_);
 
-  // Save climbing image state before MMF
-  AtomMatrix savedPositions = neb.path[neb.climbingImage]->getPositions();
+  // The dimer moves this image. updateForces() may then hop
+  // climbingImage to a neighbor; band CI force is that neighbor.
+  const long walked = neb.climbingImage;
+  AtomMatrix savedPositions = neb.path[walked]->getPositions();
 
   double alignment = 0.0;
   int mmfResult = runDimer(neb, alignment);
@@ -93,23 +96,27 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
     return {newForce, true, false};
   }
 
-  bool mmfHelped = (newForce < convForce) && mmfResult != -2;
+  const double walkedForce = neb.path[walked]->getForcesFreeV().norm();
+  const bool mmfHelped = walkHelped(walkedForce, convForce, mmfResult);
 
   if (mmfHelped) {
-    updateThresholdSuccess(convForce, newForce);
+    updateThresholdSuccess(convForce, walkedForce);
     QUILL_LOG_DEBUG(log,
-                    "MMF helped (status={}). Force: {:.4f} -> {:.4f} "
-                    "({:.2f}x baseline). New threshold: {:.4f}",
-                    mmfResult, convForce, newForce, newForce / baseline_force_,
+                    "MMF helped (status={}, walked={}, now_ci={}). "
+                    "Walked force: {:.4f} -> {:.4f} ({:.2f}x baseline). "
+                    "Band CI force: {:.4f}. New threshold: {:.4f}",
+                    mmfResult, walked, neb.climbingImage, convForce,
+                    walkedForce, walkedForce / baseline_force_, newForce,
                     current_threshold_);
   } else {
-    // On positive curvature (status=-2), the CI is at a minimum, not a
-    // saddle. Restore to pre-MMF position to prevent catastrophic force
-    // explosion. For other failures (alignment loss, force increase),
-    // let the NEB recover naturally -- the CI position may still be
-    // closer to the saddle than before.
-    if (mmfResult == -2) {
-      neb.path[neb.climbingImage]->setPositions(savedPositions);
+    // Frontiers OCI-NEB (doi:10.3389/fchem.2026.1807063, Algorithm 1)
+    // restores only on positive curvature (status -2). Alignment
+    // failure keeps the walked CI and applies the linear penalty.
+    // restore_unhelpful also restores on alignment reject / force
+    // increase on the walked image. Default false: the paper setting.
+    const bool restore = cfg_.restore_unhelpful || mmfResult == -2;
+    if (restore) {
+      neb.path[walked]->setPositions(savedPositions);
       neb.movedAfterForceCall = true;
       has_cached_mode_ = false;
       newForce = convForce;
@@ -117,15 +124,16 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
     updateThresholdBackoff(alignment);
     QUILL_LOG_DEBUG(
         log,
-        "MMF backoff (status={}). Force: {:.4f} -> {:.4f}, "
+        "MMF backoff (status={}, walked={}, now_ci={}). "
+        "Walked force: {:.4f} -> {:.4f}, band CI: {:.4f}, "
         "Alignment:  {:.3f}. {}New threshold: {:.4f} ({:.2f}x baseline)",
-        mmfResult, convForce, newForce, alignment,
-        mmfResult == -2 ? "Restored CI. " : "", current_threshold_,
+        mmfResult, walked, neb.climbingImage, convForce, walkedForce, newForce,
+        alignment, restore ? "Restored CI. " : "", current_threshold_,
         current_threshold_ / baseline_force_);
   }
 
   bool shouldReset =
-      (savedPositions - neb.path[neb.climbingImage]->getPositions()).norm() >
+      (savedPositions - neb.path[walked]->getPositions()).norm() >
       neb.params.optimizer_options.max_move *
           neb.params.neb_options.image_count;
 

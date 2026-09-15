@@ -20,8 +20,7 @@ protected:
   const Parameters &params;
 
 public:
-  ObjectiveFunction(const Parameters &paramsPassed)
-      : params{paramsPassed} {}
+  ObjectiveFunction(const Parameters &paramsPassed) : params{paramsPassed} {}
   virtual ~ObjectiveFunction() {}
   virtual double getEnergy() = 0;
   virtual VectorXd getGradient(bool fdstep = false) = 0;
@@ -31,6 +30,13 @@ public:
   virtual bool isConverged() = 0;
   virtual double getConvergence() = 0;
   virtual VectorXd difference(const VectorXd &a, const VectorXd &b) = 0;
+  // Packwood/Kermode pair preconditioner: MIC of one Cartesian pair.
+  // Default leaves dr unchanged (no cell).
+  virtual void minimumImage(Eigen::Ref<Eigen::Vector3d> /*dr*/) const {}
+  // Per-atom masses of the free atoms (length N, not 3N). Empty if unknown.
+  virtual VectorXd getMasses() const { return VectorXd(); }
+  // True when the geometry uses periodic boundaries (Sella proj_rot off).
+  virtual bool getPeriodic() const { return false; }
 };
 
 } // namespace eonc
