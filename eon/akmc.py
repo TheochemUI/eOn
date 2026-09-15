@@ -3,7 +3,6 @@
 import math
 import sys
 import configparser
-import os.path
 import shutil
 from time import sleep
 import os
@@ -50,16 +49,15 @@ def akmc(config: ConfigClass = None, steps=0):
     # 6) Write out the state of the simulation
 
     # First of all, does the root directory even exist?
-    if not os.path.isdir(config.path_root):
+    if not Path(config.path_root).is_dir():
         logger.critical("Root directory does not exist, as such the " \
                         "reactant cannot exist. Exiting...")
         sys.exit(1)
 
     # If we are saving debug results, create the directory if it does not exist.
     if config.debug_keep_all_results:
-        rp = os.path.join(config.path_root, config.debug_results_path)
-        if not os.path.isdir(rp):
-            os.mkdir(rp)
+        rp = Path(config.path_root) / config.debug_results_path
+        rp.mkdir(exist_ok=True)
 
     # Define constants.
     kT = config.main_temperature/11604.5 #in eV
@@ -82,15 +80,14 @@ def akmc(config: ConfigClass = None, steps=0):
     # Did the temperature change? Then the existing superbasins are invalid now.
     if abs(previous_temperature - config.main_temperature) > 1e-6:
         # Remove superbasin data.
-        if os.path.isdir(config.sb_path):
+        if Path(config.sb_path).is_dir():
             shutil.rmtree(config.sb_path)
-        state_dirs = os.listdir(config.path_states)
-        for state_dir in state_dirs:
-            if state_dir == 'state_table':
+        for state_dir in Path(config.path_states).iterdir():
+            if state_dir.name == 'state_table':
                 continue
-            superbasin_file = os.path.join(config.path_states, state_dir, config.sb_state_file)
-            if os.path.isfile(superbasin_file):
-                os.remove(superbasin_file)
+            superbasin_file = state_dir / config.sb_state_file
+            if superbasin_file.is_file():
+                superbasin_file.unlink()
         # Keep the new temperature.
         previous_temperature = config.main_temperature
 
@@ -134,13 +131,10 @@ def akmc(config: ConfigClass = None, steps=0):
 def get_akmc_metadata(config: ConfigClass = None):
     if config is None:
         raise TypeError("get_akmc_metadata requires a ConfigClass instance")
-    if not os.path.isdir(config.path_results):
-        os.makedirs(config.path_results)
-    # read in metadata
-    # do we want custom metadata locations?
-    metafile = os.path.join(config.path_results, 'info.txt')
-    parser = io.ini(metafile)
-    if os.path.isfile(metafile):
+    Path(config.path_results).mkdir(parents=True, exist_ok=True)
+    metafile = io.info_txt_path(config)
+    parser = io.ini(str(metafile))
+    if Path(metafile).is_file():
         start_state_num = parser.get("Simulation Information",'current_state', 0)
         time = parser.get("Simulation Information", 'time_simulated', 0.0)
         previous_state_num = parser.get("Simulation Information", "previous_state", -1)
@@ -167,7 +161,7 @@ def write_akmc_metadata(parser, current_state_num, time, previous_state_num, pre
 def get_statelist(kT, config: ConfigClass = None):
     if config is None:
         raise TypeError("get_statelist requires a ConfigClass instance")
-    initial_state_path = os.path.join(config.path_root, "pos.con")
+    initial_state_path = str(Path(config.path_root) / "pos.con")
     return akmcstatelist.AKMCStateList(
         kT,
         config.akmc_thermal_window,
@@ -256,8 +250,8 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
             # If we are following another trajectory:
             if config.debug_target_trajectory != "False":
                 # Get the Dynamics objects.
-                owndynamics = io.Dynamics(os.path.join(config.path_results, "dynamics.txt")).get()
-                targetdynamics = io.Dynamics(os.path.join(config.debug_target_trajectory, "dynamics.txt")).get()
+                owndynamics = io.Dynamics(str(Path(config.path_results) / "dynamics.txt")).get()
+                targetdynamics = io.Dynamics(str(Path(config.debug_target_trajectory) / "dynamics.txt")).get()
                 # Get the current_step.
                 try:
                     current_step = len(owndynamics)
@@ -274,8 +268,9 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
                     print("Can no longer follow target trajectory")
                     sys.exit(1)
                 # Load the con file for that process saddle.
-                targetSaddleCon = io.loadcon(os.path.join(config.debug_target_trajectory, "states", str(stateid), "procdata", "saddle_%d.con" % procid))
-                targetProductCon = io.loadcon(os.path.join(config.debug_target_trajectory, "states", str(stateid), "procdata", "product_%d.con" % procid))
+                procdata = Path(config.debug_target_trajectory) / "states" / str(stateid) / "procdata"
+                targetSaddleCon = io.loadcon(str(procdata / ("saddle_%d.con" % procid)))
+                targetProductCon = io.loadcon(str(procdata / ("product_%d.con" % procid)))
                 ibox = numpy.linalg.inv(targetSaddleCon.box)
                 # See if we have this process
                 for i in range(len(rate_table)):
@@ -332,7 +327,7 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
             proc_id_out = rate_table[nsid][0]
 
         # Write data to disk
-        dynamics = io.Dynamics(os.path.join(config.path_results, "dynamics.txt"))
+        dynamics = io.Dynamics(str(Path(config.path_results) / "dynamics.txt"))
         if proc_id_out != -1:
             proc = current_state.get_process(proc_id_out)
             dynamics.append(current_state.number, proc_id_out, next_state.number, step_time, time, proc['barrier'], proc['rate'], current_state.get_energy())
@@ -396,7 +391,7 @@ def main(config: ConfigClass = None):
 
     #setup logging
     logging.basicConfig(level=logging.DEBUG,
-            filename=os.path.join(config.path_results, "akmc.log"),
+            filename=str(Path(config.path_results) / "akmc.log"),
             format="%(asctime)s %(levelname)s:%(name)s: %(message)s",
             datefmt="%F %T")
     logging.raiseExceptions = False
@@ -500,12 +495,13 @@ def main(config: ConfigClass = None):
                 def attempt_removal(thing):
                     if thing is None:
                         return
-                    if os.path.isdir(thing):
-                        shutil.rmtree(thing)
-                        os.mkdir(thing)
-                        os.removedirs(thing)
-                    elif os.path.isfile(thing):
-                        os.remove(thing)
+                    p = Path(thing)
+                    if p.is_dir():
+                        io.remove_tree_and_empty_parents(p)
+                    elif p.is_file():
+                        p.unlink()
+                root = Path(config.path_root)
+                results = Path(config.path_results)
                 rmthings = [config.path_jobs_out,
                             config.path_jobs_in,
                             config.path_incomplete,
@@ -516,19 +512,19 @@ def main(config: ConfigClass = None):
                             config.sb_path,
                             config.sb_recycling_path,
                             config.debug_results_path,
-                            os.path.join(config.path_root, "searchdata"),
-                            os.path.join(config.path_results, "askmc_data.txt"),
-                            os.path.join(config.path_results, "searches.log"),
-                            os.path.join(config.path_results, "dynamics.txt"),
-                            os.path.join(config.path_results, "info.txt"),
-                            os.path.join(config.path_results, "akmc.log"),
-                            os.path.join(config.path_results, "jobs.tbl"),
-                            os.path.join(config.path_root, "results"),
+                            root / "searchdata",
+                            results / "askmc_data.txt",
+                            results / "searches.log",
+                            results / "dynamics.txt",
+                            io.info_txt_path(config),
+                            results / "akmc.log",
+                            results / "jobs.tbl",
+                            root / "results",
                             io.prng_state_path(config),
-                            os.path.join(config.path_root, "explorer.pickle"),
-                            os.path.join(config.path_root, "temperatures.dat"),
-                            os.path.join(config.path_root, "client.log"),
-                            os.path.join(config.path_root, "lockfile"),
+                            root / "explorer.pickle",
+                            root / "temperatures.dat",
+                            root / "client.log",
+                            root / "lockfile",
                             ]
                 for thing in rmthings:
                     attempt_removal(thing)
@@ -548,14 +544,16 @@ def main(config: ConfigClass = None):
             res = input("Are you sure you want to restart (remove dynamics.txt, info.txt and akmc.log)? (y/N) ").lower()
         if len(res)>0 and res[0] == 'y':
 
-            # remove akmc data that are specific for a trajectory
-            dynamics_path = os.path.join(config.path_results, "dynamics.txt")
-            info_path = os.path.join(config.path_results, "info.txt")
-            log_path = os.path.join(config.path_results, "akmc.log")
-            jobs_path = os.path.join(config.path_results, "jobs.tbl")
-            for i in [info_path, dynamics_path, log_path, jobs_path]:
-                if os.path.isfile(i):
-                    os.remove(i)
+            results = Path(config.path_results)
+            for i in [
+                results / "dynamics.txt",
+                io.info_txt_path(config),
+                results / "akmc.log",
+                results / "jobs.tbl",
+            ]:
+                p = Path(i)
+                if p.is_file():
+                    p.unlink()
 
             if config.sb_on:
                 if options.force:
@@ -565,18 +563,15 @@ def main(config: ConfigClass = None):
 
                 # remove superbasin data (specific for a trajectory)
                 if len(res)>0 and res[0] == 'y':
-                    # remove directory superbasins
-                    if os.path.isdir(config.sb_path):
+                    if Path(config.sb_path).is_dir():
                         io.remove_tree_and_empty_parents(config.sb_path)
 
-                    # remove superbasins files from states dirctories
-                    state_dirs = os.listdir(config.path_states)
-                    for i in state_dirs:
-                        if i != 'state_table':
-                            superbasin_file = os.path.join(config.path_states, i)
-                            superbasin_file = os.path.join(superbasin_file, config.sb_state_file)
-                            if os.path.isfile(superbasin_file):
-                                os.remove(superbasin_file)
+                    for state_dir in Path(config.path_states).iterdir():
+                        if state_dir.name == 'state_table':
+                            continue
+                        superbasin_file = state_dir / config.sb_state_file
+                        if superbasin_file.is_file():
+                            superbasin_file.unlink()
 
                     string_sb_clear = " with directory 'superbasins' and files named '"
                     string_sb_clear += str(config.sb_state_file) + "' removed"
