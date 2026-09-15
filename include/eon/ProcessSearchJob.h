@@ -118,4 +118,3 @@ private:
 
 } // namespace eonc
 
-using eonc::ProcessSearchJob;

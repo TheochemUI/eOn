@@ -19,6 +19,9 @@
 #include <format>
 #include <fstream>
 
+
+namespace eonc {
+
 std::vector<std::string> ReplicaDynamicsJob::run() {
   auto seed = std::make_shared<Matter>(pot, params);
   std::string reactantFilename =
@@ -257,3 +260,5 @@ void ReplicaDynamicsJob::saveData(int status) {
     }
   }
 }
+
+} // namespace eonc

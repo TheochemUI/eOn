@@ -22,6 +22,9 @@
 #include <limits>
 #include <stdexcept>
 
+
+namespace eonc {
+
 std::vector<std::string> StructureComparisonJob::run() {
   std::vector<std::string> returnFiles;
   const std::string file1 = eonc::helpers::getRelevantFile("matter1.con");
@@ -77,3 +80,5 @@ std::vector<std::string> StructureComparisonJob::run() {
   returnFiles.push_back(resultsFilename);
   return returnFiles;
 }
+
+} // namespace eonc

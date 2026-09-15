@@ -26,6 +26,9 @@
 #include <string>
 #include <thread>
 
+
+namespace eonc {
+
 std::vector<std::string> ReplicaExchangeJob::run() {
   std::string posFilename =
       eonc::helpers::getRelevantFile(params.main_options.conFilename);
@@ -233,3 +236,5 @@ void ReplicaExchangeJob::saveData() {
     }
   }
 }
+
+} // namespace eonc

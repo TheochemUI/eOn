@@ -24,6 +24,9 @@
 #include <fstream>
 #include <stdexcept>
 
+
+namespace eonc {
+
 std::vector<std::string> NudgedElasticBandJob::run() {
   NudgedElasticBand::NEBStatus status;
   size_t f1;
@@ -319,3 +322,5 @@ void NudgedElasticBandJob::printEndState(NudgedElasticBand::NEBStatus status) {
     QUILL_LOG_WARNING(m_log, "Unknown status: {}!", static_cast<int>(status));
   return;
 }
+
+} // namespace eonc

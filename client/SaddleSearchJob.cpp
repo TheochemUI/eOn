@@ -24,6 +24,9 @@
 #include <stdexcept>
 #include <string>
 
+
+namespace eonc {
+
 std::vector<std::string> SaddleSearchJob::run() {
   std::string reactantFilename("pos.con");
   std::string displacementFilename("displacement.con");
@@ -211,3 +214,5 @@ void SaddleSearchJob::printEndState(int status) {
     QUILL_LOG_WARNING(log, "[Saddle Search] {}", msg);
   }
 }
+
+} // namespace eonc

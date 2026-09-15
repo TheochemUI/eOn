@@ -23,6 +23,9 @@
 #include <algorithm>
 #include <cmath>
 
+
+namespace eonc {
+
 std::vector<std::string> GlobalOptimizationJob::run() {
   // int status;
   GlobalOptimization globopt = GlobalOptimization(params);
@@ -463,3 +466,5 @@ size_t GlobalOptimizationJob::hunt(double epot) {
   // jlo++;
   return jlo;
 }
+
+} // namespace eonc

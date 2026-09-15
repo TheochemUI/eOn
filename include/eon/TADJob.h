@@ -31,4 +31,3 @@ private:
 
 } // namespace eonc
 
-using eonc::TADJob;

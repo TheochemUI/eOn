@@ -27,6 +27,9 @@
 #include <stdexcept>
 #include <string>
 
+
+namespace eonc {
+
 const char PrefactorJob::PREFACTOR_REACTANT[] = "reactant";
 const char PrefactorJob::PREFACTOR_SADDLE[] = "saddle";
 const char PrefactorJob::PREFACTOR_PRODUCT[] = "product";
@@ -152,3 +155,5 @@ std::vector<std::string> PrefactorJob::run() {
 
   return returnFiles;
 }
+
+} // namespace eonc
