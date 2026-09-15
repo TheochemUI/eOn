@@ -15,6 +15,7 @@
 #include <ctime>
 #include <limits>
 #include <memory>
+#include <span>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -127,8 +128,11 @@ std::tuple<double, AtomMatrix> eonc::Potential::get_ef(const AtomMatrix &pos,
   long nAtoms = static_cast<long>(pos.rows());
   AtomMatrix forces{MatrixXd::Zero(nAtoms, 3)};
   double var{0}; // no variance for true potentials
-  this->force(nAtoms, pos.data(), atmnrs.data(), forces.data(), &energy, &var,
-              box.data());
+  const auto n = static_cast<size_t>(nAtoms);
+  this->force(std::span<const double>(pos.data(), n * 3),
+              std::span<const int>(atmnrs.data(), n),
+              std::span<double>(forces.data(), n * 3), &energy, &var,
+              std::span<const double>(box.data(), 9));
   forceCallCounter++;
   PotRegistry::get().on_force_call(ptype);
   if (!std::isfinite(energy) || !forces.allFinite()) {

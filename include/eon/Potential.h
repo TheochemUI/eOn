@@ -16,6 +16,8 @@
 #include "PotRegistry.h"
 #include <atomic>
 #include <memory>
+#include <span>
+#include <stdexcept>
 
 namespace eonc {
 
@@ -51,6 +53,19 @@ public:
   void virtual force(long nAtoms, const double *positions, const int *atomicNrs,
                      double *forces, double *energy, double *variance,
                      const double *box) = 0;
+
+  /// C++ call site: size-checked view over the raw FFI force().
+  void force(std::span<const double> positions, std::span<const int> atomicNrs,
+             std::span<double> forces, double *energy, double *variance,
+             std::span<const double> box) {
+    if (positions.size() % 3 != 0 ||
+        positions.size() / 3 != atomicNrs.size() ||
+        forces.size() != positions.size() || box.size() != 9) {
+      throw std::invalid_argument("Potential::force span size mismatch");
+    }
+    force(static_cast<long>(atomicNrs.size()), positions.data(),
+          atomicNrs.data(), forces.data(), energy, variance, box.data());
+  }
 
   /// Optional frozen-atom mask (nAtoms*3, 1.0 = fixed). Default no-op.
   /// Matter calls this immediately before force() so wrappers that need

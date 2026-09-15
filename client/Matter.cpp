@@ -20,6 +20,7 @@
 #include "eon/EonLogger.h"
 #include <cmath>
 #include <memory>
+#include <span>
 #include <stdexcept>
 #include <string>
 
@@ -616,8 +617,12 @@ void Matter::computePotential() const {
       // No intermediate allocation, no tuple, no copy.
       double var{0};
       potential->setFixedMask(nAtoms, isFixed.data());
-      potential->force(nAtoms, positions.data(), atomicNrs.data(),
-                       forces.data(), &potentialEnergy, &var, cell.data());
+      const auto n = static_cast<size_t>(nAtoms);
+      potential->force(std::span<const double>(positions.data(), n * 3),
+                       std::span<const int>(atomicNrs.data(), n),
+                       std::span<double>(forces.data(), n * 3),
+                       &potentialEnergy, &var,
+                       std::span<const double>(cell.data(), 9));
       potential->forceCallCounter++;
       PotRegistry::get().on_force_call(potential->getType());
     }
