@@ -1,1 +1,0 @@
-`[ASE_ORCA] charge` is read from the INI and passed to `ase.Atoms`.

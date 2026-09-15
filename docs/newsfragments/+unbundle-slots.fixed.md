@@ -1,1 +1,0 @@
-`unbundle` drops only those bundle slots that lack a `results*` file.

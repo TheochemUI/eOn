@@ -1425,17 +1425,6 @@ package:
     sha256: 29e7d8da81f39e93bf60a9f6efe0b624b82d1ace0868cc6a185a614e104c26ac
   category: main
   optional: false
-- name: vesin-torch
-  version: 0.6.0
-  manager: pip
-  platform: linux-64
-  dependencies:
-    torch: '>=2.3,<2.14'
-  url: https://files.pythonhosted.org/packages/26/c8/8c69982b64b4672b3264518abe3fd5dc18184a7eea2eed63289c0540b6ab/vesin_torch-0.6.0-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
-  hash:
-    sha256: 709c6ff6665880a74e76b2e3d2d2638c6fb61e43a034ebc5d200fda6cc00d050
-  category: main
-  optional: false
 - name: httpx
   version: 0.28.1
   manager: pip
@@ -1469,6 +1458,17 @@ package:
   url: https://files.pythonhosted.org/packages/2c/58/ca301544e1fa93ed4f80d724bf5b194f6e4b945841c5bfd555878eea9fcb/referencing-0.37.0-py3-none-any.whl
   hash:
     sha256: 381329a9f99628c9069361716891d34ad94af76e461dcb0335825aecc7692231
+  category: main
+  optional: false
+- name: vesin-torch
+  version: 0.6.1
+  manager: pip
+  platform: linux-64
+  dependencies:
+    torch: '>=2.3,<2.14'
+  url: https://files.pythonhosted.org/packages/31/f4/38039b99cf4444daac1a5c9896658a48a44198406ba2c1cfb22891786c76/vesin_torch-0.6.1-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+  hash:
+    sha256: 525e8cd24d9e724fa1135f01e3a24dc3dbda430273426c7b8575d1f6267c43ca
   category: main
   optional: false
 - name: anyio
@@ -1704,20 +1704,6 @@ package:
     sha256: 8bf1fe301b7d8acfa6e8571e3b1c3d158f909666642431cc78a1b7b4dbc5ec5b
   category: main
   optional: false
-- name: metatomic-torch
-  version: 0.1.15
-  manager: pip
-  platform: linux-64
-  dependencies:
-    torch: '>=2.3,<2.13'
-    metatensor-torch: '>=0.10.0,<0.11'
-    metatensor-operations: '>=0.5.0,<0.6'
-    metatomic-ase: '>=0.1.1,<0.2.0'
-  url: https://files.pythonhosted.org/packages/53/b0/e09d4d734b43eaec58b9073cd1645a4432d9c562f1479664cb02d349f148/metatomic_torch-0.1.15-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
-  hash:
-    sha256: 198ebadb15cd1094636468db84f4adf71012b765f568b3b522086a89411d5583
-  category: main
-  optional: false
 - name: huggingface-hub
   version: 1.3.4
   manager: pip
@@ -1832,18 +1818,6 @@ package:
     sha256: f6008a4919fdbc0b0097089f67a1eb55d950ed7e90ce2cc3e640abadd2757a04
   category: main
   optional: false
-- name: vesin
-  version: 0.6.0
-  manager: pip
-  platform: linux-64
-  dependencies:
-    numpy: '*'
-    vesin-torch ; extra: == 'torch'
-  url: https://files.pythonhosted.org/packages/75/d1/2ca1ec1cbd728e29a0754b2fee177eb10f1b9840f5f62940a3c4085b6672/vesin-0.6.0-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
-  hash:
-    sha256: 166b6bb2ecb8178387d412b4ac6120d0ac5f6c7e2fc055be0e0456010d9e5dbb
-  category: main
-  optional: false
 - name: filelock
   version: 3.20.0
   manager: pip
@@ -1941,14 +1915,14 @@ package:
   category: main
   optional: false
 - name: readcon
-  version: 0.14.5
+  version: 0.14.9
   manager: pip
   platform: linux-64
   dependencies:
-    readcon-chemfiles: ==0.14.5 ; extra == 'chemfiles'
-  url: https://files.pythonhosted.org/packages/92/6b/76d7536feb9ee48e7c8046a4240c5aaa65aac4cc9dfe1377dc32b426ce34/readcon-0.14.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+    readcon-chemfiles: ==0.14.9 ; extra == 'chemfiles'
+  url: https://files.pythonhosted.org/packages/96/b1/2e0a6a033db6f0ec2ac5dd77f6a67cac7d715922c6f04f846efa8e6c241e/readcon-0.14.9-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
   hash:
-    sha256: 1b3f988cf59d795e3cf346b3bb4b346d3769150e8d51f380cd7930bd7d15a5ac
+    sha256: 3b27628273fc91f7a0c6b4b1dbef3623aaa235997d9e9b6f8349cb51af12ef63
   category: main
   optional: false
 - name: hf-xet
@@ -2020,6 +1994,18 @@ package:
   url: https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl
   hash:
     sha256: e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5
+  category: main
+  optional: false
+- name: vesin
+  version: 0.6.1
+  manager: pip
+  platform: linux-64
+  dependencies:
+    numpy: '*'
+    vesin-torch ; extra: == 'torch'
+  url: https://files.pythonhosted.org/packages/b6/24/ef992ce7a8491b8f1e223febce36ebe1221f24bf5f60f62aa3dba69ae43b/vesin-0.6.1-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+  hash:
+    sha256: 27c4d838bbe315837cf7ca62597b94581235c269dce4d1d3600749f64396e746
   category: main
   optional: false
 - name: fonttools
@@ -2215,6 +2201,17 @@ package:
     sha256: 7b4df175cdb08ba400f45cae3bdcae7ba8365db4d165fc65fd04b050ab63b46b
   category: main
   optional: false
+- name: wigners
+  version: 0.4.1
+  manager: pip
+  platform: linux-64
+  dependencies:
+    numpy: '*'
+  url: https://files.pythonhosted.org/packages/e6/06/77f0eba1e17dbbe9b37efcd0d5ec1a66c2dd605f4771ca132d147e721603/wigners-0.4.1-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+  hash:
+    sha256: f31433df45744681c990ac57b40c4ea4d3eaf1b0a2228b39a172fdf9b6895be8
+  category: main
+  optional: false
 - name: cycler
   version: 0.12.1
   manager: pip
@@ -2241,6 +2238,21 @@ package:
   url: https://files.pythonhosted.org/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl
   hash:
     sha256: a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427
+  category: main
+  optional: false
+- name: metatomic-torch
+  version: 0.1.17
+  manager: pip
+  platform: linux-64
+  dependencies:
+    torch: '>=2.3,<2.14'
+    metatensor-torch: '>=0.10.0,<0.11'
+    metatensor-operations: '>=0.5.0,<0.6'
+    wigners: '>=0.4.0'
+    metatomic-ase: '>=0.1.1,<0.2.0'
+  url: https://files.pythonhosted.org/packages/f8/a2/9c296b0f0eb5803a9261e7d9c466fce8bad8b886438f7fb1f629d7ec8709/metatomic_torch-0.1.17-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+  hash:
+    sha256: 2fcbde683fbf03228661c763abd14a635981ebdd62e503176c370ecfcb560775
   category: main
   optional: false
 - name: argcomplete
@@ -3794,6 +3806,21 @@ package:
     sha256: 850ba148bd908d7e2411587e247a1e4f0327839c40e2e5e6d05a007ecc69911d
   category: main
   optional: false
+- name: metatomic-torch
+  version: 0.1.17
+  manager: pip
+  platform: osx-arm64
+  dependencies:
+    torch: '>=2.3,<2.14'
+    metatensor-torch: '>=0.10.0,<0.11'
+    metatensor-operations: '>=0.5.0,<0.6'
+    wigners: '>=0.4.0'
+    metatomic-ase: '>=0.1.1,<0.2.0'
+  url: https://files.pythonhosted.org/packages/11/81/8aeba2f1e93c24615040fa39c50a9f722334a9290db3ef0c249007fd6285/metatomic_torch-0.1.17-py3-none-macosx_11_0_arm64.whl
+  hash:
+    sha256: 3ab628246641382a020722bcc09d23e146aea54e881d9b142aaf7a09cbdac668
+  category: main
+  optional: false
 - name: typing-extensions
   version: 4.15.0
   manager: pip
@@ -4055,6 +4082,17 @@ package:
     sha256: 556dba8fb6f5d8742f2923fe9457dbdd51e1049c4a43fd3986a0b14a1d815fc6
   category: main
   optional: false
+- name: readcon
+  version: 0.14.9
+  manager: pip
+  platform: osx-arm64
+  dependencies:
+    readcon-chemfiles: ==0.14.9 ; extra == 'chemfiles'
+  url: https://files.pythonhosted.org/packages/54/d8/6b747a2cbb3f49227d7ec33d691502c296ae8b2ce014cfb0a5a5a08b7018/readcon-0.14.9-cp312-cp312-macosx_11_0_arm64.whl
+  hash:
+    sha256: 39dc342e0e68767cc98b84657d6736456f1fde05dfb7466212b71084b3ed3e3b
+  category: main
+  optional: false
 - name: huggingface-hub
   version: 1.3.4
   manager: pip
@@ -4143,6 +4181,17 @@ package:
   url: https://files.pythonhosted.org/packages/5b/5a/51f5464373ce2aeb5194508298a508b6f21d3867f499556263c64c621914/kiwisolver-1.4.9-cp312-cp312-macosx_11_0_arm64.whl
   hash:
     sha256: 4a2899935e724dd1074cb568ce7ac0dce28b2cd6ab539c8e001a8578eb106d14
+  category: main
+  optional: false
+- name: vesin-torch
+  version: 0.6.1
+  manager: pip
+  platform: osx-arm64
+  dependencies:
+    torch: '>=2.3,<2.14'
+  url: https://files.pythonhosted.org/packages/5c/a4/c871068307d3142406ff5e08923c0ed9a0196a4eadb2fbd6a25c27484eed/vesin_torch-0.6.1-py3-none-macosx_11_0_arm64.whl
+  hash:
+    sha256: fbf1f8835664ac142e9acd60e8141c134ecf379a174803eb33ea417c69458a32
   category: main
   optional: false
 - name: jsonschema
@@ -4255,6 +4304,18 @@ package:
     sha256: 2d400746a40668fc9dec9810239072b40b4484b640a8c38fd654a024c7a1bf55
   category: main
   optional: false
+- name: vesin
+  version: 0.6.1
+  manager: pip
+  platform: osx-arm64
+  dependencies:
+    numpy: '*'
+    vesin-torch ; extra: == 'torch'
+  url: https://files.pythonhosted.org/packages/7f/19/0f8bd7ed5fd54a9917f9385298d0696942cff92fae3bdd0295caab5a3c47/vesin-0.6.1-py3-none-macosx_11_0_arm64.whl
+  hash:
+    sha256: 5992919826b8935ac6abca105bd3b5eba61e7a58e656940b261b20740b8e0fe6
+  category: main
+  optional: false
 - name: hf-xet
   version: 1.2.0
   manager: pip
@@ -4276,17 +4337,6 @@ package:
   url: https://files.pythonhosted.org/packages/82/85/f8e2061c58cf4ea22681be48f5aecf0074abd9717fcb8f05dd3ea6e370fc/metatensor_learn-0.5.0-py3-none-any.whl
   hash:
     sha256: ad8863dac144f03c9ca80ec625c9e35b87ceb82438a0a80c0bf14e9dcc1b607c
-  category: main
-  optional: false
-- name: vesin-torch
-  version: 0.6.0
-  manager: pip
-  platform: osx-arm64
-  dependencies:
-    torch: '>=2.3,<2.14'
-  url: https://files.pythonhosted.org/packages/86/9c/5504980a1bb584a21b9d71683702b8de68f3d76233be4b46753e2a9bcb81/vesin_torch-0.6.0-py3-none-macosx_11_0_arm64.whl
-  hash:
-    sha256: 18fc864b6c5155131838774864c390f04fcf93c148d73d95111aa3a76da46f2d
   category: main
   optional: false
 - name: metatrain
@@ -4394,32 +4444,6 @@ package:
   url: https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl
   hash:
     sha256: e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5
-  category: main
-  optional: false
-- name: metatomic-torch
-  version: 0.1.15
-  manager: pip
-  platform: osx-arm64
-  dependencies:
-    torch: '>=2.3,<2.13'
-    metatensor-torch: '>=0.10.0,<0.11'
-    metatensor-operations: '>=0.5.0,<0.6'
-    metatomic-ase: '>=0.1.1,<0.2.0'
-  url: https://files.pythonhosted.org/packages/a5/4b/84c9232a6265da82fb6f253a2c49cba1ab5f4a9d5fad4cc0bb81d5dde61b/metatomic_torch-0.1.15-py3-none-macosx_11_0_arm64.whl
-  hash:
-    sha256: bd263207ea778447044b86988b100e76e969af39da8f47ccb5f7d0f080fba458
-  category: main
-  optional: false
-- name: vesin
-  version: 0.6.0
-  manager: pip
-  platform: osx-arm64
-  dependencies:
-    numpy: '*'
-    vesin-torch ; extra: == 'torch'
-  url: https://files.pythonhosted.org/packages/a7/52/2d91ab075569763e2839446bcf610dc5e6f5f1e7be4c0c1c9c476ad857e6/vesin-0.6.0-py3-none-macosx_11_0_arm64.whl
-  hash:
-    sha256: 6fdb37490bd4fc8a00cfc12595861684855ef9ec30981d6086ce78569ed24b80
   category: main
   optional: false
 - name: pydantic-core
@@ -4554,6 +4578,17 @@ package:
     sha256: 85cef7cff222d8644161529808465972e51340599459b8ac3ccbac5a854e0d30
   category: main
   optional: false
+- name: wigners
+  version: 0.4.1
+  manager: pip
+  platform: osx-arm64
+  dependencies:
+    numpy: '*'
+  url: https://files.pythonhosted.org/packages/e9/b7/1b820919eb1fc43ab85b3e2b718513bde6cd45b6db2f8233e7eb8c3965d9/wigners-0.4.1-py3-none-macosx_11_0_arm64.whl
+  hash:
+    sha256: a83f06b240c6db701f73287c961c766a2eec659a44475e1c84479af254a69b3f
+  category: main
+  optional: false
 - name: python-dateutil
   version: 2.9.0.post0
   manager: pip
@@ -4610,17 +4645,6 @@ package:
   url: https://files.pythonhosted.org/packages/ed/1d/5057f812d4f6adc91a20a2d6f2ebcdb517fdbc87ae3acc5633c9b97c8ba5/scipy-1.17.0-cp312-cp312-macosx_12_0_arm64.whl
   hash:
     sha256: 88c22af9e5d5a4f9e027e26772cc7b5922fab8bcc839edb3ae33de404feebd9e
-  category: main
-  optional: false
-- name: readcon
-  version: 0.14.5
-  manager: pip
-  platform: osx-arm64
-  dependencies:
-    readcon-chemfiles: ==0.14.5 ; extra == 'chemfiles'
-  url: https://files.pythonhosted.org/packages/fa/cc/3bf0d31586beb64cb502a360ad4e69706296103d0d2d6a7c3e6109deb332/readcon-0.14.5-cp312-cp312-macosx_11_0_arm64.whl
-  hash:
-    sha256: 3a44dc89fd2ed3cddd950b7ce053da066cf33a90400d93a6da49b12336d4ae95
   category: main
   optional: false
 - name: pillow
@@ -5918,15 +5942,16 @@ package:
     sha256: 850ba148bd908d7e2411587e247a1e4f0327839c40e2e5e6d05a007ecc69911d
   category: main
   optional: false
-- name: vesin-torch
-  version: 0.6.0
+- name: vesin
+  version: 0.6.1
   manager: pip
   platform: win-64
   dependencies:
-    torch: '>=2.3,<2.14'
-  url: https://files.pythonhosted.org/packages/16/b1/8b73cba2df3889d9f5687e23abb7a5ec4a39f231a580e5943fa728c1a468/vesin_torch-0.6.0-py3-none-win_amd64.whl
+    numpy: '*'
+    vesin-torch ; extra: == 'torch'
+  url: https://files.pythonhosted.org/packages/15/d1/787f91f3d735e34c2e7a5a64e7b7fc6dbe8fd99869aa05bdfa2d42d0f09d/vesin-0.6.1-py3-none-win_amd64.whl
   hash:
-    sha256: 8a65a709a49869d8e20160a4f02726f7554d4dd3b3c73ab6fe495f5bdab7700a
+    sha256: 43f2073f7e16b00935f0245d5fff05609470f0618f2844e3f7daa1279eec4312
   category: main
   optional: false
 - name: tqdm
@@ -6017,17 +6042,6 @@ package:
   url: https://files.pythonhosted.org/packages/2a/39/e50c7c3a983047577ee07d2a9e53faf5a69493943ec3f6a384bdc792deb2/httpx-0.28.1-py3-none-any.whl
   hash:
     sha256: d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad
-  category: main
-  optional: false
-- name: readcon
-  version: 0.14.5
-  manager: pip
-  platform: win-64
-  dependencies:
-    readcon-chemfiles: ==0.14.5 ; extra == 'chemfiles'
-  url: https://files.pythonhosted.org/packages/2b/d0/741dbaf8a1276981af216f55ab2cf8ffc8c73f241a6b7fa1cac73d81da45/readcon-0.14.5-cp312-cp312-win_amd64.whl
-  hash:
-    sha256: 40dff98579947066ef3c84efcff77ea45151b29bdf28ef37aec5630765e9a276
   category: main
   optional: false
 - name: referencing
@@ -6236,16 +6250,19 @@ package:
     sha256: a0b2b9fe80bbcd81a6647ff13108738cfb482d481d826cc0e02f5b35e5c88d2c
   category: main
   optional: false
-- name: vesin
-  version: 0.6.0
+- name: metatomic-torch
+  version: 0.1.17
   manager: pip
   platform: win-64
   dependencies:
-    numpy: '*'
-    vesin-torch ; extra: == 'torch'
-  url: https://files.pythonhosted.org/packages/49/61/ebff303f97e3c17c9eda155464aa37d5eec4ce27d31e01cda7e76b5bb7e7/vesin-0.6.0-py3-none-win_amd64.whl
+    torch: '>=2.3,<2.14'
+    metatensor-torch: '>=0.10.0,<0.11'
+    metatensor-operations: '>=0.5.0,<0.6'
+    wigners: '>=0.4.0'
+    metatomic-ase: '>=0.1.1,<0.2.0'
+  url: https://files.pythonhosted.org/packages/4b/5e/9c055996a423a5a0078868cd60de5b5ce9b5d5d4f50c9f5c42a317d16050/metatomic_torch-0.1.17-py3-none-win_amd64.whl
   hash:
-    sha256: 84c19d030a38ea6c752e31d7281403e5ece0373ab86cacbe85c3a7c15d701a33
+    sha256: 03f6a05ab5b7655a46a3b8ae34153045682dd04006b6a4f4dc6fc16a2587b2e1
   category: main
   optional: false
 - name: pydantic

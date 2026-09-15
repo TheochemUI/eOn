@@ -1,1 +1,0 @@
-Min-mode `bowl_breakout` does not index atom 0 on an empty Matter and caps the bowl set at `nAtoms`.

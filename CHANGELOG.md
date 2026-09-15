@@ -2,6 +2,213 @@
 
 <!-- towncrier release notes start -->
 
+## [3.3.0](https://github.com/TheochemUI/eOn/tree/3.3.0) - 2026-09-15
+
+### Removed
+
+- Drop the unused `with_pybind11` meson option and the dead `EONMPIBGP` include in ClientEON. Feature-gated public headers remain.
+- OCI-NEB MMF triggers on the adaptive threshold only. The floor is `2 * force_tolerance`; `ci_mmf_after` is no longer an extra OR.
+
+### Added
+
+- AKMC CI builds with `-Dwith_pyeonclient=true`. XTB CI includes windows-2022. Lanczos docs name stiff EAM/Tersoff. `load_ini_text` and AMSEl `on_error` / `fallback_single` are in.
+- Document Potential/Matter thread-safe interface. `matter_to_ase` copies atom ids. Testing guide names Baker 05/17/19/20 as the reduced parameter-check set.
+- External C++ includes `eon/api.h` for Matter, Parameters, NEB, IDPP/SIDPP, and dimer. Job headers stay internal.
+- Hash-pin GitHub Actions (zizmor), add `ci_zizmor.yml`, and run zizmor from prek.
+- Hessian, Prefactor, and Dynamics jobs write results.dat from JobResultEnvelope. LocalInProcess builds CON text only when a caller reads min.con.
+- IRACompare.cpp is always compiled so NEB can call match_endpoints when
+  IRA is off (the methods stub). `matchArrays` plus `pyeonclient.ira_match`
+  let `eon.atoms.rot_match` use IRA when the wheel has it, else Kabsch.
+- In-process `process_search` puts `saddle.con` on the result record so explorer can register the saddle without an `eonclient` subprocess.
+- JobResult Cap'n Proto names historical `termination_reason` integers as `TerminationCode` (0–21). `statusCode` stays the results.dat integer.
+- JobResult has a `body` union (`minimization` / `neb` / `processSearch`). Shared scalars stay on the outer struct.
+- Jobs register themselves into a table; `makeJob` looks up the factory. AMSEl persist_split writes a sidecar so a resume does not re-split the basin.
+- LAMMPSPot accepts an injected ILammpsLoader. Production still uses the
+  process-default LammpsLoader singleton.
+- LocalInProcess also dispatches dynamics, Monte Carlo, basin hopping, Hessian, prefactor, and finite-difference. Those C++ jobs write results.dat from JobResultEnvelope.
+- LocalInProcess dispatches minimization, point, process_search, and saddle_search. PointJob writes results.dat from JobResultEnvelope. JobType.OH_TST is bound.
+- Meson `-Dstdpar=cpu|gpu` turns on nvc++ `-stdpar=multicore|gpu` for the NEB image-force `std::execution::par` path without TBB. `-Dstdpar=gpu` also passes `-gpu=cc80,cc90` (override with `-Dstdpar_gpu_cc=`). GCC/Clang still use `-Dwith_parallel_neb=true`. Morse atom loops stay on the host. `QMC_GPU` is a QMCPACK flag, not an eOn option. eOn skips the cmake Highway wrap on nvc++ so Meson does not import `hwy_list_targets` (PGICompiler has no `get_pie_args`).
+- Metatomic `forceBatch` tries a single `model.forward` over N systems and falls back to sequential `force()` if that path throws.
+- MetatomicPotential can clone the already-loaded Torch module for per-image NEB instances without a second disk load.
+- MinimizationJob fills an in-memory JobResultEnvelope and writes results.dat from it. The Cap'n Proto schema is unchanged.
+- NEB writes `peakNN_pos.con` and `peakNN_mode.dat` for every interior spline maximum (`setup_mmf_peaks`, default on). Those files are the dimer seeds for a follow-up saddle search.
+- NEB, dimer, and process search query pot thread-safety through `potAllowsSharedInstance` in `eon/PotCapabilities.h`. Virtual `isThreadSafe` stays the override point.
+- Optional ASE ``batch_calculate`` sets ``supportsBatchEvaluation``.
+  Without the hook the pot stays on sequential ``force()``. From #409.
+- Parameters can load INI from a memory string (`load_ini_text`). LocalInProcess uses that instead of a temp file. Docs floors drop the invalid rgpycrumbs `analysis` extra.
+- RgpotAdapter rejects a kernel whose `caps().reentrancy` is not SharedInstance, PerInstance, or ProcessSerial. OCI-NEB hybrid-dimer defaults stay `ci_stability_count=5` and `max_steps=1000`.
+- SaddleSearchJob and ProcessSearchJob accept an in-memory Matter via `runFromMatter`, so pyeonclient does not have to write pos.con first.
+- With `write_movies = true`, saddle search writes `mode_000.dat`, `mode_001.dat`, … so dimer mode-evolution plots have per-iteration eigenvectors.
+- `Potential::layoutFlags()` reports in-process vs cwd vs subprocess execution. ExtPot sets Subprocess and NeedsWorkingDirectory.
+- `RGPOT_NWCHEM_ENGINE` is accepted as an alias of `RGPOT_NWCHEMC_ENGINE`. Devdocs list which pots live in rgpot vs in-tree.
+- `[Nudged Elastic Band] match_endpoints = true` rigid-aligns and permutes the reactant onto the product with IRA before interpolation.
+- `[Potential] thread_safe = false` keeps a shared Potential serial. EAM and EMT refuse shared-instance threading (cell lists / ASAP state).
+- ``eon.geometry.pbc`` uses minimage ``wrap_many`` for packed displacements.
+  ``neighbor_list_pairs`` returns vesin ``ijS`` rows without unique-index
+  MIC reduction.
+- `eon_schema.jobs` encodes and decodes JobResult dicts (`job_result_dumps` / `job_result_loads`). pycapnp is used when installed; otherwise JSON of the wire field names.
+- `job = test` now constructs TestJob. The implementation is linked into eonclib and writes results.dat (OK/FAIL/SKIP per pot). Missing `pos_test.con` is SKIP, not a link error.
+- pyeonclient exports ProcessSearchJob with min1/min2/saddle/prefactors. LocalInProcess uses that job when present. NEB writes results.dat from JobResultEnvelope plus image keys.
+
+### Changed
+
+- AMS and AMS_IO look up symbols with `readcon::z_to_symbol`. GPR dropped
+  an unused private element table.
+- ASE and CatLearn pot headers no longer inject `using namespace
+  pybind11::literals`. The `_a` literal is function-local in the TUs.
+- ASE-NWChem `basis` and `memory` come from `[ASE_NWCHEM]` instead of
+  hard-coded `3-21G` / `2 gb`. Defaults are unchanged.
+- ConjugateGradients, FIRE, LBFGS, Quickmin, and SteepestDescent headers no longer inject `using eonc::…`. Implementations live in `namespace eonc`.
+- Dimer `opt_method` is `OptType` (CG/LBFGS/SD) like the other optimizers. INI still accepts `cg`/`lbfgs`/`sd`.
+- Dimer, ImprovedDimer, Lanczos, Davidson, LOR, LowestEigenmode, MinModeSaddleSearch, and EigenmodeStrategy headers no longer inject `using eonc::…`.
+- IRA CShDA marks unassigned pairs with `huge()` instead of 999.9.
+  A 38-atom core-plus-outlier pair that used to return a non-bijective
+  permutation now assigns every index.
+- Matter, Parameters, NEB, and the RPC server TUs live in `namespace eonc`. `NudgedElasticBand.h`, `Optimizer.h`, and `ServeRpcServer.h` no longer inject `using eonc::…`.
+- Minimization, Point, Dynamics, Hessian, FiniteDifference, and Test job headers no longer inject `using eonc::…` into the global namespace. The job factory qualifies `eonc::` at the register site.
+- More public headers (dynamics, Hessian, IDPP, IRA, saddle methods) no longer inject `using eonc::…`. Implementations live in `namespace eonc`.
+- NEB image forces use `std::execution::par` when built with `-Dwith_parallel_neb=true` (TBB), instead of one raw thread per bead.
+- Option structs live in ``ParametersOptions.h``. ``Parameters.h`` is the
+  loader aggregate and keeps ``Parameters::neb_options_t`` aliases.
+- Parameters option groups now expose only const accessors. INI/JSON loaders and
+  bindings write through ``ParametersLoadAccess``; MPI comm/rank use dedicated
+  setters so ``ParametersMpi.h`` no longer takes the address of a temporary.
+- Pot headers inherit `eonc::Potential` directly. `Potential.h` no longer injects `using eonc::Potential`.
+- Production client sources no longer use `using namespace eonc::helpers`. Call sites are qualified.
+- Public headers no longer include mpi.h or gate EigenmodeStrategy on
+  WITH_GPRD. Potential and Matter forward-declare Parameters. Optional
+  MPI helpers live in ParametersMpi.h.
+- Public headers no longer inject `using eonc::Matter`, `Parameters`, or the
+  BaseStructures enums. Helper rng/geometry names are called as `eonc::rng`
+  and `eonc::geometry`. `Potential::get_ef` is defined on `eonc::Potential`.
+- Python CNA now builds unique-index adjacency from vesin ``ijS`` pair
+  arrays. The local element table is a Z-keyed radius/color overlay;
+  symbol and Z lookups stay on readcon.
+- Python CNA uses the same 0/1/2 labels as the C++ client (fcc/hcp/other).
+  Common-neighbor lookup is a set membership test that keeps neighbor-list order.
+- Remaining job headers no longer inject `using eonc::…`. Implementations live in `namespace eonc`. `Job.h` still has the `using eonc::Job` alias.
+- ServeMode, BondBoost, Rgpot, and AMS use `std::ranges::transform` for case folding instead of `std::transform`.
+- SocketNWChem looks up symbols with `readcon::z_to_symbol` instead of a
+  private element table. The last owned file-scope `using` directives are gone.
+- The ASE potential maps incoming C arrays with Eigen::Map, matching
+  ASE-ORCA, instead of building pybind11 shape vectors by hand.
+- The client Fortran compile no longer passes `-w`. Named `-Wno-*`
+  flags stay. Water displacements are no longer a fake `Displace` subclass.
+- The command-line parser qualifies Argum types instead of a file-scope
+  using-directive. Helper file helpers use `std::string` / `std::ifstream`.
+- The eon-schema `rgpycrumbs` extra matches the tree pin (`>=1.10.4`). Dimer docs mark LOR as added in 2.17.2.
+- Water and Water_Pt potential TUs wrap implementations in
+  ``namespace forcefields`` instead of file-scope ``using namespace``.
+- `Job.h` and `ServeMode.h` no longer inject `using eonc::…` into the global namespace.
+- ``Parameters::load``, ``load_ini_text``, and ``load_json`` take
+  ``std::string_view`` instead of owning ``std::string``.
+- ``Parameters`` now has a private load-state ``Impl``
+  (``last_load_source`` / ``last_load_error``). Option-group layout stays
+  in the installed header and is not ABI-stable. ``Matter`` still exposes
+  Eigen.
+- ``Parameters`` option groups are private. Callers use ``main_options()``
+  and the other accessors. ``load`` / ``to_json`` still round-trip.
+- ``Potential::force`` has a ``std::span`` overload that checks sizes
+  before the raw C-array virtual. Matter, ``get_ef``, and surrogate
+  ``get_ef_var`` use it. Fortran/FFI loaders keep the pointer API.
+- ``eon.atoms.atomic_number`` / ``symbol_for_z`` call readcon's Python
+  ``symbol_to_atomic_number`` / ``atomic_number_to_symbol`` (0.14.9+). The
+  ctypes probe of ``rkr_symbol_to_z`` is gone.
+- `eon.atoms.atomic_number` / `symbol_for_z` prefer readcon for Z/symbol. The local table keeps radius and colour for viz.
+- `eon.geometry.neighbor_list` takes vesin's per-axis `periodic` flag.
+  `Structure.periodic` defaults to all-periodic and is used when the
+  argument is omitted.
+- `eon.geometry.pbc` accepts a bool or length-3 mask so a free axis is
+  not minimum-image wrapped. Partial masks use the numpy wrap.
+- `import eon` no longer imports the AKMC server. `eon.server` loads on first access.
+
+### Fixed
+
+- A failed `hessian.dat` write now fails the Hessian calculation instead of returning a successful eigen solve.
+- AKMCState stores the search count in MetaData and increments it on each append, instead of rereading the search log.
+- AtomicGPDimer throws on a null Matter and returns a zero mode if the GP orientation size does not match the free-atom count.
+- BGSD uses `safe_normalize` on the trial mode so an all-fixed Matter does not write NaN.
+- Bond-boost returns zero bias when QRR or the selected bond count is not positive, and skips a bond whose length or equilibrium is zero.
+- Collective IDPP `lastMaxForce` uses free-atom residuals only, so frozen pair forces no longer pin SIDPP at `max_iterations`.
+- Collective IDPP leaves a collapsed-image tangent as zero instead of `normalize()` to NaN.
+- Cookbook tests skip unless ``EON_PET_NEB_ROOT`` / ``EON_PET_MAD_MODEL`` are set. ASE NWChem examples take ``NWCHEM_COMMAND``.
+- Dephase and INI dynamics step counts no longer divide by a zero `time_step`. A non-positive dt throws in the dephase paths and yields 0 steps in INI load.
+- Document that XTB NEB is serial: `isThreadSafe` and `needsPerImageInstance` are both false because of Fortran restart units.
+- Documentation PRs no longer get `contents: write`. The build job is read-only; deploy is a separate job that runs only on push.
+- Dynamics throws on a null Matter. Kinetic temperature, thermal velocities, and Andersen redraws skip when there are no free atoms or a mass is not positive.
+- EpiCenters throw on a null Matter instead of dereferencing it.
+- Finite-difference displacements use `structure_comparison.neighbor_cutoff` and reject a zero displacement instead of normalizing it to NaN.
+- Fix Matter size/cache bugs, dimer rotate/PBC/fixed-atom mode, NEB/Helper/min-mode signed max-component, FIRE zero-force/max-move, Hessian failed-cache, CG extra step, Dynamics extra MD step, BondBoost 0/dt and listed-atom range, Prefactor frozen atoms in the Hessian filter, GP surrogate target layout, OCINEB/GP-dimer eigenvector size, min-mode status/forcecalls/confine loop, ARTn direction.dat load, process-search pot/mode/displacement, fCallsMin double-count, replica-exchange config swap and per-thread ran2, basin-hopping accept/compare/swap, Nose-Hoover G2/Q2 plus post-Verlet KE, EpiCenters empty-set throw, MonteCarlo Metropolis sign, Quickmin zero-force, HessianJob failed-freq status, TAD/SafeHyper clock clamp and refine bounds, SafeHyper bias binding, BGSD NaN/iteration cap, OCINEB converged_only plus SIDPP collapse, TAD empty product, ParallelReplica first-hop stop, NEB path size, ASE position alias, SD two-point PBC, Prefactor empty moved set, ASE mixed-PBC throw, ASE unknown-constraint throw, readonly forces view, non-finite force reject, LAMMPS extract null and missing in.lammps, setForces mask persist, Structure-Matter atom_id copy, job catch of runtime_error, Lanczos/Davidson max_iterations floor, LBFGS negative s·y skip, LAMMPS neighbor rebuild and restricted cell, and Structure id uniqueness. Morse Pt saddle energy is unchanged; the dimer-rotate fix shifts the FD curvature from -1.014995 to -1.010564 and process-search force calls from 67 to 69.
+- GPRD CI no longer reports Success when `SUBMODULE_PRIVATE` is missing. A `gprd-gate` job records availability; `gprd-integration` is Skipped on forks instead of a fake pass.
+- IRA compare returns an error on a zero-atom Matter instead of indexing `cand1[0]`.
+- LAMMPS `setforce` follows Matter's per-axis freeze mask. An atom frozen
+  only in z is no longer free to move in z inside LAMMPS.
+- LAMMPS applies `fix setforce 0 0 0` to atoms with `Atom.fixed` set on all three axes before `run 1`, so buffer atoms stay put during post-saddle minimization.
+- MPI `stop_clients` sends `STOPCAR` to ready client ranks. AKMC uses that instead of `Abort`.
+- Matter atom accessors throw `out_of_range` on a bad atom index or axis instead of indexing Eigen unchecked.
+- Meson accepts readcon-core 0.14.9. The v0.14.10 wrap tag still reports crate version 0.14.9, so a cargo-c install failed the old `>=0.14.10` check.
+- Metatomic seeds the Torch RNG from `main.randomSeed` when rotation averaging is on. NC force blocks must have `nAtoms*3` values before reshape.
+- Min-mode `bowl_breakout` does not index atom 0 on an empty Matter and caps the bowl set at `nAtoms`.
+- Minima-hopping Boltzmann accept/reject compares the hop to the current minimum and uses `exp(-dE/(kB T))` with `params.constants.kB`.
+- NEB `isUncertain` now includes the product endpoint (`path[numImages+1]`).
+- NEB spline extrema leave a collapsed endpoint tangent as zero instead of `normalize()` to NaN.
+- Process search opens `pos.con` through `getRelevantFile`, throws on a failed load, and compares a copy so `Matter::compare` cannot translate `initial`.
+- Removed the empty `CUH2_POT` ifdef from `Potential.cpp`.
+- Replica exchange rejects `replicas < 1` and applies the same temperature fallback as the Python bind (`low` from main T or 300 K, `high` at least `1.5 * low`).
+- SIDPP throws if adjacent images collapse. `climbing_image_converged_only` no longer reports GOOD while the rest of the band exceeds `climbing_image_band_slack` times the force tolerance.
+- Same-size `Matter::resize` and displacement.con loads keep the reactant's `.con` atom ids instead of restamping 1..N.
+- SocketNWChem drops a dead i-PI connection and accepts a new NWChem client once, so process_search / AKMC can continue after `task scf optimize` exits.
+- Superbasin `make()` also calls `connect_states` on the new basin so intra-basin reverse processes register.
+- TAD and SafeHyper rewind to `mdBuffer[0]` when refine returns 0. SafeHyper skips the boost exponential when T or kB is not positive.
+- The SIGFPE continue path now demotes ARM FPCR trap-enable bits (Linux fpsimd_context and Apple neon state). enableFPE on Apple aarch64 sets `__fpcr`, not `__fpsr`. x86 MXCSR masking is unchanged.
+- The client calls `getBundleSize()` again and enables bundling when a numbered bundle is present. A thrown `int` from a job is a failed exit, not a silent continue.
+- The point job opens `pos.con` through `getRelevantFile`, so `pos_cp.con` / `pos_in.con` are used when present.
+- The prefactor job writes `prefactor_reactant_to_product` and `prefactor_product_to_reactant`, honors `getPrefactors` failure, and does not assert on an empty moved set.
+- Unbundled results name each slot `{state}_{first_wuid+slot}` so explorer
+  does not add `result['number']` to recover the wuid. Reset paths share
+  `fileio.remove_tree_and_empty_parents`.
+- When a superbasin is active, `previous_state` stays the last KMC hop. Only `explore_state` is the lowest-confidence basin member.
+- XTB sets periodicity from the box diagonal.
+- `Matter::pbc` is the raw difference when periodic boundaries are off. OCINEB does not resample a non-periodic climbing image, so a 3-atom vacuum cell cannot fold to a 60 A reaction coordinate.
+- `Parameters::load(FILE*)` returns 1 on a null FILE, a failed seek, or a negative `ftell` size.
+- `Prefactor::getPrefactors` returns -1 if any of min1, saddle, or min2 is null.
+- `WeightedSpring::compute` throws if the image index is 0 or past the spring table.
+- `[ASE_ORCA] charge` is read from the INI and passed to `ase.Atoms`.
+- ``SaddleSearchConfig.displace_atom_list`` accepts the scalar int ``-1``
+  used by ``examples/akmc-al/run_akmc_al.py``, as well as ``[-1]`` and
+  ``"-1"``.
+- ``SaddleSearchJob`` and ``ProcessSearchJob`` apply
+  ``client_displace_type = listed_atoms`` (and ``random`` / ``last_atom`` /
+  ``least_coordinated``) through ``listedAtomEpiCenter`` plus a
+  ``displace_radius`` / ``displace_magnitude`` kick instead of copying the
+  reactant unchanged.
+- ``listedAtomEpiCenter`` now picks with ``randomDouble(size)`` so the last
+  listed (or last free, for lone ``-1``) atom can be chosen. The previous
+  ``size-1`` interval always dropped that last index.
+- `accuratePES` compares max `|pred-true|` and restores each image's incoming potential. The unused `sqrt(pred^2-true^2)` leftover is gone.
+- `debug_keep_all_results` writes `results.dat` and con payloads from the result dict into `debug_results_path`.
+- `eon_matter_to_atmconf` throws on a null Matter or when no atoms move.
+- `eonclient -m` does not write a `.con` when no output path is given.
+- `geometry::identical` will not assign two left atoms to the same right partner.
+- `getMidSlice` keeps the CatLearn order (endpoints, then a two-thirds interior image) and throws if the path has fewer than three images. It is not `n/2`.
+- `getRelevantFile` no longer throws on a name without a `.`. `_cp` / `_in` suffixes still win when those files exist.
+- `gh release edit` failures are no longer ignored. A stale notes update now fails the release job.
+- `job = dynamics` writes a `results.dat` envelope (`termination_reason`, `job_type`, `potential_energy`, `total_force_calls`) and still returns `final.con`.
+- `job = structure_comparison` loads `matter1.con` and `matter2.con`, compares a copy, and writes `results.dat` (`match`, `distance`, `per_atom_norm`, energies).
+- `min_mode_method=gprdimer` constructs `AtomicGPDimer` in place in the eigenmode variant. A WITH_GPRD Catch2 case covers that path.
+- `removeNetForce` no longer runs on a one-atom Matter. Subtracting the mean force was identically zero and made a 1-atom NEB report immediate GOOD.
+- `rgpot_pot` now compiles with the same `_args` as the other pot plugins (`WITH_RGPOT`). Dead Metatomic `n_avg` and the empty `.cargo/config.toml` are gone.
+- `rotm`, `get_rotation_matrix`, and `internal_motion` call `numpy.cos` /
+  `sin` / `arccos`. They used to call bare `cos`/`sin`/`acos` and raise
+  NameError. `get_mappings` uses vector PBC distances.
+- `unbundle` drops only those bundle slots that lack a `results*` file.
+- `unbundle` only copies `*_N.ext` when `N` is all digits and matches the bundle number. Non-numeric suffixes such as `pos_final.con` are left alone.
+- eonclib compiles after the Parameters accessor split: pot TUs include
+  Parameters.h, write-holes use ParametersLoadAccess, and Dimer/ConFileIO
+  qualify helpers and Matter.
+- pyeonclient ConFrame export uses mkstemps (exclusive) and releases the GIL while writing. The guessable world-writable temp name is gone.
+
+
 ## [3.2.1](https://github.com/TheochemUI/eOn/tree/3.2.1) - 2026-09-13
 
 ### Added
