@@ -15,6 +15,8 @@
 #include <cmath>
 #include <stdexcept>
 
+namespace eonc {
+
 const char Dynamics::ANDERSEN[] = "andersen";
 const char Dynamics::NOSE_HOOVER[] = "nose_hoover";
 const char Dynamics::LANGEVIN[] = "langevin";
@@ -289,3 +291,5 @@ void Dynamics::langevinVerlet() {
   vel += 0.5 * dt * acc;
   matter->setVelocities(vel);
 }
+
+} // namespace eonc

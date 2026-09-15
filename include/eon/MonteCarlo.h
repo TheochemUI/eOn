@@ -37,4 +37,3 @@ private:
 
 } // namespace eonc
 
-using eonc::MonteCarlo;

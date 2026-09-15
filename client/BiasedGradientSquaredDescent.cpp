@@ -24,6 +24,9 @@
 #include <cstring>
 #include <map>
 
+
+namespace eonc {
+
 class BGSDObjectiveFunction : public ObjectiveFunction {
   Matter &matter;
 
@@ -176,3 +179,5 @@ double BiasedGradientSquaredDescent::getEigenvalue() { return eigenvalue; }
 AtomMatrix BiasedGradientSquaredDescent::getEigenvector() {
   return eigenvector;
 }
+
+} // namespace eonc

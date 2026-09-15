@@ -56,4 +56,3 @@ private:
 
 } // namespace eonc
 
-using eonc::BiasedGradientSquaredDescent;

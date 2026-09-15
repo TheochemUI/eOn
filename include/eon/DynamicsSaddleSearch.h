@@ -61,4 +61,3 @@ private:
 
 } // namespace eonc
 
-using eonc::DynamicsSaddleSearch;

@@ -26,6 +26,23 @@ JOB_HEADERS = sorted(
         "LowestEigenmode.h",
         "MinModeSaddleSearch.h",
         "EigenmodeStrategy.h",
+        "GleThermostat.h",
+        "BondBoost.h",
+        "Hessian.h",
+        "MonteCarlo.h",
+        "GlobalOptimization.h",
+        "IRACompare.h",
+        "IDPPObjectiveFunction.hpp",
+        "ObjectiveFunction.h",
+        "SaddleSearchMethod.h",
+        "SurrogatePotential.h",
+        "PotRegistry.h",
+        "BasinHoppingSaddleSearch.h",
+        "BiasedGradientSquaredDescent.h",
+        "DynamicsSaddleSearch.h",
+        "ARTnSaddleSearch.h",
+        "AtomicGPDimer.h",
+        "Dynamics.h",
     )
 ]
 
