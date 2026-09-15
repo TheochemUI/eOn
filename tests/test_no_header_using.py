@@ -3,13 +3,9 @@
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-# Job.h still injects using eonc::Job (wide call sites). All other *Job.h
-# must stay clean. Optimizer impl headers are also clean; Optimizer.h
-# still has the factory alias.
+# Optimizer.h still has the factory alias.
 JOB_HEADERS = sorted(
-    p
-    for p in (ROOT / "include" / "eon").glob("*Job.h")
-    if p.name != "Job.h"
+    (ROOT / "include" / "eon").glob("*Job.h")
 ) + [
     ROOT / "include" / "eon" / name
     for name in (
@@ -43,6 +39,7 @@ JOB_HEADERS = sorted(
         "ARTnSaddleSearch.h",
         "AtomicGPDimer.h",
         "Dynamics.h",
+        "ServeMode.h",
     )
 ]
 
