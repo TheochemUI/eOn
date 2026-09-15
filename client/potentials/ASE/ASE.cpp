@@ -11,10 +11,12 @@
 */
 
 #include "eon/potentials/ASE/ASE.h"
+#include "eon/Eigen.h"
 #include "eon/PyGuard.h"
 #include "eon/fpe_handler.h"
+#include <pybind11/eigen.h>
 #include <pybind11/embed.h>
-#include <pybind11/numpy.h> // for py::array_t
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <stdexcept>
 #include <string>
@@ -80,24 +82,22 @@ void ASE::force(long nAtoms, const double *R, const int *atomicNrs, double *F,
   variance = nullptr;
   py::gil_scoped_acquire gil;
   try {
-    // TODO(rg): This is easier on the type system if Eigen::Map is used like in
-    // ASE_ORCA convert arrays to Numpy arrays
-    std::vector<size_t> R_shape = {static_cast<size_t>(nAtoms), 3};
-    py::array_t<double> R_np(R_shape, R);
-    py::array_t<int> atomicNrs_np(nAtoms, atomicNrs);
-    py::array_t<double> box_np({3, 3}, box);
+    AtomMatrix positions = AtomMatrix::Map(const_cast<double *>(R), nAtoms, 3);
+    RotationMatrix boxx = RotationMatrix::Map(const_cast<double *>(box), 3, 3);
+    Eigen::Map<Eigen::VectorXi> atmnmrs(const_cast<int *>(atomicNrs), nAtoms);
 
-    // get energy and forces (in this order) from Python
     std::tuple<double, py::array_t<double>> py_result =
-        _calculate(R_np, atomicNrs_np, box_np, calculator)
+        _calculate(positions, atmnmrs, boxx, calculator)
             .cast<std::tuple<double, py::array_t<double>>>();
 
-    // copy the results to the output arrays
     *U = std::get<0>(py_result);
     py::array_t<double> forces = std::get<1>(py_result);
     auto buffer = forces.request();
-    double *ptr = static_cast<double *>(buffer.ptr);
-    std::copy(ptr, ptr + buffer.size, F);
+    if (buffer.size < nAtoms * 3) {
+      throw std::runtime_error("ASE _calculate returned forces of the wrong size");
+    }
+    Eigen::Map<AtomMatrix>(F, nAtoms, 3) = Eigen::Map<const AtomMatrix>(
+        static_cast<const double *>(buffer.ptr), nAtoms, 3);
 
   } catch (py::error_already_set &e) {
     fprintf(stderr, "ASE calculator: Python error: %s\n", e.what());
