@@ -66,16 +66,16 @@ template <class P>
 ZhuPhilpott<P>::ZhuPhilpott()
     : SpceCcl() {
   nPlatinum_ = 0;
-  positions_ = 0;
-  forces_ = 0;
+  positions_.clear();
+  forces_.clear();
 }
 
 template <class P>
 ZhuPhilpott<P>::ZhuPhilpott(double cutoff, double switchingWidth)
     : SpceCcl(cutoff, switchingWidth) {
   nPlatinum_ = 0;
-  positions_ = 0;
-  forces_ = 0;
+  positions_.clear();
+  forces_.clear();
 }
 
 template <class P> ZhuPhilpott<P>::ZhuPhilpott(ZhuPhilpott const &zhuPhilpott) {
