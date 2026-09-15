@@ -2,6 +2,52 @@
 
 <!-- towncrier release notes start -->
 
+## [3.2.1](https://github.com/TheochemUI/eOn/tree/3.2.1) - 2026-09-13
+
+### Added
+
+- Exposed `opt_method`, `neb_opt_method`, `refine_opt_method`, and `refine_threshold` on pyeonclient `Parameters` so dimers and NEBs can pick FIRE/LBFGS/CG without a minimization-only path. ([#406](https://github.com/TheochemUI/eOn/issues/406))
+- Added `PotType.EXPR` so rgpot 3.1 ExprPot can compose named kernels (`0.5*lj + d3`) from `[ExprPot]` expression and terms.
+- Agreement tests for ``minimage`` and ``linkcell`` against eOn's
+  numpy/C++ wrap oracles, LAMMPS ``minimum_image`` (ortho and
+  restricted triclinic), and GROMACS ``pbc_dx``.
+- Exposed rgpot 3.1 Grimme DFT-D3 and DFT-D4 as `PotType.DFTD3` / `DFTD4` (`potential = dftd3` / `dftd4`, `[D3Pot]` / `[D4Pot]`).
+- Exposed rgpot 3.2 MOPACPot as `PotType.MOPAC` (`potential = mopac`, `[MOPACPot]`, Expr term `mopac`). Default model is AM1.
+- Standalone doxyYoda C++ API HTML is published at `/api-cpp/` next to the Sphinx book.
+- The C++ API landing page links to the Sphinx book. `pixi run -e docs makedocs` writes `/api-cpp/` next to the book.
+- ``eon.geometry.pbc`` uses ``minimage`` when installed. ``neighbor_list_linkcell``
+  compares the vesin neighbor list to ``linkcell.knearest`` on the same
+  ``Structure``.
+
+### Developer
+
+- Pinned potentials-schema wrap to e825c207 so it matches rgpot 3.2.0's vendored Potentials.capnp.
+- Updated wrap pins to current releases: rgpot v3.1.2, readcon-core v0.14.10, Highway 1.4.0, potentials-schema v1.15.1, xtb v6.7.1, plus current IRA and ARTn heads.
+
+### Changed
+
+- PotentialConfig now uses parseable pot tokens (socketnwchem, ase_pot, catlearn) and exposes emt_rasmussen and potentials_path. ([#414](https://github.com/TheochemUI/eOn/issues/414))
+- Docs footer credits antics and loads only `antics.js`.
+- Raised Python floors to readcon 0.14.9, vesin 0.6.1, and rgpot 3.1.2.
+
+### Fixed
+
+- The C++ API mainpage no longer prints undefined Makefile Doxygen aliases, and the theme header version matches 3.2.0. ([#401](https://github.com/TheochemUI/eOn/issues/401))
+- Fixed IDPP, collective IDPP, and SIDPP path initialization moving frozen atoms when a mover sat next to a constraint. ([#410](https://github.com/TheochemUI/eOn/issues/410))
+- Fixed ASE from_ase wrapping coordinates before PBC was applied, and stopped treating every get_indices constraint as FixAtoms. Positions views are not writeable in place. to_ase attaches SinglePoint energy/forces. NEB keeps the GIL when the pot is not thread-safe. ([#414](https://github.com/TheochemUI/eOn/issues/414))
+- Write ``hessian.dat`` even when ``[Main] quiet = true``. Quiet still
+  suppresses the log line; the Hessian job's artifact is no longer gated
+  on it.
+- ``LammpsLoader::require_loaded`` now says whether ``liblammps.so`` is
+  missing, failed ``dlopen`` (glibc), or opened without
+  ``lammps_open_no_mpi`` (the eOn plugin is not LAMMPS).
+- ``displace_atom_list`` is CON file-order. ``ListedAtoms`` remaps those
+  rows through the ``atom_id`` sort when the raw list is all frozen, so
+  a movable-first active-volume ``.con`` no longer raises
+  "Listed atoms are all frozen".
+
+
+
 ## [3.2.0](https://github.com/TheochemUI/eOn/tree/3.2.0) - 2026-08-16
 
 ### Added

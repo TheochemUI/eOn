@@ -7,7 +7,7 @@ on the `main` branch and the corresponding GitHub Release / conda-forge build.
 
 | Version | Supported |
 |---------|-----------|
-| Latest `2.x` release on `main` / PyPI / conda-forge | Yes |
+| Latest `3.x` release on `main` / PyPI `eon-akmc` / conda-forge `eon` | Yes |
 | Older minor/patch lines | Best effort only; please upgrade |
 | Pre-release / RC tags (`X.Y.Z-rc.N`) | No stability or security SLA |
 
@@ -33,6 +33,7 @@ towncrier fragments) when reporters wish to be named.
 
 - Source of truth for a cut is the annotated tag `vX.Y.Z` and the
   `eon-vX.Y.Z.tar.xz` asset (git archive), not ad-hoc tarballs from forks.
-- PyPI `eon` publishes only from `release.yml` on stable tags (trusted publisher
-  or scoped token); RC tags skip PyPI.
+- PyPI `eon-akmc` publishes only from `release.yml` on stable tags (trusted
+  publisher or scoped token); RC tags skip PyPI. PyPI `eon` is a different
+  project (EoN epidemics).
 - conda-forge builds are reviewed via the feedstock PR process separately.
