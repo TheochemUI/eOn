@@ -5,7 +5,10 @@ set -euo pipefail
 EXTRA_LIBS="$(
   python -c '
 import pathlib, sys
-import torch
+try:
+    import torch
+except ImportError:
+    raise SystemExit(0)
 mm = ".".join(torch.__version__.split("+")[0].split(".")[:2])
 root = pathlib.Path(sys.prefix)
 torch_lib = pathlib.Path(torch.__file__).resolve().parent / "lib"

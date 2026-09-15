@@ -827,16 +827,7 @@ if get_option('with_xtb')
     # Try finding system 'xtb' via pkg-config or cmake.
     # Users who need to build xtb from source can place it in subprojects/
     # and Meson's implicit fallback will find it.
-    # Windows conda/pixi ships libxtb.lib; pkg-config still says -lxtb
-    # (MSVC then looks for xtb.lib and LNK1181s).
-    if host_machine.system() == 'windows'
-        xtb_dep = cppc.find_library('xtb', required: false)
-        if not xtb_dep.found()
-            xtb_dep = cppc.find_library('libxtb', required: true)
-        endif
-    else
-        xtb_dep = dependency('xtb', required: true)
-    endif
+    xtb_dep = dependency('xtb', required: true)
 
     _deps += [xtb_dep]
     subdir('potentials/XTBPot')
