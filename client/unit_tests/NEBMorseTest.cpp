@@ -15,6 +15,7 @@
 #include "eon/IDPPObjectiveFunction.hpp"
 #include "eon/NEBInitialPaths.hpp"
 #include "eon/api.h"
+#include "eon/NEBOcinebController.h"
 #include "eon/NudgedElasticBand.h"
 #include "eon/PotCapabilities.h"
 #include "eon/PotRegistry.h"
@@ -401,6 +402,22 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB with single image does not crash",
 
 // --- Potential thread safety tests ---
 
+TEST_CASE("OCI-NEB shouldTrigger uses 2*ftol not trigger_force",
+          "[neb][awc]") {
+  Parameters p;
+  p.neb_options.force_tolerance = 0.01;
+  p.neb_options.climbing_image.ocineb.use_mmf = true;
+  p.neb_options.climbing_image.ocineb.trigger_factor = 0.0;
+  p.neb_options.climbing_image.ocineb.trigger_force = 100.0;
+  p.neb_options.climbing_image.ocineb.ci_stability_count = 0;
+  auto cfg = eonc::neb::OCINEBController::fromParams(p);
+  eonc::neb::OCINEBController ctl(cfg);
+  ctl.initBaseline(1.0);
+  REQUIRE(ctl.threshold() == Catch::Approx(0.02).margin(1e-12));
+  REQUIRE(ctl.shouldTrigger(0.015, true, 1, 5, 1));
+  REQUIRE_FALSE(ctl.shouldTrigger(0.05, true, 1, 5, 1));
+}
+
 TEST_CASE("NEB match_endpoints is off by default", "[neb][srlq]") {
   Parameters params;
   REQUIRE_FALSE(params.neb_options.match_endpoints);
@@ -743,7 +760,7 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB with OCINEB hybrid dimer",
   params.neb_options.climbing_image.converged_only = false;
   params.neb_options.climbing_image.trigger_force = 0.0;
   params.neb_options.climbing_image.ocineb.use_mmf = true;
-  params.neb_options.climbing_image.ocineb.trigger_force = 100.0;
+  params.neb_options.climbing_image.ocineb.trigger_factor = 100.0;
   params.neb_options.climbing_image.ocineb.max_steps = 5;
   params.optimizer_options.max_iterations = 20;
   params.neb_options.force_tolerance = 0.1;

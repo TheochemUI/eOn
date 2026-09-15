@@ -39,7 +39,8 @@ OCINEBController::OCINEBController(const Config &cfg)
 
 void OCINEBController::initBaseline(double baseline_force) {
   baseline_force_ = baseline_force;
-  current_threshold_ = baseline_force_ * cfg_.trigger_factor;
+  current_threshold_ = std::max(baseline_force_ * cfg_.trigger_factor,
+                                2.0 * cfg_.force_tolerance);
 }
 
 bool OCINEBController::shouldTrigger(double convForce, bool ci_active,
@@ -53,7 +54,7 @@ bool OCINEBController::shouldTrigger(double convForce, bool ci_active,
     return false;
   if (convForce <= cfg_.force_tolerance)
     return false;
-  return (convForce < current_threshold_ || convForce < cfg_.trigger_force);
+  return convForce < current_threshold_;
 }
 
 void OCINEBController::updateStability(long climbingImage) {
@@ -229,7 +230,9 @@ int OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
 void OCINEBController::updateThresholdSuccess(double convForce,
                                               double newForce) {
   current_threshold_ = newForce * (0.5 + 0.4 * (newForce / convForce));
-  double max_threshold = baseline_force_ * cfg_.trigger_factor;
+  double max_threshold =
+      std::max(baseline_force_ * cfg_.trigger_factor,
+               2.0 * cfg_.force_tolerance);
   current_threshold_ = std::min(current_threshold_, max_threshold);
 }
 
@@ -242,8 +245,7 @@ void OCINEBController::updateThresholdBackoff(double alignment) {
   // convergence, but also capped by the trigger_factor envelope so a
   // loose force_tolerance cannot push min_threshold above the cap and
   // starve MMF activation.
-  double min_threshold = std::min(cfg_.force_tolerance * 2.0,
-                                  baseline_force_ * cfg_.trigger_factor);
+  double min_threshold = 2.0 * cfg_.force_tolerance;
   current_threshold_ = std::max(current_threshold_, min_threshold);
 }
 
