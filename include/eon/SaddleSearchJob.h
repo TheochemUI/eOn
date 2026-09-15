@@ -86,4 +86,3 @@ private:
 
 } // namespace eonc
 
-using eonc::SaddleSearchJob;

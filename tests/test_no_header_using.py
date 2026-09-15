@@ -3,14 +3,13 @@
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-JOB_HEADERS = [
-    ROOT / "include" / "eon" / "TestJob.h",
-    ROOT / "include" / "eon" / "MinimizationJob.h",
-    ROOT / "include" / "eon" / "PointJob.h",
-    ROOT / "include" / "eon" / "DynamicsJob.h",
-    ROOT / "include" / "eon" / "HessianJob.h",
-    ROOT / "include" / "eon" / "FiniteDifferenceJob.h",
-]
+# Job.h still injects using eonc::Job (wide call sites). All other *Job.h
+# must stay clean.
+JOB_HEADERS = sorted(
+    p
+    for p in (ROOT / "include" / "eon").glob("*Job.h")
+    if p.name != "Job.h"
+)
 
 
 def test_job_headers_have_no_file_scope_using():

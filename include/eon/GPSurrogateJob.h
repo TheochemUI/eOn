@@ -86,4 +86,3 @@ void addVectorRow(MatrixXd &data, const Eigen::VectorXd &newrow);
 
 } // namespace eonc
 
-using eonc::GPSurrogateJob;

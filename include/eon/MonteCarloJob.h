@@ -30,4 +30,3 @@ private:
 
 } // namespace eonc
 
-using eonc::MonteCarloJob;

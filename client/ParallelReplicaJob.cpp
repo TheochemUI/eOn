@@ -23,6 +23,9 @@
 #include <format>
 #include <fstream>
 
+
+namespace eonc {
+
 std::vector<std::string> ParallelReplicaJob::run() {
   reactant = std::make_shared<Matter>(pot, params);
   {
@@ -348,3 +351,5 @@ int ParallelReplicaJob::refineTransition(
 
   return (lo + hi) / 2 + 1;
 }
+
+} // namespace eonc

@@ -33,6 +33,9 @@
 
 #include "eon/EonLogger.h"
 
+
+namespace eonc {
+
 std::vector<std::string> ProcessSearchJob::run() {
   std::string reactantFilename = eonc::helpers::getRelevantFile("pos.con");
   std::string displacementFilename("displacement.con");
@@ -84,7 +87,7 @@ std::vector<std::string> ProcessSearchJob::run() {
               params.saddle_search_options.displace_magnitude)) {
         EONC_LOG_CRITICAL("Failed to load {} (and no usable {})",
                           displacementFilename, modeFilename);
-        exit(1);
+        throw std::runtime_error("failed to load " + displacementFilename);
       }
       *min1 = *min2 = *initial;
     } else if (eonc::helpers::applyClientDisplacement(*saddle, *initial, params,
@@ -471,3 +474,5 @@ void ProcessSearchJob::printEndState(int status) {
     QUILL_LOG_ERROR(log, "[Saddle Search] {}", msg);
   }
 }
+
+} // namespace eonc

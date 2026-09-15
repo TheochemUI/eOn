@@ -48,4 +48,3 @@ private:
 
 } // namespace eonc
 
-using eonc::BasinHoppingJob;

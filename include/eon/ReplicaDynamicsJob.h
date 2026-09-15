@@ -102,4 +102,3 @@ protected:
 
 } // namespace eonc
 
-using eonc::ReplicaDynamicsJob;

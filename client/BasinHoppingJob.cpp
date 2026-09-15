@@ -27,6 +27,9 @@
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 
+
+namespace eonc {
+
 std::vector<std::string> BasinHoppingJob::run() {
   bool swapMove;
   double swap_accept = 0.0;
@@ -474,3 +477,5 @@ VectorXd BasinHoppingJob::calculateDistanceFromCenter(Matter *matter) {
 
   return dist;
 }
+
+} // namespace eonc

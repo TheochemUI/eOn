@@ -440,11 +440,8 @@ class ServerMinModeExplorer(MinModeExplorer):
         f.close()
 
     def explore(self):
-        if not os.path.isdir(self.config.path_jobs_in): #XXX: does this condition ever happen?
+        if not os.path.isdir(self.config.path_jobs_in):
             os.makedirs(self.config.path_jobs_in)
-            if self.state.get_confidence(self.superbasin) >= self.config.akmc_confidence:
-                self.process_searches = {}
-                self.save()
 
         MinModeExplorer.explore(self)
 

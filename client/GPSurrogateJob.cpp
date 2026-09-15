@@ -22,6 +22,9 @@
 #include <sstream>
 #include <stdexcept>
 
+
+namespace eonc {
+
 std::vector<std::string> GPSurrogateJob::run() {
   std::string reactantFilename = eonc::helpers::getRelevantFile("reactant.con");
   std::string productFilename = eonc::helpers::getRelevantFile("product.con");
@@ -184,6 +187,9 @@ void GPSurrogateJob::saveData(NudgedElasticBand::NEBStatus status,
   returnFiles.push_back("neb.dat");
   neb->printImageData(true);
 }
+
+} // namespace eonc
+
 namespace eonc::helpers::surrogate {
 MatrixXd get_features(const std::vector<Matter> &matobjs) {
   // Calculate dimensions

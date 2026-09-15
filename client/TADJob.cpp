@@ -15,6 +15,9 @@
 
 #include <cmath>
 
+
+namespace eonc {
+
 void TADJob::initExtra() {
   crossing = std::make_shared<Matter>(pot, params);
 
@@ -244,3 +247,5 @@ int TADJob::dynamics() {
     return 0;
   }
 }
+
+} // namespace eonc

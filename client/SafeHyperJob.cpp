@@ -16,6 +16,9 @@
 
 #include <cmath>
 
+
+namespace eonc {
+
 void SafeHyperJob::reportResults() {
   if (newStateFlag) {
     QUILL_LOG_DEBUG(log, "Transition time: {:.2e} s",
@@ -263,3 +266,5 @@ int SafeHyperJob::dynamics() {
     return 0;
   }
 }
+
+} // namespace eonc
