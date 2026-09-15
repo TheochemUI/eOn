@@ -23,6 +23,9 @@
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/MobileAtoms.h"
 #include "eon/Parameters.h"
+#ifdef WITH_GPRD
+#include "eon/AtomicGPDimer.h"
+#endif
 
 #include <algorithm>
 #include <cmath>
@@ -162,7 +165,7 @@ TEST_CASE_METHOD(DimerFixture,
 
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   REQUIRE(strategy != nullptr);
-  REQUIRE(std::holds_alternative<ImprovedDimer>(*strategy));
+  REQUIRE(dynamic_cast<ImprovedDimer *>(strategy.get()) != nullptr);
 }
 
 TEST_CASE_METHOD(DimerFixture,
@@ -174,7 +177,7 @@ TEST_CASE_METHOD(DimerFixture,
 
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   REQUIRE(strategy != nullptr);
-  REQUIRE(std::holds_alternative<Dimer>(*strategy));
+  REQUIRE(dynamic_cast<Dimer *>(strategy.get()) != nullptr);
 }
 
 TEST_CASE_METHOD(DimerFixture, "buildEigenmodeStrategy returns Lanczos variant",
@@ -184,7 +187,7 @@ TEST_CASE_METHOD(DimerFixture, "buildEigenmodeStrategy returns Lanczos variant",
 
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   REQUIRE(strategy != nullptr);
-  REQUIRE(std::holds_alternative<Lanczos>(*strategy));
+  REQUIRE(dynamic_cast<Lanczos *>(strategy.get()) != nullptr);
 }
 
 TEST_CASE_METHOD(DimerFixture,
@@ -195,7 +198,7 @@ TEST_CASE_METHOD(DimerFixture,
 
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   REQUIRE(strategy != nullptr);
-  REQUIRE(std::holds_alternative<Davidson>(*strategy));
+  REQUIRE(dynamic_cast<Davidson *>(strategy.get()) != nullptr);
 }
 
 #ifndef WITH_GPRD
@@ -214,7 +217,7 @@ TEST_CASE_METHOD(DimerFixture, "gprdimer constructs AtomicGPDimer in place",
       LowestEigenmode::MINMODE_GPRDIMER;
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   REQUIRE(strategy != nullptr);
-  REQUIRE(std::holds_alternative<AtomicGPDimer>(*strategy));
+  REQUIRE(dynamic_cast<AtomicGPDimer *>(strategy.get()) != nullptr);
 }
 #endif
 
