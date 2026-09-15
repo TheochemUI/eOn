@@ -36,13 +36,13 @@ int main(int argc, char **argv) {
   }
 
   Parameters params;
-  params.potential_options().potential = PotType::XTB;
-  params.xtb_options().paramset = "GFN2xTB";
-  params.xtb_options().acc = 1.0;
-  params.xtb_options().elec_temperature = 300.0;
-  params.xtb_options().maxiter = 250;
-  params.xtb_options().charge = 0.0;
-  params.xtb_options().uhf = 0;
+  ParametersLoadAccess::potential_options(params).potential = PotType::XTB;
+  ParametersLoadAccess::xtb_options(params).paramset = "GFN2xTB";
+  ParametersLoadAccess::xtb_options(params).acc = 1.0;
+  ParametersLoadAccess::xtb_options(params).elec_temperature = 300.0;
+  ParametersLoadAccess::xtb_options(params).maxiter = 250;
+  ParametersLoadAccess::xtb_options(params).charge = 0.0;
+  ParametersLoadAccess::xtb_options(params).uhf = 0;
 
   auto pot = std::make_shared<XTBPot>(params);
   double energy = 0;

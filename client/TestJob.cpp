@@ -81,7 +81,7 @@ double TestJob::getEnergyDiff(std::string potTag, double refEnergy) {
     throw std::invalid_argument("unknown pot " + potTag);
   }
   Parameters p = params;
-  p.potential_options().potential = *type;
+  ParametersLoadAccess::potential_options(p).potential = *type;
   auto potHandle = eonc::helpers::makePotential(*type, p);
   Matter pos(potHandle, p);
   if (!eonc::io::io_ok(pos.con2matter(std::string("pos_test.con")))) {
@@ -97,7 +97,7 @@ double TestJob::getForceDiff(std::string potTag, double refForce) {
     throw std::invalid_argument("unknown pot " + potTag);
   }
   Parameters p = params;
-  p.potential_options().potential = *type;
+  ParametersLoadAccess::potential_options(p).potential = *type;
   auto potHandle = eonc::helpers::makePotential(*type, p);
   Matter pos(potHandle, p);
   if (!eonc::io::io_ok(pos.con2matter(std::string("pos_test.con")))) {

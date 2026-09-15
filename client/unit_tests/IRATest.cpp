@@ -35,7 +35,7 @@ protected:
         pot{nullptr},
         m1{nullptr},
         m2{nullptr} {
-    params.potential_options().potential = PotType::LJ;
+    ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
     pot = eonc::helpers::makePotential(PotType::LJ, params);
     m1 = std::make_shared<Matter>(pot, params);
     m2 = std::make_shared<Matter>(pot, params);

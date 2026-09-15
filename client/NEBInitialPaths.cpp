@@ -19,11 +19,11 @@ namespace eonc::helpers::neb_paths {
 // Forward declaration of ZBL setup helper to keep code clean
 std::shared_ptr<Potential> createZBLPotential() {
   auto zbl_params = Parameters{};
-  zbl_params.potential_options().potential = PotType::ZBL;
+  ParametersLoadAccess::potential_options(zbl_params).potential = PotType::ZBL;
   // Strong short-range repulsion
-  zbl_params.zbl_options().cut_inner = 0.5;
+  ParametersLoadAccess::zbl_options(zbl_params).cut_inner = 0.5;
   // Cutoff sufficient to push overlapping atoms apart
-  zbl_params.zbl_options().cut_global = 3.0;
+  ParametersLoadAccess::zbl_options(zbl_params).cut_global = 3.0;
   return eonc::helpers::makePotential(PotType::ZBL, zbl_params);
 }
 

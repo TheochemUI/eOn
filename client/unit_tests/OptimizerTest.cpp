@@ -65,11 +65,11 @@ public:
 
 static Parameters makeOptParams() {
   Parameters params;
-  params.optimizer_options().converged_force = 1e-6;
-  params.optimizer_options().max_move = 0.2;
-  params.optimizer_options().max_iterations = 1000;
-  params.optimizer_options().time_step = 0.1;
-  params.optimizer_options().max_time_step = 1.0;
+  ParametersLoadAccess::optimizer_options(params).converged_force = 1e-6;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 1000;
+  ParametersLoadAccess::optimizer_options(params).time_step = 0.1;
+  ParametersLoadAccess::optimizer_options(params).max_time_step = 1.0;
   params.optimizer_options().lbfgs.memory = 20;
   params.optimizer_options().lbfgs.auto_scale = true;
   params.optimizer_options().lbfgs.inverse_curvature = 0.01;
@@ -83,14 +83,14 @@ static Parameters makeOptParams() {
   params.optimizer_options().cg.max_iter_before_reset = 0;
   params.optimizer_options().cg.line_converged = 0.1;
   params.optimizer_options().cg.line_search_max_iter = 5;
-  params.main_options().finiteDifference = 0.01;
+  ParametersLoadAccess::main_options(params).finiteDifference = 0.01;
   params.saddle_search_options().confine_positive.bowl_breakout = false;
   return params;
 }
 
 TEST_CASE("FIRE throws when the time step collapses", "[optimizer][fire]") {
   auto params = makeOptParams();
-  params.optimizer_options().time_step = 1e-7;
+  ParametersLoadAccess::optimizer_options(params).time_step = 1e-7;
   auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
   VectorXd start(2);
   start << 5.0, 3.0;
@@ -140,7 +140,7 @@ TEST_CASE("LBFGS optimizer converges on quadratic", "[optimizer][lbfgs]") {
 
 TEST_CASE("CG optimizer converges on quadratic", "[optimizer][cg]") {
   auto params = makeOptParams();
-  params.optimizer_options().converged_force = 1e-3; // CG needs looser tol
+  ParametersLoadAccess::optimizer_options(params).converged_force = 1e-3; // CG needs looser tol
   auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
   VectorXd start(2);
   start << 5.0, 3.0;
@@ -157,7 +157,7 @@ TEST_CASE("CG optimizer converges on quadratic", "[optimizer][cg]") {
 TEST_CASE("CG with line search converges on quadratic",
           "[optimizer][cg][line_search]") {
   auto params = makeOptParams();
-  params.optimizer_options().converged_force = 1e-3;
+  ParametersLoadAccess::optimizer_options(params).converged_force = 1e-3;
   params.optimizer_options().cg.line_search = true;
   params.optimizer_options().cg.line_search_max_iter = 10;
   auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
@@ -175,7 +175,7 @@ TEST_CASE("CG with line search converges on quadratic",
 TEST_CASE("CG with no_overshooting converges on quadratic",
           "[optimizer][cg][no_overshoot]") {
   auto params = makeOptParams();
-  params.optimizer_options().converged_force = 1e-3;
+  ParametersLoadAccess::optimizer_options(params).converged_force = 1e-3;
   params.optimizer_options().cg.no_overshooting = true;
   auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
   VectorXd start(2);
@@ -192,9 +192,9 @@ TEST_CASE("CG with no_overshooting converges on quadratic",
 TEST_CASE("Quickmin optimizer reduces energy on quadratic",
           "[optimizer][quickmin]") {
   auto params = makeOptParams();
-  params.optimizer_options().converged_force = 1e-2;
-  params.optimizer_options().time_step = 0.01;
-  params.optimizer_options().max_move = 0.5;
+  ParametersLoadAccess::optimizer_options(params).converged_force = 1e-2;
+  ParametersLoadAccess::optimizer_options(params).time_step = 0.01;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.5;
   auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
   VectorXd start(2);
   start << 1.0, 0.5;
@@ -231,7 +231,7 @@ TEST_CASE("FIRE zero-force step stays finite", "[optimizer][fire]") {
 TEST_CASE("SteepestDescent optimizer converges on quadratic",
           "[optimizer][sd]") {
   auto params = makeOptParams();
-  params.optimizer_options().converged_force = 1e-3;
+  ParametersLoadAccess::optimizer_options(params).converged_force = 1e-3;
   auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
   VectorXd start(2);
   start << 5.0, 3.0;

@@ -29,7 +29,7 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 // Helper to create an LJ Matter loaded from reactant.con (13-atom H cluster)
 static std::pair<std::shared_ptr<Matter>, Parameters> makeLJCluster() {
   Parameters params;
-  params.potential_options().potential = PotType::LJ;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m = std::make_shared<Matter>(pot, params);
   m->con2matter(std::string("reactant.con"));
@@ -72,7 +72,7 @@ TEST_CASE("SetPotential changes energy", "[MatterTest]") {
   REQUIRE(std::isfinite(e_lj));
   REQUIRE(e_lj < 0.0); // LJ cluster has negative binding energy
 
-  params.potential_options().potential = PotType::MORSE_PT;
+  ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
   auto pot_morse = eonc::helpers::makePotential(PotType::MORSE_PT, params);
   REQUIRE(m1->getPotential() != pot_morse);
   m1->setPotential(pot_morse);
@@ -116,7 +116,7 @@ TEST_CASE("Copy constructor preserves positions, cell, and atomic numbers",
 
 TEST_CASE("pbc is identity when periodic is off", "[MatterTest][acc]") {
   Parameters params;
-  params.potential_options().potential = PotType::LJ;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter m(pot, params);
   m.resize(2);
@@ -133,8 +133,8 @@ TEST_CASE("pbc is identity when periodic is off", "[MatterTest][acc]") {
 TEST_CASE("removeNetForce is skipped for a single free atom",
           "[MatterTest][zjri]") {
   Parameters params;
-  params.potential_options().potential = PotType::LJ;
-  params.main_options().removeNetForce = true;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::main_options(params).removeNetForce = true;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter one(pot, params);
   one.resize(1);
@@ -285,7 +285,7 @@ struct IsolatedMoleculePot final : Potential {
 TEST_CASE("isolated molecule pot hard-fails if PBC re-enabled (#188)",
           "[MatterTest][pbc][molecular]") {
   Parameters params;
-  params.potential_options().potential = PotType::LJ;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = std::make_shared<IsolatedMoleculePot>();
   Matter m(pot, params);
   // Constructor turns PBC off for isolated-molecule pots.
@@ -387,11 +387,11 @@ TEST_CASE("getKineticEnergy returns finite value", "[MatterTest]") {
 
 TEST_CASE("relax converges LJ cluster", "[MatterTest][relax]") {
   Parameters params;
-  params.potential_options().potential = PotType::LJ;
-  params.optimizer_options().method = OptType::LBFGS;
-  params.optimizer_options().converged_force = 0.001;
-  params.optimizer_options().max_iterations = 50;
-  params.optimizer_options().max_move = 0.2;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::optimizer_options(params).method = OptType::LBFGS;
+  ParametersLoadAccess::optimizer_options(params).converged_force = 0.001;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 50;
+  ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m1 = std::make_shared<Matter>(pot, params);
   m1->con2matter(std::string("reactant.con"));
@@ -475,8 +475,8 @@ TEST_CASE("movedAtomsPct skips atoms fixed in min1",
   AtomMatrix pos = saddle->getPositions();
   pos.row(1) += AtomMatrix::Constant(1, 3, 0.4).row(0);
   saddle->setPositions(pos);
-  params.prefactor_options().filter_fraction = 1.0;
-  params.prefactor_options().within_radius = 0.0;
+  ParametersLoadAccess::prefactor_options(params).filter_fraction = 1.0;
+  ParametersLoadAccess::prefactor_options(params).within_radius = 0.0;
   VectorXi moved = eonc::Prefactor::movedAtomsPct(params, min1.get(),
                                                   saddle.get(), min2.get());
   for (int i = 0; i < moved.size(); ++i) {

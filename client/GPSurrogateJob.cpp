@@ -28,7 +28,7 @@ std::vector<std::string> GPSurrogateJob::run() {
   std::string reactantFilename = eonc::helpers::getRelevantFile("reactant.con");
   std::string productFilename = eonc::helpers::getRelevantFile("product.con");
   auto true_params = std::make_shared<Parameters>(params);
-  true_params->main_options().job = params.sub_job;
+  ParametersLoadAccess::main_options(*true_params).job = params.sub_job;
   auto initial = std::make_shared<Matter>(pot, *true_params);
   if (!eonc::io::io_ok(initial->con2matter(reactantFilename))) {
     EONC_LOG_CRITICAL("Failed to load {}", reactantFilename);
@@ -51,11 +51,11 @@ GPSurrogateJob::runFromMatter(std::shared_ptr<Matter> initial,
   }
   // Clone and setup "true" params
   auto true_params = std::make_shared<Parameters>(params);
-  true_params->main_options().job = params.sub_job;
+  ParametersLoadAccess::main_options(*true_params).job = params.sub_job;
   auto true_job =
       eonc::helpers::makeJob(std::make_unique<Parameters>(*true_params));
   auto pyparams = std::make_shared<Parameters>(params);
-  pyparams->potential_options().potential = PotType::CatLearn;
+  ParametersLoadAccess::potential_options(*pyparams).potential = PotType::CatLearn;
 
   initial->setPotential(pot);
   final_state->setPotential(pot);
@@ -92,7 +92,7 @@ GPSurrogateJob::runFromMatter(std::shared_ptr<Matter> initial,
     eonc::helpers::eigen::addVectorRow(targets, target);
     surpot->train_optimize(features, targets);
     pyparams->nebClimbingImageMethod = false;
-    pyparams->optimizer_options().converged_force =
+    ParametersLoadAccess::optimizer_options(*pyparams).converged_force =
         params.optimizer_options().converged_force * 0.8;
     for (auto &&obj : neb->path) {
       obj->setPotential(surpot);

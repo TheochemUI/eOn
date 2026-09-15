@@ -8,17 +8,52 @@ Storage and I/O
 Geometry kernels
     PBC, neighbor lists (vesin), and process-atom selection live under
     :mod:`eon.geometry`. This module re-exports them for compatibility and
-    keeps structure-matching / CNA helpers plus the element table.
+    keeps structure-matching / CNA helpers plus a radius/color overlay.
 """
 import numpy
 import logging
 logger = logging.getLogger("atoms")
 
 from eon.structure import Atoms, Structure  # noqa: F401
+
+_RKR = None
+
+
+def _rkr_lib():
+    """C ABI on the readcon extension: rkr_symbol_to_z / rkr_z_to_symbol.
+
+    The installed Python module does not re-export those helpers yet.
+    """
+    global _RKR
+    if _RKR is not None:
+        return _RKR if _RKR is not False else None
+    try:
+        import ctypes
+        import pathlib
+        import readcon
+
+        matches = list(pathlib.Path(readcon.__file__).parent.glob("readcon*.so"))
+        if not matches:
+            _RKR = False
+            return None
+        lib = ctypes.CDLL(str(matches[0]))
+        lib.rkr_symbol_to_z.argtypes = [ctypes.c_char_p]
+        lib.rkr_symbol_to_z.restype = ctypes.c_int
+        lib.rkr_z_to_symbol.argtypes = [ctypes.c_uint64]
+        lib.rkr_z_to_symbol.restype = ctypes.c_char_p
+        _RKR = lib
+        return lib
+    except Exception:
+        _RKR = False
+        return None
+
+
 def atomic_number(symbol_or_z):
-    """Z for a symbol. Integers pass through. Prefers readcon; table is fallback."""
-    if isinstance(symbol_or_z, int):
-        return symbol_or_z
+    """Z for a symbol. Integers pass through. Symbol lookup is readcon."""
+    if isinstance(symbol_or_z, (int, numpy.integer)):
+        return int(symbol_or_z)
+    if symbol_or_z in {"Xx", "X"}:
+        return 0
     try:
         import readcon
 
@@ -31,11 +66,19 @@ def atomic_number(symbol_or_z):
                 return z
     except Exception:
         pass
-    return int(elements[symbol_or_z]["number"])
+    lib = _rkr_lib()
+    if lib is not None:
+        z = int(lib.rkr_symbol_to_z(str(symbol_or_z).encode("ascii")))
+        if z > 0:
+            return z
+    raise KeyError(f"unknown element {symbol_or_z!r}; install readcon")
 
 
 def symbol_for_z(z):
-    """Chemical symbol for Z. Prefers readcon; table is fallback."""
+    """Chemical symbol for Z. Lookup is readcon; Z=0 is the unknown placeholder."""
+    z = int(z)
+    if z == 0:
+        return "Xx"
     try:
         import readcon
 
@@ -43,12 +86,19 @@ def symbol_for_z(z):
             readcon, "z_to_symbol", None
         )
         if fn is not None:
-            symbol = fn(int(z))
+            symbol = fn(z)
             if symbol and symbol not in {"X", "Xx"}:
                 return str(symbol)
     except Exception:
         pass
-    return str(elements[int(z)]["symbol"])
+    lib = _rkr_lib()
+    if lib is not None:
+        raw = lib.rkr_z_to_symbol(z)
+        if raw:
+            symbol = raw.decode("ascii")
+            if symbol and symbol not in {"X", "Xx"}:
+                return symbol
+    raise KeyError(f"unknown Z {z!r}; install readcon")
 
 
 from eon.geometry import (  # noqa: F401
@@ -59,6 +109,7 @@ from eon.geometry import (  # noqa: F401
     least_coordinated,
     length_angle_to_box,
     neighbor_list,
+    neighbor_list_pairs,
     neighbor_list_vectors,
     pbc,
     per_atom_norm,
@@ -317,6 +368,31 @@ CNA_HCP = 1
 CNA_OTHER = 2
 
 
+def _adjacency_from_pairs(n, i, j):
+    """Unique-index adjacency from vesin pair arrays.
+
+    Each row is increasing atom index, matching ``EpiCenters.cpp`` insertion
+    order so the CNA bond-sum still distinguishes 421 (fcc) from 422 (hcp).
+    """
+    i = numpy.asarray(i, dtype=numpy.int64)
+    j = numpy.asarray(j, dtype=numpy.int64)
+    mask = i != j
+    i, j = i[mask], j[mask]
+    nl = [[] for _ in range(n)]
+    if i.size == 0:
+        return nl
+    packed = numpy.unique(i * numpy.int64(n) + j)
+    for a, b in zip((packed // n).tolist(), (packed % n).tolist()):
+        nl[int(a)].append(int(b))
+    return nl
+
+
+def _neighbor_lists(p, cutoff):
+    """CNA adjacency from :func:`eon.geometry.neighbor_list_pairs`."""
+    i, j, _s = neighbor_list_pairs(p, cutoff)
+    return _adjacency_from_pairs(len(p), i, j)
+
+
 def _neighbor_sets(nl):
     """Per-atom neighbor sets for O(1) membership; list order stays on *nl*."""
     return [set(nbs) for nbs in nl]
@@ -354,7 +430,7 @@ def cna(p, cutoff, brute=False):
     can_values = numpy.full(n, CNA_OTHER, dtype=int)
     nr_FCC = numpy.zeros(n, dtype=int)
     nr_HCP = numpy.zeros(n, dtype=int)
-    nl = neighbor_list(p, cutoff, brute)
+    nl = _neighbor_lists(p, cutoff)
     nl_sets = _neighbor_sets(nl)
 
     for a2 in range(n):
@@ -395,7 +471,7 @@ def cnat(p, cutoff, brute=False):
     can_values = numpy.zeros(len(p))
     nr_5 = numpy.zeros(len(p))
     nr_6 = numpy.zeros(len(p))
-    nl = neighbor_list(p, cutoff, brute)
+    nl = _neighbor_lists(p, cutoff)
     nl_sets = _neighbor_sets(nl)
 
     # loops over all the atoms
@@ -442,7 +518,7 @@ def cnar(p, cutoff, brute=False):
     for i in range(len(p)):
         cna[i] = {}
 
-    nl = neighbor_list(p, cutoff, brute)
+    nl = _neighbor_lists(p, cutoff)
     nl_sets = _neighbor_sets(nl)
 
     def codeString(j,k,l):
@@ -589,124 +665,272 @@ def internal_motion(a, b):
     return b
 
 
-elements = {}
-numElements = 119
-elements[  0] = elements[ 'Xx'] = {'symbol':  'Xx', 'name':       'unknown', 'mass':   1.00000000, 'radius':  1.0000, 'color': [1.000, 0.078, 0.576], 'number': 0}
-elements[  1] = elements[  'H'] = {'symbol':   'H', 'name':      'hydrogen', 'mass':   1.00794000, 'radius':  0.3100, 'color': [1.000, 1.000, 1.000], 'number': 1}
-elements[  2] = elements[ 'He'] = {'symbol':  'He', 'name':        'helium', 'mass':   4.00260200, 'radius':  0.2800, 'color': [0.851, 1.000, 1.000], 'number': 2}
-elements[  3] = elements[ 'Li'] = {'symbol':  'Li', 'name':       'lithium', 'mass':   6.94100000, 'radius':  1.2800, 'color': [0.800, 0.502, 1.000], 'number': 3}
-elements[  4] = elements[ 'Be'] = {'symbol':  'Be', 'name':     'beryllium', 'mass':   9.01218200, 'radius':  0.9600, 'color': [0.761, 1.000, 0.000], 'number': 4}
-elements[  5] = elements[  'B'] = {'symbol':   'B', 'name':         'boron', 'mass':  10.81100000, 'radius':  0.8400, 'color': [1.000, 0.710, 0.710], 'number': 5}
-elements[  6] = elements[  'C'] = {'symbol':   'C', 'name':        'carbon', 'mass':  12.01070000, 'radius':  0.7300, 'color': [0.565, 0.565, 0.565], 'number': 6}
-elements[  7] = elements[  'N'] = {'symbol':   'N', 'name':      'nitrogen', 'mass':  14.00670000, 'radius':  0.7100, 'color': [0.188, 0.314, 0.973], 'number': 7}
-elements[  8] = elements[  'O'] = {'symbol':   'O', 'name':        'oxygen', 'mass':  15.99940000, 'radius':  0.6600, 'color': [1.000, 0.051, 0.051], 'number': 8}
-elements[  9] = elements[  'F'] = {'symbol':   'F', 'name':      'fluorine', 'mass':  18.99840320, 'radius':  0.5700, 'color': [0.565, 0.878, 0.314], 'number': 9}
-elements[ 10] = elements[ 'Ne'] = {'symbol':  'Ne', 'name':          'neon', 'mass':  20.17970000, 'radius':  0.5800, 'color': [0.702, 0.890, 0.961], 'number': 10}
-elements[ 11] = elements[ 'Na'] = {'symbol':  'Na', 'name':        'sodium', 'mass':  22.98976928, 'radius':  1.6600, 'color': [0.671, 0.361, 0.949], 'number': 11}
-elements[ 12] = elements[ 'Mg'] = {'symbol':  'Mg', 'name':     'magnesium', 'mass':  24.30500000, 'radius':  1.4100, 'color': [0.541, 1.000, 0.000], 'number': 12}
-elements[ 13] = elements[ 'Al'] = {'symbol':  'Al', 'name':      'aluminum', 'mass':  26.98153860, 'radius':  1.2100, 'color': [0.749, 0.651, 0.651], 'number': 13}
-elements[ 14] = elements[ 'Si'] = {'symbol':  'Si', 'name':       'silicon', 'mass':  28.08550000, 'radius':  1.1100, 'color': [0.941, 0.784, 0.627], 'number': 14}
-elements[ 15] = elements[  'P'] = {'symbol':   'P', 'name':    'phosphorus', 'mass':  30.97376200, 'radius':  1.0700, 'color': [1.000, 0.502, 0.000], 'number': 15}
-elements[ 16] = elements[  'S'] = {'symbol':   'S', 'name':        'sulfur', 'mass':  32.06500000, 'radius':  1.0500, 'color': [1.000, 1.000, 0.188], 'number': 16}
-elements[ 17] = elements[ 'Cl'] = {'symbol':  'Cl', 'name':      'chlorine', 'mass':  35.45300000, 'radius':  1.0200, 'color': [0.122, 0.941, 0.122], 'number': 17}
-elements[ 18] = elements[ 'Ar'] = {'symbol':  'Ar', 'name':         'argon', 'mass':  39.94800000, 'radius':  1.0600, 'color': [0.502, 0.820, 0.890], 'number': 18}
-elements[ 19] = elements[  'K'] = {'symbol':   'K', 'name':     'potassium', 'mass':  39.09830000, 'radius':  2.0300, 'color': [0.561, 0.251, 0.831], 'number': 19}
-elements[ 20] = elements[ 'Ca'] = {'symbol':  'Ca', 'name':       'calcium', 'mass':  40.07800000, 'radius':  1.7600, 'color': [0.239, 1.000, 0.000], 'number': 20}
-elements[ 21] = elements[ 'Sc'] = {'symbol':  'Sc', 'name':      'scandium', 'mass':  44.95591200, 'radius':  1.7000, 'color': [0.902, 0.902, 0.902], 'number': 21}
-elements[ 22] = elements[ 'Ti'] = {'symbol':  'Ti', 'name':      'titanium', 'mass':  47.86700000, 'radius':  1.6000, 'color': [0.749, 0.761, 0.780], 'number': 22}
-elements[ 23] = elements[  'V'] = {'symbol':   'V', 'name':      'vanadium', 'mass':  50.94150000, 'radius':  1.5300, 'color': [0.651, 0.651, 0.671], 'number': 23}
-elements[ 24] = elements[ 'Cr'] = {'symbol':  'Cr', 'name':      'chromium', 'mass':  51.99610000, 'radius':  1.3900, 'color': [0.541, 0.600, 0.780], 'number': 24}
-elements[ 25] = elements[ 'Mn'] = {'symbol':  'Mn', 'name':     'manganese', 'mass':  54.93804500, 'radius':  1.3900, 'color': [0.611, 0.478, 0.780], 'number': 25}
-elements[ 26] = elements[ 'Fe'] = {'symbol':  'Fe', 'name':          'iron', 'mass':  55.84500000, 'radius':  1.3200, 'color': [0.878, 0.400, 0.200], 'number': 26}
-elements[ 27] = elements[ 'Co'] = {'symbol':  'Co', 'name':        'cobalt', 'mass':  58.93319500, 'radius':  1.2600, 'color': [0.941, 0.565, 0.627], 'number': 27}
-elements[ 28] = elements[ 'Ni'] = {'symbol':  'Ni', 'name':        'nickel', 'mass':  58.69340000, 'radius':  1.2400, 'color': [0.314, 0.816, 0.314], 'number': 28}
-elements[ 29] = elements[ 'Cu'] = {'symbol':  'Cu', 'name':        'copper', 'mass':  63.54600000, 'radius':  1.3200, 'color': [0.784, 0.502, 0.200], 'number': 29}
-elements[ 30] = elements[ 'Zn'] = {'symbol':  'Zn', 'name':          'zinc', 'mass':  65.38000000, 'radius':  1.2200, 'color': [0.490, 0.502, 0.690], 'number': 30}
-elements[ 31] = elements[ 'Ga'] = {'symbol':  'Ga', 'name':       'gallium', 'mass':  69.72300000, 'radius':  1.2200, 'color': [0.761, 0.561, 0.561], 'number': 31}
-elements[ 32] = elements[ 'Ge'] = {'symbol':  'Ge', 'name':     'germanium', 'mass':  72.64000000, 'radius':  1.2000, 'color': [0.400, 0.561, 0.561], 'number': 32}
-elements[ 33] = elements[ 'As'] = {'symbol':  'As', 'name':       'arsenic', 'mass':  74.92160000, 'radius':  1.1900, 'color': [0.741, 0.502, 0.890], 'number': 33}
-elements[ 34] = elements[ 'Se'] = {'symbol':  'Se', 'name':      'selenium', 'mass':  78.96000000, 'radius':  1.2000, 'color': [1.000, 0.631, 0.000], 'number': 34}
-elements[ 35] = elements[ 'Br'] = {'symbol':  'Br', 'name':       'bromine', 'mass':  79.90400000, 'radius':  1.2000, 'color': [0.651, 0.161, 0.161], 'number': 35}
-elements[ 36] = elements[ 'Kr'] = {'symbol':  'Kr', 'name':       'krypton', 'mass':  83.79800000, 'radius':  1.1600, 'color': [0.361, 0.722, 0.820], 'number': 36}
-elements[ 37] = elements[ 'Rb'] = {'symbol':  'Rb', 'name':      'rubidium', 'mass':  85.46780000, 'radius':  2.2000, 'color': [0.439, 0.180, 0.690], 'number': 37}
-elements[ 38] = elements[ 'Sr'] = {'symbol':  'Sr', 'name':     'strontium', 'mass':  87.62000000, 'radius':  1.9500, 'color': [0.000, 1.000, 0.000], 'number': 38}
-elements[ 39] = elements[  'Y'] = {'symbol':   'Y', 'name':       'yttrium', 'mass':  88.90585000, 'radius':  1.9000, 'color': [0.580, 1.000, 1.000], 'number': 39}
-elements[ 40] = elements[ 'Zr'] = {'symbol':  'Zr', 'name':     'zirconium', 'mass':  91.22400000, 'radius':  1.7500, 'color': [0.580, 0.878, 0.878], 'number': 40}
-elements[ 41] = elements[ 'Nb'] = {'symbol':  'Nb', 'name':       'niobium', 'mass':  92.90638000, 'radius':  1.6400, 'color': [0.451, 0.761, 0.788], 'number': 41}
-elements[ 42] = elements[ 'Mo'] = {'symbol':  'Mo', 'name':    'molybdenum', 'mass':  95.96000000, 'radius':  1.5400, 'color': [0.329, 0.710, 0.710], 'number': 42}
-elements[ 43] = elements[ 'Tc'] = {'symbol':  'Tc', 'name':    'technetium', 'mass':  98.00000000, 'radius':  1.4700, 'color': [0.231, 0.620, 0.620], 'number': 43}
-elements[ 44] = elements[ 'Ru'] = {'symbol':  'Ru', 'name':     'ruthenium', 'mass': 101.07000000, 'radius':  1.4600, 'color': [0.141, 0.561, 0.561], 'number': 44}
-elements[ 45] = elements[ 'Rh'] = {'symbol':  'Rh', 'name':       'rhodium', 'mass': 102.90550000, 'radius':  1.4200, 'color': [0.039, 0.490, 0.549], 'number': 45}
-elements[ 46] = elements[ 'Pd'] = {'symbol':  'Pd', 'name':     'palladium', 'mass': 106.42000000, 'radius':  1.3900, 'color': [0.000, 0.412, 0.522], 'number': 46}
-elements[ 47] = elements[ 'Ag'] = {'symbol':  'Ag', 'name':        'silver', 'mass': 107.86820000, 'radius':  1.4500, 'color': [0.753, 0.753, 0.753], 'number': 47}
-elements[ 48] = elements[ 'Cd'] = {'symbol':  'Cd', 'name':       'cadmium', 'mass': 112.41100000, 'radius':  1.4400, 'color': [1.000, 0.851, 0.561], 'number': 48}
-elements[ 49] = elements[ 'In'] = {'symbol':  'In', 'name':        'indium', 'mass': 114.81800000, 'radius':  1.4200, 'color': [0.651, 0.459, 0.451], 'number': 49}
-elements[ 50] = elements[ 'Sn'] = {'symbol':  'Sn', 'name':           'tin', 'mass': 118.71000000, 'radius':  1.3900, 'color': [0.400, 0.502, 0.502], 'number': 50}
-elements[ 51] = elements[ 'Sb'] = {'symbol':  'Sb', 'name':      'antimony', 'mass': 121.76000000, 'radius':  1.3900, 'color': [0.620, 0.388, 0.710], 'number': 51}
-elements[ 52] = elements[ 'Te'] = {'symbol':  'Te', 'name':     'tellurium', 'mass': 127.60000000, 'radius':  1.3800, 'color': [0.831, 0.478, 0.000], 'number': 52}
-elements[ 53] = elements[  'I'] = {'symbol':   'I', 'name':        'iodine', 'mass': 126.90470000, 'radius':  1.3900, 'color': [0.580, 0.000, 0.580], 'number': 53}
-elements[ 54] = elements[ 'Xe'] = {'symbol':  'Xe', 'name':         'xenon', 'mass': 131.29300000, 'radius':  1.4000, 'color': [0.259, 0.620, 0.690], 'number': 54}
-elements[ 55] = elements[ 'Cs'] = {'symbol':  'Cs', 'name':        'cesium', 'mass': 132.90545190, 'radius':  2.4400, 'color': [0.341, 0.090, 0.561], 'number': 55}
-elements[ 56] = elements[ 'Ba'] = {'symbol':  'Ba', 'name':        'barium', 'mass': 137.32700000, 'radius':  2.1500, 'color': [0.000, 0.788, 0.000], 'number': 56}
-elements[ 57] = elements[ 'La'] = {'symbol':  'La', 'name':     'lanthanum', 'mass': 138.90547000, 'radius':  2.0700, 'color': [0.439, 0.831, 1.000], 'number': 57}
-elements[ 58] = elements[ 'Ce'] = {'symbol':  'Ce', 'name':        'cerium', 'mass': 140.11600000, 'radius':  2.0400, 'color': [1.000, 1.000, 0.780], 'number': 58}
-elements[ 59] = elements[ 'Pr'] = {'symbol':  'Pr', 'name':  'praseodymium', 'mass': 140.90765000, 'radius':  2.0300, 'color': [0.851, 1.000, 0.780], 'number': 59}
-elements[ 60] = elements[ 'Nd'] = {'symbol':  'Nd', 'name':     'neodymium', 'mass': 144.24200000, 'radius':  2.0100, 'color': [0.780, 1.000, 0.780], 'number': 60}
-elements[ 61] = elements[ 'Pm'] = {'symbol':  'Pm', 'name':    'promethium', 'mass': 145.00000000, 'radius':  1.9900, 'color': [0.639, 1.000, 0.780], 'number': 61}
-elements[ 62] = elements[ 'Sm'] = {'symbol':  'Sm', 'name':      'samarium', 'mass': 150.36000000, 'radius':  1.9800, 'color': [0.561, 1.000, 0.780], 'number': 62}
-elements[ 63] = elements[ 'Eu'] = {'symbol':  'Eu', 'name':      'europium', 'mass': 151.96400000, 'radius':  1.9800, 'color': [0.380, 1.000, 0.780], 'number': 63}
-elements[ 64] = elements[ 'Gd'] = {'symbol':  'Gd', 'name':    'gadolinium', 'mass': 157.25000000, 'radius':  1.9600, 'color': [0.271, 1.000, 0.780], 'number': 64}
-elements[ 65] = elements[ 'Tb'] = {'symbol':  'Tb', 'name':       'terbium', 'mass': 158.92535000, 'radius':  1.9400, 'color': [0.189, 1.000, 0.780], 'number': 65}
-elements[ 66] = elements[ 'Dy'] = {'symbol':  'Dy', 'name':    'dysprosium', 'mass': 162.50000000, 'radius':  1.9200, 'color': [0.122, 1.000, 0.780], 'number': 66}
-elements[ 67] = elements[ 'Ho'] = {'symbol':  'Ho', 'name':       'holmium', 'mass': 164.93032000, 'radius':  1.9200, 'color': [0.000, 1.000, 0.612], 'number': 67}
-elements[ 68] = elements[ 'Er'] = {'symbol':  'Er', 'name':        'erbium', 'mass': 167.25900000, 'radius':  1.8900, 'color': [0.000, 0.902, 0.459], 'number': 68}
-elements[ 69] = elements[ 'Tm'] = {'symbol':  'Tm', 'name':       'thulium', 'mass': 168.93421000, 'radius':  1.9000, 'color': [0.000, 0.831, 0.322], 'number': 69}
-elements[ 70] = elements[ 'Yb'] = {'symbol':  'Yb', 'name':     'ytterbium', 'mass': 173.05400000, 'radius':  1.8700, 'color': [0.000, 0.749, 0.220], 'number': 70}
-elements[ 71] = elements[ 'Lu'] = {'symbol':  'Lu', 'name':      'lutetium', 'mass': 174.96680000, 'radius':  1.8700, 'color': [0.000, 0.671, 0.141], 'number': 71}
-elements[ 72] = elements[ 'Hf'] = {'symbol':  'Hf', 'name':       'hafnium', 'mass': 178.49000000, 'radius':  1.7500, 'color': [0.302, 0.761, 1.000], 'number': 72}
-elements[ 73] = elements[ 'Ta'] = {'symbol':  'Ta', 'name':      'tantalum', 'mass': 180.94788000, 'radius':  1.7000, 'color': [0.302, 0.651, 1.000], 'number': 73}
-elements[ 74] = elements[  'W'] = {'symbol':   'W', 'name':      'tungsten', 'mass': 183.84000000, 'radius':  1.6200, 'color': [0.129, 0.580, 0.839], 'number': 74}
-elements[ 75] = elements[ 'Re'] = {'symbol':  'Re', 'name':       'rhenium', 'mass': 186.20700000, 'radius':  1.5100, 'color': [0.149, 0.490, 0.671], 'number': 75}
-elements[ 76] = elements[ 'Os'] = {'symbol':  'Os', 'name':        'osmium', 'mass': 190.23000000, 'radius':  1.4400, 'color': [0.149, 0.400, 0.588], 'number': 76}
-elements[ 77] = elements[ 'Ir'] = {'symbol':  'Ir', 'name':       'iridium', 'mass': 192.21700000, 'radius':  1.4100, 'color': [0.090, 0.329, 0.529], 'number': 77}
-elements[ 78] = elements[ 'Pt'] = {'symbol':  'Pt', 'name':      'platinum', 'mass': 195.08400000, 'radius':  1.3600, 'color': [0.816, 0.816, 0.878], 'number': 78}
-elements[ 79] = elements[ 'Au'] = {'symbol':  'Au', 'name':          'gold', 'mass': 196.96656900, 'radius':  1.3600, 'color': [1.000, 0.820, 0.137], 'number': 79}
-elements[ 80] = elements[ 'Hg'] = {'symbol':  'Hg', 'name':       'mercury', 'mass': 200.59000000, 'radius':  1.3200, 'color': [0.722, 0.722, 0.816], 'number': 80}
-elements[ 81] = elements[ 'Tl'] = {'symbol':  'Tl', 'name':      'thallium', 'mass': 204.38330000, 'radius':  1.4500, 'color': [0.651, 0.329, 0.302], 'number': 81}
-elements[ 82] = elements[ 'Pb'] = {'symbol':  'Pb', 'name':          'lead', 'mass': 207.20000000, 'radius':  1.4600, 'color': [0.341, 0.349, 0.380], 'number': 82}
-elements[ 83] = elements[ 'Bi'] = {'symbol':  'Bi', 'name':       'bismuth', 'mass': 208.98040000, 'radius':  1.4800, 'color': [0.620, 0.310, 0.710], 'number': 83}
-elements[ 84] = elements[ 'Po'] = {'symbol':  'Po', 'name':      'polonium', 'mass': 210.00000000, 'radius':  1.4000, 'color': [0.671, 0.361, 0.000], 'number': 84}
-elements[ 85] = elements[ 'At'] = {'symbol':  'At', 'name':      'astatine', 'mass': 210.00000000, 'radius':  1.5000, 'color': [0.459, 0.310, 0.271], 'number': 85}
-elements[ 86] = elements[ 'Rn'] = {'symbol':  'Rn', 'name':         'radon', 'mass': 222.00000000, 'radius':  1.5000, 'color': [0.259, 0.510, 0.588], 'number': 86}
-elements[ 87] = elements[ 'Fr'] = {'symbol':  'Fr', 'name':      'francium', 'mass': 223.00000000, 'radius':  2.6000, 'color': [0.259, 0.000, 0.400], 'number': 87}
-elements[ 88] = elements[ 'Ra'] = {'symbol':  'Ra', 'name':        'radium', 'mass': 226.00000000, 'radius':  2.2100, 'color': [0.000, 0.490, 0.000], 'number': 88}
-elements[ 89] = elements[ 'Ac'] = {'symbol':  'Ac', 'name':      'actinium', 'mass': 227.00000000, 'radius':  2.1500, 'color': [0.439, 0.671, 0.980], 'number': 89}
-elements[ 90] = elements[ 'Th'] = {'symbol':  'Th', 'name':       'thorium', 'mass': 232.03806000, 'radius':  2.0600, 'color': [0.000, 0.729, 1.000], 'number': 90}
-elements[ 91] = elements[ 'Pa'] = {'symbol':  'Pa', 'name':  'protactinium', 'mass': 231.03588000, 'radius':  2.0000, 'color': [0.000, 0.631, 1.000], 'number': 91}
-elements[ 92] = elements[  'U'] = {'symbol':   'U', 'name':       'uranium', 'mass': 238.02891000, 'radius':  1.9600, 'color': [0.000, 0.561, 1.000], 'number': 92}
-elements[ 93] = elements[ 'Np'] = {'symbol':  'Np', 'name':     'neptunium', 'mass': 237.00000000, 'radius':  1.9000, 'color': [0.000, 0.502, 1.000], 'number': 93}
-elements[ 94] = elements[ 'Pu'] = {'symbol':  'Pu', 'name':     'plutonium', 'mass': 244.00000000, 'radius':  1.8700, 'color': [0.000, 0.420, 1.000], 'number': 94}
-elements[ 95] = elements[ 'Am'] = {'symbol':  'Am', 'name':     'americium', 'mass': 243.00000000, 'radius':  1.8000, 'color': [0.329, 0.361, 0.949], 'number': 95}
-elements[ 96] = elements[ 'Cm'] = {'symbol':  'Cm', 'name':        'curium', 'mass': 247.00000000, 'radius':  1.6900, 'color': [0.471, 0.361, 0.890], 'number': 96}
-elements[ 97] = elements[ 'Bk'] = {'symbol':  'Bk', 'name':     'berkelium', 'mass': 247.00000000, 'radius':  1.6600, 'color': [0.541, 0.310, 0.890], 'number': 97}
-elements[ 98] = elements[ 'Cf'] = {'symbol':  'Cf', 'name':   'californium', 'mass': 251.00000000, 'radius':  1.6800, 'color': [0.631, 0.212, 0.831], 'number': 98}
-elements[ 99] = elements[ 'Es'] = {'symbol':  'Es', 'name':   'einsteinium', 'mass': 252.00000000, 'radius':  1.6500, 'color': [0.702, 0.122, 0.831], 'number': 99}
-elements[100] = elements[ 'Fm'] = {'symbol':  'Fm', 'name':       'fermium', 'mass': 257.00000000, 'radius':  1.6700, 'color': [0.702, 0.122, 0.729], 'number': 100}
-elements[101] = elements[ 'Md'] = {'symbol':  'Md', 'name':   'mendelevium', 'mass': 258.00000000, 'radius':  1.7300, 'color': [0.702, 0.051, 0.651], 'number': 101}
-elements[102] = elements[ 'No'] = {'symbol':  'No', 'name':      'nobelium', 'mass': 259.00000000, 'radius':  1.7600, 'color': [0.741, 0.051, 0.529], 'number': 102}
-elements[103] = elements[ 'Lr'] = {'symbol':  'Lr', 'name':    'lawrencium', 'mass': 266.00000000, 'radius':  1.6100, 'color': [0.780, 0.000, 0.400], 'number': 103}
-elements[104] = elements[ 'Rf'] = {'symbol':  'Rf', 'name': 'rutherfordium', 'mass': 267.00000000, 'radius':  1.5700, 'color': [0.800, 0.000, 0.349], 'number': 104}
-elements[105] = elements[ 'Db'] = {'symbol':  'Db', 'name':       'dubnium', 'mass': 268.00000000, 'radius':  1.4900, 'color': [0.820, 0.000, 0.310], 'number': 105}
-elements[106] = elements[ 'Sg'] = {'symbol':  'Sg', 'name':    'seaborgium', 'mass': 269.00000000, 'radius':  1.4300, 'color': [0.851, 0.000, 0.271], 'number': 106}
-elements[107] = elements[ 'Bh'] = {'symbol':  'Bh', 'name':       'bohrium', 'mass': 270.00000000, 'radius':  1.4100, 'color': [0.878, 0.000, 0.220], 'number': 107}
-elements[108] = elements[ 'Hs'] = {'symbol':  'Hs', 'name':       'hassium', 'mass': 270.00000000, 'radius':  1.3400, 'color': [0.902, 0.000, 0.180], 'number': 108}
-elements[109] = elements[ 'Mt'] = {'symbol':  'Mt', 'name':    'meitnerium', 'mass': 278.00000000, 'radius':  1.2900, 'color': [0.922, 0.000, 0.149], 'number': 109}
-elements[110] = elements[ 'Ds'] = {'symbol':  'Ds', 'name':  'darmstadtium', 'mass': 281.00000000, 'radius':  1.2800, 'color': [0.922, 0.000, 0.149], 'number': 110}
-elements[111] = elements[ 'Rg'] = {'symbol':  'Rg', 'name':   'roentgenium', 'mass': 282.00000000, 'radius':  1.2100, 'color': [0.922, 0.000, 0.149], 'number': 111}
-elements[112] = elements[ 'Cn'] = {'symbol':  'Cn', 'name':   'copernicium', 'mass': 285.00000000, 'radius':  1.2200, 'color': [0.922, 0.000, 0.149], 'number': 112}
-elements[113] = elements[ 'Nh'] = {'symbol':  'Nh', 'name':      'nihonium', 'mass': 286.00000000, 'radius':  1.3600, 'color': [0.922, 0.000, 0.149], 'number': 113}
-elements[114] = elements[ 'Fl'] = {'symbol':  'Fl', 'name':     'flerovium', 'mass': 289.00000000, 'radius':  1.4300, 'color': [0.922, 0.000, 0.149], 'number': 114}
-elements[115] = elements[ 'Mc'] = {'symbol':  'Mc', 'name':     'moscovium', 'mass': 290.00000000, 'radius':  1.5800, 'color': [0.922, 0.000, 0.149], 'number': 115}
-elements[116] = elements[ 'Lv'] = {'symbol':  'Lv', 'name':   'livermorium', 'mass': 293.00000000, 'radius':  1.6600, 'color': [0.922, 0.000, 0.149], 'number': 116}
-elements[117] = elements[ 'Ts'] = {'symbol':  'Ts', 'name':    'tennessine', 'mass': 294.00000000, 'radius':  1.5600, 'color': [0.922, 0.000, 0.149], 'number': 117}
-elements[118] = elements[ 'Og'] = {'symbol':  'Og', 'name':     'oganesson', 'mass': 294.00000000, 'radius':  1.5700, 'color': [0.922, 0.000, 0.149], 'number': 118}
+# Presentation overlay keyed by Z. Symbol / name / mass live in readcon.
+_RADIUS = (
+    1.0000,  # 0
+    0.3100,  # 1
+    0.2800,  # 2
+    1.2800,  # 3
+    0.9600,  # 4
+    0.8400,  # 5
+    0.7300,  # 6
+    0.7100,  # 7
+    0.6600,  # 8
+    0.5700,  # 9
+    0.5800,  # 10
+    1.6600,  # 11
+    1.4100,  # 12
+    1.2100,  # 13
+    1.1100,  # 14
+    1.0700,  # 15
+    1.0500,  # 16
+    1.0200,  # 17
+    1.0600,  # 18
+    2.0300,  # 19
+    1.7600,  # 20
+    1.7000,  # 21
+    1.6000,  # 22
+    1.5300,  # 23
+    1.3900,  # 24
+    1.3900,  # 25
+    1.3200,  # 26
+    1.2600,  # 27
+    1.2400,  # 28
+    1.3200,  # 29
+    1.2200,  # 30
+    1.2200,  # 31
+    1.2000,  # 32
+    1.1900,  # 33
+    1.2000,  # 34
+    1.2000,  # 35
+    1.1600,  # 36
+    2.2000,  # 37
+    1.9500,  # 38
+    1.9000,  # 39
+    1.7500,  # 40
+    1.6400,  # 41
+    1.5400,  # 42
+    1.4700,  # 43
+    1.4600,  # 44
+    1.4200,  # 45
+    1.3900,  # 46
+    1.4500,  # 47
+    1.4400,  # 48
+    1.4200,  # 49
+    1.3900,  # 50
+    1.3900,  # 51
+    1.3800,  # 52
+    1.3900,  # 53
+    1.4000,  # 54
+    2.4400,  # 55
+    2.1500,  # 56
+    2.0700,  # 57
+    2.0400,  # 58
+    2.0300,  # 59
+    2.0100,  # 60
+    1.9900,  # 61
+    1.9800,  # 62
+    1.9800,  # 63
+    1.9600,  # 64
+    1.9400,  # 65
+    1.9200,  # 66
+    1.9200,  # 67
+    1.8900,  # 68
+    1.9000,  # 69
+    1.8700,  # 70
+    1.8700,  # 71
+    1.7500,  # 72
+    1.7000,  # 73
+    1.6200,  # 74
+    1.5100,  # 75
+    1.4400,  # 76
+    1.4100,  # 77
+    1.3600,  # 78
+    1.3600,  # 79
+    1.3200,  # 80
+    1.4500,  # 81
+    1.4600,  # 82
+    1.4800,  # 83
+    1.4000,  # 84
+    1.5000,  # 85
+    1.5000,  # 86
+    2.6000,  # 87
+    2.2100,  # 88
+    2.1500,  # 89
+    2.0600,  # 90
+    2.0000,  # 91
+    1.9600,  # 92
+    1.9000,  # 93
+    1.8700,  # 94
+    1.8000,  # 95
+    1.6900,  # 96
+    1.6600,  # 97
+    1.6800,  # 98
+    1.6500,  # 99
+    1.6700,  # 100
+    1.7300,  # 101
+    1.7600,  # 102
+    1.6100,  # 103
+    1.5700,  # 104
+    1.4900,  # 105
+    1.4300,  # 106
+    1.4100,  # 107
+    1.3400,  # 108
+    1.2900,  # 109
+    1.2800,  # 110
+    1.2100,  # 111
+    1.2200,  # 112
+    1.3600,  # 113
+    1.4300,  # 114
+    1.5800,  # 115
+    1.6600,  # 116
+    1.5600,  # 117
+    1.5700,  # 118
+)
+_COLOR = (
+    (1.000, 0.078, 0.576),  # 0
+    (1.000, 1.000, 1.000),  # 1
+    (0.851, 1.000, 1.000),  # 2
+    (0.800, 0.502, 1.000),  # 3
+    (0.761, 1.000, 0.000),  # 4
+    (1.000, 0.710, 0.710),  # 5
+    (0.565, 0.565, 0.565),  # 6
+    (0.188, 0.314, 0.973),  # 7
+    (1.000, 0.051, 0.051),  # 8
+    (0.565, 0.878, 0.314),  # 9
+    (0.702, 0.890, 0.961),  # 10
+    (0.671, 0.361, 0.949),  # 11
+    (0.541, 1.000, 0.000),  # 12
+    (0.749, 0.651, 0.651),  # 13
+    (0.941, 0.784, 0.627),  # 14
+    (1.000, 0.502, 0.000),  # 15
+    (1.000, 1.000, 0.188),  # 16
+    (0.122, 0.941, 0.122),  # 17
+    (0.502, 0.820, 0.890),  # 18
+    (0.561, 0.251, 0.831),  # 19
+    (0.239, 1.000, 0.000),  # 20
+    (0.902, 0.902, 0.902),  # 21
+    (0.749, 0.761, 0.780),  # 22
+    (0.651, 0.651, 0.671),  # 23
+    (0.541, 0.600, 0.780),  # 24
+    (0.611, 0.478, 0.780),  # 25
+    (0.878, 0.400, 0.200),  # 26
+    (0.941, 0.565, 0.627),  # 27
+    (0.314, 0.816, 0.314),  # 28
+    (0.784, 0.502, 0.200),  # 29
+    (0.490, 0.502, 0.690),  # 30
+    (0.761, 0.561, 0.561),  # 31
+    (0.400, 0.561, 0.561),  # 32
+    (0.741, 0.502, 0.890),  # 33
+    (1.000, 0.631, 0.000),  # 34
+    (0.651, 0.161, 0.161),  # 35
+    (0.361, 0.722, 0.820),  # 36
+    (0.439, 0.180, 0.690),  # 37
+    (0.000, 1.000, 0.000),  # 38
+    (0.580, 1.000, 1.000),  # 39
+    (0.580, 0.878, 0.878),  # 40
+    (0.451, 0.761, 0.788),  # 41
+    (0.329, 0.710, 0.710),  # 42
+    (0.231, 0.620, 0.620),  # 43
+    (0.141, 0.561, 0.561),  # 44
+    (0.039, 0.490, 0.549),  # 45
+    (0.000, 0.412, 0.522),  # 46
+    (0.753, 0.753, 0.753),  # 47
+    (1.000, 0.851, 0.561),  # 48
+    (0.651, 0.459, 0.451),  # 49
+    (0.400, 0.502, 0.502),  # 50
+    (0.620, 0.388, 0.710),  # 51
+    (0.831, 0.478, 0.000),  # 52
+    (0.580, 0.000, 0.580),  # 53
+    (0.259, 0.620, 0.690),  # 54
+    (0.341, 0.090, 0.561),  # 55
+    (0.000, 0.788, 0.000),  # 56
+    (0.439, 0.831, 1.000),  # 57
+    (1.000, 1.000, 0.780),  # 58
+    (0.851, 1.000, 0.780),  # 59
+    (0.780, 1.000, 0.780),  # 60
+    (0.639, 1.000, 0.780),  # 61
+    (0.561, 1.000, 0.780),  # 62
+    (0.380, 1.000, 0.780),  # 63
+    (0.271, 1.000, 0.780),  # 64
+    (0.189, 1.000, 0.780),  # 65
+    (0.122, 1.000, 0.780),  # 66
+    (0.000, 1.000, 0.612),  # 67
+    (0.000, 0.902, 0.459),  # 68
+    (0.000, 0.831, 0.322),  # 69
+    (0.000, 0.749, 0.220),  # 70
+    (0.000, 0.671, 0.141),  # 71
+    (0.302, 0.761, 1.000),  # 72
+    (0.302, 0.651, 1.000),  # 73
+    (0.129, 0.580, 0.839),  # 74
+    (0.149, 0.490, 0.671),  # 75
+    (0.149, 0.400, 0.588),  # 76
+    (0.090, 0.329, 0.529),  # 77
+    (0.816, 0.816, 0.878),  # 78
+    (1.000, 0.820, 0.137),  # 79
+    (0.722, 0.722, 0.816),  # 80
+    (0.651, 0.329, 0.302),  # 81
+    (0.341, 0.349, 0.380),  # 82
+    (0.620, 0.310, 0.710),  # 83
+    (0.671, 0.361, 0.000),  # 84
+    (0.459, 0.310, 0.271),  # 85
+    (0.259, 0.510, 0.588),  # 86
+    (0.259, 0.000, 0.400),  # 87
+    (0.000, 0.490, 0.000),  # 88
+    (0.439, 0.671, 0.980),  # 89
+    (0.000, 0.729, 1.000),  # 90
+    (0.000, 0.631, 1.000),  # 91
+    (0.000, 0.561, 1.000),  # 92
+    (0.000, 0.502, 1.000),  # 93
+    (0.000, 0.420, 1.000),  # 94
+    (0.329, 0.361, 0.949),  # 95
+    (0.471, 0.361, 0.890),  # 96
+    (0.541, 0.310, 0.890),  # 97
+    (0.631, 0.212, 0.831),  # 98
+    (0.702, 0.122, 0.831),  # 99
+    (0.702, 0.122, 0.729),  # 100
+    (0.702, 0.051, 0.651),  # 101
+    (0.741, 0.051, 0.529),  # 102
+    (0.780, 0.000, 0.400),  # 103
+    (0.800, 0.000, 0.349),  # 104
+    (0.820, 0.000, 0.310),  # 105
+    (0.851, 0.000, 0.271),  # 106
+    (0.878, 0.000, 0.220),  # 107
+    (0.902, 0.000, 0.180),  # 108
+    (0.922, 0.000, 0.149),  # 109
+    (0.922, 0.000, 0.149),  # 110
+    (0.922, 0.000, 0.149),  # 111
+    (0.922, 0.000, 0.149),  # 112
+    (0.922, 0.000, 0.149),  # 113
+    (0.922, 0.000, 0.149),  # 114
+    (0.922, 0.000, 0.149),  # 115
+    (0.922, 0.000, 0.149),  # 116
+    (0.922, 0.000, 0.149),  # 117
+    (0.922, 0.000, 0.149),  # 118
+)
+numElements = len(_RADIUS)
+
+
+class _ElementStyle:
+    """Radius/color by Z; ``elements[symbol]`` resolves Z through readcon."""
+
+    def __getitem__(self, key):
+        z = key if isinstance(key, int) else atomic_number(key)
+        if z < 0 or z >= len(_RADIUS):
+            z = 0
+        return {
+            "radius": _RADIUS[z],
+            "color": list(_COLOR[z]),
+            "number": z,
+            "symbol": symbol_for_z(z),
+        }
+
+    def __contains__(self, key):
+        try:
+            self[key]
+            return True
+        except Exception:
+            return False
+
+
+elements = _ElementStyle()

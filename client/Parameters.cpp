@@ -43,14 +43,14 @@ int Parameters::load(std::string filename) {
   int error = eonc::config::load_ini(ini, *this);
 
   // Sanity Checks
-  if (parallel_replica_options().state_check_interval > dynamics_options().time &&
-      magic_enum::enum_name<JobType>(main_options().job) == "parallel_replica") {
+  if (parallel_replica_options_.state_check_interval > dynamics_options_.time &&
+      magic_enum::enum_name<JobType>(main_options_.job) == "parallel_replica") {
     EONC_LOG_ERROR("[Parallel Replica] state_check_interval must be <= time");
     error = 1;
   }
 
-  if (!neb_options().initialization.input_path.empty() &&
-      neb_options().initialization.method == NEBInit::LINEAR) {
+  if (!neb_options_.initialization.input_path.empty() &&
+      neb_options_.initialization.method == NEBInit::LINEAR) {
     EONC_LOG_WARNING(
         "[Nudged Elastic Band] 'initial_path_in' is provided, but "
         "'initializer' defaults to linear. "
@@ -58,23 +58,23 @@ int Parameters::load(std::string filename) {
         "used without initializer set to file.");
   }
 
-  if (saddle_search_options().dynamics.record_interval_input >
-      saddle_search_options().dynamics.state_check_interval_input) {
+  if (saddle_search_options_.dynamics.record_interval_input >
+      saddle_search_options_.dynamics.state_check_interval_input) {
     EONC_LOG_ERROR("[Saddle Search] dynamics_record_interval must be <= "
                    "dynamics_state_check_interval");
     error = 1;
   }
 
-  if (potential_options().potential == PotType::AMS ||
-      potential_options().potential == PotType::AMS_IO) {
-    if (ams_options().forcefield.empty() && ams_options().model.empty() &&
-        ams_options().xc.empty()) {
+  if (potential_options_.potential == PotType::AMS ||
+      potential_options_.potential == PotType::AMS_IO) {
+    if (ams_options_.forcefield.empty() && ams_options_.model.empty() &&
+        ams_options_.xc.empty()) {
       EONC_LOG_ERROR("[AMS] Must provide atleast forcefield or model or xc");
       error = 1;
     }
 
-    if (!ams_options().forcefield.empty() && !ams_options().model.empty() &&
-        !ams_options().xc.empty()) {
+    if (!ams_options_.forcefield.empty() && !ams_options_.model.empty() &&
+        !ams_options_.xc.empty()) {
       EONC_LOG_ERROR("[AMS] Must provide either forcefield or model");
       error = 1;
     }
@@ -118,13 +118,13 @@ int Parameters::load(FILE *file) {
   int error = eonc::config::load_ini(ini, *this);
   // Same validation as the filename overload
   // (duplicated intentionally for now; will be extracted to validate())
-  if (parallel_replica_options().state_check_interval > dynamics_options().time &&
-      magic_enum::enum_name<JobType>(main_options().job) == "parallel_replica") {
+  if (parallel_replica_options_.state_check_interval > dynamics_options_.time &&
+      magic_enum::enum_name<JobType>(main_options_.job) == "parallel_replica") {
     EONC_LOG_ERROR("[Parallel Replica] state_check_interval must be <= time");
     error = 1;
   }
-  if (saddle_search_options().dynamics.record_interval_input >
-      saddle_search_options().dynamics.state_check_interval_input) {
+  if (saddle_search_options_.dynamics.record_interval_input >
+      saddle_search_options_.dynamics.state_check_interval_input) {
     EONC_LOG_ERROR("[Saddle Search] dynamics_record_interval must be <= "
                    "dynamics_state_check_interval");
     error = 1;

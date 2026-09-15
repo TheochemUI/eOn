@@ -299,8 +299,7 @@ static int eonClientMain(int argc, char **argv) {
     }
 
     if (my_client_number < number_of_clients) {
-      parameters.potential_options().MPIPotentialRank =
-          potential_ranks[my_client_number * potential_group_size];
+      parameters.set_mpi_potential_rank(potential_ranks[my_client_number * potential_group_size]);
     }
   }
 

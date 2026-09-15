@@ -479,7 +479,7 @@ void bind_potential(nb::module_ &m) {
         if (!v) {
           throw std::invalid_argument("unknown PotType: " + name);
         }
-        params.potential_options().potential = *v;
+        ParametersLoadAccess::potential_options(params).potential = *v;
         auto pot = eonc::helpers::makePotential(*v, params);
         if (!pot) {
           throw std::runtime_error("make_potential returned null for " + name);
