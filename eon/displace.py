@@ -731,9 +731,8 @@ class NotTCP(Displace):
         return self.get_displacement(epicenter)
 
 
-# XXX(rg): Why doesn't this actually form a child class of Displace? No initialization..
-class Water(Displace):
-    """Displace molecules of water without streatching them."""
+class Water:
+    """Displace water molecules as rigid units. Not a Displace epicenter helper."""
 
     def __init__(
         self, reactant, stdev_translation, stdev_rotation, molecule_list=[], random=0
