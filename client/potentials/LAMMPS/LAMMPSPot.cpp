@@ -76,27 +76,46 @@ void LAMMPSPot::applySetforce(long N) {
     return;
   }
   auto &lmp = eonc::LammpsLoader::instance();
-  try {
-    lmp.command(LAMMPSObj, "unfix eon_freeze");
-  } catch (...) {
-  }
-  try {
-    lmp.command(LAMMPSObj, "group eon_frozen delete");
-  } catch (...) {
-  }
-  std::string ids;
-  for (long i = 0; i < N; ++i) {
-    if (fixedMask_[static_cast<size_t>(3 * i)] >= 0.5 &&
-        fixedMask_[static_cast<size_t>(3 * i + 1)] >= 0.5 &&
-        fixedMask_[static_cast<size_t>(3 * i + 2)] >= 0.5) {
-      ids += std::format("{} ", i + 1);
+  static constexpr const char *kUnfix[] = {
+      "unfix eon_fx", "unfix eon_fy", "unfix eon_fz", "unfix eon_freeze"};
+  static constexpr const char *kUngroup[] = {
+      "group eon_fx delete", "group eon_fy delete", "group eon_fz delete",
+      "group eon_frozen delete"};
+  for (const char *cmd : kUnfix) {
+    try {
+      lmp.command(LAMMPSObj, cmd);
+    } catch (...) {
     }
   }
-  if (ids.empty()) {
-    return;
+  for (const char *cmd : kUngroup) {
+    try {
+      lmp.command(LAMMPSObj, cmd);
+    } catch (...) {
+    }
   }
-  lmp.command(LAMMPSObj, ("group eon_frozen id " + ids).c_str());
-  lmp.command(LAMMPSObj, "fix eon_freeze eon_frozen setforce 0.0 0.0 0.0");
+  // Matter stores per-axis isFixed. A z-only freeze must not leave LAMMPS
+  // free to move that atom in z.
+  std::string ids[3];
+  for (long i = 0; i < N; ++i) {
+    for (int ax = 0; ax < 3; ++ax) {
+      if (fixedMask_[static_cast<size_t>(3 * i + ax)] >= 0.5) {
+        ids[ax] += std::format("{} ", i + 1);
+      }
+    }
+  }
+  static constexpr const char *kGroup[] = {"eon_fx", "eon_fy", "eon_fz"};
+  static constexpr const char *kFix[] = {
+      "fix eon_fx eon_fx setforce 0.0 NULL NULL",
+      "fix eon_fy eon_fy setforce NULL 0.0 NULL",
+      "fix eon_fz eon_fz setforce NULL NULL 0.0"};
+  for (int ax = 0; ax < 3; ++ax) {
+    if (ids[ax].empty()) {
+      continue;
+    }
+    lmp.command(LAMMPSObj,
+                ("group " + std::string(kGroup[ax]) + " id " + ids[ax]).c_str());
+    lmp.command(LAMMPSObj, kFix[ax]);
+  }
 }
 
 void LAMMPSPot::cleanMemory() {
