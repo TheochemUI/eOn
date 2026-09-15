@@ -5,7 +5,6 @@ import sys
 import configparser
 import shutil
 from time import sleep
-import os
 import time as unix_time
 import optparse
 import logging
