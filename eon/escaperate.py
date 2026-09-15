@@ -339,17 +339,7 @@ def main(config: ConfigClass = None):
 
     if len(args) > 1:
         print("takes only one positional argument")
-    sys.argv = sys.argv[0:1]
-    if len(args) == 1:
-        sys.argv += args
-    if len(sys.argv) > 1:
-        config.init(sys.argv[-1])
-    else:
-        config.init()
-    # set options.path_root to be where the config file is if given as an arg
-    if config.path_root.strip() == '.' and len(args) == 1:
-        config.path_root = os.path.abspath(os.path.dirname(args[0]))
-        os.chdir(config.path_root)
+    config.init_from_cli(args)
 
     if config.comm_job_bundle_size != 1:
         print("error: Parallel Replica only supports a bundle size of 1")
