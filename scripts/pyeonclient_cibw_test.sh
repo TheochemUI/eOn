@@ -4,19 +4,25 @@
 set -euo pipefail
 EXTRA_LIBS="$(
   python -c '
-import importlib, pathlib
+import pathlib, sys
 dirs = []
-for n in ("torch", "metatensor", "metatensor.torch", "metatomic.torch"):
-    try:
-        m = importlib.import_module(n)
-        p = pathlib.Path(m.__file__).resolve().parent
-        dirs += [str(p), str(p / "lib"), str(p.parent)]
-    except Exception:
-        pass
-print(":".join(dict.fromkeys(d for d in dirs if pathlib.Path(d).is_dir())))
-' 2>/dev/null || true
+for root in sys.path:
+    r = pathlib.Path(root)
+    if not r.is_dir():
+        continue
+    for pat in (
+        "libtorch.so*",
+        "libmetatensor*.so*",
+        "libmetatomic*.so*",
+        "libc10.so*",
+    ):
+        for so in r.rglob(pat):
+            dirs.append(str(so.resolve().parent))
+print(":".join(dict.fromkeys(dirs)))
+'
 )"
 if [ -n "${EXTRA_LIBS}" ]; then
   export LD_LIBRARY_PATH="${EXTRA_LIBS}:${LD_LIBRARY_PATH:-}"
+  echo "cibw-test EXTRA_LIBS=${EXTRA_LIBS}"
 fi
 python -c "import pyeonclient as p, pathlib, subprocess; print(p.__version__, 'mta', p.built_with_metatomic(), 'rgpot', p.built_with_rgpot()); assert p.built_with_rgpot(); core=next(pathlib.Path(p.__file__).parent.glob('_core*.so')); out=subprocess.check_output(['readelf','-d',str(core)],text=True); assert 'libtorch' not in out or p.built_with_metatomic(); print('NEEDED_OK'); assert hasattr(p.NudgedElasticBand, 'path_frames')"
