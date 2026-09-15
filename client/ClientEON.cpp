@@ -50,10 +50,6 @@
 #include "eon/PyGuard.h"
 #endif
 
-#ifdef EONMPIBGP
-#include <libgen.h>
-#endif
-
 // Includes for FPE trapping
 #include "eon/fpe_handler.h"
 
