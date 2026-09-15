@@ -38,7 +38,8 @@ ProjectionStrategy buildProjectionStrategy(const Parameters &params) {
       !weightedActive) {
     return PlainEB{};
   }
-  if (params.neb_options().spring.doubly_nudged && !omActive && !weightedActive) {
+  if (params.neb_options().spring.doubly_nudged && !omActive &&
+      !weightedActive) {
     return DNEB_Projection{};
   }
   return NEB_Projection{};

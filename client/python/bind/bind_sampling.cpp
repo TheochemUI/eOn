@@ -48,7 +48,8 @@ void ensure_dynamics_steps(eonc::Parameters &params, long default_steps) {
     ParametersLoadAccess::dynamics_options(params).time_step =
         params.dynamics_options().time_step_input / params.constants().timeUnit;
     if (params.dynamics_options().time_step <= 0.0)
-      ParametersLoadAccess::dynamics_options(params).time_step = 1.0 / params.constants().timeUnit;
+      ParametersLoadAccess::dynamics_options(params).time_step =
+          1.0 / params.constants().timeUnit;
   }
 }
 

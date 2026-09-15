@@ -47,8 +47,8 @@ TEST_CASE("CI-NEB XTB regression", "[neb][xtb]") {
   ParametersLoadAccess::optimizer_options(params).max_iterations = 100;
   ParametersLoadAccess::optimizer_options(params).max_move = 0.1;
 
-  auto pot =
-      eonc::helpers::makePotential(params.potential_options().potential, params);
+  auto pot = eonc::helpers::makePotential(params.potential_options().potential,
+                                          params);
   auto initial = std::make_shared<Matter>(pot, params);
   auto final_state = std::make_shared<Matter>(pot, params);
 

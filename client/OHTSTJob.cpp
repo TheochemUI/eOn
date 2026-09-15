@@ -295,19 +295,19 @@ std::vector<std::string> OHTSTJob::run(void) {
   }
 
   const double temperature = params.main_options().temperature;
-  EONC_LOG_INFO("[oh_tst] thermostat = {}{}", params.oh_tst_options().thermostat,
-                params.oh_tst_options().thermostat == "gle"
-                    ? std::string(" (drift: ") +
-                          params.oh_tst_options().gle_a_file + ")"
-                    : std::string());
+  EONC_LOG_INFO(
+      "[oh_tst] thermostat = {}{}", params.oh_tst_options().thermostat,
+      params.oh_tst_options().thermostat == "gle"
+          ? std::string(" (drift: ") + params.oh_tst_options().gle_a_file + ")"
+          : std::string());
   m_kbt = params.constants().kB * temperature;
   m_dt = params.oh_tst_options().time_step / params.constants().timeUnit;
   m_seedState = (params.main_options().randomSeed > 0)
                     ? params.main_options().randomSeed
                     : 12345;
   // Per-step collision probability from the Andersen collision period.
-  const double tcol =
-      params.thermostat_options().andersen_tcol_input / params.constants().timeUnit;
+  const double tcol = params.thermostat_options().andersen_tcol_input /
+                      params.constants().timeUnit;
   m_andersenProb = (tcol > 0.0) ? std::min(1.0, m_dt / tcol) : 0.1;
 
   // Free-DOF mass vector (amu per coordinate).

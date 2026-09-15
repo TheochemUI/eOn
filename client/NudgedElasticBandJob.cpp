@@ -96,7 +96,8 @@ std::vector<std::string> NudgedElasticBandJob::run() {
   // - If params.neb_options().endpoints.minimize is false: never minimize
   // endpoints.
   // - If params.neb_options().endpoints.minimize is true and
-  // params.neb_options().initialization.input_path is empty: minimize endpoints.
+  // params.neb_options().initialization.input_path is empty: minimize
+  // endpoints.
   // - If params.nebMinimEP is true and params.nebIpath is NOT empty:
   //     -> minimize endpoints only if params.nebMinimEPIpath is true.
   // Log what decision was made so users can see behavior.
@@ -136,7 +137,8 @@ std::vector<std::string> NudgedElasticBandJob::run() {
     QUILL_LOG_DEBUG(m_log, "Minimized reactant");
     QUILL_LOG_DEBUG(m_log, "Minimizing product");
     final_state->relax(false, params.debug_options().write_movies,
-                       params.main_options().checkpoint, "prod_neb", "prod_neb");
+                       params.main_options().checkpoint, "prod_neb",
+                       "prod_neb");
   }
 
   auto neb =

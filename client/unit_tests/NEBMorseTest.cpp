@@ -162,7 +162,8 @@ TEST_CASE_METHOD(NEBLJFixture, "convergenceForce norm metric",
 
 TEST_CASE_METHOD(NEBLJFixture, "convergenceForce max_atom metric",
                  "[neb][convergenceForce][max_atom]") {
-  ParametersLoadAccess::optimizer_options(params).convergence_metric = "max_atom";
+  ParametersLoadAccess::optimizer_options(params).convergence_metric =
+      "max_atom";
   auto neb = makeNEB();
   neb->updateForces();
 
@@ -173,7 +174,8 @@ TEST_CASE_METHOD(NEBLJFixture, "convergenceForce max_atom metric",
 
 TEST_CASE_METHOD(NEBLJFixture, "convergenceForce max_component metric",
                  "[neb][convergenceForce][max_component]") {
-  ParametersLoadAccess::optimizer_options(params).convergence_metric = "max_component";
+  ParametersLoadAccess::optimizer_options(params).convergence_metric =
+      "max_component";
   auto neb = makeNEB();
   neb->updateForces();
 
@@ -677,7 +679,8 @@ TEST_CASE_METHOD(NEBLJFixture, "converged_only does not ignore a hot band",
   neb->updateForces();
   neb->setCIEnabled(true);
   neb->climbingImage = 1;
-  REQUIRE(neb->convergenceForce() > 10.0 * params.neb_options().force_tolerance);
+  REQUIRE(neb->convergenceForce() >
+          10.0 * params.neb_options().force_tolerance);
 }
 
 TEST_CASE_METHOD(NEBLJFixture, "SIDPP rejects a collapsed adjacent pair",

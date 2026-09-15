@@ -102,7 +102,8 @@ TEST_CASE("BondBoost schedule advances only from advance(), not boost()",
 TEST_CASE("BondBoost listed index out of range throws", "[bondboost][list]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "999999";
+  ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list =
+      "999999";
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter matter(pot, params);
   matter.con2matter(std::string("reactant.con"));
@@ -113,7 +114,8 @@ TEST_CASE("BondBoost listed index out of range throws", "[bondboost][list]") {
 TEST_CASE("BondBoost garbage list is not treated as all", "[bondboost][list]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
-  ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "not-a-list";
+  ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list =
+      "not-a-list";
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter matter(pot, params);
   matter.con2matter(std::string("reactant.con"));

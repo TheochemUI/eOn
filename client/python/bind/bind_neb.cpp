@@ -607,7 +607,8 @@ void bind_neb(nb::module_ &m) {
         const std::string nebFilename = "neb.con";
         if (!eonc::io::io_ok(eonc::neb::writePathCon(
                 neb.path, neb.tangent, neb.eigenmode_solvers, neb.numImages,
-                params.debug_options().estimate_neb_eigenvalues, nebFilename))) {
+                params.debug_options().estimate_neb_eigenvalues,
+                nebFilename))) {
           throw std::runtime_error("neb_write_results: failed neb.con");
         }
         returnFiles.push_back(nebFilename);

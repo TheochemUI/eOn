@@ -119,9 +119,10 @@ public:
               3 * matter->numberOfAtoms(),
               params.saddle_search_options().confine_positive.min_active);
           long boostTries = 0;
-          while (sufficientForce <
-                     params.saddle_search_options().confine_positive.min_active &&
-                 boostTries < maxBoostTries) {
+          while (
+              sufficientForce <
+                  params.saddle_search_options().confine_positive.min_active &&
+              boostTries < maxBoostTries) {
             sufficientForce = 0;
             force = matter->getForces();
             for (long i = 0; i < matter->numberOfAtoms(); i++) {
@@ -165,7 +166,8 @@ public:
       return matter->getForcesFreeV().norm();
     } else if (params.optimizer_options().convergence_metric == "max_atom") {
       return matter->maxForce();
-    } else if (params.optimizer_options().convergence_metric == "max_component") {
+    } else if (params.optimizer_options().convergence_metric ==
+               "max_component") {
       return matter->getForces().cwiseAbs().maxCoeff();
     } else {
       EONC_LOG_CRITICAL("[MinModeSaddleSearch] unknown convergence metric: {}",

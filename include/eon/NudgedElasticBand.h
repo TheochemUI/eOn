@@ -107,8 +107,7 @@ class NEBObjectiveFunction : public ObjectiveFunction {
 public:
   NEBObjectiveFunction(NudgedElasticBand *nebPassed,
                        const Parameters &parametersPassed)
-      : ObjectiveFunction(parametersPassed),
-        neb{nebPassed} {}
+      : ObjectiveFunction(parametersPassed), neb{nebPassed} {}
   // This is the odd one out, doesn't take a Matter so we null it
 
   ~NEBObjectiveFunction(void) {};

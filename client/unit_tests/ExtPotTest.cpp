@@ -32,7 +32,8 @@ public:
         matter{nullptr},
         pot_ext{nullptr},
         threshold{1e-6} {
-    ParametersLoadAccess::potential_options(params).potential = PotType::EXT_POT;
+    ParametersLoadAccess::potential_options(params).potential =
+        PotType::EXT_POT;
     // Use absolute path so the test works regardless of cwd
     auto ext_pot_script = std::filesystem::canonical("ext_pot").string();
     ParametersLoadAccess::potential_options(params).extPotPath = ext_pot_script;

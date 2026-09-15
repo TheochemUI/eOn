@@ -67,7 +67,8 @@ protected:
 
     // Dimer parameters
     ParametersLoadAccess::saddle_search_options(params).max_iterations = 500;
-    ParametersLoadAccess::saddle_search_options(params).displace_magnitude = 0.01;
+    ParametersLoadAccess::saddle_search_options(params).displace_magnitude =
+        0.01;
     ParametersLoadAccess::saddle_search_options(params).displace_radius = 5.0;
     ParametersLoadAccess::saddle_search_options(params).converged_force = 0.01;
     ParametersLoadAccess::saddle_search_options(params).minmode_method =
@@ -178,7 +179,8 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
   // nothing. Setting filin to a path that does not exist has to trip the
   // eager existence check in ARTnSaddleSearch::run(), before setup_artn gets
   // a chance to surface its own ERR_FILE, and return STATUS_BAD_ARTN_ERROR.
-  ParametersLoadAccess::artn_options(params).filin = "this_artn_input_does_not_exist.in";
+  ParametersLoadAccess::artn_options(params).filin =
+      "this_artn_input_does_not_exist.in";
   auto artnSearch = std::make_unique<ARTnSaddleSearch>(matter_artn, pot,
                                                        displacement, params);
   REQUIRE(artnSearch->run() == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR);

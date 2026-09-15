@@ -141,7 +141,8 @@ bool Hessian::calculate() {
     return false;
   }
 
-  const bool useCentral = isCentralScheme(parameters.hessian_options().fd_scheme);
+  const bool useCentral =
+      isCentralScheme(parameters.hessian_options().fd_scheme);
   const std::string &ckptPath = parameters.hessian_options().checkpoint_path;
   const bool wantResume =
       parameters.hessian_options().resume && !ckptPath.empty();

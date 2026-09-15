@@ -27,9 +27,9 @@ std::vector<T> get_val_from_string(std::string_view line,
         elem}; // instead of {ss.str(elem); ss >> tmp; ss.clear();}
     ss >> tmp;
     if (b_isunsigned and tmp < 0) {
-      std::cerr
-          << "Can't represent negative numbers with an unsigned type, bailing on "
-          << tmp << "\n";
+      std::cerr << "Can't represent negative numbers with an unsigned type, "
+                   "bailing on "
+                << tmp << "\n";
       assert(tmp > 0);
     }
     retval.push_back(tmp);

@@ -140,7 +140,8 @@ TEST_CASE("LBFGS optimizer converges on quadratic", "[optimizer][lbfgs]") {
 
 TEST_CASE("CG optimizer converges on quadratic", "[optimizer][cg]") {
   auto params = makeOptParams();
-  ParametersLoadAccess::optimizer_options(params).converged_force = 1e-3; // CG needs looser tol
+  ParametersLoadAccess::optimizer_options(params).converged_force =
+      1e-3; // CG needs looser tol
   auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
   VectorXd start(2);
   start << 5.0, 3.0;

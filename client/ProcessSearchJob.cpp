@@ -50,9 +50,10 @@ std::vector<std::string> ProcessSearchJob::run() {
   }
   saddle = std::make_shared<Matter>(pot, params);
   // Give min2 its own potential for parallel endpoint minimization
-  auto min2Pot = (pot->needsPerImageInstance() && params.main_options().parallel)
-                     ? eonc::helpers::makePotential(params)
-                     : pot;
+  auto min2Pot =
+      (pot->needsPerImageInstance() && params.main_options().parallel)
+          ? eonc::helpers::makePotential(params)
+          : pot;
   min1 = std::make_shared<Matter>(pot, params);
   min2 = std::make_shared<Matter>(min2Pot, params);
 
@@ -182,9 +183,10 @@ ProcessSearchJob::runFromMatter(std::shared_ptr<Matter> seed) {
   }
   initial = seed;
   initial->setPotential(pot);
-  auto min2Pot = (pot->needsPerImageInstance() && params.main_options().parallel)
-                     ? eonc::helpers::makePotential(params)
-                     : pot;
+  auto min2Pot =
+      (pot->needsPerImageInstance() && params.main_options().parallel)
+          ? eonc::helpers::makePotential(params)
+          : pot;
   displacement = std::make_shared<Matter>(pot, params);
   saddle = std::make_shared<Matter>(pot, params);
   min1 = std::make_shared<Matter>(pot, params);
@@ -279,8 +281,8 @@ int ProcessSearchJob::doProcessSearch() {
       eonc::potAllowsSharedInstance(*pot) || pot->needsPerImageInstance();
   if (params.main_options().parallel && canParallel) {
     std::thread t1([&] {
-      converged1 =
-          min1->relax(false, params.debug_options().write_movies, false, "min1");
+      converged1 = min1->relax(false, params.debug_options().write_movies,
+                               false, "min1");
     });
     converged2 =
         min2->relax(false, params.debug_options().write_movies, false, "min2");
@@ -322,7 +324,8 @@ int ProcessSearchJob::doProcessSearch() {
     // stopped just outside the state-identity tolerance or relaxed into a
     // different state entirely calls for opposite fixes, and the status
     // alone does not distinguish them.
-    const double tol = params.structure_comparison_options().distance_difference;
+    const double tol =
+        params.structure_comparison_options().distance_difference;
     auto countMoved = [&](const Matter &m) {
       long moved = 0;
       for (long i = 0; i < initial->numberOfAtoms(); ++i) {

@@ -39,7 +39,8 @@ ObsTest::~ObsTest() {
 TEST_F(ObsTest, TestMatter) {
   string confile("pos.con");
   Parameters parameters;
-  ParametersLoadAccess::potential_options(parameters).potential = PotType::MORSE_PT;
+  ParametersLoadAccess::potential_options(parameters).potential =
+      PotType::MORSE_PT;
   auto pot = eonc::helpers::makePotential(parameters);
   auto matter = std::make_shared<Matter>(pot, parameters);
   matter->con2matter(confile);

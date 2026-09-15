@@ -28,8 +28,7 @@ public:
   IDPPObjectiveFunction(std::shared_ptr<Matter> matterPassed,
                         const Parameters &paramsPassed,
                         const MatrixXd &targetDistances)
-      : ObjectiveFunction(paramsPassed),
-        matter{std::move(matterPassed)},
+      : ObjectiveFunction(paramsPassed), matter{std::move(matterPassed)},
         d_target(targetDistances) {
 
     // Initialize working variables to avoid re-allocation
@@ -56,7 +55,8 @@ public:
   }
 
   bool isConverged() override {
-    return getConvergence() < params.neb_options().initialization.force_tolerance;
+    return getConvergence() <
+           params.neb_options().initialization.force_tolerance;
   }
 
   double getConvergence() override {
@@ -78,8 +78,7 @@ class CollectiveIDPPObjectiveFunction : public ObjectiveFunction {
 public:
   CollectiveIDPPObjectiveFunction(std::vector<Matter> &pathRef,
                                   const Parameters &paramsPassed)
-      : ObjectiveFunction(paramsPassed),
-        path(pathRef) {
+      : ObjectiveFunction(paramsPassed), path(pathRef) {
 
     // Initialize distances for endpoints
     dInit = getDistanceMatrix(path.front());
@@ -119,7 +118,8 @@ public:
 
   // Check convergence of the IDPP-NEB
   bool isConverged() override {
-    return getConvergence() < params.neb_options().initialization.force_tolerance;
+    return getConvergence() <
+           params.neb_options().initialization.force_tolerance;
   }
 
   double getConvergence() override { return lastMaxForce; }
@@ -150,10 +150,7 @@ public:
                             std::shared_ptr<Potential> zbl,
                             std::vector<Matter> &p, const Parameters &params,
                             double weight = 1.0)
-      : ObjectiveFunction(params),
-        idpp_obj(idpp),
-        zbl_pot(zbl),
-        path(p),
+      : ObjectiveFunction(params), idpp_obj(idpp), zbl_pot(zbl), path(p),
         zbl_weight(weight) {}
 
   double getEnergy() override {

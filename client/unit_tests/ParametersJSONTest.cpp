@@ -104,7 +104,8 @@ TEST_CASE("JSON to_json includes dynamics section", "[params][json]") {
 TEST_CASE("JSON round-trip preserves dimer rotation_backend",
           "[params][json][lor]") {
   Parameters p1;
-  ParametersLoadAccess::dimer_options(p1).rotation_backend = DimerRotationBackend::LOR;
+  ParametersLoadAccess::dimer_options(p1).rotation_backend =
+      DimerRotationBackend::LOR;
 
   auto j = eonc::config::to_json(p1);
   REQUIRE(j["Dimer"].contains("rotation_backend"));

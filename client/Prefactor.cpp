@@ -153,8 +153,8 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
   } else if (parameters.prefactor_options().rate ==
              eonc::Prefactor::RATE_QQHTST) {
     double kB_T = parameters.main_options().temperature * 8.617332e-5; // eV
-    double h_bar = 6.582119e-16;                                     // eV*s
-    double h = 4.135667e-15;                                         // eV*s
+    double h_bar = 6.582119e-16;                                       // eV*s
+    double h = 4.135667e-15;                                           // eV*s
     double temp = (h_bar / (2.0 * kB_T));
 
     for (int i = 0; i < min1Freqs.size(); i++) {
@@ -276,9 +276,9 @@ VectorXi eonc::Prefactor::movedAtomsPct(const Parameters &parameters,
 
   int nMoved = 0;
   double d = 0.0;
-  while (
-      nMoved < nFree &&
-      (sum <= 0.0 || d / sum < parameters.prefactor_options().filter_fraction)) {
+  while (nMoved < nFree &&
+         (sum <= 0.0 ||
+          d / sum < parameters.prefactor_options().filter_fraction)) {
     int maxi = -1;
     for (int i = 0; i < nAtoms; i++) {
       if (min1->getFixed(i) || saddle->getFixed(i)) {

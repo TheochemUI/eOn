@@ -22,8 +22,7 @@
 
 class GhostPotential : public AsapPotential {
 public:
-  GhostPotential(AsapPotential *p)
-      : potential(p) {}
+  GhostPotential(AsapPotential *p) : potential(p) {}
 
   /// Check if the ghost atoms want the neighbor list updated.
 

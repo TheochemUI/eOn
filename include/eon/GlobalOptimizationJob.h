@@ -23,20 +23,14 @@ namespace eonc {
 class GlobalOptimizationJob : public Job {
 public:
   GlobalOptimizationJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)),
-        nlmin{0},
-        ediff{1.E-1},
-        ekin{5.E-2},
+      : Job(std::move(parameters)), nlmin{0}, ediff{1.E-1}, ekin{5.E-2},
         beta1{params.global_optimization_options().beta},
         beta2{params.global_optimization_options().beta},
         beta3{1. / params.global_optimization_options().beta},
         alpha1{1. / params.global_optimization_options().alpha},
         alpha2{params.global_optimization_options().alpha},
-        mdmin{params.global_optimization_options().mdmin},
-        fcallsMove{0},
-        firstStep{true},
-        fcallsRelax{0},
-        monfile{"monitoring.dat"},
+        mdmin{params.global_optimization_options().mdmin}, fcallsMove{0},
+        firstStep{true}, fcallsRelax{0}, monfile{"monitoring.dat"},
         earrfile{"earr.dat"} {}
   ~GlobalOptimizationJob(void) = default;
   void hoppingStep(long, Matter &, Matter &);

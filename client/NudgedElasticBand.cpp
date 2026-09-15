@@ -49,7 +49,8 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
     : NudgedElasticBand(
           [&]() {
             auto &init_opt = parametersPassed.neb_options().initialization;
-            const size_t base_count = parametersPassed.neb_options().image_count;
+            const size_t base_count =
+                parametersPassed.neb_options().image_count;
             if (parametersPassed.neb_options().match_endpoints) {
               auto aligned = eonc::IRACompare::alignReactantToProduct(
                   *initialPassed, *finalPassed, 1.0);
@@ -421,7 +422,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
               ? refine_optim
               : optim;
       if (refine_optim &&
-          convForce <= params.optimizer_options().refine.threshold && !switched) {
+          convForce <= params.optimizer_options().refine.threshold &&
+          !switched) {
         switched = true;
         EONC_LOG_DEBUG("Switched to {}",
                        magic_enum::enum_name<OptType>(
