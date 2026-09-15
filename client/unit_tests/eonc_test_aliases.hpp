@@ -13,11 +13,13 @@
 
 #include "eon/BaseStructures.h"
 #include "eon/Matter.h"
+#include "eon/MonteCarlo.h"
 #include "eon/Parameters.h"
 
 using eonc::DimerRotationBackend;
 using eonc::JobType;
 using eonc::Matter;
+using eonc::MonteCarlo;
 using eonc::NEBInit;
 using eonc::OptType;
 using eonc::Parameters;
