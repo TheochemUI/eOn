@@ -11,8 +11,6 @@
 */
 #pragma once
 
-#include "eon/ARTnSaddleSearch.h"
-#include "eon/AtomicGPDimer.h"
 #include "eon/BaseStructures.h"
 #include "eon/Davidson.h"
 #include "eon/Dimer.h"
