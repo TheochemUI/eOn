@@ -618,11 +618,15 @@ void Matter::computePotential() const {
       double var{0};
       potential->setFixedMask(nAtoms, isFixed.data());
       const auto n = static_cast<size_t>(nAtoms);
+      // Isolated molecules still store a box for I/O. Pots that infer PBC
+      // from a non-zero cell (GFN2) must see a zero box here.
+      const Matrix3d force_cell =
+          usePeriodicBoundaries ? cell : Matrix3d::Zero();
       potential->force(std::span<const double>(positions.data(), n * 3),
                        std::span<const int>(atomicNrs.data(), n),
                        std::span<double>(forces.data(), n * 3),
                        &potentialEnergy, &var,
-                       std::span<const double>(cell.data(), 9));
+                       std::span<const double>(force_cell.data(), 9));
       potential->forceCallCounter++;
       PotRegistry::get().on_force_call(potential->getType());
     }
