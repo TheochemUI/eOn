@@ -43,6 +43,27 @@ def test_pyproject_console_script_points_at_server():
             assert "eon.main:main" not in stripped
 
 
+def test_import_eon_does_not_load_server():
+    env = dict(**__import__("os").environ)
+    env["PYTHONPATH"] = str(REPO) + (
+        ":" + env["PYTHONPATH"] if env.get("PYTHONPATH") else ""
+    )
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "import sys, eon; assert 'eon.server' not in sys.modules; "
+            "_ = eon.server; assert 'eon.server' in sys.modules",
+        ],
+        cwd=str(REPO),
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+
+
 def test_import_eon_server_from_source_tree():
     # Real import path used by CPython package surface (no eonclient required).
     mod = importlib.import_module("eon.server")
