@@ -186,7 +186,7 @@ jobs:
           CIBW_BEFORE_BUILD: |
             set -euo pipefail
             export LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:${LD_LIBRARY_PATH:-}
-            pip install -U pip nanobind meson ninja meson-python auditwheel
+            pip install -U pip 'nanobind>=2.4,<3' meson ninja meson-python auditwheel
             pip install --only-binary=:all: numpy || pip install numpy
             if [[ "${{ matrix.variant }}" == "metatomic" ]]; then
               # Must be visible to the build Python (no-isolation frontend).
@@ -256,7 +256,7 @@ jobs:
           echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH" >> "$GITHUB_ENV"
           echo "CMAKE_PREFIX_PATH=/usr/local" >> "$GITHUB_ENV"
       - run: |
-          python -m pip install -U pip build nanobind numpy meson ninja meson-python
+          python -m pip install -U pip build 'nanobind>=2.4,<3' numpy meson ninja meson-python
           # sdist configures the project; quill/capnp must resolve
           python -m build --sdist
           ls -la dist/
