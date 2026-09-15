@@ -13,6 +13,9 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Matter.h"
 
+#include <span>
+#include <stdexcept>
+
 namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
@@ -150,6 +153,22 @@ TEST_CASE("EAM potential can be created", "[pot][eam]") {
   auto pot = eonc::helpers::makePotential(params);
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::EAM_AL);
+}
+
+TEST_CASE("Potential span force rejects size mismatch", "[pot][span]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(params);
+  double pos[6] = {};
+  int z[2] = {1, 1};
+  double f[6] = {};
+  double box[9] = {};
+  double energy = 0;
+  REQUIRE_THROWS_AS(pot->force(std::span<const double>(pos, 3),
+                               std::span<const int>(z, 2),
+                               std::span<double>(f, 6), &energy, nullptr,
+                               std::span<const double>(box, 9)),
+                    std::invalid_argument);
 }
 
 TEST_CASE("SW potential can be created and returns finite energy",
