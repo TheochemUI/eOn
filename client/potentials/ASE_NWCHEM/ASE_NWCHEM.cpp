@@ -46,6 +46,7 @@ std::filesystem::path makeAseWorkDir(const char *prefix) {
 // TODO(rg): Clean this up.
 ASENwchemPot::ASENwchemPot(const eonc::Parameters &a_params)
     : eonc::Potential(eonc::PotType::ASE_NWCHEM, a_params) {
+  using namespace pybind11::literals;
   eonc::ensure_interpreter();
   counter = 0;
   py::module_ sys = py::module_::import("sys");
@@ -139,6 +140,7 @@ ASENwchemPot::~ASENwchemPot() {
 void ASENwchemPot::force(long nAtoms, const double *R, const int *atomicNrs,
                          double *F, double *U, double *variance,
                          const double *box) {
+  using namespace pybind11::literals;
   variance = nullptr;
   try {
     AtomMatrix positions = AtomMatrix::Map(const_cast<double *>(R), nAtoms, 3);

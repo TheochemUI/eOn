@@ -15,6 +15,7 @@
 
 CatLearnPot::CatLearnPot(const eonc::Parameters &a_params)
     : eonc::SurrogatePotential(eonc::PotType::CatLearn, a_params) {
+  using namespace pybind11::literals;
   py::module_ sys = py::module_::import("sys");
   py::exec(
       std::format("sys.path.insert(0, {})", a_params.catlearn_options.path));
@@ -36,6 +37,7 @@ void CatLearnPot::train_optimize(MatrixXd features, MatrixXd targets) {
 void CatLearnPot::force(long nAtoms, const double *positions,
                         const int *atomicNrs, double *forces, double *energy,
                         double *variance, const double *box) {
+  using namespace pybind11::literals;
   MatrixXd features =
       Eigen::Map<MatrixXd>(const_cast<double *>(positions), 1, nAtoms * 3);
   py::tuple ef_and_unc = (this->m_gpmod.attr("predict")(
