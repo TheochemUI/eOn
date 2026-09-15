@@ -147,9 +147,8 @@ void ASENwchemPot::force(long nAtoms, const double *R, const int *atomicNrs,
     Eigen::VectorXi atmnmrs =
         Eigen::Map<Eigen::VectorXi>(const_cast<int *>(atomicNrs), nAtoms);
     if (!boxx.isIdentity(1e-6)) {
-      QUILL_LOG_WARNING(
-          eonc::log::get(),
-          "ASE-NWChem ignores the simulation cell; NWChem SCF is molecular only");
+      QUILL_LOG_WARNING(eonc::log::get(), "ASE-NWChem ignores the simulation "
+                                          "cell; NWChem SCF is molecular only");
     }
     py::object atoms = this->ase.attr("Atoms")("symbols"_a = atmnmrs,
                                                "positions"_a = positions);
