@@ -63,6 +63,31 @@ repair_one() {
       \( -name 'librgpot.so' -o -name 'librgpot.so.*' \) \
       2>/dev/null | head -40
   )
+  # meson-python build dir still holds wrap librgpot after prefix/lib is
+  # not packed. Seed the vendor dir from those paths and write the SONAME.
+  shopt -s nullglob
+  local seed
+  for seed in \
+      /project/.mesonpy-*/subprojects/rgpot/CppCore/librgpot.so* \
+      "${PYEONCLIENT_BUILD_ROOT:-$PWD}"/.mesonpy-*/subprojects/rgpot/CppCore/librgpot.so*; do
+    [[ -f "$seed" ]] || continue
+    echo "seed-rgpot: $seed"
+    search="${search}:$(dirname "$seed")"
+    local base
+    base="$(basename "$seed")"
+    if [[ ! -f "$libs_dir/$base" ]]; then
+      cp -aL "$seed" "$libs_dir/$base"
+    fi
+    if [[ "$base" == librgpot.so.* ]]; then
+      local ver
+      ver="$(echo "$base" | sed -n 's/^librgpot\.so\.\([0-9][0-9]*\).*/\1/p')"
+      if [[ -n "$ver" && ! -f "$libs_dir/librgpot.so.$ver" ]]; then
+        cp -aL "$seed" "$libs_dir/librgpot.so.$ver"
+        echo "seed-rgpot-soname: librgpot.so.$ver"
+      fi
+    fi
+  done
+  shopt -u nullglob
   export LD_LIBRARY_PATH="$libs_dir:${search}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
   # Pull auditwheel / mesonpy lib packs into one dir so a single $ORIGIN rpath
