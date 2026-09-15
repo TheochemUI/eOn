@@ -24,6 +24,9 @@
 #include <thread>
 
 #include "eon/EonLogger.h"
+
+namespace eonc {
+
 ImprovedDimer::ImprovedDimer(std::shared_ptr<Matter> matter,
                              const Parameters &params,
                              std::shared_ptr<Potential> pot)
@@ -437,3 +440,5 @@ double ImprovedDimer::getEigenvalue() { return C_tau; }
 AtomMatrix ImprovedDimer::getEigenvector() {
   return AtomMatrix::Map(tau.data(), x0->numberOfAtoms(), 3);
 }
+
+} // namespace eonc

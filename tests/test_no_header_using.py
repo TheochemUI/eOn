@@ -18,6 +18,14 @@ JOB_HEADERS = sorted(
         "LBFGS.h",
         "Quickmin.h",
         "SteepestDescent.h",
+        "Dimer.h",
+        "ImprovedDimer.h",
+        "Lanczos.h",
+        "Davidson.h",
+        "LORRotation.h",
+        "LowestEigenmode.h",
+        "MinModeSaddleSearch.h",
+        "EigenmodeStrategy.h",
     )
 ]
 

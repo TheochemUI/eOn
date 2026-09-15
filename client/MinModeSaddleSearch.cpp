@@ -28,6 +28,9 @@
 #include <stdexcept>
 #include <string>
 
+
+namespace eonc {
+
 class MinModeObjectiveFunction : public ObjectiveFunction {
 private:
   std::shared_ptr<Matter> matter;
@@ -498,3 +501,5 @@ double MinModeSaddleSearch::getEigenvalue() {
 AtomMatrix MinModeSaddleSearch::getEigenvector() {
   return eonc::eigenmodeGetEigenvector(*minModeMethod);
 }
+
+} // namespace eonc

@@ -18,6 +18,9 @@
 #include <cmath>
 #include <thread>
 
+
+namespace eonc {
+
 Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
@@ -283,3 +286,5 @@ void Dimer::rotate(double rotationAngle) {
   rotationalPlane = makeOrthogonal(rotationalPlane, direction);
   eonc::safemath::safe_normalize_inplace(rotationalPlane);
 }
+
+} // namespace eonc
