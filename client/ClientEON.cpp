@@ -230,7 +230,7 @@ static int eonClientMain(int argc, char **argv) {
     MPI_Abort(MPI_COMM_WORLD, 1);
   }
 
-  // XXX: Barrier for gpaw-python
+  // All ranks must have loaded Parameters before the process-type Allgather.
   MPI_Barrier(MPI_COMM_WORLD);
 
   int irank;
@@ -360,8 +360,7 @@ static int eonClientMain(int argc, char **argv) {
   auto start_time = std::chrono::steady_clock::now();
 
 #ifdef EONMPI
-  // XXX: When do we stop? The server should probably tell everyone when to
-  // stop.
+  // Server sends a path starting with STOPCAR to end this loop.
   char logfilename[1024];
   snprintf(logfilename, 1024, "eonclient_%i.log", my_client_number);
 
