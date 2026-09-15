@@ -102,12 +102,19 @@ repair_one() {
               resolved="$d/$needed"
               break
             fi
+            # SONAME librgpot.so.3 vs file librgpot.so.3.2.0
+            local cand
+            cand="$(ls -1 "$d/$needed".[0-9]* 2>/dev/null | head -1 || true)"
+            if [[ -n "$cand" && -f "$cand" ]]; then
+              resolved="$cand"
+              break
+            fi
           done
           unset IFS
         fi
         if [[ -z "${resolved:-}" || ! -f "$resolved" ]]; then
-          # still missing — try find under search roots
-          resolved="$(find ${search//:/ } -maxdepth 2 -name "$needed" 2>/dev/null | head -1 || true)"
+          # still missing — try find under search roots (SONAME or so.N.X.Y)
+          resolved="$(find ${search//:/ } -maxdepth 6 \( -name "$needed" -o -name "${needed}.*" \) 2>/dev/null | head -1 || true)"
         fi
         if [[ -z "${resolved:-}" || ! -f "$resolved" ]]; then
           echo "WARNING: cannot resolve NEEDED $needed (from $(basename "$so"))" >&2
