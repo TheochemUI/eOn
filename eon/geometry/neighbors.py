@@ -119,7 +119,9 @@ def neighbor_list_vectors(
     diffs = np.empty((len(pairs), 3), dtype=float)
     for k, (center, j) in enumerate(pairs):
         diffs[k] = r[j] - r[center]
-    wrapped = np.atleast_2d(pbc(diffs, box, ibox))
+    wrapped = np.atleast_2d(
+        pbc(diffs, box, ibox, periodic=_periodic_flags(p, None))
+    )
     out: List[List[np.ndarray]] = [[] for _ in nl]
     for k, (center, _j) in enumerate(pairs):
         out[center].append(np.asarray(wrapped[k], dtype=float))
