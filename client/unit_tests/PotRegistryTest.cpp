@@ -12,6 +12,7 @@
 
 #include "eon/PotRegistry.h"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/Parameters.h"
 #include "eon/Potential.h"
 #include <fstream>
 #include <memory>
