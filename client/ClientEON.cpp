@@ -430,8 +430,7 @@ static int eonClientMain(int argc, char **argv) {
       if (error) {
         QUILL_LOG_ERROR(logger, "problem loading parameter file, stopping");
         logger->flush_log();
-        exit(1);
-        abort();
+        return 1;
       }
 
       // Determine what type of job we are running according to the parameters
