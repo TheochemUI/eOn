@@ -21,6 +21,7 @@ configure fails rather than passing a flag the linker will reject.
 ```bash
 CXX=nvc++ meson setup /tmp/eon-stdpar \
   -Dstdpar=gpu -Dstdpar_gpu_cc=cc80,cc90 \
+  -Ddefault_library=static -Db_pie=false \
   -Db_pie=false -Ddefault_library=static
 ```
 
