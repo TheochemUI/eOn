@@ -390,7 +390,7 @@ void from_json(const json &j, Parameters &p) {
   validate_and_link(p);
 }
 
-int load_json(const std::string &json_str, Parameters &params) {
+int load_json(std::string_view json_str, Parameters &params) {
   try {
     auto j = json::parse(json_str);
     from_json(j, params);

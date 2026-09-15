@@ -33,8 +33,8 @@ Parameters::Parameters() {
   eonc::config::validate_and_link(*this);
 }
 
-int Parameters::load(std::string filename) {
-  INIReader ini(filename);
+int Parameters::load(std::string_view filename) {
+  INIReader ini{std::string(filename)};
   if (ini.ParseError() < 0) {
     EONC_LOG_ERROR("Can't load INI file: {}", filename);
     return 1;
@@ -132,8 +132,8 @@ int Parameters::load(FILE *file) {
   return error;
 }
 
-int Parameters::load_ini_text(const std::string &ini_text) {
-  INIReader ini(ini_text.c_str(), ini_text.size());
+int Parameters::load_ini_text(std::string_view ini_text) {
+  INIReader ini(ini_text.data(), ini_text.size());
   if (ini.ParseError() < 0) {
     EONC_LOG_ERROR("Couldn't parse INI from memory");
     return 1;
@@ -141,7 +141,7 @@ int Parameters::load_ini_text(const std::string &ini_text) {
   return eonc::config::load_ini(ini, *this);
 }
 
-int Parameters::load_json(const std::string &json_str) {
+int Parameters::load_json(std::string_view json_str) {
   return eonc::config::load_json(json_str, *this);
 }
 

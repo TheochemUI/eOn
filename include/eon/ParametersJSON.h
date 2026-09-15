@@ -13,6 +13,7 @@
 
 #include <nlohmann/json.hpp>
 #include <string>
+#include <string_view>
 
 namespace eonc {
 
@@ -27,7 +28,7 @@ nlohmann::json to_json(const Parameters &params);
 void from_json(const nlohmann::json &j, Parameters &params);
 
 /// Load Parameters from a JSON string. Returns 0 on success.
-int load_json(const std::string &json_str, Parameters &params);
+int load_json(std::string_view json_str, Parameters &params);
 
 } // namespace config
 } // namespace eonc

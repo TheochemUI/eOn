@@ -15,6 +15,7 @@
 #include "ParametersOptions.h"
 #include <cstdio>
 #include <string>
+#include <string_view>
 
 class INIReader;
 
@@ -36,10 +37,10 @@ public:
   Parameters();
   ~Parameters() = default;
   Parameters(const Parameters &) = default;
-  int load(std::string filename);
+  int load(std::string_view filename);
   int load(FILE *file);
-  int load_ini_text(const std::string &ini_text);
-  int load_json(const std::string &json_str);
+  int load_ini_text(std::string_view ini_text);
+  int load_json(std::string_view json_str);
   std::string to_json() const;
 
   using constants_t = eonc::constants_t;

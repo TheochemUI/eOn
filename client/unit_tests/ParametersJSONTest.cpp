@@ -19,6 +19,7 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 #include <stdexcept>
+#include <string_view>
 
 namespace tests {
 
@@ -222,6 +223,17 @@ neighbor_cutoff = 4.0
           Catch::Approx(0.2));
 
   std::filesystem::remove(tmpfile);
+}
+
+TEST_CASE("Parameters load APIs accept string_view", "[params][ini]") {
+  constexpr std::string_view ini = "[Main]\njob = point\n";
+  Parameters p;
+  REQUIRE(p.load_ini_text(ini) == 0);
+  REQUIRE(p.main_options().job == JobType::Point);
+
+  constexpr std::string_view js = R"({"Main":{"job":"minimization"}})";
+  REQUIRE(p.load_json(js) == 0);
+  REQUIRE(p.main_options().job == JobType::Minimization);
 }
 
 TEST_CASE("JSON from_json rejects unknown convergence_metric",
