@@ -19,7 +19,7 @@ Potential CCL Table II for intramolecular interactions in water.
 University of Iceland
 */
 namespace forcefields {
-class Ccl : public PotentialBase {
+class Ccl : public eonc::PotentialBase {
 public:
   Ccl() {}
   void computeHH_O_(const int nAtoms, const double R[], double F[], double &U,

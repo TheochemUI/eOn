@@ -16,7 +16,7 @@
 
 namespace py = pybind11;
 
-class ASE : public Potential {
+class ASE : public eonc::Potential {
 
 private:
   size_t counter{0};
@@ -26,7 +26,7 @@ private:
                          // forces and energy
 
 public:
-  ASE(const Parameters &a_params);
+  ASE(const eonc::Parameters &a_params);
   virtual ~ASE() {
     QUILL_LOG_INFO(eonc::log::get(), "[ASE] called potential {} times",
                    counter);

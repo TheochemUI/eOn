@@ -22,10 +22,10 @@
 namespace py = pybind11;
 using namespace pybind11::literals; // to bring in the `_a` literal
 
-class CatLearnPot : public SurrogatePotential {
+class CatLearnPot : public eonc::SurrogatePotential {
 
 public:
-  CatLearnPot(const Parameters &a_params);
+  CatLearnPot(const eonc::Parameters &a_params);
 
   // Functions
   void train_optimize(const MatrixXd &features,

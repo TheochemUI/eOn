@@ -22,9 +22,9 @@ class RGPotEngine;
  * libnwchemc / libcpmdc). Not potserv RPC. Configure via [RgpotPot] INI;
  * energy eV, forces eV/Angstrom.
  */
-class RgpotPot final : public Potential {
+class RgpotPot final : public eonc::Potential {
 public:
-  explicit RgpotPot(const Parameters &p);
+  explicit RgpotPot(const eonc::Parameters &p);
   ~RgpotPot() override;
 
   RgpotPot(const RgpotPot &) = delete;

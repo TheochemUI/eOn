@@ -45,7 +45,7 @@ std::filesystem::path makeAseWorkDir(const char *prefix) {
 
 // TODO(rg): Clean this up.
 ASENwchemPot::ASENwchemPot(const Parameters &a_params)
-    : Potential(PotType::ASE_NWCHEM, a_params) {
+    : eonc::Potential(PotType::ASE_NWCHEM, a_params) {
   eonc::ensure_interpreter();
   counter = 0;
   py::module_ sys = py::module_::import("sys");

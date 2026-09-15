@@ -26,7 +26,7 @@
 
 /** EMT potential. Inspect the EMT_parms.h to see what the EMT potential is
  * hardcoded to describe.*/
-class EffectiveMediumTheory : public Potential {
+class EffectiveMediumTheory : public eonc::Potential {
 
 private:
   bool emtRasmussen{false};
@@ -38,8 +38,8 @@ private:
   SuperCell *SuperCellObj{nullptr};
 
 public:
-  EffectiveMediumTheory(const Parameters &p)
-      : Potential(p),
+  EffectiveMediumTheory(const eonc::Parameters &p)
+      : eonc::Potential(p),
         emtRasmussen{p.potential_options.EMTRasmussen} {}
   ~EffectiveMediumTheory() { cleanMemory(); }
   void cleanMemory();

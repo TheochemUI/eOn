@@ -39,7 +39,7 @@
 #endif
 
 LAMMPSPot::LAMMPSPot(const Parameters &p)
-    : Potential(p),
+    : eonc::Potential(p),
       lammpsThr{p.potential_options.LAMMPSThreads}
 #ifdef EONMPI
       ,

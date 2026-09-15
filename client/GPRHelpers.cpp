@@ -20,6 +20,9 @@
 #include <stdexcept>
 #include <unordered_map>
 
+
+namespace eonc {
+
 gpr::InputParameters
 eonc::helpers::eon_parameters_to_gpr(const Parameters &parameters) {
   gpr::InputParameters p;
@@ -242,3 +245,5 @@ gpr::Observation eonc::helpers::eon_matter_to_init_obs(Matter *matter) {
   o.E(0, 0) = matter->getPotentialEnergy();
   return o;
 }
+
+} // namespace eonc

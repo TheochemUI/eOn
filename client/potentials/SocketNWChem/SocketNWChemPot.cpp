@@ -30,7 +30,7 @@ char const *atomicNumber2symbol(int n) { return elementArray[n]; }
 } // namespace
 
 SocketNWChemPot::SocketNWChemPot(const Parameters &p)
-    : Potential(PotType::SocketNWChem, p),
+    : eonc::Potential(PotType::SocketNWChem, p),
       listen_fd(-1),
       conn_fd(-1),
       is_connected(false) {

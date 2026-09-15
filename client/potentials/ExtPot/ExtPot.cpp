@@ -118,7 +118,7 @@ std::string resolveCommand(const std::string &command) {
 } // namespace
 
 ExtPot::ExtPot(const Parameters &p)
-    : Potential(p),
+    : eonc::Potential(p),
       eon_extpot_path{resolveCommand(p.potential_options.extPotPath)} {}
 
 void ExtPot::cleanMemory(void) {

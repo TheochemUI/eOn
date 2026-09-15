@@ -24,6 +24,9 @@
 #include "subprojects/gpr_optim/gpr/auxiliary/ProblemSetUp.h"
 #include "subprojects/gpr_optim/structures/Structures.h"
 
+
+namespace eonc {
+
 namespace {
 
 // AtomMatrix is row-major N×3; gpr::Coord is row-major 1×(3N) with the same
@@ -124,3 +127,5 @@ AtomMatrix AtomicGPDimer::getEigenvector() {
   }
   return full;
 }
+
+} // namespace eonc

@@ -37,7 +37,7 @@ static EonMtaConfig config_from_params(const Parameters &params) {
 }
 
 MetatomicDynPot::MetatomicDynPot(const Parameters &params)
-    : Potential(PotType::METATOMIC) {
+    : eonc::Potential(PotType::METATOMIC) {
   auto &loader = MetatomicLoader::instance();
   loader.require_loaded();
   std::array<char, 1024> err{};

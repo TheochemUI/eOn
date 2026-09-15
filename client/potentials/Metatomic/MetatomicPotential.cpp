@@ -56,7 +56,7 @@ static torch::optional<std::string> normalize_variant(const std::string &s) {
 }
 
 MetatomicPotential::MetatomicPotential(const Parameters &params)
-    : Potential(PotType::METATOMIC),
+    : eonc::Potential(PotType::METATOMIC),
       m_metatomic_opts{params.metatomic_options},
       model_(torch::jit::Module()),
       device_type_(c10::DeviceType::CPU),
@@ -302,7 +302,7 @@ MetatomicPotential::MetatomicPotential(const Parameters &params)
 }
 
 MetatomicPotential::MetatomicPotential(const MetatomicPotential &src, CloneTag)
-    : Potential(PotType::METATOMIC),
+    : eonc::Potential(PotType::METATOMIC),
       m_metatomic_opts{src.m_metatomic_opts},
       model_(src.model_.clone(/*inplace=*/false)),
       capabilities_{src.capabilities_},

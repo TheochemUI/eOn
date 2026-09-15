@@ -50,10 +50,10 @@
  * model.
  *
  */
-class MetatomicPotential : public Potential {
+class MetatomicPotential : public eonc::Potential {
 private:
   eonc::log::Scoped m_log;
-  Parameters::metatomic_options_t m_metatomic_opts;
+  eonc::Parameters::metatomic_options_t m_metatomic_opts;
   // --- Metatomic and Torch members ---
   metatensor_torch::Module model_;
   metatomic_torch::ModelCapabilities capabilities_;
@@ -100,7 +100,7 @@ public:
    * @param params A shared pointer to the simulation parameters object.
    * This object should contain the settings needed for the metatomic model.
    */
-  MetatomicPotential(const Parameters &params);
+  MetatomicPotential(const eonc::Parameters &params);
 
   /**
    * @brief Destructor.

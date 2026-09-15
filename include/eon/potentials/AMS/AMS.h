@@ -30,10 +30,10 @@
 #include <string>
 #include <vector>
 
-class AMS : public Potential {
+class AMS : public eonc::Potential {
 
 public:
-  AMS(const Parameters &p);
+  AMS(const eonc::Parameters &p);
   ~AMS();
   void initialize() {};
   void cleanMemory(void);
@@ -57,7 +57,7 @@ private:
   std::string engine, forcefield, model, xc, resources, basis;
   std::string engine_setup, engine_lower;
   // Generate run configuration
-  std::string generate_run(const Parameters &p);
+  std::string generate_run(const eonc::Parameters &p);
   // Environment
   boost::process::native_environment nativenv;
   int amsevals{0};

@@ -17,6 +17,9 @@
 #include <stdexcept>
 #include <vector>
 
+
+namespace eonc {
+
 namespace {
 long pickFromHits(const std::vector<long> &hits, const char *what) {
   if (hits.empty()) {
@@ -253,3 +256,5 @@ long eonc::EpiCenters::minCoordination(const Matter *matter,
   }
   return minVal;
 }
+
+} // namespace eonc
