@@ -343,7 +343,7 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
             dynamics.append(current_state.number, proc_id_out, next_state.number, step_time, time, proc['barrier'], proc['rate'], current_state.get_energy())
             logger.info("KMC step from state %i through process %i to state %i ", current_state.number, rate_table[nsid][0], next_state.number)
         else:
-            #XXX The proc_out_id was -1, which means there's a bug or this was a superbasin step.
+            # Superbasin hop: process id is not a single-state table row.
             dynamics.append_sb(current_state.number, sb_proc_id_out, next_state.number, step_time, time, sb_id, 1.0/mean_time, current_state.get_energy())
             logger.info("SB step from state %i through process %i to state %i ", current_state.number, sb_proc_id_out, next_state.number)
 

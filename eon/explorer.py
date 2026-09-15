@@ -470,7 +470,6 @@ class ServerMinModeExplorer(MinModeExplorer):
         for result in self.comm.get_results(self.config.path_jobs_in, keep_result):
             _archive_debug_result(self.config, result)
             state_num = int(result['name'].split("_")[0])
-            # XXX: doesn't this doesn't give the correct id wrt bundling
             id = int(result['name'].split("_")[1])
             searchdata_id = "%d_%d" % (state_num, id)
 

@@ -216,8 +216,6 @@ if use_fortran == true
             '-Wno-deprecated',
             '-Wno-unused-label',
             # Common
-            '-w',
-            # ^--- Silence.. TODO(rg): Seriously a very bad idea long term
             '-Wno-maybe-uninitialized',
             '-Wno-uninitialized',
             '-Wno-unused-but-set-parameter',
