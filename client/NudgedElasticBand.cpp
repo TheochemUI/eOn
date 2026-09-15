@@ -386,7 +386,9 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
         // images are redistributed). Zero force-call cost; next NEB
         // iteration recomputes all forces anyway.
         bool didResample = false;
-        if (!result.convergedAfterMMF && result.newForce < convForce) {
+        if (!result.convergedAfterMMF && result.newForce < convForce &&
+            path[climbingImage]->getPeriodic() &&
+            path[0]->numberOfAtoms() > 6) {
           eonc::helpers::neb_paths::resamplePathInPlace(
               std::span{path.data(), path.size()});
           movedAfterForceCall = true;
