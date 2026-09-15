@@ -40,9 +40,9 @@ public:
       : ptype{a_ptype}, m_registry_id{PotRegistry::get().on_created(a_ptype)},
         m_created_at{PotRegistry::Clock::now()}, forceCallCounter{0} {}
 
-  // Defined in eoncbase (PotentialParams.cpp) so shared plugins that
-  // link only eoncbase get the symbols. Potential.h must not include
-  // Parameters.h (header-surface contract).
+  // Out-of-line in eoncbase (PotentialParams.cpp) so shared plugins
+  // that link only eoncbase get the symbols. This header only
+  // forward-declares Parameters (header-surface contract).
   Potential(PotType a_ptype, const Parameters &p);
   explicit Potential(const Parameters &a_params);
 
