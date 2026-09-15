@@ -53,9 +53,10 @@ protected:
     ParametersLoadAccess::optimizer_options(params).max_move = 0.2;
     ParametersLoadAccess::neb_options(params).image_count = 5;
     ParametersLoadAccess::neb_options(params).force_tolerance = 0.01;
-    params.neb_options().initialization.method = NEBInit::LINEAR;
-    params.neb_options().endpoints.minimize = false;
-    params.neb_options().climbing_image.enabled = false;
+    ParametersLoadAccess::neb_options(params).initialization.method =
+        NEBInit::LINEAR;
+    ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+    ParametersLoadAccess::neb_options(params).climbing_image.enabled = false;
   }
 };
 
@@ -104,15 +105,16 @@ TEST_CASE_METHOD(NEBRegressionFixture,
   REQUIRE(std::isfinite(maxBarrier));
 
   // The converged force must be below tolerance
-  REQUIRE(neb->convergenceForce() < params.neb_options().force_tolerance);
+  REQUIRE(neb->convergenceForce() <
+          ParametersLoadAccess::neb_options(params).force_tolerance);
 }
 
 TEST_CASE_METHOD(NEBRegressionFixture,
                  "Energy-weighted springs produce different path than uniform",
                  "[neb][regression]") {
   // Uniform springs
-  params.neb_options().spring.weighting.enabled = false;
-  params.neb_options().spring.constant = 5.0;
+  ParametersLoadAccess::neb_options(params).spring.weighting.enabled = false;
+  ParametersLoadAccess::neb_options(params).spring.constant = 5.0;
   ParametersLoadAccess::neb_options(params).force_tolerance = 0.05;
   auto neb_uniform =
       std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
@@ -121,9 +123,9 @@ TEST_CASE_METHOD(NEBRegressionFixture,
       neb_uniform->path[neb_uniform->maxEnergyImage]->getPotentialEnergy();
 
   // Weighted springs
-  params.neb_options().spring.weighting.enabled = true;
-  params.neb_options().spring.weighting.k_min = 1.0;
-  params.neb_options().spring.weighting.k_max = 10.0;
+  ParametersLoadAccess::neb_options(params).spring.weighting.enabled = true;
+  ParametersLoadAccess::neb_options(params).spring.weighting.k_min = 1.0;
+  ParametersLoadAccess::neb_options(params).spring.weighting.k_max = 10.0;
   auto neb_weighted =
       std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
   neb_weighted->compute();
@@ -144,7 +146,7 @@ TEST_CASE_METHOD(NEBRegressionFixture,
                  "Climbing image finds higher barrier than plain NEB",
                  "[neb][regression]") {
   // Plain NEB
-  params.neb_options().climbing_image.enabled = false;
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = false;
   ParametersLoadAccess::neb_options(params).force_tolerance = 0.05;
   auto neb_plain =
       std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
@@ -153,9 +155,10 @@ TEST_CASE_METHOD(NEBRegressionFixture,
       neb_plain->path[neb_plain->maxEnergyImage]->getPotentialEnergy();
 
   // CI-NEB
-  params.neb_options().climbing_image.enabled = true;
-  params.neb_options().climbing_image.trigger_force = 1e10; // immediate
-  params.neb_options().climbing_image.trigger_factor = 1.0;
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = true;
+  ParametersLoadAccess::neb_options(params).climbing_image.trigger_force =
+      1e10; // immediate
+  ParametersLoadAccess::neb_options(params).climbing_image.trigger_factor = 1.0;
   auto neb_ci =
       std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
   neb_ci->compute();
@@ -207,7 +210,7 @@ TEST_CASE_METHOD(NEBRegressionFixture,
 TEST_CASE_METHOD(NEBRegressionFixture,
                  "Parallel NEB produces identical results to sequential",
                  "[neb][regression][parallel]") {
-  params.neb_options().climbing_image.enabled = false;
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = false;
   ParametersLoadAccess::neb_options(params).force_tolerance = 0.05;
 
   // Run with parallel disabled

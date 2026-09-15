@@ -53,7 +53,8 @@ public:
   int degreesOfFreedom() override { return 2; }
 
   bool isConverged() override {
-    return getConvergence() < params.optimizer_options().converged_force;
+    return getConvergence() <
+           ParametersLoadAccess::optimizer_options(params).converged_force;
   }
 
   double getConvergence() override { return m_positions.norm(); }
@@ -70,21 +71,23 @@ static Parameters makeOptParams() {
   ParametersLoadAccess::optimizer_options(params).max_iterations = 1000;
   ParametersLoadAccess::optimizer_options(params).time_step = 0.1;
   ParametersLoadAccess::optimizer_options(params).max_time_step = 1.0;
-  params.optimizer_options().lbfgs.memory = 20;
-  params.optimizer_options().lbfgs.auto_scale = true;
-  params.optimizer_options().lbfgs.inverse_curvature = 0.01;
-  params.optimizer_options().lbfgs.angle_reset = true;
-  params.optimizer_options().lbfgs.distance_reset = true;
-  params.optimizer_options().sd.alpha = 0.1;
-  params.optimizer_options().sd.two_point = false;
-  params.optimizer_options().cg.no_overshooting = false;
-  params.optimizer_options().cg.knock_out_max_move = false;
-  params.optimizer_options().cg.line_search = false;
-  params.optimizer_options().cg.max_iter_before_reset = 0;
-  params.optimizer_options().cg.line_converged = 0.1;
-  params.optimizer_options().cg.line_search_max_iter = 5;
+  ParametersLoadAccess::optimizer_options(params).lbfgs.memory = 20;
+  ParametersLoadAccess::optimizer_options(params).lbfgs.auto_scale = true;
+  ParametersLoadAccess::optimizer_options(params).lbfgs.inverse_curvature =
+      0.01;
+  ParametersLoadAccess::optimizer_options(params).lbfgs.angle_reset = true;
+  ParametersLoadAccess::optimizer_options(params).lbfgs.distance_reset = true;
+  ParametersLoadAccess::optimizer_options(params).sd.alpha = 0.1;
+  ParametersLoadAccess::optimizer_options(params).sd.two_point = false;
+  ParametersLoadAccess::optimizer_options(params).cg.no_overshooting = false;
+  ParametersLoadAccess::optimizer_options(params).cg.knock_out_max_move = false;
+  ParametersLoadAccess::optimizer_options(params).cg.line_search = false;
+  ParametersLoadAccess::optimizer_options(params).cg.max_iter_before_reset = 0;
+  ParametersLoadAccess::optimizer_options(params).cg.line_converged = 0.1;
+  ParametersLoadAccess::optimizer_options(params).cg.line_search_max_iter = 5;
   ParametersLoadAccess::main_options(params).finiteDifference = 0.01;
-  params.saddle_search_options().confine_positive.bowl_breakout = false;
+  ParametersLoadAccess::saddle_search_options(params)
+      .confine_positive.bowl_breakout = false;
   return params;
 }
 
@@ -97,10 +100,11 @@ TEST_CASE("FIRE throws when the time step collapses", "[optimizer][fire]") {
   objf->setPositions(start);
 
   FIRE opt(objf, params);
-  REQUIRE_THROWS_AS(opt.step(params.optimizer_options().max_move),
-                    std::runtime_error);
+  REQUIRE_THROWS_AS(
+      opt.step(ParametersLoadAccess::optimizer_options(params).max_move),
+      std::runtime_error);
   try {
-    opt.step(params.optimizer_options().max_move);
+    opt.step(ParametersLoadAccess::optimizer_options(params).max_move);
     FAIL("expected throw");
   } catch (const std::runtime_error &e) {
     REQUIRE_THAT(std::string(e.what()),
@@ -116,7 +120,8 @@ TEST_CASE("FIRE optimizer converges on quadratic", "[optimizer][fire]") {
   objf->setPositions(start);
 
   FIRE opt(objf, params);
-  int status = opt.run(1000, params.optimizer_options().max_move);
+  int status =
+      opt.run(1000, ParametersLoadAccess::optimizer_options(params).max_move);
   auto final_pos = objf->getPositions();
 
   REQUIRE(final_pos.norm() < 1e-4);
@@ -131,7 +136,8 @@ TEST_CASE("LBFGS optimizer converges on quadratic", "[optimizer][lbfgs]") {
   objf->setPositions(start);
 
   LBFGS opt(objf, params);
-  int status = opt.run(1000, params.optimizer_options().max_move);
+  int status =
+      opt.run(1000, ParametersLoadAccess::optimizer_options(params).max_move);
   auto final_pos = objf->getPositions();
 
   REQUIRE(final_pos.norm() < 0.01);
@@ -148,7 +154,8 @@ TEST_CASE("CG optimizer converges on quadratic", "[optimizer][cg]") {
   objf->setPositions(start);
 
   ConjugateGradients opt(objf, params);
-  int status = opt.run(5000, params.optimizer_options().max_move);
+  int status =
+      opt.run(5000, ParametersLoadAccess::optimizer_options(params).max_move);
   auto final_pos = objf->getPositions();
 
   REQUIRE(final_pos.norm() < 0.01);
@@ -159,15 +166,15 @@ TEST_CASE("CG with line search converges on quadratic",
           "[optimizer][cg][line_search]") {
   auto params = makeOptParams();
   ParametersLoadAccess::optimizer_options(params).converged_force = 1e-3;
-  params.optimizer_options().cg.line_search = true;
-  params.optimizer_options().cg.line_search_max_iter = 10;
+  ParametersLoadAccess::optimizer_options(params).cg.line_search = true;
+  ParametersLoadAccess::optimizer_options(params).cg.line_search_max_iter = 10;
   auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
   VectorXd start(2);
   start << 5.0, 3.0;
   objf->setPositions(start);
 
   ConjugateGradients opt(objf, params);
-  opt.run(5000, params.optimizer_options().max_move);
+  opt.run(5000, ParametersLoadAccess::optimizer_options(params).max_move);
   auto final_pos = objf->getPositions();
 
   REQUIRE(final_pos.norm() < 0.1);
@@ -177,14 +184,14 @@ TEST_CASE("CG with no_overshooting converges on quadratic",
           "[optimizer][cg][no_overshoot]") {
   auto params = makeOptParams();
   ParametersLoadAccess::optimizer_options(params).converged_force = 1e-3;
-  params.optimizer_options().cg.no_overshooting = true;
+  ParametersLoadAccess::optimizer_options(params).cg.no_overshooting = true;
   auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
   VectorXd start(2);
   start << 5.0, 3.0;
   objf->setPositions(start);
 
   ConjugateGradients opt(objf, params);
-  opt.run(5000, params.optimizer_options().max_move);
+  opt.run(5000, ParametersLoadAccess::optimizer_options(params).max_move);
   auto final_pos = objf->getPositions();
 
   REQUIRE(final_pos.norm() < 0.5);
@@ -203,7 +210,7 @@ TEST_CASE("Quickmin optimizer reduces energy on quadratic",
 
   double E_init = objf->getEnergy();
   Quickmin opt(objf, params);
-  opt.run(100, params.optimizer_options().max_move);
+  opt.run(100, ParametersLoadAccess::optimizer_options(params).max_move);
   double E_final = objf->getEnergy();
 
   // Quickmin should at least reduce energy, even if it doesn't converge
@@ -216,7 +223,8 @@ TEST_CASE("Quickmin zero-force step stays finite", "[optimizer][quickmin]") {
   auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
   objf->setPositions(VectorXd::Zero(2));
   Quickmin opt(objf, params);
-  REQUIRE(opt.step(params.optimizer_options().max_move) == 1);
+  REQUIRE(opt.step(ParametersLoadAccess::optimizer_options(params).max_move) ==
+          1);
   REQUIRE(objf->getPositions().norm() == Catch::Approx(0.0).margin(1e-15));
 }
 
@@ -225,7 +233,8 @@ TEST_CASE("FIRE zero-force step stays finite", "[optimizer][fire]") {
   auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
   objf->setPositions(VectorXd::Zero(2));
   FIRE opt(objf, params);
-  REQUIRE_NOTHROW(opt.step(params.optimizer_options().max_move));
+  REQUIRE_NOTHROW(
+      opt.step(ParametersLoadAccess::optimizer_options(params).max_move));
   REQUIRE(std::isfinite(objf->getPositions().norm()));
 }
 
@@ -239,7 +248,8 @@ TEST_CASE("SteepestDescent optimizer converges on quadratic",
   objf->setPositions(start);
 
   SteepestDescent opt(objf, params);
-  int status = opt.run(5000, params.optimizer_options().max_move);
+  int status =
+      opt.run(5000, ParametersLoadAccess::optimizer_options(params).max_move);
   auto final_pos = objf->getPositions();
 
   REQUIRE(final_pos.norm() < 0.01);

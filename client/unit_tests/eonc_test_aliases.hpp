@@ -16,6 +16,7 @@
 #include "eon/LowestEigenmode.h"
 #include "eon/Matter.h"
 #include "eon/MonteCarlo.h"
+#include "eon/NudgedElasticBand.h"
 #include "eon/Parameters.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
@@ -27,6 +28,7 @@ using eonc::LowestEigenmode;
 using eonc::Matter;
 using eonc::MonteCarlo;
 using eonc::NEBInit;
+using eonc::NudgedElasticBand;
 using eonc::OptType;
 using eonc::Parameters;
 using eonc::ParametersLoadAccess;
