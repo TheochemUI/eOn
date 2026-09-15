@@ -189,8 +189,8 @@ int OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
   }
 
   AtomMatrix finalModeMatrix = tempMinModeSearch->getEigenvector();
-  VectorXd finalMode = VectorXd::Map(finalModeMatrix.data(),
-                                     finalModeMatrix.size());
+  VectorXd finalMode =
+      VectorXd::Map(finalModeMatrix.data(), finalModeMatrix.size());
   VectorXd currentTangent =
       VectorXd::Map(neb.tangent[neb.climbingImage]->data(),
                     neb.tangent[neb.climbingImage]->size());
@@ -230,9 +230,8 @@ int OCINEBController::runDimer(eonc::NudgedElasticBand &neb,
 void OCINEBController::updateThresholdSuccess(double convForce,
                                               double newForce) {
   current_threshold_ = newForce * (0.5 + 0.4 * (newForce / convForce));
-  double max_threshold =
-      std::max(baseline_force_ * cfg_.trigger_factor,
-               2.0 * cfg_.force_tolerance);
+  double max_threshold = std::max(baseline_force_ * cfg_.trigger_factor,
+                                  2.0 * cfg_.force_tolerance);
   current_threshold_ = std::min(current_threshold_, max_threshold);
 }
 

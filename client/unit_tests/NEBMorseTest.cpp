@@ -14,11 +14,11 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/IDPPObjectiveFunction.hpp"
 #include "eon/NEBInitialPaths.hpp"
-#include "eon/api.h"
 #include "eon/NEBOcinebController.h"
 #include "eon/NudgedElasticBand.h"
 #include "eon/PotCapabilities.h"
 #include "eon/PotRegistry.h"
+#include "eon/api.h"
 #include <fstream>
 #include <stdexcept>
 #include <thread>
@@ -402,8 +402,7 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB with single image does not crash",
 
 // --- Potential thread safety tests ---
 
-TEST_CASE("OCI-NEB shouldTrigger uses 2*ftol not trigger_force",
-          "[neb][awc]") {
+TEST_CASE("OCI-NEB shouldTrigger uses 2*ftol not trigger_force", "[neb][awc]") {
   Parameters p;
   p.neb_options.force_tolerance = 0.01;
   p.neb_options.climbing_image.ocineb.use_mmf = true;
@@ -668,8 +667,7 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB compute converges or hits max iterations",
            status == NudgedElasticBand::NEBStatus::BAD_MAX_ITERATIONS));
 }
 
-TEST_CASE_METHOD(NEBLJFixture,
-                 "converged_only does not ignore a hot band",
+TEST_CASE_METHOD(NEBLJFixture, "converged_only does not ignore a hot band",
                  "[neb][converged_only][bghy]") {
   params.neb_options.climbing_image.enabled = true;
   params.neb_options.climbing_image.converged_only = true;
@@ -679,8 +677,7 @@ TEST_CASE_METHOD(NEBLJFixture,
   neb->updateForces();
   neb->setCIEnabled(true);
   neb->climbingImage = 1;
-  REQUIRE(neb->convergenceForce() >
-          10.0 * params.neb_options.force_tolerance);
+  REQUIRE(neb->convergenceForce() > 10.0 * params.neb_options.force_tolerance);
 }
 
 TEST_CASE_METHOD(NEBLJFixture, "SIDPP rejects a collapsed adjacent pair",

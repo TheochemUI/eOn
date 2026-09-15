@@ -11,8 +11,8 @@
 */
 #include "ApprovalTests.hpp"
 #include "catch2/catch_amalgamated.hpp"
-#include "eonc_test_aliases.hpp"
 #include "eon/Matter.h"
+#include "eonc_test_aliases.hpp"
 #include <iomanip>
 #include <iostream>
 #include <string>

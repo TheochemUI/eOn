@@ -487,10 +487,8 @@ int load_ini(INIReader &ini, Parameters &params) {
   params.dimer_options.max_iterations = ini.GetInteger(
       "Dimer", "max_iterations", params.dimer_options.max_iterations);
   if (auto dimerOpt = magic_enum::enum_cast<OptType>(
-          ini.Get("Dimer", "opt_method", "cg"),
-          magic_enum::case_insensitive);
-      dimerOpt && *dimerOpt != OptType::Unknown &&
-      *dimerOpt != OptType::None) {
+          ini.Get("Dimer", "opt_method", "cg"), magic_enum::case_insensitive);
+      dimerOpt && *dimerOpt != OptType::Unknown && *dimerOpt != OptType::None) {
     params.dimer_options.opt_method = *dimerOpt;
   }
   params.dimer_options.rotations_min = ini.GetInteger(
@@ -870,9 +868,8 @@ int load_ini(INIReader &ini, Parameters &params) {
                   params.neb_options.mmf_peaks.tolerance);
   params.neb_options.match_endpoints = ini.GetBoolean(
       neb_section, "match_endpoints", params.neb_options.match_endpoints);
-  params.neb_options.match_method =
-      toLowerCase(ini.Get(neb_section, "match_method",
-                          params.neb_options.match_method));
+  params.neb_options.match_method = toLowerCase(
+      ini.Get(neb_section, "match_method", params.neb_options.match_method));
 
   params.neb_options.spring.constant =
       ini.GetReal(neb_section, "spring", params.neb_options.spring.constant);
@@ -911,9 +908,9 @@ int load_ini(INIReader &ini, Parameters &params) {
   params.neb_options.climbing_image.converged_only =
       ini.GetBoolean(neb_section, "climbing_image_converged_only",
                      params.neb_options.climbing_image.converged_only);
-  params.neb_options.climbing_image.band_slack = ini.GetReal(
-      neb_section, "climbing_image_band_slack",
-      params.neb_options.climbing_image.band_slack);
+  params.neb_options.climbing_image.band_slack =
+      ini.GetReal(neb_section, "climbing_image_band_slack",
+                  params.neb_options.climbing_image.band_slack);
   params.neb_options.climbing_image.use_old_tangent =
       ini.GetBoolean(neb_section, "old_tangent",
                      params.neb_options.climbing_image.use_old_tangent);

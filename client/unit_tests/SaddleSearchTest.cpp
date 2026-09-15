@@ -125,8 +125,8 @@ TEST_CASE_METHOD(SaddleSearchFixture,
   long nAtoms = matter->numberOfAtoms();
   AtomMatrix mode = AtomMatrix::Random(nAtoms, 3);
   mode.normalize();
-  MinModeSaddleSearch search(matter, mode, matter->getPotentialEnergy(),
-                             params, pot);
+  MinModeSaddleSearch search(matter, mode, matter->getPotentialEnergy(), params,
+                             pot);
   search.run();
 
   REQUIRE(fs::exists("mode_000.dat"));

@@ -323,8 +323,7 @@ MetatomicPotential::MetatomicPotential(const MetatomicPotential &src, CloneTag)
 }
 
 std::shared_ptr<Potential> MetatomicPotential::clonePotential() const {
-  return std::shared_ptr<Potential>(
-      new MetatomicPotential(*this, CloneTag{}));
+  return std::shared_ptr<Potential>(new MetatomicPotential(*this, CloneTag{}));
 }
 
 // --- helpers for random / symmetry rotations (#287, #292) ---

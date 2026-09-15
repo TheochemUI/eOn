@@ -22,7 +22,6 @@
 #include <limits>
 #include <stdexcept>
 
-
 namespace eonc {
 
 std::vector<std::string> StructureComparisonJob::run() {

@@ -22,7 +22,6 @@
 #include <fstream>
 #include <stdexcept>
 
-
 namespace eonc {
 
 std::vector<std::string> FiniteDifferenceJob::run(void) {

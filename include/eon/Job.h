@@ -75,4 +75,3 @@ std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params);
 } // namespace helpers
 
 } // namespace eonc
-

@@ -12,8 +12,8 @@
 #include "eon/fpe_handler.h"
 
 #include <cfenv>
-#include <cstdint>
 #include <csignal>
+#include <cstdint>
 #include <cstdio>
 
 #ifndef _WIN32

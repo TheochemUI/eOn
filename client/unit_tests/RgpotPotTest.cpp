@@ -1,7 +1,7 @@
 #include "catch2/catch_amalgamated.hpp"
-#include "eonc_test_aliases.hpp"
 #include "eon/MatrixHelpers.hpp"
 #include "eon/Matter.h"
+#include "eonc_test_aliases.hpp"
 #include <cmath>
 #include <cstdlib>
 #include <memory>

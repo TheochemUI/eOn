@@ -112,9 +112,9 @@
 #include <limits>
 #include <stdexcept>
 
-std::tuple<double, AtomMatrix>
-eonc::Potential::get_ef(const AtomMatrix &pos, const VectorXi &atmnrs,
-                        const Matrix3d &box) {
+std::tuple<double, AtomMatrix> eonc::Potential::get_ef(const AtomMatrix &pos,
+                                                       const VectorXi &atmnrs,
+                                                       const Matrix3d &box) {
   double energy{std::numeric_limits<double>::infinity()};
   long nAtoms = static_cast<long>(pos.rows());
   AtomMatrix forces{MatrixXd::Zero(nAtoms, 3)};
@@ -124,8 +124,7 @@ eonc::Potential::get_ef(const AtomMatrix &pos, const VectorXi &atmnrs,
   forceCallCounter++;
   PotRegistry::get().on_force_call(ptype);
   if (!std::isfinite(energy) || !forces.allFinite()) {
-    throw std::runtime_error(
-        "Potential::get_ef: non-finite energy or forces");
+    throw std::runtime_error("Potential::get_ef: non-finite energy or forces");
   }
 
   return std::make_tuple(energy, forces);

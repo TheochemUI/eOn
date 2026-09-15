@@ -19,7 +19,6 @@
 #include <sstream>
 #include <string>
 
-
 namespace eonc {
 
 namespace {

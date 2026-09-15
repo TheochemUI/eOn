@@ -19,10 +19,9 @@
 #include <stdexcept>
 
 #include <cmath>
-#include <memory>
 #include <format>
 #include <fstream>
-
+#include <memory>
 
 namespace eonc {
 
@@ -213,10 +212,10 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
 
   std::unique_ptr<Matter> product;
   if (transitionTime != 0) {
-    int decorrelationSteps = static_cast<int>(
-        std::floor(params.parallel_replica_options.corr_time /
-                       params.dynamics_options.time_step +
-                   0.5));
+    int decorrelationSteps =
+        static_cast<int>(std::floor(params.parallel_replica_options.corr_time /
+                                        params.dynamics_options.time_step +
+                                    0.5));
     if (decorrelationSteps < 0) {
       decorrelationSteps = 0;
     }

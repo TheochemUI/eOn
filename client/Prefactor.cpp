@@ -19,7 +19,6 @@
 #include <format>
 #include <fstream>
 
-
 namespace eonc {
 
 int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
@@ -277,9 +276,9 @@ VectorXi eonc::Prefactor::movedAtomsPct(const Parameters &parameters,
 
   int nMoved = 0;
   double d = 0.0;
-  while (nMoved < nFree &&
-         (sum <= 0.0 ||
-          d / sum < parameters.prefactor_options.filter_fraction)) {
+  while (
+      nMoved < nFree &&
+      (sum <= 0.0 || d / sum < parameters.prefactor_options.filter_fraction)) {
     int maxi = -1;
     for (int i = 0; i < nAtoms; i++) {
       if (min1->getFixed(i) || saddle->getFixed(i)) {

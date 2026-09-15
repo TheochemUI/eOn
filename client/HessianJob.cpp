@@ -25,7 +25,6 @@
 #include <stdexcept>
 #include <string>
 
-
 namespace eonc {
 
 std::vector<std::string> HessianJob::run(void) {

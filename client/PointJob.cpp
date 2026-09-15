@@ -19,7 +19,6 @@
 #include <sstream>
 #include <stdexcept>
 
-
 namespace eonc {
 
 std::vector<std::string> PointJob::run() {

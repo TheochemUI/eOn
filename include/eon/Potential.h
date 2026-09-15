@@ -156,4 +156,3 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 } // namespace helpers
 
 } // namespace eonc
-

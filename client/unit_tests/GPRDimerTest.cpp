@@ -20,7 +20,6 @@
 #include <algorithm>
 
 #include "GPRDimerTest.h"
-#include "eonc_test_aliases.hpp"
 #include "eon/AtomicGPDimer.h"
 #include "eon/GPRHelpers.h"
 #include "eon/HelperFunctions.h"
@@ -28,6 +27,7 @@
 #include "eon/Matter.h"
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/Parameters.h"
+#include "eonc_test_aliases.hpp"
 
 namespace tests {
 

@@ -14,7 +14,6 @@
 
 #include <cmath>
 
-
 namespace eonc {
 
 Eigen::VectorXd ConjugateGradients::getStep() {
@@ -150,10 +149,10 @@ int ConjugateGradients::single_step(double a_maxMove) {
     if (m_optConfig.bowlBreakout) {
       // max displacement is based on system not single atom
       pos += eonc::geometry::maxMotionAppliedV(stepSize * m_directionNorm,
-                                              a_maxMove);
+                                               a_maxMove);
     } else {
       pos += eonc::geometry::maxAtomMotionAppliedV(stepSize * m_directionNorm,
-                                                  a_maxMove);
+                                                   a_maxMove);
     }
     m_objf->setPositions(pos);
   } else {

@@ -20,7 +20,6 @@
 #include <stdexcept>
 #include <unordered_map>
 
-
 namespace eonc {
 
 gpr::InputParameters

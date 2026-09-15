@@ -24,7 +24,6 @@
 #include <stdexcept>
 #include <string>
 
-
 namespace eonc {
 
 std::vector<std::string> SaddleSearchJob::run() {

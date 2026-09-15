@@ -15,7 +15,6 @@
 
 #include <cmath>
 
-
 namespace eonc {
 
 void TADJob::initExtra() {

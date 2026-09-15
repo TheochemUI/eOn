@@ -17,7 +17,6 @@
 #include <stdexcept>
 #include <vector>
 
-
 namespace eonc {
 
 namespace {
@@ -25,8 +24,8 @@ long pickFromHits(const std::vector<long> &hits, const char *what) {
   if (hits.empty()) {
     throw std::runtime_error(what);
   }
-  const long pick =
-      static_cast<long>(eonc::rng::randomDouble(static_cast<long>(hits.size())));
+  const long pick = static_cast<long>(
+      eonc::rng::randomDouble(static_cast<long>(hits.size())));
   return hits[static_cast<size_t>(pick)];
 }
 } // namespace
@@ -56,7 +55,8 @@ long eonc::EpiCenters::minCoordinatedEpiCenter(const Matter *matter,
     throw std::invalid_argument("EpiCenters: null Matter");
   }
   const long nAtoms = matter->numberOfAtoms();
-  auto minCoordinatedList = std::make_unique<bool[]>(static_cast<size_t>(nAtoms));
+  auto minCoordinatedList =
+      std::make_unique<bool[]>(static_cast<size_t>(nAtoms));
   const long minCoordinationVal = minCoordination(matter, neighborCutoff);
   coordinationLessOrEqual(minCoordinatedList.get(), minCoordinationVal, matter,
                           neighborCutoff);
@@ -232,9 +232,10 @@ long eonc::EpiCenters::listedAtomEpiCenter(const Matter *matter,
   if (freeAtoms.empty()) {
     throw std::runtime_error("Listed atoms are all frozen");
   }
-  // eonc::rng::randomDouble(N) is [0, N); size-1 dropped the last listed / last free atom.
-  long pick =
-      static_cast<long>(eonc::rng::randomDouble(static_cast<long>(freeAtoms.size())));
+  // eonc::rng::randomDouble(N) is [0, N); size-1 dropped the last listed / last
+  // free atom.
+  long pick = static_cast<long>(
+      eonc::rng::randomDouble(static_cast<long>(freeAtoms.size())));
   return freeAtoms[pick];
 }
 

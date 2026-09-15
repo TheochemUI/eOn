@@ -21,7 +21,6 @@
 #include <limits>
 #include <stdexcept>
 
-
 namespace eonc {
 
 int DynamicsSaddleSearch::run() {

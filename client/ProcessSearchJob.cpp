@@ -33,7 +33,6 @@
 
 #include "eon/EonLogger.h"
 
-
 namespace eonc {
 
 std::vector<std::string> ProcessSearchJob::run() {
@@ -276,8 +275,8 @@ int ProcessSearchJob::doProcessSearch() {
   long fc1_before = min1->getPotentialCalls();
   long fc2_before = min2->getPotentialCalls();
 
-  bool canParallel = eonc::potAllowsSharedInstance(*pot) ||
-                     pot->needsPerImageInstance();
+  bool canParallel =
+      eonc::potAllowsSharedInstance(*pot) || pot->needsPerImageInstance();
   if (params.main_options.parallel && canParallel) {
     std::thread t1([&] {
       converged1 =

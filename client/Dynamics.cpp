@@ -61,9 +61,8 @@ void Dynamics::oneStep(int stepNumber) {
     }
     double kinE = matter->getKineticEnergy();
     double potE = matter->getPotentialEnergy();
-    const double kinT = (nFreeCoords > 0 && kB > 0.0)
-                            ? 2.0 * kinE / nFreeCoords / kB
-                            : 0.0;
+    const double kinT =
+        (nFreeCoords > 0 && kB > 0.0) ? 2.0 * kinE / nFreeCoords / kB : 0.0;
 
     if (stepNumber % m_config.write_movies_interval == 0) {
       QUILL_LOG_DEBUG(log, "{} {:8} {:10.4} {:12.4} {:12.4} {:10.2}\n",
@@ -116,9 +115,8 @@ void Dynamics::run() {
 
     double kinE = matter->getKineticEnergy();
     double potE = matter->getPotentialEnergy();
-    const double kinT = (nFreeCoords > 0 && kB > 0.0)
-                            ? 2.0 * kinE / nFreeCoords / kB
-                            : 0.0;
+    const double kinT =
+        (nFreeCoords > 0 && kB > 0.0) ? 2.0 * kinE / nFreeCoords / kB : 0.0;
     sumT += kinT;
     sumT2 += kinT * kinT;
 
@@ -157,10 +155,10 @@ void Dynamics::andersenCollision() {
     if (eonc::rng::randomDouble() < pCol && !matter->getFixed(i)) {
       for (int j = 0; j < 3; j++) {
         double vOld = velocity(i, j);
-        const double vNew =
-            (mass[i] > 0.0 && kB > 0.0 && temperature > 0.0)
-                ? std::sqrt(kB * temperature / mass[i]) * eonc::rng::gaussRandom(0.0, 1.0)
-                : 0.0;
+        const double vNew = (mass[i] > 0.0 && kB > 0.0 && temperature > 0.0)
+                                ? std::sqrt(kB * temperature / mass[i]) *
+                                      eonc::rng::gaussRandom(0.0, 1.0)
+                                : 0.0;
         velocity(i, j) = std::sqrt(1.0 - alpha * alpha) * vOld + alpha * vNew;
       }
     }
@@ -175,10 +173,10 @@ void Dynamics::setThermalVelocity() {
   for (long i = 0; i < nAtoms; i++) {
     if (!matter->getFixed(i)) {
       for (int j = 0; j < 3; j++) {
-        velocity(i, j) =
-            (mass[i] > 0.0 && kB > 0.0 && temperature > 0.0)
-                ? std::sqrt(kB * temperature / mass[i]) * eonc::rng::gaussRandom(0.0, 1.0)
-                : 0.0;
+        velocity(i, j) = (mass[i] > 0.0 && kB > 0.0 && temperature > 0.0)
+                             ? std::sqrt(kB * temperature / mass[i]) *
+                                   eonc::rng::gaussRandom(0.0, 1.0)
+                             : 0.0;
       }
     }
   }
@@ -188,9 +186,8 @@ void Dynamics::setThermalVelocity() {
 void Dynamics::rescaleVelocity() {
   AtomMatrix velocity = matter->getVelocities();
   double kinE = matter->getKineticEnergy();
-  const double kinT = (nFreeCoords > 0 && kB > 0.0)
-                          ? 2.0 * kinE / nFreeCoords / kB
-                          : 0.0;
+  const double kinT =
+      (nFreeCoords > 0 && kB > 0.0) ? 2.0 * kinE / nFreeCoords / kB : 0.0;
   if (!(kinT > 0.0) || !(temperature > 0.0)) {
     return;
   }

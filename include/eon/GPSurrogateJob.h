@@ -85,4 +85,3 @@ void addVectorRow(MatrixXd &data, const Eigen::VectorXd &newrow);
 } // namespace helpers::eigen
 
 } // namespace eonc
-

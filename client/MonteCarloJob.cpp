@@ -23,7 +23,6 @@
 #include <stdexcept>
 #include <string>
 
-
 namespace eonc {
 
 std::vector<std::string> MonteCarloJob::run(void) {

@@ -24,7 +24,6 @@
 #include "subprojects/gpr_optim/gpr/auxiliary/ProblemSetUp.h"
 #include "subprojects/gpr_optim/structures/Structures.h"
 
-
 namespace eonc {
 
 namespace {
@@ -113,8 +112,7 @@ AtomMatrix AtomicGPDimer::getEigenvector() {
   if (nFree <= 0 || orient.size() != 3 * nFree) {
     return AtomMatrix::Zero(nAtoms, 3);
   }
-  AtomMatrix freeMode =
-      Eigen::Map<const AtomMatrix>(orient.data(), nFree, 3);
+  AtomMatrix freeMode = Eigen::Map<const AtomMatrix>(orient.data(), nFree, 3);
   if (nFree == nAtoms) {
     return freeMode;
   }

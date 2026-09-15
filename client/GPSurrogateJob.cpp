@@ -22,7 +22,6 @@
 #include <sstream>
 #include <stdexcept>
 
-
 namespace eonc {
 
 std::vector<std::string> GPSurrogateJob::run() {
@@ -256,8 +255,7 @@ std::vector<Matter> getMidSlice(const std::vector<Matter> &matobjs) {
   // training is order-sensitive (front, back, interior). The interior
   // index is two-thirds along the movable images, not n/2.
   if (matobjs.size() < 3) {
-    throw std::invalid_argument(
-        "getMidSlice: need at least three images");
+    throw std::invalid_argument("getMidSlice: need at least three images");
   }
   const std::size_t n = matobjs.size();
   const std::size_t twoThirds =
