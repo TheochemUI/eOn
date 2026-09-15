@@ -413,16 +413,19 @@ void EMT::CalculateIDs() {
   // calculated.  Otherwise the ID is the offset into the list of elements.
   if (nelements > 1) {
     const int *z = atoms->GetAtomicNumbers();
-    int found = 0; // REMOVE WHEN TESTED !   XXXXX
+    for (int j = 0; j < nSize; j++)
+      id[j] = -1;
     for (i = 0; i < nelements; i++) {
       int zcand = parameters[i]->Z;
       for (int j = 0; j < nSize; j++)
-        if (z[j] == zcand) {
+        if (z[j] == zcand)
           id[j] = i;
-          found++;
-        }
     }
-    assert(found == nSize);
+    for (int j = 0; j < nSize; j++) {
+      if (id[j] < 0) {
+        throw Exception("EMT::CalculateIDs: no EMT parameters for Z");
+      }
+    }
     // If we have ghost atoms, their IDs should be updated.
     //// // NO: This is now done when the ghost positions are updated.
     ////if (ghostatoms)
