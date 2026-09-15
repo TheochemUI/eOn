@@ -287,67 +287,81 @@ def rotm(axis, theta):
         ])/(mag*mag)
 
 
+# Same labels as eonc::EpiCenters::cna (client/EpiCenters.cpp).
+CNA_FCC = 0
+CNA_HCP = 1
+CNA_OTHER = 2
+
+
+def _neighbor_sets(nl):
+    """Per-atom neighbor sets for O(1) membership; list order stays on *nl*."""
+    return [set(nbs) for nbs in nl]
+
+
+def _common_neighbors_ordered(nl_a1, nbs_a2):
+    """Common neighbors of a1 and a2, in a1 neighbor-list order.
+
+    Bond-sum (FCC 421 vs HCP 422) depends on that order, so this must not
+    be an unordered set intersection.
+    """
+    return [a3 for a3 in nl_a1 if a3 in nbs_a2]
+
+
+def _common_bond_stats(nl_sets, common):
+    bonds_nr = 0
+    bonds_sum = 0
+    for j2 in range(1, len(common)):
+        nbs = nl_sets[common[j2]]
+        for j1 in range(j2):
+            if common[j1] in nbs:
+                bonds_nr += 1
+                bonds_sum += j1 + j2
+    return bonds_nr, bonds_sum
+
+
 def cna(p, cutoff, brute=False):
-    """ Returns a list of cna numbers for all atoms in p
-        Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)"""
-    can_values = numpy.zeros(len(p))
-    nr_FCC = numpy.zeros(len(p))
-    nr_HCP = numpy.zeros(len(p))
+    """Common-neighbor labels for every atom in *p*.
+
+    Labels match the C++ client (``EpiCenters::cna``): 0 fcc (421), 1 hcp
+    (422), 2 other. Inspired by the CNA code provided by Asap
+    (wiki.fysik.dtu.dk/asap).
+    """
+    n = len(p)
+    can_values = numpy.full(n, CNA_OTHER, dtype=int)
+    nr_FCC = numpy.zeros(n, dtype=int)
+    nr_HCP = numpy.zeros(n, dtype=int)
     nl = neighbor_list(p, cutoff, brute)
+    nl_sets = _neighbor_sets(nl)
 
-    # loops over all the atoms
-    for a2 in range(len(p)):
-        nl_a2 = nl[a2]
-        # loops over the atoms neighboring a2
-        for n2 in range(len(nl_a2)):
-            a1 = nl_a2[n2];
-            if a1 < a2:
-                common = []
-                nl_a1 = nl[a1]
-                # loops over the atoms neighboring a1
-                for n1 in range(len(nl_a1)):
-                    a3 = nl_a1[n1]
-                    # checks if atom a_3 is a common neighbor to a1 and a2
-                    for m2 in range(len(nl_a2)):
-                        if a3 == nl_a2[m2]:
-                            common.append(a3)
-                # determines the connectivity of common neighbors
-                if len(common) == 4:
-                    bonds_nr = 0
-                    bonds_sum = 0
-                    for j2 in range(1,4):
-                        nl_j2 = nl[common[j2]]
-                        for j1 in range(j2):
-                            for n in range(len(nl_j2)):
-                                if common[j1] == nl_j2[n]:
-                                    bonds_nr += 1
-                                    bonds_sum += j1 + j2
+    for a2 in range(n):
+        nbs_a2 = nl_sets[a2]
+        for a1 in nl[a2]:
+            if a1 >= a2:
+                continue
+            common = _common_neighbors_ordered(nl[a1], nbs_a2)
+            if len(common) != 4:
+                continue
+            bonds_nr, bonds_sum = _common_bond_stats(nl_sets, common)
+            if bonds_nr == 2:
+                if bonds_sum == 6:
+                    nr_FCC[a1] += 1
+                    nr_FCC[a2] += 1
+                else:
+                    nr_HCP[a1] += 1
+                    nr_HCP[a2] += 1
 
-                    if bonds_nr == 2:
-                        if bonds_sum == 6:
-                            nr_FCC[a1] += 1
-                            nr_FCC[a2] += 1
-                        else:
-                            nr_HCP[a1] += 1
-                            nr_HCP[a2] += 1
-
-    # 2: fcc (421), 1: hcp (422), 0: other
-    for i in range(len(p)):
+    for i in range(n):
         if len(nl[i]) == 12:
             if nr_FCC[i] == 12:
-                can_values[i] = 2
-            elif (nr_FCC[i] == 6) and (nr_HCP[i] == 6):
-                can_values[i] = 1
+                can_values[i] = CNA_FCC
+            elif nr_FCC[i] == 6 and nr_HCP[i] == 6:
+                can_values[i] = CNA_HCP
     return can_values
 
 def not_HCP_or_FCC(p, cutoff, brute=False):
-    """ Returns a list of indices for the atoms with cna = 0 """
-    not_cna = []
+    """Indices of atoms that are neither fcc nor hcp (CNA other)."""
     cna_numbers = cna(p, cutoff, brute)
-    for i in range(len(cna_numbers)):
-        if cna_numbers[i] == 0:
-            not_cna.append(i)
-    return not_cna
+    return [i for i, label in enumerate(cna_numbers) if label == CNA_OTHER]
 
 
 # ### TShacked start
@@ -358,35 +372,17 @@ def cnat(p, cutoff, brute=False):
     nr_5 = numpy.zeros(len(p))
     nr_6 = numpy.zeros(len(p))
     nl = neighbor_list(p, cutoff, brute)
+    nl_sets = _neighbor_sets(nl)
 
     # loops over all the atoms
     for a2 in range(len(p)):
-        nl_a2 = nl[a2]
-        # loops over the atoms neighboring a2
-        for n2 in range(len(nl_a2)):
-            a1 = nl_a2[n2];
+        nbs_a2 = nl_sets[a2]
+        for a1 in nl[a2]:
             if a1 < a2:
-                common = []
-                nl_a1 = nl[a1]
-                # loops over the atoms neighboring a1
-                for n1 in range(len(nl_a1)):
-                    a3 = nl_a1[n1]
-                    # checks if atom a_3 is a common neighbor to a1 and a2
-                    for m2 in range(len(nl_a2)):
-                        if a3 == nl_a2[m2]:
-                            common.append(a3)
+                common = _common_neighbors_ordered(nl[a1], nbs_a2)
                 # determines the connectivity of common neighbors
-                #print a2, n2, len(common)
                 if len(common) in [5,6]:
-                    bonds_nr = 0
-                    bonds_sum = 0
-                    for j2 in range(1,len(common)):
-                        nl_j2 = nl[common[j2]]
-                        for j1 in range(j2):
-                            for n in range(len(nl_j2)):
-                                if common[j1] == nl_j2[n]:
-                                    bonds_nr += 1
-                                    bonds_sum += j1 + j2
+                    bonds_nr, bonds_sum = _common_bond_stats(nl_sets, common)
 
                     if bonds_nr == 5 and len(common) == 5:
                         nr_5[a1] += 1
@@ -423,36 +419,18 @@ def cnar(p, cutoff, brute=False):
         cna[i] = {}
 
     nl = neighbor_list(p, cutoff, brute)
+    nl_sets = _neighbor_sets(nl)
 
     def codeString(j,k,l):
         return "%d,%d,%d" % (j,k,l)
 
     # loops over all the atoms
     for a2 in range(len(p)):
-        nl_a2 = nl[a2]
-        # loops over the atoms neighboring a2
-        for n2 in range(len(nl_a2)):
-            a1 = nl_a2[n2];
+        nbs_a2 = nl_sets[a2]
+        for a1 in nl[a2]:
             if a1 < a2: # prevent double counting?
-                common = []
-                nl_a1 = nl[a1]
-                # loops over the atoms neighboring a1
-                for n1 in range(len(nl_a1)):
-                    a3 = nl_a1[n1]
-                    # checks if atom a_3 is a common neighbor to a1 and a2
-                    for m2 in range(len(nl_a2)):
-                        if a3 == nl_a2[m2]:
-                            common.append(a3)
-                # determines the connectivity of common neighbors
-                bonds_nr = 0
-                bonds_sum = 0
-                for j2 in range(1,len(common)):
-                    nl_j2 = nl[common[j2]]
-                    for j1 in range(j2):
-                        for n in range(len(nl_j2)):
-                            if common[j1] == nl_j2[n]:
-                                bonds_nr += 1
-                                bonds_sum += j1 + j2
+                common = _common_neighbors_ordered(nl[a1], nbs_a2)
+                bonds_nr, bonds_sum = _common_bond_stats(nl_sets, common)
                 code = codeString(len(common), bonds_nr, bonds_sum)
                 if not code in cna[a1]:
                     cna[a1][code] = 0
