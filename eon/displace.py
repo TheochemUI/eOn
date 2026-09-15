@@ -409,8 +409,6 @@ class Undercoordinated(Displace):
 
     def make_displacement(self):
         """Select an undercoordinated atom and displace all atoms in a radius about it."""
-        # TODO: We should make sure that the amount of I/O to disk is what we think it should be:
-        #       about 100 kB or so per make_displacement().
         if not self.initialized:
             self.init()
         epicenter = self.undercoordinated_atoms[

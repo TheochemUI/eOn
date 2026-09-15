@@ -2,7 +2,7 @@
 """ The statelist module. """
 
 import logging
-import os
+from pathlib import Path
 
 from eon import atoms
 from eon import fileio as io
@@ -28,20 +28,21 @@ class StateList:
         self.StateClass = StateClass
 
         # Paths
-        self.state_table_path = os.path.join(self.path, "state_table")
+        root = Path(self.path)
+        self.state_table_path = str(root / "state_table")
 
         # Create the statelist directory if it does not exist.
-        if not os.path.isdir(self.path):
+        if not root.is_dir():
             logger.warning("State list path does not exist; Creating: %s" % self.path)
-            os.makedirs(self.path)
-            open(self.state_table_path, 'w').close()
+            root.mkdir(parents=True)
+            Path(self.state_table_path).write_text("")
 
         # Create the zero state directory if it does not exist.
-        if not os.path.isdir(os.path.join(self.path, "0")):
+        if not (root / "0").is_dir():
             if initial_state is None:
                 raise IOError("Missing zeroth state directory and no reactant provided")
             self.StateClass(
-                statepath=os.path.join(self.path, "0"),
+                statepath=str(root / "0"),
                 statenumber=0,
                 statelist=self,
                 previous_state_num=-1,
@@ -60,8 +61,6 @@ class StateList:
 
     def get_product_state(self, state_number, process_id):
         ''' Returns a State object referenced by state_number and process_id. '''
-        #TODO: Compare self.configuration of product with existing states.
-
         # If the number of states in state_table is zero
         #we need to add the zero state and energy to the state table.
         if self.get_num_states() == 0:
@@ -127,7 +126,7 @@ class StateList:
         if state_number in self.states:
             return self.states[state_number]
         st = self.StateClass(
-            statepath=os.path.join(self.path, str(state_number)),
+            statepath=str(Path(self.path) / str(state_number)),
             statenumber=state_number,
             statelist=self,
             config=self.config,
@@ -174,7 +173,7 @@ class StateList:
 
     def state_path(self, state_number):
         """ Utility function to return the compiled path of a state, whether it exists or not. """
-        return os.path.join(self.path, str(state_number))
+        return str(Path(self.path) / str(state_number))
 
 if __name__ == "__main__":
     pass
