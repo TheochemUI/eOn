@@ -29,3 +29,23 @@ def test_parameters_mpi_is_optional_header():
     assert (EON / "ParametersMpi.h").is_file()
     text = (EON / "ParametersMpi.h").read_text()
     assert "mpi.h" in text
+
+
+def test_parameters_h_is_the_aggregate():
+    p = (EON / "Parameters.h").read_text()
+    assert '#include "ParametersOptions.h"' in p
+    assert "struct neb_options_t" not in p
+    assert "using neb_options_t" in p
+    assert len(p.splitlines()) < 160
+
+
+def test_parameters_options_defines_job_and_pot_structs():
+    o = (EON / "ParametersOptions.h").read_text()
+    for name in (
+        "potential_options_t",
+        "neb_options_t",
+        "dimer_options_t",
+        "metatomic_options_t",
+        "oh_tst_options_t",
+    ):
+        assert f"struct {name}" in o or f"using {name}" in o
