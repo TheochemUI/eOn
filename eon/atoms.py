@@ -15,6 +15,42 @@ import logging
 logger = logging.getLogger("atoms")
 
 from eon.structure import Atoms, Structure  # noqa: F401
+def atomic_number(symbol_or_z):
+    """Z for a symbol. Integers pass through. Prefers readcon; table is fallback."""
+    if isinstance(symbol_or_z, int):
+        return symbol_or_z
+    try:
+        import readcon
+
+        fn = getattr(readcon, "symbol_to_atomic_number", None) or getattr(
+            readcon, "symbol_to_z", None
+        )
+        if fn is not None:
+            z = int(fn(symbol_or_z))
+            if z > 0:
+                return z
+    except Exception:
+        pass
+    return int(elements[symbol_or_z]["number"])
+
+
+def symbol_for_z(z):
+    """Chemical symbol for Z. Prefers readcon; table is fallback."""
+    try:
+        import readcon
+
+        fn = getattr(readcon, "atomic_number_to_symbol", None) or getattr(
+            readcon, "z_to_symbol", None
+        )
+        if fn is not None:
+            symbol = fn(int(z))
+            if symbol and symbol not in {"X", "Xx"}:
+                return str(symbol)
+    except Exception:
+        pass
+    return str(elements[int(z)]["symbol"])
+
+
 from eon.geometry import (  # noqa: F401
     box_to_length_angle,
     brute_neighbor_list,

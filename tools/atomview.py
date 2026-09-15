@@ -243,7 +243,7 @@ class atomview(gtk.Window):
             atom = queueitem("atom")
             atom.r = np.copy(r[i])
             atom.radius = atoms.elements[name[i]]['radius']
-            atom.number = atoms.elements[name[i]]['number']
+            atom.number = atoms.atomic_number(name[i])
             atom.id = i % len(self.drawpoint)
             atom.depth = 0
             self.queue.append(atom)
