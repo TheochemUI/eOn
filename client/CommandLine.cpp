@@ -158,16 +158,17 @@ void commandLine(int argc, char **argv) {
                  .argName("VALUE")
                  .help("Convergence force")
                  .handler([&](const std::string_view &value) {
-                   optConvergedForce = parseFloatingPoint<double>(value);
+                   optConvergedForce = Argum::parseFloatingPoint<double>(value);
                  }));
 
-  parser.add(Argum::Option("--tolerance", "-t")
-                 .argName("VALUE")
-                 .help("Distance tolerance")
-                 .handler([&](const std::string_view &value) {
-                   ParametersLoadAccess::structure_comparison_options(params)
-                       .distance_difference = parseFloatingPoint<double>(value);
-                 }));
+  parser.add(
+      Argum::Option("--tolerance", "-t")
+          .argName("VALUE")
+          .help("Distance tolerance")
+          .handler([&](const std::string_view &value) {
+            eonc::ParametersLoadAccess::structure_comparison_options(params)
+                .distance_difference = Argum::parseFloatingPoint<double>(value);
+          }));
 
   parser.add(Argum::Option("--potential", "-p")
                  .argName("POTENTIAL")
@@ -195,14 +196,14 @@ void commandLine(int argc, char **argv) {
                  .argName("PORT")
                  .help("Port for single-potential serve mode (used with -p)")
                  .handler([&](const std::string_view &value) {
-                   serve_port = parseIntegral<uint16_t>(value);
+                   serve_port = Argum::parseIntegral<uint16_t>(value);
                  }));
 
   parser.add(Argum::Option("--replicas")
                  .argName("N")
                  .help("Number of replicated server instances (used with -p)")
                  .handler([&](const std::string_view &value) {
-                   replicas = parseIntegral<size_t>(value);
+                   replicas = Argum::parseIntegral<size_t>(value);
                  }));
 
   parser.add(Argum::Option("--gateway")
@@ -292,7 +293,7 @@ void commandLine(int argc, char **argv) {
     for (auto &ch : potential) {
       ch = std::tolower(static_cast<unsigned char>(ch));
     }
-    ParametersLoadAccess::potential_options(params).potential =
+    eonc::ParametersLoadAccess::potential_options(params).potential =
         magic_enum::enum_cast<PotType>(potential, magic_enum::case_insensitive)
             .value_or(PotType::UNKNOWN);
     auto host = serve_host.value_or("localhost");
@@ -313,9 +314,9 @@ void commandLine(int argc, char **argv) {
   // Config-driven serve (no -p or --serve, just --config with [Serve])
   if (!pflag && !sflag && !mflag && !cflag && config_path.has_value() &&
       !serve_spec.has_value() &&
-      (!ParametersLoadAccess::serve_options(params).endpoints.empty() ||
-       ParametersLoadAccess::serve_options(params).gateway_port > 0 ||
-       ParametersLoadAccess::serve_options(params).replicas > 1)) {
+      (!eonc::ParametersLoadAccess::serve_options(params).endpoints.empty() ||
+       eonc::ParametersLoadAccess::serve_options(params).gateway_port > 0 ||
+       eonc::ParametersLoadAccess::serve_options(params).replicas > 1)) {
     serveFromConfig(params);
     std::exit(EXIT_SUCCESS);
   }
@@ -336,24 +337,24 @@ void commandLine(int argc, char **argv) {
   }
 
   if (!cflag) {
-    ParametersLoadAccess::potential_options(params).potential =
+    eonc::ParametersLoadAccess::potential_options(params).potential =
         magic_enum::enum_cast<PotType>(potential, magic_enum::case_insensitive)
             .value_or(PotType::UNKNOWN);
   }
 
   if (!sflag) {
-    ParametersLoadAccess::optimizer_options(params).method =
+    eonc::ParametersLoadAccess::optimizer_options(params).method =
         magic_enum::enum_cast<OptType>(optimizer, magic_enum::case_insensitive)
             .value_or(OptType::CG);
-    ParametersLoadAccess::optimizer_options(params).converged_force =
+    eonc::ParametersLoadAccess::optimizer_options(params).converged_force =
         optConvergedForce;
   }
 
   if (cflag) {
     // Matter copies structure_comparison_options into its own structComp in
     // the constructor, so the flag has to be set before the two below.
-    ParametersLoadAccess::structure_comparison_options(params).check_rotation =
-        true;
+    eonc::ParametersLoadAccess::structure_comparison_options(params)
+        .check_rotation = true;
   }
 
   auto pot = eonc::helpers::makePotential(params);

@@ -21,5 +21,6 @@ using eonc::Matter;
 using eonc::NEBInit;
 using eonc::OptType;
 using eonc::Parameters;
+using eonc::ParametersLoadAccess;
 using eonc::PotType;
 using eonc::RunStatus;

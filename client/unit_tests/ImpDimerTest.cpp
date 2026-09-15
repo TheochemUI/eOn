@@ -20,6 +20,14 @@
 
 namespace tests {
 
+using eonc::ImprovedDimer;
+using eonc::LowestEigenmode;
+using eonc::Matter;
+using eonc::OptType;
+using eonc::Parameters;
+using eonc::ParametersLoadAccess;
+using eonc::PotType;
+
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 TEST_CASE("ImprovedDimer computes eigenvalue on displaced cluster",
