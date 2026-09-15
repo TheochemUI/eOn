@@ -299,8 +299,8 @@ def rotm(axis, theta):
     u2 = u*u
     v2 = v*v
     w2 = w*w
-    ct = cos(theta)
-    st = sin(theta)
+    ct = numpy.cos(theta)
+    st = numpy.sin(theta)
     mag = numpy.linalg.norm(axis)
     if (mag*mag == 0 or theta == 0.0):
         return numpy.identity(3)
@@ -487,109 +487,73 @@ def not_TCP_or_BCC(p, cutoff, brute=False):
 
 import sys
 sys.setrecursionlimit(10000)
-def get_mappings(a, b, eps_r, neighbor_cutoff, mappings = None):
-    """ A recursive depth-first search for a complete set of mappings from atoms
-        in configuration a to atoms in configuration b. Do not use the mappings
-        argument, this is only used internally for recursion.
+def get_mappings(a, b, eps_r, neighbor_cutoff, mappings=None):
+    """Depth-first search for a complete atom mapping from a onto b.
 
-        Returns None if no mapping was found, or a dictionary mapping atom
-        indices a to atom indices b.
-
-        Note: If a and b are mirror images, this function will still return a
-        mapping from a to b, even though it may not be possible to align them
-        through translation and rotation. """
-    # If this is the top-level user call, create and loop through top-level
-    # mappings.
+    Returns None if no mapping was found, or a dict mapping a indices to b
+    indices. Mirror images still map; this does not test proper rotation.
+    """
     if mappings is None:
-        # Find the least common coordination number in b.
-        bCoordinations = coordination_numbers(b, neighbor_cutoff)
-        bCoordinationsCounts = {}
-        for coordination in bCoordinations:
-            if coordination in bCoordinationsCounts:
-                bCoordinationsCounts[coordination] += 1
-            else:
-                bCoordinationsCounts[coordination] = 1
-        bLeastCommonCoordination = list(bCoordinationsCounts.keys())[0]
-        for coordination in list(bCoordinationsCounts.keys()):
-            if bCoordinationsCounts[coordination] < bCoordinationsCounts[bLeastCommonCoordination]:
-                bLeastCommonCoordination = coordination
-        # Find one atom in a with the least common coordination number in b.
-        # If it does not exist, return None.
-        aCoordinations = coordination_numbers(a, neighbor_cutoff)
+        b_coord = coordination_numbers(b, neighbor_cutoff)
+        counts = {}
+        for c in b_coord:
+            counts[c] = counts.get(c, 0) + 1
+        least = min(counts, key=counts.get)
+        a_coord = coordination_numbers(a, neighbor_cutoff)
         try:
-            aAtom = aCoordinations.index(bLeastCommonCoordination)
+            a_atom = list(a_coord).index(least)
         except ValueError:
             return None
-        # Create a mapping from the atom chosen from a to each of the atoms with
-        # the least common coordination number in b, and recurse.
-        for i in range(len(bCoordinations)):
-            if bCoordinations[i] == bLeastCommonCoordination:
-                # Make sure the element types are the same.
-                if a.names[aAtom] != b.names[i]:
-                    continue
-                mappings = get_mappings(a, b, eps_r, neighbor_cutoff, {aAtom:i})
-                # If the result is not none, then we found a successful mapping.
-                if mappings is not None:
-                    return mappings
-        # There were no mappings.
+        for i, c in enumerate(b_coord):
+            if c != least or a.names[a_atom] != b.names[i]:
+                continue
+            found = get_mappings(a, b, eps_r, neighbor_cutoff, {a_atom: i})
+            if found is not None:
+                return found
         return None
 
-    # This is a recursed invocation of this function.
-    else:
-        # Find an atom from a that has not yet been mapped.
-        unmappedA = 0
-        while unmappedA < len(a):
-            if unmappedA not in list(mappings.keys()):
-                break
-            unmappedA += 1
-        # Calculate the distances from unmappedA to all mapped a atoms.
-        distances = {}
-        for i in list(mappings.keys()):
-            distances[i] = numpy.linalg.norm(pbc(a.r[unmappedA] - a.r[i], a.box))
-        # Loop over each unmapped b atom. Compare the distances between it and
-        # the mapped b atoms to the corresponding distances between unmappedA
-        # and the mapped atoms. If everything is similar, create a new mapping
-        # and recurse.
-        for bAtom in range(len(b)):
-            if bAtom not in list(mappings.values()):
-                for aAtom in distances:
-                    # Break if type check fails.
-                    if b.names[bAtom] != a.names[unmappedA]:
-                        break
-                    # Break if distance check fails
-                    bDist = numpy.linalg.norm(pbc(b.r[bAtom] - b.r[mappings[aAtom]], b.box))
-                    if abs(distances[aAtom] - bDist) > eps_r:
-                        break
-                else:
-                    # All distances were good, so create a new mapping.
-                    newMappings = mappings.copy()
-                    newMappings[unmappedA] = bAtom
-                    # If this is now a complete mapping from a to b, return it.
-                    if len(newMappings) == len(a):
-                        return newMappings
-                    # Otherwise, recurse.
-                    newMappings = get_mappings(a, b, eps_r, neighbor_cutoff, newMappings)
-                    # Pass any successful mapping up the recursion chain.
-                    if newMappings is not None:
-                        return newMappings
-        # There were no mappings.
-        return None
+    n = len(a)
+    mapped_a = mappings
+    mapped_b = set(mapped_a.values())
+    unmapped_a = next((i for i in range(n) if i not in mapped_a), n)
+    mapped_idx = list(mapped_a.keys())
+    diffs = pbc(a.r[unmapped_a] - a.r[mapped_idx], a.box)
+    dists = numpy.linalg.norm(numpy.atleast_2d(diffs), axis=1)
+    b_of_mapped = [mapped_a[i] for i in mapped_idx]
+    want_name = a.names[unmapped_a]
+    for b_atom in range(len(b)):
+        if b_atom in mapped_b or b.names[b_atom] != want_name:
+            continue
+        b_diffs = pbc(b.r[b_atom] - b.r[b_of_mapped], b.box)
+        b_dists = numpy.linalg.norm(numpy.atleast_2d(b_diffs), axis=1)
+        if numpy.max(numpy.abs(dists - b_dists)) > eps_r:
+            continue
+        new_map = mapped_a.copy()
+        new_map[unmapped_a] = b_atom
+        if len(new_map) == n:
+            return new_map
+        found = get_mappings(a, b, eps_r, neighbor_cutoff, new_map)
+        if found is not None:
+            return found
+    return None
 
 def get_rotation_matrix(axis, theta):
     axis = axis / numpy.linalg.norm(axis)
     t = theta
-    T = 1.0 - cos(t)
+    ct = numpy.cos(t)
+    st = numpy.sin(t)
+    T = 1.0 - ct
     rx, ry, rz = axis
     rotmat = numpy.zeros((3, 3))
-    rotmat[0][0] = T*rx*rx + cos(t)
-    rotmat[0][1] = T*ry*rx + rz*sin(t)
-    rotmat[0][2] = T*rz*rx - ry*sin(t)
-    rotmat[1][0] = T*rx*ry - rz*sin(t)
-    rotmat[1][1] = T*ry*ry + cos(t)
-    rotmat[1][2] = T*rz*ry + rx*sin(t)
-    rotmat[2][0] = T*rx*rz + ry*sin(t)
-    rotmat[2][1] = T*ry*rz - rx*sin(t)
-    rotmat[2][2] = T*rz*rz + cos(t)
+    rotmat[0][0] = T*rx*rx + ct
+    rotmat[0][1] = T*ry*rx + rz*st
+    rotmat[0][2] = T*rz*rx - ry*st
+    rotmat[1][0] = T*rx*ry - rz*st
+    rotmat[1][1] = T*ry*ry + ct
+    rotmat[1][2] = T*rz*ry + rx*st
+    rotmat[2][0] = T*rx*rz + ry*st
+    rotmat[2][1] = T*ry*rz - rx*st
+    rotmat[2][2] = T*rz*rz + ct
     return rotmat
 
 def rotate(r, axis, center, angle):
@@ -613,14 +577,14 @@ def internal_motion(a, b):
     a0a1 = (a.r[1] - a.r[0]) / numpy.linalg.norm(a.r[1] - a.r[0])
     b0b1 = (b.r[1] - b.r[0]) / numpy.linalg.norm(b.r[1] - b.r[0])
     axis1 = numpy.cross(b0b1, a0a1) / numpy.linalg.norm(numpy.cross(b0b1, a0a1))
-    theta1 = acos((a0a1*b0b1).sum())
+    theta1 = numpy.arccos((a0a1*b0b1).sum())
     b.r = rotate(b.r, axis1, a.r[0], theta1)
     axis2 = (a.r[2] - a.r[0]) / numpy.linalg.norm(a.r[2] - a.r[0])
     va = a.r[2] - ((a.r[2] - a.r[0]) * axis2).sum() * axis2
     va = va / numpy.linalg.norm(va)
     vb = b.r[2] - ((b.r[2] - a.r[0]) * axis2).sum() * axis2
     vb = vb / numpy.linalg.norm(vb)
-    theta2 = acos((va * vb).sum())
+    theta2 = numpy.arccos((va * vb).sum())
     b.r = rotate(b.r, axis2, a.r[0], theta2)
     return b
 
