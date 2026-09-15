@@ -18,7 +18,6 @@
 #include <cmath>
 #include <thread>
 
-
 namespace eonc {
 
 Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,

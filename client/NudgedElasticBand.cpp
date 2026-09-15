@@ -10,11 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/NudgedElasticBand.h"
-#include "eon/IRACompare.h"
-#include "eon/PotCapabilities.h"
 #include "eon/BaseStructures.h"
 #include "eon/EigenmodeStrategy.h"
 #include "eon/IDPPObjectiveFunction.hpp"
+#include "eon/IRACompare.h"
 #include "eon/NEBForceProjection.h"
 #include "eon/NEBInitialPaths.hpp"
 #include "eon/NEBOcinebController.h"
@@ -23,6 +22,7 @@
 #include "eon/NEBSpringForce.h"
 #include "eon/NEBTangent.h"
 #include "eon/Optimizer.h"
+#include "eon/PotCapabilities.h"
 #include "magic_enum/magic_enum.hpp"
 
 #include "eon/EonLogger.h"
@@ -61,11 +61,10 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
                     "interpolating the input order",
                     aligned.error);
               } else {
-                QUILL_LOG_INFO(
-                    log,
-                    "match_endpoints: Hausdorff {:.4f} A after IRA "
-                    "permute+rotate of the reactant",
-                    aligned.hausdorffDistance);
+                QUILL_LOG_INFO(log,
+                               "match_endpoints: Hausdorff {:.4f} A after IRA "
+                               "permute+rotate of the reactant",
+                               aligned.hausdorffDistance);
               }
             }
 
@@ -162,8 +161,7 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
   this->status = NEBStatus::INIT;
   numImages = params.neb_options.image_count;
   if (initPath.size() != static_cast<size_t>(numImages + 2)) {
-    throw std::invalid_argument(
-        "NEB: initPath.size() must be image_count + 2");
+    throw std::invalid_argument("NEB: initPath.size() must be image_count + 2");
   }
   atoms = initPath.front().numberOfAtoms();
 

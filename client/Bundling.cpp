@@ -107,9 +107,8 @@ std::vector<std::string> unbundle(int number) {
 
     std::string numstr = originalFilename.substr(upos + 1, dpos - upos - 1);
     if (numstr.empty() ||
-        !std::all_of(numstr.begin(), numstr.end(), [](unsigned char c) {
-          return std::isdigit(c);
-        })) {
+        !std::all_of(numstr.begin(), numstr.end(),
+                     [](unsigned char c) { return std::isdigit(c); })) {
       continue;
     }
     const int bundleNumber = std::atoi(numstr.c_str());

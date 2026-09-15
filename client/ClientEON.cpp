@@ -435,8 +435,8 @@ static int eonClientMain(int argc, char **argv) {
 
       // Determine what type of job we are running according to the parameters
       // file.
-      auto job =
-          eonc::helpers::makeJob(std::make_unique<eonc::Parameters>(parameters));
+      auto job = eonc::helpers::makeJob(
+          std::make_unique<eonc::Parameters>(parameters));
       if (job == nullptr) {
         QUILL_LOG_ERROR(logger, "error: Unknown job: {}",
                         std::string{magic_enum::enum_name<eonc::JobType>(

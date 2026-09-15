@@ -16,7 +16,6 @@
 #include <format>
 #include <stdexcept>
 
-
 namespace eonc {
 
 int FIRE::step(double a_maxMove) {

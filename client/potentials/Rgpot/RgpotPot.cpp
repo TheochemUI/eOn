@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <cctype>
-#include <ranges>
 #include <cstdlib>
 #include <iostream>
+#include <ranges>
 #include <string>
 
 RgpotPot::RgpotPot(const eonc::Parameters &p)

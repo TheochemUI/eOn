@@ -27,7 +27,6 @@
 #include <stdexcept>
 #include <string>
 
-
 namespace eonc {
 
 const char PrefactorJob::PREFACTOR_REACTANT[] = "reactant";

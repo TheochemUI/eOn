@@ -14,7 +14,6 @@
 #include <cmath>
 #include <stdexcept>
 
-
 namespace eonc {
 
 void MonteCarlo::run(int numSteps, double temperature, double stepSize) {

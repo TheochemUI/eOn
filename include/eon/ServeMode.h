@@ -114,4 +114,3 @@ void serveFromConfig(const Parameters &params);
 std::vector<ServeEndpoint> parseServeSpec(const std::string &spec);
 
 } // namespace eonc
-

@@ -14,11 +14,11 @@
 #include <algorithm>
 #include <cctype>
 #include <cstddef>
-#include <ranges>
 #include <format>
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <ranges>
 #include <stdexcept>
 #include <vector>
 
@@ -597,10 +597,9 @@ std::string AMS::generate_run(const eonc::Parameters &p) {
     if (forcefield.empty()) {
       throw std::runtime_error("REAXFF needs a forcefield\n");
     }
-    std::ranges::transform(forcefield, forcefield.begin(),
-                           [](unsigned char c) {
-                             return static_cast<char>(std::toupper(c));
-                           });
+    std::ranges::transform(forcefield, forcefield.begin(), [](unsigned char c) {
+      return static_cast<char>(std::toupper(c));
+    });
 
     std::string engine_formatter = R"(
    Engine {}

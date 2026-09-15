@@ -28,7 +28,6 @@
 #include <stdexcept>
 #include <string>
 
-
 namespace eonc {
 
 class MinModeObjectiveFunction : public ObjectiveFunction {
@@ -91,26 +90,26 @@ public:
           if (nBowlActive <= 0) {
             force.setZero();
           } else {
-          std::vector<int> indices_max(nBowlActive);
+            std::vector<int> indices_max(nBowlActive);
 
-          // Find the nBowlActive atoms with largest forces
-          for (int j = 0; j < nBowlActive; j++) {
-            double f_max = forceTemp.row(0).norm();
-            int i_max = 0;
-            for (long i = 0; i < matter->numberOfAtoms(); i++) {
-              if (f_max < forceTemp.row(i).norm()) {
-                f_max = forceTemp.row(i).norm();
-                i_max = static_cast<int>(i);
+            // Find the nBowlActive atoms with largest forces
+            for (int j = 0; j < nBowlActive; j++) {
+              double f_max = forceTemp.row(0).norm();
+              int i_max = 0;
+              for (long i = 0; i < matter->numberOfAtoms(); i++) {
+                if (f_max < forceTemp.row(i).norm()) {
+                  f_max = forceTemp.row(i).norm();
+                  i_max = static_cast<int>(i);
+                }
               }
+              forceTemp.row(i_max).setZero();
+              indices_max[j] = i_max;
             }
-            forceTemp.row(i_max).setZero();
-            indices_max[j] = i_max;
-          }
-          forceTemp.setZero();
-          for (int j = 0; j < nBowlActive; j++) {
-            forceTemp.row(indices_max[j]) = -proj.row(indices_max[j]);
-          }
-          force = forceTemp;
+            forceTemp.setZero();
+            for (int j = 0; j < nBowlActive; j++) {
+              forceTemp.row(indices_max[j]) = -proj.row(indices_max[j]);
+            }
+            force = forceTemp;
           }
         } else {
           int sufficientForce = 0;
@@ -311,9 +310,9 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
           QUILL_LOG_WARNING(log, "Failed to write climb movie frame {}",
                             climbLabel);
         }
-        eonc::helpers::saveMode(
-            std::format("mode_{:03}.dat", frameIndex), matter,
-            eonc::eigenmodeGetEigenvector(*minModeMethod));
+        eonc::helpers::saveMode(std::format("mode_{:03}.dat", frameIndex),
+                                matter,
+                                eonc::eigenmodeGetEigenvector(*minModeMethod));
       }
 
       if (params.debug_options.write_deprecated_outs) {

@@ -16,7 +16,6 @@
 
 #include <cmath>
 
-
 namespace eonc {
 
 Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
@@ -126,9 +125,8 @@ int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
   // Skip degenerate or negative curvature (Powell / Nocedal).
   const double sy = s0.dot(y0);
   if (sy <= LBFGS_EPS) {
-    QUILL_LOG_WARNING(m_log,
-                      "[LBFGS] s0.y0 not positive ({:.4e}), resetting memory",
-                      sy);
+    QUILL_LOG_WARNING(
+        m_log, "[LBFGS] s0.y0 not positive ({:.4e}), resetting memory", sy);
     reset();
     return 0;
   }

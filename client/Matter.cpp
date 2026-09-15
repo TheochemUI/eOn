@@ -22,7 +22,6 @@
 #include <stdexcept>
 #include <string>
 
-
 namespace eonc {
 
 namespace {
@@ -151,15 +150,15 @@ bool Matter::compare(const Matter &matter, bool indistinguishable) {
     return false;
   if (structComp.check_rotation && indistinguishable) {
     return eonc::geometry::sortedR(*this, matter,
-                                  structComp.distance_difference);
+                                   structComp.distance_difference);
   } else if (indistinguishable) {
     if (this->numberOfFixedAtoms() == 0 and structComp.remove_translation)
       eonc::geometry::translationRemove(*this, matter);
     return eonc::geometry::identical(*this, matter,
-                                    structComp.distance_difference);
+                                     structComp.distance_difference);
   } else if (structComp.check_rotation) {
     return eonc::geometry::rotationMatch(*this, matter,
-                                        structComp.distance_difference);
+                                         structComp.distance_difference);
   } else {
     if (this->numberOfFixedAtoms() == 0 and structComp.remove_translation)
       eonc::geometry::translationRemove(*this, matter);
@@ -199,9 +198,8 @@ void Matter::resize(const long int length) {
   }
   // Same-N resize still zeros coordinates. Keep .con column-5 ids and
   // the file-order map so a later matter2con does not stamp 1..N.
-  const bool keepAtomIds =
-      (length == nAtoms && atomIndex.size() == length &&
-       fileToMatter.size() == static_cast<size_t>(length));
+  const bool keepAtomIds = (length == nAtoms && atomIndex.size() == length &&
+                            fileToMatter.size() == static_cast<size_t>(length));
   // Zero is a real size: leaving nAtoms at the old value there sends
   // setMasses and every other nAtoms loop off the end of an empty array.
   nAtoms = length;

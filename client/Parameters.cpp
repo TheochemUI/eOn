@@ -23,7 +23,6 @@
 
 #include "eon/EonLogger.h"
 
-
 namespace eonc {
 
 Parameters::Parameters() {

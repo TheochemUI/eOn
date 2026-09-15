@@ -30,7 +30,6 @@
 #include <cmath>
 #include <memory>
 
-
 namespace eonc {
 
 Lanczos::Lanczos(std::shared_ptr<Matter> matter, const Parameters &params,
@@ -61,8 +60,7 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
     return;
   }
 
-  const long maxIters =
-      std::max(1L, params.lanczos_options.max_iterations);
+  const long maxIters = std::max(1L, params.lanczos_options.max_iterations);
   MatrixXd T(size, maxIters), Q(size, maxIters);
   T.setZero();
   VectorXd u(size), r = packMobileRows(direction, mobile);

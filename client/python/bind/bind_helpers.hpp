@@ -79,10 +79,10 @@ con_frames_to_python(const std::vector<readcon::ConFrame> &frames) {
   namespace fs = std::filesystem;
   // Exclusive temp file (eOn-srwt): no guessable world-writable name.
 #ifdef _WIN32
-  const auto tmp = fs::temp_directory_path() /
-                   std::format("eon_frames_{}.con",
-                               static_cast<unsigned long long>(
-                                   std::random_device{}()));
+  const auto tmp =
+      fs::temp_directory_path() /
+      std::format("eon_frames_{}.con",
+                  static_cast<unsigned long long>(std::random_device{}()));
   {
     nb::gil_scoped_release release;
     if (!eonc::io::io_ok(eonc::io::writeConFrames(tmp.string(), frames))) {

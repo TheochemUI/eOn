@@ -19,7 +19,6 @@
 #include <cmath>
 #include <cstdio>
 
-
 namespace eonc {
 
 int BasinHoppingSaddleSearch::run() {

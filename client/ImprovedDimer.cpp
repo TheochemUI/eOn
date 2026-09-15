@@ -13,10 +13,10 @@
 // An attempt to keep to the variable names in their 2008 paper has been made.
 
 #include "eon/ImprovedDimer.h"
-#include "eon/PotCapabilities.h"
 #include "eon/DimerRotationDispatch.h"
 #include "eon/HelperFunctions.h"
 #include "eon/LowestEigenmode.h"
+#include "eon/PotCapabilities.h"
 #include "eon/SafeMath.h"
 #include "eon/eonExceptions.hpp"
 
@@ -143,7 +143,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
 
   // Melander, Laasonen, Jonsson, JCTC 11(3), 1055-1062, 2015
   if (params.dimer_options.remove_rotation) {
-    eonc::geometry::rotationRemove(AtomMatrix::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
+    eonc::geometry::rotationRemove(
+        AtomMatrix::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
     x1_r = x1->getPositionsV();
     tau = x1->pbcV(x1_r - x0_r);
     eonc::safemath::safe_normalize_inplace(tau);
@@ -157,8 +158,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
   // Else fall back to thread-parallel when the potential is thread-safe or
   // wants per-image instances. Otherwise sequential.
   VectorXd g0, g1;
-  bool canParallel = eonc::potAllowsSharedInstance(*pot) ||
-                     pot->needsPerImageInstance();
+  bool canParallel =
+      eonc::potAllowsSharedInstance(*pot) || pot->needsPerImageInstance();
   if (pot->supportsBatchEvaluation()) {
     long n = x0->numberOfAtoms();
     bool x0dirty = x0->needsForceUpdate();
@@ -372,8 +373,8 @@ void ImprovedDimer::compute(std::shared_ptr<Matter> matter,
       // Melander, Laasonen, Jonsson, JCTC 11(3), 1055-1062, 2015
       if (params.dimer_options.remove_rotation) {
         x1->setPositionsV(x1_r);
-        eonc::geometry::rotationRemove(AtomMatrix::Map(x0_r.data(), x0->numberOfAtoms(), 3),
-                       x1);
+        eonc::geometry::rotationRemove(
+            AtomMatrix::Map(x0_r.data(), x0->numberOfAtoms(), 3), x1);
         x1_r = x1->getPositionsV();
         tau = x1_r - x0_r;
         eonc::safemath::safe_normalize_inplace(tau);

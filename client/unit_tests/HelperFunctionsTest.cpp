@@ -87,8 +87,8 @@ TEST_CASE("HelperFunctions: loadOrSynthesizeDisplacement from mode (#189/#79)",
   const long nAtoms = initial.numberOfAtoms();
   REQUIRE(nAtoms > 0);
 
-  const auto tmp = std::filesystem::temp_directory_path() /
-                   "eon_mode_for_synth.dat";
+  const auto tmp =
+      std::filesystem::temp_directory_path() / "eon_mode_for_synth.dat";
   {
     FILE *f = fopen(tmp.c_str(), "w");
     REQUIRE(f != nullptr);
@@ -122,8 +122,8 @@ TEST_CASE("loadOrSynthesizeDisplacement keeps reactant atom ids",
   for (long i = 0; i < nAtoms; ++i) {
     initial.setAtomIndex(i, 700 + i);
   }
-  const auto disp = std::filesystem::temp_directory_path() /
-                    "eon_disp_mtxr.con";
+  const auto disp =
+      std::filesystem::temp_directory_path() / "eon_disp_mtxr.con";
   Matter written(pot, params);
   written = initial;
   REQUIRE(eonc::io::io_ok(written.matter2con(disp.string())));

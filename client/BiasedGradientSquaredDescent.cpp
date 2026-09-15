@@ -15,15 +15,14 @@
 #include "eon/Matter.h"
 #include "eon/ObjectiveFunction.h"
 #include "eon/Optimizer.h"
-#include "eon/SafeMath.h"
 #include "eon/SaddleSearchMethod.h"
+#include "eon/SafeMath.h"
 
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <map>
-
 
 namespace eonc {
 
@@ -66,12 +65,11 @@ public:
     matter.setPositionsFreeV(Vpositions - normVforce * fd);
     VectorXd Vforcenew = matter.getForcesFreeV();
     matter.setPositionsFreeV(Vpositions);
-    VectorXd Hforce =
-        magVforce * (Vforcenew - Vforce) / fd +
-        bgsdAlpha *
-            (matter.getPotentialEnergy() -
-             (reactantEnergy + params.bgsd_options.beta)) *
-            Vforce;
+    VectorXd Hforce = magVforce * (Vforcenew - Vforce) / fd +
+                      bgsdAlpha *
+                          (matter.getPotentialEnergy() -
+                           (reactantEnergy + params.bgsd_options.beta)) *
+                          Vforce;
     return -Hforce;
   }
 
@@ -118,8 +116,7 @@ int BiasedGradientSquaredDescent::run() {
       log,
       "starting optimization of H with params alpha and beta: {:.2f} {:.2f}",
       params.bgsd_options.alpha, params.bgsd_options.beta);
-  while (iteration < max_iter &&
-         (!objf->isConvergedH() || iteration == 0)) {
+  while (iteration < max_iter && (!objf->isConvergedH() || iteration == 0)) {
     if (!std::isfinite(objf->getEnergy())) {
       break;
     }

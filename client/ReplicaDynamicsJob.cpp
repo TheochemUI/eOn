@@ -19,7 +19,6 @@
 #include <format>
 #include <fstream>
 
-
 namespace eonc {
 
 std::vector<std::string> ReplicaDynamicsJob::run() {
@@ -84,7 +83,8 @@ ReplicaDynamicsJob::PrdClock ReplicaDynamicsJob::prdClock() const {
     return n < 1 ? 1 : n;
   };
   PrdClock c;
-  c.state_check = to_steps(params.parallel_replica_options.state_check_interval);
+  c.state_check =
+      to_steps(params.parallel_replica_options.state_check_interval);
   c.record = to_steps(params.parallel_replica_options.record_interval);
   if (c.record > c.state_check) {
     c.record = c.state_check;

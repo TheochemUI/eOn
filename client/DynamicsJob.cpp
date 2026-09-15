@@ -22,7 +22,6 @@
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 
-
 namespace eonc {
 
 std::vector<std::string> DynamicsJob::run(void) {

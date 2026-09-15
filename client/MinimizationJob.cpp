@@ -22,7 +22,6 @@
 #include <iostream>
 #include <stdexcept>
 
-
 namespace eonc {
 
 std::vector<std::string> MinimizationJob::run() {

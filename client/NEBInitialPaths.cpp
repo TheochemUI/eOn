@@ -339,8 +339,8 @@ void ensureDistinctAdjacentImages(const std::vector<Matter> &path,
         "NEB path: min adjacent image separation must be positive");
   }
   for (size_t i = 1; i < path.size(); ++i) {
-    const AtomMatrix diff = path[i].pbc(path[i].getPositions() -
-                                        path[i - 1].getPositions());
+    const AtomMatrix diff =
+        path[i].pbc(path[i].getPositions() - path[i - 1].getPositions());
     const double d = diff.norm();
     if (!(d > min_sep) || !std::isfinite(d)) {
       throw std::runtime_error(

@@ -4,8 +4,6 @@
 #include <iostream>
 #include <type_traits>
 
-using namespace std::string_literals;
-
 namespace eonc::helpers {
 template <typename T>
 std::vector<T> get_val_from_string(std::string_view line,
@@ -30,7 +28,7 @@ std::vector<T> get_val_from_string(std::string_view line,
     ss >> tmp;
     if (b_isunsigned and tmp < 0) {
       std::cerr
-          << "Can't represent negative numbers with an unsigned type, bailing on "s
+          << "Can't represent negative numbers with an unsigned type, bailing on "
           << tmp << "\n";
       assert(tmp > 0);
     }

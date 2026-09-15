@@ -24,7 +24,6 @@
 #include <fstream>
 #include <stdexcept>
 
-
 namespace eonc {
 
 std::vector<std::string> NudgedElasticBandJob::run() {

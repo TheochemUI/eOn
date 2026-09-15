@@ -23,7 +23,6 @@
 #include <algorithm>
 #include <cmath>
 
-
 namespace eonc {
 
 std::vector<std::string> GlobalOptimizationJob::run() {
@@ -403,8 +402,7 @@ void GlobalOptimizationJob::velopt(Matter &matter) {
   matter.setVelocities(vat);
   long nFreeCoords = matter.numberOfFreeAtoms() * 3;
   if (nFreeCoords <= 0) {
-    throw std::invalid_argument(
-        "GlobalOptimizationJob::velopt: no free atoms");
+    throw std::invalid_argument("GlobalOptimizationJob::velopt: no free atoms");
   }
   double kinE = matter.getKineticEnergy();
   double kB = params.constants.kB;

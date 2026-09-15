@@ -37,9 +37,6 @@
 #include <sys/resource.h>
 #include <sys/time.h>
 #endif
-using std::ifstream;
-using std::string;
-
 // Vector functions.
 // Make v1 orthogonal to v2
 AtomMatrix eonc::helpers::makeOrthogonal(const AtomMatrix v1,
@@ -75,16 +72,17 @@ void eonc::helpers::getTime(double *real, double *user, double *sys) {
 #endif
 }
 
-bool eonc::helpers::existsFile(string filename) {
+bool eonc::helpers::existsFile(std::string filename) {
   return std::filesystem::exists(filename);
 }
 
-string eonc::helpers::getRelevantFile(string filename) {
+std::string eonc::helpers::getRelevantFile(std::string filename) {
   const auto dot = filename.rfind('.');
-  const string prefix =
-      (dot == string::npos) ? filename : filename.substr(0, dot);
-  const string postfix = (dot == string::npos) ? string{} : filename.substr(dot);
-  string filenameRelevant = prefix + "_cp" + postfix;
+  const std::string prefix =
+      (dot == std::string::npos) ? filename : filename.substr(0, dot);
+  const std::string postfix =
+      (dot == std::string::npos) ? std::string{} : filename.substr(dot);
+  std::string filenameRelevant = prefix + "_cp" + postfix;
   if (existsFile(filenameRelevant)) {
     return filenameRelevant;
   }
@@ -95,8 +93,8 @@ string eonc::helpers::getRelevantFile(string filename) {
   return filename;
 }
 
-VectorXd eonc::helpers::loadMasses(string filename, int nAtoms) {
-  ifstream massFile(filename.c_str());
+VectorXd eonc::helpers::loadMasses(std::string filename, int nAtoms) {
+  std::ifstream massFile(filename.c_str());
   if (!massFile.is_open()) {
     EONC_LOG_CRITICAL("File {} was not found", filename);
     throw std::runtime_error(std::format("cannot open {}", filename));
@@ -133,7 +131,7 @@ AtomMatrix eonc::helpers::loadMode(FILE *modeFile, int nAtoms) {
   return mode;
 }
 
-AtomMatrix eonc::helpers::loadMode(string filename, int nAtoms) {
+AtomMatrix eonc::helpers::loadMode(std::string filename, int nAtoms) {
   // Unique FILE* with RAII cleanup
   auto closer = [](FILE *f) {
     if (f)
@@ -337,7 +335,8 @@ namespace {
 class MatterObjectiveFunction : public eonc::ObjectiveFunction {
   eonc::Matter &m_matter; // non-owning reference, avoids copy
 public:
-  MatterObjectiveFunction(eonc::Matter &mat, const eonc::Parameters &parametersPassed)
+  MatterObjectiveFunction(eonc::Matter &mat,
+                          const eonc::Parameters &parametersPassed)
       : eonc::ObjectiveFunction(parametersPassed),
         m_matter{mat} {
     eonc::helpers::requireKnownConvergenceMetric(

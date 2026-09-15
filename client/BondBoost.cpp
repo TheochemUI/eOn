@@ -16,13 +16,12 @@
 
 #include <algorithm>
 #include <cctype>
-#include <ranges>
 #include <cmath>
+#include <ranges>
 #include <stdexcept>
 #include <string>
 #include <unordered_set>
 #include <vector>
-
 
 namespace eonc {
 

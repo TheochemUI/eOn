@@ -15,7 +15,6 @@
 #include "eon/SteepestDescent.h"
 #include "eon/SafeMath.h"
 
-
 namespace eonc {
 
 int SteepestDescent::step(double a_maxMove) {

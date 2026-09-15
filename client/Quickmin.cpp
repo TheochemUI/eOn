@@ -14,7 +14,6 @@
 
 #include <cmath>
 
-
 namespace eonc {
 
 int Quickmin::step(double a_maxMove) {

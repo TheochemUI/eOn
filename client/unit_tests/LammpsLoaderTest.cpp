@@ -75,7 +75,8 @@ TEST_CASE("LammpsLoader: require_loaded is consistent with is_loaded",
     } catch (const std::runtime_error &err) {
       const std::string what{err.what()};
       REQUIRE_THAT(what, Catch::Matchers::ContainsSubstring("liblammps"));
-      REQUIRE_THAT(what, Catch::Matchers::ContainsSubstring(loader.last_error()));
+      REQUIRE_THAT(what,
+                   Catch::Matchers::ContainsSubstring(loader.last_error()));
       REQUIRE_FALSE(loader.last_error().empty());
       REQUIRE_FALSE(loader.is_loaded());
       REQUIRE(loader.open_no_mpi == nullptr);

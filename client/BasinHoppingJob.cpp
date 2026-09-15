@@ -27,7 +27,6 @@
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 
-
 namespace eonc {
 
 std::vector<std::string> BasinHoppingJob::run() {
@@ -41,7 +40,8 @@ std::vector<std::string> BasinHoppingJob::run() {
   std::unique_ptr<Matter> minTrial = std::make_unique<Matter>(pot, params);
   std::unique_ptr<Matter> swapTrial = std::make_unique<Matter>(pot, params);
 
-  std::string conFilename = eonc::helpers::getRelevantFile(params.main_options.conFilename);
+  std::string conFilename =
+      eonc::helpers::getRelevantFile(params.main_options.conFilename);
   if (!eonc::io::io_ok(current->con2matter(conFilename))) {
     QUILL_LOG_CRITICAL(log, "Failed to load {}", conFilename);
     throw std::runtime_error("failed to load " + conFilename);
@@ -77,7 +77,8 @@ std::vector<std::string> BasinHoppingJob::run() {
     randomPositions *= current->getCell();
     current->setPositionsFree(randomPositions);
 
-    eonc::geometry::pushApart(current, params.basin_hopping_options.push_apart_distance);
+    eonc::geometry::pushApart(current,
+                              params.basin_hopping_options.push_apart_distance);
   }
 
   *trial = *current;
@@ -107,7 +108,8 @@ std::vector<std::string> BasinHoppingJob::run() {
   for (int step = 0; step < nsteps; step++) {
 
     // Swap or displace
-    if (eonc::rng::randomDouble(1.0) < params.basin_hopping_options.swap_probability &&
+    if (eonc::rng::randomDouble(1.0) <
+            params.basin_hopping_options.swap_probability &&
         step < params.basin_hopping_options.steps) {
       *swapTrial = *current;
       randomSwap(swapTrial.get());
@@ -119,7 +121,8 @@ std::vector<std::string> BasinHoppingJob::run() {
 
       trial->setPositions(current->getPositions() + displacement);
       swapMove = false;
-      eonc::geometry::pushApart(trial, params.basin_hopping_options.push_apart_distance);
+      eonc::geometry::pushApart(
+          trial, params.basin_hopping_options.push_apart_distance);
 
       *minTrial = *trial;
     }
@@ -256,7 +259,8 @@ std::vector<std::string> BasinHoppingJob::run() {
         jump = displaceRandom(curDisplacement);
         current->setPositions(current->getPositions() + jump);
         if (params.basin_hopping_options.significant_structure) {
-          eonc::geometry::pushApart(current, params.basin_hopping_options.push_apart_distance);
+          eonc::geometry::pushApart(
+              current, params.basin_hopping_options.push_apart_distance);
           current->relax(true);
         }
         currentEnergy = current->getPotentialEnergy();

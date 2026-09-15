@@ -14,12 +14,11 @@
 #include "eon/Matter.h"
 #include "eon/Potential.h"
 
+#include "magic_enum/magic_enum.hpp"
 #include <cmath>
 #include <fstream>
-#include "magic_enum/magic_enum.hpp"
 #include <stdexcept>
 #include <string>
-
 
 namespace eonc {
 
@@ -76,8 +75,8 @@ void TestJob::checkPotentials() {
 }
 
 double TestJob::getEnergyDiff(std::string potTag, double refEnergy) {
-  auto type =
-      magic_enum::enum_cast<eonc::PotType>(potTag, magic_enum::case_insensitive);
+  auto type = magic_enum::enum_cast<eonc::PotType>(
+      potTag, magic_enum::case_insensitive);
   if (!type) {
     throw std::invalid_argument("unknown pot " + potTag);
   }
@@ -92,8 +91,8 @@ double TestJob::getEnergyDiff(std::string potTag, double refEnergy) {
 }
 
 double TestJob::getForceDiff(std::string potTag, double refForce) {
-  auto type =
-      magic_enum::enum_cast<eonc::PotType>(potTag, magic_enum::case_insensitive);
+  auto type = magic_enum::enum_cast<eonc::PotType>(
+      potTag, magic_enum::case_insensitive);
   if (!type) {
     throw std::invalid_argument("unknown pot " + potTag);
   }

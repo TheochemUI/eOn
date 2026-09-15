@@ -19,17 +19,16 @@
 
 #include "eon/Davidson.h"
 
-#include <algorithm>
 #include "eon/EonLogger.h"
 #include "eon/HelperFunctions.h"
 #include "eon/MobileAtoms.h"
 #include "eon/Potential.h"
 #include "eon/SafeMath.h"
+#include <algorithm>
 
 #include <cmath>
 #include <memory>
 #include <vector>
-
 
 namespace eonc {
 
@@ -61,8 +60,7 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
     return;
   }
 
-  const long maxIter =
-      std::max(1L, params.davidson_options.max_iterations);
+  const long maxIter = std::max(1L, params.davidson_options.max_iterations);
   const double tol = params.davidson_options.tolerance;
   const double dr = params.main_options.finiteDifference;
   const bool useDiagPrec = params.davidson_options.diagonal_preconditioner;

@@ -14,7 +14,6 @@
 
 #include "eon/EonLogger.h"
 
-
 namespace eonc {
 
 GlobalOptimization::GlobalOptimization(const Parameters &params)

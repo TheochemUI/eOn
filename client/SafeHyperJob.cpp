@@ -16,7 +16,6 @@
 
 #include <cmath>
 
-
 namespace eonc {
 
 void SafeHyperJob::reportResults() {

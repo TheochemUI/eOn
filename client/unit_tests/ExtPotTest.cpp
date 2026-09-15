@@ -11,10 +11,10 @@
 */
 
 #include "catch2/catch_amalgamated.hpp"
-#include "eonc_test_aliases.hpp"
 #include "eon/MatrixHelpers.hpp"
 #include "eon/Matter.h"
 #include "eon/potentials/ExtPot/ExtPotCommand.h"
+#include "eonc_test_aliases.hpp"
 #include <cstdlib>
 #include <filesystem>
 #include <memory>

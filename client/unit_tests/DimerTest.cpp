@@ -206,8 +206,7 @@ TEST_CASE_METHOD(DimerFixture,
                       Catch::Matchers::ContainsSubstring("with_gprd"));
 }
 #else
-TEST_CASE_METHOD(DimerFixture,
-                 "gprdimer constructs AtomicGPDimer in place",
+TEST_CASE_METHOD(DimerFixture, "gprdimer constructs AtomicGPDimer in place",
                  "[eigenmode][strategy][gprdimer][m9q]") {
   params.saddle_search_options.minmode_method =
       LowestEigenmode::MINMODE_GPRDIMER;
