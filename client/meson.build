@@ -688,6 +688,8 @@ eonclib_sources = [
     'EpiCenters.cpp',
     'SaddleSearchJob.cpp',
     'BasinHoppingSaddleSearch.cpp',
+    # Stubs when -Dwith_ira=false; NudgedElasticBand always calls IRACompare.
+    'IRACompare.cpp',
 ]
 
 eonclient_sources = ['ClientEON.cpp', 'CommandLine.cpp']
@@ -1211,7 +1213,6 @@ if get_option('with_ira')
     endif
     _deps += [ira_dep]
     _args += ['-DWITH_IRA']
-    eonclib_sources += ['IRACompare.cpp']
     eonclib_sources += ['libs/IRA/IRAResource.cpp']
 endif
 
