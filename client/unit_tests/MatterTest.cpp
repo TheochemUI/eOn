@@ -113,6 +113,22 @@ TEST_CASE("Copy constructor preserves positions, cell, and atomic numbers",
   REQUIRE(m2.getAtomicNrs() == m1->getAtomicNrs());
 }
 
+TEST_CASE("pbc is identity when periodic is off", "[MatterTest][acc]") {
+  Parameters params;
+  params.potential_options.potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter m(pot, params);
+  m.resize(2);
+  m.setAtomicNr(0, 1);
+  m.setAtomicNr(1, 1);
+  m.setCell(Matrix3d::Identity() * 20.0);
+  m.setPeriodic(false);
+  AtomMatrix d(2, 3);
+  d << 15.0, 0.0, 0.0, -15.0, 0.0, 0.0;
+  AtomMatrix wrapped = m.pbc(d);
+  REQUIRE(wrapped.isApprox(d, 1e-12));
+}
+
 TEST_CASE("removeNetForce is skipped for a single free atom",
           "[MatterTest][zjri]") {
   Parameters params;

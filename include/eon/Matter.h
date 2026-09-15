@@ -161,9 +161,15 @@ public:
   }
 
   AtomMatrix pbc(const AtomMatrix &diff) const {
+    if (!usePeriodicBoundaries) {
+      return diff;
+    }
     return eonc::pbc::apply(diff, cell, cellInverse);
   }
   VectorXd pbcV(const VectorXd &diff) const {
+    if (!usePeriodicBoundaries) {
+      return diff;
+    }
     return eonc::pbc::applyV(diff, cell, cellInverse);
   }
 
