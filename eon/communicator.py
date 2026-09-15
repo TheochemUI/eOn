@@ -15,6 +15,8 @@ import re
 import numpy
 import sys
 
+from pathlib import Path
+
 from eon.config import ConfigClass # Typing
 
 def bundled_job_name(bundle_dirname, slot):
@@ -333,18 +335,13 @@ class Communicator:
         # Split jobpaths in to lists of size self.bundle_size.
         chunks = [ data[i:i+self.bundle_size] for i in range(0, len(data), self.bundle_size) ]
         for chunk in chunks:
-            # create the bundle's directory
+            job_path = Path(self.scratchpath) / chunk[0]["id"]
+            job_path.mkdir()
 
-            job_path = os.path.join(self.scratchpath, chunk[0]['id'])
-            os.mkdir(job_path)
-
-            for filename in list(invariants.keys()):
-                f = open(os.path.join(job_path, filename), 'w')
-                file_contents, file_permissions = invariants[filename]
-#                f.write(invariants[filename].getvalue())
-                f.write(file_contents.getvalue())
-                f.close()
-                os.chmod(os.path.join(job_path, filename), file_permissions)
+            for filename, (file_contents, file_permissions) in invariants.items():
+                dest = job_path / filename
+                dest.write_text(file_contents.getvalue())
+                dest.chmod(file_permissions)
 
             # Concatenate all of the displacement and modes together.
             n = 0
@@ -357,13 +354,11 @@ class Communicator:
                         filename = basename
                     else:
                         filename = "%s_%d.%s" % (splitname[0], n, splitname[1])
-                    f = open(os.path.join(job_path, filename), 'w')
-                    f.write(job[basename].getvalue())
-                    f.close()
+                    (job_path / filename).write_text(job[basename].getvalue())
                 n += 1
 
             # Returns the jobpath to the new bigger workunit.
-            yield job_path
+            yield str(job_path)
 
 
 class MPI(Communicator):

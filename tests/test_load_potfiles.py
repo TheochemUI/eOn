@@ -13,11 +13,11 @@ def test_load_potfiles_skips_subdir_inside_pot_dir(tmp_path):
     (pot / "POTCAR").write_text("ok")
     (pot / "nested").mkdir()
     (pot / "nested" / "x").write_text("no")
-    got = load_potfiles(str(pot))
+    got = load_potfiles(pot)
     assert set(got) == {"POTCAR"}
     data, _mode = got["POTCAR"]
     assert data.getvalue() == "ok"
 
 
 def test_load_potfiles_missing_dir(tmp_path):
-    assert load_potfiles(str(tmp_path / "nope")) == {}
+    assert load_potfiles(tmp_path / "nope") == {}
