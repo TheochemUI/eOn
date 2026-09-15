@@ -388,6 +388,8 @@ public:
     std::string multiplicity;
     double scf_thresh{1e-5};
     long scf_maxiter{200};
+    std::string basis{"3-21G"};
+    std::string memory{"2 gb"};
   } ase_nwchem_options;
 
   // [Metatomic] //

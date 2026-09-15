@@ -565,6 +565,10 @@ int load_ini(INIReader &ini, Parameters &params) {
         ini.GetReal("ASE_NWCHEM", "scf_thresh", 1e-5);
     params.ase_nwchem_options.scf_maxiter =
         ini.GetInteger("ASE_NWCHEM", "scf_maxiter", 200);
+    params.ase_nwchem_options.basis =
+        ini.Get("ASE_NWCHEM", "basis", params.ase_nwchem_options.basis);
+    params.ase_nwchem_options.memory =
+        ini.Get("ASE_NWCHEM", "memory", params.ase_nwchem_options.memory);
   }
   // [Metatomic]
   if (ini.HasSection("Metatomic")) {
