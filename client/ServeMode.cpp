@@ -40,7 +40,7 @@ namespace eonc {
 namespace {
 
 /// Create a ForceCallback that wraps an eOn Potential's force() method.
-ForceCallback makeForceCallback(std::shared_ptr<::Potential> pot) {
+ForceCallback makeForceCallback(std::shared_ptr<Potential> pot) {
   return [pot = std::move(pot)](long nAtoms, const double *positions,
                                 const int *atomicNrs, double *forces,
                                 double *energy, const double *box) {
