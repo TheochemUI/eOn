@@ -1,5 +1,6 @@
-import os
 import logging
+from pathlib import Path
+
 logger = logging.getLogger('superbasinscheme')
 
 import sys
@@ -18,19 +19,21 @@ class SuperbasinScheme:
             raise TypeError("SuperbasinScheme requires a ConfigClass instance")
         self.config = config
         self.path = superbasin_path
-        self.path_storage = os.path.join(superbasin_path, "storage")
+        self.path_storage = str(Path(superbasin_path) / "storage")
 
         self.states = states
         self.kT = kT
 
-        if not os.path.isdir(self.path):
+        root = Path(self.path)
+        if not root.is_dir():
             logger.warning('Superbasin path does not exist, creating %s' % self.path)
-            os.makedirs(self.path)
-            os.makedirs(self.path_storage)
+            root.mkdir(parents=True)
+            Path(self.path_storage).mkdir()
 
         self.superbasins = []
         self.next_sb_num = 0
-        for i in os.listdir(self.path):
+        for i in root.iterdir():
+            i = i.name
             if i == 'storage':
                 continue
             if not i.isdigit():
@@ -130,18 +133,13 @@ class SuperbasinScheme:
                 new_sb_states.add(i)
             else:
                 new_sb_states.update(sb.states)
-                # keep basins to analyze data
-                if True:
-                    sb.delete(self.path_storage)
-                else:
-                    sb.delete()
+                sb.delete(self.path_storage)
                 self.superbasins.remove(sb)
         new_sb_states = list(new_sb_states)
 
-        self.states.connect_states(new_sb_states) #XXX:This should ensure detailed balance
-        # However, it will likely be very slow. We should be able to do without it.
-        # Also, if confidence is changed and new processes are found, the superbasin
-        # #will ignore these new processes.
+        # Register reverse processes among the merged states so the
+        # superbasin rate matrix is detailed-balanced.
+        self.states.connect_states(new_sb_states)
 
         self.superbasins.append(
             superbasin.Superbasin(self.path, self.next_sb_num,
@@ -198,13 +196,12 @@ class TransitionCounting(SuperbasinScheme):
     def write_data(self):
         logger.debug('writing')
         for start_state in self.count:
-            data_path = os.path.join(start_state.path, self.config.sb_state_file)
-            f = open(data_path, 'w')
-            for end_state in self.count[start_state]:
-                #print(end_state.number, self.count[start_state][end_state], f)
-                #f.write(end_state.number, self.count[start_state][end_state])
-                f.write("%d %d\n" % (end_state.number, self.count[start_state][end_state]))
-            f.close()
+            data_path = Path(start_state.path) / self.config.sb_state_file
+            lines = [
+                "%d %d\n" % (end_state.number, self.count[start_state][end_state])
+                for end_state in self.count[start_state]
+            ]
+            data_path.write_text("".join(lines))
 
     def read_data(self):
         self.count = {}
@@ -213,14 +210,12 @@ class TransitionCounting(SuperbasinScheme):
         try:
             return self.count[state]
         except KeyError:
-            data_path = os.path.join(state.path, self.config.sb_state_file)
+            data_path = Path(state.path) / self.config.sb_state_file
             self.count[state] = {}
-            if os.path.isfile(data_path):
-                f = open(data_path, 'r')
-                for i in f:
+            if data_path.is_file():
+                for i in data_path.read_text().splitlines():
                     i = i.strip().split()
                     self.count[state][self.states.get_state(int(i[0]))] = int(i[1])
-                f.close()
             return self.count[state]
 
 
@@ -321,22 +316,17 @@ class EnergyLevel(SuperbasinScheme):
         logger.debug('reading')
         for i in range(self.states.get_num_states()):
             state = self.states.get_state(i)
-            data_path = os.path.join(state.path, self.config.sb_state_file)
-            if os.path.isfile(data_path):
-                f = open(data_path, 'r')
-                self.levels[self.states.get_state(i)] = float(f.read().strip())
-                f.close()
+            data_path = Path(state.path) / self.config.sb_state_file
+            if data_path.is_file():
+                self.levels[self.states.get_state(i)] = float(data_path.read_text().strip())
             # Resume global min from state energies even without a levels file.
             self._note_state_energy(state.get_energy())
 
     def write_data(self):
         logger.debug('writing')
         for i in self.levels:
-            data_path = os.path.join(i.path, self.config.sb_state_file)
-            f = open(data_path, 'w')
-            #print("%f\n" % self.levels[i], f)
-            f.write("%f\n" % self.levels[i])
-            f.close()
+            data_path = Path(i.path) / self.config.sb_state_file
+            data_path.write_text("%f\n" % self.levels[i])
 
 
 class RateThreshold(SuperbasinScheme):

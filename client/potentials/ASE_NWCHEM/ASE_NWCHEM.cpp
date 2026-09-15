@@ -145,8 +145,11 @@ void ASENwchemPot::force(long nAtoms, const double *R, const int *atomicNrs,
     RotationMatrix boxx = RotationMatrix::Map(const_cast<double *>(box), 3, 3);
     Eigen::VectorXi atmnmrs =
         Eigen::Map<Eigen::VectorXi>(const_cast<int *>(atomicNrs), nAtoms);
-    // XXX: NWChem refuses to perform SCF for anything but a molecule, so no box
-    // or pbc can be passed
+    if (!boxx.isIdentity(1e-6)) {
+      QUILL_LOG_WARNING(
+          eonc::log::get(),
+          "ASE-NWChem ignores the simulation cell; NWChem SCF is molecular only");
+    }
     py::object atoms = this->ase.attr("Atoms")("symbols"_a = atmnmrs,
                                                "positions"_a = positions);
     atoms.attr("calc") = this->calc;
