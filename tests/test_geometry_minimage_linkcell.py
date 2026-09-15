@@ -35,6 +35,20 @@ def test_pbc_matches_minimage_and_numpy():
     assert abs(float(np.dot(via_mi, via_mi)) - 0.64) < 1e-12
 
 
+def test_pbc_packed_uses_wrap_many_when_present():
+    p = _pair()
+    diffs = np.vstack([p.r[1] - p.r[0], p.r[0] - p.r[1]])
+    packed = pbc(diffs, p.box)
+    cell = minimage.Cell.from_vesin(p.box.tolist())
+    if hasattr(cell, "wrap_many"):
+        np.testing.assert_allclose(packed, np.asarray(cell.wrap_many(diffs)), atol=1e-12)
+    else:
+        rows = np.stack(
+            [np.asarray(cell.displacement([0.0, 0.0, 0.0], d.tolist())) for d in diffs]
+        )
+        np.testing.assert_allclose(packed, rows, atol=1e-12)
+
+
 def test_linkcell_neighbors_match_vesin_on_wrap():
     p = _pair()
     vesin = neighbor_list(p, cutoff=1.0)
