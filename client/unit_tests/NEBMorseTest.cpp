@@ -410,10 +410,13 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB with single image does not crash",
 TEST_CASE("OCI-NEB shouldTrigger uses 2*ftol not trigger_force", "[neb][awc]") {
   Parameters p;
   ParametersLoadAccess::neb_options(p).force_tolerance = 0.01;
-  p.neb_options().climbing_image.ocineb.use_mmf = true;
-  p.neb_options().climbing_image.ocineb.trigger_factor = 0.0;
-  p.neb_options().climbing_image.ocineb.trigger_force = 100.0;
-  p.neb_options().climbing_image.ocineb.ci_stability_count = 0;
+  ParametersLoadAccess::neb_options(p).climbing_image.ocineb.use_mmf = true;
+  ParametersLoadAccess::neb_options(p).climbing_image.ocineb.trigger_factor =
+      0.0;
+  ParametersLoadAccess::neb_options(p).climbing_image.ocineb.trigger_force =
+      100.0;
+  ParametersLoadAccess::neb_options(p)
+      .climbing_image.ocineb.ci_stability_count = 0;
   auto cfg = eonc::neb::OCINEBController::fromParams(p);
   eonc::neb::OCINEBController ctl(cfg);
   ctl.initBaseline(1.0);

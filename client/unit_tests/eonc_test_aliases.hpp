@@ -12,6 +12,7 @@
 #pragma once
 
 #include "eon/BaseStructures.h"
+#include "eon/IDPPObjectiveFunction.hpp"
 #include "eon/ImprovedDimer.h"
 #include "eon/LowestEigenmode.h"
 #include "eon/Matter.h"
@@ -21,6 +22,7 @@
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 
+using eonc::CollectiveIDPPObjectiveFunction;
 using eonc::DimerRotationBackend;
 using eonc::ImprovedDimer;
 using eonc::JobType;
@@ -28,6 +30,7 @@ using eonc::LowestEigenmode;
 using eonc::Matter;
 using eonc::MonteCarlo;
 using eonc::NEBInit;
+using eonc::NEBObjectiveFunction;
 using eonc::NudgedElasticBand;
 using eonc::OptType;
 using eonc::Parameters;
