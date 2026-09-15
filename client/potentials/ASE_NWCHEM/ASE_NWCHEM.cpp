@@ -43,7 +43,6 @@ std::filesystem::path makeAseWorkDir(const char *prefix) {
 
 } // namespace
 
-// TODO(rg): Clean this up.
 ASENwchemPot::ASENwchemPot(const eonc::Parameters &a_params)
     : eonc::Potential(eonc::PotType::ASE_NWCHEM, a_params) {
   using namespace pybind11::literals;
