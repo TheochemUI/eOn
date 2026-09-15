@@ -3,6 +3,7 @@
 */
 #include "eigen_numpy.hpp"
 #include "eon/Hessian.h"
+#include "eon/IRACompare.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 #include "eon/Prefactor.h"
@@ -16,6 +17,7 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace eonc::pybind {
 namespace nb = nanobind;
@@ -112,6 +114,39 @@ void bind_analysis(nb::module_ &m) {
         return vectori_to_numpy(eonc::Prefactor::allFreeAtoms(&matter));
       },
       nb::arg("matter"), "Indices of free (unfixed) atoms");
+
+  m.def(
+      "ira_match",
+      [](const NpF64 &pos1, const NpI64 &z1, const NpF64 &pos2, const NpI64 &z2,
+         double thresh) {
+        AtomMatrix p1 = atom_matrix_from_numpy(pos1);
+        AtomMatrix p2 = atom_matrix_from_numpy(pos2);
+        VectorXi t1 = vectori_from_numpy_i64(z1);
+        VectorXi t2 = vectori_from_numpy_i64(z2);
+        if (p1.rows() != t1.size() || p2.rows() != t2.size()) {
+          throw std::invalid_argument("ira_match: Z length must match n atoms");
+        }
+        std::vector<int> typ1(t1.data(), t1.data() + t1.size());
+        std::vector<int> typ2(t2.data(), t2.data() + t2.size());
+        auto r = eonc::IRACompare::matchArrays(
+            static_cast<int>(p1.rows()), typ1.data(), p1.data(),
+            static_cast<int>(p2.rows()), typ2.data(), p2.data(), thresh);
+        return nb::make_tuple(r.hausdorffDistance, r.error);
+      },
+      nb::arg("pos1"), nb::arg("z1"), nb::arg("pos2"), nb::arg("z2"),
+      nb::arg("threshold") = 1.0,
+      "IRA CShDA+SVD match on (n,3) coords and Z. Returns (hausdorff, error).");
+
+  m.def(
+      "built_with_ira",
+      []() {
+#ifdef WITH_IRA
+        return true;
+#else
+        return false;
+#endif
+      },
+      "True if compiled with -Dwith_ira=true");
 }
 
 } // namespace eonc::pybind

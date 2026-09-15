@@ -157,6 +157,30 @@ def points_energies_match(file_a, energy_a, files_b, energies_b, eps_e, eps_r,
 def rot_match(a, b, eps_r):
     if not (a.free.all() and b.free.all()):
         logger.warning("Comparing structures with frozen atoms with rotational matching; check_rotation may be set incorrectly")
+    if len(a) == 0:
+        return len(b) == 0
+    try:
+        from pyeonclient import _core
+
+        ira = getattr(_core, "ira_match", None)
+        if ira is not None:
+            z1 = numpy.asarray([atomic_number(s) for s in a.names], dtype=numpy.int64)
+            z2 = numpy.asarray([atomic_number(s) for s in b.names], dtype=numpy.int64)
+            hd, err = ira(
+                numpy.ascontiguousarray(a.r, dtype=float),
+                z1,
+                numpy.ascontiguousarray(b.r, dtype=float),
+                z2,
+                float(eps_r),
+            )
+            if err == 0:
+                return hd < eps_r
+    except Exception:
+        pass
+    return _rot_match_kabsch(a, b, eps_r)
+
+
+def _rot_match_kabsch(a, b, eps_r):
     acm = sum(a.r)/len(a)
     bcm = sum(b.r)/len(b)
 

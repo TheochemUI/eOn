@@ -17,6 +17,7 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/IRACompare.h"
 #include "eon/Matter.h"
+#include <vector>
 
 namespace tests {
 
@@ -53,6 +54,27 @@ TEST_CASE_METHOD(IRAFixture,
   // Permutation should map each atom to itself (may be 0- or 1-based)
   REQUIRE(result.permutation.size() ==
           static_cast<size_t>(m1->numberOfAtoms()));
+}
+
+TEST_CASE_METHOD(IRAFixture, "IRA matchArrays agrees with match",
+                 "[ira][match]") {
+  auto via_matter = eonc::IRACompare::match(*m1, *m2, 1.0);
+  std::vector<int> z1(static_cast<size_t>(m1->numberOfAtoms()));
+  std::vector<int> z2(static_cast<size_t>(m2->numberOfAtoms()));
+  auto nrs1 = m1->getAtomicNrs();
+  auto nrs2 = m2->getAtomicNrs();
+  for (int i = 0; i < m1->numberOfAtoms(); ++i) {
+    z1[static_cast<size_t>(i)] = nrs1[i];
+  }
+  for (int i = 0; i < m2->numberOfAtoms(); ++i) {
+    z2[static_cast<size_t>(i)] = nrs2[i];
+  }
+  auto via_arr = eonc::IRACompare::matchArrays(
+      m1->numberOfAtoms(), z1.data(), m1->getPositions().data(),
+      m2->numberOfAtoms(), z2.data(), m2->getPositions().data(), 1.0);
+  REQUIRE(via_arr.error == via_matter.error);
+  REQUIRE_THAT(via_arr.hausdorffDistance,
+               Catch::Matchers::WithinAbs(via_matter.hausdorffDistance, 1e-12));
 }
 
 TEST_CASE_METHOD(IRAFixture,
