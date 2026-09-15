@@ -24,7 +24,7 @@
 namespace py = pybind11;
 
 ASE::ASE(const Parameters &a_params)
-    : Potential(PotType::ASE_POT, a_params) {
+    : eonc::Potential(PotType::ASE_POT, a_params) {
   eonc::ensure_interpreter();
   counter = 1;
   std::string py_file = a_params.potential_options.extPotPath;

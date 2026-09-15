@@ -43,6 +43,7 @@ JOB_HEADERS = sorted(
         "NudgedElasticBand.h",
         "Optimizer.h",
         "ServeRpcServer.h",
+        "Potential.h",
     )
 ]
 

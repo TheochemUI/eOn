@@ -22,12 +22,12 @@
 /// EAM (Embedded Atom Method) potential with cell list neighbor finding.
 class EAM
 #ifndef EAM_STANDALONE
-    : public Potential
+    : public eonc::Potential
 #endif
 {
 public:
-  explicit EAM(const Parameters &params)
-      : Potential(PotType::EAM_AL, params),
+  explicit EAM(const eonc::Parameters &params)
+      : eonc::Potential(PotType::EAM_AL, params),
         rc_{6.0, 6.0, 6.0} {}
 
   ~EAM() override = default;

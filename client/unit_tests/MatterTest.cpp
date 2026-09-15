@@ -20,6 +20,7 @@
 #include <memory>
 
 using namespace Catch::Matchers;
+using eonc::Potential;
 
 namespace tests {
 

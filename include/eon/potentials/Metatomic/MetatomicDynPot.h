@@ -13,9 +13,9 @@
 
 namespace eonc {
 
-class MetatomicDynPot : public Potential {
+class MetatomicDynPot : public eonc::Potential {
 public:
-  explicit MetatomicDynPot(const Parameters &params);
+  explicit MetatomicDynPot(const eonc::Parameters &params);
   ~MetatomicDynPot() override;
 
   void force(long nAtoms, const double *positions, const int *atomicNrs,

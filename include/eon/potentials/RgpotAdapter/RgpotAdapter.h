@@ -25,25 +25,25 @@
 /// row-major 3x3 box — bypassing rgpot's AtomMatrix wrapper and its
 /// optional result cache. Thread-sharing policy derives from the
 /// kernel's capability descriptor instead of per-type lists.
-template <class RPot> class RgpotAdapter final : public Potential {
+template <class RPot> class RgpotAdapter final : public eonc::Potential {
 public:
   /// Kernels construct in place from their config: several hold mutexes
   /// or other immovable state, so the adapter never copies or moves them.
   template <class Cfg>
-  RgpotAdapter(PotType ptype, const Parameters &params, const Cfg &cfg)
-      : Potential(ptype, params), pot_(cfg) {
+  RgpotAdapter(PotType ptype, const eonc::Parameters &params, const Cfg &cfg)
+      : eonc::Potential(ptype, params), pot_(cfg) {
     validateCaps();
   }
 
   /// Kernels with no configuration surface default-construct in place.
-  RgpotAdapter(PotType ptype, const Parameters &params)
-      : Potential(ptype, params), pot_() {
+  RgpotAdapter(PotType ptype, const eonc::Parameters &params)
+      : eonc::Potential(ptype, params), pot_() {
     validateCaps();
   }
 
   /// Take a pre-built kernel (ExprPot and other move-only constructors).
-  RgpotAdapter(PotType ptype, const Parameters &params, RPot &&kernel)
-      : Potential(ptype, params), pot_(std::move(kernel)) {
+  RgpotAdapter(PotType ptype, const eonc::Parameters &params, RPot &&kernel)
+      : eonc::Potential(ptype, params), pot_(std::move(kernel)) {
     validateCaps();
   }
 
@@ -133,13 +133,13 @@ private:
 /// data with no eOn-side configuration surface.
 template <class RPot>
 std::shared_ptr<Potential> makeRgpotDefault(PotType ptype,
-                                            const Parameters &params) {
+                                            const eonc::Parameters &params) {
   return std::make_shared<RgpotAdapter<RPot>>(ptype, params);
 }
 
 /// Factory arm helper: construct the kernel from its config and wrap it.
 template <class RPot, class Cfg>
-std::shared_ptr<Potential> makeRgpot(PotType ptype, const Parameters &params,
+std::shared_ptr<Potential> makeRgpot(PotType ptype, const eonc::Parameters &params,
                                      const Cfg &cfg) {
   return std::make_shared<RgpotAdapter<RPot>>(ptype, params, cfg);
 }

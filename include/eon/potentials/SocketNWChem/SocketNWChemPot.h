@@ -24,9 +24,9 @@
  * the `driver socket` directive). This class manages a persistent connection to
  * NWChem. Supports both TCP/IP and UNIX domain sockets.
  */
-class SocketNWChemPot : public Potential {
+class SocketNWChemPot : public eonc::Potential {
 public:
-  explicit SocketNWChemPot(const Parameters &p);
+  explicit SocketNWChemPot(const eonc::Parameters &p);
   ~SocketNWChemPot() override;
 
   /**

@@ -17,11 +17,11 @@
 
 #include <iostream>
 
-class XTBPot final : public Potential {
+class XTBPot final : public eonc::Potential {
 public:
   // Functions
-  XTBPot(const Parameters &p)
-      : Potential(PotType::XTB, p),
+  XTBPot(const eonc::Parameters &p)
+      : eonc::Potential(PotType::XTB, p),
         xtb_acc{p.xtb_options.acc},
         xtb_electronic_temperature{p.xtb_options.elec_temperature},
         xtb_max_iter{p.xtb_options.maxiter},

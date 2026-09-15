@@ -50,7 +50,7 @@ char const *atomicNumber2symbol(int n) { return elementArray[n]; }
 } // namespace
 
 GPRPotential::GPRPotential(const Parameters &p)
-    : Potential(PotType::GPR, p) {
+    : eonc::Potential(PotType::GPR, p) {
   gpr_model = nullptr;
 }
 

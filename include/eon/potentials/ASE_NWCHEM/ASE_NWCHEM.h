@@ -23,7 +23,7 @@
 namespace py = pybind11;
 using namespace pybind11::literals; // to bring in the `_a` literal
 
-class ASENwchemPot : public Potential {
+class ASENwchemPot : public eonc::Potential {
 
 private:
   py::object calc;
@@ -32,7 +32,7 @@ private:
   size_t counter{0};
 
 public:
-  ASENwchemPot(const Parameters &a_params);
+  ASENwchemPot(const eonc::Parameters &a_params);
   virtual ~ASENwchemPot();
 
   // Functions

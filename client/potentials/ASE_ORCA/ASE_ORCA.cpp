@@ -56,7 +56,7 @@ std::filesystem::path makeAseWorkDir(const char *prefix) {
 } // namespace
 
 ASEOrcaPot::ASEOrcaPot(const Parameters &a_params)
-    : Potential(PotType::ASE_ORCA, a_params) {
+    : eonc::Potential(PotType::ASE_ORCA, a_params) {
   eonc::ensure_interpreter();
   counter = 0;
   py::module_ sys = py::module_::import("sys");

@@ -19,13 +19,13 @@
 #include <mutex>
 #include <vector>
 
-class LAMMPSPot : public Potential {
+class LAMMPSPot : public eonc::Potential {
 
 public:
   [[nodiscard]] bool needsPerImageInstance() const noexcept override {
     return true;
   }
-  LAMMPSPot(const Parameters &p);
+  LAMMPSPot(const eonc::Parameters &p);
   ~LAMMPSPot();
   void cleanMemory();
   void force(long N, const double *R, const int *atomicNrs, double *F,

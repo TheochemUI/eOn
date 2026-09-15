@@ -12,7 +12,7 @@
 #include <string>
 
 RgpotPot::RgpotPot(const Parameters &p)
-    : Potential(PotType::RGPOT, p) {
+    : eonc::Potential(PotType::RGPOT, p) {
   RGPotEngineOptions opt;
   const auto &o = p.rgpot_options;
   opt.backend = o.backend;

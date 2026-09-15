@@ -23,7 +23,7 @@
 namespace py = pybind11;
 using namespace pybind11::literals; // to bring in the `_a` literal
 
-class ASEOrcaPot : public Potential {
+class ASEOrcaPot : public eonc::Potential {
 
 private:
   py::object calc;
@@ -32,7 +32,7 @@ private:
   size_t counter{0};
 
 public:
-  ASEOrcaPot(const Parameters &a_params);
+  ASEOrcaPot(const eonc::Parameters &a_params);
   virtual ~ASEOrcaPot();
 
   // Functions

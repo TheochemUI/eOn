@@ -25,7 +25,7 @@
 namespace bp = boost::process;
 
 AMS::AMS(const Parameters &p)
-    : Potential(PotType::AMS, p) {
+    : eonc::Potential(PotType::AMS, p) {
   // Get the values from the configuration
   // All the parameter values convert to lowercase in generate_run
   this->engine = p.ams_options.engine;

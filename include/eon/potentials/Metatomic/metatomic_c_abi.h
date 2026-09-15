@@ -31,7 +31,7 @@ extern "C" {
 typedef struct EonMtaPot EonMtaPot;
 
 /**
- * Flat config for create (mirrors Parameters::metatomic_options_t).
+ * Flat config for create (mirrors eonc::Parameters::metatomic_options_t).
  * All string pointers may be NULL (treated as empty / defaults).
  */
 typedef struct EonMtaConfig {
