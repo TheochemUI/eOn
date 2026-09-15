@@ -69,6 +69,9 @@ private:
   // --- Private Methods ---
   void setup_server();
   void accept_connection();
+  void drop_connection();
+  void forceOnce(long N, const double *R, const int *atomicNrs, double *F,
+                 double *U, double *variance, const double *box);
   void send_header(const char *msg);
   void recv_header(char *buffer);
   void send_exact(const void *buffer, size_t n_bytes);

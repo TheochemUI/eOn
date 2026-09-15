@@ -131,6 +131,18 @@ void SocketNWChemPot::write_nwchem_template(
 void SocketNWChemPot::force(long N, const double *R, const int *atomicNrs,
                             double *F, double *U, double *variance,
                             const double *box) {
+  try {
+    forceOnce(N, R, atomicNrs, F, U, variance, box);
+    return;
+  } catch (const std::runtime_error &) {
+    drop_connection();
+  }
+  forceOnce(N, R, atomicNrs, F, U, variance, box);
+}
+
+void SocketNWChemPot::forceOnce(long N, const double *R, const int *atomicNrs,
+                                double *F, double *U, double *variance,
+                                const double *box) {
   if (!is_connected) {
     std::vector<std::string> symbols;
     symbols.reserve(N);
@@ -299,6 +311,14 @@ void SocketNWChemPot::accept_connection() {
     throw std::runtime_error("Failed to accept client connection.");
   }
   is_connected = true;
+}
+
+void SocketNWChemPot::drop_connection() {
+  if (conn_fd >= 0) {
+    ::close(conn_fd);
+    conn_fd = -1;
+  }
+  is_connected = false;
 }
 
 void SocketNWChemPot::send_header(const char *msg) {
