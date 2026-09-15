@@ -53,11 +53,9 @@ def parallelreplica(config: ConfigClass = None):
     logger.info("Simulation time: %e s", time)
     wuid = make_searches(comm, current_state, wuid, config)
 
-    # Write out metadata.
-    metafile = os.path.join(config.path_results, 'info.txt')
     parser = configparser.RawConfigParser()
     write_pr_metadata(parser, current_state.number, time, wuid)
-    parser.write(open(metafile, 'w'))
+    io.write_info_txt(config, parser)
     io.save_prng_state(io.prng_state_path(config))
 
 def step(current_time, current_state, states, transition, config: ConfigClass = None):
