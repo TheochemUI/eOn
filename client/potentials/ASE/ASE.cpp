@@ -12,6 +12,7 @@
 
 #include "eon/potentials/ASE/ASE.h"
 #include "eon/Eigen.h"
+#include "eon/Parameters.h"
 #include "eon/PyGuard.h"
 #include "eon/fpe_handler.h"
 #include <pybind11/eigen.h>
@@ -94,7 +95,8 @@ void ASE::force(long nAtoms, const double *R, const int *atomicNrs, double *F,
     py::array_t<double> forces = std::get<1>(py_result);
     auto buffer = forces.request();
     if (buffer.size < nAtoms * 3) {
-      throw std::runtime_error("ASE _calculate returned forces of the wrong size");
+      throw std::runtime_error(
+          "ASE _calculate returned forces of the wrong size");
     }
     Eigen::Map<AtomMatrix>(F, nAtoms, 3) = Eigen::Map<const AtomMatrix>(
         static_cast<const double *>(buffer.ptr), nAtoms, 3);
@@ -147,8 +149,7 @@ void ASE::forceBatch(long nSystems, long nAtoms, const double *const *positions,
     py::array_t<double> F = std::get<1>(py_result);
     auto bufE = E.request();
     auto bufF = F.request();
-    if (bufE.size < nSystems ||
-        bufF.size < nSystems * nAtoms * 3) {
+    if (bufE.size < nSystems || bufF.size < nSystems * nAtoms * 3) {
       throw std::runtime_error(
           "ASE batch_calculate returned energies/forces of the wrong size");
     }

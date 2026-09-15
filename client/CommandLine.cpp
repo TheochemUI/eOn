@@ -129,11 +129,12 @@ void commandLine(int argc, char **argv) {
                    std::exit(EXIT_SUCCESS);
                  }));
 
-  parser.add(
-      Argum::Option("--features").help("Print compile-time features").handler([&]() {
-        printFeatures();
-        std::exit(EXIT_SUCCESS);
-      }));
+  parser.add(Argum::Option("--features")
+                 .help("Print compile-time features")
+                 .handler([&]() {
+                   printFeatures();
+                   std::exit(EXIT_SUCCESS);
+                 }));
 
   parser.add(Argum::Option("--minimize", "-m")
                  .help("Minimization of inputConfile saves to outputConfile")
@@ -164,8 +165,8 @@ void commandLine(int argc, char **argv) {
                  .argName("VALUE")
                  .help("Distance tolerance")
                  .handler([&](const std::string_view &value) {
-                   ParametersLoadAccess::structure_comparison_options(params).distance_difference =
-                       parseFloatingPoint<double>(value);
+                   ParametersLoadAccess::structure_comparison_options(params)
+                       .distance_difference = parseFloatingPoint<double>(value);
                  }));
 
   parser.add(Argum::Option("--potential", "-p")
@@ -344,19 +345,15 @@ void commandLine(int argc, char **argv) {
     ParametersLoadAccess::optimizer_options(params).method =
         magic_enum::enum_cast<OptType>(optimizer, magic_enum::case_insensitive)
             .value_or(OptType::CG);
-    ParametersLoadAccess::optimizer_options(params).converged_force = optConvergedForce;
+    ParametersLoadAccess::optimizer_options(params).converged_force =
+        optConvergedForce;
   }
 
   if (cflag) {
     // Matter copies structure_comparison_options into its own structComp in
     // the constructor, so the flag has to be set before the two below.
-    ParametersLoadAccess::structure_comparison_options(params).check_rotation = true;
-  }
-
-  if (cflag) {
-    // Matter copies structure_comparison_options into its own structComp in
-    // the constructor, so the flag has to be set before the two below.
-    params.structure_comparison_options.check_rotation = true;
+    ParametersLoadAccess::structure_comparison_options(params).check_rotation =
+        true;
   }
 
   auto pot = eonc::helpers::makePotential(params);

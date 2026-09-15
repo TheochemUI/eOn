@@ -11,6 +11,7 @@
 */
 #include "eon/potentials/LAMMPS/LAMMPSPot.h"
 #include "eon/EonLogger.h"
+#include "eon/Parameters.h"
 #include "eon/fpe_handler.h"
 #include "eon/potentials/LAMMPS/LammpsLoader.h"
 
@@ -90,8 +91,8 @@ void LAMMPSPot::applySetforce(long N) {
     return;
   }
   auto &lmp = loader_;
-  static constexpr const char *kUnfix[] = {
-      "unfix eon_fx", "unfix eon_fy", "unfix eon_fz", "unfix eon_freeze"};
+  static constexpr const char *kUnfix[] = {"unfix eon_fx", "unfix eon_fy",
+                                           "unfix eon_fz", "unfix eon_freeze"};
   static constexpr const char *kUngroup[] = {
       "group eon_fx delete", "group eon_fy delete", "group eon_fz delete",
       "group eon_frozen delete"};
@@ -126,8 +127,9 @@ void LAMMPSPot::applySetforce(long N) {
     if (ids[ax].empty()) {
       continue;
     }
-    lmp.command(LAMMPSObj,
-                ("group " + std::string(kGroup[ax]) + " id " + ids[ax]).c_str());
+    lmp.command(
+        LAMMPSObj,
+        ("group " + std::string(kGroup[ax]) + " id " + ids[ax]).c_str());
     lmp.command(LAMMPSObj, kFix[ax]);
   }
 }
