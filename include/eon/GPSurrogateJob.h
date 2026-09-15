@@ -15,9 +15,6 @@
 #include "Job.h"
 #include "Parameters.h"
 
-#ifdef WITH_CATLEARN
-#include "potentials/CatLearnPot/CatLearnPot.h"
-#endif
 #include "PyGuard.h"
 #include <format>
 #include <pybind11/eigen.h>

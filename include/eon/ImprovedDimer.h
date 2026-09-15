@@ -33,9 +33,10 @@ public:
                 std::shared_ptr<Potential> pot);
   ~ImprovedDimer() = default;
 
-  void compute(std::shared_ptr<Matter> matter, AtomMatrix initialDirection);
-  double getEigenvalue();
-  AtomMatrix getEigenvector();
+  void compute(std::shared_ptr<Matter> matter,
+               AtomMatrix initialDirection) override;
+  double getEigenvalue() override;
+  AtomMatrix getEigenvector() override;
 
   std::shared_ptr<Matter> x0; // Center image
   std::shared_ptr<Matter> x1; // Forward image

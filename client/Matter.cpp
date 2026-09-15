@@ -14,6 +14,7 @@
 #include "eon/BondBoost.h"
 #include "eon/GeometryAnalysis.h"
 #include "eon/HelperFunctions.h"
+#include "eon/Parameters.h"
 #include "eon/SurrogatePotential.h"
 
 #include "eon/EonLogger.h"
@@ -23,6 +24,33 @@
 #include <string>
 
 namespace eonc {
+
+Matter::Matter(std::shared_ptr<Potential> pot, const Parameters &params)
+    : potential{pot},
+      usePeriodicBoundaries{!(pot && pot->requiresIsolatedMoleculeLayout())},
+      pbcConvention{PbcConvention::Legacy},
+      recomputePotential{true},
+      forceCalls{0},
+      removeNetForce{params.main_options.removeNetForce},
+      structComp{params.structure_comparison_options},
+      parameters{&params},
+      nAtoms{0},
+      positions{MatrixXd::Zero(0, 3)},
+      velocities{MatrixXd::Zero(0, 3)},
+      forces{MatrixXd::Zero(0, 3)},
+      biasForces{MatrixXd::Zero(0, 3)},
+      biasPotential{nullptr},
+      masses{Eigen::VectorXd::Zero(0)},
+      atomicNrs{Eigen::VectorXi::Zero(0)},
+      isFixed{AtomMatrix::Zero(0, 3)},
+      cell{Matrix3d::Zero()},
+      cellInverse{Matrix3d::Zero()},
+      energyVariance{0.0},
+      potentialEnergy{0.0} {}
+
+bool Matter::getWriteConForces() const noexcept {
+  return parameters != nullptr && parameters->main_options.writeConForces;
+}
 
 namespace {
 void checkAtom(long nAtoms, long indexAtom, const char *fn) {

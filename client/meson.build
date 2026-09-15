@@ -636,6 +636,7 @@ eonclib_sources = [
     'GleThermostat.cpp',
     'GlobalOptimization.cpp',
     'LowestEigenmode.cpp',
+    'EigenmodeStrategy.cpp',
     'MinModeSaddleSearch.cpp',
     'StructureComparisonJob.cpp',
     'SteepestDescent.cpp',

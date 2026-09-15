@@ -34,11 +34,12 @@ public:
   Davidson(std::shared_ptr<Matter> matter, const Parameters &params,
            std::shared_ptr<Potential> pot);
   ~Davidson() = default;
-  void compute(std::shared_ptr<Matter> matter, AtomMatrix initialDirection);
+  void compute(std::shared_ptr<Matter> matter,
+               AtomMatrix initialDirection) override;
   void compute(std::shared_ptr<Matter> matter, AtomMatrix initialDirection,
                const VectorXi &mobileAtoms);
-  double getEigenvalue();
-  AtomMatrix getEigenvector();
+  double getEigenvalue() override;
+  AtomMatrix getEigenvector() override;
 
 private:
   AtomMatrix lowestEv;

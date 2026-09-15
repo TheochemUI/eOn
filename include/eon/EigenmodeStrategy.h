@@ -11,108 +11,55 @@
 */
 #pragma once
 
-#include "Davidson.h"
-#include "Dimer.h"
 #include "ImprovedDimer.h"
-#include "Lanczos.h"
 #include "LowestEigenmode.h"
-#include <stdexcept>
-#include <variant>
-
-#ifdef WITH_GPRD
-#include "AtomicGPDimer.h"
-#endif
+#include <memory>
 
 namespace eonc {
 
-#ifdef WITH_GPRD
-using EigenmodeStrategy =
-    std::variant<Dimer, ImprovedDimer, Lanczos, Davidson, AtomicGPDimer>;
-#else
-using EigenmodeStrategy = std::variant<Dimer, ImprovedDimer, Lanczos, Davidson>;
-#endif
+class Matter;
+class Parameters;
+class Potential;
 
-/// Build the eigenmode solver from parameters.
-/// min_mode_method: dimer (rotation CG) | lanczos | davidson | gprdimer
-inline std::shared_ptr<EigenmodeStrategy>
+/// Type-erased eigenmode solver. Layout is the same with or without gprd.
+using EigenmodeStrategy = LowestEigenmode;
+
+std::shared_ptr<LowestEigenmode>
 buildEigenmodeStrategy(std::shared_ptr<Matter> matter, const Parameters &params,
-                       std::shared_ptr<Potential> pot) {
-  if (params.saddle_search_options.minmode_method ==
-      LowestEigenmode::MINMODE_DIMER) {
-    if (params.dimer_options.improved) {
-      return std::make_shared<EigenmodeStrategy>(
-          ImprovedDimer(matter, params, pot));
-    }
-    return std::make_shared<EigenmodeStrategy>(Dimer(matter, params, pot));
-  } else if (params.saddle_search_options.minmode_method ==
-             LowestEigenmode::MINMODE_LANCZOS) {
-    return std::make_shared<EigenmodeStrategy>(Lanczos(matter, params, pot));
-  } else if (params.saddle_search_options.minmode_method ==
-             LowestEigenmode::MINMODE_DAVIDSON) {
-    return std::make_shared<EigenmodeStrategy>(Davidson(matter, params, pot));
-  }
-#ifdef WITH_GPRD
-  else if (params.saddle_search_options.minmode_method ==
-           LowestEigenmode::MINMODE_GPRDIMER) {
-    // AtomicGPDimer embeds atmd::AtomicDimer (unique_ptr + user dtor → not
-    // movable). Construct the alternative in place; do not pass a temporary.
-    return std::make_shared<EigenmodeStrategy>(
-        std::in_place_type<AtomicGPDimer>, matter, params, pot);
-  }
-#else
-  else if (params.saddle_search_options.minmode_method ==
-           LowestEigenmode::MINMODE_GPRDIMER) {
-    throw std::runtime_error(
-        "min_mode_method=gprdimer requires -Dwith_gprd=true (WITH_GPRD)");
-  }
-#endif
-  // Default to improved dimer
-  return std::make_shared<EigenmodeStrategy>(
-      ImprovedDimer(matter, params, pot));
-}
+                       std::shared_ptr<Potential> pot);
 
-/// Dispatch compute() to the active variant.
-inline void eigenmodeCompute(EigenmodeStrategy &s,
+inline void eigenmodeCompute(LowestEigenmode &s,
                              std::shared_ptr<Matter> matter,
                              AtomMatrix direction) {
-  std::visit([&](auto &impl) { impl.compute(matter, direction); }, s);
+  s.compute(matter, direction);
 }
 
-/// Dispatch getEigenvalue() to the active variant.
-inline double eigenmodeGetEigenvalue(EigenmodeStrategy &s) {
-  return std::visit([](auto &impl) { return impl.getEigenvalue(); }, s);
+inline double eigenmodeGetEigenvalue(LowestEigenmode &s) {
+  return s.getEigenvalue();
 }
 
-/// Dispatch getEigenvector() to the active variant.
-inline AtomMatrix eigenmodeGetEigenvector(EigenmodeStrategy &s) {
-  return std::visit([](auto &impl) { return impl.getEigenvector(); }, s);
+inline AtomMatrix eigenmodeGetEigenvector(LowestEigenmode &s) {
+  return s.getEigenvector();
 }
 
-/// Access ImprovedDimer-specific features. Returns nullptr if not
-/// ImprovedDimer.
-inline ImprovedDimer *asImprovedDimer(EigenmodeStrategy &s) {
-  return std::get_if<ImprovedDimer>(&s);
+inline ImprovedDimer *asImprovedDimer(LowestEigenmode &s) {
+  return dynamic_cast<ImprovedDimer *>(&s);
 }
 
-/// Read stats from any variant (all inherit LowestEigenmode stats fields).
-inline long eigenmodeTotalForceCalls(EigenmodeStrategy &s) {
-  return std::visit([](auto &impl) { return impl.totalForceCalls; }, s);
+inline long eigenmodeTotalForceCalls(LowestEigenmode &s) {
+  return s.totalForceCalls;
 }
 
-inline double eigenmodeStatsTorque(EigenmodeStrategy &s) {
-  return std::visit([](auto &impl) { return impl.statsTorque; }, s);
+inline double eigenmodeStatsTorque(LowestEigenmode &s) { return s.statsTorque; }
+
+inline double eigenmodeStatsAngle(LowestEigenmode &s) { return s.statsAngle; }
+
+inline long eigenmodeStatsRotations(LowestEigenmode &s) {
+  return s.statsRotations;
 }
 
-inline double eigenmodeStatsAngle(EigenmodeStrategy &s) {
-  return std::visit([](auto &impl) { return impl.statsAngle; }, s);
-}
-
-inline long eigenmodeStatsRotations(EigenmodeStrategy &s) {
-  return std::visit([](auto &impl) { return impl.statsRotations; }, s);
-}
-
-inline long eigenmodeTotalIterations(EigenmodeStrategy &s) {
-  return std::visit([](auto &impl) { return impl.totalIterations; }, s);
+inline long eigenmodeTotalIterations(LowestEigenmode &s) {
+  return s.totalIterations;
 }
 
 } // namespace eonc

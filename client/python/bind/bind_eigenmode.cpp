@@ -146,35 +146,17 @@ struct PyDimer {
     return matrix_to_numpy(eonc::eigenmodeGetEigenvector(*strategy));
   }
 
-  long total_force_calls() const {
-    return std::visit([](const auto &impl) { return impl.totalForceCalls; },
-                      *strategy);
-  }
+  long total_force_calls() const { return strategy->totalForceCalls; }
 
-  long total_iterations() const {
-    return std::visit([](const auto &impl) { return impl.totalIterations; },
-                      *strategy);
-  }
+  long total_iterations() const { return strategy->totalIterations; }
 
-  double stats_torque() const {
-    return std::visit([](const auto &impl) { return impl.statsTorque; },
-                      *strategy);
-  }
+  double stats_torque() const { return strategy->statsTorque; }
 
-  double stats_curvature() const {
-    return std::visit([](const auto &impl) { return impl.statsCurvature; },
-                      *strategy);
-  }
+  double stats_curvature() const { return strategy->statsCurvature; }
 
-  double stats_angle() const {
-    return std::visit([](const auto &impl) { return impl.statsAngle; },
-                      *strategy);
-  }
+  double stats_angle() const { return strategy->statsAngle; }
 
-  long stats_rotations() const {
-    return std::visit([](const auto &impl) { return impl.statsRotations; },
-                      *strategy);
-  }
+  long stats_rotations() const { return strategy->statsRotations; }
 };
 
 template <typename Class>

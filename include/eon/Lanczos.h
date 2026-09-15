@@ -29,13 +29,14 @@ public:
   Lanczos(std::shared_ptr<Matter> matter, const Parameters &params,
           std::shared_ptr<Potential> pot);
   ~Lanczos() = default;
-  void compute(std::shared_ptr<Matter> matter, AtomMatrix initialDirection);
+  void compute(std::shared_ptr<Matter> matter,
+               AtomMatrix initialDirection) override;
   /// Same as compute(matter, dir) but with an explicit mobile atom list
   /// (intersected with free flags). Eigenvector rows outside the list are 0.
   void compute(std::shared_ptr<Matter> matter, AtomMatrix initialDirection,
                const VectorXi &mobileAtoms);
-  double getEigenvalue();
-  AtomMatrix getEigenvector();
+  double getEigenvalue() override;
+  AtomMatrix getEigenvector() override;
 
 private:
   AtomMatrix lowestEv;
