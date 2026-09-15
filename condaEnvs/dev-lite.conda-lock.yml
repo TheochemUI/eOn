@@ -4402,6 +4402,23 @@ package:
     sha256: 45a282cde31d808236fd7ea9d919b128653c8b38b393d1c4ab335c62924d9aba
   category: main
   optional: false
+- name: pydantic
+  version: 2.13.4
+  manager: pip
+  platform: win-64
+  dependencies:
+    annotated-types: '>=0.6.0'
+    pydantic-core: ==2.46.4
+    typing-extensions: '>=4.14.1'
+    typing-inspection: '>=0.4.2'
+    email-validator: '>=2.0.0 ; extra == ''email'''
+    tzdata ; python_full_version: '>= ''3.9'' and sys_platform == ''win32'' and extra
+      == ''timezone'''
+  url: https://files.pythonhosted.org/packages/fd/7b/122376b1fd3c62c1ed9dc80c931ace4844b3c55407b6fb2d199377c9736f/pydantic-2.13.4-py3-none-any.whl
+  hash:
+    sha256: 45a282cde31d808236fd7ea9d919b128653c8b38b393d1c4ab335c62924d9aba
+  category: main
+  optional: false
 - name: argcomplete
   version: 3.6.3
   manager: conda

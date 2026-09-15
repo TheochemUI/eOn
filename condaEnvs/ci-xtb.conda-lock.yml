@@ -8572,6 +8572,18 @@ package:
     sha256: 850ba148bd908d7e2411587e247a1e4f0327839c40e2e5e6d05a007ecc69911d
   category: main
   optional: false
+- name: vesin
+  version: 0.6.1
+  manager: pip
+  platform: win-64
+  dependencies:
+    numpy: '*'
+    vesin-torch ; extra: == 'torch'
+  url: https://files.pythonhosted.org/packages/15/d1/787f91f3d735e34c2e7a5a64e7b7fc6dbe8fd99869aa05bdfa2d42d0f09d/vesin-0.6.1-py3-none-win_amd64.whl
+  hash:
+    sha256: 43f2073f7e16b00935f0245d5fff05609470f0618f2844e3f7daa1279eec4312
+  category: main
+  optional: false
 - name: contourpy
   version: 1.3.3
   manager: pip
@@ -8846,6 +8858,17 @@ package:
   url: https://files.pythonhosted.org/packages/ad/cf/0348374369ca588f8fe9c338fae49fa4e16eeb10ffb3d012f23a54578a9e/kiwisolver-1.5.0-cp312-cp312-win_amd64.whl
   hash:
     sha256: f18c2d9782259a6dc132fdc7a63c168cbc74b35284b6d75c673958982a378384
+  category: main
+  optional: false
+- name: readcon
+  version: 0.14.9
+  manager: pip
+  platform: win-64
+  dependencies:
+    readcon-chemfiles: ==0.14.9 ; extra == 'chemfiles'
+  url: https://files.pythonhosted.org/packages/af/ce/91b57d6afbab72fb4ecc6583b976aecbff70bdd90ae072fb8f21f02400da/readcon-0.14.9-cp312-cp312-win_amd64.whl
+  hash:
+    sha256: ddde79e5d3ee2aa36a29fb037fa3c6c9cdf0648713ec04ffa5029bc3741be2df
   category: main
   optional: false
 - name: six

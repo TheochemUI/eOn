@@ -1389,6 +1389,49 @@ int load_ini(INIReader &ini, Parameters &params) {
   ParametersLoadAccess::oh_tst_options(params).scan_planes = ini.GetInteger(
       "OH_TST", "scan_planes", ParametersLoadAccess::oh_tst_options(params).scan_planes);
 
+  // [OH_TST] //
+
+  params.oh_tst_options.reactant_filename = ini.Get(
+      "OH_TST", "reactant_filename", params.oh_tst_options.reactant_filename);
+  params.oh_tst_options.product_filename = ini.Get(
+      "OH_TST", "product_filename", params.oh_tst_options.product_filename);
+  params.oh_tst_options.time_step =
+      ini.GetReal("OH_TST", "time_step", params.oh_tst_options.time_step);
+  params.oh_tst_options.equil_steps = ini.GetInteger(
+      "OH_TST", "equil_steps", params.oh_tst_options.equil_steps);
+  params.oh_tst_options.sample_steps = ini.GetInteger(
+      "OH_TST", "sample_steps", params.oh_tst_options.sample_steps);
+  params.oh_tst_options.max_planes =
+      ini.GetInteger("OH_TST", "max_planes", params.oh_tst_options.max_planes);
+  params.oh_tst_options.plane_mass =
+      ini.GetReal("OH_TST", "plane_mass", params.oh_tst_options.plane_mass);
+  params.oh_tst_options.alpha_rot =
+      ini.GetReal("OH_TST", "alpha_rot", params.oh_tst_options.alpha_rot);
+  params.oh_tst_options.plane_time_step = ini.GetReal(
+      "OH_TST", "plane_time_step", params.oh_tst_options.plane_time_step);
+  params.oh_tst_options.ds_max =
+      ini.GetReal("OH_TST", "ds_max", params.oh_tst_options.ds_max);
+  params.oh_tst_options.dtheta_max =
+      ini.GetReal("OH_TST", "dtheta_max", params.oh_tst_options.dtheta_max);
+  params.oh_tst_options.force_tol =
+      ini.GetReal("OH_TST", "force_tol", params.oh_tst_options.force_tol);
+  params.oh_tst_options.s_init =
+      ini.GetReal("OH_TST", "s_init", params.oh_tst_options.s_init);
+  params.oh_tst_options.reactant_md_steps = ini.GetInteger(
+      "OH_TST", "reactant_md_steps", params.oh_tst_options.reactant_md_steps);
+  params.oh_tst_options.symmetry_products = ini.Get(
+      "OH_TST", "symmetry_products", params.oh_tst_options.symmetry_products);
+  params.oh_tst_options.max_delta_a =
+      ini.GetReal("OH_TST", "max_delta_a", params.oh_tst_options.max_delta_a);
+  params.oh_tst_options.thermostat = toLowerCase(
+      ini.Get("OH_TST", "thermostat", params.oh_tst_options.thermostat));
+  params.oh_tst_options.gle_a_file =
+      ini.Get("OH_TST", "gle_a_file", params.oh_tst_options.gle_a_file);
+  params.oh_tst_options.pmf_scan =
+      ini.GetBoolean("OH_TST", "pmf_scan", params.oh_tst_options.pmf_scan);
+  params.oh_tst_options.scan_planes = ini.GetInteger(
+      "OH_TST", "scan_planes", params.oh_tst_options.scan_planes);
+
   return error;
 }
 

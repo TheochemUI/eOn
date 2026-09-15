@@ -99,6 +99,8 @@ private:
 
   void ensure_loaded();
 
+  void ensure_loaded();
+
   bool m_loaded{false};
   bool m_tried{false};
   dynlib::Handle m_handle{};
