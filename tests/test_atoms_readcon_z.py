@@ -1,5 +1,8 @@
 """Z/symbol lookups prefer readcon and fall back to the local table."""
 
+import pytest
+
+pytest.importorskip("readcon")
 from eon import atoms
 
 
