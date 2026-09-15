@@ -13,7 +13,6 @@
 #include "EonLogger.h"
 
 #include "Eigen.h"
-#include "Parameters.h"
 #include "PotRegistry.h"
 #include <atomic>
 #include <memory>
@@ -21,6 +20,8 @@
 #include <stdexcept>
 
 namespace eonc {
+
+class Parameters;
 
 class Potential {
 protected:
@@ -39,11 +40,11 @@ public:
       : ptype{a_ptype}, m_registry_id{PotRegistry::get().on_created(a_ptype)},
         m_created_at{PotRegistry::Clock::now()}, forceCallCounter{0} {}
 
-  Potential(PotType a_ptype, const Parameters &p) : Potential(a_ptype) {
-    force_serial_ = !p.potential_options().thread_safe;
-  }
-  Potential(const Parameters &a_params)
-      : Potential(a_params.potential_options().potential, a_params) {}
+  // Defined in eoncbase (PotentialParams.cpp) so shared plugins that
+  // link only eoncbase get the symbols. Potential.h must not include
+  // Parameters.h (header-surface contract).
+  Potential(PotType a_ptype, const Parameters &p);
+  explicit Potential(const Parameters &a_params);
 
   virtual ~Potential() {
     PotRegistry::get().on_destroyed(m_registry_id, ptype, forceCallCounter,
