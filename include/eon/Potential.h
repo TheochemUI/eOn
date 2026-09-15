@@ -57,6 +57,14 @@ public:
                      double *forces, double *energy, double *variance,
                      const double *box) = 0;
 
+  /// Optional frozen-atom mask (nAtoms*3, 1.0 = fixed). Default no-op.
+  /// Matter calls this immediately before force() so wrappers that need
+  /// it (LAMMPS setforce) see Atom.fixed without changing force().
+  virtual void setFixedMask(long nAtoms, const double *isFixed) {
+    (void)nAtoms;
+    (void)isFixed;
+  }
+
   std::tuple<double, AtomMatrix>
   get_ef(const AtomMatrix &pos, const VectorXi &atmnrs, const Matrix3d &box);
 
