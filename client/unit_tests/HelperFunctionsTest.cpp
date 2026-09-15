@@ -90,7 +90,7 @@ TEST_CASE("HelperFunctions: loadOrSynthesizeDisplacement from mode (#189/#79)",
   const auto tmp =
       std::filesystem::temp_directory_path() / "eon_mode_for_synth.dat";
   {
-    FILE *f = fopen(tmp.c_str(), "w");
+    FILE *f = fopen(tmp.string().c_str(), "w");
     REQUIRE(f != nullptr);
     for (long i = 0; i < nAtoms; ++i) {
       if (initial.getFixed(i)) {
