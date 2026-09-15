@@ -16,36 +16,23 @@ logger = logging.getLogger("atoms")
 
 from eon.structure import Atoms, Structure  # noqa: F401
 
-_RKR = None
 
+def _readcon_z_helpers():
+    """readcon>=0.14.9 exports symbol_to_atomic_number / atomic_number_to_symbol."""
+    import readcon
 
-def _rkr_lib():
-    """C ABI on the readcon extension: rkr_symbol_to_z / rkr_z_to_symbol.
-
-    The installed Python module does not re-export those helpers yet.
-    """
-    global _RKR
-    if _RKR is not None:
-        return _RKR if _RKR is not False else None
-    try:
-        import ctypes
-        import pathlib
-        import readcon
-
-        matches = list(pathlib.Path(readcon.__file__).parent.glob("readcon*.so"))
-        if not matches:
-            _RKR = False
-            return None
-        lib = ctypes.CDLL(str(matches[0]))
-        lib.rkr_symbol_to_z.argtypes = [ctypes.c_char_p]
-        lib.rkr_symbol_to_z.restype = ctypes.c_int
-        lib.rkr_z_to_symbol.argtypes = [ctypes.c_uint64]
-        lib.rkr_z_to_symbol.restype = ctypes.c_char_p
-        _RKR = lib
-        return lib
-    except Exception:
-        _RKR = False
-        return None
+    to_z = getattr(readcon, "symbol_to_atomic_number", None) or getattr(
+        readcon, "symbol_to_z", None
+    )
+    to_sym = getattr(readcon, "atomic_number_to_symbol", None) or getattr(
+        readcon, "z_to_symbol", None
+    )
+    if to_z is None or to_sym is None:
+        ver = getattr(readcon, "__version__", "unknown")
+        raise ImportError(
+            f"readcon {ver} has no symbol/Z helpers; need readcon>=0.14.9"
+        )
+    return to_z, to_sym
 
 
 def atomic_number(symbol_or_z):
@@ -54,24 +41,11 @@ def atomic_number(symbol_or_z):
         return int(symbol_or_z)
     if symbol_or_z in {"Xx", "X"}:
         return 0
-    try:
-        import readcon
-
-        fn = getattr(readcon, "symbol_to_atomic_number", None) or getattr(
-            readcon, "symbol_to_z", None
-        )
-        if fn is not None:
-            z = int(fn(symbol_or_z))
-            if z > 0:
-                return z
-    except Exception:
-        pass
-    lib = _rkr_lib()
-    if lib is not None:
-        z = int(lib.rkr_symbol_to_z(str(symbol_or_z).encode("ascii")))
-        if z > 0:
-            return z
-    raise KeyError(f"unknown element {symbol_or_z!r}; install readcon")
+    to_z, _ = _readcon_z_helpers()
+    z = int(to_z(symbol_or_z))
+    if z > 0:
+        return z
+    raise KeyError(f"unknown element {symbol_or_z!r}")
 
 
 def symbol_for_z(z):
@@ -79,26 +53,11 @@ def symbol_for_z(z):
     z = int(z)
     if z == 0:
         return "Xx"
-    try:
-        import readcon
-
-        fn = getattr(readcon, "atomic_number_to_symbol", None) or getattr(
-            readcon, "z_to_symbol", None
-        )
-        if fn is not None:
-            symbol = fn(z)
-            if symbol and symbol not in {"X", "Xx"}:
-                return str(symbol)
-    except Exception:
-        pass
-    lib = _rkr_lib()
-    if lib is not None:
-        raw = lib.rkr_z_to_symbol(z)
-        if raw:
-            symbol = raw.decode("ascii")
-            if symbol and symbol not in {"X", "Xx"}:
-                return symbol
-    raise KeyError(f"unknown Z {z!r}; install readcon")
+    _, to_sym = _readcon_z_helpers()
+    symbol = to_sym(z)
+    if symbol and symbol not in {"X", "Xx"}:
+        return str(symbol)
+    raise KeyError(f"unknown Z {z!r}")
 
 
 from eon.geometry import (  # noqa: F401
