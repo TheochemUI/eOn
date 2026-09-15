@@ -16,7 +16,8 @@ builders, ImprovedDimer, Lanczos, and JobResult. Job implementations
 #include "eon/api.h"
 
 eonc::Parameters params;
-params.potential_options.potential = eonc::PotType::LJ;
+eonc::ParametersLoadAccess::potential_options(params).potential =
+    eonc::PotType::LJ;
 auto pot = eonc::helpers::makePotential(params);
 auto path = eonc::helpers::neb_paths::sidppPath(reactant, product, 5, params);
 eonc::NudgedElasticBand neb(path, params, pot);
