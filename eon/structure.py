@@ -150,6 +150,15 @@ class Structure:
     def free(self, value) -> None:
         self._free = coerce_free(value, len(self))
 
+    @property
+    def pbc(self) -> np.ndarray:
+        """ASE-style alias of :attr:`periodic`."""
+        return self.periodic
+
+    @pbc.setter
+    def pbc(self, value) -> None:
+        self.periodic = np.asarray(value, dtype=bool)
+
     def __len__(self) -> int:
         return int(self.r.shape[0])
 

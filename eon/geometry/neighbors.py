@@ -53,6 +53,8 @@ def _periodic_flags(p: StructureLike, periodic: PeriodicSpec | None) -> Periodic
         return periodic
     flags = getattr(p, "periodic", None)
     if flags is None:
+        flags = getattr(p, "pbc", None)
+    if flags is None:
         return True
     return flags
 
