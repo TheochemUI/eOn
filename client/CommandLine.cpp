@@ -353,6 +353,12 @@ void commandLine(int argc, char **argv) {
     ParametersLoadAccess::structure_comparison_options(params).check_rotation = true;
   }
 
+  if (cflag) {
+    // Matter copies structure_comparison_options into its own structComp in
+    // the constructor, so the flag has to be set before the two below.
+    params.structure_comparison_options.check_rotation = true;
+  }
+
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_unique<Matter>(pot, params);
   auto matter2 = std::make_unique<Matter>(pot, params);

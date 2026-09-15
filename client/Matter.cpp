@@ -261,6 +261,33 @@ void Matter::resize(const long int length) {
       fileToMatter[static_cast<size_t>(i)] = i;
     }
   }
+  // Zero is a real size: leaving nAtoms at the old value there sends
+  // setMasses and every other nAtoms loop off the end of an empty array.
+  nAtoms = length;
+  positions.resize(length, 3);
+  positions.setZero();
+
+  velocities.resize(length, 3);
+  velocities.setZero();
+
+  biasForces.resize(length, 3);
+  biasForces.setZero();
+
+  forces.resize(length, 3);
+  forces.setZero();
+
+  masses.resize(length);
+  masses.setZero();
+
+  atomicNrs.resize(length);
+  atomicNrs.setZero();
+
+  isFixed.resize(length, 3);
+  isFixed.setZero();
+
+  atomIndex.resize(length);
+  for (long i = 0; i < length; i++)
+    atomIndex(i) = static_cast<std::int64_t>(i); // default: sequential
   recomputePotential = true;
   recomputeMaskedForces = true;
   recomputeFreeMask = true;

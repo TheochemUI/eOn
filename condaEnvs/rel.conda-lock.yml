@@ -6066,18 +6066,15 @@ package:
     sha256: dd80ecb295460a5d9d260df63c43f4afbdd832d725a531f008dad1664f458adf
   category: main
   optional: false
-- name: metatomic-torch
-  version: 0.1.15
+- name: vesin-torch
+  version: 0.6.1
   manager: pip
   platform: win-64
   dependencies:
-    torch: '>=2.3,<2.13'
-    metatensor-torch: '>=0.10.0,<0.11'
-    metatensor-operations: '>=0.5.0,<0.6'
-    metatomic-ase: '>=0.1.1,<0.2.0'
-  url: https://files.pythonhosted.org/packages/35/65/6e929b8dec39cb3943658d1c5e1bd02522a051acd161d4a107401b8f3392/metatomic_torch-0.1.15-py3-none-win_amd64.whl
+    torch: '>=2.3,<2.14'
+  url: https://files.pythonhosted.org/packages/33/c7/59786955fa5a78bed2663496d0c67a1c776d3de41bf5aaa919d0b86231ca/vesin_torch-0.6.1-py3-none-win_amd64.whl
   hash:
-    sha256: aeac5cd60bdd0eca111561dd5c5228c40befdff997b7e7f6e2ccc06613d9bc37
+    sha256: 5c52cc5cee742afd2d9f338b4ed786e37a50480b80dfd47c477eed1b937340dc
   category: main
   optional: false
 - name: anyio
@@ -6329,6 +6326,17 @@ package:
   url: https://files.pythonhosted.org/packages/7e/f5/f66802a942d491edb555dd61e3a9961140fd64c90bce1eafd741609d334d/httpcore-1.0.9-py3-none-any.whl
   hash:
     sha256: 2d400746a40668fc9dec9810239072b40b4484b640a8c38fd654a024c7a1bf55
+  category: main
+  optional: false
+- name: wigners
+  version: 0.4.1
+  manager: pip
+  platform: win-64
+  dependencies:
+    numpy: '*'
+  url: https://files.pythonhosted.org/packages/7f/51/14f98e3b80bd109c68b68d02d6fb5d18f9b350fba8990fae7dd23269b42a/wigners-0.4.1-py3-none-win_amd64.whl
+  hash:
+    sha256: a87c04045e11d77352c2b91397aade2a7ec72585b579beba35bdb9077ef1002a
   category: main
   optional: false
 - name: fonttools
@@ -6599,6 +6607,17 @@ package:
   url: https://files.pythonhosted.org/packages/ad/8a/5764b851659345f34787f1b6eb30b9d308bbd6c294825cbe38b6b869c97a/typer_slim-0.23.1-py3-none-any.whl
   hash:
     sha256: 8146d5df1eb89f628191c4c604c8464fa841885d0733c58e6e700ff0228adac5
+  category: main
+  optional: false
+- name: readcon
+  version: 0.14.9
+  manager: pip
+  platform: win-64
+  dependencies:
+    readcon-chemfiles: ==0.14.9 ; extra == 'chemfiles'
+  url: https://files.pythonhosted.org/packages/af/ce/91b57d6afbab72fb4ecc6583b976aecbff70bdd90ae072fb8f21f02400da/readcon-0.14.9-cp312-cp312-win_amd64.whl
+  hash:
+    sha256: ddde79e5d3ee2aa36a29fb037fa3c6c9cdf0648713ec04ffa5029bc3741be2df
   category: main
   optional: false
 - name: mdurl

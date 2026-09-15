@@ -49,6 +49,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SUBMODULE_PRIVATE }}
       - name: Pull GPRD submodule
+        if: steps.gate.outputs.available == 'true'
         run: |
           # develop tip: 26242c8 is not on any branch after gpr_optim history rewrite
           # (git clone then checkout fails with "unable to read tree").
@@ -65,9 +66,11 @@ jobs:
           environments: >-
             dev
       - name: Install cbindgen
+        if: steps.gate.outputs.available == 'true'
         shell: bash
         run: command -v cbindgen || cargo install cbindgen
       - name: Install eon with GPRD
+        if: steps.gate.outputs.available == 'true'
         shell: pixi run bash -e {0}
         run: |
           meson setup --reconfigure bbdir  \
@@ -78,6 +81,7 @@ jobs:
           -Dwith_tests=true
           meson install --skip-subprojects -C bbdir
       - name: Integration Tests
+        if: steps.gate.outputs.available == 'true'
         shell: pixi run bash -e {0}
         run: |
           cd client/unit_tests/data/systems/saddle_search/

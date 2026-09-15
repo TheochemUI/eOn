@@ -2106,6 +2106,17 @@ package:
     sha256: 381329a9f99628c9069361716891d34ad94af76e461dcb0335825aecc7692231
   category: main
   optional: false
+- name: vesin-torch
+  version: 0.6.1
+  manager: pip
+  platform: linux-64
+  dependencies:
+    torch: '>=2.3,<2.14'
+  url: https://files.pythonhosted.org/packages/31/f4/38039b99cf4444daac1a5c9896658a48a44198406ba2c1cfb22891786c76/vesin_torch-0.6.1-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+  hash:
+    sha256: 525e8cd24d9e724fa1135f01e3a24dc3dbda430273426c7b8575d1f6267c43ca
+  category: main
+  optional: false
 - name: anyio
   version: 4.12.1
   manager: pip
@@ -2337,20 +2348,6 @@ package:
   url: https://files.pythonhosted.org/packages/51/c7/b64cae5dba3a1b138d7123ec36bb5ccd39d39939f18454407e5468f4763f/fsspec-2025.12.0-py3-none-any.whl
   hash:
     sha256: 8bf1fe301b7d8acfa6e8571e3b1c3d158f909666642431cc78a1b7b4dbc5ec5b
-  category: main
-  optional: false
-- name: metatomic-torch
-  version: 0.1.15
-  manager: pip
-  platform: linux-64
-  dependencies:
-    torch: '>=2.3,<2.13'
-    metatensor-torch: '>=0.10.0,<0.11'
-    metatensor-operations: '>=0.5.0,<0.6'
-    metatomic-ase: '>=0.1.1,<0.2.0'
-  url: https://files.pythonhosted.org/packages/53/b0/e09d4d734b43eaec58b9073cd1645a4432d9c562f1479664cb02d349f148/metatomic_torch-0.1.15-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
-  hash:
-    sha256: 198ebadb15cd1094636468db84f4adf71012b765f568b3b522086a89411d5583
   category: main
   optional: false
 - name: huggingface-hub
@@ -2647,6 +2644,18 @@ package:
     sha256: e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5
   category: main
   optional: false
+- name: vesin
+  version: 0.6.1
+  manager: pip
+  platform: linux-64
+  dependencies:
+    numpy: '*'
+    vesin-torch ; extra: == 'torch'
+  url: https://files.pythonhosted.org/packages/b6/24/ef992ce7a8491b8f1e223febce36ebe1221f24bf5f60f62aa3dba69ae43b/vesin-0.6.1-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+  hash:
+    sha256: 27c4d838bbe315837cf7ca62597b94581235c269dce4d1d3600749f64396e746
+  category: main
+  optional: false
 - name: fonttools
   version: 4.61.1
   manager: pip
@@ -2840,6 +2849,17 @@ package:
     sha256: 7b4df175cdb08ba400f45cae3bdcae7ba8365db4d165fc65fd04b050ab63b46b
   category: main
   optional: false
+- name: wigners
+  version: 0.4.1
+  manager: pip
+  platform: linux-64
+  dependencies:
+    numpy: '*'
+  url: https://files.pythonhosted.org/packages/e6/06/77f0eba1e17dbbe9b37efcd0d5ec1a66c2dd605f4771ca132d147e721603/wigners-0.4.1-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+  hash:
+    sha256: f31433df45744681c990ac57b40c4ea4d3eaf1b0a2228b39a172fdf9b6895be8
+  category: main
+  optional: false
 - name: cycler
   version: 0.12.1
   manager: pip
@@ -2866,6 +2886,21 @@ package:
   url: https://files.pythonhosted.org/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl
   hash:
     sha256: a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427
+  category: main
+  optional: false
+- name: metatomic-torch
+  version: 0.1.17
+  manager: pip
+  platform: linux-64
+  dependencies:
+    torch: '>=2.3,<2.14'
+    metatensor-torch: '>=0.10.0,<0.11'
+    metatensor-operations: '>=0.5.0,<0.6'
+    wigners: '>=0.4.0'
+    metatomic-ase: '>=0.1.1,<0.2.0'
+  url: https://files.pythonhosted.org/packages/f8/a2/9c296b0f0eb5803a9261e7d9c466fce8bad8b886438f7fb1f629d7ec8709/metatomic_torch-0.1.17-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+  hash:
+    sha256: 2fcbde683fbf03228661c763abd14a635981ebdd62e503176c370ecfcb560775
   category: main
   optional: false
 - name: argcomplete
@@ -5009,6 +5044,21 @@ package:
     sha256: 850ba148bd908d7e2411587e247a1e4f0327839c40e2e5e6d05a007ecc69911d
   category: main
   optional: false
+- name: metatomic-torch
+  version: 0.1.17
+  manager: pip
+  platform: osx-arm64
+  dependencies:
+    torch: '>=2.3,<2.14'
+    metatensor-torch: '>=0.10.0,<0.11'
+    metatensor-operations: '>=0.5.0,<0.6'
+    wigners: '>=0.4.0'
+    metatomic-ase: '>=0.1.1,<0.2.0'
+  url: https://files.pythonhosted.org/packages/11/81/8aeba2f1e93c24615040fa39c50a9f722334a9290db3ef0c249007fd6285/metatomic_torch-0.1.17-py3-none-macosx_11_0_arm64.whl
+  hash:
+    sha256: 3ab628246641382a020722bcc09d23e146aea54e881d9b142aaf7a09cbdac668
+  category: main
+  optional: false
 - name: httpx
   version: 0.28.1
   manager: pip
@@ -5260,6 +5310,17 @@ package:
     sha256: 556dba8fb6f5d8742f2923fe9457dbdd51e1049c4a43fd3986a0b14a1d815fc6
   category: main
   optional: false
+- name: readcon
+  version: 0.14.9
+  manager: pip
+  platform: osx-arm64
+  dependencies:
+    readcon-chemfiles: ==0.14.9 ; extra == 'chemfiles'
+  url: https://files.pythonhosted.org/packages/54/d8/6b747a2cbb3f49227d7ec33d691502c296ae8b2ce014cfb0a5a5a08b7018/readcon-0.14.9-cp312-cp312-macosx_11_0_arm64.whl
+  hash:
+    sha256: 39dc342e0e68767cc98b84657d6736456f1fde05dfb7466212b71084b3ed3e3b
+  category: main
+  optional: false
 - name: huggingface-hub
   version: 1.3.4
   manager: pip
@@ -5448,6 +5509,18 @@ package:
   url: https://files.pythonhosted.org/packages/7e/f5/f66802a942d491edb555dd61e3a9961140fd64c90bce1eafd741609d334d/httpcore-1.0.9-py3-none-any.whl
   hash:
     sha256: 2d400746a40668fc9dec9810239072b40b4484b640a8c38fd654a024c7a1bf55
+  category: main
+  optional: false
+- name: vesin
+  version: 0.6.1
+  manager: pip
+  platform: osx-arm64
+  dependencies:
+    numpy: '*'
+    vesin-torch ; extra: == 'torch'
+  url: https://files.pythonhosted.org/packages/7f/19/0f8bd7ed5fd54a9917f9385298d0696942cff92fae3bdd0295caab5a3c47/vesin-0.6.1-py3-none-macosx_11_0_arm64.whl
+  hash:
+    sha256: 5992919826b8935ac6abca105bd3b5eba61e7a58e656940b261b20740b8e0fe6
   category: main
   optional: false
 - name: hf-xet
@@ -5747,6 +5820,17 @@ package:
   url: https://files.pythonhosted.org/packages/e7/05/c19819d5e3d95294a6f5947fb9b9629efb316b96de511b418c53d245aae6/cycler-0.12.1-py3-none-any.whl
   hash:
     sha256: 85cef7cff222d8644161529808465972e51340599459b8ac3ccbac5a854e0d30
+  category: main
+  optional: false
+- name: wigners
+  version: 0.4.1
+  manager: pip
+  platform: osx-arm64
+  dependencies:
+    numpy: '*'
+  url: https://files.pythonhosted.org/packages/e9/b7/1b820919eb1fc43ab85b3e2b718513bde6cd45b6db2f8233e7eb8c3965d9/wigners-0.4.1-py3-none-macosx_11_0_arm64.whl
+  hash:
+    sha256: a83f06b240c6db701f73287c961c766a2eec659a44475e1c84479af254a69b3f
   category: main
   optional: false
 - name: python-dateutil

@@ -7838,6 +7838,18 @@ package:
     sha256: 149f7d84afca659d1a97e39a4778794a2f83bf344c5ee5134e09995086cc2392
   category: main
   optional: false
+- name: vesin
+  version: 0.6.1
+  manager: pip
+  platform: linux-64
+  dependencies:
+    numpy: '*'
+    vesin-torch ; extra: == 'torch'
+  url: https://files.pythonhosted.org/packages/b6/24/ef992ce7a8491b8f1e223febce36ebe1221f24bf5f60f62aa3dba69ae43b/vesin-0.6.1-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+  hash:
+    sha256: 27c4d838bbe315837cf7ca62597b94581235c269dce4d1d3600749f64396e746
+  category: main
+  optional: false
 - name: six
   version: 1.17.0
   manager: pip
