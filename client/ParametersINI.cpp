@@ -68,9 +68,9 @@ int load_ini(INIReader &ini, Parameters &params) {
   if (params.main_options.randomSeed < 0) {
     unsigned i = static_cast<unsigned>(std::time(nullptr));
     params.main_options.randomSeed = i;
-    eonc::helpers::random(i);
+    eonc::rng::random(i);
   } else {
-    eonc::helpers::random(params.main_options.randomSeed);
+    eonc::rng::random(params.main_options.randomSeed);
   }
   params.main_options.maxForceCalls = ini.GetInteger(
       "Main", "max_force_calls", params.main_options.maxForceCalls);

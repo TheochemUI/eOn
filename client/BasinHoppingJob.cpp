@@ -66,12 +66,12 @@ std::vector<std::string> BasinHoppingJob::run() {
     QUILL_LOG_DEBUG(log, "generating random structure with probability {:.4f}",
                     randomProb);
   }
-  double u = eonc::helpers::random();
+  double u = eonc::rng::random();
   if (u < params.basin_hopping_options.initial_random_structure_probability) {
     AtomMatrix randomPositions = current->getPositionsFree();
     for (int i = 0; i < current->numberOfFreeAtoms(); i++) {
       for (int j = 0; j < 3; j++) {
-        randomPositions(i, j) = eonc::helpers::random();
+        randomPositions(i, j) = eonc::rng::random();
       }
     }
     randomPositions *= current->getCell();

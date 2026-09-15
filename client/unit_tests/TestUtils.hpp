@@ -11,6 +11,7 @@
 */
 #pragma once
 
+#include "eonc_test_aliases.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/EonLogger.h"
 #include "quill/Backend.h"

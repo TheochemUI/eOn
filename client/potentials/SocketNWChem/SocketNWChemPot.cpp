@@ -29,8 +29,8 @@ const char *elementArray[] = {
 char const *atomicNumber2symbol(int n) { return elementArray[n]; }
 } // namespace
 
-SocketNWChemPot::SocketNWChemPot(const Parameters &p)
-    : eonc::Potential(PotType::SocketNWChem, p),
+SocketNWChemPot::SocketNWChemPot(const eonc::Parameters &p)
+    : eonc::Potential(eonc::PotType::SocketNWChem, p),
       listen_fd(-1),
       conn_fd(-1),
       is_connected(false) {

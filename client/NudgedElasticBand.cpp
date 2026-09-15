@@ -438,7 +438,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
 
     double dE = path[maxEnergyImage]->getPotentialEnergy() -
                 path[0]->getPotentialEnergy();
-    double stepSize = eonc::helpers::maxAtomMotionV(
+    double stepSize = eonc::geometry::maxAtomMotionV(
         path[0]->pbcV(objf->getPositions() - pos));
     QUILL_LOG_DEBUG(log, "{:>10} {:>12.4e} {:>14.4e} {:>11} {:>12.4}",
                     iteration, stepSize, convergenceForce(), maxEnergyImage,

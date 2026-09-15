@@ -149,10 +149,10 @@ int ConjugateGradients::single_step(double a_maxMove) {
   if (!m_optConfig.opts.cg.no_overshooting) {
     if (m_optConfig.bowlBreakout) {
       // max displacement is based on system not single atom
-      pos += eonc::helpers::maxMotionAppliedV(stepSize * m_directionNorm,
+      pos += eonc::geometry::maxMotionAppliedV(stepSize * m_directionNorm,
                                               a_maxMove);
     } else {
-      pos += eonc::helpers::maxAtomMotionAppliedV(stepSize * m_directionNorm,
+      pos += eonc::geometry::maxAtomMotionAppliedV(stepSize * m_directionNorm,
                                                   a_maxMove);
     }
     m_objf->setPositions(pos);
@@ -163,7 +163,7 @@ int ConjugateGradients::single_step(double a_maxMove) {
     double forceChange = 0.;
     while (passedMinimum < 0.0 &&
            0.1 * std::fabs(projectedForce1) < std::fabs(projectedForce2)) {
-      posStep = pos + eonc::helpers::maxAtomMotionAppliedV(
+      posStep = pos + eonc::geometry::maxAtomMotionAppliedV(
                           stepSize * m_directionNorm, a_maxMove);
       m_objf->setPositions(posStep);
       forceAfterStep = -m_objf->getGradient(true);

@@ -138,7 +138,7 @@ Matter &Matter::operator=(Matter &&other) noexcept {
 // The == comparison considers identity. This is crucial for process search.
 // bool Matter::operator==(const Matter& matter) {
 //     if(structComp.check_rotation) {
-//         return eonc::helpers::rotationMatch(this, &matter,
+//         return eonc::geometry::rotationMatch(this, &matter,
 //         structComp.distance_difference);
 //     }else{
 //         return (structComp.distance_difference)
@@ -150,19 +150,19 @@ bool Matter::compare(const Matter &matter, bool indistinguishable) {
   if (nAtoms != matter.numberOfAtoms())
     return false;
   if (structComp.check_rotation && indistinguishable) {
-    return eonc::helpers::sortedR(*this, matter,
+    return eonc::geometry::sortedR(*this, matter,
                                   structComp.distance_difference);
   } else if (indistinguishable) {
     if (this->numberOfFixedAtoms() == 0 and structComp.remove_translation)
-      eonc::helpers::translationRemove(*this, matter);
-    return eonc::helpers::identical(*this, matter,
+      eonc::geometry::translationRemove(*this, matter);
+    return eonc::geometry::identical(*this, matter,
                                     structComp.distance_difference);
   } else if (structComp.check_rotation) {
-    return eonc::helpers::rotationMatch(*this, matter,
+    return eonc::geometry::rotationMatch(*this, matter,
                                         structComp.distance_difference);
   } else {
     if (this->numberOfFixedAtoms() == 0 and structComp.remove_translation)
-      eonc::helpers::translationRemove(*this, matter);
+      eonc::geometry::translationRemove(*this, matter);
     return (structComp.distance_difference) > perAtomNorm(matter);
   }
 }

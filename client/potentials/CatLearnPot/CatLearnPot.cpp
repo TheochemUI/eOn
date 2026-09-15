@@ -13,8 +13,8 @@
 #include "eon/potentials/CatLearnPot/CatLearnPot.h"
 #include "Eigen/src/Core/Matrix.h"
 
-CatLearnPot::CatLearnPot(const Parameters &a_params)
-    : eonc::SurrogatePotential(PotType::CatLearn, a_params) {
+CatLearnPot::CatLearnPot(const eonc::Parameters &a_params)
+    : eonc::SurrogatePotential(eonc::PotType::CatLearn, a_params) {
   py::module_ sys = py::module_::import("sys");
   py::exec(
       std::format("sys.path.insert(0, {})", a_params.catlearn_options.path));

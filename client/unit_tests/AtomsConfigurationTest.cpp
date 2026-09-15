@@ -20,6 +20,7 @@
 #include <algorithm>
 
 #include "AtomsConfigurationTest.h"
+#include "eonc_test_aliases.hpp"
 #include "eon/GPRHelpers.h"
 #include "eon/HelperFunctions.h"
 #include "eon/Matter.h"

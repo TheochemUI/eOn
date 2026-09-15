@@ -24,8 +24,8 @@
 
 namespace bp = boost::process;
 
-AMS::AMS(const Parameters &p)
-    : eonc::Potential(PotType::AMS, p) {
+AMS::AMS(const eonc::Parameters &p)
+    : eonc::Potential(eonc::PotType::AMS, p) {
   // Get the values from the configuration
   // All the parameter values convert to lowercase in generate_run
   this->engine = p.ams_options.engine;
@@ -522,7 +522,7 @@ void AMS::finishRunScript(std::ofstream &out) {
   }
 }
 
-std::string AMS::generate_run(const Parameters &p) {
+std::string AMS::generate_run(const eonc::Parameters &p) {
   std::string engine_block; // Shadows the class variable
   // TODO: Use args everywhere, cleaner logic
   // Ensure capitals and existence

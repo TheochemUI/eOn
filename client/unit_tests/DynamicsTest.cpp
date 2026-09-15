@@ -33,7 +33,7 @@ protected:
     params.potential_options.potential = PotType::LJ;
     params.main_options.temperature = 300.0;
     params.main_options.randomSeed = 42;
-    eonc::helpers::random(42);
+    eonc::rng::random(42);
 
     pot = eonc::helpers::makePotential(PotType::LJ, params);
     matter = new Matter(pot, params);
@@ -64,7 +64,7 @@ TEST_CASE_METHOD(DynamicsFixture,
                  "Dynamics 5 steps with fixed seed is deterministic",
                  "[dynamics]") {
   // Run 5 steps, record final energy
-  eonc::helpers::random(42); // reset seed
+  eonc::rng::random(42); // reset seed
   Dynamics dyn(matter, params);
   dyn.setTemperature(100.0);
   dyn.setThermalVelocity();
@@ -77,7 +77,7 @@ TEST_CASE_METHOD(DynamicsFixture,
 
   // Reset and run again with same seed
   matter->con2matter(std::string("reactant.con"));
-  eonc::helpers::random(42);
+  eonc::rng::random(42);
   Dynamics dyn2(matter, params);
   dyn2.setTemperature(100.0);
   dyn2.setThermalVelocity();

@@ -20,6 +20,7 @@
 #include <algorithm>
 
 #include "GPRDimerTest.h"
+#include "eonc_test_aliases.hpp"
 #include "eon/AtomicGPDimer.h"
 #include "eon/GPRHelpers.h"
 #include "eon/HelperFunctions.h"

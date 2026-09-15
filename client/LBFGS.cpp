@@ -33,7 +33,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
           m_log, "[LBFGS] Negative curvature: {:.4f} eV/A^2 take max move step",
           C);
       reset();
-      return eonc::helpers::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
+      return eonc::geometry::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
     }
 
     if (m_optConfig.opts.lbfgs.auto_scale) {
@@ -56,7 +56,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
                         "eV/A^2, take max move step",
                         C);
       reset();
-      return eonc::helpers::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
+      return eonc::geometry::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
     } else {
       QUILL_LOG_DEBUG(m_log,
                       "[LBFGS] Curvature calculated via FD: {:.4e} eV/A^2", C);
@@ -82,13 +82,13 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
 
   Eigen::VectorXd d = -z;
 
-  double distance = eonc::helpers::maxAtomMotionV(d);
+  double distance = eonc::geometry::maxAtomMotionV(d);
   if (distance >= a_maxMove && m_optConfig.opts.lbfgs.distance_reset) {
     QUILL_LOG_DEBUG(m_log,
                     "[LBFGS] reset memory, proposed step too large: {:.4f}",
                     distance);
     reset();
-    return eonc::helpers::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
+    return eonc::geometry::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
   }
 
   double vd = eonc::safemath::safe_normalized(d).dot(
@@ -104,10 +104,10 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
                     "force too large: {:.4f}",
                     angle);
     reset();
-    return eonc::helpers::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
+    return eonc::geometry::maxAtomMotionAppliedV(H0 * a_f, a_maxMove);
   }
 
-  return eonc::helpers::maxAtomMotionAppliedV(d, a_maxMove);
+  return eonc::geometry::maxAtomMotionAppliedV(d, a_maxMove);
 }
 
 void LBFGS::reset() {

@@ -117,7 +117,7 @@ std::string resolveCommand(const std::string &command) {
 
 } // namespace
 
-ExtPot::ExtPot(const Parameters &p)
+ExtPot::ExtPot(const eonc::Parameters &p)
     : eonc::Potential(p),
       eon_extpot_path{resolveCommand(p.potential_options.extPotPath)} {}
 

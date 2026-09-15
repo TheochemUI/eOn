@@ -242,7 +242,7 @@ bool eonc::helpers::applyClientDisplacement(Matter &target,
     const double dist = (i == epicenter) ? 0.0 : initial.distance(epicenter, i);
     if (dist <= radius) {
       for (int a = 0; a < 3; ++a) {
-        mode(i, a) = gaussRandom(0.0, mag);
+        mode(i, a) = eonc::rng::gaussRandom(0.0, mag);
       }
     }
   }
@@ -334,11 +334,11 @@ void eonc::helpers::requireKnownConvergenceMetric(std::string_view metric,
 }
 
 namespace {
-class MatterObjectiveFunction : public ObjectiveFunction {
-  Matter &m_matter; // non-owning reference, avoids copy
+class MatterObjectiveFunction : public eonc::ObjectiveFunction {
+  eonc::Matter &m_matter; // non-owning reference, avoids copy
 public:
-  MatterObjectiveFunction(Matter &mat, const Parameters &parametersPassed)
-      : ObjectiveFunction(parametersPassed),
+  MatterObjectiveFunction(eonc::Matter &mat, const eonc::Parameters &parametersPassed)
+      : eonc::ObjectiveFunction(parametersPassed),
         m_matter{mat} {
     eonc::helpers::requireKnownConvergenceMetric(
         params.optimizer_options.convergence_metric, "[Matter]");

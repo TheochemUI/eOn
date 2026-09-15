@@ -36,7 +36,7 @@ int Quickmin::step(double a_maxMove) {
   }
 
   m_vel += force * m_dt;
-  Eigen::VectorXd dr = eonc::helpers::maxAtomMotionAppliedV(
+  Eigen::VectorXd dr = eonc::geometry::maxAtomMotionAppliedV(
       m_vel * m_dt,
       a_maxMove); // used to be m_optConfig.opts.max_time_step
   QUILL_LOG_INFO(m_log, "{} M_Vel.norm() is {}", m_iteration, m_vel.norm());

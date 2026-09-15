@@ -37,7 +37,7 @@ int BasinHoppingSaddleSearch::run() {
   double Temperature = params.main_options.temperature;
   double arg = -de / (kB * Temperature);
   double p = std::exp(arg);
-  double r = eonc::helpers::random();
+  double r = eonc::rng::random();
   if (ereactant < eproduct) {
     if (r > p) { // reject
       return 1;

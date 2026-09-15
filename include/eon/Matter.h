@@ -406,5 +406,3 @@ private:
 };
 
 } // namespace eonc
-
-using eonc::Matter;

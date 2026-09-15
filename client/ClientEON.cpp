@@ -174,7 +174,7 @@ static int eonClientMain(int argc, char **argv) {
           "%(message)\n[end %(log_level)]"},
       quill::ClockSourceType::System);
   //--- End logging setup
-  Parameters parameters;
+  eonc::Parameters parameters;
 
 #if defined WITH_ASE_ORCA || EMBED_PYTHON || WITH_ASE_NWCHEM
   eonc::ensure_interpreter();
@@ -276,7 +276,7 @@ static int eonClientMain(int argc, char **argv) {
   }
   clients = number_of_clients;
 
-  if (parameters.potential_options.potential == PotType::MPI) {
+  if (parameters.potential_options.potential == eonc::PotType::MPI) {
     std::vector<int> potential_ranks(potentials);
     int j;
     for (i = 0, j = 0; i < isize; i++) {
@@ -304,7 +304,7 @@ static int eonClientMain(int argc, char **argv) {
   }
 
   // LAMMPS MPI communicator setup (runtime check, not compile-time)
-  if (parameters.potential_options.potential == PotType::LAMMPS) {
+  if (parameters.potential_options.potential == eonc::PotType::LAMMPS) {
     for (i = 0; i < static_cast<int>(client_ranks.size()); i++) {
       MPI_Group world_group, new_group;
       MPI_Comm_group(MPI_COMM_WORLD, &world_group);
@@ -436,10 +436,10 @@ static int eonClientMain(int argc, char **argv) {
       // Determine what type of job we are running according to the parameters
       // file.
       auto job =
-          eonc::helpers::makeJob(std::make_unique<Parameters>(parameters));
+          eonc::helpers::makeJob(std::make_unique<eonc::Parameters>(parameters));
       if (job == nullptr) {
         QUILL_LOG_ERROR(logger, "error: Unknown job: {}",
-                        std::string{magic_enum::enum_name<JobType>(
+                        std::string{magic_enum::enum_name<eonc::JobType>(
                             parameters.main_options.job)});
         logger->flush_log();
         return 1;

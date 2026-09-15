@@ -20,6 +20,7 @@
 #include <algorithm>
 
 #include "CuH2Test.h"
+#include "eonc_test_aliases.hpp"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 

@@ -112,9 +112,9 @@
 #include <limits>
 #include <stdexcept>
 
-std::tuple<double, AtomMatrix> Potential::get_ef(const AtomMatrix &pos,
-                                                 const VectorXi &atmnrs,
-                                                 const Matrix3d &box) {
+std::tuple<double, AtomMatrix>
+eonc::Potential::get_ef(const AtomMatrix &pos, const VectorXi &atmnrs,
+                        const Matrix3d &box) {
   double energy{std::numeric_limits<double>::infinity()};
   long nAtoms = static_cast<long>(pos.rows());
   AtomMatrix forces{MatrixXd::Zero(nAtoms, 3)};
