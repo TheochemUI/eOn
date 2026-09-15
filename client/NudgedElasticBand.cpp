@@ -35,6 +35,9 @@
 #include <numeric>
 #include <vector>
 #endif
+
+namespace eonc {
+
 namespace fs = std::filesystem;
 
 // Nudged Elastic Band definitions
@@ -722,3 +725,5 @@ NudgedElasticBand::pathFrames(std::optional<size_t> bandIndex) {
       path, tangent, eigenmode_solvers, numImages,
       params.debug_options.estimate_neb_eigenvalues, bandIndex);
 }
+
+} // namespace eonc

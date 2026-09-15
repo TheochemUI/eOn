@@ -22,6 +22,9 @@
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 
+
+namespace eonc {
+
 std::vector<std::string> DynamicsJob::run(void) {
   auto R = std::make_shared<Matter>(pot, params);
   const std::string posFile = eonc::helpers::getRelevantFile("pos.con");
@@ -50,3 +53,5 @@ std::vector<std::string> DynamicsJob::run(void) {
   returnFiles.push_back(resultsFilename);
   return returnFiles;
 }
+
+} // namespace eonc

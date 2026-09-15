@@ -104,5 +104,3 @@ std::unique_ptr<Optimizer> mkOptim(std::shared_ptr<ObjectiveFunction> a_objf,
 }
 
 } // namespace eonc
-
-using eonc::Optimizer;

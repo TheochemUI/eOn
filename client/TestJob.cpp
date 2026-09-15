@@ -20,6 +20,9 @@
 #include <stdexcept>
 #include <string>
 
+
+namespace eonc {
+
 namespace {
 struct PotRef {
   const char *tag;
@@ -103,3 +106,5 @@ double TestJob::getForceDiff(std::string potTag, double refForce) {
   }
   return pos.maxForce() - refForce;
 }
+
+} // namespace eonc

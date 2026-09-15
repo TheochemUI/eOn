@@ -22,6 +22,9 @@
 #include <iostream>
 #include <stdexcept>
 
+
+namespace eonc {
+
 std::vector<std::string> MinimizationJob::run() {
   std::string posInFilename("pos.con");
   std::string posOutFilename("min.con");
@@ -90,3 +93,5 @@ std::vector<std::string> MinimizationJob::run() {
 
   return returnFiles;
 }
+
+} // namespace eonc

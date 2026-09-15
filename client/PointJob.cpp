@@ -19,6 +19,9 @@
 #include <sstream>
 #include <stdexcept>
 
+
+namespace eonc {
+
 std::vector<std::string> PointJob::run() {
   std::vector<std::string> returnFiles;
   std::string posInFilename = eonc::helpers::getRelevantFile("pos.con");
@@ -50,3 +53,5 @@ std::vector<std::string> PointJob::run() {
 
   return returnFiles;
 }
+
+} // namespace eonc
