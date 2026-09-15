@@ -193,9 +193,6 @@ def make_searches(comm, wuid, bhstates, config: ConfigClass):
     #invariants['config_passed.ini'] = io.modify_config(config.config_path, ini_changes)
     #invariants['reactant_passed.con']  = reactIO
 
-    #Merge potential files into invariants
-    invariants = dict(invariants,  **io.load_potfiles(config.path_pot))
-
     searches = []
     for i in range(num_to_make):
         search = {}

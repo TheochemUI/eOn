@@ -243,8 +243,6 @@ class ClientMinModeExplorer(MinModeExplorer):
 #            file_permission = os.stat("masses.dat").st_mode
             invariants['masses.dat'] = (weightsIO, file_permission)
 
-        # Merge potential files into invariants
-        invariants = dict(invariants, **io.load_potfiles(self.config.path_pot))
         atom_list_str = str(self.state.info.get("Saddle Search", "displace_atom_list", ""))
         for i in range(num_to_make):
             search = {}
@@ -538,9 +536,6 @@ class ServerMinModeExplorer(MinModeExplorer):
         jobs = []
 
         invariants = {}
-
-        # Merge potential files into invariants
-        invariants = dict(invariants, **io.load_potfiles(self.config.path_pot))
 
         t1 = time()
 

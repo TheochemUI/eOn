@@ -62,8 +62,6 @@ def _fallback_single_job(config: ConfigClass) -> None:
     config.path_scratch = config.path_root
     comm = communicator.get_communicator(config)
 
-    invariants = dict(io.load_potfiles(config.path_pot))
-
     job: dict = {}
     files = [f for f in os.listdir(".") if os.path.isfile(f)]
     for f in files:
@@ -76,7 +74,7 @@ def _fallback_single_job(config: ConfigClass) -> None:
         shutil.rmtree("output_old")
     if os.path.isdir("output"):
         shutil.move("output", "output_old")
-    comm.submit_jobs([job], invariants)
+    comm.submit_jobs([job], {})
 
 
 def server(config: ConfigClass | None = None) -> None:

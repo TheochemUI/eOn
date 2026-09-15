@@ -592,15 +592,21 @@ class Dynamics:
         return data
 
 def load_potfiles(pot_dir):
+    """Load regular files from *pot_dir* as (StringIO, mode) pairs.
+
+    Subdirectories are skipped by testing the path under *pot_dir*, not
+    a same-named entry in the process CWD.
+    """
     ret = {}
-    if os.path.isdir(pot_dir):
-        for name in os.listdir(pot_dir):
-            if os.path.isdir(name):
-                continue
-            a = open(os.path.join(pot_dir, name), 'r')
-            b = StringIO("".join(a.readlines()))
-            c = os.stat(os.path.join(pot_dir, name)).st_mode
-            ret[name] = (b,c)
+    if not pot_dir or not os.path.isdir(pot_dir):
+        return ret
+    for name in os.listdir(pot_dir):
+        path = os.path.join(pot_dir, name)
+        if os.path.isdir(path):
+            continue
+        with open(path, "r") as fh:
+            data = StringIO(fh.read())
+        ret[name] = (data, os.stat(path).st_mode)
     return ret
 
 class TableException(Exception):

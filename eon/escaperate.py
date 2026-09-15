@@ -265,11 +265,6 @@ def make_searches(comm, current_state, wuid, config: ConfigClass = None):
     reactIO = StringIO()
     io.savecon(reactIO, reactant)
 
-    # Merge potential files into invariants
-    #XXX: Should this be in our "science" maybe the communicator should
-    #     handle this.
-    invariants = dict(invariants, **io.load_potfiles(config.path_pot))
-
     searches = []
     for i in range(num_to_make):
         search = {}
