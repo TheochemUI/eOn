@@ -2,6 +2,7 @@
 ** This file is part of eOn.
 */
 #include "eon/potentials/Rgpot/RgpotPot.h"
+#include "eon/Parameters.h"
 #include "eon/potentials/Rgpot/RGPotEngine.h"
 
 #include <algorithm>

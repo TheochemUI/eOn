@@ -11,6 +11,7 @@
 */
 #pragma once
 
+#include "eon/Parameters.h"
 #include "eon/Potential.h"
 #include "units.hpp"
 #include "xtb.h"
