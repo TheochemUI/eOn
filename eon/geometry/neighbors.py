@@ -8,12 +8,14 @@ compatibility but no longer selects a different algorithm.
 
 from __future__ import annotations
 
-from typing import List
+from typing import List, Sequence, Union
 
 import numpy as np
 from vesin import NeighborList as VesinNeighborList
 
 from eon.geometry.pbc import pbc
+
+PeriodicSpec = Union[bool, Sequence[bool], np.ndarray]
 
 # Structure-like: needs .r, .box, __len__, and optionally .free
 StructureLike = object
@@ -45,21 +47,37 @@ def _pair_lists(n: int, i: np.ndarray, j: np.ndarray) -> List[List[int]]:
     return [sorted(s) for s in nl_sets]
 
 
+def _periodic_flags(p: StructureLike, periodic: PeriodicSpec | None) -> PeriodicSpec:
+    """Resolve vesin ``periodic`` from the explicit argument or ``p.periodic``."""
+    if periodic is not None:
+        return periodic
+    flags = getattr(p, "periodic", None)
+    if flags is None:
+        return True
+    return flags
+
+
 def neighbor_list(
     p: StructureLike,
     cutoff: float,
     brute: bool = False,  # noqa: ARG001 — API compat; vesin always used
+    periodic: PeriodicSpec | None = None,
 ) -> List[List[int]]:
     """Return neighbors within *cutoff* for each atom (PBC, full undirected list).
 
     Parameters
     ----------
     p
-        Structure with ``.r`` (N,3) and ``.box`` (3,3).
+        Structure with ``.r`` (N,3) and ``.box`` (3,3). Optional
+        ``.periodic`` (bool or length-3 bools) is used when *periodic*
+        is omitted.
     cutoff
         Pair cutoff distance.
     brute
         Ignored; kept so callers using ``config.comp_brute_neighbors`` need no change.
+    periodic
+        Passed to vesin. A single bool applies to all axes; a length-3
+        sequence is per-axis. Default is ``p.periodic`` or all-periodic.
     """
     r, box = _positions_box(p)
     n = r.shape[0]
@@ -68,7 +86,9 @@ def neighbor_list(
     if cutoff <= 0:
         return [[] for _ in range(n)]
     calc = VesinNeighborList(cutoff=float(cutoff), full_list=True)
-    i, j = calc.compute(r, box, periodic=True, quantities="ij")
+    i, j = calc.compute(
+        r, box, periodic=_periodic_flags(p, periodic), quantities="ij"
+    )
     return _pair_lists(n, np.asarray(i), np.asarray(j))
 
 
@@ -109,6 +129,7 @@ def neighbor_list_vectors(
 def neighbor_list_pairs(
     p: StructureLike,
     cutoff: float,
+    periodic: PeriodicSpec | None = None,
 ):
     """Vesin pair list with cell shifts (ASE/tonari ``ijS``).
 
@@ -127,7 +148,9 @@ def neighbor_list_pairs(
     if n == 0 or cutoff <= 0:
         return empty
     calc = VesinNeighborList(cutoff=float(cutoff), full_list=True)
-    i, j, S = calc.compute(r, box, periodic=True, quantities="ijS")
+    i, j, S = calc.compute(
+        r, box, periodic=_periodic_flags(p, periodic), quantities="ijS"
+    )
     return np.asarray(i), np.asarray(j), np.asarray(S)
 
 
