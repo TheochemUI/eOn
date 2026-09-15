@@ -17,6 +17,22 @@ import sys
 
 from eon.config import ConfigClass # Typing
 
+def bundled_job_name(bundle_dirname, slot):
+    """Job id for slot *slot* inside a bundle named after the first job.
+
+    Bundles live in a directory named ``{state}_{first_wuid}``. Jobs in
+    the chunk are consecutive wuids, so slot *n* is ``first_wuid + n``.
+    """
+    parts = str(bundle_dirname).split("_", 1)
+    if len(parts) != 2:
+        return str(bundle_dirname)
+    state, first = parts
+    try:
+        return f"{state}_{int(first) + int(slot)}"
+    except ValueError:
+        return str(bundle_dirname)
+
+
 def tryint(s):
     try:
         return int(s)
@@ -239,7 +255,10 @@ class Communicator:
                 #                     "Check its output for errors." % jobpath)
                 continue
 
-            results = [{'name': dirname} for i in range(bundle_size)]
+            results = [
+                {'name': bundled_job_name(dirname, i)}
+                for i in range(bundle_size)
+            ]
 
             if not is_bundle:
                 # Only a single task inside this job, no need to unbundle.

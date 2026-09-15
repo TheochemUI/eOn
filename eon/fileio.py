@@ -16,6 +16,7 @@ import os
 
 import pickle as pickle
 import readcon
+import shutil
 import stat
 import tempfile
 
@@ -23,6 +24,23 @@ from eon.geometry.cell import box_to_length_angle, length_angle_to_box
 from eon.structure import Structure
 
 logger = logging.getLogger('io')
+
+
+def remove_tree_and_empty_parents(path):
+    """Remove *path* and any empty directories that contained it.
+
+    Reset paths recreate an empty *path* then call :func:`os.removedirs`
+    so empty parents are pruned. ``OSError`` is ignored when a parent is
+    not empty.
+    """
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    os.makedirs(path, exist_ok=True)
+    try:
+        os.removedirs(path)
+    except OSError:
+        pass
+
 
 def prng_state_path(config):
     '''Path of the persisted numpy PRNG pickle.
