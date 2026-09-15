@@ -206,6 +206,20 @@ class Communicator:
         '''Returns the number of items waiting to run in the queue.'''
         raise NotImplementedError()
 
+    def queued_search_count(self):
+        """Searches waiting, using the bundle size this communicator was built with.
+
+        ``get_queue_size`` counts bundles. Multiplying by the live config
+        ``comm_job_bundle_size`` is wrong if that value changed after
+        construction.
+        """
+        return self.get_queue_size() * self.bundle_size
+
+    def in_progress_search_count(self):
+        """Searches running, using this communicator's bundle size."""
+        nprog = getattr(self, "get_number_in_progress", lambda: 0)()
+        return nprog * self.bundle_size
+
     def cancel_state(self, statenumber):
         '''Returns the number of workunits that were canceled.'''
         raise NotImplementedError()

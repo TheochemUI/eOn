@@ -250,8 +250,7 @@ def make_searches(comm, current_state, wuid, config: ConfigClass = None):
     if config is None:
         raise TypeError("make_searches requires a ConfigClass instance")
     reactant = current_state.get_reactant()
-    #XXX:what if the user changes the bundle size?
-    num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size
+    num_in_buffer = comm.queued_search_count()
     logger.info("Queue contains %i searches" % num_in_buffer)
     num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
     logger.info("Making %i searches" % num_to_make)

@@ -171,7 +171,7 @@ def basinhopping(config: ConfigClass = None):
     io.save_prng_state(io.prng_state_path(config))
 
 def make_searches(comm, wuid, bhstates, config: ConfigClass):
-    num_in_buffer = comm.get_queue_size()*config.comm_job_bundle_size
+    num_in_buffer = comm.queued_search_count()
     logger.info("%i searches in the queue" % num_in_buffer)
     num_to_make = max(config.comm_job_buffer_size - num_in_buffer, 0)
     logger.info("Making %i searches" % num_to_make)

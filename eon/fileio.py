@@ -645,11 +645,7 @@ class Table:
     >>> t2 = Table("sample.tbl") #doctest: +SKIP
 """
 
-    #XXX: This is the number of digits that a floating point number gets
-    #     serialized with. Should it be some sort of config option?
-    #     Or is there just a good default?
-
-    def __init__(self, filename, columns=None, overwrite=False):
+    def __init__(self, filename, columns=None, overwrite=False, floatprecision=6):
         self.filename = filename
         self.columns = columns
         self.rows = []
@@ -658,7 +654,7 @@ class Table:
         self.initialized = False
         self.overwrite = overwrite
 
-        self.floatprecision = 6
+        self.floatprecision = floatprecision
         self.eagerwrite = True
 
     def init(self):

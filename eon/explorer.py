@@ -163,12 +163,15 @@ class MinModeExplorer(Explorer):
             num_cancelled = self.comm.cancel_state(self.state.number)
             logger.info("Cancelled %i workunits from state %i",
                         num_cancelled, self.state.number)
-            #XXX: Do we ever call explore on a completed state twice?
             if self.config.kdb_on:
-                logger.info("Adding relevant processes to kinetic database")
-                for process_id in self.state.get_process_ids():
-                    output = kdb.insert(self.state, process_id, self.config)
-                    logger.debug("kdb insert: %s", output)
+                marker = os.path.join(self.state.path, "kdb_inserted")
+                if not os.path.isfile(marker):
+                    logger.info("Adding relevant processes to kinetic database")
+                    for process_id in self.state.get_process_ids():
+                        output = kdb.insert(self.state, process_id, self.config)
+                        logger.debug("kdb insert: %s", output)
+                    with open(marker, "w"):
+                        pass
 
     def generate_displacement(self):
         if self.config.recycling_on and self.state.number != 0:
@@ -204,8 +207,7 @@ class ClientMinModeExplorer(MinModeExplorer):
             self.job_table.delete_row_func('state', lambda s: s != state.number)
 
     def make_jobs(self):
-        #XXX:what if the user changes the bundle size?
-        num_in_buffer = self.comm.get_queue_size()*self.config.comm_job_bundle_size
+        num_in_buffer = self.comm.queued_search_count()
         logger.info("Queue contains %i searches" % num_in_buffer)
         num_to_make = max(self.config.comm_job_buffer_size - num_in_buffer, 0)
         logger.info("Making %i process searches" % num_to_make)
@@ -394,7 +396,6 @@ class ClientMinModeExplorer(MinModeExplorer):
 class ServerMinModeExplorer(MinModeExplorer):
 
     def __init__(self, states, previous_state, state, superbasin=None, config=None):
-        #XXX: need to init somehow
         self.search_id = 0
 
         self.wuid_to_search_id = {}
@@ -519,9 +520,9 @@ class ServerMinModeExplorer(MinModeExplorer):
         return num_registered
 
     def make_jobs(self):
-        num_unsent = self.comm.get_queue_size()*self.config.comm_job_bundle_size
+        num_unsent = self.comm.queued_search_count()
         logger.info("Queued %i jobs" % num_unsent)
-        num_in_progress = self.comm.get_number_in_progress()*self.config.comm_job_bundle_size
+        num_in_progress = self.comm.in_progress_search_count()
         logger.info("Running %i jobs" % num_in_progress)
         num_total = num_unsent + num_in_progress
         num_to_make = max(self.config.comm_job_buffer_size - num_unsent, 0)
