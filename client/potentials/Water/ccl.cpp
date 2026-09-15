@@ -21,48 +21,46 @@ University of Iceland
 #include <cmath>
 // #include "unit_system.hpp"
 
-using namespace forcefields;
+namespace forcefields {
 namespace {
 #if defined(FORCEFIELDS_UNIT_SYSTEM_HPP) &&                                    \
     (FORCEFIELDS_UNIT_SYSTEM_HPP !=                                            \
      FORCEFIELDS_UNIT_SYSTEM_ELECTRONVOLT_ANGSTROM_FEMTOSECOND_ECHARGE)
-using namespace unit_system;
-
-double const re_ = 0.9572 * ANGSTROM;
-double const thetae_ = 104.52 * DEGREE;
+double const re_ = 0.9572 * unit_system::ANGSTROM;
+double const thetae_ = 104.52 * unit_system::DEGREE;
 
 double const re2_ = re_ * re_;
 //    double const ERGS_PER_ANGSTROM2=ERGS/ANGSTROM2;
 
 // ------------------------ Quadratic ---------------------------
-double const ro_2_ = 84.54e-12 * ERGS_PER_ANGSTROM2;
-double const ro1_ro2_ = -1.01e-12 * ERGS_PER_ANGSTROM2;
-double const ro_theta_ = 2.288e-12 * ERGS_PER_ANGSTROM2;
-double const theta_2_ = 7.607e-12 * ERGS_PER_ANGSTROM2;
+double const ro_2_ = 84.54e-12 * unit_system::ERGS_PER_ANGSTROM2;
+double const ro1_ro2_ = -1.01e-12 * unit_system::ERGS_PER_ANGSTROM2;
+double const ro_theta_ = 2.288e-12 * unit_system::ERGS_PER_ANGSTROM2;
+double const theta_2_ = 7.607e-12 * unit_system::ERGS_PER_ANGSTROM2;
 
 // --------------------------------------------- Cubic
 // ----------------------------------------
-double const ro_3_ = -10.168e-12 * ERGS_PER_ANGSTROM2;
-double const ro_ro1_ro2_ = 0.201e-12 * ERGS_PER_ANGSTROM2;
-double const ro_2_theta_ = 4.308e-12 * ERGS_PER_ANGSTROM2;
-double const ro1_ro2_theta_ = -4.020e-12 * ERGS_PER_ANGSTROM2;
-double const ro_theta_2_ = -1.175e-12 * ERGS_PER_ANGSTROM2;
-double const thetat_3_ = -1.595e-12 * ERGS_PER_ANGSTROM2;
+double const ro_3_ = -10.168e-12 * unit_system::ERGS_PER_ANGSTROM2;
+double const ro_ro1_ro2_ = 0.201e-12 * unit_system::ERGS_PER_ANGSTROM2;
+double const ro_2_theta_ = 4.308e-12 * unit_system::ERGS_PER_ANGSTROM2;
+double const ro1_ro2_theta_ = -4.020e-12 * unit_system::ERGS_PER_ANGSTROM2;
+double const ro_theta_2_ = -1.175e-12 * unit_system::ERGS_PER_ANGSTROM2;
+double const thetat_3_ = -1.595e-12 * unit_system::ERGS_PER_ANGSTROM2;
 
 // --------------------------------------------- Quartic
 // ----------------------------------------
-double const ro_4_ = -10.684e-12 * ERGS_PER_ANGSTROM2;
-double const ro1_ro2_ro_2_ = -6.162e-12 * ERGS_PER_ANGSTROM2;
-double const ro1_2_ro2_2_ = 2.717e-12 * ERGS_PER_ANGSTROM2;
+double const ro_4_ = -10.684e-12 * unit_system::ERGS_PER_ANGSTROM2;
+double const ro1_ro2_ro_2_ = -6.162e-12 * unit_system::ERGS_PER_ANGSTROM2;
+double const ro1_2_ro2_2_ = 2.717e-12 * unit_system::ERGS_PER_ANGSTROM2;
 
-double const ro_3_theta_ = 6.328e-12 * ERGS_PER_ANGSTROM2;
-double const ro_ro1_ro2_theta_ = -4.020e-12 * ERGS_PER_ANGSTROM2;
+double const ro_3_theta_ = 6.328e-12 * unit_system::ERGS_PER_ANGSTROM2;
+double const ro_ro1_ro2_theta_ = -4.020e-12 * unit_system::ERGS_PER_ANGSTROM2;
 
-double const ro_2_theta_2_ = -4.70e-12 * ERGS_PER_ANGSTROM2;
-double const ro1_ro2_theta_2_ = 3.05e-12 * ERGS_PER_ANGSTROM2;
+double const ro_2_theta_2_ = -4.70e-12 * unit_system::ERGS_PER_ANGSTROM2;
+double const ro1_ro2_theta_2_ = 3.05e-12 * unit_system::ERGS_PER_ANGSTROM2;
 
 // ro_theta_3 = 0
-double const theta_4_ = -0.0318e-12 * ERGS_PER_ANGSTROM2;
+double const theta_4_ = -0.0318e-12 * unit_system::ERGS_PER_ANGSTROM2;
 #else
 double const re_ = 0.9572;                  // ANGSTROM
 double const thetae_ = 1.82421813418447321; // RADIANS
@@ -110,9 +108,9 @@ LA Curtiss, SR Langhoff, J. Mol. Spectroscopy @b 1976, vol. 61, p. 371-381
 */
 
 /// Distance OH at equilibrium
-double const Ccl::re_ = ::re_;
+double const Ccl::re_ = re_;
 /// Distance OH at equilibrium
-double const Ccl::thetae_ = ::thetae_;
+double const Ccl::thetae_ = thetae_;
 
 /** Compute the forces and the energy.
 The order of the atoms is very important. For this function the order is H1, H1,
@@ -505,3 +503,4 @@ void Ccl::theta_4(Dtheta const &dth, double &energy, double &d3) {
   energy += theta_4_ * re2_ * dth._2 * dth._2;
   d3 += theta_4_ * re2_ * 4.0 * dth._3; // dE/d(theta)
 }
+} // namespace forcefields

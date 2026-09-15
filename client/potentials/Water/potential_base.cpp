@@ -31,7 +31,7 @@ Thorsten Schnabel, Jadran Vrabec , Hans Hasse, Institut fur Technische
 Thermodynamik und Thermische Verfahrenstechnik, Universitat Stuttgart, D-70550
 Stuttgart, Germany, http://www.itt.uni-stuttgart.de/~schnabel/CR.pdf.
 */
-using namespace forcefields;
+namespace forcefields {
 
 /** Non bond interaction cutoff.
 When the distance between two molecules is over getCutoff(), van der Waals and
@@ -683,6 +683,7 @@ Lennard-Jones parameters for platinum.
 const double PotentialBase::EPSILON_PT = 0.68165797577788501; // eV
 const double PotentialBase::SIGMA_PT = 2.54;                  // Angstrom
 /// @}
+} // namespace forcefields
 /*
  const double PotentialBase::ONE_OVER_4_PI_EPSILON0 =
  unit_system::ONE_OVER_4_PI_EPSILON0; const double

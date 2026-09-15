@@ -17,7 +17,8 @@ University of Iceland
 @see zhu_philpott.hpp
 */
 #include "eon/potentials/Water_Pt/zhu_philpott_parameters.hpp"
-using namespace forcefields::zhu_philpott_parameters;
+namespace forcefields {
+namespace zhu_philpott_parameters {
 
 double const Standard::sigmaO_ = 2.86;                     // Angstrom
 double const Standard::epsilonO_ = 0.0023734176137013181;  // eV
@@ -44,3 +45,5 @@ double const Iceland::sigmaHPt_ = 2.730249677569295;       // Angstrom
 double const Iceland::sigmaOPt_ = 2.7735458150747108;      // Angstrom
 double const Iceland::epsilonHPt_ = 0.0097305875238262573; // eV
 double const Iceland::epsilonOPt_ = 0.020323980763749295;  // eV
+} // namespace zhu_philpott_parameters
+} // namespace forcefields
