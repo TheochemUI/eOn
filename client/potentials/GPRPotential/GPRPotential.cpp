@@ -49,8 +49,8 @@ int symbol2atomicNumber(char const *symbol) {
 char const *atomicNumber2symbol(int n) { return elementArray[n]; }
 } // namespace
 
-GPRPotential::GPRPotential(const Parameters &p)
-    : eonc::Potential(PotType::GPR, p) {
+GPRPotential::GPRPotential(const eonc::Parameters &p)
+    : eonc::Potential(eonc::PotType::GPR, p) {
   gpr_model = nullptr;
 }
 

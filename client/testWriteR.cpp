@@ -18,9 +18,9 @@ using namespace std::string_literals;
 
 int main() {
   std::string confile("pos.con");
-  Parameters parameters;
+  eonc::Parameters parameters;
   auto pot = eonc::helpers::makePotential(parameters);
-  Matter matter(pot, parameters);
+  eonc::Matter matter(pot, parameters);
   matter.con2matter(confile);
   matter.writeTibble("rSysdat.txt"s);
   return EXIT_SUCCESS;

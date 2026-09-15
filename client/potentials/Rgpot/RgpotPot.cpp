@@ -11,8 +11,8 @@
 #include <iostream>
 #include <string>
 
-RgpotPot::RgpotPot(const Parameters &p)
-    : eonc::Potential(PotType::RGPOT, p) {
+RgpotPot::RgpotPot(const eonc::Parameters &p)
+    : eonc::Potential(eonc::PotType::RGPOT, p) {
   RGPotEngineOptions opt;
   const auto &o = p.rgpot_options;
   opt.backend = o.backend;

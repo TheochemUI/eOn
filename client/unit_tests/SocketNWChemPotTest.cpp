@@ -1,4 +1,5 @@
 #include "catch2/catch_amalgamated.hpp"
+#include "eonc_test_aliases.hpp"
 #include "eon/MatrixHelpers.hpp"
 #include "eon/Matter.h"
 #include <memory>

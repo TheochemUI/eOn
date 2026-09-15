@@ -44,6 +44,10 @@ JOB_HEADERS = sorted(
         "Optimizer.h",
         "ServeRpcServer.h",
         "Potential.h",
+        "Matter.h",
+        "Parameters.h",
+        "BaseStructures.h",
+        "HelperFunctions.h",
     )
 ]
 

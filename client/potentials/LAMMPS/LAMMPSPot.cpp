@@ -38,7 +38,7 @@
 #define LAMMPS_LIB_MPI
 #endif
 
-LAMMPSPot::LAMMPSPot(const Parameters &p)
+LAMMPSPot::LAMMPSPot(const eonc::Parameters &p)
     : eonc::Potential(p),
       lammpsThr{p.potential_options.LAMMPSThreads}
 #ifdef EONMPI

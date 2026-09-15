@@ -785,5 +785,3 @@ public:
 };
 
 } // namespace eonc
-
-using eonc::Parameters;

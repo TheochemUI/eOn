@@ -339,7 +339,7 @@ int ParallelReplicaJob::refineTransition(
     if (!fake) {
       stillReactant = snapshot.compare(*reactant);
     } else {
-      stillReactant = static_cast<bool>(eonc::helpers::randomInt(0, 1));
+      stillReactant = static_cast<bool>(eonc::rng::randomInt(0, 1));
     }
 
     if (stillReactant) {

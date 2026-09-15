@@ -52,7 +52,7 @@ TEST_CASE("getRelevantFile accepts a name with no extension", "[helpers]") {
 }
 
 TEST_CASE("HelperFunctions: random() returns value in [0,1)", "[helpers]") {
-  double r = eonc::helpers::random();
+  double r = eonc::rng::random();
   REQUIRE_FALSE(std::isnan(r));
   REQUIRE(std::isfinite(r));
   REQUIRE(r >= 0.0);
@@ -60,7 +60,7 @@ TEST_CASE("HelperFunctions: random() returns value in [0,1)", "[helpers]") {
 }
 
 TEST_CASE("HelperFunctions: random(seed) returns value in [0,1)", "[helpers]") {
-  double r = eonc::helpers::random(42);
+  double r = eonc::rng::random(42);
   REQUIRE_FALSE(std::isnan(r));
   REQUIRE(std::isfinite(r));
   REQUIRE(r >= 0.0);
@@ -69,7 +69,7 @@ TEST_CASE("HelperFunctions: random(seed) returns value in [0,1)", "[helpers]") {
 
 TEST_CASE("HelperFunctions: randomDouble() returns value in [0,1)",
           "[helpers]") {
-  double r = eonc::helpers::randomDouble();
+  double r = eonc::rng::randomDouble();
   REQUIRE_FALSE(std::isnan(r));
   REQUIRE(std::isfinite(r));
   REQUIRE(r >= 0.0);
@@ -146,7 +146,7 @@ TEST_CASE("loadOrSynthesizeDisplacement keeps reactant atom ids",
 
 TEST_CASE("HelperFunctions: randomDouble(max) respects upper bound",
           "[helpers]") {
-  double r = eonc::helpers::randomDouble(5.0);
+  double r = eonc::rng::randomDouble(5.0);
   REQUIRE(std::isfinite(r));
   REQUIRE(r >= 0.0);
   REQUIRE(r <= 5.0);
@@ -154,7 +154,7 @@ TEST_CASE("HelperFunctions: randomDouble(max) respects upper bound",
 
 TEST_CASE("HelperFunctions: randomInt(lo, hi) respects bounds", "[helpers]") {
   for (int trial = 0; trial < 100; trial++) {
-    long r = eonc::helpers::randomInt(1, 4);
+    long r = eonc::rng::randomInt(1, 4);
     REQUIRE(r >= 1);
     REQUIRE(r <= 4);
   }
@@ -229,7 +229,7 @@ TEST_CASE("applyClientDisplacement load type is a no-op",
 TEST_CASE("HelperFunctions: gaussRandom() produces finite values",
           "[helpers]") {
   double avg = 1.0, sd = 0.1;
-  double r = eonc::helpers::gaussRandom(avg, sd);
+  double r = eonc::rng::gaussRandom(avg, sd);
   REQUIRE(std::isfinite(r));
   // Within 6 sigma (extremely unlikely to fail)
   REQUIRE(r > avg - 6.0 * sd);
@@ -252,7 +252,7 @@ TEST_CASE("HelperFunctions: split_string_int empty string", "[helpers]") {
 TEST_CASE("HelperFunctions: maxAtomMotionV", "[helpers]") {
   Eigen::VectorXd v(6);
   v << 1.0, 0.0, 0.0, 0.0, 3.0, 4.0;
-  double maxMotion = eonc::helpers::maxAtomMotionV(v);
+  double maxMotion = eonc::geometry::maxAtomMotionV(v);
   REQUIRE(maxMotion == Catch::Approx(5.0));
 }
 

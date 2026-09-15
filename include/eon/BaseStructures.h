@@ -125,11 +125,3 @@ enum class DimerRotationBackend {
 };
 
 } // namespace eonc
-
-// Backward-compat aliases during migration
-using eonc::DimerRotationBackend;
-using eonc::JobType;
-using eonc::NEBInit;
-using eonc::OptType;
-using eonc::PotType;
-using eonc::RunStatus;

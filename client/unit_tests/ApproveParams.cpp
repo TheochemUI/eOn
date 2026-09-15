@@ -11,6 +11,7 @@
 */
 #include "ApprovalTests.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eonc_test_aliases.hpp"
 #include "eon/Parameters.h"
 #include <iomanip>
 #include <iostream>

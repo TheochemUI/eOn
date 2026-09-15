@@ -28,29 +28,6 @@ namespace helpers {
 
 inline constexpr double pi = 3.14159265358979323846;
 
-// Backward-compatible wrappers delegating to eonc::rng
-using eonc::rng::gaussRandom;
-using eonc::rng::random;
-using eonc::rng::randomDouble;
-using eonc::rng::randomInt;
-
-// Backward-compatible wrappers delegating to eonc::geometry
-using eonc::geometry::identical;
-using eonc::geometry::maxAtomMotion;
-using eonc::geometry::maxAtomMotionApplied;
-using eonc::geometry::maxAtomMotionAppliedV;
-using eonc::geometry::maxAtomMotionV;
-using eonc::geometry::maxMotionApplied;
-using eonc::geometry::maxMotionAppliedV;
-using eonc::geometry::numAtomsMoved;
-using eonc::geometry::projectOutRotTrans;
-using eonc::geometry::pushApart;
-using eonc::geometry::rotationExtract;
-using eonc::geometry::rotationMatch;
-using eonc::geometry::rotationRemove;
-using eonc::geometry::sortedR;
-using eonc::geometry::translationRemove;
-
 AtomMatrix makeOrthogonal(
     const AtomMatrix v1,
     const AtomMatrix v2); // return orthogonal component of v1 from v2

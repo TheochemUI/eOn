@@ -171,7 +171,7 @@ ReplicaExchangeJob::runFromMatter(std::shared_ptr<Matter> initial) {
     if (nReplicas >= 2 && (step % exchangePeriodSteps) == 0) {
       for (long trial = 0;
            trial < params.replica_exchange_options.exchange_trials; trial++) {
-        long i = eonc::helpers::randomInt(0, nReplicas - 2);
+        long i = eonc::rng::randomInt(0, nReplicas - 2);
         double energyLow = replica[i]->getPotentialEnergy();
         double energyHigh = replica[i + 1]->getPotentialEnergy();
         double kbTLow = kB * replicaTemperature[i];
@@ -180,7 +180,7 @@ ReplicaExchangeJob::runFromMatter(std::shared_ptr<Matter> initial) {
             std::min(1.0, std::exp((energyHigh - energyLow) *
                                    (eonc::safemath::safe_recip(kbTHigh, 0.0) -
                                     eonc::safemath::safe_recip(kbTLow, 0.0))));
-        double rnd = eonc::helpers::randomDouble();
+        double rnd = eonc::rng::randomDouble();
         QUILL_LOG_INFO(log,
                        "step: {} trial swap, i {}, elow: {:.5f}, ehigh: "
                        "{:.5f}, pAcc: {:.5f}, rand: {}",

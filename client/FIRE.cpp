@@ -33,7 +33,7 @@ int FIRE::step(double a_maxMove) {
   m_vel += f * m_dt;
   Eigen::VectorXd dx = m_vel * m_dt;
 
-  dx = eonc::helpers::maxAtomMotionAppliedV(dx, a_maxMove);
+  dx = eonc::geometry::maxAtomMotionAppliedV(dx, a_maxMove);
   m_objf->setPositions(x + dx);
 
   f = -m_objf->getGradient();
