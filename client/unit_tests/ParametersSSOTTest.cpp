@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <utility>
 
 namespace tests {
 static eonc::helpers::test::QuillTestLogger _quill_setup;
@@ -56,6 +57,28 @@ TEST_CASE("Parameters::load INI still overrides SSoT defaults",
   REQUIRE(p.potential_options().potential == PotType::EAM_AL);
   REQUIRE(p.optimizer_options().method == OptType::LBFGS);
   REQUIRE(p.optimizer_options().max_iterations == 42);
+  REQUIRE(p.last_load_source() == ini.string());
+  REQUIRE(p.last_load_error() == 0);
+  Parameters copied = p;
+  REQUIRE(copied.last_load_source() == p.last_load_source());
+  REQUIRE(copied.last_load_error() == 0);
+  REQUIRE(copied.main_options().temperature == Catch::Approx(450.0));
+  Parameters assigned;
+  assigned = p;
+  REQUIRE(assigned.last_load_source() == p.last_load_source());
   fs::remove_all(dir);
+}
+
+TEST_CASE("Parameters load-state Impl records a missing file",
+          "[params][pimpl]") {
+  Parameters p;
+  REQUIRE(p.last_load_source().empty());
+  REQUIRE(p.last_load_error() == 0);
+  REQUIRE(p.load("no-such-eon-config.ini") != 0);
+  REQUIRE(p.last_load_source() == "no-such-eon-config.ini");
+  REQUIRE(p.last_load_error() != 0);
+  Parameters moved = std::move(p);
+  REQUIRE(moved.last_load_source() == "no-such-eon-config.ini");
+  REQUIRE(p.last_load_source().empty());
 }
 } // namespace tests
