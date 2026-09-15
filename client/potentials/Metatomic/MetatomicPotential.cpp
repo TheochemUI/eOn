@@ -320,8 +320,9 @@ MetatomicPotential::MetatomicPotential(const MetatomicPotential &src, CloneTag)
   QUILL_LOG_INFO(m_log, "[MetatomicPotential] Cloned loaded model (no disk)");
 }
 
-std::shared_ptr<Potential> MetatomicPotential::clonePotential() const {
-  return std::shared_ptr<Potential>(new MetatomicPotential(*this, CloneTag{}));
+std::shared_ptr<eonc::Potential> MetatomicPotential::clonePotential() const {
+  return std::shared_ptr<eonc::Potential>(
+      new MetatomicPotential(*this, CloneTag{}));
 }
 
 // --- helpers for random / symmetry rotations (#287, #292) ---
@@ -669,7 +670,7 @@ void MetatomicPotential::forceBatch(long nSystems, long nAtoms,
       forceBatchNative(nSystems, nAtoms, positions, atomicNrs, forces, energies,
                        variances, boxes);
       forceCallCounter += nSystems;
-      PotRegistry::get().on_force_call(ptype);
+      eonc::PotRegistry::get().on_force_call(ptype);
       return;
     } catch (const std::exception &e) {
       QUILL_LOG_WARNING(m_log,
@@ -685,7 +686,7 @@ void MetatomicPotential::forceBatch(long nSystems, long nAtoms,
     if (variances)
       variances[s] = var;
     forceCallCounter++;
-    PotRegistry::get().on_force_call(ptype);
+    eonc::PotRegistry::get().on_force_call(ptype);
   }
 }
 
