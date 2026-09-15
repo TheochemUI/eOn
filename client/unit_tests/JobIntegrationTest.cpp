@@ -1400,12 +1400,12 @@ max_iterations = 1000
   std::filesystem::current_path(originalDir);
 
   // Verify ARTn parameters are parsed
-  REQUIRE(params->artn_options.push_step_size == 0.5);
+  REQUIRE(params->artn_options().push_step_size == 0.5);
   // ninit default is -1 (sentinel = "keep pARTn's own default"); test does
   // not set it in the INI above, so the sentinel must round-trip unchanged.
-  REQUIRE(params->artn_options.ninit == -1);
-  REQUIRE(params->artn_options.force_threshold == 0.1);
-  REQUIRE(params->artn_options.max_iterations == 1000);
+  REQUIRE(params->artn_options().ninit == -1);
+  REQUIRE(params->artn_options().force_threshold == 0.1);
+  REQUIRE(params->artn_options().max_iterations == 1000);
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture, "IRA parameters parsed correctly",
@@ -1426,9 +1426,9 @@ use_pbc = true
   std::filesystem::current_path(originalDir);
 
   // Verify IRA parameters are parsed
-  REQUIRE(params->ira_options.distance_threshold == 0.5);
-  REQUIRE(params->ira_options.symmetry_threshold == 0.2);
-  REQUIRE(params->ira_options.use_pbc == true);
+  REQUIRE(params->ira_options().distance_threshold == 0.5);
+  REQUIRE(params->ira_options().symmetry_threshold == 0.2);
+  REQUIRE(params->ira_options().use_pbc == true);
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
@@ -1721,7 +1721,7 @@ TEST_CASE("ProcessSearchJob fixed-atom restore: displacement.con stale rows "
   // Build two Matter objects.  LJ suffices: we only read positions and
   // fixed-flags, never evaluate the potential.
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
 
   // initial = pos.con (the authoritative reference)
@@ -1786,8 +1786,8 @@ TEST_CASE("makeJob creates correct job type for each JobType",
           "[job][factory]") {
   auto params = std::make_unique<Parameters>();
 
-  params->potential_options.potential = PotType::LJ;
-  params->main_options.job = JobType::Point;
+  params->potential_options().potential = PotType::LJ;
+  params->main_options().job = JobType::Point;
   auto job = eonc::helpers::makeJob(std::move(params));
   REQUIRE(job != nullptr);
 }

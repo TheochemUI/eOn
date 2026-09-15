@@ -125,9 +125,9 @@ bool OHTSTJob::symmetryReflect(const VectorXd &xR, VectorXd &x, VectorXd &v,
 OHTSTJob::PlaneAverages OHTSTJob::samplePlane(Matter &matter,
                                               const VectorXd &gamma,
                                               const VectorXd &normal) {
-  const long equilSteps = params.oh_tst_options.equil_steps;
-  const long sampleSteps = params.oh_tst_options.sample_steps;
-  const double alphaRot = params.oh_tst_options.alpha_rot;
+  const long equilSteps = params.oh_tst_options().equil_steps;
+  const long sampleSteps = params.oh_tst_options().sample_steps;
+  const double alphaRot = params.oh_tst_options().alpha_rot;
 
   // Constrain the current geometry exactly onto the plane.
   VectorXd x = matter.getPositionsFreeV();
@@ -141,13 +141,13 @@ OHTSTJob::PlaneAverages OHTSTJob::samplePlane(Matter &matter,
   // Verlet step (the auxiliary momenta start fresh per sampling
   // block); velocities re-project onto the plane after every kick.
   std::unique_ptr<GleThermostat> gle;
-  if (params.oh_tst_options.thermostat == "gle") {
+  if (params.oh_tst_options().thermostat == "gle") {
     const MatrixXd a =
-        GleThermostat::loadDriftMatrix(params.oh_tst_options.gle_a_file);
+        GleThermostat::loadDriftMatrix(params.oh_tst_options().gle_a_file);
     gle = std::make_unique<GleThermostat>(a, m_kbt, 0.5 * m_dt, x.size());
     if (!gle->valid()) {
       EONC_LOG_CRITICAL("OH-TST gle thermostat unusable (gle_a_file = {})",
-                        params.oh_tst_options.gle_a_file);
+                        params.oh_tst_options().gle_a_file);
       throw std::runtime_error("oh_tst: gle thermostat unusable");
     }
   }
@@ -224,15 +224,15 @@ double OHTSTJob::reactantQRatio(Matter &matter, const VectorXd &gammaR,
   // 1 / |(r_{i+1} - r_i).n|. The trajectory is unconstrained,
   // thermostatted, and stays in the reactant basin by construction
   // (it starts there and the barrier is >> kT).
-  const long steps = params.oh_tst_options.reactant_md_steps;
-  const long equilSteps = params.oh_tst_options.equil_steps;
+  const long steps = params.oh_tst_options().reactant_md_steps;
+  const long equilSteps = params.oh_tst_options().equil_steps;
   VectorXd x = matter.getPositionsFreeV();
   VectorXd v(x.size());
   drawThermalVelocities(v, nullptr);
   std::unique_ptr<GleThermostat> gle;
-  if (params.oh_tst_options.thermostat == "gle") {
+  if (params.oh_tst_options().thermostat == "gle") {
     const MatrixXd a =
-        GleThermostat::loadDriftMatrix(params.oh_tst_options.gle_a_file);
+        GleThermostat::loadDriftMatrix(params.oh_tst_options().gle_a_file);
     gle = std::make_unique<GleThermostat>(a, m_kbt, 0.5 * m_dt, x.size());
     if (!gle->valid()) {
       throw std::runtime_error("oh_tst: gle thermostat unusable");
@@ -282,32 +282,32 @@ std::vector<std::string> OHTSTJob::run(void) {
   auto reactant = std::make_shared<Matter>(pot, params);
   auto product = std::make_shared<Matter>(pot, params);
   if (!eonc::io::io_ok(
-          reactant->con2matter(params.oh_tst_options.reactant_filename))) {
+          reactant->con2matter(params.oh_tst_options().reactant_filename))) {
     EONC_LOG_CRITICAL("OH-TST failed to load {}",
-                      params.oh_tst_options.reactant_filename);
+                      params.oh_tst_options().reactant_filename);
     throw std::runtime_error("oh_tst: failed to load reactant");
   }
   if (!eonc::io::io_ok(
-          product->con2matter(params.oh_tst_options.product_filename))) {
+          product->con2matter(params.oh_tst_options().product_filename))) {
     EONC_LOG_CRITICAL("OH-TST failed to load {}",
-                      params.oh_tst_options.product_filename);
+                      params.oh_tst_options().product_filename);
     throw std::runtime_error("oh_tst: failed to load product");
   }
 
-  const double temperature = params.main_options.temperature;
-  EONC_LOG_INFO("[oh_tst] thermostat = {}{}", params.oh_tst_options.thermostat,
-                params.oh_tst_options.thermostat == "gle"
+  const double temperature = params.main_options().temperature;
+  EONC_LOG_INFO("[oh_tst] thermostat = {}{}", params.oh_tst_options().thermostat,
+                params.oh_tst_options().thermostat == "gle"
                     ? std::string(" (drift: ") +
-                          params.oh_tst_options.gle_a_file + ")"
+                          params.oh_tst_options().gle_a_file + ")"
                     : std::string());
-  m_kbt = params.constants.kB * temperature;
-  m_dt = params.oh_tst_options.time_step / params.constants.timeUnit;
-  m_seedState = (params.main_options.randomSeed > 0)
-                    ? params.main_options.randomSeed
+  m_kbt = params.constants().kB * temperature;
+  m_dt = params.oh_tst_options().time_step / params.constants().timeUnit;
+  m_seedState = (params.main_options().randomSeed > 0)
+                    ? params.main_options().randomSeed
                     : 12345;
   // Per-step collision probability from the Andersen collision period.
   const double tcol =
-      params.thermostat_options.andersen_tcol_input / params.constants.timeUnit;
+      params.thermostat_options().andersen_tcol_input / params.constants().timeUnit;
   m_andersenProb = (tcol > 0.0) ? std::min(1.0, m_dt / tcol) : 0.1;
 
   // Free-DOF mass vector (amu per coordinate).
@@ -370,8 +370,8 @@ std::vector<std::string> OHTSTJob::run(void) {
   m_symXR = xR;
   m_symDirs.clear();
   m_symDirs.push_back(u);
-  if (!params.oh_tst_options.symmetry_products.empty()) {
-    std::string rest = params.oh_tst_options.symmetry_products;
+  if (!params.oh_tst_options().symmetry_products.empty()) {
+    std::string rest = params.oh_tst_options().symmetry_products;
     while (!rest.empty()) {
       const auto comma = rest.find(',');
       std::string fname = rest.substr(0, comma);
@@ -401,15 +401,15 @@ std::vector<std::string> OHTSTJob::run(void) {
   // Plane state: progression coordinate s, normal n, their conjugate
   // velocities, and the previous-iteration driving forces for the
   // two-force velocity Verlet updates (Eqs 6-7 and 9-10).
-  double s = params.oh_tst_options.s_init * guideLen;
+  double s = params.oh_tst_options().s_init * guideLen;
   double vS = 0.0;
   VectorXd n = u;
   VectorXd omega = VectorXd::Zero(n.size());
-  const double mS = params.oh_tst_options.plane_mass;
-  const double dtPlane = params.oh_tst_options.plane_time_step;
-  const double dsMax = params.oh_tst_options.ds_max;
-  const double dThetaMax = params.oh_tst_options.dtheta_max;
-  const double fTol = params.oh_tst_options.force_tol;
+  const double mS = params.oh_tst_options().plane_mass;
+  const double dtPlane = params.oh_tst_options().plane_time_step;
+  const double dsMax = params.oh_tst_options().ds_max;
+  const double dThetaMax = params.oh_tst_options().dtheta_max;
+  const double fTol = params.oh_tst_options().force_tol;
 
   Matter walker(*reactant);
 
@@ -434,10 +434,10 @@ std::vector<std::string> OHTSTJob::run(void) {
     EONC_LOG_ERROR("[oh_tst] cannot open oh_tst_progression.dat");
   }
 
-  const bool scanMode = params.oh_tst_options.pmf_scan;
-  const long nScan = std::max(2L, params.oh_tst_options.scan_planes);
+  const bool scanMode = params.oh_tst_options().pmf_scan;
+  const long nScan = std::max(2L, params.oh_tst_options().scan_planes);
   const double dsScan = scanMode ? (guideLen / (double)(nScan - 1)) : 0.0;
-  const long nPlanes = scanMode ? nScan : params.oh_tst_options.max_planes;
+  const long nPlanes = scanMode ? nScan : params.oh_tst_options().max_planes;
   long plane = 0;
   bool converged = false;
   // Sec IIC guideline refinement: after the translational force first
@@ -508,11 +508,11 @@ std::vector<std::string> OHTSTJob::run(void) {
     // means the endpoints were not minimized (static relaxation
     // forces leak into <F.n>) or the plane is chasing a drifting
     // ensemble; 300 planes of that is pure waste.
-    if (aTotal > params.oh_tst_options.max_delta_a) {
+    if (aTotal > params.oh_tst_options().max_delta_a) {
       EONC_LOG_CRITICAL(
           "[oh_tst] accumulated work {:.2f} eV exceeds max_delta_a "
           "{:.2f} eV at plane {} -- endpoints likely unminimized",
-          aTotal, params.oh_tst_options.max_delta_a, plane);
+          aTotal, params.oh_tst_options().max_delta_a, plane);
       throw std::runtime_error("oh_tst: diverging reversible work");
     }
     // A stationary plane only counts as the variational maximum
@@ -522,7 +522,7 @@ std::vector<std::string> OHTSTJob::run(void) {
     // work is the cheapest evidence of a ridge.
     if (!scanMode && plane > 2 && aTotal > 2.0 * m_kbt &&
         std::fabs(avg.fn) < fTol &&
-        gRot.norm() * params.oh_tst_options.alpha_rot < fTol) {
+        gRot.norm() * params.oh_tst_options().alpha_rot < fTol) {
       converged = true;
       // The converged plane is the optimal one even if sampling noise
       // put an earlier plane marginally higher.
@@ -564,7 +564,7 @@ std::vector<std::string> OHTSTJob::run(void) {
     // translates again.
     const bool rotationOnly =
         guidelineMoving &&
-        gRot.norm() * params.oh_tst_options.alpha_rot > 5.0 * fTol &&
+        gRot.norm() * params.oh_tst_options().alpha_rot > 5.0 * fTol &&
         rotOnlySteps < 10;
     if (rotationOnly) {
       ++rotOnlySteps;
@@ -682,12 +682,12 @@ std::vector<std::string> OHTSTJob::run(void) {
   // Q^ZR/Q^R at the FIRST plane of the progression (Z^R), whose
   // reversible work to the optimal plane is what aBest measures.
   Matter rWalker(*reactant);
-  const VectorXd gammaR = xR + (params.oh_tst_options.s_init * guideLen) * u;
+  const VectorXd gammaR = xR + (params.oh_tst_options().s_init * guideLen) * u;
   const double qRatio = reactantQRatio(rWalker, gammaR, u);
 
   // Rate in internal units (1/internal-time), then SI.
   const double kInternal = vFlux * qRatio * std::exp(-aBest / m_kbt);
-  const double kSI = kInternal / (params.constants.timeUnit * 1.0e-15);
+  const double kSI = kInternal / (params.constants().timeUnit * 1.0e-15);
 
   std::vector<std::string> returnFiles;
   std::ofstream out("results.dat");

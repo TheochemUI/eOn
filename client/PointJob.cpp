@@ -42,7 +42,7 @@ std::vector<std::string> PointJob::run() {
   // data/reference/point_*.dat); the rest is the key set every other job
   // writes and eon.explorer reads.
   auto env = JobResultEnvelope::fromMinimization(
-      RunStatus::GOOD, params.potential_options.potential,
+      RunStatus::GOOD, params.potential_options().potential,
       PotRegistry::get().total_force_calls(), true, pos->getPotentialEnergy());
   env.job_type = "point";
   env.extras.emplace_back("Energy", pos->getPotentialEnergy());

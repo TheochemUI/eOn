@@ -45,7 +45,7 @@ TEST_CASE("PotRegistry tracks creation and destruction",
   PotRegistry::get().reset();
 
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
 
   SECTION("on_created increments alive and created counts") {
     REQUIRE(PotRegistry::get().type_alive(PotType::LJ) == 0);
@@ -73,7 +73,7 @@ TEST_CASE("PotRegistry tracks force calls", "[PotRegistry][force_calls]") {
   PotRegistry::get().reset();
 
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
 
   SECTION("on_force_call increments per-type and total counters") {
     DummyPotential pot(PotType::LJ, params);
@@ -138,7 +138,7 @@ TEST_CASE("PotRegistry reset clears all state", "[PotRegistry][reset]") {
   PotRegistry::get().reset();
 
   Parameters params;
-  params.potential_options.potential = PotType::EMT;
+  params.potential_options().potential = PotType::EMT;
 
   // Create some state
   PotRegistry::get().on_force_call(PotType::EMT);
@@ -162,7 +162,7 @@ TEST_CASE("PotRegistry write_summary produces valid JSON",
   PotRegistry::get().reset();
 
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
 
   // Create and destroy a potential, calling get_ef to register force calls
   {
@@ -227,7 +227,7 @@ TEST_CASE("PotRegistry instance records capture correct force_calls",
   PotRegistry::get().reset();
 
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
 
   // Instance with 5 force calls
   {

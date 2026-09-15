@@ -30,7 +30,7 @@ namespace eonc {
 
 std::vector<std::string> ReplicaExchangeJob::run() {
   std::string posFilename =
-      eonc::helpers::getRelevantFile(params.main_options.conFilename);
+      eonc::helpers::getRelevantFile(params.main_options().conFilename);
   pos = std::make_shared<Matter>(pot, params);
   if (!eonc::io::io_ok(pos->con2matter(posFilename))) {
     QUILL_LOG_CRITICAL(log, "Failed to load {}", posFilename);
@@ -48,14 +48,14 @@ ReplicaExchangeJob::runFromMatter(std::shared_ptr<Matter> initial) {
   pos = initial;
   pos->setPotential(pot);
 
-  auto &rex = params.replica_exchange_options;
+  auto &rex = params.replica_exchange_options();
   if (rex.replicas < 1) {
     throw std::invalid_argument(
         "ReplicaExchangeJob: replica_exchange.replicas must be >= 1");
   }
   if (rex.temperature_low <= 0.0) {
-    rex.temperature_low = params.main_options.temperature > 0.0
-                              ? params.main_options.temperature
+    rex.temperature_low = params.main_options().temperature > 0.0
+                              ? params.main_options().temperature
                               : 300.0;
   }
   if (rex.temperature_high <= rex.temperature_low) {
@@ -63,14 +63,14 @@ ReplicaExchangeJob::runFromMatter(std::shared_ptr<Matter> initial) {
   }
 
   long samplingSteps =
-      static_cast<long>(params.replica_exchange_options.sampling_time /
-                            params.dynamics_options.time_step +
+      static_cast<long>(params.replica_exchange_options().sampling_time /
+                            params.dynamics_options().time_step +
                         0.5);
   long exchangePeriodSteps =
-      static_cast<long>(params.replica_exchange_options.exchange_period /
-                            params.dynamics_options.time_step +
+      static_cast<long>(params.replica_exchange_options().exchange_period /
+                            params.dynamics_options().time_step +
                         0.5);
-  const double kB = params.constants.kB;
+  const double kB = params.constants().kB;
   if (samplingSteps <= 0)
     samplingSteps = 1;
   if (exchangePeriodSteps <= 0)
@@ -80,7 +80,7 @@ ReplicaExchangeJob::runFromMatter(std::shared_ptr<Matter> initial) {
 
   long refForceCalls = PotRegistry::get().total_force_calls();
 
-  const long nReplicas = params.replica_exchange_options.replicas;
+  const long nReplicas = params.replica_exchange_options().replicas;
   std::vector<std::shared_ptr<Matter>> replica(nReplicas);
   std::vector<std::unique_ptr<Dynamics>> replicaDynamics(nReplicas);
 
@@ -99,27 +99,27 @@ ReplicaExchangeJob::runFromMatter(std::shared_ptr<Matter> initial) {
 
   QUILL_LOG_DEBUG(log, "Temperature distribution:");
   if (nReplicas < 2) {
-    replicaTemperature[0] = params.replica_exchange_options.temperature_low;
+    replicaTemperature[0] = params.replica_exchange_options().temperature_low;
     replicaDynamics[0]->setTemperature(replicaTemperature[0]);
     replicaDynamics[0]->setThermalVelocity();
-  } else if (params.replica_exchange_options.temperature_distribution ==
+  } else if (params.replica_exchange_options().temperature_distribution ==
              "linear") {
     for (long i = 0; i < nReplicas; i++) {
       replicaTemperature[i] =
-          params.replica_exchange_options.temperature_low +
+          params.replica_exchange_options().temperature_low +
           static_cast<double>(i) / static_cast<double>(nReplicas - 1) *
-              (params.replica_exchange_options.temperature_high -
-               params.replica_exchange_options.temperature_low);
+              (params.replica_exchange_options().temperature_high -
+               params.replica_exchange_options().temperature_low);
       replicaDynamics[i]->setTemperature(replicaTemperature[i]);
       replicaDynamics[i]->setThermalVelocity();
     }
-  } else if (params.replica_exchange_options.temperature_distribution ==
+  } else if (params.replica_exchange_options().temperature_distribution ==
              "exponential") {
-    double kTemp = std::log(params.replica_exchange_options.temperature_high /
-                            params.replica_exchange_options.temperature_low) /
+    double kTemp = std::log(params.replica_exchange_options().temperature_high /
+                            params.replica_exchange_options().temperature_low) /
                    static_cast<double>(nReplicas - 1);
     for (long i = 0; i < nReplicas; i++) {
-      replicaTemperature[i] = params.replica_exchange_options.temperature_low *
+      replicaTemperature[i] = params.replica_exchange_options().temperature_low *
                               std::exp(kTemp * static_cast<double>(i));
       replicaDynamics[i]->setTemperature(replicaTemperature[i]);
       replicaDynamics[i]->setThermalVelocity();
@@ -134,11 +134,11 @@ ReplicaExchangeJob::runFromMatter(std::shared_ptr<Matter> initial) {
 
   QUILL_LOG_DEBUG(
       log, "Replica Exchange sampling for {:.0f} fs; {} steps; {} replicas.",
-      params.replica_exchange_options.sampling_time * 10.18, samplingSteps,
-      params.replica_exchange_options.replicas);
+      params.replica_exchange_options().sampling_time * 10.18, samplingSteps,
+      params.replica_exchange_options().replicas);
 
   // Parallel replica dynamics when enabled and potential supports it
-  const bool canParallel = params.main_options.parallel &&
+  const bool canParallel = params.main_options().parallel &&
                            (eonc::potAllowsSharedInstance(*pot) || perImage);
 
   for (long step = 1; step <= samplingSteps; step++) {
@@ -150,7 +150,7 @@ ReplicaExchangeJob::runFromMatter(std::shared_ptr<Matter> initial) {
         threads.emplace_back([&, i] {
           // New std::thread, new TLS ran2. Split the stream by replica and
           // step so Langevin/Andersen noise is not identical across replicas.
-          const long userSeed = params.main_options.randomSeed;
+          const long userSeed = params.main_options().randomSeed;
           const long base = (userSeed > 0) ? userSeed : 1;
           eonc::rng::random(base + (step + 1) * 10007 + (i + 1));
           replicaDynamics[i]->oneStep();
@@ -168,7 +168,7 @@ ReplicaExchangeJob::runFromMatter(std::shared_ptr<Matter> initial) {
     // Metropolis replica exchange
     if (nReplicas >= 2 && (step % exchangePeriodSteps) == 0) {
       for (long trial = 0;
-           trial < params.replica_exchange_options.exchange_trials; trial++) {
+           trial < params.replica_exchange_options().exchange_trials; trial++) {
         long i = eonc::rng::randomInt(0, nReplicas - 2);
         double energyLow = replica[i]->getPotentialEnergy();
         double energyHigh = replica[i + 1]->getPotentialEnergy();
@@ -219,10 +219,10 @@ void ReplicaExchangeJob::saveData() {
     out << std::format("{} termination_reason\n", 0);
     out << "GOOD termination_reason_text\n";
     out << "replica_exchange job_type\n";
-    out << std::format("{} random_seed\n", params.main_options.randomSeed);
+    out << std::format("{} random_seed\n", params.main_options().randomSeed);
     out << std::format(
         "{} potential_type\n",
-        magic_enum::enum_name<PotType>(params.potential_options.potential));
+        magic_enum::enum_name<PotType>(params.potential_options().potential));
     out << std::format("{} force_calls_sampling\n", forceCalls);
   }
 

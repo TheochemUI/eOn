@@ -77,27 +77,27 @@ eonc::Parameters route_minmode_params(eonc::Parameters params,
           "\"). Use DimerSpec / method=\"improved\" — not classic/lanczos/"
           "davidson.");
     }
-    params.saddle_search_options.minmode_method =
+    params.saddle_search_options().minmode_method =
         eonc::LowestEigenmode::MINMODE_GPRDIMER;
-    params.dimer_options.improved = true;
+    params.dimer_options().improved = true;
     return params;
 #endif
   }
 
   if (method == "classic") {
-    params.saddle_search_options.minmode_method =
+    params.saddle_search_options().minmode_method =
         eonc::LowestEigenmode::MINMODE_DIMER;
-    params.dimer_options.improved = false;
+    params.dimer_options().improved = false;
   } else if (method == "improved" || method == "dimer" || method.empty()) {
     // Default and "dimer" synonym: improved dimer
-    params.saddle_search_options.minmode_method =
+    params.saddle_search_options().minmode_method =
         eonc::LowestEigenmode::MINMODE_DIMER;
-    params.dimer_options.improved = true;
+    params.dimer_options().improved = true;
   } else if (method == "lanczos") {
-    params.saddle_search_options.minmode_method =
+    params.saddle_search_options().minmode_method =
         eonc::LowestEigenmode::MINMODE_LANCZOS;
   } else if (method == "davidson") {
-    params.saddle_search_options.minmode_method =
+    params.saddle_search_options().minmode_method =
         eonc::LowestEigenmode::MINMODE_DAVIDSON;
   } else {
     throw std::runtime_error(

@@ -44,7 +44,7 @@ std::vector<std::string> HessianJob::run(void) {
   // [Hessian] phva_atoms = PHVA mobile/active set (displaced in FD). free/fixed
   // is the optimizer mask; resolveMobileAtoms intersects the list with free.
   const VectorXi mobile =
-      eonc::resolveMobileAtoms(matter.get(), params.hessian_options.phva_atoms);
+      eonc::resolveMobileAtoms(matter.get(), params.hessian_options().phva_atoms);
   const bool no_mobile = mobile.size() == 0;
   bool freqs_ok = false;
   if (!no_mobile) {
@@ -58,7 +58,7 @@ std::vector<std::string> HessianJob::run(void) {
   const auto status =
       freqs_ok ? RunStatus::GOOD : RunStatus::FAIL_POTENTIAL_FAILED;
   auto env = JobResultEnvelope::fromMinimization(
-      status, params.potential_options.potential,
+      status, params.potential_options().potential,
       PotRegistry::get().total_force_calls(), false, 0.0);
   env.job_type = "hessian";
   env.extras.emplace_back("force_calls", static_cast<double>(env.force_calls));

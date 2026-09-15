@@ -77,15 +77,15 @@ public:
                       eonc::safemath::safe_normalized(eigenvector);
 
     if (eigenvalue > 0.0) {
-      if (params.saddle_search_options.perp_force_ratio > 0.0) {
-        double d = params.saddle_search_options.perp_force_ratio;
+      if (params.saddle_search_options().perp_force_ratio > 0.0) {
+        double d = params.saddle_search_options().perp_force_ratio;
         force = d * force - (1.0 + d) * proj;
-      } else if (params.saddle_search_options.confine_positive.enabled) {
-        if (params.saddle_search_options.confine_positive.bowl_breakout) {
+      } else if (params.saddle_search_options().confine_positive.enabled) {
+        if (params.saddle_search_options().confine_positive.bowl_breakout) {
           AtomMatrix forceTemp = matter->getForces();
           const long nAtoms = matter->numberOfAtoms();
           int nBowlActive = static_cast<int>(std::min<long>(
-              params.saddle_search_options.confine_positive.bowl_active,
+              params.saddle_search_options().confine_positive.bowl_active,
               nAtoms));
           if (nBowlActive <= 0) {
             force.setZero();
@@ -114,13 +114,13 @@ public:
         } else {
           int sufficientForce = 0;
           double minForce =
-              params.saddle_search_options.confine_positive.min_force;
+              params.saddle_search_options().confine_positive.min_force;
           const long maxBoostTries = std::max(
               3 * matter->numberOfAtoms(),
-              params.saddle_search_options.confine_positive.min_active);
+              params.saddle_search_options().confine_positive.min_active);
           long boostTries = 0;
           while (sufficientForce <
-                     params.saddle_search_options.confine_positive.min_active &&
+                     params.saddle_search_options().confine_positive.min_active &&
                  boostTries < maxBoostTries) {
             sufficientForce = 0;
             force = matter->getForces();
@@ -131,13 +131,13 @@ public:
                 } else {
                   sufficientForce++;
                   force(i, k) =
-                      -params.saddle_search_options.confine_positive.boost *
+                      -params.saddle_search_options().confine_positive.boost *
                       proj(i, k);
                 }
               }
             }
             minForce *=
-                params.saddle_search_options.confine_positive.scale_ratio;
+                params.saddle_search_options().confine_positive.scale_ratio;
             boostTries++;
           }
         }
@@ -157,22 +157,22 @@ public:
   VectorXd getPositions() { return matter->getPositionsV(); }
   int degreesOfFreedom() { return 3 * matter->numberOfAtoms(); }
   bool isConverged() {
-    return getConvergence() < params.saddle_search_options.converged_force;
+    return getConvergence() < params.saddle_search_options().converged_force;
   }
 
   double getConvergence() {
-    if (params.optimizer_options.convergence_metric == "norm") {
+    if (params.optimizer_options().convergence_metric == "norm") {
       return matter->getForcesFreeV().norm();
-    } else if (params.optimizer_options.convergence_metric == "max_atom") {
+    } else if (params.optimizer_options().convergence_metric == "max_atom") {
       return matter->maxForce();
-    } else if (params.optimizer_options.convergence_metric == "max_component") {
+    } else if (params.optimizer_options().convergence_metric == "max_component") {
       return matter->getForces().cwiseAbs().maxCoeff();
     } else {
       EONC_LOG_CRITICAL("[MinModeSaddleSearch] unknown convergence metric: {}",
-                        params.optimizer_options.convergence_metric);
+                        params.optimizer_options().convergence_metric);
       throw std::invalid_argument(
           std::format("[MinModeSaddleSearch] unknown convergence_metric: {}",
-                      params.optimizer_options.convergence_metric));
+                      params.optimizer_options().convergence_metric));
     }
   }
 
@@ -189,7 +189,7 @@ MinModeSaddleSearch::MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
     : SaddleSearchMethod(potPassed, parametersPassed),
       matter{matterPassed} {
   eonc::helpers::requireKnownConvergenceMetric(
-      params.optimizer_options.convergence_metric, "[MinModeSaddleSearch]");
+      params.optimizer_options().convergence_metric, "[MinModeSaddleSearch]");
   reactantEnergy = reactantEnergyPassed;
   mode = modePassed;
   initialTangent_ = modePassed;
@@ -207,14 +207,14 @@ MinModeSaddleSearch::MinModeSaddleSearch(std::shared_ptr<Matter> matterPassed,
 }
 
 int MinModeSaddleSearch::run() {
-  return run(params.saddle_search_options.max_iterations);
+  return run(params.saddle_search_options().max_iterations);
 }
 
 int MinModeSaddleSearch::runRetainFrames(long max_iterations_override) {
   retain_climb_frames_ = true;
   climb_frames_.clear();
   const long maxIter = max_iterations_override < 0
-                           ? params.saddle_search_options.max_iterations
+                           ? params.saddle_search_options().max_iterations
                            : max_iterations_override;
   const int st = run(maxIter);
   retain_climb_frames_ = false;
@@ -230,9 +230,9 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
   int optStatus;
   bool firstIteration = true;
   const char *forceLabel =
-      params.optimizer_options.convergence_metric_label.c_str();
+      params.optimizer_options().convergence_metric_label.c_str();
 
-  if (params.saddle_search_options.minmode_method ==
+  if (params.saddle_search_options().minmode_method ==
       LowestEigenmode::MINMODE_GPRDIMER) {
     QUILL_LOG_DEBUG(
         log, "================= Using the GP Dimer Library =================");
@@ -248,7 +248,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       status = STATUS_BAD_NO_NEGATIVE_MODE_AT_SADDLE;
     }
     if (std::abs(eonc::eigenmodeGetEigenvalue(*minModeMethod)) <
-        params.saddle_search_options.zero_mode_abort_curvature) {
+        params.saddle_search_options().zero_mode_abort_curvature) {
       QUILL_LOG_DEBUG(log, "Zero mode eigenvalue: {}",
                       eonc::eigenmodeGetEigenvalue(*minModeMethod));
       status = STATUS_ZEROMODE_ABORT;
@@ -257,21 +257,21 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
     forcecalls = eonc::eigenmodeTotalForceCalls(*minModeMethod);
   } else {
 
-    if (params.saddle_search_options.minmode_method ==
+    if (params.saddle_search_options().minmode_method ==
         LowestEigenmode::MINMODE_DIMER) {
       QUILL_LOG_INFO(log,
                      "[Dimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}   "
                      "{:7s}   {:6s}   {:4s}   {:5s}\n",
                      "Step", "Step Size", "Delta E", forceLabel, "Curvature",
                      "Torque", "Angle", "Rots", "Align");
-    } else if (params.saddle_search_options.minmode_method ==
+    } else if (params.saddle_search_options().minmode_method ==
                LowestEigenmode::MINMODE_LANCZOS) {
       QUILL_LOG_INFO(
           log,
           "[Lanczos]  {:9s} {:9s} {:10s} {:18s} {:9s} {:10s} {:7s} {:5s}\n",
           "Step", "Step Size", "Delta E", forceLabel, "Curvature", "Rel Change",
           "Angle", "Iters");
-    } else if (params.saddle_search_options.minmode_method ==
+    } else if (params.saddle_search_options().minmode_method ==
                LowestEigenmode::MINMODE_GPRDIMER) {
       QUILL_LOG_INFO(log,
                      "[GPRDimer]  {:9s}   {:9s}   {:10s}   {:18s}   {:9s}  "
@@ -304,7 +304,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       if (retain_climb_frames_) {
         climb_frames_.push_back(eonc::io::matterToConFrame(*matter, &metadata));
       }
-      if (params.debug_options.write_movies) {
+      if (params.debug_options().write_movies) {
         if (!eonc::io::io_ok(
                 matter->matter2con(climbLabel, append, &metadata))) {
           QUILL_LOG_WARNING(log, "Failed to write climb movie frame {}",
@@ -315,7 +315,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
                                 eonc::eigenmodeGetEigenvector(*minModeMethod));
       }
 
-      if (params.debug_options.write_deprecated_outs) {
+      if (params.debug_options().write_deprecated_outs) {
         std::ofstream climbDat(climbDatFilename,
                                append ? (std::ios::binary | std::ios::app)
                                       : std::ios::binary);
@@ -331,12 +331,12 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
         }
       }
     };
-    if (params.debug_options.write_movies || retain_climb_frames_) {
+    if (params.debug_options().write_movies || retain_climb_frames_) {
       write_climb_frame(0, false, 0.0, 0.0, objf->getConvergence(),
                         eonc::eigenmodeGetEigenvalue(*minModeMethod), 0.0, 0.0,
                         0);
     }
-    if (params.saddle_search_options.nonnegative_displacement_abort) {
+    if (params.saddle_search_options().nonnegative_displacement_abort) {
       objf->getGradient();
       if (eonc::eigenmodeGetEigenvalue(*minModeMethod) > 0) {
         QUILL_LOG_DEBUG(log, "Nonnegative eigenvalue: {}",
@@ -347,24 +347,24 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
     }
 
     auto optim = eonc::helpers::create::mkOptim(
-        objf, params.optimizer_options.method, params);
+        objf, params.optimizer_options().method, params);
 
     while (!objf->isConverged() || iteration == 0) {
 
       if (!firstIteration) {
 
-        if (params.saddle_search_options.nonlocal_count_abort != 0) {
+        if (params.saddle_search_options().nonlocal_count_abort != 0) {
           long nm = eonc::geometry::numAtomsMoved(
               initialPosition - matter->getPositions(),
-              params.saddle_search_options.nonlocal_distance_abort);
-          if (nm >= params.saddle_search_options.nonlocal_count_abort) {
+              params.saddle_search_options().nonlocal_distance_abort);
+          if (nm >= params.saddle_search_options().nonlocal_count_abort) {
             status = STATUS_NONLOCAL_ABORT;
             break;
           }
         }
 
         if (std::abs(eonc::eigenmodeGetEigenvalue(*minModeMethod)) <
-            params.saddle_search_options.zero_mode_abort_curvature) {
+            params.saddle_search_options().zero_mode_abort_curvature) {
           QUILL_LOG_DEBUG(log, "Zero mode eigenvalue: {}",
                           eonc::eigenmodeGetEigenvalue(*minModeMethod));
           status = STATUS_ZEROMODE_ABORT;
@@ -381,12 +381,12 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       AtomMatrix pos = matter->getPositions();
 
       try {
-        if (params.saddle_search_options.confine_positive.bowl_breakout &&
+        if (params.saddle_search_options().confine_positive.bowl_breakout &&
             eonc::eigenmodeGetEigenvalue(*minModeMethod) > 0 &&
-            params.optimizer_options.method == OptType::CG) {
-          optStatus = optim->step(-params.optimizer_options.max_move);
+            params.optimizer_options().method == OptType::CG) {
+          optStatus = optim->step(-params.optimizer_options().max_move);
         } else {
-          optStatus = optim->step(params.optimizer_options.max_move);
+          optStatus = optim->step(params.optimizer_options().max_move);
         }
       } catch (const eonc::DimerModeRestoredException &) {
         QUILL_LOG_DEBUG(
@@ -407,7 +407,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       double de = objf->getEnergy() - reactantEnergy;
 
       // Melander, Laasonen, Jonsson, JCTC 11(3), 1055-1062, 2015
-      if (params.saddle_search_options.remove_rotation) {
+      if (params.saddle_search_options().remove_rotation) {
         eonc::geometry::rotationRemove(pos, matter);
       }
       double stepSize = (matter->pbc(matter->getPositions() - pos)).norm();
@@ -421,7 +421,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
       long rotations = eonc::eigenmodeStatsRotations(*minModeMethod);
       double conv = objf->getConvergence();
 
-      if (params.saddle_search_options.minmode_method ==
+      if (params.saddle_search_options().minmode_method ==
           LowestEigenmode::MINMODE_LANCZOS) {
         QUILL_LOG_DEBUG(
             log,
@@ -436,12 +436,12 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
             iteration, stepSize, de, conv, eigenval, torque, angle, rotations);
       }
 
-      if (params.debug_options.write_movies || retain_climb_frames_) {
+      if (params.debug_options().write_movies || retain_climb_frames_) {
         write_climb_frame(static_cast<uint64_t>(iteration), true, stepSize, de,
                           conv, eigenval, torque, angle, rotations);
       }
 
-      if (params.main_options.checkpoint) {
+      if (params.main_options().checkpoint) {
         if (!eonc::io::io_ok(
                 matter->matter2con("displacement_cp.con", false))) {
           QUILL_LOG_WARNING(log, "Failed to write displacement_cp.con");
@@ -450,7 +450,7 @@ int MinModeSaddleSearch::run(long max_iterations_override) {
                                 eonc::eigenmodeGetEigenvector(*minModeMethod));
       }
 
-      if (de > params.saddle_search_options.max_energy) {
+      if (de > params.saddle_search_options().max_energy) {
         status = STATUS_BAD_HIGH_ENERGY;
         break;
       }

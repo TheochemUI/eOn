@@ -43,7 +43,7 @@ std::vector<std::string> StructureComparisonJob::run() {
   // Matter::compare can translate the left operand. Probe on a copy.
   Matter probe(*matter1);
   const bool match = probe.compare(
-      *matter2, params.structure_comparison_options.indistinguishable_atoms);
+      *matter2, params.structure_comparison_options().indistinguishable_atoms);
 
   double distance = std::numeric_limits<double>::quiet_NaN();
   double perAtom = std::numeric_limits<double>::quiet_NaN();

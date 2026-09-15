@@ -98,7 +98,7 @@ void bind_analysis(nb::module_ &m) {
       "moved_atoms",
       [](const Parameters &params, Matter &min1, Matter &saddle, Matter &min2) {
         VectorXi atoms;
-        if (params.prefactor_options.filter_scheme ==
+        if (params.prefactor_options().filter_scheme ==
             eonc::Prefactor::FILTER_FRACTION)
           atoms = eonc::Prefactor::movedAtomsPct(params, &min1, &saddle, &min2);
         else

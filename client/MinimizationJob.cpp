@@ -28,7 +28,7 @@ std::vector<std::string> MinimizationJob::run() {
   std::string posInFilename("pos.con");
   std::string posOutFilename("min.con");
 
-  if (params.main_options.checkpoint) {
+  if (params.main_options().checkpoint) {
     if (std::filesystem::exists("pos_cp.con")) {
       posInFilename = "pos_cp.con";
       QUILL_LOG_DEBUG(log, "[Minimization] Resuming from checkpoint");
@@ -51,8 +51,8 @@ std::vector<std::string> MinimizationJob::run() {
   bool converged;
   try {
     converged =
-        pos->relax(false, params.debug_options.write_movies,
-                   params.main_options.checkpoint, "minimization", "pos");
+        pos->relax(false, params.debug_options().write_movies,
+                   params.main_options().checkpoint, "minimization", "pos");
     if (converged) {
       status = RunStatus::GOOD;
       QUILL_LOG_DEBUG(log, "Minimization converged within tolerence");
@@ -86,7 +86,7 @@ std::vector<std::string> MinimizationJob::run() {
   const bool hasE = status != RunStatus::FAIL_POTENTIAL_FAILED;
   const double energy = hasE ? pos->getPotentialEnergy() : 0.0;
   JobResultEnvelope::fromMinimization(
-      status, params.potential_options.potential,
+      status, params.potential_options().potential,
       this->pot->forceCallCounter.load(), hasE, energy)
       .writeResultsDat(resultsFilename.string());
 

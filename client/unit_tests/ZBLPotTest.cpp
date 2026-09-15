@@ -17,11 +17,11 @@ public:
         matter{nullptr},
         pot_zbl{nullptr},
         threshold{1e-6} {
-    params.potential_options.potential = PotType::ZBL;
-    params.zbl_options.cut_inner = 2.0;
-    params.zbl_options.cut_global = 2.5;
+    params.potential_options().potential = PotType::ZBL;
+    params.zbl_options().cut_inner = 2.0;
+    params.zbl_options().cut_global = 2.5;
 
-    pot_zbl = eonc::helpers::makePotential(params.potential_options.potential,
+    pot_zbl = eonc::helpers::makePotential(params.potential_options().potential,
                                            params);
     matter = std::make_shared<Matter>(pot_zbl, params);
 

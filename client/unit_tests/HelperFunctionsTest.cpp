@@ -80,7 +80,7 @@ TEST_CASE("HelperFunctions: loadOrSynthesizeDisplacement from mode (#189/#79)",
           "[helpers][displacement]") {
   // Standalone saddle_search needs displacement without AKMC (#189).
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter initial(pot, params);
   REQUIRE(eonc::io::io_ok(initial.con2matter(std::string("reactant.con"))));
@@ -114,7 +114,7 @@ TEST_CASE("HelperFunctions: loadOrSynthesizeDisplacement from mode (#189/#79)",
 TEST_CASE("loadOrSynthesizeDisplacement keeps reactant atom ids",
           "[helpers][displacement][mtxr]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter initial(pot, params);
   REQUIRE(eonc::io::io_ok(initial.con2matter(std::string("reactant.con"))));
@@ -183,12 +183,12 @@ TEST_CASE("SaddleSearchJob listed_atoms moves a free atom",
   // SaddleSearchJob / ProcessSearchJob call applyClientDisplacement
   // when client_displace_type = listed_atoms.
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
-  params.saddle_search_options.displace_type =
+  params.potential_options().potential = PotType::LJ;
+  params.saddle_search_options().displace_type =
       std::string(eonc::EpiCenters::DISP_LISTED_ATOMS);
-  params.saddle_search_options.displace_atom_list = {0};
-  params.saddle_search_options.displace_radius = 0.0;
-  params.saddle_search_options.displace_magnitude = 0.2;
+  params.saddle_search_options().displace_atom_list = {0};
+  params.saddle_search_options().displace_radius = 0.0;
+  params.saddle_search_options().displace_magnitude = 0.2;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter initial(pot, params);
   initial.resize(2);
@@ -212,8 +212,8 @@ TEST_CASE("SaddleSearchJob listed_atoms moves a free atom",
 TEST_CASE("applyClientDisplacement load type is a no-op",
           "[helpers][listed_atoms]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
-  params.saddle_search_options.displace_type =
+  params.potential_options().potential = PotType::LJ;
+  params.saddle_search_options().displace_type =
       std::string(eonc::EpiCenters::DISP_LOAD);
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter initial(pot, params);

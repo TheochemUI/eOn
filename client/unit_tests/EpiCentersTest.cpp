@@ -39,8 +39,8 @@ public:
       : params{},
         pot{nullptr},
         matter{nullptr} {
-    params.potential_options.potential = PotType::LJ;
-    pot = eonc::helpers::makePotential(params.potential_options.potential,
+    params.potential_options().potential = PotType::LJ;
+    pot = eonc::helpers::makePotential(params.potential_options().potential,
                                        params);
     matter = std::make_shared<Matter>(pot, params);
     const std::string confile("pos.con");
@@ -189,13 +189,13 @@ TEST_CASE_METHOD(EpiCentersFixture,
 TEST_CASE("Parameters default displace_atom_list is empty",
           "[Parameters][displace_atom_list]") {
   Parameters params;
-  REQUIRE(params.saddle_search_options.displace_atom_list.empty());
+  REQUIRE(params.saddle_search_options().displace_atom_list.empty());
 }
 
 TEST_CASE("Parameters default displace_type is load",
           "[Parameters][displace_type]") {
   Parameters params;
-  REQUIRE(params.saddle_search_options.displace_type ==
+  REQUIRE(params.saddle_search_options().displace_type ==
           std::string(eonc::EpiCenters::DISP_LOAD));
 }
 
@@ -216,12 +216,12 @@ TEST_CASE("Parameters parses comma-separated displace_atom_list from INI",
   fclose(tmpf);
 
   REQUIRE(err == 0);
-  REQUIRE(params.saddle_search_options.displace_type ==
+  REQUIRE(params.saddle_search_options().displace_type ==
           std::string(eonc::EpiCenters::DISP_LISTED_ATOMS));
-  REQUIRE(params.saddle_search_options.displace_atom_list.size() == 3);
-  REQUIRE(params.saddle_search_options.displace_atom_list[0] == 10);
-  REQUIRE(params.saddle_search_options.displace_atom_list[1] == 20);
-  REQUIRE(params.saddle_search_options.displace_atom_list[2] == 30);
+  REQUIRE(params.saddle_search_options().displace_atom_list.size() == 3);
+  REQUIRE(params.saddle_search_options().displace_atom_list[0] == 10);
+  REQUIRE(params.saddle_search_options().displace_atom_list[1] == 20);
+  REQUIRE(params.saddle_search_options().displace_atom_list[2] == 30);
 }
 
 TEST_CASE("Parameters handles single-element displace_atom_list",
@@ -240,8 +240,8 @@ TEST_CASE("Parameters handles single-element displace_atom_list",
   fclose(tmpf);
 
   REQUIRE(err == 0);
-  REQUIRE(params.saddle_search_options.displace_atom_list.size() == 1);
-  REQUIRE(params.saddle_search_options.displace_atom_list[0] == 42);
+  REQUIRE(params.saddle_search_options().displace_atom_list.size() == 1);
+  REQUIRE(params.saddle_search_options().displace_atom_list[0] == 42);
 }
 
 TEST_CASE("Parameters handles negative indices in displace_atom_list",
@@ -259,10 +259,10 @@ TEST_CASE("Parameters handles negative indices in displace_atom_list",
   fclose(tmpf);
 
   REQUIRE(err == 0);
-  REQUIRE(params.saddle_search_options.displace_atom_list.size() == 3);
-  REQUIRE(params.saddle_search_options.displace_atom_list[0] == 5);
-  REQUIRE(params.saddle_search_options.displace_atom_list[1] == -1);
-  REQUIRE(params.saddle_search_options.displace_atom_list[2] == 10);
+  REQUIRE(params.saddle_search_options().displace_atom_list.size() == 3);
+  REQUIRE(params.saddle_search_options().displace_atom_list[0] == 5);
+  REQUIRE(params.saddle_search_options().displace_atom_list[1] == -1);
+  REQUIRE(params.saddle_search_options().displace_atom_list[2] == 10);
 }
 
 TEST_CASE("Parameters empty displace_atom_list stays empty",
@@ -280,7 +280,7 @@ TEST_CASE("Parameters empty displace_atom_list stays empty",
   fclose(tmpf);
 
   REQUIRE(err == 0);
-  REQUIRE(params.saddle_search_options.displace_atom_list.empty());
+  REQUIRE(params.saddle_search_options().displace_atom_list.empty());
 }
 
 TEST_CASE("Parameters listed_atoms is whitelisted in displace_type",
@@ -299,7 +299,7 @@ TEST_CASE("Parameters listed_atoms is whitelisted in displace_type",
 
   REQUIRE(err == 0);
   // Should NOT fall back to "load"
-  REQUIRE(params.saddle_search_options.displace_type ==
+  REQUIRE(params.saddle_search_options().displace_type ==
           std::string(eonc::EpiCenters::DISP_LISTED_ATOMS));
 }
 
@@ -318,7 +318,7 @@ TEST_CASE("Parameters unknown displace_type falls back to load",
   fclose(tmpf);
 
   REQUIRE(err == 0);
-  REQUIRE(params.saddle_search_options.displace_type ==
+  REQUIRE(params.saddle_search_options().displace_type ==
           std::string(eonc::EpiCenters::DISP_LOAD));
 }
 
@@ -349,7 +349,7 @@ TEST_CASE("Parameters all valid displace_types are accepted",
     REQUIRE(err == 0);
     // "load" is whitelisted only implicitly (it's the fallback),
     // but it should still be preserved if set explicitly
-    REQUIRE(params.saddle_search_options.displace_type == dtype);
+    REQUIRE(params.saddle_search_options().displace_type == dtype);
   }
 }
 
@@ -358,7 +358,7 @@ TEST_CASE("Parameters all valid displace_types are accepted",
 TEST_CASE("minCoordinatedEpiCenter returns a free atom index",
           "[epicenters][min_coordinated]") {
   Parameters params;
-  params.potential_options.potential = PotType::MORSE_PT;
+  params.potential_options().potential = PotType::MORSE_PT;
   auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
@@ -372,7 +372,7 @@ TEST_CASE("minCoordinatedEpiCenter returns a free atom index",
 TEST_CASE("randomFreeAtomEpiCenter returns a free atom",
           "[epicenters][random]") {
   Parameters params;
-  params.potential_options.potential = PotType::MORSE_PT;
+  params.potential_options().potential = PotType::MORSE_PT;
   auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
@@ -398,7 +398,7 @@ TEST_CASE_METHOD(EpiCentersFixture,
 
 TEST_CASE("lastAtom returns last atom index", "[epicenters][last_atom]") {
   Parameters params;
-  params.potential_options.potential = PotType::MORSE_PT;
+  params.potential_options().potential = PotType::MORSE_PT;
   auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
@@ -410,7 +410,7 @@ TEST_CASE("lastAtom returns last atom index", "[epicenters][last_atom]") {
 TEST_CASE("coordination returns finite values for all atoms",
           "[epicenters][coordination]") {
   Parameters params;
-  params.potential_options.potential = PotType::MORSE_PT;
+  params.potential_options().potential = PotType::MORSE_PT;
   auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
@@ -427,7 +427,7 @@ TEST_CASE("coordination returns finite values for all atoms",
 TEST_CASE("minCoordination returns a valid atom index",
           "[epicenters][min_coordination]") {
   Parameters params;
-  params.potential_options.potential = PotType::MORSE_PT;
+  params.potential_options().potential = PotType::MORSE_PT;
   auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
@@ -439,7 +439,7 @@ TEST_CASE("minCoordination returns a valid atom index",
 
 TEST_CASE("cnaEpiCenter returns a non-FCC/HCP atom", "[epicenters][cna]") {
   Parameters params;
-  params.potential_options.potential = PotType::MORSE_PT;
+  params.potential_options().potential = PotType::MORSE_PT;
   auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
@@ -454,7 +454,7 @@ TEST_CASE("cnaEpiCenter returns a non-FCC/HCP atom", "[epicenters][cna]") {
 TEST_CASE("randomFreeAtomEpiCenter throws when every atom is fixed",
           "[epicenters][empty]") {
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter matter(pot, params);
   matter.resize(2);
@@ -470,7 +470,7 @@ TEST_CASE("randomFreeAtomEpiCenter throws when every atom is fixed",
 TEST_CASE("coordinationLessOrEqual filters atoms correctly",
           "[epicenters][coordination_filter]") {
   Parameters params;
-  params.potential_options.potential = PotType::MORSE_PT;
+  params.potential_options().potential = PotType::MORSE_PT;
   auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));

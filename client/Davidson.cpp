@@ -42,7 +42,7 @@ Davidson::Davidson(std::shared_ptr<Matter> matter, const Parameters &params,
 
 void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction) {
   const VectorXi mobile =
-      resolveMobileAtoms(matter.get(), params.davidson_options.phva_atoms);
+      resolveMobileAtoms(matter.get(), params.davidson_options().phva_atoms);
   compute(std::move(matter), std::move(direction), mobile);
 }
 
@@ -60,10 +60,10 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
     return;
   }
 
-  const long maxIter = std::max(1L, params.davidson_options.max_iterations);
-  const double tol = params.davidson_options.tolerance;
-  const double dr = params.main_options.finiteDifference;
-  const bool useDiagPrec = params.davidson_options.diagonal_preconditioner;
+  const long maxIter = std::max(1L, params.davidson_options().max_iterations);
+  const double tol = params.davidson_options().tolerance;
+  const double dr = params.main_options().finiteDifference;
+  const bool useDiagPrec = params.davidson_options().diagonal_preconditioner;
 
   MatrixXd V(size, maxIter);
   MatrixXd HV(size, maxIter);

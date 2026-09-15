@@ -42,24 +42,24 @@ namespace nb = nanobind;
 namespace {
 
 void ensure_dynamics_steps(eonc::Parameters &params, long default_steps) {
-  if (params.dynamics_options.steps <= 0)
-    params.dynamics_options.steps = default_steps;
-  if (params.dynamics_options.time_step <= 0.0) {
-    params.dynamics_options.time_step =
-        params.dynamics_options.time_step_input / params.constants.timeUnit;
-    if (params.dynamics_options.time_step <= 0.0)
-      params.dynamics_options.time_step = 1.0 / params.constants.timeUnit;
+  if (params.dynamics_options().steps <= 0)
+    params.dynamics_options().steps = default_steps;
+  if (params.dynamics_options().time_step <= 0.0) {
+    params.dynamics_options().time_step =
+        params.dynamics_options().time_step_input / params.constants().timeUnit;
+    if (params.dynamics_options().time_step <= 0.0)
+      params.dynamics_options().time_step = 1.0 / params.constants().timeUnit;
   }
 }
 
 void ensure_long_timescale_params(eonc::Parameters &params,
                                   long default_steps) {
   ensure_dynamics_steps(params, default_steps);
-  auto &dyn = params.dynamics_options;
+  auto &dyn = params.dynamics_options();
   const double dt = dyn.time_step;
   const double horizon = dt * static_cast<double>(dyn.steps);
 
-  auto &pr = params.parallel_replica_options;
+  auto &pr = params.parallel_replica_options();
   if (pr.state_check_interval <= 0.0)
     pr.state_check_interval = std::max(dt, horizon);
   if (pr.record_interval <= 0.0)
@@ -81,7 +81,7 @@ void ensure_long_timescale_params(eonc::Parameters &params,
       pr.dephase_loop_max = 2;
   }
 
-  auto &rex = params.replica_exchange_options;
+  auto &rex = params.replica_exchange_options();
   if (rex.replicas < 2)
     rex.replicas = 2;
   if (rex.sampling_time <= 0.0 ||
@@ -90,8 +90,8 @@ void ensure_long_timescale_params(eonc::Parameters &params,
   if (rex.exchange_period <= 0.0 || rex.exchange_period > rex.sampling_time)
     rex.exchange_period = std::max(dt, rex.sampling_time / 2.0);
   if (rex.temperature_low <= 0.0)
-    rex.temperature_low = params.main_options.temperature > 0.0
-                              ? params.main_options.temperature
+    rex.temperature_low = params.main_options().temperature > 0.0
+                              ? params.main_options().temperature
                               : 300.0;
   if (rex.temperature_high <= rex.temperature_low)
     rex.temperature_high = rex.temperature_low * 1.5;
@@ -201,13 +201,13 @@ void bind_sampling(nb::module_ &m) {
     std::shared_ptr<Matter> run(bool inplace) {
       auto work = matter_work(seed, inplace);
       MonteCarlo mc(work, params);
-      int steps = params.monte_carlo_options.steps;
+      int steps = params.monte_carlo_options().steps;
       if (steps <= 0)
         steps = 10;
       {
         nb::gil_scoped_release release;
-        mc.run(steps, params.main_options.temperature,
-               params.monte_carlo_options.step_size);
+        mc.run(steps, params.main_options().temperature,
+               params.monte_carlo_options().step_size);
       }
       result = matter_result(seed, work, inplace);
       return result;
@@ -239,14 +239,14 @@ void bind_sampling(nb::module_ &m) {
         throw std::runtime_error("BasinHopping: potential required");
       auto work = matter_work(seed, inplace);
       work->setPotential(pot);
-      long nsteps = params.basin_hopping_options.steps;
+      long nsteps = params.basin_hopping_options().steps;
       if (nsteps <= 0)
         nsteps = 5;
-      double max_disp = params.basin_hopping_options.displacement;
-      double kT = params.constants.kB * params.main_options.temperature;
+      double max_disp = params.basin_hopping_options().displacement;
+      double kT = params.constants().kB * params.main_options().temperature;
       std::mt19937_64 rng(
-          params.main_options.randomSeed >= 0
-              ? static_cast<uint64_t>(params.main_options.randomSeed)
+          params.main_options().randomSeed >= 0
+              ? static_cast<uint64_t>(params.main_options().randomSeed)
               : 0xC0FFEEULL);
       std::uniform_real_distribution<double> uni(0.0, 1.0);
       std::normal_distribution<double> gauss(0.0, 1.0);
@@ -327,7 +327,7 @@ void bind_sampling(nb::module_ &m) {
     nb::object run(bool inplace) {
       auto reactant = matter_work(seed, inplace);
       reactant->setPotential(pot);
-      if (params.process_search_options.minimize_first) {
+      if (params.process_search_options().minimize_first) {
         nb::gil_scoped_release release;
         reactant->relax(true);
       }
@@ -337,7 +337,7 @@ void bind_sampling(nb::module_ &m) {
         E0 = reactant->getPotentialEnergy();
       }
       auto saddle = std::make_shared<Matter>(*reactant);
-      double mag = params.saddle_search_options.displace_magnitude;
+      double mag = params.saddle_search_options().displace_magnitude;
       if (mag > 0.0) {
         AtomMatrix pos = saddle->getPositions();
         pos += mag * mode;

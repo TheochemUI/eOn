@@ -46,9 +46,9 @@ public:
     double Henergy = 0.5 * Vforce.dot(Vforce) +
                      0.5 * bgsdAlpha *
                          (matter.getPotentialEnergy() -
-                          (reactantEnergy + params.bgsd_options.beta)) *
+                          (reactantEnergy + params.bgsd_options().beta)) *
                          (matter.getPotentialEnergy() -
-                          (reactantEnergy + params.bgsd_options.beta));
+                          (reactantEnergy + params.bgsd_options().beta));
     return Henergy;
   }
 
@@ -56,7 +56,7 @@ public:
     (void)fdstep;
     VectorXd Vforce = matter.getForcesFreeV();
     const double magVforce = Vforce.norm();
-    const double fd = params.bgsd_options.gradient_finite_difference;
+    const double fd = params.bgsd_options().gradient_finite_difference;
     if (!(magVforce > 0.0) || !std::isfinite(magVforce) || !(fd > 0.0)) {
       return VectorXd::Zero(Vforce.size());
     }
@@ -68,7 +68,7 @@ public:
     VectorXd Hforce = magVforce * (Vforcenew - Vforce) / fd +
                       bgsdAlpha *
                           (matter.getPotentialEnergy() -
-                           (reactantEnergy + params.bgsd_options.beta)) *
+                           (reactantEnergy + params.bgsd_options().beta)) *
                           Vforce;
     return -Hforce;
   }
@@ -84,13 +84,13 @@ public:
   int degreesOfFreedom() { return 3 * matter.numberOfFreeAtoms(); }
   bool isConverged() { return isConvergedH() && isConvergedV(); }
   bool isConvergedH() {
-    return getConvergenceH() < params.bgsd_options.h_force_convergence;
+    return getConvergenceH() < params.bgsd_options().h_force_convergence;
   }
   bool isConvergedV() {
-    return getConvergenceV() < params.bgsd_options.grad2energy_convergence;
+    return getConvergenceV() < params.bgsd_options().grad2energy_convergence;
   }
   bool isConvergedIP() {
-    return getConvergenceH() < params.bgsd_options.grad2force_convergence;
+    return getConvergenceH() < params.bgsd_options().grad2force_convergence;
   }
 
   double getConvergence() { return getGradient().norm(); }
@@ -107,20 +107,20 @@ private:
 
 int BiasedGradientSquaredDescent::run() {
   auto objf = std::make_shared<BGSDObjectiveFunction>(
-      *saddle, reactantEnergy, params.bgsd_options.alpha, params);
+      *saddle, reactantEnergy, params.bgsd_options().alpha, params);
   auto optim = eonc::helpers::create::mkOptim(
-      objf, params.optimizer_options.method, params);
+      objf, params.optimizer_options().method, params);
   int iteration = 0;
-  const int max_iter = params.optimizer_options.max_iterations;
+  const int max_iter = params.optimizer_options().max_iterations;
   QUILL_LOG_DEBUG(
       log,
       "starting optimization of H with params alpha and beta: {:.2f} {:.2f}",
-      params.bgsd_options.alpha, params.bgsd_options.beta);
+      params.bgsd_options().alpha, params.bgsd_options().beta);
   while (iteration < max_iter && (!objf->isConvergedH() || iteration == 0)) {
     if (!std::isfinite(objf->getEnergy())) {
       break;
     }
-    optim->step(params.optimizer_options.max_move);
+    optim->step(params.optimizer_options().max_move);
     QUILL_LOG_DEBUG(log,
                     "iteration {} Henergy, gradientHnorm, and Venergy: "
                     "{:.8f} {:.8f} {:.8f}",
@@ -131,13 +131,13 @@ int BiasedGradientSquaredDescent::run() {
   auto objf2 = std::make_shared<BGSDObjectiveFunction>(*saddle, reactantEnergy,
                                                        0.0, params);
   auto optim2 = eonc::helpers::create::mkOptim(
-      objf2, params.optimizer_options.method, params);
+      objf2, params.optimizer_options().method, params);
   int iter2 = 0;
   while (iter2 < max_iter && (!objf2->isConvergedV() || iter2 == 0)) {
     if (objf2->isConvergedIP() || !std::isfinite(objf2->getEnergy())) {
       break;
     }
-    optim2->step(params.optimizer_options.max_move);
+    optim2->step(params.optimizer_options().max_move);
     QUILL_LOG_DEBUG(log,
                     "gradient squared iteration {} Henergy, gradientHnorm, "
                     "and Venergy: {:.8f} {:.8f} {:.8f}",

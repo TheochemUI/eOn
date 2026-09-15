@@ -31,18 +31,18 @@ protected:
       : params{},
         pot{nullptr},
         matter{nullptr} {
-    params.potential_options.potential = PotType::LJ;
-    params.optimizer_options.method = OptType::CG;
-    params.optimizer_options.converged_force = 0.01;
-    params.optimizer_options.max_move = 0.1;
-    params.dimer_options.improved = true;
-    params.dimer_options.converged_angle = 0.01;
-    params.dimer_options.max_iterations = 50;
-    params.saddle_search_options.minmode_method =
+    params.potential_options().potential = PotType::LJ;
+    params.optimizer_options().method = OptType::CG;
+    params.optimizer_options().converged_force = 0.01;
+    params.optimizer_options().max_move = 0.1;
+    params.dimer_options().improved = true;
+    params.dimer_options().converged_angle = 0.01;
+    params.dimer_options().max_iterations = 50;
+    params.saddle_search_options().minmode_method =
         LowestEigenmode::MINMODE_DIMER;
-    params.saddle_search_options.max_iterations = 100;
-    params.saddle_search_options.converged_force = 0.05;
-    params.saddle_search_options.max_energy = 20.0;
+    params.saddle_search_options().max_iterations = 100;
+    params.saddle_search_options().converged_force = 0.05;
+    params.saddle_search_options().max_energy = 20.0;
 
     pot = eonc::helpers::makePotential(PotType::LJ, params);
     matter = std::make_shared<Matter>(pot, params);
@@ -93,8 +93,8 @@ TEST_CASE_METHOD(SaddleSearchFixture,
 TEST_CASE_METHOD(SaddleSearchFixture,
                  "MinModeSaddleSearch hits max iterations with low limit",
                  "[saddle_search]") {
-  params.saddle_search_options.max_iterations = 2;
-  params.saddle_search_options.converged_force = 1e-10;
+  params.saddle_search_options().max_iterations = 2;
+  params.saddle_search_options().converged_force = 1e-10;
 
   long nAtoms = matter->numberOfAtoms();
   AtomMatrix mode = AtomMatrix::Random(nAtoms, 3);
@@ -113,9 +113,9 @@ TEST_CASE_METHOD(SaddleSearchFixture,
                  "write_movies writes per-iteration mode files",
                  "[saddle_search][ra6]") {
   namespace fs = std::filesystem;
-  params.debug_options.write_movies = true;
-  params.saddle_search_options.max_iterations = 2;
-  params.saddle_search_options.converged_force = 1e-10;
+  params.debug_options().write_movies = true;
+  params.saddle_search_options().max_iterations = 2;
+  params.saddle_search_options().converged_force = 1e-10;
 
   const auto tmp = fs::temp_directory_path() / "eon_ra6_modes";
   fs::create_directories(tmp);
@@ -161,9 +161,9 @@ TEST_CASE_METHOD(
     "MinModeSaddleSearch run never returns STATUS_GOOD if unconverged (#20)",
     "[saddle_search][issue_20]") {
   // Force a non-converged climb: tiny iteration budget + absurd force target.
-  params.saddle_search_options.max_iterations = 1;
-  params.saddle_search_options.converged_force = 1e-20;
-  params.optimizer_options.converged_force = 1e-20;
+  params.saddle_search_options().max_iterations = 1;
+  params.saddle_search_options().converged_force = 1e-20;
+  params.optimizer_options().converged_force = 1e-20;
 
   long nAtoms = matter->numberOfAtoms();
   AtomMatrix mode = AtomMatrix::Random(nAtoms, 3);
@@ -206,9 +206,9 @@ TEST_CASE_METHOD(SaddleSearchFixture,
 TEST_CASE_METHOD(SaddleSearchFixture,
                  "MinModeSaddleSearch with Lanczos eigenmode",
                  "[saddle_search][lanczos]") {
-  params.saddle_search_options.minmode_method =
+  params.saddle_search_options().minmode_method =
       LowestEigenmode::MINMODE_LANCZOS;
-  params.saddle_search_options.max_iterations = 50;
+  params.saddle_search_options().max_iterations = 50;
 
   long nAtoms = matter->numberOfAtoms();
   AtomMatrix mode = AtomMatrix::Random(nAtoms, 3);
@@ -225,8 +225,8 @@ TEST_CASE_METHOD(SaddleSearchFixture,
 
 TEST_CASE_METHOD(SaddleSearchFixture, "MinModeSaddleSearch with classic Dimer",
                  "[saddle_search][classic_dimer]") {
-  params.dimer_options.improved = false; // classic dimer, not improved
-  params.saddle_search_options.max_iterations = 50;
+  params.dimer_options().improved = false; // classic dimer, not improved
+  params.saddle_search_options().max_iterations = 50;
 
   long nAtoms = matter->numberOfAtoms();
   AtomMatrix mode = AtomMatrix::Random(nAtoms, 3);

@@ -14,14 +14,14 @@ TEST_CASE("Parameters constructor applies Cap'n Proto SSoT defaults",
           "[params][ssot]") {
   Parameters p;
   // From schema/eon_params.capnp MainOptions / PotentialOptions
-  REQUIRE(p.main_options.temperature == Catch::Approx(300.0));
-  REQUIRE(p.main_options.finiteDifference == Catch::Approx(0.01));
-  REQUIRE(p.main_options.job == JobType::Process_Search);
-  REQUIRE(p.potential_options.potential == PotType::LJ);
-  REQUIRE(p.optimizer_options.method == OptType::CG);
-  REQUIRE(p.optimizer_options.max_iterations == 1000);
-  REQUIRE(p.process_search_options.minimize_first == true);
-  REQUIRE(p.structure_comparison_options.distance_difference ==
+  REQUIRE(p.main_options().temperature == Catch::Approx(300.0));
+  REQUIRE(p.main_options().finiteDifference == Catch::Approx(0.01));
+  REQUIRE(p.main_options().job == JobType::Process_Search);
+  REQUIRE(p.potential_options().potential == PotType::LJ);
+  REQUIRE(p.optimizer_options().method == OptType::CG);
+  REQUIRE(p.optimizer_options().max_iterations == 1000);
+  REQUIRE(p.process_search_options().minimize_first == true);
+  REQUIRE(p.structure_comparison_options().distance_difference ==
           Catch::Approx(0.1));
 }
 
@@ -50,12 +50,12 @@ TEST_CASE("Parameters::load INI still overrides SSoT defaults",
   }
   Parameters p;
   REQUIRE(p.load(ini.string()) == 0);
-  REQUIRE(p.main_options.job == JobType::Minimization);
-  REQUIRE(p.main_options.temperature == Catch::Approx(450.0));
-  REQUIRE(p.main_options.randomSeed == 7);
-  REQUIRE(p.potential_options.potential == PotType::EAM_AL);
-  REQUIRE(p.optimizer_options.method == OptType::LBFGS);
-  REQUIRE(p.optimizer_options.max_iterations == 42);
+  REQUIRE(p.main_options().job == JobType::Minimization);
+  REQUIRE(p.main_options().temperature == Catch::Approx(450.0));
+  REQUIRE(p.main_options().randomSeed == 7);
+  REQUIRE(p.potential_options().potential == PotType::EAM_AL);
+  REQUIRE(p.optimizer_options().method == OptType::LBFGS);
+  REQUIRE(p.optimizer_options().max_iterations == 42);
   fs::remove_all(dir);
 }
 } // namespace tests

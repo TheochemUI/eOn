@@ -33,11 +33,11 @@ public:
         matter{nullptr},
         pot{nullptr},
         threshold{1e-6} {
-    params.potential_options.potential = PotType::ASE_POT;
+    params.potential_options().potential = PotType::ASE_POT;
     auto script = std::filesystem::canonical("ase_lj.py").string();
-    params.potential_options.extPotPath = script;
+    params.potential_options().extPotPath = script;
 
-    pot = eonc::helpers::makePotential(params.potential_options.potential,
+    pot = eonc::helpers::makePotential(params.potential_options().potential,
                                        params);
     matter = std::make_shared<Matter>(pot, params);
 

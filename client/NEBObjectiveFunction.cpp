@@ -66,7 +66,7 @@ bool NEBObjectiveFunction::isUncertain() {
       maxMaxUnc = currentMaxUnc;
     }
   }
-  bool unc_conv{maxMaxUnc > params.gp_surrogate_options.uncertainty};
+  bool unc_conv{maxMaxUnc > params.gp_surrogate_options().uncertainty};
   if (unc_conv) {
     this->status = NudgedElasticBand::NEBStatus::MAX_UNCERTAINTY;
   }
@@ -74,7 +74,7 @@ bool NEBObjectiveFunction::isUncertain() {
 }
 
 bool NEBObjectiveFunction::isConverged() {
-  bool force_conv = getConvergence() < params.neb_options.force_tolerance;
+  bool force_conv = getConvergence() < params.neb_options().force_tolerance;
   return force_conv;
 }
 

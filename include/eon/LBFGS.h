@@ -32,7 +32,7 @@ public:
         m_iteration{0},
         m_memory{std::min(
             a_objf->degreesOfFreedom(),
-            static_cast<int>(a_params.optimizer_options.lbfgs.memory))} {}
+            static_cast<int>(a_params.optimizer_options().lbfgs.memory))} {}
 
   ~LBFGS() = default;
 

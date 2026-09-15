@@ -38,7 +38,7 @@ AtomsConfigurationTest::~AtomsConfigurationTest() {
 
 TEST_F(AtomsConfigurationTest, TestMatter) {
   Parameters parameters;
-  parameters.potential_options.potential = PotType::MORSE_PT;
+  parameters.potential_options().potential = PotType::MORSE_PT;
   auto pot = eonc::helpers::makePotential(parameters);
   auto matter = std::make_shared<Matter>(pot, parameters);
   matter->con2matter("pos.con");

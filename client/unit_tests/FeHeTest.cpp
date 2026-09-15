@@ -21,7 +21,7 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 TEST_CASE("FeHe potential returns finite energy on Fe BCC cluster",
           "[pot][fehe][fe]") {
   Parameters params;
-  params.potential_options.potential = PotType::FEHE;
+  params.potential_options().potential = PotType::FEHE;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));

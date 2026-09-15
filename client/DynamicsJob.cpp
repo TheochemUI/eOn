@@ -42,7 +42,7 @@ std::vector<std::string> DynamicsJob::run(void) {
 
   const std::string resultsFilename("results.dat");
   auto env = JobResultEnvelope::fromMinimization(
-      RunStatus::GOOD, params.potential_options.potential,
+      RunStatus::GOOD, params.potential_options().potential,
       PotRegistry::get().total_force_calls(), true, R->getPotentialEnergy());
   env.job_type = "dynamics";
   env.writeResultsDat(resultsFilename);

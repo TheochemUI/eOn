@@ -37,7 +37,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
 
   AtomMatrix forceA = reactant->getForces();
 
-  const double cutoff = params.structure_comparison_options.neighbor_cutoff;
+  const double cutoff = params.structure_comparison_options().neighbor_cutoff;
   long epicenter =
       eonc::EpiCenters::minCoordinatedEpiCenter(reactant.get(), cutoff);
   AtomMatrix displacement;
@@ -63,7 +63,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
   displacement /= dispNorm;
 
   auto env = JobResultEnvelope::fromMinimization(
-      RunStatus::GOOD, params.potential_options.potential,
+      RunStatus::GOOD, params.potential_options().potential,
       PotRegistry::get().total_force_calls(), false, 0.0);
   env.job_type = "finite_difference";
 

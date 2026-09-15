@@ -135,16 +135,16 @@ bool Hessian::calculate() {
   }
 
   Matter matterTemp(*matter);
-  double dr = parameters.main_options.finiteDifference;
+  double dr = parameters.main_options().finiteDifference;
   if (!(dr > 0.0) || !std::isfinite(dr)) {
     QUILL_LOG_ERROR(log, "[Hessian] invalid finiteDifference dr={}\n", dr);
     return false;
   }
 
-  const bool useCentral = isCentralScheme(parameters.hessian_options.fd_scheme);
-  const std::string &ckptPath = parameters.hessian_options.checkpoint_path;
+  const bool useCentral = isCentralScheme(parameters.hessian_options().fd_scheme);
+  const std::string &ckptPath = parameters.hessian_options().checkpoint_path;
   const bool wantResume =
-      parameters.hessian_options.resume && !ckptPath.empty();
+      parameters.hessian_options().resume && !ckptPath.empty();
 
   AtomMatrix pos = matter->getPositions();
   AtomMatrix posDisplace(nAtoms, 3);
@@ -239,7 +239,7 @@ bool Hessian::calculate() {
     return false;
   }
 
-  if (!parameters.main_options.quiet) {
+  if (!parameters.main_options().quiet) {
     QUILL_LOG_DEBUG(log, "[Hessian] writing hessian\n");
   }
   {
@@ -299,7 +299,7 @@ VectorXd Hessian::removeZeroFreqs(const VectorXd &freqs) {
   newfreqs.resize(size);
   int nremoved = 0;
   for (int i = 0; i < size; i++) {
-    if (std::abs(freqs(i)) > parameters.hessian_options.zero_freq_value) {
+    if (std::abs(freqs(i)) > parameters.hessian_options().zero_freq_value) {
       newfreqs(i - nremoved) = freqs(i);
     } else {
       nremoved++;

@@ -56,7 +56,7 @@ public:
   }
 
   bool isConverged() override {
-    return getConvergence() < params.neb_options.initialization.force_tolerance;
+    return getConvergence() < params.neb_options().initialization.force_tolerance;
   }
 
   double getConvergence() override {
@@ -119,7 +119,7 @@ public:
 
   // Check convergence of the IDPP-NEB
   bool isConverged() override {
-    return getConvergence() < params.neb_options.initialization.force_tolerance;
+    return getConvergence() < params.neb_options().initialization.force_tolerance;
   }
 
   double getConvergence() override { return lastMaxForce; }

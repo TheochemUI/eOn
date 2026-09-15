@@ -57,7 +57,7 @@ ForceCallback makeForceCallback(std::shared_ptr<::Potential> pot) {
 
 void serveMode(const Parameters &params, const std::string &host,
                uint16_t port) {
-  auto pot_type = params.potential_options.potential;
+  auto pot_type = params.potential_options().potential;
   EONC_LOG_INFO("Creating potential: {}",
                 std::string(magic_enum::enum_name(pot_type)));
 
@@ -88,7 +88,7 @@ void serveMultiple(const std::vector<ServeEndpoint> &endpoints,
   // Single endpoint: run in the main thread (no extra overhead)
   if (endpoints.size() == 1) {
     auto params = base_params;
-    params.potential_options.potential = endpoints[0].potential;
+    params.potential_options().potential = endpoints[0].potential;
     serveMode(params, endpoints[0].host, endpoints[0].port);
     return;
   }
@@ -102,7 +102,7 @@ void serveMultiple(const std::vector<ServeEndpoint> &endpoints,
   for (const auto &ep : endpoints) {
     threads.emplace_back([&base_params, ep]() {
       auto params = base_params;
-      params.potential_options.potential = ep.potential;
+      params.potential_options().potential = ep.potential;
       auto pot_name = std::string(magic_enum::enum_name(ep.potential));
 
       EONC_LOG_INFO("[{}:{}] Creating potential: {}", ep.host, ep.port,
@@ -173,7 +173,7 @@ void serveGateway(const Parameters &params, const std::string &host,
     return;
   }
 
-  auto pot_type = params.potential_options.potential;
+  auto pot_type = params.potential_options().potential;
   EONC_LOG_INFO("Creating pool of {} {} instances for gateway on {}:{}",
                 pool_size, std::string(magic_enum::enum_name(pot_type)), host,
                 port);
@@ -200,7 +200,7 @@ void serveGateway(const Parameters &params, const std::string &host,
 // ---------------------------------------------------------------------------
 
 void serveFromConfig(const Parameters &params) {
-  const auto &opts = params.serve_options;
+  const auto &opts = params.serve_options();
 
   // Multi-model endpoints take priority
   if (!opts.endpoints.empty()) {

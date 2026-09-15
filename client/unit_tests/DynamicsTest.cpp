@@ -30,9 +30,9 @@ protected:
       : params{},
         pot{nullptr},
         matter{nullptr} {
-    params.potential_options.potential = PotType::LJ;
-    params.main_options.temperature = 300.0;
-    params.main_options.randomSeed = 42;
+    params.potential_options().potential = PotType::LJ;
+    params.main_options().temperature = 300.0;
+    params.main_options().randomSeed = 42;
     eonc::rng::random(42);
 
     pot = eonc::helpers::makePotential(PotType::LJ, params);
@@ -137,7 +137,7 @@ TEST_CASE_METHOD(DynamicsFixture,
 TEST_CASE_METHOD(DynamicsFixture,
                  "Dynamics Nose-Hoover thermostat runs without crash",
                  "[dynamics][nose_hoover]") {
-  params.thermostat_options.kind = "nose_hoover";
+  params.thermostat_options().kind = "nose_hoover";
   Dynamics dyn(matter, params);
   dyn.setTemperature(300.0);
   dyn.setThermalVelocity();
@@ -154,7 +154,7 @@ TEST_CASE_METHOD(DynamicsFixture,
 
 TEST_CASE_METHOD(DynamicsFixture, "Dynamics run with steps=0 does not move",
                  "[dynamics][steps]") {
-  params.dynamics_options.steps = 0;
+  params.dynamics_options().steps = 0;
   AtomMatrix before = matter->getPositions();
   Dynamics dyn(matter, params);
   dyn.setTemperature(300.0);
@@ -167,8 +167,8 @@ TEST_CASE_METHOD(DynamicsFixture, "Dynamics run with steps=0 does not move",
 TEST_CASE_METHOD(DynamicsFixture,
                  "Dynamics Langevin thermostat runs without crash",
                  "[dynamics][langevin]") {
-  params.thermostat_options.kind = "langevin";
-  params.thermostat_options.langevin_friction = 0.01;
+  params.thermostat_options().kind = "langevin";
+  params.thermostat_options().langevin_friction = 0.01;
   Dynamics dyn(matter, params);
   dyn.setTemperature(300.0);
   dyn.setThermalVelocity();

@@ -31,7 +31,7 @@ void MonteCarlo::run(int numSteps, double temperature, double stepSize) {
     QUILL_LOG_WARNING(log, "Failed to write movie.con header frame");
   }
 
-  const double kB = params.constants.kB;
+  const double kB = params.constants().kB;
   int accepts = 0;
   for (int steps = 0; steps < numSteps; ++steps) {
     const AtomMatrix current = matter->getPositions();

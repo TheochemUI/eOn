@@ -70,7 +70,7 @@ AtomMatrix ImprovedTangent::compute(const AtomMatrix &posDiffNext,
 }
 
 TangentStrategy buildTangentStrategy(const Parameters &params) {
-  if (params.neb_options.climbing_image.use_old_tangent) {
+  if (params.neb_options().climbing_image.use_old_tangent) {
     return SimpleTangent{};
   }
   return ImprovedTangent{};

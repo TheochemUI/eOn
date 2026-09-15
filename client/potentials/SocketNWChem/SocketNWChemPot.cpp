@@ -22,13 +22,13 @@ SocketNWChemPot::SocketNWChemPot(const eonc::Parameters &p)
       conn_fd(-1),
       is_connected(false) {
 
-  unix_socket_mode = p.socket_nwchem_options.unix_socket_mode;
-  nwchem_settings = p.socket_nwchem_options.nwchem_settings;
-  mem_in_gb = p.socket_nwchem_options.mem_in_gb;
-  make_template_input = p.socket_nwchem_options.make_template_input;
+  unix_socket_mode = p.socket_nwchem_options().unix_socket_mode;
+  nwchem_settings = p.socket_nwchem_options().nwchem_settings;
+  mem_in_gb = p.socket_nwchem_options().mem_in_gb;
+  make_template_input = p.socket_nwchem_options().make_template_input;
 
   if (unix_socket_mode) {
-    unix_socket_basename = p.socket_nwchem_options.unix_socket_path;
+    unix_socket_basename = p.socket_nwchem_options().unix_socket_path;
     // NWChem's Fortran i-PI driver truncates the socket name to ~30 chars.
     // The full path is /tmp/ipi_<basename>, so basename must be short.
     server_address = "/tmp/ipi_" + unix_socket_basename;
@@ -49,8 +49,8 @@ SocketNWChemPot::SocketNWChemPot(const eonc::Parameters &p)
     std::cout << "SocketNWChemPot: Initializing in UNIX mode." << std::endl;
     std::cout << "Listening on socket file: " << server_address << std::endl;
   } else {
-    server_address = p.socket_nwchem_options.host;
-    port = p.socket_nwchem_options.port;
+    server_address = p.socket_nwchem_options().host;
+    port = p.socket_nwchem_options().port;
     std::cout << "SocketNWChemPot: Initializing in TCP mode." << std::endl;
     std::cout << "Listening on: " << server_address << ":" << port << std::endl;
   }

@@ -48,9 +48,9 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
                                      std::shared_ptr<Potential> potPassed)
     : NudgedElasticBand(
           [&]() {
-            auto &init_opt = parametersPassed.neb_options.initialization;
-            const size_t base_count = parametersPassed.neb_options.image_count;
-            if (parametersPassed.neb_options.match_endpoints) {
+            auto &init_opt = parametersPassed.neb_options().initialization;
+            const size_t base_count = parametersPassed.neb_options().image_count;
+            if (parametersPassed.neb_options().match_endpoints) {
               auto aligned = eonc::IRACompare::alignReactantToProduct(
                   *initialPassed, *finalPassed, 1.0);
               auto *log = eonc::log::get();
@@ -134,13 +134,13 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
               }
 
               auto optim = eonc::helpers::create::mkOptim(
-                  post_decim_objf, parametersPassed.neb_options.opt_method,
+                  post_decim_objf, parametersPassed.neb_options().opt_method,
                   parametersPassed);
 
               // Run a short optimization
               optim->run(
-                  parametersPassed.neb_options.initialization.max_iterations,
-                  parametersPassed.neb_options.initialization.max_move);
+                  parametersPassed.neb_options().initialization.max_iterations,
+                  parametersPassed.neb_options().initialization.max_move);
             }
             return path;
           }(),
@@ -150,16 +150,16 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
 NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
                                      const Parameters &parametersPassed,
                                      std::shared_ptr<Potential> potPassed)
-    : ci_enabled_{parametersPassed.neb_options.climbing_image.enabled},
+    : ci_enabled_{parametersPassed.neb_options().climbing_image.enabled},
       params{parametersPassed},
       pot{potPassed},
       E_ref{0.0} {
 
   log = eonc::log::get();
   eonc::helpers::requireKnownConvergenceMetric(
-      params.optimizer_options.convergence_metric, "[Nudged Elastic Band]");
+      params.optimizer_options().convergence_metric, "[Nudged Elastic Band]");
   this->status = NEBStatus::INIT;
-  numImages = params.neb_options.image_count;
+  numImages = params.neb_options().image_count;
   if (initPath.size() != static_cast<size_t>(numImages + 2)) {
     throw std::invalid_argument("NEB: initPath.size() must be image_count + 2");
   }
@@ -176,7 +176,7 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
 
   // Create per-image potentials if needed for true parallel force evaluation
   perImagePotentials_ =
-      pot->needsPerImageInstance() && params.main_options.parallel;
+      pot->needsPerImageInstance() && params.main_options().parallel;
   if (perImagePotentials_) {
     QUILL_LOG_INFO(log,
                    "NEB: Creating per-image potential instances for "
@@ -211,12 +211,12 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
   climbingImage = 0;
 
   // Setup springs
-  k_u = params.neb_options.spring.weighting.k_max;
-  k_l = params.neb_options.spring.weighting.k_min;
-  if (params.neb_options.spring.weighting.enabled) {
+  k_u = params.neb_options().spring.weighting.k_max;
+  k_l = params.neb_options().spring.weighting.k_min;
+  if (params.neb_options().spring.weighting.enabled) {
     ksp = k_l;
   } else {
-    ksp = params.neb_options.spring.constant;
+    ksp = params.neb_options().spring.constant;
   }
 
   // Cache strategies that are constant across iterations
@@ -224,7 +224,7 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
   projectionStrat_ = eonc::neb::buildProjectionStrategy(params);
 
   // Optional debugging setup
-  if (params.debug_options.estimate_neb_eigenvalues) {
+  if (params.debug_options().estimate_neb_eigenvalues) {
     eigenmode_solvers.resize(numImages + 2);
     for (long i = 0; i <= numImages + 1; i++) {
       eigenmode_solvers[i] =
@@ -249,11 +249,11 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
 
   bool switched{false};
   auto optim = eonc::helpers::create::mkOptim(
-      objf, params.neb_options.opt_method, params);
+      objf, params.neb_options().opt_method, params);
   std::unique_ptr<Optimizer> refine_optim{nullptr};
-  if (params.optimizer_options.refine.method != OptType::None) {
+  if (params.optimizer_options().refine.method != OptType::None) {
     refine_optim = eonc::helpers::create::mkOptim(
-        objf, params.optimizer_options.refine.method, params);
+        objf, params.optimizer_options().refine.method, params);
   }
 
   // OCINEB controller
@@ -261,12 +261,12 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
   eonc::neb::OCINEBController ocineb(ocinebCfg);
 
   while (this->status != NEBStatus::GOOD) {
-    if (params.debug_options.write_movies &&
-        (iteration % params.debug_options.write_movies_interval == 0)) {
+    if (params.debug_options().write_movies &&
+        (iteration % params.debug_options().write_movies_interval == 0)) {
       bool append = (iteration != 0);
       if (!eonc::io::io_ok(eonc::neb::writePathCon(
               path, tangent, eigenmode_solvers, numImages,
-              params.debug_options.estimate_neb_eigenvalues,
+              params.debug_options().estimate_neb_eigenvalues,
               std::format("neb_path_{:03d}.con", iteration), iteration))) {
         QUILL_LOG_ERROR(log, "Failed to write NEB path movie for iteration {}",
                         iteration);
@@ -312,7 +312,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
       ocineb.initBaseline(convForce);
 
       // Log configuration banner
-      auto &ci_opt = params.neb_options.climbing_image;
+      auto &ci_opt = params.neb_options().climbing_image;
       auto &mmf_opt = ci_opt.ocineb;
       auto fmt_trigger = [](double val) -> std::string {
         if (val > 1e100)
@@ -360,7 +360,7 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
 
       EONC_LOG_DEBUG("{:>10s} {:>12s} {:>14s} {:>11s} {:>12s}", "iteration",
                      "step size",
-                     params.optimizer_options.convergence_metric_label,
+                     params.optimizer_options().convergence_metric_label,
                      "max image", "max energy");
       QUILL_LOG_DEBUG(
           eonc::log::get(),
@@ -369,10 +369,10 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
 
     // CI active when force drops below relative threshold
     bool ci_active =
-        params.neb_options.climbing_image.enabled &&
+        params.neb_options().climbing_image.enabled &&
         (convForce < baseline_force *
-                         params.neb_options.climbing_image.trigger_factor ||
-         convForce < params.neb_options.climbing_image.trigger_force);
+                         params.neb_options().climbing_image.trigger_factor ||
+         convForce < params.neb_options().climbing_image.trigger_force);
 
     if (iteration) {
       // MMF triggering via controller
@@ -402,11 +402,11 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
         // starts from the redistributed positions.
         if (result.shouldResetOptimizer || didResample) {
           optim = eonc::helpers::create::mkOptim(
-              objf, params.neb_options.opt_method, params);
+              objf, params.neb_options().opt_method, params);
         }
       }
 
-      if (iteration >= params.neb_options.max_iterations) {
+      if (iteration >= params.neb_options().max_iterations) {
         status = NEBStatus::BAD_MAX_ITERATIONS;
         break;
       }
@@ -417,19 +417,19 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
 
       auto &activeOptim =
           (refine_optim &&
-           convForce <= params.optimizer_options.refine.threshold)
+           convForce <= params.optimizer_options().refine.threshold)
               ? refine_optim
               : optim;
       if (refine_optim &&
-          convForce <= params.optimizer_options.refine.threshold && !switched) {
+          convForce <= params.optimizer_options().refine.threshold && !switched) {
         switched = true;
         EONC_LOG_DEBUG("Switched to {}",
                        magic_enum::enum_name<OptType>(
-                           params.optimizer_options.refine.method));
+                           params.optimizer_options().refine.method));
       }
-      activeOptim->step(params.optimizer_options.max_move);
+      activeOptim->step(params.optimizer_options().max_move);
 
-      setCIEnabled(params.neb_options.climbing_image.enabled);
+      setCIEnabled(params.neb_options().climbing_image.enabled);
     }
 
     iteration++;
@@ -469,10 +469,10 @@ double NudgedElasticBand::convergenceForce() {
     updateForces();
 
   auto imageForce = [&](long i) -> double {
-    if (params.optimizer_options.convergence_metric == "norm") {
+    if (params.optimizer_options().convergence_metric == "norm") {
       return projectedForce[i]->norm();
     }
-    if (params.optimizer_options.convergence_metric == "max_atom") {
+    if (params.optimizer_options().convergence_metric == "max_atom") {
       double f = 0;
       for (int j = 0; j < path[0]->numberOfAtoms(); j++) {
         if (path[0]->getFixed(j))
@@ -481,16 +481,16 @@ double NudgedElasticBand::convergenceForce() {
       }
       return f;
     }
-    if (params.optimizer_options.convergence_metric == "max_component") {
+    if (params.optimizer_options().convergence_metric == "max_component") {
       return projectedForce[i]->cwiseAbs().maxCoeff();
     }
     log = eonc::log::traceback();
     QUILL_LOG_CRITICAL(
         log, "[Nudged Elastic Band] unknown opt_convergence_metric: {}",
-        params.optimizer_options.convergence_metric);
+        params.optimizer_options().convergence_metric);
     throw std::invalid_argument(
         std::format("[Nudged Elastic Band] unknown convergence_metric: {}",
-                    params.optimizer_options.convergence_metric));
+                    params.optimizer_options().convergence_metric));
   };
 
   double bandMax = 0;
@@ -498,15 +498,15 @@ double NudgedElasticBand::convergenceForce() {
     bandMax = std::max(bandMax, imageForce(i));
   }
 
-  const bool ciOnly = params.neb_options.climbing_image.converged_only &&
+  const bool ciOnly = params.neb_options().climbing_image.converged_only &&
                       ci_enabled_ && climbingImage != 0;
   if (!ciOnly) {
     return bandMax;
   }
 
   const double ciForce = imageForce(climbingImage);
-  const double slack = params.neb_options.climbing_image.band_slack;
-  const double tol = params.neb_options.force_tolerance;
+  const double slack = params.neb_options().climbing_image.band_slack;
+  const double tol = params.neb_options().force_tolerance;
   if (slack > 0.0 && bandMax > slack * tol) {
     return bandMax;
   }
@@ -571,7 +571,7 @@ void NudgedElasticBand::updateForces(bool ci_active) {
     // Per-image evaluation (sequential or parallel threads)
     bool canParallel =
         eonc::potAllowsSharedInstance(*pot) || perImagePotentials_;
-    if (numImages > 1 && params.main_options.parallel && canParallel) {
+    if (numImages > 1 && params.main_options().parallel && canParallel) {
 #ifdef EON_PARALLEL_NEB
       // TBB-backed std::execution::par (meson -Dwith_parallel_neb=true).
       // One thread per image oversubscribes a 20-bead band on 8 cores.
@@ -618,7 +618,7 @@ void NudgedElasticBand::updateForces(bool ci_active) {
   double maxEnergy = (*it)->getPotentialEnergy();
 
   // Update E_ref for energy weighting
-  if (params.neb_options.spring.weighting.enabled) {
+  if (params.neb_options().spring.weighting.enabled) {
     E_ref = std::min(path[0]->getPotentialEnergy(),
                      path[numImages + 1]->getPotentialEnergy());
   }
@@ -707,7 +707,7 @@ void NudgedElasticBand::updateForces(bool ci_active) {
 
 void NudgedElasticBand::printImageData(bool writeToFile, size_t idx) {
   eonc::neb::printImageData(path, tangent, eigenmode_solvers, numImages,
-                            params.debug_options.estimate_neb_eigenvalues,
+                            params.debug_options().estimate_neb_eigenvalues,
                             writeToFile, idx, log);
 }
 
@@ -723,7 +723,7 @@ std::vector<readcon::ConFrame>
 NudgedElasticBand::pathFrames(std::optional<size_t> bandIndex) {
   return eonc::neb::pathToConFrames(
       path, tangent, eigenmode_solvers, numImages,
-      params.debug_options.estimate_neb_eigenvalues, bandIndex);
+      params.debug_options().estimate_neb_eigenvalues, bandIndex);
 }
 
 } // namespace eonc

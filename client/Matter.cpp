@@ -31,8 +31,8 @@ Matter::Matter(std::shared_ptr<Potential> pot, const Parameters &params)
       pbcConvention{PbcConvention::Legacy},
       recomputePotential{true},
       forceCalls{0},
-      removeNetForce{params.main_options.removeNetForce},
-      structComp{params.structure_comparison_options},
+      removeNetForce{params.main_options().removeNetForce},
+      structComp{params.structure_comparison_options()},
       parameters{&params},
       nAtoms{0},
       positions{MatrixXd::Zero(0, 3)},
@@ -49,7 +49,7 @@ Matter::Matter(std::shared_ptr<Potential> pot, const Parameters &params)
       potentialEnergy{0.0} {}
 
 bool Matter::getWriteConForces() const noexcept {
-  return parameters != nullptr && parameters->main_options.writeConForces;
+  return parameters != nullptr && parameters->main_options().writeConForces;
 }
 
 namespace {

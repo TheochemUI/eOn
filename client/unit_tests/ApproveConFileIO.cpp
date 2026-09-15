@@ -70,7 +70,7 @@ std::shared_ptr<Matter> load_reactant() {
   // function, so the Parameters cannot be a local.
   static Parameters params = [] {
     Parameters p;
-    p.potential_options.potential = PotType::LJ;
+    p.potential_options().potential = PotType::LJ;
     return p;
   }();
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
@@ -106,7 +106,7 @@ TEST_CASE("VerifyGeometryOnlyRoundTrip", "[approval][confileio][compat]") {
   REQUIRE(eonc::io::io_ok(m->matter2con(tmp.string(), false)));
 
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m2 = std::make_shared<Matter>(pot, params);
   REQUIRE(eonc::io::io_ok(m2->con2matter(tmp.string())));
@@ -136,7 +136,7 @@ TEST_CASE("VerifyForceBearingWrite", "[approval][confileio][modern]") {
   }
 
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m2 = std::make_shared<Matter>(pot, params);
   REQUIRE(eonc::io::io_ok(m2->con2matter(tmp.string())));
@@ -180,7 +180,7 @@ TEST_CASE("VerifyDefaultWriteHasNoForceSections",
   REQUIRE(body.find("\"forces\"") == std::string::npos);
 
   Parameters params;
-  params.potential_options.potential = PotType::LJ;
+  params.potential_options().potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto m2 = std::make_shared<Matter>(pot, params);
   REQUIRE(eonc::io::io_ok(m2->con2matter(tmp.string())));

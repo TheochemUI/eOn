@@ -56,15 +56,15 @@ std::vector<std::string> PrefactorJob::run() {
       params, reactant.get(), saddle.get(), product.get(), pref1, pref2);
 
   VectorXi atoms;
-  if (params.prefactor_options.all_free_atoms) {
+  if (params.prefactor_options().all_free_atoms) {
     std::string matterFilename;
-    if (params.prefactor_options.configuration ==
+    if (params.prefactor_options().configuration ==
         PrefactorJob::PREFACTOR_REACTANT) {
       matterFilename = reactantFilename;
-    } else if (params.prefactor_options.configuration ==
+    } else if (params.prefactor_options().configuration ==
                PrefactorJob::PREFACTOR_SADDLE) {
       matterFilename = saddleFilename;
-    } else if (params.prefactor_options.configuration ==
+    } else if (params.prefactor_options().configuration ==
                PrefactorJob::PREFACTOR_PRODUCT) {
       matterFilename = productFilename;
     }
@@ -92,15 +92,15 @@ std::vector<std::string> PrefactorJob::run() {
   bool failed = (prefStatus == -1) || (atoms.rows() == 0);
 
   if (!failed) {
-    if (params.prefactor_options.configuration ==
+    if (params.prefactor_options().configuration ==
         PrefactorJob::PREFACTOR_REACTANT) {
       Hessian hessian(params, reactant.get());
       freqs = hessian.getFreqs(reactant.get(), atoms);
-    } else if (params.prefactor_options.configuration ==
+    } else if (params.prefactor_options().configuration ==
                PrefactorJob::PREFACTOR_SADDLE) {
       Hessian hessian(params, saddle.get());
       freqs = hessian.getFreqs(saddle.get(), atoms);
-    } else if (params.prefactor_options.configuration ==
+    } else if (params.prefactor_options().configuration ==
                PrefactorJob::PREFACTOR_PRODUCT) {
       Hessian hessian(params, product.get());
       freqs = hessian.getFreqs(product.get(), atoms);
@@ -120,7 +120,7 @@ std::vector<std::string> PrefactorJob::run() {
 
   auto env = JobResultEnvelope::fromMinimization(
       failed ? RunStatus::FAIL_POTENTIAL_FAILED : RunStatus::GOOD,
-      params.potential_options.potential,
+      params.potential_options().potential,
       PotRegistry::get().total_force_calls(), false, 0.0);
   env.job_type = "prefactor";
   env.tags.emplace_back("good", failed ? "false" : "true");

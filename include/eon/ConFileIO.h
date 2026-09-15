@@ -80,7 +80,7 @@ struct ConFrameMetadata {
   std::vector<ConMetadataText> strings;
   std::optional<std::string> raw_json;
   /// When set, this write includes or omits force sections regardless of
-  /// Parameters.main_options.writeConForces or the process-wide flag.
+  /// Parameters.main_options().writeConForces or the process-wide flag.
   std::optional<bool> write_con_forces;
 };
 

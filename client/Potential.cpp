@@ -26,10 +26,10 @@
 
 namespace eonc {
 Potential::Potential(PotType a_ptype, const Parameters &p) : Potential(a_ptype) {
-  force_serial_ = !p.potential_options.thread_safe;
+  force_serial_ = !p.potential_options().thread_safe;
 }
 Potential::Potential(const Parameters &a_params)
-    : Potential(a_params.potential_options.potential, a_params) {}
+    : Potential(a_params.potential_options().potential, a_params) {}
 } // namespace eonc
 #ifdef WITH_CATLEARN
 #include "eon/potentials/CatLearnPot/CatLearnPot.h"
@@ -152,7 +152,7 @@ std::string lower_copy(std::string s) {
 #ifdef RGPOT_HAS_DFTD3
 rgpot::D3Damping d3_damping_from_params(const Parameters &params) {
   rgpot::D3Damping damp = rgpot::D3Damping::BJ;
-  if (lower_copy(params.dftd_options.d3_damping) == "zero") {
+  if (lower_copy(params.dftd_options().d3_damping) == "zero") {
     damp = rgpot::D3Damping::Zero;
   }
   return damp;
@@ -173,34 +173,34 @@ std::unique_ptr<rgpot::PotentialBase> make_expr_term(const std::string &raw,
   }
   if (name == "zbl") {
     return std::make_unique<rgpot::ZBLPot>(rgpot::ZBLConfig{
-        .cut_inner = params.zbl_options.cut_inner,
-        .cut_global = params.zbl_options.cut_global,
+        .cut_inner = params.zbl_options().cut_inner,
+        .cut_global = params.zbl_options().cut_global,
     });
   }
 #ifdef RGPOT_HAS_DFTD3
   if (name == "d3" || name == "dftd3") {
     return std::make_unique<rgpot::D3Pot>(rgpot::D3Config{
         .damping = d3_damping_from_params(params),
-        .functional = params.dftd_options.functional,
-        .atm = params.dftd_options.atm,
+        .functional = params.dftd_options().functional,
+        .atm = params.dftd_options().atm,
     });
   }
 #endif
 #ifdef RGPOT_HAS_DFTD4
   if (name == "d4" || name == "dftd4") {
     return std::make_unique<rgpot::D4Pot>(rgpot::D4Config{
-        .functional = params.dftd_options.functional,
-        .charge = params.dftd_options.d4_charge,
-        .atm = params.dftd_options.atm,
+        .functional = params.dftd_options().functional,
+        .charge = params.dftd_options().d4_charge,
+        .atm = params.dftd_options().atm,
     });
   }
 #endif
   if (name == "mopac") {
     return std::make_unique<rgpot::MOPACPot>(rgpot::MOPACPot::Config{
-        .charge = params.mopac_options.charge,
-        .spin = params.mopac_options.spin,
-        .model = params.mopac_options.model,
-        .engine_path = params.mopac_options.engine_path,
+        .charge = params.mopac_options().charge,
+        .spin = params.mopac_options().spin,
+        .model = params.mopac_options().model,
+        .engine_path = params.mopac_options().engine_path,
     });
   }
   throw std::runtime_error(
@@ -210,7 +210,7 @@ std::unique_ptr<rgpot::PotentialBase> make_expr_term(const std::string &raw,
 
 std::vector<rgpot::ExprPot::Term> parse_expr_terms(const Parameters &params) {
   std::vector<rgpot::ExprPot::Term> terms;
-  std::string buf = params.expr_options.terms;
+  std::string buf = params.expr_options().terms;
   std::string token;
   auto flush = [&]() {
     while (!token.empty() &&
@@ -248,15 +248,15 @@ std::vector<rgpot::ExprPot::Term> parse_expr_terms(const Parameters &params) {
 std::shared_ptr<Potential> makePotential(const Parameters &params) {
   // Inject config-file path before any potential constructor runs
   PluginLoader::instance().add_config_paths(
-      params.potential_options.potentialsPath);
-  return makePotential(params.potential_options.potential, params);
+      params.potential_options().potentialsPath);
+  return makePotential(params.potential_options().potential, params);
 }
 std::shared_ptr<Potential> makePotential(PotType ptype,
                                          const Parameters &params) {
   // Inject config-file path before any potential constructor runs.
   // Called on every code path including Job::Job which uses this overload.
   PluginLoader::instance().add_config_paths(
-      params.potential_options.potentialsPath);
+      params.potential_options().potentialsPath);
   switch (ptype) {
   // TODO: Every potential must know their own type
   case PotType::EMT: {
@@ -405,7 +405,7 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
 #ifdef RGPOT_HAS_DFTD3
   case PotType::DFTD3: {
     rgpot::D3Damping damp = rgpot::D3Damping::BJ;
-    std::string dname = params.dftd_options.d3_damping;
+    std::string dname = params.dftd_options().d3_damping;
     for (char &c : dname) {
       c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
     }
@@ -415,8 +415,8 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     return makeRgpot<rgpot::D3Pot>(
         PotType::DFTD3, params,
         rgpot::D3Config{.damping = damp,
-                        .functional = params.dftd_options.functional,
-                        .atm = params.dftd_options.atm});
+                        .functional = params.dftd_options().functional,
+                        .atm = params.dftd_options().atm});
     break;
   }
 #endif
@@ -424,9 +424,9 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
   case PotType::DFTD4: {
     return makeRgpot<rgpot::D4Pot>(
         PotType::DFTD4, params,
-        rgpot::D4Config{.functional = params.dftd_options.functional,
-                        .charge = params.dftd_options.d4_charge,
-                        .atm = params.dftd_options.atm});
+        rgpot::D4Config{.functional = params.dftd_options().functional,
+                        .charge = params.dftd_options().d4_charge,
+                        .atm = params.dftd_options().atm});
     break;
   }
 #endif
@@ -434,8 +434,8 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     return makeRgpot<rgpot::ZBLPot>(
         PotType::ZBL, params,
         rgpot::ZBLConfig{
-            .cut_inner = params.zbl_options.cut_inner,
-            .cut_global = params.zbl_options.cut_global,
+            .cut_inner = params.zbl_options().cut_inner,
+            .cut_global = params.zbl_options().cut_global,
         });
     break;
   }
@@ -455,20 +455,20 @@ std::shared_ptr<Potential> makePotential(PotType ptype,
     return makeRgpot<rgpot::MOPACPot>(
         PotType::MOPAC, params,
         rgpot::MOPACPot::Config{
-            .charge = params.mopac_options.charge,
-            .spin = params.mopac_options.spin,
-            .model = params.mopac_options.model,
-            .engine_path = params.mopac_options.engine_path,
+            .charge = params.mopac_options().charge,
+            .spin = params.mopac_options().spin,
+            .model = params.mopac_options().model,
+            .engine_path = params.mopac_options().engine_path,
         });
     break;
   }
 #ifdef RGPOT_HAS_EXPR
   case PotType::EXPR: {
-    if (params.expr_options.expression.empty()) {
+    if (params.expr_options().expression.empty()) {
       throw std::runtime_error(
           "ExprPot needs [ExprPot] expression, e.g. 0.5*lj + d3");
     }
-    rgpot::ExprPot expr(params.expr_options.expression,
+    rgpot::ExprPot expr(params.expr_options().expression,
                         parse_expr_terms(params));
     return std::make_shared<RgpotAdapter<rgpot::ExprPot>>(PotType::EXPR, params,
                                                           std::move(expr));
