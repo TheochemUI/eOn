@@ -58,6 +58,9 @@ TEST_CASE("CI-NEB XTB regression", "[neb][xtb]") {
   std::string prodFile("product.con");
   initial->con2matter(reactFile);
   final_state->con2matter(prodFile);
+  // 9-atom molecule in a 25 Å box. GFN2 has no PBC multipoles.
+  initial->setPeriodic(false);
+  final_state->setPeriodic(false);
 
   auto neb =
       std::make_unique<NudgedElasticBand>(initial, final_state, params, pot);
