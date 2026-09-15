@@ -23,26 +23,24 @@ University of Iceland
 // distance: Angstrom, time: fs, charge: e).
 #include "eon/potentials/Water/tip4p_unit_system.hpp"
 
-using namespace forcefields;
+namespace forcefields {
 /* defined(FORCEFIELDS_UNIT_SYSTEM_HPP) && \
 ( FORCEFIELDS_UNIT_SYSTEM_HPP !=
 FORCEFIELDS_UNIT_SYSTEM_ELECTRONVOLT_ANGSTROM_FEMTOSECOND_ECHARGE) //*/
-using namespace forcefields::unit_system;
 namespace {
-double const re_ = 0.9572 * ANGSTROM;
-double const thetae_ = 104.52 * DEGREE;
-double const charge_ = 0.520 * ECHARGE;    ///< Charge on one hydrogen
-double const charge2_ = charge_ * charge_; ///< Square of # charge_
+double const re_ = 0.9572 * unit_system::ANGSTROM;
+double const thetae_ = 104.52 * unit_system::DEGREE;
+double const charge_ = 0.520 * unit_system::ECHARGE; ///< Charge on one hydrogen
+double const charge2_ = charge_ * charge_;           ///< Square of # charge_
 double const sigma_ =
-    3.154 * ANGSTROM; ///< Lennard-Jones sigma between oxygen atoms.
+    3.154 * unit_system::ANGSTROM; ///< Lennard-Jones sigma between oxygen atoms.
 double const epsilon_ =
-    78.0 * KELVIN; ///< Lennard-Jones epsilon between oxygen atoms.
-double const ron_ =
-    0.150 * ANGSTROM; ///< Distance between oxygen and the middle charge N.
+    78.0 * unit_system::KELVIN; ///< Lennard-Jones epsilon between oxygen atoms.
+double const ron_ = 0.150 * unit_system::ANGSTROM; ///< Distance between oxygen
+                                                  ///< and the middle charge N.
 double const rok_ =
-    ::re_ *
-    std::cos(::thetae_ / 2.0); ///< Distance between oxygen and the centre of
-                               ///< the two hydrogen atoms (point K).
+    re_ * std::cos(thetae_ / 2.0); ///< Distance between oxygen and the centre
+                                   ///< of the two hydrogen atoms (point K).
 double const wh_ = ron_ / rok_ * 0.5;
 double const wo_ = (1.0 - wh_ * 2.0);
 } // namespace
@@ -288,3 +286,4 @@ void Tip4p::lennardJonesWithCutoff(Water &w1, Water &w2, double &U) {
     };
   };
 }
+} // namespace forcefields

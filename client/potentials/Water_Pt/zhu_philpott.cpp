@@ -60,7 +60,7 @@ adds the values, otherwise it is simply marked as output.
 #define DEBUG_LEVEL_RETURN(x)
 #endif
 
-using namespace forcefields;
+namespace forcefields {
 
 template <class P>
 ZhuPhilpott<P>::ZhuPhilpott()
@@ -539,3 +539,4 @@ void ZhuPhilpott<P>::coulombFull(Water &w1, Water &w2, double &U,
   // interactions between O1, O2
   coulomb(w1.ro_, w2.ro_, w1.fo_, w2.fo_, U, 4.0 * qq2overEr);
 }
+} // namespace forcefields
