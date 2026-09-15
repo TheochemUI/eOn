@@ -11,6 +11,7 @@
 */
 #pragma once
 
+#include "eon/Parameters.h"
 #include "eon/Potential.h"
 #include "units.hpp"
 #include "xtb.h"
@@ -21,12 +22,10 @@ class XTBPot final : public eonc::Potential {
 public:
   // Functions
   XTBPot(const eonc::Parameters &p)
-      : eonc::Potential(eonc::PotType::XTB, p),
-        xtb_acc{p.xtb_options().acc},
+      : eonc::Potential(eonc::PotType::XTB, p), xtb_acc{p.xtb_options().acc},
         xtb_electronic_temperature{p.xtb_options().elec_temperature},
         xtb_max_iter{p.xtb_options().maxiter},
-        total_charge{p.xtb_options().charge},
-        uhf{p.xtb_options().uhf} {
+        total_charge{p.xtb_options().charge}, uhf{p.xtb_options().uhf} {
     // Deprecated for packaging: prefer -Dwith_rgpot=true + potential=RGPOT
     // backend=xtb (dlopen libxtb_engine.so). Native -Dwith_xtb stays available.
     std::cerr

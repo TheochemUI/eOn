@@ -186,7 +186,7 @@ jobs:
           CIBW_BEFORE_BUILD: |
             set -euo pipefail
             export LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:${LD_LIBRARY_PATH:-}
-            pip install -U pip nanobind meson ninja meson-python auditwheel
+            pip install -U pip 'nanobind>=2.4,<3' meson ninja meson-python auditwheel
             pip install --only-binary=:all: numpy || pip install numpy
             if [[ "${{ matrix.variant }}" == "metatomic" ]]; then
               # Must be visible to the build Python (no-isolation frontend).
@@ -206,9 +206,8 @@ jobs:
             auditwheel repair -w {dest_dir} {wheel} 2>/dev/null
             || cp -f {wheel} {dest_dir}/;
             bash scripts/pyeonclient_repair_wheel.sh {dest_dir}/pyeonclient-*.whl'
-          CIBW_TEST_REQUIRES: pytest numpy
-          CIBW_TEST_COMMAND: |
-            python -c "import pyeonclient as p, pathlib, subprocess; print(p.__version__, 'mta', p.built_with_metatomic(), 'rgpot', p.built_with_rgpot()); assert p.built_with_rgpot(); core=next(pathlib.Path(p.__file__).parent.glob('_core*.so')); out=subprocess.check_output(['readelf','-d',str(core)],text=True); assert 'libtorch' not in out or p.built_with_metatomic(); print('NEEDED_OK'); assert hasattr(p.NudgedElasticBand, 'path_frames')"
+          CIBW_TEST_REQUIRES: ${{ matrix.variant == 'metatomic' && 'pytest numpy torch>=2.7 metatensor metatensor-torch metatomic-torch vesin' || 'pytest numpy' }}
+          CIBW_TEST_COMMAND: bash {project}/scripts/pyeonclient_cibw_test.sh
 
       - name: Tag metatomic wheels with local version (never collide with base)
         if: steps.gate.outputs.skip != 'true' && matrix.variant == 'metatomic'
@@ -256,7 +255,7 @@ jobs:
           echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH" >> "$GITHUB_ENV"
           echo "CMAKE_PREFIX_PATH=/usr/local" >> "$GITHUB_ENV"
       - run: |
-          python -m pip install -U pip build nanobind numpy meson ninja meson-python
+          python -m pip install -U pip build 'nanobind>=2.4,<3' numpy meson ninja meson-python
           # sdist configures the project; quill/capnp must resolve
           python -m build --sdist
           ls -la dist/

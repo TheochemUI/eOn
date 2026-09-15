@@ -20,8 +20,7 @@ protected:
   const Parameters &params;
 
 public:
-  ObjectiveFunction(const Parameters &paramsPassed)
-      : params{paramsPassed} {}
+  ObjectiveFunction(const Parameters &paramsPassed) : params{paramsPassed} {}
   virtual ~ObjectiveFunction() {}
   virtual double getEnergy() = 0;
   virtual VectorXd getGradient(bool fdstep = false) = 0;

@@ -42,8 +42,8 @@ TEST_CASE("RgpotPot in-process nwchemc force (no potserv)",
   ParametersLoadAccess::rgpot_options(params).charge = 0;
   ParametersLoadAccess::rgpot_options(params).multiplicity = 1;
 
-  auto pot =
-      eonc::helpers::makePotential(params.potential_options().potential, params);
+  auto pot = eonc::helpers::makePotential(params.potential_options().potential,
+                                          params);
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::RGPOT);
 
@@ -91,8 +91,8 @@ TEST_CASE("RgpotPot in-process cpmdc force (no potserv)",
   ParametersLoadAccess::rgpot_options(params).charge = 0;
   ParametersLoadAccess::rgpot_options(params).multiplicity = 1;
 
-  auto pot =
-      eonc::helpers::makePotential(params.potential_options().potential, params);
+  auto pot = eonc::helpers::makePotential(params.potential_options().potential,
+                                          params);
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::RGPOT);
 

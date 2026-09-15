@@ -367,7 +367,7 @@ private:
   VectorXi atomicNrs;
   AtomMatrix isFixed; // Nx3; 1.0 if that axis is fixed, 0.0 if free
   Eigen::Matrix<std::int64_t, Eigen::Dynamic, 1>
-      atomIndex; // original atom index from .con column 5
+      atomIndex;                  // original atom index from .con column 5
   std::vector<long> fileToMatter; // CON file row -> Matter row
   mutable AtomMatrix freeMask; // cached Nx3 mask (1.0 for free, 0.0 for fixed)
   mutable AtomMatrix maskedForces;      // cached forces with fixed atoms zeroed

@@ -40,8 +40,11 @@ public:
       : ptype{a_ptype}, m_registry_id{PotRegistry::get().on_created(a_ptype)},
         m_created_at{PotRegistry::Clock::now()}, forceCallCounter{0} {}
 
+  // Out-of-line in eoncbase (PotentialParams.cpp) so shared plugins
+  // that link only eoncbase get the symbols. This header only
+  // forward-declares Parameters (header-surface contract).
   Potential(PotType a_ptype, const Parameters &p);
-  Potential(const Parameters &a_params);
+  explicit Potential(const Parameters &a_params);
 
   virtual ~Potential() {
     PotRegistry::get().on_destroyed(m_registry_id, ptype, forceCallCounter,
@@ -58,8 +61,7 @@ public:
   void force(std::span<const double> positions, std::span<const int> atomicNrs,
              std::span<double> forces, double *energy, double *variance,
              std::span<const double> box) {
-    if (positions.size() % 3 != 0 ||
-        positions.size() / 3 != atomicNrs.size() ||
+    if (positions.size() % 3 != 0 || positions.size() / 3 != atomicNrs.size() ||
         forces.size() != positions.size() || box.size() != 9) {
       throw std::invalid_argument("Potential::force span size mismatch");
     }

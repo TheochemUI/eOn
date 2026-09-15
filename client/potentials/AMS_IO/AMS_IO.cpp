@@ -11,6 +11,7 @@
 */
 
 #include "eon/potentials/AMS_IO/AMS_IO.h"
+#include "eon/Parameters.h"
 #include "eon/potentials/ExternalCommand.h"
 
 #include <cstddef>
@@ -99,8 +100,8 @@ void AMS_IO::passToSystem(long N, const double *R, const int *atomicNrs,
   out << " Atoms\n";
   for (long i = 0; i < N; i++) {
     out << std::format("  {}\t{:.19f}\t{:.19f}\t{:.19f}\n",
-                       symbol_for_z(atomicNrs[i]), R[i * 3 + 0],
-                       R[i * 3 + 1], R[i * 3 + 2]);
+                       symbol_for_z(atomicNrs[i]), R[i * 3 + 0], R[i * 3 + 1],
+                       R[i * 3 + 2]);
   }
   out << " End\n";
   if (!model.empty() || !forcefield.empty()) {

@@ -49,10 +49,10 @@ private:
   //! Canonical averages over one thermostatted, plane-constrained
   //! sampling block.
   struct PlaneAverages {
-    double fn{0.0};      //!< <F.n>
-    VectorXd rotNorm;    //!< <(n.F) R / (alpha |R|^2)>, drives rotation
-    VectorXd rotRaw;     //!< <(n.F) R>, integrand of Eq 19
-    VectorXd pos;        //!< <r>, anchors Eq 18 and the Eq 12 restart
+    double fn{0.0};   //!< <F.n>
+    VectorXd rotNorm; //!< <(n.F) R / (alpha |R|^2)>, drives rotation
+    VectorXd rotRaw;  //!< <(n.F) R>, integrand of Eq 19
+    VectorXd pos;     //!< <r>, anchors Eq 18 and the Eq 12 restart
   };
 
   PlaneAverages samplePlane(Matter &matter, const VectorXd &gamma,

@@ -29,7 +29,7 @@ namespace config {
 int load_ini(::INIReader &, Parameters &);
 void apply_ssot_defaults(Parameters &);
 void validate_and_link(Parameters &);
-}
+} // namespace config
 struct ParametersLoadAccess;
 
 class Parameters {
@@ -102,7 +102,9 @@ public:
   std::uintptr_t mpi_client_comm() const {
     return potential_options_.MPIClientComm;
   }
-  void set_mpi_potential_rank(int rank) { potential_options_.MPIPotentialRank = rank; }
+  void set_mpi_potential_rank(int rank) {
+    potential_options_.MPIPotentialRank = rank;
+  }
 
   friend int config::load_ini(::INIReader &, Parameters &);
   friend void config::apply_ssot_defaults(Parameters &);
@@ -250,9 +252,13 @@ private:
 /// Write hole for INI/JSON loaders and nanobind property setters.
 struct ParametersLoadAccess {
   static constants_t &constants(Parameters &p) { return p.constants_; }
-  static const constants_t &constants(const Parameters &p) { return p.constants_; }
+  static const constants_t &constants(const Parameters &p) {
+    return p.constants_;
+  }
   static main_options_t &main_options(Parameters &p) { return p.main_options_; }
-  static const main_options_t &main_options(const Parameters &p) { return p.main_options_; }
+  static const main_options_t &main_options(const Parameters &p) {
+    return p.main_options_;
+  }
   static potential_options_t &potential_options(Parameters &p) {
     return p.potential_options_;
   }
@@ -260,15 +266,25 @@ struct ParametersLoadAccess {
     return p.potential_options_;
   }
   static ams_options_t &ams_options(Parameters &p) { return p.ams_options_; }
-  static const ams_options_t &ams_options(const Parameters &p) { return p.ams_options_; }
+  static const ams_options_t &ams_options(const Parameters &p) {
+    return p.ams_options_;
+  }
   static xtb_options_t &xtb_options(Parameters &p) { return p.xtb_options_; }
-  static const xtb_options_t &xtb_options(const Parameters &p) { return p.xtb_options_; }
+  static const xtb_options_t &xtb_options(const Parameters &p) {
+    return p.xtb_options_;
+  }
   static zbl_options_t &zbl_options(Parameters &p) { return p.zbl_options_; }
-  static const zbl_options_t &zbl_options(const Parameters &p) { return p.zbl_options_; }
+  static const zbl_options_t &zbl_options(const Parameters &p) {
+    return p.zbl_options_;
+  }
   static dftd_options_t &dftd_options(Parameters &p) { return p.dftd_options_; }
-  static const dftd_options_t &dftd_options(const Parameters &p) { return p.dftd_options_; }
+  static const dftd_options_t &dftd_options(const Parameters &p) {
+    return p.dftd_options_;
+  }
   static expr_options_t &expr_options(Parameters &p) { return p.expr_options_; }
-  static const expr_options_t &expr_options(const Parameters &p) { return p.expr_options_; }
+  static const expr_options_t &expr_options(const Parameters &p) {
+    return p.expr_options_;
+  }
   static mopac_options_t &mopac_options(Parameters &p) {
     return p.mopac_options_;
   }
@@ -278,7 +294,8 @@ struct ParametersLoadAccess {
   static socket_nwchem_options_t &socket_nwchem_options(Parameters &p) {
     return p.socket_nwchem_options_;
   }
-  static const socket_nwchem_options_t &socket_nwchem_options(const Parameters &p) {
+  static const socket_nwchem_options_t &
+  socket_nwchem_options(const Parameters &p) {
     return p.socket_nwchem_options_;
   }
   static rgpot_options_t &rgpot_options(Parameters &p) {
@@ -298,13 +315,15 @@ struct ParametersLoadAccess {
   static process_search_options_t &process_search_options(Parameters &p) {
     return p.process_search_options_;
   }
-  static const process_search_options_t &process_search_options(const Parameters &p) {
+  static const process_search_options_t &
+  process_search_options(const Parameters &p) {
     return p.process_search_options_;
   }
   static saddle_search_options_t &saddle_search_options(Parameters &p) {
     return p.saddle_search_options_;
   }
-  static const saddle_search_options_t &saddle_search_options(const Parameters &p) {
+  static const saddle_search_options_t &
+  saddle_search_options(const Parameters &p) {
     return p.saddle_search_options_;
   }
   static optimizer_options_t &optimizer_options(Parameters &p) {
@@ -328,7 +347,8 @@ struct ParametersLoadAccess {
   static gp_surrogate_options_t &gp_surrogate_options(Parameters &p) {
     return p.gp_surrogate_options_;
   }
-  static const gp_surrogate_options_t &gp_surrogate_options(const Parameters &p) {
+  static const gp_surrogate_options_t &
+  gp_surrogate_options(const Parameters &p) {
     return p.gp_surrogate_options_;
   }
   static catlearn_options_t &catlearn_options(Parameters &p) {
@@ -380,7 +400,9 @@ struct ParametersLoadAccess {
     return p.hessian_options_;
   }
   static neb_options_t &neb_options(Parameters &p) { return p.neb_options_; }
-  static const neb_options_t &neb_options(const Parameters &p) { return p.neb_options_; }
+  static const neb_options_t &neb_options(const Parameters &p) {
+    return p.neb_options_;
+  }
   static dynamics_options_t &dynamics_options(Parameters &p) {
     return p.dynamics_options_;
   }
@@ -390,11 +412,14 @@ struct ParametersLoadAccess {
   static parallel_replica_options_t &parallel_replica_options(Parameters &p) {
     return p.parallel_replica_options_;
   }
-  static const parallel_replica_options_t &parallel_replica_options(const Parameters &p) {
+  static const parallel_replica_options_t &
+  parallel_replica_options(const Parameters &p) {
     return p.parallel_replica_options_;
   }
   static tad_options_t &tad_options(Parameters &p) { return p.tad_options_; }
-  static const tad_options_t &tad_options(const Parameters &p) { return p.tad_options_; }
+  static const tad_options_t &tad_options(const Parameters &p) {
+    return p.tad_options_;
+  }
   static thermostat_options_t &thermostat_options(Parameters &p) {
     return p.thermostat_options_;
   }
@@ -404,19 +429,22 @@ struct ParametersLoadAccess {
   static replica_exchange_options_t &replica_exchange_options(Parameters &p) {
     return p.replica_exchange_options_;
   }
-  static const replica_exchange_options_t &replica_exchange_options(const Parameters &p) {
+  static const replica_exchange_options_t &
+  replica_exchange_options(const Parameters &p) {
     return p.replica_exchange_options_;
   }
   static hyperdynamics_options_t &hyperdynamics_options(Parameters &p) {
     return p.hyperdynamics_options_;
   }
-  static const hyperdynamics_options_t &hyperdynamics_options(const Parameters &p) {
+  static const hyperdynamics_options_t &
+  hyperdynamics_options(const Parameters &p) {
     return p.hyperdynamics_options_;
   }
   static basin_hopping_options_t &basin_hopping_options(Parameters &p) {
     return p.basin_hopping_options_;
   }
-  static const basin_hopping_options_t &basin_hopping_options(const Parameters &p) {
+  static const basin_hopping_options_t &
+  basin_hopping_options(const Parameters &p) {
     return p.basin_hopping_options_;
   }
   static global_optimization_options_t &
@@ -434,7 +462,9 @@ struct ParametersLoadAccess {
     return p.monte_carlo_options_;
   }
   static bgsd_options_t &bgsd_options(Parameters &p) { return p.bgsd_options_; }
-  static const bgsd_options_t &bgsd_options(const Parameters &p) { return p.bgsd_options_; }
+  static const bgsd_options_t &bgsd_options(const Parameters &p) {
+    return p.bgsd_options_;
+  }
   static serve_options_t &serve_options(Parameters &p) {
     return p.serve_options_;
   }
@@ -442,9 +472,13 @@ struct ParametersLoadAccess {
     return p.serve_options_;
   }
   static artn_options_t &artn_options(Parameters &p) { return p.artn_options_; }
-  static const artn_options_t &artn_options(const Parameters &p) { return p.artn_options_; }
+  static const artn_options_t &artn_options(const Parameters &p) {
+    return p.artn_options_;
+  }
   static ira_options_t &ira_options(Parameters &p) { return p.ira_options_; }
-  static const ira_options_t &ira_options(const Parameters &p) { return p.ira_options_; }
+  static const ira_options_t &ira_options(const Parameters &p) {
+    return p.ira_options_;
+  }
   static debug_options_t &debug_options(Parameters &p) {
     return p.debug_options_;
   }

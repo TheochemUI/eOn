@@ -33,11 +33,12 @@ double const thetae_ = 104.52 * unit_system::DEGREE;
 double const charge_ = 0.520 * unit_system::ECHARGE; ///< Charge on one hydrogen
 double const charge2_ = charge_ * charge_;           ///< Square of # charge_
 double const sigma_ =
-    3.154 * unit_system::ANGSTROM; ///< Lennard-Jones sigma between oxygen atoms.
+    3.154 *
+    unit_system::ANGSTROM; ///< Lennard-Jones sigma between oxygen atoms.
 double const epsilon_ =
     78.0 * unit_system::KELVIN; ///< Lennard-Jones epsilon between oxygen atoms.
 double const ron_ = 0.150 * unit_system::ANGSTROM; ///< Distance between oxygen
-                                                  ///< and the middle charge N.
+                                                   ///< and the middle charge N.
 double const rok_ =
     re_ * std::cos(thetae_ / 2.0); ///< Distance between oxygen and the centre
                                    ///< of the two hydrogen atoms (point K).

@@ -189,13 +189,14 @@ TEST_CASE_METHOD(EpiCentersFixture,
 TEST_CASE("Parameters default displace_atom_list is empty",
           "[Parameters][displace_atom_list]") {
   Parameters params;
-  REQUIRE(params.saddle_search_options().displace_atom_list.empty());
+  REQUIRE(ParametersLoadAccess::saddle_search_options(params)
+              .displace_atom_list.empty());
 }
 
 TEST_CASE("Parameters default displace_type is load",
           "[Parameters][displace_type]") {
   Parameters params;
-  REQUIRE(params.saddle_search_options().displace_type ==
+  REQUIRE(ParametersLoadAccess::saddle_search_options(params).displace_type ==
           std::string(eonc::EpiCenters::DISP_LOAD));
 }
 
@@ -216,12 +217,16 @@ TEST_CASE("Parameters parses comma-separated displace_atom_list from INI",
   fclose(tmpf);
 
   REQUIRE(err == 0);
-  REQUIRE(params.saddle_search_options().displace_type ==
+  REQUIRE(ParametersLoadAccess::saddle_search_options(params).displace_type ==
           std::string(eonc::EpiCenters::DISP_LISTED_ATOMS));
-  REQUIRE(params.saddle_search_options().displace_atom_list.size() == 3);
-  REQUIRE(params.saddle_search_options().displace_atom_list[0] == 10);
-  REQUIRE(params.saddle_search_options().displace_atom_list[1] == 20);
-  REQUIRE(params.saddle_search_options().displace_atom_list[2] == 30);
+  REQUIRE(ParametersLoadAccess::saddle_search_options(params)
+              .displace_atom_list.size() == 3);
+  REQUIRE(ParametersLoadAccess::saddle_search_options(params)
+              .displace_atom_list[0] == 10);
+  REQUIRE(ParametersLoadAccess::saddle_search_options(params)
+              .displace_atom_list[1] == 20);
+  REQUIRE(ParametersLoadAccess::saddle_search_options(params)
+              .displace_atom_list[2] == 30);
 }
 
 TEST_CASE("Parameters handles single-element displace_atom_list",
@@ -240,8 +245,10 @@ TEST_CASE("Parameters handles single-element displace_atom_list",
   fclose(tmpf);
 
   REQUIRE(err == 0);
-  REQUIRE(params.saddle_search_options().displace_atom_list.size() == 1);
-  REQUIRE(params.saddle_search_options().displace_atom_list[0] == 42);
+  REQUIRE(ParametersLoadAccess::saddle_search_options(params)
+              .displace_atom_list.size() == 1);
+  REQUIRE(ParametersLoadAccess::saddle_search_options(params)
+              .displace_atom_list[0] == 42);
 }
 
 TEST_CASE("Parameters handles negative indices in displace_atom_list",
@@ -259,10 +266,14 @@ TEST_CASE("Parameters handles negative indices in displace_atom_list",
   fclose(tmpf);
 
   REQUIRE(err == 0);
-  REQUIRE(params.saddle_search_options().displace_atom_list.size() == 3);
-  REQUIRE(params.saddle_search_options().displace_atom_list[0] == 5);
-  REQUIRE(params.saddle_search_options().displace_atom_list[1] == -1);
-  REQUIRE(params.saddle_search_options().displace_atom_list[2] == 10);
+  REQUIRE(ParametersLoadAccess::saddle_search_options(params)
+              .displace_atom_list.size() == 3);
+  REQUIRE(ParametersLoadAccess::saddle_search_options(params)
+              .displace_atom_list[0] == 5);
+  REQUIRE(ParametersLoadAccess::saddle_search_options(params)
+              .displace_atom_list[1] == -1);
+  REQUIRE(ParametersLoadAccess::saddle_search_options(params)
+              .displace_atom_list[2] == 10);
 }
 
 TEST_CASE("Parameters empty displace_atom_list stays empty",
@@ -280,7 +291,8 @@ TEST_CASE("Parameters empty displace_atom_list stays empty",
   fclose(tmpf);
 
   REQUIRE(err == 0);
-  REQUIRE(params.saddle_search_options().displace_atom_list.empty());
+  REQUIRE(ParametersLoadAccess::saddle_search_options(params)
+              .displace_atom_list.empty());
 }
 
 TEST_CASE("Parameters listed_atoms is whitelisted in displace_type",
@@ -299,7 +311,7 @@ TEST_CASE("Parameters listed_atoms is whitelisted in displace_type",
 
   REQUIRE(err == 0);
   // Should NOT fall back to "load"
-  REQUIRE(params.saddle_search_options().displace_type ==
+  REQUIRE(ParametersLoadAccess::saddle_search_options(params).displace_type ==
           std::string(eonc::EpiCenters::DISP_LISTED_ATOMS));
 }
 
@@ -318,7 +330,7 @@ TEST_CASE("Parameters unknown displace_type falls back to load",
   fclose(tmpf);
 
   REQUIRE(err == 0);
-  REQUIRE(params.saddle_search_options().displace_type ==
+  REQUIRE(ParametersLoadAccess::saddle_search_options(params).displace_type ==
           std::string(eonc::EpiCenters::DISP_LOAD));
 }
 
@@ -349,7 +361,8 @@ TEST_CASE("Parameters all valid displace_types are accepted",
     REQUIRE(err == 0);
     // "load" is whitelisted only implicitly (it's the fallback),
     // but it should still be preserved if set explicitly
-    REQUIRE(params.saddle_search_options().displace_type == dtype);
+    REQUIRE(ParametersLoadAccess::saddle_search_options(params).displace_type ==
+            dtype);
   }
 }
 

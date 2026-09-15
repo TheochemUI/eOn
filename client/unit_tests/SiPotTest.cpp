@@ -63,7 +63,8 @@ TEST_CASE("SW potential returns finite energy and forces on Si diamond",
 TEST_CASE("Tersoff energy matches SVN on Si diamond", "[pot][tersoff][si]") {
   SIPOT_REQUIRE_POS_CON();
   Parameters params;
-  ParametersLoadAccess::potential_options(params).potential = PotType::TERSOFF_SI;
+  ParametersLoadAccess::potential_options(params).potential =
+      PotType::TERSOFF_SI;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
@@ -97,7 +98,8 @@ TEST_CASE("EDIP energy matches SVN on Si diamond", "[pot][edip][si]") {
 TEST_CASE("Lenosky energy matches SVN on Si diamond", "[pot][lenosky][si]") {
   SIPOT_REQUIRE_POS_CON();
   Parameters params;
-  ParametersLoadAccess::potential_options(params).potential = PotType::LENOSKY_SI;
+  ParametersLoadAccess::potential_options(params).potential =
+      PotType::LENOSKY_SI;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("pos.con"));
@@ -123,7 +125,8 @@ TEST_CASE("SW and Tersoff give different energies on same Si system",
   double e_sw = m1->getPotentialEnergy();
   SIPOT_REQUIRE_LOADED(e_sw, "sw_si");
 
-  ParametersLoadAccess::potential_options(params).potential = PotType::TERSOFF_SI;
+  ParametersLoadAccess::potential_options(params).potential =
+      PotType::TERSOFF_SI;
   auto pot_tersoff = eonc::helpers::makePotential(params);
   auto m2 = std::make_shared<Matter>(pot_tersoff, params);
   m2->con2matter(std::string("pos.con"));

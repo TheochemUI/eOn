@@ -24,7 +24,8 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
   os << "\n[Main]" << std::endl;
   os << "kB: " << params.constants().kB << std::endl;
   os << "timeUnit: " << params.constants().timeUnit << std::endl;
-  os << "job: " << magic_enum::enum_name(params.main_options().job) << std::endl;
+  os << "job: " << magic_enum::enum_name(params.main_options().job)
+     << std::endl;
   os << "randomSeed: " << params.main_options().randomSeed << std::endl;
   os << "temperature: " << params.main_options().temperature << std::endl;
   os << "quiet: " << std::boolalpha << params.main_options().quiet << std::endl;
@@ -41,7 +42,8 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << params.main_options().removeNetForce << std::endl;
   os << "\n[Potential]" << std::endl;
   os << "potential: "
-     << magic_enum::enum_name(params.potential_options().potential) << std::endl;
+     << magic_enum::enum_name(params.potential_options().potential)
+     << std::endl;
   os << "MPIPollPeriod: " << params.potential_options().MPIPollPeriod
      << std::endl;
   os << "MPIPotentialRank: " << params.potential_options().MPIPotentialRank
@@ -68,7 +70,8 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
   os << "amshome: " << params.ams_options().env.amshome << std::endl;
   os << "scm_tmpdir: " << params.ams_options().env.scm_tmpdir << std::endl;
   os << "scmlicense: " << params.ams_options().env.scmlicense << std::endl;
-  os << "scm_pythondir: " << params.ams_options().env.scm_pythondir << std::endl;
+  os << "scm_pythondir: " << params.ams_options().env.scm_pythondir
+     << std::endl;
   os << "amsbin: " << params.ams_options().env.amsbin << std::endl;
   os << "amsresources: " << params.ams_options().env.amsresources << std::endl;
 
@@ -102,131 +105,205 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
 
   os << "\n[Saddle Search]" << std::endl;
   os << "saddleMaxJumpAttempts: "
-     << params.saddle_search_options().max_jump_attempts << std::endl;
-  os << "saddleMaxIterations: " << params.saddle_search_options().max_iterations
+     << ParametersLoadAccess::saddle_search_options(params).max_jump_attempts
      << std::endl;
-  os << "saddleMethod: " << params.saddle_search_options().method << std::endl;
-  os << "saddleMinmodeMethod: " << params.saddle_search_options().minmode_method
+  os << "saddleMaxIterations: "
+     << ParametersLoadAccess::saddle_search_options(params).max_iterations
      << std::endl;
-  os << "saddleDisplaceType: " << params.saddle_search_options().displace_type
+  os << "saddleMethod: "
+     << ParametersLoadAccess::saddle_search_options(params).method << std::endl;
+  os << "saddleMinmodeMethod: "
+     << ParametersLoadAccess::saddle_search_options(params).minmode_method
      << std::endl;
-  os << "saddleMaxEnergy: " << params.saddle_search_options().max_energy
+  os << "saddleDisplaceType: "
+     << ParametersLoadAccess::saddle_search_options(params).displace_type
+     << std::endl;
+  os << "saddleMaxEnergy: "
+     << ParametersLoadAccess::saddle_search_options(params).max_energy
      << std::endl;
   os << "saddleDisplaceMagnitude: "
-     << params.saddle_search_options().displace_magnitude << std::endl;
-  os << "saddleMaxSingleDisplace: "
-     << params.saddle_search_options().max_single_displace << std::endl;
-  os << "saddleDisplaceRadius: " << params.saddle_search_options().displace_radius
+     << ParametersLoadAccess::saddle_search_options(params).displace_magnitude
      << std::endl;
-  os << "saddleConvergedForce: " << params.saddle_search_options().converged_force
+  os << "saddleMaxSingleDisplace: "
+     << ParametersLoadAccess::saddle_search_options(params).max_single_displace
+     << std::endl;
+  os << "saddleDisplaceRadius: "
+     << ParametersLoadAccess::saddle_search_options(params).displace_radius
+     << std::endl;
+  os << "saddleConvergedForce: "
+     << ParametersLoadAccess::saddle_search_options(params).converged_force
      << std::endl;
   os << "saddlePerpForceRatio: "
-     << params.saddle_search_options().perp_force_ratio << std::endl;
+     << ParametersLoadAccess::saddle_search_options(params).perp_force_ratio
+     << std::endl;
   os << "saddleNonnegativeDisplacementAbort: " << std::boolalpha
-     << params.saddle_search_options().nonnegative_displacement_abort
+     << ParametersLoadAccess::saddle_search_options(params)
+            .nonnegative_displacement_abort
      << std::endl;
   os << "saddleNonlocalCountAbort: "
-     << params.saddle_search_options().nonlocal_count_abort << std::endl;
+     << ParametersLoadAccess::saddle_search_options(params).nonlocal_count_abort
+     << std::endl;
   os << "saddleNonlocalDistanceAbort: "
-     << params.saddle_search_options().nonlocal_distance_abort << std::endl;
+     << ParametersLoadAccess::saddle_search_options(params)
+            .nonlocal_distance_abort
+     << std::endl;
   os << "saddleRemoveRotation: " << std::boolalpha
-     << params.saddle_search_options().remove_rotation << std::endl;
+     << ParametersLoadAccess::saddle_search_options(params).remove_rotation
+     << std::endl;
   os << "saddleDynamicsTemperature: "
-     << params.saddle_search_options().dynamics.temperature << std::endl;
+     << ParametersLoadAccess::saddle_search_options(params).dynamics.temperature
+     << std::endl;
   os << "saddleDynamicsStateCheckIntervalInput: "
-     << params.saddle_search_options().dynamics.state_check_interval_input
+     << ParametersLoadAccess::saddle_search_options(params)
+            .dynamics.state_check_interval_input
      << std::endl;
   os << "saddleDynamicsStateCheckInterval: "
-     << params.saddle_search_options().dynamics.state_check_interval << std::endl;
+     << ParametersLoadAccess::saddle_search_options(params)
+            .dynamics.state_check_interval
+     << std::endl;
   os << "saddleDynamicsRecordIntervalInput: "
-     << params.saddle_search_options().dynamics.record_interval_input
+     << ParametersLoadAccess::saddle_search_options(params)
+            .dynamics.record_interval_input
      << std::endl;
   os << "saddleDynamicsRecordInterval: "
-     << params.saddle_search_options().dynamics.record_interval << std::endl;
+     << ParametersLoadAccess::saddle_search_options(params)
+            .dynamics.record_interval
+     << std::endl;
   os << "saddleDynamicsLinearInterpolation: " << std::boolalpha
-     << params.saddle_search_options().dynamics.linear_interpolation << std::endl;
+     << ParametersLoadAccess::saddle_search_options(params)
+            .dynamics.linear_interpolation
+     << std::endl;
   os << "saddleDynamicsMaxInitCurvature: "
-     << params.saddle_search_options().dynamics.max_init_curvature << std::endl;
+     << ParametersLoadAccess::saddle_search_options(params)
+            .dynamics.max_init_curvature
+     << std::endl;
   os << "saddleConfinePositive: " << std::boolalpha
-     << params.saddle_search_options().confine_positive.enabled << std::endl;
+     << ParametersLoadAccess::saddle_search_options(params)
+            .confine_positive.enabled
+     << std::endl;
   os << "saddleBowlBreakout: " << std::boolalpha
-     << params.saddle_search_options().confine_positive.bowl_breakout
+     << ParametersLoadAccess::saddle_search_options(params)
+            .confine_positive.bowl_breakout
      << std::endl;
   os << "saddleBowlActive: "
-     << params.saddle_search_options().confine_positive.bowl_active << std::endl;
+     << ParametersLoadAccess::saddle_search_options(params)
+            .confine_positive.bowl_active
+     << std::endl;
   os << "saddleConfinePositiveMinForce: "
-     << params.saddle_search_options().confine_positive.min_force << std::endl;
+     << ParametersLoadAccess::saddle_search_options(params)
+            .confine_positive.min_force
+     << std::endl;
   os << "saddleConfinePositiveScaleRatio: "
-     << params.saddle_search_options().confine_positive.scale_ratio << std::endl;
+     << ParametersLoadAccess::saddle_search_options(params)
+            .confine_positive.scale_ratio
+     << std::endl;
   os << "saddleConfinePositiveBoost: "
-     << params.saddle_search_options().confine_positive.boost << std::endl;
+     << ParametersLoadAccess::saddle_search_options(params)
+            .confine_positive.boost
+     << std::endl;
   os << "saddleConfinePositiveMinActive: "
-     << params.saddle_search_options().confine_positive.min_active << std::endl;
+     << ParametersLoadAccess::saddle_search_options(params)
+            .confine_positive.min_active
+     << std::endl;
   os << "saddleZeroModeAbortCurvature: "
-     << params.saddle_search_options().zero_mode_abort_curvature << std::endl;
+     << ParametersLoadAccess::saddle_search_options(params)
+            .zero_mode_abort_curvature
+     << std::endl;
   os << "saddleDisplaceAtomList: [";
-  for (size_t i = 0; i < params.saddle_search_options().displace_atom_list.size();
+  for (size_t i = 0; i < ParametersLoadAccess::saddle_search_options(params)
+                             .displace_atom_list.size();
        ++i) {
     if (i > 0)
       os << ", ";
-    os << params.saddle_search_options().displace_atom_list[i];
+    os << ParametersLoadAccess::saddle_search_options(params)
+              .displace_atom_list[i];
   }
   os << "]" << std::endl;
 
   os << "\n[Optimizers]" << std::endl;
-  os << "optMethod: " << magic_enum::enum_name(params.optimizer_options().method)
+  os << "optMethod: "
+     << magic_enum::enum_name(
+            ParametersLoadAccess::optimizer_options(params).method)
      << std::endl;
-  os << "optConvergenceMetric: " << params.optimizer_options().convergence_metric
+  os << "optConvergenceMetric: "
+     << ParametersLoadAccess::optimizer_options(params).convergence_metric
      << std::endl;
   os << "optConvergenceMetricLabel: "
-     << params.optimizer_options().convergence_metric_label << std::endl;
-  os << "optMaxIterations: " << params.optimizer_options().max_iterations
+     << ParametersLoadAccess::optimizer_options(params).convergence_metric_label
      << std::endl;
-  os << "optMaxMove: " << params.optimizer_options().max_move << std::endl;
-  os << "optConvergedForce: " << params.optimizer_options().converged_force
+  os << "optMaxIterations: "
+     << ParametersLoadAccess::optimizer_options(params).max_iterations
      << std::endl;
-  os << "optTimeStepInput: " << params.optimizer_options().time_step_input
+  os << "optMaxMove: "
+     << ParametersLoadAccess::optimizer_options(params).max_move << std::endl;
+  os << "optConvergedForce: "
+     << ParametersLoadAccess::optimizer_options(params).converged_force
      << std::endl;
-  os << "optTimeStep: " << params.optimizer_options().time_step << std::endl;
-  os << "optMaxTimeStepInput: " << params.optimizer_options().max_time_step_input
+  os << "optTimeStepInput: "
+     << ParametersLoadAccess::optimizer_options(params).time_step_input
      << std::endl;
-  os << "optMaxTimeStep: " << params.optimizer_options().max_time_step
+  os << "optTimeStep: "
+     << ParametersLoadAccess::optimizer_options(params).time_step << std::endl;
+  os << "optMaxTimeStepInput: "
+     << ParametersLoadAccess::optimizer_options(params).max_time_step_input
      << std::endl;
-  os << "optLBFGSMemory: " << params.optimizer_options().lbfgs.memory
+  os << "optMaxTimeStep: "
+     << ParametersLoadAccess::optimizer_options(params).max_time_step
+     << std::endl;
+  os << "optLBFGSMemory: "
+     << ParametersLoadAccess::optimizer_options(params).lbfgs.memory
      << std::endl;
   os << "optLBFGSInverseCurvature: "
-     << params.optimizer_options().lbfgs.inverse_curvature << std::endl;
+     << ParametersLoadAccess::optimizer_options(params).lbfgs.inverse_curvature
+     << std::endl;
   os << "optLBFGSMaxInverseCurvature: "
-     << params.optimizer_options().lbfgs.max_inverse_curvature << std::endl;
+     << ParametersLoadAccess::optimizer_options(params)
+            .lbfgs.max_inverse_curvature
+     << std::endl;
   os << "optLBFGSAutoScale: " << std::boolalpha
-     << params.optimizer_options().lbfgs.auto_scale << std::endl;
+     << ParametersLoadAccess::optimizer_options(params).lbfgs.auto_scale
+     << std::endl;
   os << "optLBFGSAngleReset: " << std::boolalpha
-     << params.optimizer_options().lbfgs.angle_reset << std::endl;
+     << ParametersLoadAccess::optimizer_options(params).lbfgs.angle_reset
+     << std::endl;
   os << "optLBFGSDistanceReset: " << std::boolalpha
-     << params.optimizer_options().lbfgs.distance_reset << std::endl;
+     << ParametersLoadAccess::optimizer_options(params).lbfgs.distance_reset
+     << std::endl;
   os << "optQMSteepestDecent: " << std::boolalpha
-     << params.optimizer_options().quickmin.steepest_descent << std::endl;
+     << ParametersLoadAccess::optimizer_options(params)
+            .quickmin.steepest_descent
+     << std::endl;
   os << "optCGNoOvershooting: " << std::boolalpha
-     << params.optimizer_options().cg.no_overshooting << std::endl;
+     << ParametersLoadAccess::optimizer_options(params).cg.no_overshooting
+     << std::endl;
   os << "optCGKnockOutMaxMove: " << std::boolalpha
-     << params.optimizer_options().cg.knock_out_max_move << std::endl;
+     << ParametersLoadAccess::optimizer_options(params).cg.knock_out_max_move
+     << std::endl;
   os << "optCGLineSearch: " << std::boolalpha
-     << params.optimizer_options().cg.line_search << std::endl;
-  os << "optCGLineConverged: " << params.optimizer_options().cg.line_converged
+     << ParametersLoadAccess::optimizer_options(params).cg.line_search
+     << std::endl;
+  os << "optCGLineConverged: "
+     << ParametersLoadAccess::optimizer_options(params).cg.line_converged
      << std::endl;
   os << "optCGLineSearchMaxIter: "
-     << params.optimizer_options().cg.line_search_max_iter << std::endl;
+     << ParametersLoadAccess::optimizer_options(params).cg.line_search_max_iter
+     << std::endl;
   os << "optCGMaxIterBeforeReset: "
-     << params.optimizer_options().cg.max_iter_before_reset << std::endl;
-  os << "optSDAlpha: " << params.optimizer_options().sd.alpha << std::endl;
+     << ParametersLoadAccess::optimizer_options(params).cg.max_iter_before_reset
+     << std::endl;
+  os << "optSDAlpha: "
+     << ParametersLoadAccess::optimizer_options(params).sd.alpha << std::endl;
   os << "optSDTwoPoint: " << std::boolalpha
-     << params.optimizer_options().sd.two_point << std::endl;
+     << ParametersLoadAccess::optimizer_options(params).sd.two_point
+     << std::endl;
 
   os << "\n[Refine]" << std::endl;
   os << "refineOptMethod: "
-     << magic_enum::enum_name(params.optimizer_options().refine.method)
+     << magic_enum::enum_name(
+            ParametersLoadAccess::optimizer_options(params).refine.method)
      << std::endl;
-  os << "refineThreshold: " << params.optimizer_options().refine.threshold
+  os << "refineThreshold: "
+     << ParametersLoadAccess::optimizer_options(params).refine.threshold
      << std::endl;
 
   os << "\n[Dimer]" << std::endl;
@@ -254,8 +331,8 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << std::endl;
   os << "gprDimerConvergedAngle: " << params.gpr_dimer_options().converged_angle
      << std::endl;
-  os << "gprDimerRelaxConvAngle: " << params.gpr_dimer_options().relax_conv_angle
-     << std::endl;
+  os << "gprDimerRelaxConvAngle: "
+     << params.gpr_dimer_options().relax_conv_angle << std::endl;
   os << "gprDimerInitRotationsMax: "
      << params.gpr_dimer_options().init_rotations_max << std::endl;
   os << "gprDimerRelaxRotationsMax: "
@@ -270,14 +347,16 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << params.gpr_dimer_options().midpoint_max_disp << std::endl;
   os << "gprDimerRotOptMethod: " << params.gpr_dimer_options().rot_opt_method
      << std::endl;
-  os << "gprDimerTransOptMethod: " << params.gpr_dimer_options().trans_opt_method
-     << std::endl;
+  os << "gprDimerTransOptMethod: "
+     << params.gpr_dimer_options().trans_opt_method << std::endl;
   os << "gprActiveRadius: " << params.gpr_dimer_options().active_radius
      << std::endl;
   os << "gprDimerSep: " << params.gpr_dimer_options().dimer_sep << std::endl;
-  os << "gprDimerConvStep: " << params.gpr_dimer_options().conv_step << std::endl;
+  os << "gprDimerConvStep: " << params.gpr_dimer_options().conv_step
+     << std::endl;
   os << "gprDimerMaxStep: " << params.gpr_dimer_options().max_step << std::endl;
-  os << "gprForceThreshold: " << params.saddle_search_options().converged_force
+  os << "gprForceThreshold: "
+     << ParametersLoadAccess::saddle_search_options(params).converged_force
      << std::endl;
   os << "gprDimerRatioAtLimit: " << params.gpr_dimer_options().ratio_at_limit
      << std::endl;
@@ -311,18 +390,18 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << std::endl;
   os << "gprOptLambdaLimit: "
      << params.gpr_dimer_options().opt_params.lambda_limit << std::endl;
-  os << "gprOptLambdaInit: " << params.gpr_dimer_options().opt_params.lambda_init
-     << std::endl;
+  os << "gprOptLambdaInit: "
+     << params.gpr_dimer_options().opt_params.lambda_init << std::endl;
   os << "gprUsePrune: " << std::boolalpha
      << params.gpr_dimer_options().prune_params.use_prune << std::endl;
   os << "gprPruneBegin: " << params.gpr_dimer_options().prune_params.begin
      << std::endl;
   os << "gprPruneNVals: " << params.gpr_dimer_options().prune_params.n_vals
      << std::endl;
-  os << "gprPruneThreshold: " << params.gpr_dimer_options().prune_params.threshold
-     << std::endl;
-  os << "gprReportLevel: " << params.gpr_dimer_options().debug_params.report_level
-     << std::endl;
+  os << "gprPruneThreshold: "
+     << params.gpr_dimer_options().prune_params.threshold << std::endl;
+  os << "gprReportLevel: "
+     << params.gpr_dimer_options().debug_params.report_level << std::endl;
   os << "gprDebugLevel: " << params.gpr_dimer_options().debug_params.debug_level
      << std::endl;
   os << "gprDebugOutDir: " << params.gpr_dimer_options().debug_params.out_dir
@@ -331,19 +410,22 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << std::endl;
   os << "gprDebugEnergyFile: "
      << params.gpr_dimer_options().debug_params.energy_file << std::endl;
-  os << "gprDebugGradFile: " << params.gpr_dimer_options().debug_params.grad_file
-     << std::endl;
+  os << "gprDebugGradFile: "
+     << params.gpr_dimer_options().debug_params.grad_file << std::endl;
   os << "gprDebugOutExt: " << params.gpr_dimer_options().debug_params.out_ext
      << std::endl;
   os << "gprDebugOffsetMidPoint: "
      << params.gpr_dimer_options().debug_params.offset_mid_point << std::endl;
-  os << "gprDebugDy: " << params.gpr_dimer_options().debug_params.dy << std::endl;
-  os << "gprDebugDz: " << params.gpr_dimer_options().debug_params.dz << std::endl;
+  os << "gprDebugDy: " << params.gpr_dimer_options().debug_params.dy
+     << std::endl;
+  os << "gprDebugDz: " << params.gpr_dimer_options().debug_params.dz
+     << std::endl;
 
   os << "\n[Surrogate]" << std::endl;
   os << "use_surrogate: " << params.gp_surrogate_options().enabled << std::endl;
   os << "sub_job: "
-     << magic_enum::enum_name(params.gp_surrogate_options().sub_job) << std::endl;
+     << magic_enum::enum_name(params.gp_surrogate_options().sub_job)
+     << std::endl;
   os << "gp_uncertainty: " << params.gp_surrogate_options().uncertainty
      << std::endl;
   os << "gp_linear_path_always: " << std::boolalpha
@@ -360,8 +442,8 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << params.catlearn_options().use_deriv << std::endl;
   os << "catl_use_fingerprint: " << std::boolalpha
      << params.catlearn_options().use_fingerprint << std::endl;
-  os << "catl_parallel: " << std::boolalpha << params.catlearn_options().parallel
-     << std::endl;
+  os << "catl_parallel: " << std::boolalpha
+     << params.catlearn_options().parallel << std::endl;
 
   os << "\n[ASE ORCA]" << std::endl;
   os << "orca_path: " << params.ase_orca_options().path << std::endl;
@@ -374,10 +456,12 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << std::endl;
   os << "lanczosQuitEarly: " << std::boolalpha
      << params.lanczos_options().quit_early << std::endl;
-  os << "lanczosPhvaAtoms: " << params.lanczos_options().phva_atoms << std::endl;
+  os << "lanczosPhvaAtoms: " << params.lanczos_options().phva_atoms
+     << std::endl;
 
   os << "\n[Davidson]" << std::endl;
-  os << "davidsonTolerance: " << params.davidson_options().tolerance << std::endl;
+  os << "davidsonTolerance: " << params.davidson_options().tolerance
+     << std::endl;
   os << "davidsonMaxIterations: " << params.davidson_options().max_iterations
      << std::endl;
   os << "davidsonDiagonalPreconditioner: " << std::boolalpha
@@ -403,11 +487,12 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << params.prefactor_options().all_free_atoms << std::endl;
   os << "prefactorFilterScheme: " << params.prefactor_options().filter_scheme
      << std::endl;
-  os << "prefactorFilterFraction: " << params.prefactor_options().filter_fraction
-     << std::endl;
+  os << "prefactorFilterFraction: "
+     << params.prefactor_options().filter_fraction << std::endl;
 
   os << "\n[Hessian]" << std::endl;
-  os << "hessianPhvaAtoms: " << params.hessian_options().phva_atoms << std::endl;
+  os << "hessianPhvaAtoms: " << params.hessian_options().phva_atoms
+     << std::endl;
   os << "hessianZeroFreqValue: " << params.hessian_options().zero_freq_value
      << std::endl;
 
@@ -435,37 +520,58 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << std::endl;
 
   os << "\n[Dynamics]" << std::endl;
-  os << "mdTimeStepInput: " << params.dynamics_options().time_step_input
+  os << "mdTimeStepInput: "
+     << ParametersLoadAccess::dynamics_options(params).time_step_input
      << std::endl;
-  os << "mdTimeStep: " << params.dynamics_options().time_step << std::endl;
-  os << "mdTimeInput: " << params.dynamics_options().time_input << std::endl;
-  os << "mdTime: " << params.dynamics_options().time << std::endl;
-  os << "mdSteps: " << params.dynamics_options().steps << std::endl;
+  os << "mdTimeStep: "
+     << ParametersLoadAccess::dynamics_options(params).time_step << std::endl;
+  os << "mdTimeInput: "
+     << ParametersLoadAccess::dynamics_options(params).time_input << std::endl;
+  os << "mdTime: " << ParametersLoadAccess::dynamics_options(params).time
+     << std::endl;
+  os << "mdSteps: " << ParametersLoadAccess::dynamics_options(params).steps
+     << std::endl;
 
   os << "\n[Parallel Replica]" << std::endl;
   os << "parrepRefineTransition: " << std::boolalpha
-     << params.parallel_replica_options().refine_transition << std::endl;
+     << ParametersLoadAccess::parallel_replica_options(params).refine_transition
+     << std::endl;
   os << "parrepAutoStop: " << std::boolalpha
-     << params.parallel_replica_options().auto_stop << std::endl;
+     << ParametersLoadAccess::parallel_replica_options(params).auto_stop
+     << std::endl;
   os << "parrepDephaseLoopStop: " << std::boolalpha
-     << params.parallel_replica_options().dephase_loop_stop << std::endl;
+     << ParametersLoadAccess::parallel_replica_options(params).dephase_loop_stop
+     << std::endl;
   os << "parrepDephaseTimeInput: "
-     << params.parallel_replica_options().dephase_time_input << std::endl;
-  os << "parrepDephaseTime: " << params.parallel_replica_options().dephase_time
+     << ParametersLoadAccess::parallel_replica_options(params)
+            .dephase_time_input
+     << std::endl;
+  os << "parrepDephaseTime: "
+     << ParametersLoadAccess::parallel_replica_options(params).dephase_time
      << std::endl;
   os << "parrepDephaseLoopMax: "
-     << params.parallel_replica_options().dephase_loop_max << std::endl;
+     << ParametersLoadAccess::parallel_replica_options(params).dephase_loop_max
+     << std::endl;
   os << "parrepStateCheckIntervalInput: "
-     << params.parallel_replica_options().state_check_interval_input << std::endl;
+     << ParametersLoadAccess::parallel_replica_options(params)
+            .state_check_interval_input
+     << std::endl;
   os << "parrepStateCheckInterval: "
-     << params.parallel_replica_options().state_check_interval << std::endl;
+     << ParametersLoadAccess::parallel_replica_options(params)
+            .state_check_interval
+     << std::endl;
   os << "parrepRecordIntervalInput: "
-     << params.parallel_replica_options().record_interval_input << std::endl;
+     << ParametersLoadAccess::parallel_replica_options(params)
+            .record_interval_input
+     << std::endl;
   os << "parrepRecordInterval: "
-     << params.parallel_replica_options().record_interval << std::endl;
+     << ParametersLoadAccess::parallel_replica_options(params).record_interval
+     << std::endl;
   os << "parrepCorrTimeInput: "
-     << params.parallel_replica_options().corr_time_input << std::endl;
-  os << "parrepCorrTime: " << params.parallel_replica_options().corr_time
+     << ParametersLoadAccess::parallel_replica_options(params).corr_time_input
+     << std::endl;
+  os << "parrepCorrTime: "
+     << ParametersLoadAccess::parallel_replica_options(params).corr_time
      << std::endl;
 
   os << "\n[TAD]" << std::endl;
@@ -481,7 +587,8 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << params.thermostat_options().andersen_tcol_input << std::endl;
   os << "thermoAndersenTcol: " << params.thermostat_options().andersen_tcol
      << std::endl;
-  os << "thermoNoseMass: " << params.thermostat_options().nose_mass << std::endl;
+  os << "thermoNoseMass: " << params.thermostat_options().nose_mass
+     << std::endl;
   os << "thermoLangevinFrictionInput: "
      << params.thermostat_options().langevin_friction_input << std::endl;
   os << "thermoLangevinFriction: "
@@ -489,31 +596,43 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
 
   os << "\n[Replica Exchange]" << std::endl;
   os << "repexcTemperatureDistribution: "
-     << params.replica_exchange_options().temperature_distribution << std::endl;
-  os << "repexcReplicas: " << params.replica_exchange_options().replicas
+     << ParametersLoadAccess::replica_exchange_options(params)
+            .temperature_distribution
+     << std::endl;
+  os << "repexcReplicas: "
+     << ParametersLoadAccess::replica_exchange_options(params).replicas
      << std::endl;
   os << "repexcExchangeTrials: "
-     << params.replica_exchange_options().exchange_trials << std::endl;
+     << ParametersLoadAccess::replica_exchange_options(params).exchange_trials
+     << std::endl;
   os << "repexcSamplingTimeInput: "
-     << params.replica_exchange_options().sampling_time_input << std::endl;
-  os << "repexcSamplingTime: " << params.replica_exchange_options().sampling_time
+     << ParametersLoadAccess::replica_exchange_options(params)
+            .sampling_time_input
+     << std::endl;
+  os << "repexcSamplingTime: "
+     << ParametersLoadAccess::replica_exchange_options(params).sampling_time
      << std::endl;
   os << "repexcTemperatureHigh: "
-     << params.replica_exchange_options().temperature_high << std::endl;
+     << ParametersLoadAccess::replica_exchange_options(params).temperature_high
+     << std::endl;
   os << "repexcTemperatureLow: "
-     << params.replica_exchange_options().temperature_low << std::endl;
+     << ParametersLoadAccess::replica_exchange_options(params).temperature_low
+     << std::endl;
   os << "repexcExchangePeriodInput: "
-     << params.replica_exchange_options().exchange_period_input << std::endl;
+     << ParametersLoadAccess::replica_exchange_options(params)
+            .exchange_period_input
+     << std::endl;
   os << "repexcExchangePeriod: "
-     << params.replica_exchange_options().exchange_period << std::endl;
+     << ParametersLoadAccess::replica_exchange_options(params).exchange_period
+     << std::endl;
 
   os << "\n[Hyperdynamics]" << std::endl;
   os << "biasPotential: " << params.hyperdynamics_options().bias_potential
      << std::endl;
   os << "bondBoostBALS: " << params.hyperdynamics_options().boost_atom_list
      << std::endl;
-  os << "bondBoostRMDTimeInput: " << params.hyperdynamics_options().rmd_time_input
-     << std::endl;
+  os << "bondBoostRMDTimeInput: "
+     << params.hyperdynamics_options().rmd_time_input << std::endl;
   os << "bondBoostRMDTime: " << params.hyperdynamics_options().rmd_time
      << std::endl;
   os << "bondBoostDVMAX: " << params.hyperdynamics_options().dvmax << std::endl;
@@ -551,8 +670,8 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << params.basin_hopping_options().adjust_period << std::endl;
   os << "basinHoppingAdjustFraction: "
      << params.basin_hopping_options().adjust_fraction << std::endl;
-  os << "basinHoppingTargetRatio: " << params.basin_hopping_options().target_ratio
-     << std::endl;
+  os << "basinHoppingTargetRatio: "
+     << params.basin_hopping_options().target_ratio << std::endl;
   os << "basinHoppingWriteUnique: " << std::boolalpha
      << params.basin_hopping_options().write_unique << std::endl;
   os << "basinHoppingStopEnergy (-DBL_MAX): "
@@ -563,14 +682,14 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << params.global_optimization_options().move_method << std::endl;
   os << "globalOptimizationDecisionMethod: "
      << params.global_optimization_options().decision_method << std::endl;
-  os << "globalOptimizationSteps: " << params.global_optimization_options().steps
-     << std::endl;
+  os << "globalOptimizationSteps: "
+     << params.global_optimization_options().steps << std::endl;
   os << "globalOptimizationBeta: " << params.global_optimization_options().beta
      << std::endl;
-  os << "globalOptimizationAlpha: " << params.global_optimization_options().alpha
-     << std::endl;
-  os << "globalOptimizationMdmin: " << params.global_optimization_options().mdmin
-     << std::endl;
+  os << "globalOptimizationAlpha: "
+     << params.global_optimization_options().alpha << std::endl;
+  os << "globalOptimizationMdmin: "
+     << params.global_optimization_options().mdmin << std::endl;
   os << "globalOptimizationTargetEnergy: "
      << params.global_optimization_options().target_energy << std::endl;
 
@@ -588,8 +707,8 @@ std::ostream &operator<<(std::ostream &os, const Parameters &params) {
      << std::endl;
   os << "grad2energyconvergence: "
      << params.bgsd_options().grad2energy_convergence << std::endl;
-  os << "grad2forceconvergence: " << params.bgsd_options().grad2force_convergence
-     << std::endl;
+  os << "grad2forceconvergence: "
+     << params.bgsd_options().grad2force_convergence << std::endl;
 
   os << "\n[Debug]" << std::endl;
   os << "writeMovies: " << std::boolalpha << params.debug_options().write_movies

@@ -24,6 +24,11 @@ is_system_lib() {
     libgfortran.so*|libquadmath.so*) return 0 ;;
     libz.so*|libbz2.so*|liblzma.so*|libzstd.so*) return 0 ;;
     libpython*.so*) return 0 ;;
+    # Pip-provided extras. Vendoring torch/CUDA inflates the wheel and
+    # still misses libtorch.so (only libtorch_cpu.so is on disk).
+    libtorch*.so*|libc10*.so*|libshm.so*) return 0 ;;
+    libmetatensor*.so*|libmetatomic*.so*) return 0 ;;
+    libcudart*.so*|libcupti*.so*|libcublas*.so*|libcudnn*.so*|libnvJitLink*.so*|libnvrtc*.so*) return 0 ;;
     *) return 1 ;;
   esac
 }
@@ -55,9 +60,39 @@ repair_one() {
   while IFS= read -r found; do
     [[ -z "$found" ]] && continue
     search="${search}:$(dirname "$found")"
-  done < <(find "${PYEONCLIENT_BUILD_ROOT:-$PWD}" /project \
-    \( -name 'libreadcon_core.so' -o -name 'libreadcon_core.so.*' \) \
-    2>/dev/null | head -20)
+  done < <(
+    find "$work" "${PYEONCLIENT_BUILD_ROOT:-$PWD}" /project \
+      \( -name 'libreadcon_core.so' -o -name 'libreadcon_core.so.*' \) \
+      2>/dev/null | head -20
+    find "$work" "${PYEONCLIENT_BUILD_ROOT:-$PWD}" /project \
+      \( -name 'librgpot.so' -o -name 'librgpot.so.*' \) \
+      2>/dev/null | head -40
+  )
+  # meson-python build dir still holds wrap librgpot after prefix/lib is
+  # not packed. Seed the vendor dir from those paths and write the SONAME.
+  shopt -s nullglob
+  local seed
+  for seed in \
+      /project/.mesonpy-*/subprojects/rgpot/CppCore/librgpot.so* \
+      "${PYEONCLIENT_BUILD_ROOT:-$PWD}"/.mesonpy-*/subprojects/rgpot/CppCore/librgpot.so*; do
+    [[ -f "$seed" ]] || continue
+    echo "seed-rgpot: $seed"
+    search="${search}:$(dirname "$seed")"
+    local base
+    base="$(basename "$seed")"
+    if [[ ! -f "$libs_dir/$base" ]]; then
+      cp -aL "$seed" "$libs_dir/$base"
+    fi
+    if [[ "$base" == librgpot.so.* ]]; then
+      local ver
+      ver="$(echo "$base" | sed -n 's/^librgpot\.so\.\([0-9][0-9]*\).*/\1/p')"
+      if [[ -n "$ver" && ! -f "$libs_dir/librgpot.so.$ver" ]]; then
+        cp -aL "$seed" "$libs_dir/librgpot.so.$ver"
+        echo "seed-rgpot-soname: librgpot.so.$ver"
+      fi
+    fi
+  done
+  shopt -u nullglob
   export LD_LIBRARY_PATH="$libs_dir:${search}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
   # Pull auditwheel / mesonpy lib packs into one dir so a single $ORIGIN rpath
@@ -101,12 +136,19 @@ repair_one() {
               resolved="$d/$needed"
               break
             fi
+            # SONAME librgpot.so.3 vs file librgpot.so.3.2.0
+            local cand
+            cand="$(ls -1 "$d/$needed".[0-9]* 2>/dev/null | head -1 || true)"
+            if [[ -n "$cand" && -f "$cand" ]]; then
+              resolved="$cand"
+              break
+            fi
           done
           unset IFS
         fi
         if [[ -z "${resolved:-}" || ! -f "$resolved" ]]; then
-          # still missing — try find under search roots
-          resolved="$(find ${search//:/ } -maxdepth 2 -name "$needed" 2>/dev/null | head -1 || true)"
+          # still missing — try find under search roots (SONAME or so.N.X.Y)
+          resolved="$(find ${search//:/ } -maxdepth 6 \( -name "$needed" -o -name "${needed}.*" \) 2>/dev/null | head -1 || true)"
         fi
         if [[ -z "${resolved:-}" || ! -f "$resolved" ]]; then
           echo "WARNING: cannot resolve NEEDED $needed (from $(basename "$so"))" >&2

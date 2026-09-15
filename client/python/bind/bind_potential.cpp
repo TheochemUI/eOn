@@ -398,9 +398,12 @@ void bind_potential(nb::module_ &m) {
       .def(
           "get_ef",
           [](eonc::Potential &self,
-             nb::ndarray<nb::numpy, double, nb::c_contig, nb::device::cpu> pos,
-             nb::ndarray<nb::numpy, int64_t, nb::c_contig, nb::device::cpu> z,
-             nb::ndarray<nb::numpy, double, nb::c_contig, nb::device::cpu>
+             nb::ndarray<nb::numpy, const double, nb::c_contig, nb::device::cpu>
+                 pos,
+             nb::ndarray<nb::numpy, const int64_t, nb::c_contig,
+                         nb::device::cpu>
+                 z,
+             nb::ndarray<nb::numpy, const double, nb::c_contig, nb::device::cpu>
                  box) {
             if (pos.ndim() != 2 || pos.shape(1) != 3)
               throw std::invalid_argument("pos must be (n,3)");

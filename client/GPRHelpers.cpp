@@ -42,7 +42,8 @@ eonc::helpers::eon_parameters_to_gpr(const Parameters &parameters) {
   // p.inittrans_nogp.value = parameters.gpr_dimer_options().init_trans_gp;
   p.T_anglerot_gp.value = parameters.gpr_dimer_options().relax_conv_angle;
   p.num_iter_rot_gp.value = parameters.gpr_dimer_options().relax_rotations_max;
-  p.divisor_T_dimer_gp.value = parameters.gpr_dimer_options().divisor_t_dimer_gp;
+  p.divisor_T_dimer_gp.value =
+      parameters.gpr_dimer_options().divisor_t_dimer_gp;
   p.disp_max.value = parameters.gpr_dimer_options().midpoint_max_disp;
   p.ratio_at_limit.value = parameters.gpr_dimer_options().ratio_at_limit;
   p.num_bigiter.value = parameters.gpr_dimer_options().max_outer_iterations;
@@ -50,7 +51,8 @@ eonc::helpers::eon_parameters_to_gpr(const Parameters &parameters) {
   p.islarge_num_iter.value = parameters.gpr_dimer_options().many_iterations;
   // GPR Parameters
   p.gp_sigma2.value = parameters.gpr_dimer_options().gpr_params.sigma2;
-  p.jitter_sigma2.value = parameters.gpr_dimer_options().gpr_params.jitter_sigma2;
+  p.jitter_sigma2.value =
+      parameters.gpr_dimer_options().gpr_params.jitter_sigma2;
   p.sigma2.value = parameters.gpr_dimer_options().gpr_params.noise_sigma2;
   p.prior_mu.value = parameters.gpr_dimer_options().gpr_params.prior_mu;
   p.prior_nu.value = parameters.gpr_dimer_options().gpr_params.prior_nu;
@@ -66,11 +68,14 @@ eonc::helpers::eon_parameters_to_gpr(const Parameters &parameters) {
   p.use_prune.value = parameters.gpr_dimer_options().prune_params.use_prune;
   p.start_prune_at.value = parameters.gpr_dimer_options().prune_params.begin;
   p.nprune_vals.value = parameters.gpr_dimer_options().prune_params.n_vals;
-  p.prune_threshold.value = parameters.gpr_dimer_options().prune_params.threshold;
+  p.prune_threshold.value =
+      parameters.gpr_dimer_options().prune_params.threshold;
   // Debugging
-  p.report_level.value = parameters.gpr_dimer_options().debug_params.report_level;
+  p.report_level.value =
+      parameters.gpr_dimer_options().debug_params.report_level;
   p.debug_level.value = parameters.gpr_dimer_options().debug_params.debug_level;
-  p.debug_output_dir.value = parameters.gpr_dimer_options().debug_params.out_dir;
+  p.debug_output_dir.value =
+      parameters.gpr_dimer_options().debug_params.out_dir;
   p.debug_output_file_R.value =
       parameters.gpr_dimer_options().debug_params.pos_file;
   p.debug_output_file_E.value =

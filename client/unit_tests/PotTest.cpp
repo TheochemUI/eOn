@@ -126,7 +126,8 @@ TEST_CASE("Different potentials give different energies", "[pot]") {
 
 TEST_CASE("LJCluster energy matches SVN", "[pot][ljcluster]") {
   Parameters params;
-  ParametersLoadAccess::potential_options(params).potential = PotType::LJCLUSTER;
+  ParametersLoadAccess::potential_options(params).potential =
+      PotType::LJCLUSTER;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));
@@ -182,7 +183,8 @@ TEST_CASE("SW potential can be created and returns finite energy",
 
 TEST_CASE("Tersoff potential can be created", "[pot][tersoff]") {
   Parameters params;
-  ParametersLoadAccess::potential_options(params).potential = PotType::TERSOFF_SI;
+  ParametersLoadAccess::potential_options(params).potential =
+      PotType::TERSOFF_SI;
   auto pot = eonc::helpers::makePotential(params);
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::TERSOFF_SI);
@@ -198,7 +200,8 @@ TEST_CASE("EDIP potential can be created", "[pot][edip]") {
 
 TEST_CASE("Lenosky potential can be created", "[pot][lenosky]") {
   Parameters params;
-  ParametersLoadAccess::potential_options(params).potential = PotType::LENOSKY_SI;
+  ParametersLoadAccess::potential_options(params).potential =
+      PotType::LENOSKY_SI;
   auto pot = eonc::helpers::makePotential(params);
   REQUIRE(pot != nullptr);
   REQUIRE(pot->getType() == PotType::LENOSKY_SI);

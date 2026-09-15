@@ -77,8 +77,8 @@ std::vector<std::string> BasinHoppingJob::run() {
     randomPositions *= current->getCell();
     current->setPositionsFree(randomPositions);
 
-    eonc::geometry::pushApart(current,
-                              params.basin_hopping_options().push_apart_distance);
+    eonc::geometry::pushApart(
+        current, params.basin_hopping_options().push_apart_distance);
   }
 
   *trial = *current;
@@ -250,7 +250,8 @@ std::vector<std::string> BasinHoppingJob::run() {
       break;
     }
 
-    if (consecutive_rejected_trials == params.basin_hopping_options().jump_max &&
+    if (consecutive_rejected_trials ==
+            params.basin_hopping_options().jump_max &&
         step < params.basin_hopping_options().steps) {
       consecutive_rejected_trials = 0;
       AtomMatrix jump;

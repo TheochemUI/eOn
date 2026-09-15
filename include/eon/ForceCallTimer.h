@@ -23,8 +23,7 @@ class ForceCallTimer {
 
 public:
   explicit ForceCallTimer(size_t &target)
-      : target_(target),
-        initial_(PotRegistry::get().total_force_calls()) {}
+      : target_(target), initial_(PotRegistry::get().total_force_calls()) {}
   ~ForceCallTimer() {
     target_ += PotRegistry::get().total_force_calls() - initial_;
   }

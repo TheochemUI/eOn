@@ -299,7 +299,8 @@ static int eonClientMain(int argc, char **argv) {
     }
 
     if (my_client_number < number_of_clients) {
-      parameters.set_mpi_potential_rank(potential_ranks[my_client_number * potential_group_size]);
+      parameters.set_mpi_potential_rank(
+          potential_ranks[my_client_number * potential_group_size]);
     }
   }
 
@@ -459,7 +460,7 @@ static int eonClientMain(int argc, char **argv) {
       }
 
       job.reset(); // Force Potential destruction so PotRegistry records entries
-      PotRegistry::get().write_summary();
+      eonc::PotRegistry::get().write_summary();
       filenames.push_back(std::string("_potcalls.json"));
       filenames.push_back(std::string("client_quill.log"));
       filenames.push_back(std::string("client_traceback.log"));

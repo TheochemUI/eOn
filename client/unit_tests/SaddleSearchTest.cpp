@@ -225,7 +225,8 @@ TEST_CASE_METHOD(SaddleSearchFixture,
 
 TEST_CASE_METHOD(SaddleSearchFixture, "MinModeSaddleSearch with classic Dimer",
                  "[saddle_search][classic_dimer]") {
-  ParametersLoadAccess::dimer_options(params).improved = false; // classic dimer, not improved
+  ParametersLoadAccess::dimer_options(params).improved =
+      false; // classic dimer, not improved
   ParametersLoadAccess::saddle_search_options(params).max_iterations = 50;
 
   long nAtoms = matter->numberOfAtoms();

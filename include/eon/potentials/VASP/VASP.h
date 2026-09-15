@@ -16,10 +16,7 @@
 class VASP : public eonc::Potential {
 
 public:
-  VASP(const eonc::Parameters &p)
-      : eonc::Potential(p) {
-    vaspRunCount++;
-  }
+  VASP(const eonc::Parameters &p) : eonc::Potential(p) { vaspRunCount++; }
   ~VASP() { cleanMemory(); }
   void initialize() {};
   void cleanMemory(void);

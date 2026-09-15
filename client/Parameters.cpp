@@ -31,7 +31,8 @@ struct Parameters::Impl {
   int last_error{0};
 };
 
-Parameters::Parameters() : impl_(std::make_unique<Impl>()) {
+Parameters::Parameters()
+    : impl_(std::make_unique<Impl>()) {
   // Covered groups: defaults originate from schema/eon_params.capnp via
   // apply_ssot_defaults (codegen). Uncovered groups still use NSDMI.
   eonc::config::apply_ssot_defaults(*this);
@@ -44,11 +45,15 @@ Parameters::Parameters(Parameters &&) noexcept = default;
 Parameters &Parameters::operator=(Parameters &&) noexcept = default;
 
 Parameters::Parameters(const Parameters &other)
-    : constants_(other.constants_), main_options_(other.main_options_),
+    : constants_(other.constants_),
+      main_options_(other.main_options_),
       potential_options_(other.potential_options_),
-      ams_options_(other.ams_options_), xtb_options_(other.xtb_options_),
-      zbl_options_(other.zbl_options_), dftd_options_(other.dftd_options_),
-      expr_options_(other.expr_options_), mopac_options_(other.mopac_options_),
+      ams_options_(other.ams_options_),
+      xtb_options_(other.xtb_options_),
+      zbl_options_(other.zbl_options_),
+      dftd_options_(other.dftd_options_),
+      expr_options_(other.expr_options_),
+      mopac_options_(other.mopac_options_),
       socket_nwchem_options_(other.socket_nwchem_options_),
       rgpot_options_(other.rgpot_options_),
       structure_comparison_options_(other.structure_comparison_options_),
@@ -65,7 +70,8 @@ Parameters::Parameters(const Parameters &other)
       lanczos_options_(other.lanczos_options_),
       davidson_options_(other.davidson_options_),
       prefactor_options_(other.prefactor_options_),
-      hessian_options_(other.hessian_options_), neb_options_(other.neb_options_),
+      hessian_options_(other.hessian_options_),
+      neb_options_(other.neb_options_),
       dynamics_options_(other.dynamics_options_),
       parallel_replica_options_(other.parallel_replica_options_),
       tad_options_(other.tad_options_),
@@ -75,8 +81,10 @@ Parameters::Parameters(const Parameters &other)
       basin_hopping_options_(other.basin_hopping_options_),
       global_optimization_options_(other.global_optimization_options_),
       monte_carlo_options_(other.monte_carlo_options_),
-      bgsd_options_(other.bgsd_options_), serve_options_(other.serve_options_),
-      artn_options_(other.artn_options_), ira_options_(other.ira_options_),
+      bgsd_options_(other.bgsd_options_),
+      serve_options_(other.serve_options_),
+      artn_options_(other.artn_options_),
+      ira_options_(other.ira_options_),
       debug_options_(other.debug_options_),
       oh_tst_options_(other.oh_tst_options_),
       impl_(other.impl_ ? std::make_unique<Impl>(*other.impl_)

@@ -39,6 +39,8 @@ def test_dftd_pot_types_and_params():
 
 
 def test_expr_pot_lj_plus_morse():
+    if not pyec.built_with_rgpot():
+        pytest.skip("EXPR is compiled only with rgpot")
     params = pyec.Parameters()
     params.potential = pyec.PotType.EXPR
     params.expr_expression = "0.5*lj + morse"

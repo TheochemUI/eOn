@@ -106,9 +106,10 @@ int DynamicsSaddleSearch::run() {
     dyn.oneStep(step);
 
     if (recordInterval != 0 && step % recordInterval == 0) {
-      QUILL_LOG_DEBUG(
-          log, "recording configuration at step {} time {:.3f}", step,
-          step * params.dynamics_options().time_step * params.constants().timeUnit);
+      QUILL_LOG_DEBUG(log, "recording configuration at step {} time {:.3f}",
+                      step,
+                      step * params.dynamics_options().time_step *
+                          params.constants().timeUnit);
       // BUG FIX: was sharing ownership with saddle instead of copying
       auto snapshot = std::make_shared<Matter>(*saddle);
       mdSnapshots.push_back(snapshot);

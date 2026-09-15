@@ -28,8 +28,7 @@ std::shared_ptr<LowestEigenmode>
 buildEigenmodeStrategy(std::shared_ptr<Matter> matter, const Parameters &params,
                        std::shared_ptr<Potential> pot);
 
-inline void eigenmodeCompute(LowestEigenmode &s,
-                             std::shared_ptr<Matter> matter,
+inline void eigenmodeCompute(LowestEigenmode &s, std::shared_ptr<Matter> matter,
                              AtomMatrix direction) {
   s.compute(matter, direction);
 }

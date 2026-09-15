@@ -26,8 +26,7 @@ public:
                            std::shared_ptr<Potential> potPassed,
                            const Parameters &parametersPassed)
       : SaddleSearchMethod(potPassed, parametersPassed),
-        reactant{std::make_shared<Matter>(*reactant)},
-        saddle{displacement} {
+        reactant{std::make_shared<Matter>(*reactant)}, saddle{displacement} {
     eigenvector.resize(reactant->numberOfAtoms(), 3);
     eigenvector.setZero();
   }

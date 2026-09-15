@@ -28,8 +28,7 @@
 
 class EMTRasmussenParameterProvider : public EMTDefaultParameterProvider {
 public:
-  EMTRasmussenParameterProvider()
-      : EMTDefaultParameterProvider() {};
+  EMTRasmussenParameterProvider() : EMTDefaultParameterProvider() {};
   virtual string GetName() const { return "EMTRasmussenParameterProvider"; }
   virtual ~EMTRasmussenParameterProvider() {};
 

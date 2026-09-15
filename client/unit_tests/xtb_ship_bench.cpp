@@ -13,6 +13,7 @@
 
 using SteadyClock = std::chrono::steady_clock;
 using eonc::Parameters;
+using eonc::ParametersLoadAccess;
 using eonc::PotType;
 
 static const double water_pos[] = {0.00000000, 0.00000000,  0.11779000,
