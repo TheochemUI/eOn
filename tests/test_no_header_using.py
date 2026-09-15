@@ -48,6 +48,9 @@ JOB_HEADERS = sorted(
         "Parameters.h",
         "BaseStructures.h",
         "HelperFunctions.h",
+        "potentials/CatLearnPot/CatLearnPot.h",
+        "potentials/ASE_ORCA/ASE_ORCA.h",
+        "potentials/ASE_NWCHEM/ASE_NWCHEM.h",
     )
 ]
 
