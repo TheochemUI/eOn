@@ -171,7 +171,7 @@ def fastest_path(path_root, states, full=False):
 
     state_list = [states.get_state(0)]
     if full:
-        nodes = sorted(G.nodes(), lambda a, b: a.number - b.number)
+        nodes = sorted(G.nodes(), key=lambda a: a.number)
         state_pairs = [nodes[i : i + 2] for i in range(0, len(nodes) - 1)]
         for s1, s2 in state_pairs:
             path = G.shortest_path(s1, s2)[1:]
