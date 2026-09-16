@@ -6,6 +6,7 @@ import shutil
 import tempfile
 import configparser
 import optparse
+from pathlib import Path
 
 import pathfix
 
@@ -25,11 +26,11 @@ if __name__ == "__main__":
         posfile = args[0]
 
     config = configparser.SafeConfigParser()
-    if os.path.isfile("config.ini"):
+    if Path("config.ini").is_file():
         isconfig = True
         config.read("config.ini")
     else:
-        config.read(os.path.join(pathfix.path, "default_config.ini"))
+        config.read(Path(pathfix.path) / "default_config.ini")
 
 # set the potential
     if isconfig:
@@ -43,13 +44,14 @@ if __name__ == "__main__":
     cwd = os.getcwd()
     td = tempfile.mkdtemp()
 
-    shutil.copyfile(posfile, os.path.join(td, "pos.con"))
+    shutil.copyfile(posfile, Path(td) / "pos.con")
 
-    if os.path.exists("potfiles"):
+    if Path("potfiles").exists():
         potfiles = os.listdir("potfiles")
         for potfile in potfiles:
-            if os.path.isfile(os.path.join("potfiles", potfile)):
-                shutil.copyfile(os.path.join("potfiles", potfile), os.path.join(td, potfile))
+            src = Path("potfiles") / potfile
+            if src.is_file():
+                shutil.copyfile(src, Path(td) / potfile)
 
     config.set("Main", "job", "minimization")
     config.set("Potential", "potential", potential)
@@ -57,11 +59,11 @@ if __name__ == "__main__":
         config.add_section('Optimizers')
         config.set("Optimizers", "opt_method", "box")
 
-    cf = open(os.path.join(td, "config.ini"), 'w')
+    cf = open(Path(td) / "config.ini", 'w')
     config.write(cf)
     cf.close()
 
     os.chdir(td)
 #    os.system(os.path.join(pathfix.path, "../client", "eonclient"))
     os.system("eonclient")
-    shutil.copyfile(os.path.join(td, "min.con"), os.path.join(cwd, "min.con"))
+    shutil.copyfile(Path(td) / "min.con", Path(cwd) / "min.con")

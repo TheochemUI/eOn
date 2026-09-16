@@ -9,6 +9,7 @@ import time
 import numpy
 import sys
 import os
+from pathlib import Path
 from gpaw.mpi import world
 from ase.utils import devnull
 
@@ -102,7 +103,7 @@ while True:
     logdir = ''.join(tmp)
 
     #XXX: is this really needed? Why did it happen...?
-    while not os.path.isdir(logdir):
+    while not Path(logdir).is_dir():
         sys.stderr("error: logdir: %s didn't exist somehow\n" % logdir)
         time.sleep(0.1)
 
@@ -122,7 +123,7 @@ while True:
         first_time = False
     else:
         atoms.set_positions(positions)
-    logfile = os.path.join(logdir, "gpaw_%i.txt"%nforce_calls)
+    logfile = str(Path(logdir) / ("gpaw_%i.txt" % nforce_calls))
     calc.set(txt=logfile)
 
     calculation_failed  = numpy.array((0,),'i')
@@ -135,7 +136,7 @@ while True:
     t1 = time.time()
 
     if my_comm.rank == 0:
-        performance_log = os.path.join(logdir, "performance.txt")
+        performance_log = Path(logdir) / "performance.txt"
         fperformance = open(performance_log, "a+")
         fperformance.write("%i %.3f\n" % (nforce_calls, (t1-t0)))
         fperformance.close()

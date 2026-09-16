@@ -6,6 +6,7 @@ import glob
 import shutil
 import datetime
 from optparse import OptionParser
+from pathlib import Path
 import configparser
 import subprocess
 
@@ -19,7 +20,7 @@ def initialize(rads, mags, searches):
     write_metadata(0, rads, 0, mags, searches)
 
 def restore():
-    if not os.path.exists('original'):
+    if not Path('original').exists():
         print('Nothing to restore!')
         return
     os.mkdir('samples/continue')
@@ -107,8 +108,8 @@ def main():
         restore()
         return
 
-    if not os.path.exists('original'):
-        if not os.path.exists('config.ini') or not os.path.exists('reactant.con'):
+    if not Path('original').exists():
+        if not Path('config.ini').exists() or not Path('reactant.con').exists():
             print('This does not appear to be an eon project directory. Either config.ini or reactant.con or both were not found. Aborting.')
             sys.exit()
         rads = [float(r) for r in options.radii.split(',')]
@@ -130,7 +131,7 @@ def main():
     rad = rads[radi]
     mag = mags[magi]
 
-    if not os.path.exists('config.ini') or not os.path.exists('reactant.con'):
+    if not Path('config.ini').exists() or not Path('reactant.con').exists():
         # Initialize the next sample.
         for thing in glob.glob('original/*'):
             shutil.copy(thing, '.')
@@ -149,7 +150,7 @@ def main():
 
     # Check the number of completed searches.
     n_completed_searches = 0
-    if os.path.exists('states/0/search_results.txt'):
+    if Path('states/0/search_results.txt').exists():
         n_completed_searches = len(open('states/0/search_results.txt').readlines()) - 2
     print('%d searches have been completed for this sample.' % n_completed_searches)
     if n_completed_searches >= searches:
