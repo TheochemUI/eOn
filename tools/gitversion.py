@@ -2,11 +2,12 @@
 # Kanged from scipy
 import os
 import textwrap
+from pathlib import Path
 
 
 def init_version():
-    init = os.path.join(os.path.dirname(__file__), "../pyproject.toml")
-    with open(init) as fid:
+    init = Path(__file__).resolve().parent.parent / "pyproject.toml"
+    with init.open() as fid:
         data = fid.readlines()
 
     version_line = next(line for line in data if line.startswith("version ="))
@@ -22,7 +23,6 @@ def git_version(version):
     # if available
 
     import subprocess
-    import os.path
 
     git_hash = ""
     try:
@@ -30,7 +30,7 @@ def git_version(version):
             ["git", "log", "-1", '--format="%H %aI"'],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            cwd=os.path.dirname(__file__),
+            cwd=str(Path(__file__).resolve().parent),
         )
     except FileNotFoundError:
         pass
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     if args.write:
         outfile = args.write
         if args.meson_dist:
-            outfile = os.path.join(os.environ.get("MESON_DIST_ROOT", ""), outfile)
+            outfile = str(Path(os.environ.get("MESON_DIST_ROOT", "")) / outfile)
 
         # Print human readable output path
         relpath = os.path.relpath(outfile)
