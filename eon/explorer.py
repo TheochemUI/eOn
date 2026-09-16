@@ -26,33 +26,29 @@ def _archive_debug_result(config, result):
     if not config.debug_keep_all_results:
         return
     name = str(result.get("name", result.get("id", "job")))
-    dest = os.path.join(config.path_root, config.debug_results_path, name)
-    os.makedirs(dest, exist_ok=True)
+    dest = Path(config.path_root) / config.debug_results_path / name
+    dest.mkdir(parents=True, exist_ok=True)
     blob = result.get("results.dat")
     if blob is not None:
-        path = os.path.join(dest, "results.dat")
+        path = dest / "results.dat"
         if hasattr(blob, "getvalue"):
-            with open(path, "w") as f:
-                f.write(blob.getvalue())
+            path.write_text(blob.getvalue())
         elif hasattr(blob, "read"):
             pos = blob.tell()
             blob.seek(0)
-            with open(path, "w") as f:
-                f.write(blob.read())
+            path.write_text(blob.read())
             blob.seek(pos)
     for key in ("min.con", "pos.con", "saddle.con", "product.con"):
         payload = result.get(key)
         if payload is None:
             continue
-        path = os.path.join(dest, key)
+        path = dest / key
         if hasattr(payload, "getvalue"):
-            with open(path, "w") as f:
-                f.write(payload.getvalue())
+            path.write_text(payload.getvalue())
         elif hasattr(payload, "read"):
             pos = payload.tell()
             payload.seek(0)
-            with open(path, "w") as f:
-                f.write(payload.read())
+            path.write_text(payload.read())
             payload.seek(pos)
 
 def get_minmodexplorer(config: ConfigClass):
@@ -66,15 +62,13 @@ class Explorer:
         if config is None:
             raise TypeError("Explorer requires a ConfigClass instance")
         self.config = config
-        self.wuid_path = os.path.join(self.config.path_scratch, "wuid")
+        self.wuid_path = str(Path(self.config.path_scratch) / "wuid")
         self.superbasin = superbasin
         self.load_wuid()
 
     def load_wuid(self):
         try:
-            f = open(self.wuid_path)
-            self.wuid = int(f.read())
-            f.close()
+            self.wuid = int(Path(self.wuid_path).read_text())
         except IOError:
             if not self.superbasin:
                 self.wuid = 0
@@ -124,19 +118,17 @@ class MinModeExplorer(Explorer):
             moved_atoms = None
 
         if self.config.kdb_on:
-            if not os.path.isdir(self.config.kdb_scratch_path):
-                os.makedirs(self.config.kdb_scratch_path)
+            kdb_scratch = Path(self.config.kdb_scratch_path)
+            kdb_scratch.mkdir(parents=True, exist_ok=True)
+            queried_path = kdb_scratch / "queried"
             try:
-                with open(os.path.join(self.config.kdb_scratch_path, "queried"), 'r') as f:
+                with queried_path.open() as f:
                     queried = [int(q) for q in f]
             except (OSError, ValueError):
                 queried = []
             if self.state.number not in queried:
                 queried.append(self.state.number)
-                f = open(os.path.join(self.config.kdb_scratch_path, "queried"), 'w')
-                for q in queried:
-                    f.write("%d\n" % q)
-                f.close()
+                queried_path.write_text("".join("%d\n" % q for q in queried))
                 kdb.query(self.state, self.config)
 
         # If a per-state displacement atom list script was used, inject the
@@ -197,7 +189,7 @@ class MinModeExplorer(Explorer):
 class ClientMinModeExplorer(MinModeExplorer):
     def __init__(self, states, previous_state, state, superbasin=None, config=None):
         MinModeExplorer.__init__(self, states, previous_state, state, superbasin, config=config)
-        job_table_path = os.path.join(self.config.path_root, "jobs.tbl")
+        job_table_path = str(Path(self.config.path_root) / "jobs.tbl")
         job_table_columns = [ 'state', 'wuid', 'type']
         self.job_table = io.Table(job_table_path, job_table_columns)
 
@@ -299,13 +291,14 @@ class ClientMinModeExplorer(MinModeExplorer):
     def register_results(self):
         logger.info("Registering results")
         t1 = time()
-        if os.path.isdir(self.config.path_jobs_in):
+        jobs_in = Path(self.config.path_jobs_in)
+        if jobs_in.is_dir():
             try:
-                shutil.rmtree(self.config.path_jobs_in)
+                shutil.rmtree(jobs_in)
             except (OSError, IOError):
                 pass
-        if not os.path.isdir(self.config.path_jobs_in):
-            os.makedirs(self.config.path_jobs_in)
+        if not jobs_in.is_dir():
+            jobs_in.mkdir(parents=True)
 
         # Function used by communicator to determine whether to discard a result
         def keep_result(name):
@@ -400,10 +393,10 @@ class ServerMinModeExplorer(MinModeExplorer):
         self.process_searches = {}
         self.job_info = {}
 
-        if os.path.isfile("explorer.pickle"):
-            f = open("explorer.pickle", "rb")
-            tmp_dict = pickle.load(f)
-            f.close()
+        pickle_path = Path("explorer.pickle")
+        if pickle_path.is_file():
+            with pickle_path.open("rb") as f:
+                tmp_dict = pickle.load(f)
             self.__dict__.update(tmp_dict)
 
         MinModeExplorer.__init__(self, states, previous_state, state, superbasin, config=config)
@@ -439,24 +432,23 @@ class ServerMinModeExplorer(MinModeExplorer):
         f.close()
 
     def explore(self):
-        if not os.path.isdir(self.config.path_jobs_in):
-            os.makedirs(self.config.path_jobs_in)
+        Path(self.config.path_jobs_in).mkdir(parents=True, exist_ok=True)
 
         MinModeExplorer.explore(self)
 
     def register_results(self):
         logger.info("Registering results")
         t1 = time()
-        if os.path.isdir(self.config.path_jobs_in):
+        jobs_in = Path(self.config.path_jobs_in)
+        if jobs_in.is_dir():
             try:
-                shutil.rmtree(self.config.path_jobs_in)
+                shutil.rmtree(jobs_in)
             except OSError as msg:
                 logger.error("Error cleaning up %s: %s", self.config.path_jobs_in, msg)
             else:
-                os.makedirs(self.config.path_jobs_in)
+                jobs_in.mkdir(parents=True)
 
-        if not os.path.isdir(self.config.path_incomplete):
-            os.makedirs(self.config.path_incomplete)
+        Path(self.config.path_incomplete).mkdir(parents=True, exist_ok=True)
 
         # Function used by communicator to determine whether to keep a result
         def keep_result(name):
@@ -748,15 +740,13 @@ class ProcessSearch:
     def start_minimization(self, which_min):
         job = {}
 
-        saddle_path = os.path.join(self.config.path_incomplete, self.finished_saddle_name)
+        saddle_path = Path(self.config.path_incomplete) / self.finished_saddle_name
 
-        mode_file = open(os.path.join(saddle_path, "mode.dat"))
-        mode = io.load_mode(mode_file)
-        mode_file.close()
+        with (saddle_path / "mode.dat").open() as mode_file:
+            mode = io.load_mode(mode_file)
 
-        reactant_file = open(os.path.join(saddle_path, "saddle.con"))
-        reactant = io.loadcon(reactant_file)
-        reactant_file.close()
+        with (saddle_path / "saddle.con").open() as reactant_file:
+            reactant = io.loadcon(reactant_file)
 
         if which_min == "min2":
             mode = -mode
@@ -859,21 +849,15 @@ class ProcessSearch:
         self.data['barrier_reactant_to_product'] = barrier
 
     def save_result(self, result):
-        dir_path = os.path.join(self.config.path_incomplete, result['name'])
-        os.makedirs(dir_path)
+        dir_path = Path(self.config.path_incomplete) / result["name"]
+        dir_path.mkdir(parents=True)
         for k in result:
-            if hasattr(result[k], 'getvalue'):
-                fn = os.path.join(dir_path, k)
-                f = open(fn, "w")
-                f.write(result[k].getvalue())
-                f.close()
+            if hasattr(result[k], "getvalue"):
+                (dir_path / k).write_text(result[k].getvalue())
 
     def load_result(self, result_name):
-        dir_path = os.path.join(self.config.path_incomplete, result_name)
+        dir_path = Path(self.config.path_incomplete) / result_name
         result = {}
-        for file in os.listdir(dir_path):
-            file_path = os.path.join(dir_path, file)
-            f = open(file_path)
-            result[file] = io.StringIO(f.read())
-            f.close()
+        for file_path in dir_path.iterdir():
+            result[file_path.name] = io.StringIO(file_path.read_text())
         return result
