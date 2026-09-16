@@ -5,18 +5,20 @@
 
 import os
 import sys
+from pathlib import Path
 
 args = ' '.join(sys.argv[1:])
 
 n = 0
-while os.path.exists(os.path.join('states', '%d' % n)):
-	lines = open(os.path.join('states', '%d' % n, 'processtable'), 'r').readlines()[1:]
+while (Path("states") / ("%d" % n)).exists():
+	state = Path("states") / ("%d" % n)
+	lines = (state / "processtable").read_text().splitlines()[1:]
 	procs = [line.split()[0] for line in lines]
 	for proc in procs:
-		path = os.path.join('states', '%d' % n, 'procdata')
-		reactant_path = os.path.join('states', '%d' % n, 'procdata', 'reactant_%s.con' % proc)
-		saddle_path = os.path.join('states', '%d' % n, 'procdata', 'saddle_%s.con' % proc)
-		product_path = os.path.join('states', '%d' % n, 'procdata', 'product_%s.con' % proc)
-		mode_path = os.path.join('states', '%d' % n, 'procdata', 'mode_%s.dat' % proc)
+		procdata = state / "procdata"
+		reactant_path = procdata / ("reactant_%s.con" % proc)
+		saddle_path = procdata / ("saddle_%s.con" % proc)
+		product_path = procdata / ("product_%s.con" % proc)
+		mode_path = procdata / ("mode_%s.dat" % proc)
 		os.system('kdbinsert.py %s %s %s -o %s %s' % (reactant_path, saddle_path, product_path, mode_path, args))
 	n += 1
