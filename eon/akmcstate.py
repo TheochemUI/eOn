@@ -2,18 +2,19 @@
 """ The state module. """
 
 import ast
-import os
-import math
 import configparser
 import logging
-logger = logging.getLogger('state')
+import math
+from pathlib import Path
+
+logger = logging.getLogger("state")
 
 import numpy
 
-from eon.config import ConfigClass # Typing
-from eon import atoms
+from eon import atoms, state
 from eon import fileio as io
-from eon import state
+from eon.config import ConfigClass  # Typing
+
 
 class AKMCState(state.State):
     ID, ENERGY, PREFACTOR, PRODUCT, PRODUCT_ENERGY, PRODUCT_PREFACTOR, BARRIER, RATE, REPEATS = list(range(9))
@@ -43,7 +44,7 @@ class AKMCState(state.State):
         state.State.__init__(self,statepath, statenumber,statelist, previous_state_num,
                              reactant_path, self.config)
 
-        self.bad_procdata_path = os.path.join(self.path, "badprocdata")
+        self.bad_procdata_path = str(Path(self.path) / "badprocdata")
 
         self.con_cache = {}
 
@@ -305,7 +306,7 @@ class AKMCState(state.State):
 
         # Checking to see if all recycling jobs are complete
         if self.config.recycling_on and self.config.disp_moved_only:
-            job_table_path = os.path.join(self.config.path_root, "jobs.tbl")
+            job_table_path = str(Path(self.config.path_root) / "jobs.tbl")
             job_table = io.Table(job_table_path)
             if any([ t == 'recycling' for t in job_table.get_column('type') ]):
                 return 0.0
@@ -637,8 +638,8 @@ class AKMCState(state.State):
         if n is not None:
             return int(n)
         n = 0
-        if os.path.isfile(self.search_result_path):
-            with open(self.search_result_path) as f:
+        if Path(self.search_result_path).is_file():
+            with Path(self.search_result_path).open() as f:
                 f.readline()
                 f.readline()
                 for line in f:
@@ -688,14 +689,13 @@ class AKMCState(state.State):
                 self.increment_time(result['results']['simulation_time'], result['results']['md_temperature'])
 
         if store:
-            if not os.path.isdir(self.bad_procdata_path):
-                os.mkdir(self.bad_procdata_path)
+            Path(self.bad_procdata_path).mkdir(exist_ok=True)
             for name, key in (("reactant_%d.con", 'reactant.con'),
                               ("product_%d.con", 'product.con'),
                               ("mode_%d.dat", 'mode.dat'),
                               ("results_%d.dat", 'results.dat'),
                               ("saddle_%d.con", 'saddle.con')):
-                path = os.path.join(self.bad_procdata_path, name % result['wuid'])
+                path = str(Path(self.bad_procdata_path) / (name % result['wuid']))
                 with io.atomic_write(path) as f:
                     f.writelines(result[key].getvalue())
 
@@ -713,9 +713,9 @@ class AKMCState(state.State):
 
     # Utility functions for compiling procdata paths, whether the files exist or not.
     def proc_saddle_path(self, id):
-        return os.path.join(self.procdata_path, "saddle_%d.con" % id)
+        return str(Path(self.procdata_path) / ("saddle_%d.con" % id))
     def proc_mode_path(self, id):
-        return os.path.join(self.procdata_path, "mode_%d.dat" % id)
+        return str(Path(self.procdata_path) / ("mode_%d.dat" % id))
 
 
 # Lambert-W function: http://keithbriggs.info/software/LambertW.py
