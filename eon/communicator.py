@@ -10,7 +10,6 @@ from subprocess import Popen, PIPE
 import tarfile
 from io import StringIO
 import pickle as pickle
-import glob
 import re
 import numpy
 import sys
@@ -132,22 +131,20 @@ _HARVEST_EXTENSIONS = (".con", ".dat", ".json", ".log")
 
 def read_return_files_manifest(jobpath):
     """Return the filenames listed in return_files.dat, or None if absent."""
-    manifest = os.path.join(jobpath, RETURN_FILES_MANIFEST)
-    if not os.path.isfile(manifest):
+    manifest = Path(jobpath) / RETURN_FILES_MANIFEST
+    if not manifest.is_file():
         return None
     names = []
-    with open(manifest, "r") as f:
-        for line in f:
-            name = line.strip()
-            if not name or name.startswith("#"):
-                continue
-            names.append(os.path.basename(name))
+    for line in manifest.read_text().splitlines():
+        name = line.strip()
+        if not name or name.startswith("#"):
+            continue
+        names.append(Path(name).name)
     return names
 
 
 def _read_result_file(path):
-    with open(path, "r") as f:
-        return StringIO(f.read())
+    return StringIO(Path(path).read_text())
 
 
 def harvest_job_files(jobpath):
@@ -159,11 +156,11 @@ def harvest_job_files(jobpath):
     """
     listed = read_return_files_manifest(jobpath)
     files = {}
+    root = Path(jobpath)
     if listed is None:
-        for filename in glob.glob(os.path.join(jobpath, "*.*")):
-            if filename.endswith(_HARVEST_EXTENSIONS):
-                fname = os.path.basename(filename)
-                files[fname] = _read_result_file(filename)
+        for filename in root.glob("*.*"):
+            if filename.suffix in _HARVEST_EXTENSIONS:
+                files[filename.name] = _read_result_file(filename)
         return files
     wanted = list(listed)
     if "results.dat" not in wanted:
@@ -173,8 +170,8 @@ def harvest_job_files(jobpath):
         if fname in seen:
             continue
         seen.add(fname)
-        path = os.path.join(jobpath, fname)
-        if not os.path.isfile(path):
+        path = root / fname
+        if not path.is_file():
             logger.warning(
                 "returnFiles lists %s but it is missing under %s",
                 fname,
@@ -190,10 +187,10 @@ class Communicator:
         if config is None:
             raise TypeError("Communicator requires a ConfigClass instance")
         self.config = config
-        if not os.path.isdir(scratchpath):
-            # should probably log this event
-            os.makedirs(scratchpath)
-        self.scratchpath = scratchpath
+        scratch = Path(scratchpath)
+        if not scratch.is_dir():
+            scratch.mkdir(parents=True)
+        self.scratchpath = str(scratch)
         self.bundle_size = bundle_size
 
     def submit_jobs(self, data, invariants):
@@ -251,12 +248,12 @@ class Communicator:
 
         '''
         # These are the files in the result directory that we keep.
-        jobpaths = [ os.path.join(resultpath,d) for d in os.listdir(resultpath)
-                    if os.path.isdir(os.path.join(resultpath,d)) ]
+        result_root = Path(resultpath)
+        jobpaths = [str(p) for p in result_root.iterdir() if p.is_dir()]
 
         regex = re.compile(r"(\w+)_(\d+)(\.\w+)")
         for jobpath in jobpaths:
-            basename, dirname = os.path.split(jobpath)
+            dirname = Path(jobpath).name
             if not keep_result(dirname):
                 continue
             # Need to figure out how many jobs were bundled together
@@ -283,13 +280,13 @@ class Communicator:
                 results[0]['number'] = 0
             else:
                 # Several tasks bundled inside this job, we need to unbundle.
-                filenames = glob.glob(os.path.join(jobpath,"*_[0-9]*.*"))
+                filenames = list(Path(jobpath).glob("*_[0-9]*.*"))
                 for filename in filenames:
-                    if not filename.endswith(_HARVEST_EXTENSIONS):
+                    if filename.suffix not in _HARVEST_EXTENSIONS:
                         continue
 
                     # parse filename
-                    rootname, fname = os.path.split(filename)
+                    fname = filename.name
                     match = regex.match(fname)
                     if not match:
                         continue
@@ -299,9 +296,7 @@ class Communicator:
 
                     # Load data into stringIO object (should we just return filehandles?)
                     try:
-                        f = open(filename,'r')
-                        filedata = StringIO(f.read())
-                        f.close()
+                        filedata = StringIO(filename.read_text())
                     except (IOError, OSError):
                         logger.exception("Failed to read file %s" % filename)
                         continue
@@ -370,9 +365,8 @@ class MPI(Communicator):
         self.client_ranks = [ int(r) for r in os.environ['EON_CLIENT_RANKS'].split(os.pathsep) ]
         self.config.comm_job_buffer_size = len(self.client_ranks)
 
-        self.resume_jobs = []
-        if os.path.isdir(self.scratchpath):
-            self.resume_jobs = [ d for d in os.listdir(self.scratchpath) if os.path.isdir(os.path.join(self.scratchpath,d)) ]
+        scratch = Path(self.scratchpath)
+        self.resume_jobs = [p.name for p in scratch.iterdir() if p.is_dir()] if scratch.is_dir() else []
         logger.info("Found %i jobs to resume in %s", len(self.resume_jobs), self.scratchpath)
 
     def submit_jobs(self, data, invariants):
@@ -397,7 +391,7 @@ class MPI(Communicator):
             jobdir = self.resume_jobs.pop()
             rank = ready_ranks.pop()
 
-            jobpath = os.path.join(self.scratchpath,jobdir)
+            jobpath = str(Path(self.scratchpath) / jobdir)
             tmp = numpy.empty(1, dtype='i')
             self.comm.Recv(tmp, source=rank, tag=1)
             #buf = array('c', jobpath+'\0')
@@ -443,14 +437,15 @@ class MPI(Communicator):
             #jobdir = buf[:buf.index('\0')].tostring()
             jobdir = buf[:strindex].tostring()
             #print("jobdir: ",jobdir.decode())
-            jobdir = os.path.split(jobdir)[1].decode()
-            #print("jobdir: ",jobdir)
+            jobdir = Path(jobdir.decode()).name
 
             if self.config.debug_keep_all_results:
-                shutil.copytree(os.path.join(self.scratchpath,jobdir),
-                                os.path.join(self.config.path_root, self.config.debug_results_path, jobdir))
-            dest_dir = os.path.join(resultspath, jobdir)
-            shutil.move(os.path.join(self.scratchpath,jobdir), dest_dir)
+                shutil.copytree(
+                    Path(self.scratchpath) / jobdir,
+                    Path(self.config.path_root) / self.config.debug_results_path / jobdir,
+                )
+            dest_dir = Path(resultspath) / jobdir
+            shutil.move(str(Path(self.scratchpath) / jobdir), str(dest_dir))
         for bundle in self.unbundle(resultspath, keep_result):
             for result in bundle:
                 yield result
@@ -485,17 +480,16 @@ class Local(Communicator):
         self.ncpus = ncpus
 
         # path to the client
-        if os.sep in client or '/' in client:
-            self.client = os.path.abspath(client)
-            if not os.path.isfile(self.client):
+        client_path = Path(client)
+        if os.sep in client or "/" in client:
+            self.client = str(client_path.resolve())
+            if not Path(self.client).is_file():
                 logger.error("Can't find client: %s", client)
                 raise CommunicatorError("Can't find client binary: %s"%client)
         else:
             import shutil
-            # is the client in the local directory?
-            if os.path.isfile(client):
-                self.client = os.path.abspath(client)
-            # is the client in the path?
+            if client_path.is_file():
+                self.client = str(client_path.resolve())
             elif shutil.which(client) is not None:
                 self.client = shutil.which(client)
             else:
@@ -519,24 +513,25 @@ class Local(Communicator):
 
     def get_results(self, resultspath, keep_result):
         '''Moves work from scratchpath to results path.'''
-        jobdirs = [ d for d in os.listdir(self.scratchpath)
-                    if os.path.isdir(os.path.join(self.scratchpath,d)) ]
+        scratch = Path(self.scratchpath)
+        jobdirs = [p.name for p in scratch.iterdir() if p.is_dir()]
 
         for jobdir in jobdirs:
             if self.config.debug_keep_all_results:
-                shutil.copytree(os.path.join(self.scratchpath,jobdir), os.path.join(self.config.path_root, self.config.debug_results_path,jobdir))
-            dest_dir = os.path.join(resultspath, jobdir)
-            shutil.move(os.path.join(self.scratchpath,jobdir), dest_dir)
+                shutil.copytree(
+                    scratch / jobdir,
+                    Path(self.config.path_root) / self.config.debug_results_path / jobdir,
+                )
+            dest_dir = Path(resultspath) / jobdir
+            shutil.move(str(scratch / jobdir), str(dest_dir))
         for bundle in self.unbundle(resultspath, keep_result):
             for result in bundle:
                 yield result
 
         # Clean out scratch directory
-        for name in os.listdir(self.scratchpath):
-            path_name = os.path.join(self.scratchpath, name)
-            if not os.path.isdir(path_name):
-                continue
-            shutil.rmtree(path_name)
+        for path_name in scratch.iterdir():
+            if path_name.is_dir():
+                shutil.rmtree(path_name)
 
     def check_job(self, job):
         p, jobpath = job[0], job[1]
@@ -556,10 +551,9 @@ class Local(Communicator):
             errmsg = "job failed: %s (return code %s)" % (jobpath, rc)
             saw_output = False
             for name in ("stderr.dat", "stdout.dat"):
-                path = os.path.join(jobpath, name)
+                path = Path(jobpath) / name
                 try:
-                    with open(path) as f:
-                        text = f.read().strip()
+                    text = path.read_text().strip()
                 except OSError:
                     text = ""
                 if text:
@@ -586,8 +580,8 @@ class Local(Communicator):
             # (~64 KiB on Linux): the child blocks in anon_pipe_write while
             # the parent only polls p.poll() and never reads the pipe until
             # after exit. FPE floods and long client diagnostics both hit this.
-            fstdout = open(os.path.join(jobpath, "stdout.dat"), 'w')
-            fstderr = open(os.path.join(jobpath, "stderr.dat"), 'w')
+            fstdout = open(Path(jobpath) / "stdout.dat", 'w')
+            fstderr = open(Path(jobpath) / "stderr.dat", 'w')
             p = Popen(self.client, cwd=jobpath, stdout=fstdout, stderr=fstderr)
             self.joblist.append((p, jobpath, fstdout, fstderr))
 
@@ -625,10 +619,11 @@ class Script(Communicator):
                  queued_jobs_cmd, cancel_job_cmd, submit_job_cmd, config: ConfigClass = None):
         Communicator.__init__(self, scratch_path, bundle_size, config=config)
 
-        self.queued_jobs_cmd = os.path.join(scripts_path, queued_jobs_cmd)
-        self.cancel_job_cmd = os.path.join(scripts_path, cancel_job_cmd)
-        self.submit_job_cmd = os.path.join(scripts_path, submit_job_cmd)
-        self.job_id_path = os.path.join(scratch_path, "script_job_ids")
+        scripts = Path(scripts_path)
+        self.queued_jobs_cmd = str(scripts / queued_jobs_cmd)
+        self.cancel_job_cmd = str(scripts / cancel_job_cmd)
+        self.submit_job_cmd = str(scripts / submit_job_cmd)
+        self.job_id_path = str(Path(scratch_path) / "script_job_ids")
 
         self.name_prefix = name_prefix
 
@@ -661,18 +656,24 @@ class Script(Communicator):
         for jobid in finished_jobids:
             finished_eonids.append(int(self.jobids.pop(jobid)))
 
-        jobdirs = [ d for d in os.listdir(self.scratchpath)
-                    if os.path.isdir(os.path.join(self.scratchpath,d))
-                    if int(d.rsplit('_', 1)[-1]) in finished_eonids ]
+        scratch = Path(self.scratchpath)
+        jobdirs = [
+            p.name
+            for p in scratch.iterdir()
+            if p.is_dir() and int(p.name.rsplit("_", 1)[-1]) in finished_eonids
+        ]
 
         #try to return jobs in order
         sort_nicely(jobdirs)
 
         for jobdir in jobdirs:
             if self.config.debug_keep_all_results:
-                shutil.copytree(os.path.join(self.scratchpath,jobdir), os.path.join(self.config.path_root, self.config.debug_results_path,jobdir))
-            dest_dir = os.path.join(resultspath, jobdir)
-            shutil.move(os.path.join(self.scratchpath,jobdir), dest_dir)
+                shutil.copytree(
+                    scratch / jobdir,
+                    Path(self.config.path_root) / self.config.debug_results_path / jobdir,
+                )
+            dest_dir = Path(resultspath) / jobdir
+            shutil.move(str(scratch / jobdir), str(dest_dir))
 
         for bundle in self.unbundle(resultspath, keep_result):
             for result in bundle:
@@ -688,8 +689,8 @@ class Script(Communicator):
             # submit_job.sh jobname jobpath
             # should return a jobid
             # need to associate this jobid with our jobid
-            jobpath = os.path.realpath(jobpath)
-            jobname = "%s_%s" % (self.name_prefix, os.path.basename(jobpath))
+            jobpath = str(Path(jobpath).resolve())
+            jobname = "%s_%s" % (self.name_prefix, Path(jobpath).name)
             eon_jobid = jobname.rsplit('_',1)[-1]
 
             cmd = "%s %s %s" % (self.submit_job_cmd, jobname, jobpath)
