@@ -165,7 +165,7 @@ def test_base_wheel_build_and_import(tmp_path):
             search = os.pathsep.join(
                 p for p in (
                     repair_env.get("PYEONCLIENT_VENDOR_SEARCH_PATHS"),
-                    os.path.join(prefix, "lib"),
+                    str(Path(prefix) / "lib"),
                 ) if p
             )
             repair_env["PYEONCLIENT_VENDOR_SEARCH_PATHS"] = search
