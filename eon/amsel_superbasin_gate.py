@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import json
 import logging
-import os
+from pathlib import Path
 from typing import Any, Mapping
 
 logger = logging.getLogger("superbasin.amsel_gate")
@@ -184,10 +184,10 @@ def _split_cache_path(superbasin: Any) -> str | None:
 
 def load_persisted_split(superbasin: Any) -> list[int] | None:
     cache = _split_cache_path(superbasin)
-    if not cache or not os.path.isfile(cache):
+    if not cache or not Path(cache).is_file():
         return None
     try:
-        with open(cache, encoding="utf-8") as fh:
+        with Path(cache).open(encoding="utf-8") as fh:
             data = json.load(fh)
         keep = [int(x) for x in data.get("keep", [])]
         return keep or None
@@ -200,7 +200,7 @@ def persist_split(superbasin: Any, keep: list[int]) -> None:
     if not cache:
         return
     try:
-        with open(cache, "w", encoding="utf-8") as fh:
+        with Path(cache).open("w", encoding="utf-8") as fh:
             json.dump({"keep": [int(x) for x in keep]}, fh)
     except OSError as exc:
         logger.warning("amsel persist_split failed: %s", exc)
