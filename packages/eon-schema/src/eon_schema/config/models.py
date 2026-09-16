@@ -9,18 +9,19 @@ field names must match schema/eon_params.capnp (Cap'n Proto L0 SSoT).
 Parity is enforced by tests/test_params_ssot.py.
 """
 
+import math
+import random
+from pathlib import Path
+from typing import Any, Optional, Union
+
 from pydantic import (
     BaseModel,
-    Field,
-    validator,
-    model_validator,
     ConfigDict,
+    Field,
+    model_validator,
+    validator,
 )
-from typing import Optional, Any, Union
 from typing_extensions import Literal
-import math
-import os
-import random
 
 
 class MainConfig(BaseModel):
@@ -342,19 +343,26 @@ class PathsConfig(BaseModel):
     @model_validator(mode="before")
     def set_default_paths(cls, values: dict[str, Any]) -> dict[str, Any]:
         main_directory = values.get("main_directory", "./")
+        root = Path(main_directory)
+
+        def _dir(*parts: str) -> str:
+            p = root.joinpath(*parts)
+            s = str(p)
+            return s if s.endswith(("/", "\\")) else s + "/"
+
         defaults = {
-            "jobs_out": os.path.join(main_directory, "jobs", "out", ""),
-            "jobs_in": os.path.join(main_directory, "jobs", "in", ""),
-            "incomplete": os.path.join(main_directory, "jobs", "incomplete", ""),
-            "states": os.path.join(main_directory, "states", ""),
+            "jobs_out": _dir("jobs", "out"),
+            "jobs_in": _dir("jobs", "in"),
+            "incomplete": _dir("jobs", "incomplete"),
+            "states": _dir("states"),
             "results": main_directory,
-            "potential_files": os.path.join(main_directory, "potfiles"),
-            "bh_minima": os.path.join(main_directory, "minima"),
-            "kdb_scratch": os.path.join(main_directory, "kdbscratch", ""),
-            "kdb": os.path.join(main_directory, "kdb", ""),
-            "superbasins": os.path.join(main_directory, "superbasins", ""),
-            "superbasin_recycling": os.path.join(main_directory, "SB_recycling"),
-            "scratch": os.path.join(main_directory, "jobs", "scratch", ""),
+            "potential_files": str(root / "potfiles"),
+            "bh_minima": str(root / "minima"),
+            "kdb_scratch": _dir("kdbscratch"),
+            "kdb": _dir("kdb"),
+            "superbasins": _dir("superbasins"),
+            "superbasin_recycling": str(root / "SB_recycling"),
+            "scratch": _dir("jobs", "scratch"),
         }
         for field, default in defaults.items():
             if values.get(field) is None:
