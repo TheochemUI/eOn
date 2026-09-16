@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 
-import os
 import sys
+from pathlib import Path
 
-if not os.path.isdir('states'):
+if not Path("states").is_dir():
 	print('Abort: this script should be executed in an akmc directory with a states subdirectory present')
 	sys.exit()
 
 
 print('%10s %10s %10s %10s %10s %10s %10s %10s %10s %10s' % ('state', 'good', 'NC', 'energy', 'iterations', 'nonlocal', 'barrier', 'nonneg', 'prefactor', 'unknown'))
 i = 0
-while os.path.isdir(os.path.join('states', str(i))):
-	results = open(os.path.join('states', str(i), 'search_results.txt'), 'r').readlines()[2:]
+while (Path("states") / str(i)).is_dir():
+	results = (Path("states") / str(i) / "search_results.txt").read_text().splitlines()[2:]
 	good = 0
 	nc = 0
 	energy = 0

@@ -9,9 +9,10 @@
 ## http://www.gnu.org/licenses/
 ##-----------------------------------------------------------------------------------
 
-import os
 import math
+import os
 import time
+from pathlib import Path
 import gtk
 import gtk.gdk as gdk
 import gtk.glade as glade
@@ -34,7 +35,7 @@ class akmcgui(atomview.atomview):
 
     def __init__(self):
         # imports from glade
-        gladetree = gtk.glade.XML(os.path.join(pathfix.path, "tools/akmc-gui.glade"))
+        gladetree = gtk.glade.XML(str(Path(pathfix.path) / "tools" / "akmc-gui.glade"))
         gui = gladetree.get_widget("akmcgui")
         atomview.atomview.__init__(self, gui)
         self.stateScale = gladetree.get_widget("stateScale")
@@ -63,7 +64,7 @@ class akmcgui(atomview.atomview):
         self.pauseImage.set_from_stock(gtk.STOCK_MEDIA_PAUSE, gtk.ICON_SIZE_BUTTON)
         self.statePlayTB.set_image(self.playImage)
         self.plotImage = gtk.Image()
-        image = gdk.pixbuf_new_from_file_at_size(os.path.join(pathfix.path, "tools/plot_icon.png"), 15, 15)
+        image = gdk.pixbuf_new_from_file_at_size(str(Path(pathfix.path) / "tools" / "plot_icon.png"), 15, 15)
         self.plotImage.set_from_pixbuf(image)
         self.energy_plotButton.set_image(self.plotImage)
         self.directory = "./config.ini"
@@ -96,7 +97,7 @@ class akmcgui(atomview.atomview):
     def startup(self, *args):
         importlib.reload(config)
         config.init(self.directory)
-        config.path_root = os.path.dirname(self.directory)
+        config.path_root = str(Path(self.directory).parent)
         #changing path_states could cause errors
         config.path_states = "%s/states/" % config.path_root
         self.tempLabel.set_text(str(config.main_temperature))

@@ -10,9 +10,10 @@
 ##-----------------------------------------------------------------------------------
 # Author: Ian Johnson
 
-import os
 import math
+import os
 import time
+from pathlib import Path
 import gtk
 import gtk.gdk as gdk
 import gtk.glade as glade
@@ -33,7 +34,7 @@ import importlib
 class BHgui(atomview.atomview):
     def __init__(self):
         # Glade imports
-        gladetree = gtk.glade.XML(os.path.join(pathfix.path, "tools/bh-gui.glade"))
+        gladetree = gtk.glade.XML(str(Path(pathfix.path) / "tools" / "bh-gui.glade"))
         gui = gladetree.get_widget("BHgui")
         atomview.atomview.__init__(self,gui)
         self.stateSB = gladetree.get_widget("stateSB")
@@ -46,7 +47,7 @@ class BHgui(atomview.atomview):
         self.acceptanceratio = gladetree.get_widget("acceptanceratio")
         # Image setting
         self.eplotImage = gtk.Image()
-        image = gdk.pixbuf_new_from_file_at_size(os.path.join(pathfix.path, "tools/plot_icon.png"), 15, 15)
+        image = gdk.pixbuf_new_from_file_at_size(str(Path(pathfix.path) / "tools" / "plot_icon.png"), 15, 15)
         self.eplotImage.set_from_pixbuf(image)
         self.energyplotButton.set_image(self.eplotImage)
         self.rplotImage = gtk.Image()
@@ -56,7 +57,7 @@ class BHgui(atomview.atomview):
         self.directory = "./config.ini"
         importlib.reload(config)
         config.init(self.directory)
-        config.path_root = os.path.dirname(self.directory)
+        config.path_root = str(Path(self.directory).parent)
         config.path_states = "%s/states/" % config.path_root
         # Signal connectors
         self.stateScale.connect("value-changed", self.changeImage)
