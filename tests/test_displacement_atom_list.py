@@ -1,7 +1,6 @@
 """Tests for the displacement atom list script feature."""
 
 import logging
-import os
 from pathlib import Path
 from unittest import mock
 
@@ -162,12 +161,13 @@ class TestStateGetDisplacementAtomList:
         state.number = 0
         state.procs = None
         state.proc_repeat_count = None
-        state.procdata_path = os.path.join(state.path, "procdata")
-        state.reactant_path = os.path.join(state.path, "reactant.con")
-        state.proctable_path = os.path.join(state.path, "processtable")
-        state.search_result_path = os.path.join(state.path, "search_results.txt")
-        state.tar_path = os.path.join(state.path, "procdata.tar")
-        state.info = io.ini(os.path.join(state.path, "info"))
+        root = Path(state.path)
+        state.procdata_path = str(root / "procdata")
+        state.reactant_path = str(root / "reactant.con")
+        state.proctable_path = str(root / "processtable")
+        state.search_result_path = str(root / "search_results.txt")
+        state.tar_path = str(root / "procdata.tar")
+        state.info = io.ini(str(root / "info"))
         return state
 
     def test_caches_result(self, tmp_path):
@@ -231,7 +231,7 @@ class TestExplorerAtomListInjection:
 
         state_dir = tmp_path / "state_0"
         state_dir.mkdir(exist_ok=True)
-        info = io.ini(os.path.join(str(state_dir), "info"))
+        info = io.ini(str(Path(state_dir) / "info"))
         if atom_list_str:
             info.set("Saddle Search", "displace_atom_list", atom_list_str)
 

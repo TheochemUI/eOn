@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
-import subprocess
 import datetime
-import os
+import subprocess
+from pathlib import Path
 
 
 def get_semantic_version():
     """Read version from pyproject.toml (single source of truth)."""
-    toml_path = os.path.join(os.path.dirname(__file__), "..", "pyproject.toml")
-    with open(toml_path) as fid:
+    toml_path = Path(__file__).resolve().parent.parent / "pyproject.toml"
+    with toml_path.open() as fid:
         for line in fid:
             if line.startswith("version ="):
                 return line.strip().split(" = ")[1].strip('"').strip("'")

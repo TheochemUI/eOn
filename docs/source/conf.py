@@ -68,13 +68,14 @@ myst_enable_extensions = [
 # CI sets NB_EXECUTION_MODE=cache (still executes on miss; faster reruns).
 # Local/default remains "force" so authors always see live notebook output.
 import os as _os
+from pathlib import Path as _Path
 
 nb_execution_mode = _os.environ.get("NB_EXECUTION_MODE", "force")
 nb_execution_timeout = 600
 nb_execution_raise_on_error = False
 nb_execution_show_tb = True
 # Persist myst-nb execution results under docs/source for actions/cache restore.
-nb_execution_cache_path = _os.path.join(_os.path.dirname(__file__), ".jupyter_cache")
+nb_execution_cache_path = str(_Path(__file__).resolve().parent / ".jupyter_cache")
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
