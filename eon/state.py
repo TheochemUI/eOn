@@ -1,11 +1,13 @@
 
 """ The state module. """
 
+import logging
 import os
 import shutil
 import tempfile
-import logging
-logger = logging.getLogger('state')
+from pathlib import Path
+
+logger = logging.getLogger("state")
 from configparser import ConfigParser
 
 from eon import fileio as io
@@ -32,15 +34,16 @@ class State:
         self.procs = None
         self.proc_repeat_count = None
 
-        self.procdata_path = os.path.join(self.path, "procdata")
-        self.reactant_path = os.path.join(self.path, "reactant.con")
-        self.proctable_path = os.path.join(self.path, "processtable")
-        self.search_result_path = os.path.join(self.path, "search_results.txt")
-        self.tar_path = os.path.join(self.path, "procdata.tar")
-        self.info = io.ini(os.path.join(self.path, "info"))
+        root = Path(self.path)
+        self.procdata_path = str(root / "procdata")
+        self.reactant_path = str(root / "reactant.con")
+        self.proctable_path = str(root / "processtable")
+        self.search_result_path = str(root / "search_results.txt")
+        self.tar_path = str(root / "procdata.tar")
+        self.info = io.ini(str(root / "info"))
 
         # If this state does not exist on disk, create it.
-        if not os.path.isdir(self.path):
+        if not Path(self.path).is_dir():
             if reactant_path is None:
                 raise IOError("State needs a reactant_path when it is being instantiated to disk")
             self._create_on_disk(reactant_path, previous_state_num)
@@ -53,12 +56,11 @@ class State:
         and no processes. Everything lands in a sibling directory that is
         renamed once complete, leaving the state either whole or absent.
         """
-        parent = os.path.dirname(os.path.abspath(self.path))
-        staging = tempfile.mkdtemp(dir=parent,
-                                   prefix=".%s-" % os.path.basename(self.path))
+        parent = str(Path(self.path).resolve().parent)
+        staging = tempfile.mkdtemp(dir=parent, prefix=".%s-" % Path(self.path).name)
         try:
             def staged(path):
-                return os.path.join(staging, os.path.basename(path))
+                return str(Path(staging) / Path(path).name)
 
             os.mkdir(staged(self.procdata_path))
             shutil.copy(reactant_path, staged(self.reactant_path))
@@ -77,7 +79,7 @@ class State:
             os.rename(staging, self.path)
         except OSError:
             shutil.rmtree(staging, ignore_errors=True)
-            if not os.path.isdir(self.path):
+            if not Path(self.path).is_dir():
                 raise
             # Another process finished this state first; keep its copy.
 
@@ -115,13 +117,13 @@ class State:
 
     # Utility functions for compiling procdata paths, whether the files exist or not.
     def proc_reactant_path(self, id):
-        return os.path.join(self.procdata_path, "reactant_%d.con" % id)
+        return str(Path(self.procdata_path) / ("reactant_%d.con" % id))
     def proc_product_path(self, id):
-        return os.path.join(self.procdata_path, "product_%d.con" % id)
+        return str(Path(self.procdata_path) / ("product_%d.con" % id))
     def proc_results_path(self, id):
-        return os.path.join(self.procdata_path, "results_%d.dat" % id)
+        return str(Path(self.procdata_path) / ("results_%d.dat" % id))
     def proc_stdout_path(self, id):
-        return os.path.join(self.procdata_path, "stdout_%d.dat" % id)
+        return str(Path(self.procdata_path) / ("stdout_%d.dat" % id))
 
     def get_process(self, id):
         self.load_process_table()
