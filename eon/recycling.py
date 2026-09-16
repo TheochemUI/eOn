@@ -1,10 +1,12 @@
-
 import ast
-import os
+from pathlib import Path
+
 import numpy
+
 from eon import atoms
 from eon import fileio as io
-from eon.config import ConfigClass # Typing
+from eon.config import ConfigClass  # Typing
+
 
 class SB_Recycling:
     """ Constructs a super-basin recycling object.
@@ -47,8 +49,7 @@ class SB_Recycling:
         self.superbasining = superbasining
 
         # Establish the working directory.
-        if not os.path.isdir(self.path):
-            os.mkdir(self.path)
+        Path(self.path).mkdir(exist_ok=True)
 
         # Read in the metadata from before.  This sets the following:
         # self.sb_state_nums, self.on_state_num, and self.in_progress
@@ -93,11 +94,11 @@ class SB_Recycling:
                 else:
                     self.in_progress = False
             elif self.sb_scheme == "askmc":
-                if os.path.isfile(os.path.join(self.path, "current_sb_states")):
-                    fi = open(os.path.join(self.path, "current_sb_states"), "r")
-                    fi.readline() # The header
-                    self.sb_state_nums = ast.literal_eval(fi.readline())
-                    fi.close()
+                sb_states_path = Path(self.path) / "current_sb_states"
+                if sb_states_path.is_file():
+                    with sb_states_path.open() as fi:
+                        fi.readline()  # The header
+                        self.sb_state_nums = ast.literal_eval(fi.readline())
                     # If the previous state was not in the last superbasin
                     if self.previous_state.number not in self.sb_state_nums:
                         self.sb_state_nums = [[number, None] for number in self.sb_state_nums]
@@ -167,27 +168,24 @@ class SB_Recycling:
     def write_metadata(self):
         """ Write to disk the superbasin state list, and the new possibilities to consider.
             Also write how far along in this superbasin recycling process we are. """
-        data_path = os.path.join(self.path, "recycling_data.txt")
-        fo = open(data_path, "w")
-        fo.write("Superbasin Recycling Metadata\n")
-        fo.write("'Prev_Superbasin_state_list' = %s\n"          % repr(self.sb_state_nums))
-        fo.write("'in_progress' = %s\n"                         % self.in_progress)
-        fo.close()
+        data_path = Path(self.path) / "recycling_data.txt"
+        data_path.write_text(
+            "Superbasin Recycling Metadata\n"
+            "'Prev_Superbasin_state_list' = %s\n" % repr(self.sb_state_nums)
+            + "'in_progress' = %s\n" % self.in_progress
+        )
 
     def read_metadata(self):
         """ Read the metadata and return the superbasin state list, the "current/previous"
             states, and how far along in the superbasin recycling process we are. """
-        data_path = os.path.join(self.path, "recycling_data.txt")
-        # If the metadata is not there yet,
-        if not os.path.isfile(data_path):
+        data_path = Path(self.path) / "recycling_data.txt"
+        if not data_path.is_file():
             self.sb_state_nums = []
             return None
-        else:
-            fi = open(data_path, "r")
-            fi.readline() # The header
-            self.sb_state_nums  = ast.literal_eval(fi.readline().split("=")[1])
-            self.in_progress    = ast.literal_eval(fi.readline().strip().split()[2])
-            fi.close()
+        with data_path.open() as fi:
+            fi.readline()  # The header
+            self.sb_state_nums = ast.literal_eval(fi.readline().split("=")[1])
+            self.in_progress = ast.literal_eval(fi.readline().strip().split()[2])
 
     def generate_corresponding_states(self):
         """ Generate the list of reactants expected as part of the new superbasin.
@@ -262,10 +260,11 @@ class SB_Recycling:
                 if (max(sb_state.procs[process_id]["rate"] / ref_rate, ref_rate / sb_state.procs[process_id]["rate"]) < 10
                   and abs(sb_state.procs[process_id]["barrier"] - ref_barrier) < 0.2):
                     # Manually load the product.con for the process id and see if it's similar to the "state_possibility"
-                    product_path = os.path.join(state_path, "procdata", "product_%d.con" % process_id)
-                    fi = open(product_path, "r")
-                    product_con = io.loadcon(fi)
-                    fi.close()
+                    product_path = (
+                        Path(state_path) / "procdata" / ("product_%d.con" % process_id)
+                    )
+                    with product_path.open() as fi:
+                        product_con = io.loadcon(fi)
                     if atoms.identical(product_con, state_possibilities[indices_to_gen_from.index(i)], self.move_distance):
                         break
                     else:
@@ -301,12 +300,12 @@ class Recycling:
         self.states = states
         self.ref_state = suggested_ref_state
         self.current_state = new_state
-        self.metadata_path = os.path.join(self.current_state.path, "recycling_info")
+        self.metadata_path = Path(self.current_state.path) / "recycling_info"
         self.from_sb = from_sb
         self.save = save
         # If this state has already used the recycling process, we know
         # most of what we need about the state.
-        if os.path.isfile(self.metadata_path):
+        if self.metadata_path.is_file():
             # Establish (1) self.process_number, (2) self.num_procs,
             # (3) self.in_hole, (4) and self.not_in_hole.
             # Overwrite self.ref_state if not called by SB_recycling
@@ -398,12 +397,10 @@ class Recycling:
 
         # Save suggestions?
         if self.save:
-            save_path = os.path.join(self.current_state.path, "saddle_suggestions")
-            if not os.path.isdir(save_path):
-                os.mkdir(save_path)
-            fo = open(os.path.join(save_path, "proc_%d" %self.process_number), "w")
-            io.savecon(fo, saddle)
-            fo.close()
+            save_path = Path(self.current_state.path) / "saddle_suggestions"
+            save_path.mkdir(exist_ok=True)
+            with (save_path / ("proc_%d" % self.process_number)).open("w") as fo:
+                io.savecon(fo, saddle)
 
         # Make a note of the fact that we've tried to recycle another saddle.
         self.process_number += 1
@@ -417,19 +414,19 @@ class Recycling:
         """ Open the recycling metadata file located in the current state's directory.
             Return the state from which suggestions are being made.
             Return the process number current up for recycling consideration. """
-        fi = open(self.metadata_path, "r")
-        fi.readline() # The header
-        lines = fi.readlines()
+        with Path(self.metadata_path).open() as fi:
+            fi.readline()  # The header
+            lines = fi.readlines()
         # If called from superbasin recycling, use its
         # recommendation for reference state.
         if not self.from_sb:
             ref_state_num = int(lines[0].strip().split()[2])
             self.ref_state = self.states.get_state(ref_state_num)
-        self.process_number = int(lines[1].split('=')[1].strip())
-        self.num_procs = int(lines[2].split('=')[1].strip())
-        self.moved = ast.literal_eval(lines[3].split('=')[1].strip())
-        self.unmoved = ast.literal_eval(lines[4].split('=')[1].strip())
-        self.process_atoms = ast.literal_eval(lines[5].split('=')[1].strip())
+        self.process_number = int(lines[1].split("=")[1].strip())
+        self.num_procs = int(lines[2].split("=")[1].strip())
+        self.moved = ast.literal_eval(lines[3].split("=")[1].strip())
+        self.unmoved = ast.literal_eval(lines[4].split("=")[1].strip())
+        self.process_atoms = ast.literal_eval(lines[5].split("=")[1].strip())
         # Rebuild dense index -> process id map from the live table (ids may
         # be sparse content hashes; metadata only stores the ordinal).
         self.ref_state.load_process_table()
@@ -439,14 +436,15 @@ class Recycling:
 
     def write_recycling_metadata(self):
         """ Write the recycling metadata file located in the current state's directory. """
-        fo = open(self.metadata_path, "w")
-        fo.write("Recycling Metadata\n")
-        fo.write("Reference State:  %d\n" %(self.ref_state.number))
-        fo.write("Current Process Number = %d\n" %(self.process_number))
-        fo.write("Number of processes = %d\n" %(self.num_procs))
-        fo.write("Indices of 'moved' atoms = %s\n" %(repr(self.moved)))
-        fo.write("Indices of 'unmoved' atoms = %s\n" %(repr(self.unmoved)))
-        fo.write("Indices of 'process' atoms = %s\n" %(repr(self.process_atoms)))
+        Path(self.metadata_path).write_text(
+            "Recycling Metadata\n"
+            "Reference State:  %d\n" % self.ref_state.number
+            + "Current Process Number = %d\n" % self.process_number
+            + "Number of processes = %d\n" % self.num_procs
+            + "Indices of 'moved' atoms = %s\n" % repr(self.moved)
+            + "Indices of 'unmoved' atoms = %s\n" % repr(self.unmoved)
+            + "Indices of 'process' atoms = %s\n" % repr(self.process_atoms)
+        )
 
     def get_moved_indices(self):
         """ Return the indices of atoms that moved in the process getting
