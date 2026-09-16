@@ -5,6 +5,7 @@ import os
 import tempfile
 import textwrap
 import unittest
+from pathlib import Path
 
 import numpy as np
 
@@ -26,7 +27,7 @@ MINIMAL_INI = textwrap.dedent(
 
 
 def _write_ini(directory: str, name: str = "config.ini") -> str:
-    path = os.path.join(directory, name)
+    path = str(Path(directory) / name)
     with open(path, "w") as fh:
         fh.write(MINIMAL_INI)
     return path
@@ -58,8 +59,8 @@ class TestCommunicatorIndependence(unittest.TestCase):
             path_a = _write_ini(d1, "a.ini")
             path_b = _write_ini(d2, "b.ini")
             # Local validates absolute client paths; provide dummy executables.
-            client_a = os.path.join(d1, "dummy_client")
-            client_b = os.path.join(d2, "dummy_client")
+            client_a = str(Path(d1) / "dummy_client")
+            client_b = str(Path(d2) / "dummy_client")
             for c in (client_a, client_b):
                 with open(c, "w") as fh:
                     fh.write("#!/bin/sh\n")
@@ -70,7 +71,7 @@ class TestCommunicatorIndependence(unittest.TestCase):
                 cfg_a = ConfigClass()
                 cfg_a.init(path_a)
                 cfg_a.path_root = d1
-                cfg_a.path_scratch = os.path.join(d1, "scratch")
+                cfg_a.path_scratch = str(Path(d1) / "scratch")
                 cfg_a.comm_type = "local"
                 cfg_a.comm_local_client = client_a
                 cfg_a.comm_local_ncpus = 1
@@ -80,7 +81,7 @@ class TestCommunicatorIndependence(unittest.TestCase):
                 cfg_b = ConfigClass()
                 cfg_b.init(path_b)
                 cfg_b.path_root = d2
-                cfg_b.path_scratch = os.path.join(d2, "scratch")
+                cfg_b.path_scratch = str(Path(d2) / "scratch")
                 cfg_b.comm_type = "local"
                 cfg_b.comm_local_client = client_b
                 cfg_b.comm_local_ncpus = 2

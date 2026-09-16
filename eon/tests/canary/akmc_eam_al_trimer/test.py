@@ -2,11 +2,12 @@
 
 import os
 import sys
+from pathlib import Path
 sys.path.insert(0, "../../")
 from ndiff import ndiff
 
-test_path = os.path.split(os.path.realpath(__file__))[0]
-test_name = os.path.basename(test_path)
+test_path = str(Path(__file__).resolve().parent)
+test_name = Path(test_path).name
 
 os.system("../../../akmc.py --reset --force --quiet")
 for i in range(15):
