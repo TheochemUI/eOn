@@ -6,6 +6,7 @@ from eon_schema.config import (
     Metatomic,
     PotentialConfig,
     SaddleSearchConfig,
+    XtsciConfig,
 )
 
 
@@ -35,3 +36,21 @@ def test_saddle_search_accepts_scalar_minus_one_atom_list():
     assert listed.displace_atom_list == [0, 2, 4]
     csv = SaddleSearchConfig(displace_atom_list="0, 1, 2")
     assert csv.displace_atom_list == "0, 1, 2"
+
+
+def test_xtsci_is_an_engine_with_methods():
+    assert XtsciConfig().method == "lbfgs"
+    assert XtsciConfig(method="newton").method == "newton"
+    assert XtsciConfig(method="polak_ribiere").method == "polak_ribiere"
+    assert XtsciConfig().qn_step == "lbfgs"
+    assert XtsciConfig().precon == "none"
+    assert XtsciConfig().accept == "none"
+    assert XtsciConfig().manifold == "euclidean"
+    assert XtsciConfig(qn_step="newton", precon="pair").qn_step == "newton"
+    assert XtsciConfig(qn_step="newton", precon="pair").precon == "pair"
+    assert XtsciConfig(accept="nonmonotone").accept == "nonmonotone"
+    assert "method" in XtsciConfig.model_fields
+    assert "qn_step" in XtsciConfig.model_fields
+    assert "precon" in XtsciConfig.model_fields
+    assert "accept" in XtsciConfig.model_fields
+    assert "xtsci_method" not in XtsciConfig.model_fields

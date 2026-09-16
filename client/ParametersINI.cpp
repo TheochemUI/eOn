@@ -557,32 +557,71 @@ int load_ini(INIReader &ini, Parameters &params) {
         ParametersLoadAccess::optimizer_options(params).max_time_step_input /
         ParametersLoadAccess::constants(params).timeUnit;
   }
-  if (ini.HasSection("LBFGS")) {
+  // 2014 optbench INI puts lbfgs_* on [Optimizer]. Prefer [LBFGS] when present.
+  {
+    const char *lbfgs_sec = ini.HasSection("LBFGS") ? "LBFGS" : "Optimizer";
     ParametersLoadAccess::optimizer_options(params).lbfgs.memory =
         ini.GetInteger(
-            "LBFGS", "lbfgs_memory",
+            lbfgs_sec, "lbfgs_memory",
             ParametersLoadAccess::optimizer_options(params).lbfgs.memory);
     ParametersLoadAccess::optimizer_options(params).lbfgs.inverse_curvature =
-        ini.GetReal("LBFGS", "lbfgs_inverse_curvature",
+        ini.GetReal(lbfgs_sec, "lbfgs_inverse_curvature",
                     ParametersLoadAccess::optimizer_options(params)
                         .lbfgs.inverse_curvature);
     ParametersLoadAccess::optimizer_options(params)
         .lbfgs.max_inverse_curvature =
-        ini.GetReal("LBFGS", "lbfgs_max_inverse_curvature",
+        ini.GetReal(lbfgs_sec, "lbfgs_max_inverse_curvature",
                     ParametersLoadAccess::optimizer_options(params)
                         .lbfgs.max_inverse_curvature);
-    ParametersLoadAccess::optimizer_options(params).lbfgs.auto_scale =
-        ini.GetBoolean(
-            "LBFGS", "lbfgs_auto_scale",
-            ParametersLoadAccess::optimizer_options(params).lbfgs.auto_scale);
-    ParametersLoadAccess::optimizer_options(params).lbfgs.angle_reset =
-        ini.GetBoolean(
-            "LBFGS", "lbfgs_angle_reset",
-            ParametersLoadAccess::optimizer_options(params).lbfgs.angle_reset);
-    ParametersLoadAccess::optimizer_options(params).lbfgs.distance_reset =
-        ini.GetBoolean("LBFGS", "lbfgs_distance_reset",
-                       ParametersLoadAccess::optimizer_options(params)
-                           .lbfgs.distance_reset);
+    auto &lbfgs = ParametersLoadAccess::optimizer_options(params).lbfgs;
+    lbfgs.auto_scale = ini.GetBoolean(lbfgs_sec, "lbfgs_auto_scale",
+                                      lbfgs.auto_scale);
+    lbfgs.angle_reset = ini.GetBoolean(lbfgs_sec, "lbfgs_angle_reset",
+                                       lbfgs.angle_reset);
+    lbfgs.distance_reset = ini.GetBoolean(lbfgs_sec, "lbfgs_distance_reset",
+                                          lbfgs.distance_reset);
+    lbfgs.curvature = toLowerCase(
+        ini.Get(lbfgs_sec, "lbfgs_curvature", lbfgs.curvature));
+    lbfgs.project_rigid = ini.GetBoolean(lbfgs_sec, "lbfgs_project_rigid",
+                                         lbfgs.project_rigid);
+    lbfgs.secant =
+        toLowerCase(ini.Get(lbfgs_sec, "lbfgs_secant", lbfgs.secant));
+    lbfgs.precon =
+        toLowerCase(ini.Get(lbfgs_sec, "lbfgs_precon", lbfgs.precon));
+    lbfgs.step = toLowerCase(ini.Get(lbfgs_sec, "lbfgs_step", lbfgs.step));
+    lbfgs.h0 = toLowerCase(ini.Get(lbfgs_sec, "lbfgs_h0", lbfgs.h0));
+    lbfgs.accept =
+        toLowerCase(ini.Get(lbfgs_sec, "lbfgs_accept", lbfgs.accept));
+    lbfgs.extra_updates = ini.GetInteger(lbfgs_sec, "lbfgs_extra_updates",
+                                         lbfgs.extra_updates);
+    lbfgs.cautious_eps =
+        ini.GetReal(lbfgs_sec, "lbfgs_cautious_eps", lbfgs.cautious_eps);
+    lbfgs.cautious_alpha =
+        ini.GetReal(lbfgs_sec, "lbfgs_cautious_alpha", lbfgs.cautious_alpha);
+    lbfgs.precon_A = ini.GetReal(lbfgs_sec, "lbfgs_precon_A", lbfgs.precon_A);
+    lbfgs.precon_mu =
+        ini.GetReal(lbfgs_sec, "lbfgs_precon_mu", lbfgs.precon_mu);
+    lbfgs.precon_rcut =
+        ini.GetReal(lbfgs_sec, "lbfgs_precon_rcut", lbfgs.precon_rcut);
+  }
+  {
+    auto &xtsci = ParametersLoadAccess::optimizer_options(params).xtsci;
+    xtsci.method = toLowerCase(
+        ini.Get("Optimizer", "xtsci_method", xtsci.method));
+    if (ini.HasSection("Xtsci")) {
+      xtsci.method = toLowerCase(ini.Get(
+          "Xtsci", "method", ini.Get("Xtsci", "xtsci_method", xtsci.method)));
+      xtsci.qn_step = toLowerCase(ini.Get("Xtsci", "qn_step", xtsci.qn_step));
+      xtsci.precon = toLowerCase(ini.Get("Xtsci", "precon", xtsci.precon));
+      xtsci.accept = toLowerCase(ini.Get("Xtsci", "accept", xtsci.accept));
+      xtsci.highs = ini.GetBoolean(
+          "Xtsci", "highs",
+          ini.GetBoolean("Xtsci", "xtsci_highs", xtsci.highs));
+      xtsci.manifold = toLowerCase(ini.Get(
+          "Xtsci", "manifold", ini.Get("Xtsci", "xtsci_manifold", xtsci.manifold)));
+    }
+    xtsci.highs = ini.GetBoolean("Optimizer", "xtsci_highs", xtsci.highs);
+    ParametersLoadAccess::optimizer_options(params).xtsci_method = xtsci.method;
   }
   if (ini.HasSection("CG")) {
     ParametersLoadAccess::optimizer_options(params).cg.no_overshooting =
@@ -1220,6 +1259,8 @@ int load_ini(INIReader &ini, Parameters &params) {
   oci.ci_stability_count = ini.GetInteger(
       neb_section, "ci_mmf_ci_stability_count", oci.ci_stability_count);
   oci.angle_tol = ini.GetReal(neb_section, "ci_mmf_angle", oci.angle_tol);
+  oci.restore_unhelpful = ini.GetBoolean(
+      neb_section, "ci_mmf_restore_unhelpful", oci.restore_unhelpful);
 
   auto &init = ParametersLoadAccess::neb_options(params).initialization;
   init.method =

@@ -219,6 +219,15 @@ struct saddle_search_options_t {
 // [Optimizer] //
 struct optimizer_options_t {
   OptType method{OptType::CG};
+  std::string xtsci_method{"lbfgs"};
+  struct xtsci_t {
+    std::string method{"lbfgs"};
+    std::string qn_step{"lbfgs"};
+    std::string precon{"none"};
+    std::string accept{"energy"};
+    bool highs{false};
+    std::string manifold{"euclidean"};
+  } xtsci;
   std::string convergence_metric{"norm"};
   std::string convergence_metric_label;
   size_t max_iterations{1000};
@@ -239,6 +248,23 @@ struct optimizer_options_t {
     bool auto_scale{true};
     bool angle_reset{true};
     bool distance_reset{true};
+    // reset: wipe memory on bad s·y (ASE). skip: Li-Fukushima cautious
+    // skip of that pair. damped: Powell (1978) ŷ = θy+(1-θ)B0 s.
+    std::string curvature{"reset"};
+    // Isolated clusters: project 6 rigid-body modes out of the
+    // L-BFGS force and step. Off for PBC / frozen atoms.
+    bool project_rigid{false};
+    std::string secant{"standard"};
+    std::string precon{"none"};
+    std::string step{"lbfgs"};
+    std::string h0{"sy_yy"};
+    std::string accept{"energy"};
+    long extra_updates{0};
+    double cautious_eps{1.0e-6};
+    double cautious_alpha{0.01};
+    double precon_A{3.0};
+    double precon_mu{1.0};
+    double precon_rcut{0.0};
   } lbfgs;
   struct cg_t {
     bool no_overshooting{false};
@@ -522,6 +548,9 @@ struct neb_options_t {
       long ci_stability_count{5};
       double angle_tol{0.7071}; // 1/sqrt(2): Householder stability bound
       double trigger_factor{0.0};
+      // Off: Frontiers / published OCINEB. On: restore CI when MMF
+      // does not improve the band force (OptBench pair 26).
+      bool restore_unhelpful{false};
     } ocineb;
   } climbing_image;
 

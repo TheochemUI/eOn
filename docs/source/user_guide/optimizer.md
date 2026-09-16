@@ -1,8 +1,8 @@
 ---
 myst:
   html_meta:
-    "description": "Configuration options for the various geometry optimizers in eOn, including LBFGS, QuickMin, FIRE, CG, and SD."
-    "keywords": "eOn optimizer, LBFGS, QuickMin, FIRE, CG, SD, geometry optimization"
+    "description": "Configuration options for the various geometry optimizers in eOn, including LBFGS, QuickMin, FIRE, CG, SD, and xtsci."
+    "keywords": "eOn optimizer, LBFGS, QuickMin, FIRE, CG, SD, xtsci, Newton, RFO, geometry optimization"
 ---
 
 # Optimizer
@@ -80,6 +80,45 @@ Each of the optimizer methods have their own settings as well.
 
 ```{eval-rst}
 .. autopydantic_model:: eon.schema.SDConfig
+```
+
+### Xtsci
+
+``opt_method = xtsci`` selects the xtsci-optimize engine. The solver
+inside that engine is ``[Xtsci] method``. Build with
+``-Dwith_xtsci=true``. The adapter holds an ``xts_solver_t`` session;
+each ``step()`` is one outer iteration so L-BFGS pairs and NLCG
+conjugacy survive the host loop.
+
+``[Xtsci] qn_step``, ``precon``, and ``accept`` are the first-class
+knobs for an L-BFGS session. They map onto
+``xts_solver_set_qn_step``, ``xts_solver_step_hess_fg``, and
+``xts_solver_set_accept``. Energy and forces share one
+``potential->force()`` call. ``accept = none`` takes the
+maxmove-clipped step (one geometry). ``nonmonotone`` is the Grippo
+window used by the rematch INI. The pair / Lindh matrix is still
+built in eOn. Two-loop plus that matrix is \(H_0 = P^{-1}\);
+``qn_step = newton`` is regularized Newton on the same ``P``.
+``method = newton`` is a different, memoryless Newton solver.
+
+The native ``[LBFGS]`` optimizer is unchanged. ``lbfgs_step``,
+``lbfgs_precon``, and ``lbfgs_accept`` still drive it, and the
+xtsci adapter falls back to them when the ``[Xtsci]`` fields are
+left at their defaults.
+
+```{code-block} ini
+[Optimizer]
+opt_method = xtsci
+
+[Xtsci]
+method = lbfgs
+qn_step = newton
+precon = pair
+accept = nonmonotone
+```
+
+```{eval-rst}
+.. autopydantic_model:: eon.schema.XtsciConfig
 ```
 
 ## References

@@ -122,12 +122,40 @@ json to_json(const Parameters &p) {
       {"memory", ParametersLoadAccess::optimizer_options(p).lbfgs.memory},
       {"inverse_curvature",
        ParametersLoadAccess::optimizer_options(p).lbfgs.inverse_curvature},
+      {"max_inverse_curvature",
+       ParametersLoadAccess::optimizer_options(p).lbfgs.max_inverse_curvature},
       {"auto_scale",
        ParametersLoadAccess::optimizer_options(p).lbfgs.auto_scale},
       {"angle_reset",
        ParametersLoadAccess::optimizer_options(p).lbfgs.angle_reset},
       {"distance_reset",
        ParametersLoadAccess::optimizer_options(p).lbfgs.distance_reset},
+      {"curvature", ParametersLoadAccess::optimizer_options(p).lbfgs.curvature},
+      {"project_rigid",
+       ParametersLoadAccess::optimizer_options(p).lbfgs.project_rigid},
+      {"secant", ParametersLoadAccess::optimizer_options(p).lbfgs.secant},
+      {"precon", ParametersLoadAccess::optimizer_options(p).lbfgs.precon},
+      {"step", ParametersLoadAccess::optimizer_options(p).lbfgs.step},
+      {"h0", ParametersLoadAccess::optimizer_options(p).lbfgs.h0},
+      {"accept", ParametersLoadAccess::optimizer_options(p).lbfgs.accept},
+      {"extra_updates",
+       ParametersLoadAccess::optimizer_options(p).lbfgs.extra_updates},
+      {"cautious_eps",
+       ParametersLoadAccess::optimizer_options(p).lbfgs.cautious_eps},
+      {"cautious_alpha",
+       ParametersLoadAccess::optimizer_options(p).lbfgs.cautious_alpha},
+      {"precon_A", ParametersLoadAccess::optimizer_options(p).lbfgs.precon_A},
+      {"precon_mu", ParametersLoadAccess::optimizer_options(p).lbfgs.precon_mu},
+      {"precon_rcut",
+       ParametersLoadAccess::optimizer_options(p).lbfgs.precon_rcut},
+  };
+  j["Optimizer"]["Xtsci"] = {
+      {"method", ParametersLoadAccess::optimizer_options(p).xtsci.method},
+      {"qn_step", ParametersLoadAccess::optimizer_options(p).xtsci.qn_step},
+      {"precon", ParametersLoadAccess::optimizer_options(p).xtsci.precon},
+      {"accept", ParametersLoadAccess::optimizer_options(p).xtsci.accept},
+      {"highs", ParametersLoadAccess::optimizer_options(p).xtsci.highs},
+      {"manifold", ParametersLoadAccess::optimizer_options(p).xtsci.manifold},
   };
 
   // [Dynamics]
@@ -372,13 +400,48 @@ void from_json(const json &j, Parameters &p) {
       JSON_OPT(
           l, "inverse_curvature",
           ParametersLoadAccess::optimizer_options(p).lbfgs.inverse_curvature);
+      JSON_OPT(l, "max_inverse_curvature",
+               ParametersLoadAccess::optimizer_options(p)
+                   .lbfgs.max_inverse_curvature);
       JSON_OPT(l, "auto_scale",
                ParametersLoadAccess::optimizer_options(p).lbfgs.auto_scale);
       JSON_OPT(l, "angle_reset",
                ParametersLoadAccess::optimizer_options(p).lbfgs.angle_reset);
       JSON_OPT(l, "distance_reset",
                ParametersLoadAccess::optimizer_options(p).lbfgs.distance_reset);
+      JSON_OPT(l, "curvature",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.curvature);
+      JSON_OPT(l, "project_rigid",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.project_rigid);
+      JSON_OPT(l, "secant",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.secant);
+      JSON_OPT(l, "precon",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.precon);
+      JSON_OPT(l, "step",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.step);
+      JSON_OPT(l, "h0", ParametersLoadAccess::optimizer_options(p).lbfgs.h0);
+      JSON_OPT(l, "accept",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.accept);
+      JSON_OPT(l, "extra_updates",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.extra_updates);
+      JSON_OPT(l, "cautious_eps",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.cautious_eps);
+      JSON_OPT(l, "cautious_alpha",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.cautious_alpha);
+      JSON_OPT(l, "precon_A",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.precon_A);
+      JSON_OPT(l, "precon_mu",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.precon_mu);
+      JSON_OPT(l, "precon_rcut",
+               ParametersLoadAccess::optimizer_options(p).lbfgs.precon_rcut);
     }
+    if (s.contains("Xtsci")) {
+      auto &x = s.at("Xtsci");
+      JSON_OPT(x, "method",
+               ParametersLoadAccess::optimizer_options(p).xtsci.method);
+    }
+    JSON_OPT(s, "xtsci_method",
+             ParametersLoadAccess::optimizer_options(p).xtsci.method);
   }
 
   // [Dynamics]

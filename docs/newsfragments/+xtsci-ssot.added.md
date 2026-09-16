@@ -1,0 +1,1 @@
+`opt_method = xtsci` selects the xtsci-optimize engine. `[Xtsci] method` picks the solver inside it (L-BFGS, BFGS, SR1/SR2, Newton, RFO, NLCG conjugacies, Adam, PSO). YAML, JSON, pydantic, and SSOT defaults carry the same catalog.

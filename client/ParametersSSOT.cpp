@@ -94,6 +94,8 @@ OptType opt_from_ssot(std::string_view m) {
     return OptType::SD;
   if (m == "fire")
     return OptType::FIRE;
+  if (m == "xtsci")
+    return OptType::XTSCI;
   return OptType::CG;
 }
 
@@ -182,6 +184,46 @@ void apply_ssot_defaults(Parameters &p) {
       GD::OPTIMIZER_LBFGS_ANGLE_RESET;
   ParametersLoadAccess::optimizer_options(p).lbfgs.distance_reset =
       GD::OPTIMIZER_LBFGS_DISTANCE_RESET;
+  ParametersLoadAccess::optimizer_options(p).lbfgs.curvature =
+      std::string(GD::OPTIMIZER_LBFGS_CURVATURE);
+  ParametersLoadAccess::optimizer_options(p).lbfgs.project_rigid =
+      GD::OPTIMIZER_LBFGS_PROJECT_RIGID;
+  ParametersLoadAccess::optimizer_options(p).lbfgs.secant =
+      std::string(GD::OPTIMIZER_LBFGS_SECANT);
+  ParametersLoadAccess::optimizer_options(p).lbfgs.precon =
+      std::string(GD::OPTIMIZER_LBFGS_PRECON);
+  ParametersLoadAccess::optimizer_options(p).lbfgs.step =
+      std::string(GD::OPTIMIZER_LBFGS_STEP);
+  ParametersLoadAccess::optimizer_options(p).lbfgs.h0 =
+      std::string(GD::OPTIMIZER_LBFGS_H0);
+  ParametersLoadAccess::optimizer_options(p).lbfgs.accept =
+      std::string(GD::OPTIMIZER_LBFGS_ACCEPT);
+  ParametersLoadAccess::optimizer_options(p).lbfgs.extra_updates =
+      GD::OPTIMIZER_LBFGS_EXTRA_UPDATES;
+  ParametersLoadAccess::optimizer_options(p).lbfgs.cautious_eps =
+      GD::OPTIMIZER_LBFGS_CAUTIOUS_EPS;
+  ParametersLoadAccess::optimizer_options(p).lbfgs.cautious_alpha =
+      GD::OPTIMIZER_LBFGS_CAUTIOUS_ALPHA;
+  ParametersLoadAccess::optimizer_options(p).lbfgs.precon_A =
+      GD::OPTIMIZER_LBFGS_PRECON_A;
+  ParametersLoadAccess::optimizer_options(p).lbfgs.precon_mu =
+      GD::OPTIMIZER_LBFGS_PRECON_MU;
+  ParametersLoadAccess::optimizer_options(p).lbfgs.precon_rcut =
+      GD::OPTIMIZER_LBFGS_PRECON_RCUT;
+  ParametersLoadAccess::optimizer_options(p).xtsci.method =
+      std::string(GD::OPTIMIZER_XTSCI_METHOD);
+  ParametersLoadAccess::optimizer_options(p).xtsci.qn_step =
+      std::string(GD::OPTIMIZER_XTSCI_QN_STEP);
+  ParametersLoadAccess::optimizer_options(p).xtsci.precon =
+      std::string(GD::OPTIMIZER_XTSCI_PRECON);
+  ParametersLoadAccess::optimizer_options(p).xtsci.accept =
+      std::string(GD::OPTIMIZER_XTSCI_ACCEPT);
+  ParametersLoadAccess::optimizer_options(p).xtsci.highs =
+      GD::OPTIMIZER_XTSCI_HIGHS;
+  ParametersLoadAccess::optimizer_options(p).xtsci.manifold =
+      std::string(GD::OPTIMIZER_XTSCI_MANIFOLD);
+  ParametersLoadAccess::optimizer_options(p).xtsci_method =
+      std::string(GD::OPTIMIZER_XTSCI_METHOD);
 
   ParametersLoadAccess::optimizer_options(p).cg.no_overshooting =
       GD::OPTIMIZER_CG_NO_OVERSHOOTING;
