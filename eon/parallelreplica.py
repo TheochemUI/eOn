@@ -8,9 +8,9 @@ logger = logging.getLogger('pr')
 import numpy
 numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
 import optparse
-import os
 import shutil
 import sys
+from pathlib import Path
 
 from eon import version
 from eon.config import ConfigClass
@@ -24,7 +24,7 @@ def parallelreplica(config: ConfigClass = None):
         raise TypeError("parallelreplica requires a ConfigClass instance")
     logger.info('Eon version: %s', version)
     # First of all, does the root directory even exist?
-    if not os.path.isdir(config.path_root):
+    if not Path(config.path_root).is_dir():
         logger.critical("Root directory does not exist")
         sys.exit(1)
 
@@ -63,7 +63,7 @@ def step(current_time, current_state, states, transition, config: ConfigClass = 
         raise TypeError("step requires a ConfigClass instance")
     next_state = states.get_product_state(current_state.number, transition['process_id'])
     next_state.zero_time()
-    dynamics = io.Dynamics(os.path.join(config.path_results, "dynamics.txt"))
+    dynamics = io.Dynamics(str(Path(config.path_results) / "dynamics.txt"))
     proc = current_state.get_process(transition['process_id'])
     dynamics.append(current_state.number, transition['process_id'],
                     next_state.number, transition['time'], transition['time']+current_time, 0, 0, current_state.get_energy())
@@ -75,18 +75,17 @@ def step(current_time, current_state, states, transition, config: ConfigClass = 
 def get_statelist(config: ConfigClass = None):
     if config is None:
         raise TypeError("get_statelist requires a ConfigClass instance")
-    initial_state_path = os.path.join(config.path_root, 'pos.con')
+    initial_state_path = str(Path(config.path_root) / "pos.con")
     return prstatelist.PRStateList(initial_state_path, config=config)
 
 def get_pr_metadata(config: ConfigClass = None):
     if config is None:
         raise TypeError("get_pr_metadata requires a ConfigClass instance")
-    if not os.path.isdir(config.path_results):
-        os.makedirs(config.path_results)
-    metafile = os.path.join(config.path_results, 'info.txt')
+    Path(config.path_results).mkdir(parents=True, exist_ok=True)
+    metafile = io.info_txt_path(config)
     parser = configparser.ConfigParser()
-    if os.path.isfile(metafile):
-        parser.read(metafile)
+    if Path(metafile).is_file():
+        parser.read(str(metafile))
         try:
             start_state_num = parser.getint("Simulation Information",'current_state')
         except:
@@ -154,9 +153,10 @@ def register_results(comm, current_state, states, config: ConfigClass = None):
     if config is None:
         raise TypeError("register_results requires a ConfigClass instance")
     logger.info("Registering results")
-    if os.path.isdir(config.path_jobs_in):
-        shutil.rmtree(config.path_jobs_in)
-    os.makedirs(config.path_jobs_in)
+    jobs_in = Path(config.path_jobs_in)
+    if jobs_in.is_dir():
+        shutil.rmtree(jobs_in)
+    jobs_in.mkdir(parents=True)
 
     # Function used by communicator to determine whether to discard a result
     def keep_result(name):
@@ -229,25 +229,28 @@ def main(config: ConfigClass = None):
             rmdirs = [config.path_jobs_out, config.path_jobs_in, config.path_states,
                     config.path_scratch]
             if config.debug_keep_all_results:
-                rmdirs.append(os.path.join(config.path_root, "old_searches"))
+                rmdirs.append(Path(config.path_root) / "old_searches")
             for i in rmdirs:
-                if os.path.isdir(i):
+                if Path(i).is_dir():
                     io.remove_tree_and_empty_parents(i)
 
-            dynamics_path = os.path.join(config.path_results, "dynamics.txt")
-            info_path = os.path.join(config.path_results, "info.txt")
-            log_path = os.path.join(config.path_results, "pr.log")
-            prng_path = io.prng_state_path(config)
-            for i in [info_path, dynamics_path, log_path, prng_path]:
-                if os.path.isfile(i):
-                    os.remove(i)
+            results = Path(config.path_results)
+            for i in [
+                io.info_txt_path(config),
+                results / "dynamics.txt",
+                results / "pr.log",
+                io.prng_state_path(config),
+            ]:
+                p = Path(i)
+                if p.is_file():
+                    p.unlink()
 
             print("Reset")
         sys.exit(0)
 
     # setup logging
     logging.basicConfig(level=logging.DEBUG,
-            filename=os.path.join(config.path_results, "pr.log"),
+            filename=str(Path(config.path_results) / "pr.log"),
             format="%(asctime)s %(levelname)s:%(name)s: %(message)s",
             datefmt="%F %T")
     logging.raiseExceptions = False
@@ -260,7 +263,7 @@ def main(config: ConfigClass = None):
         console.setFormatter(formatter)
         rootlogger.addHandler(console)
 
-    lock = locking.LockFile(os.path.join(config.path_results, "lockfile"))
+    lock = locking.LockFile(str(Path(config.path_results) / "lockfile"))
 
     if lock.aquirelock():
         if options.continuous or config.comm_type == 'mpi':
