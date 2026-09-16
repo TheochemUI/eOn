@@ -34,8 +34,8 @@ class BHStates:
         self.energy_table.rows.sort(key=lambda r:-r['energy'])
         lowest_N = self.energy_table.rows[:N]
         i = random.choice(lowest_N)['state']
-        f = open(os.path.join(self.config.path_states, str(i), 'minimum.con'))
-        return StringIO(f.read())
+        minimum = Path(self.config.path_states) / str(i) / "minimum.con"
+        return StringIO(minimum.read_text())
 
     def add_state(self, result_files, result_info):
         energy = result_info['minimum_energy']
@@ -50,9 +50,11 @@ class BHStates:
             if len(energetically_close) != 0:
                 a1 = io.loadcon(result_files['min.con'])
                 for state_number in energetically_close:
-                    state_con_path = os.path.join(self.config.path_states,
-                                                  str(state_number),
-                                                  'minimum.con')
+                    state_con_path = str(
+                        Path(self.config.path_states)
+                        / str(state_number)
+                        / "minimum.con"
+                    )
                     a2 = io.loadcon(state_con_path)
                     if atoms.match(a1, a2, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, True, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical):
                         logger.info("Found a repeat of state %i", state_number)
@@ -71,8 +73,8 @@ class BHStates:
             self.energy_table.rows.sort(key=lambda r:-r['energy'])
             self.energy_table.write()
 
-            state_path = os.path.join(self.config.path_states, str(state_number))
-            os.mkdir(state_path)
+            state_path = Path(self.config.path_states) / str(state_number)
+            state_path.mkdir()
 
             result_files['minimum.con'] = result_files['min.con']
             del result_files['min.con']
@@ -80,10 +82,7 @@ class BHStates:
             for fn, fh in list(result_files.items()):
                 if hasattr(fh, 'getvalue') == False:
                     continue
-                p = os.path.join(state_path, fn)
-                f = open(p, 'w')
-                f.write(fh.getvalue())
-                f.close()
+                (state_path / fn).write_text(fh.getvalue())
 
         return added
 
@@ -92,17 +91,16 @@ def basinhopping(config: ConfigClass = None):
         raise TypeError("basinhopping requires a ConfigClass instance")
     logger.info('Eon version: %s', version)
     # First of all, does the root directory even exist?
-    if not os.path.isdir(config.path_root):
+    if not Path(config.path_root).is_dir():
         logger.critical("Root directory does not exist")
         sys.exit(1)
 
     # load metadata
     bhstates = BHStates(config)
 
-    if os.path.isfile("wuid.dat"):
-        wuid_file = open("wuid.dat")
-        wuid = int(wuid_file.readline().strip())
-        wuid_file.close()
+    wuid_path = Path("wuid.dat")
+    if wuid_path.is_file():
+        wuid = int(wuid_path.read_text().strip())
     else:
         wuid = 0
 
@@ -115,9 +113,7 @@ def basinhopping(config: ConfigClass = None):
 
     wuid = make_searches(comm, wuid, bhstates, config)
 
-    wuid_file = open("wuid.dat","w")
-    wuid_file.write("%i\n" % wuid)
-    wuid_file.close()
+    Path("wuid.dat").write_text("%i\n" % wuid)
 
     io.save_prng_state(io.prng_state_path(config))
 
@@ -134,9 +130,7 @@ def make_searches(comm, wuid, bhstates, config: ConfigClass):
 
     invariants = {}
 
-    f = open(os.path.join(config.path_root, 'pos.con'))
-    initial_react = StringIO(f.read())
-    f.close()
+    initial_react = StringIO((Path(config.path_root) / "pos.con").read_text())
 
     #invariants['reactant_passed.con']=reactIO
 
@@ -177,9 +171,10 @@ def make_searches(comm, wuid, bhstates, config: ConfigClass):
 
 def register_results(comm, bhstates, config):
     logger.info("Registering results")
-    if os.path.isdir(config.path_jobs_in):
-        shutil.rmtree(config.path_jobs_in)
-    os.makedirs(config.path_jobs_in)
+    jobs_in = Path(config.path_jobs_in)
+    if jobs_in.is_dir():
+        shutil.rmtree(jobs_in)
+    jobs_in.mkdir(parents=True)
 
     # Function used by communicator to determine whether to discard a result
     def keep_result(name):
@@ -236,14 +231,13 @@ def main(config: ConfigClass = None):
         if len(res)>0 and res[0] == 'y':
                 rmdirs = [config.path_jobs_out, config.path_jobs_in, config.path_scratch,  config.path_states]
                 for i in rmdirs:
-                    if os.path.isdir(i):
+                    if Path(i).is_dir():
                         io.remove_tree_and_empty_parents(i)
-                log_path = os.path.join(config.path_results, "bh.log")
-                wuid_path = os.path.join(config.path_results, "wuid.dat")
-                prng_path = io.prng_state_path(config)
-                for i in [log_path, wuid_path, prng_path ]:
-                    if os.path.isfile(i):
-                        os.remove(i)
+                log_path = Path(config.path_results) / "bh.log"
+                wuid_path = Path(config.path_results) / "wuid.dat"
+                prng_path = Path(io.prng_state_path(config))
+                for i in [log_path, wuid_path, prng_path]:
+                    i.unlink(missing_ok=True)
                 print("Reset.")
                 sys.exit(0)
         else:
@@ -252,7 +246,7 @@ def main(config: ConfigClass = None):
 
     # setup logging
     logging.basicConfig(level=logging.DEBUG,
-            filename=os.path.join(config.path_results, "bh.log"),
+            filename=str(Path(config.path_results) / "bh.log"),
             format="%(asctime)s %(levelname)s:%(name)s: %(message)s",
             datefmt="%F %T")
     logging.raiseExceptions = False
@@ -265,7 +259,7 @@ def main(config: ConfigClass = None):
         console.setFormatter(formatter)
         rootlogger.addHandler(console)
 
-    lock = locking.LockFile(os.path.join(config.path_results, "lockfile"))
+    lock = locking.LockFile(str(Path(config.path_results) / "lockfile"))
 
     if lock.aquirelock():
         if config.comm_type == 'mpi':
