@@ -2,7 +2,6 @@ import ast
 import configparser
 import numpy
 import os
-import os.path
 import sys
 import string
 import yaml
@@ -26,10 +25,8 @@ class ConfigClass:
         self.init_done = False
         self.format = []
 
-        yaml_file = open(os.path.join(os.path.dirname(__file__), 'config.yaml'))
-        y = yaml.load(yaml_file, Loader=yaml.BaseLoader)
-#        y = yaml.load(yaml_file)
-        yaml_file.close()
+        yaml_file = Path(__file__).with_name("config.yaml")
+        y = yaml.load(yaml_file.read_text(), Loader=yaml.BaseLoader)
 
         for sectionName in y:
             section = ConfigSection(sectionName)
@@ -56,15 +53,16 @@ class ConfigClass:
 
         gave_config = True
         if config_file != "":
-            if os.path.isfile(config_file):
-                parser.read(config_file)
-                self.config_path = os.path.abspath(config_file)
+            cfg = Path(config_file)
+            if cfg.is_file():
+                parser.read(str(cfg))
+                self.config_path = str(cfg.resolve())
             else:
                 print("Specified configuration file %s does not exist" % config_file, sys.stderr)
                 sys.exit(2)
-        elif os.path.isfile('config.ini'):
-            parser.read('config.ini')
-            self.config_path = os.path.abspath('config.ini')
+        elif Path("config.ini").is_file():
+            parser.read("config.ini")
+            self.config_path = str(Path("config.ini").resolve())
             gave_config = False
         else:
             print("You must provide a configuration file either by providing its name as a command line argument or by placing a config.ini in the current directory", sys.stderr)
@@ -196,7 +194,7 @@ class ConfigClass:
 
         # Rye-requested check
         # Should we have some kind of sanity-check module/function somewhere?
-        if not gave_config and not os.path.samefile(self.path_root, os.getcwd()):
+        if not gave_config and Path(self.path_root).resolve() != Path.cwd().resolve():
             res = input("The config.ini file in the current directory does not point to the current directory. Are you sure you want to continue? (y/N) ").lower()
             if len(res)>0 and res[0] == 'y':
                 pass
@@ -206,7 +204,7 @@ class ConfigClass:
         if int(self.main_random_seed) >= 0:
             from eon import fileio as io
             prng_path = io.prng_state_path(self)
-            if os.path.isfile(prng_path):
+            if Path(prng_path).is_file():
                 io.get_prng_state(prng_path)
             else:
                 numpy.random.seed(self.main_random_seed)
