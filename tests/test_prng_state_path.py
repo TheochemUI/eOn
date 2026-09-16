@@ -1,7 +1,7 @@
 """prng.pkl must follow ConfigClass.path_root, not the process CWD."""
 from __future__ import annotations
 
-import os
+from pathlib import Path
 
 import numpy as np
 
@@ -22,7 +22,7 @@ def test_save_prng_state_writes_given_path_not_cwd(tmp_path, monkeypatch):
     io.save_prng_state(dest)
 
     assert not (cwd / "prng.pkl").exists()
-    assert os.path.isfile(dest)
+    assert Path(dest).is_file()
 
     np.random.seed(0)
     assert np.random.random() != expected
@@ -32,4 +32,4 @@ def test_save_prng_state_writes_given_path_not_cwd(tmp_path, monkeypatch):
 
 def test_prng_state_path_uses_path_root(tmp_path):
     cfg = type("Cfg", (), {"path_root": str(tmp_path / "root")})()
-    assert io.prng_state_path(cfg) == os.path.join(str(tmp_path / "root"), "prng.pkl")
+    assert io.prng_state_path(cfg) == str(tmp_path / "root" / "prng.pkl")

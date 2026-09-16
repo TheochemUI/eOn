@@ -10,6 +10,7 @@ missing.
 
 import os
 import shutil
+from pathlib import Path
 
 import pytest
 
@@ -24,7 +25,7 @@ def require_binary(name):
 
     override = os.environ.get("EON_%s_BIN" % name.upper())
     if override:
-        if not os.path.isfile(override):
+        if not Path(override).is_file():
             pytest.skip("%s names %s, which does not exist"
                         % ("EON_%s_BIN" % name.upper(), override))
         return sh.Command(override)

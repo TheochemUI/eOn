@@ -8,6 +8,7 @@ identity to registration order. xxh64 of the process payload does not.
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from unittest import mock
 
 import pytest
@@ -51,12 +52,13 @@ def _make_akmc_state(tmp_path, table_body: str = ""):
     state.number = 0
     state.procs = None
     state.proc_repeat_count = None
-    state.procdata_path = os.path.join(state.path, "procdata")
-    state.reactant_path = os.path.join(state.path, "reactant.con")
+    root = Path(state.path)
+    state.procdata_path = str(root / "procdata")
+    state.reactant_path = str(root / "reactant.con")
     state.proctable_path = str(proctable)
-    state.search_result_path = os.path.join(state.path, "search_results.txt")
-    state.tar_path = os.path.join(state.path, "procdata.tar")
-    state.info = io.ini(os.path.join(state.path, "info"))
+    state.search_result_path = str(root / "search_results.txt")
+    state.tar_path = str(root / "procdata.tar")
+    state.info = io.ini(str(root / "info"))
     state.info.set("MetaData", "kT", 0.025)
     return state
 

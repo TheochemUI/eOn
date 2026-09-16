@@ -1,7 +1,7 @@
 """Escape-rate end-state table: read from start, ConfigClass paths, xxh64 products."""
 from __future__ import annotations
 
-import os
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -11,8 +11,8 @@ def test_end_state_table_path_uses_config_states():
     from eon.escaperate import end_state_table_path
 
     cfg = SimpleNamespace(path_states="/sim/states")
-    assert end_state_table_path(cfg, 0) == os.path.join("/sim/states", "0", "end_state_table")
-    assert end_state_table_path(cfg, 3) == os.path.join("/sim/states", "3", "end_state_table")
+    assert end_state_table_path(cfg, 0) == str(Path("/sim/states") / "0" / "end_state_table")
+    assert end_state_table_path(cfg, 3) == str(Path("/sim/states") / "3" / "end_state_table")
 
 
 def test_load_end_state_table_reads_existing_rows(tmp_path):
