@@ -123,7 +123,8 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
                    params.constants().kB);
 
     if (step % params.debug_options().write_movies_interval == 0) {
-      if (params.hyperdynamics_options().bias_potential == Hyperdynamics::NONE) {
+      if (params.hyperdynamics_options().bias_potential ==
+          Hyperdynamics::NONE) {
         QUILL_LOG_DEBUG(log,
                         "[ParallelReplica] {:>8} {:>12.4e} {:>10.4f} "
                         "{:>12.4f} {:>12.4f} {:>10.2f}",
@@ -212,10 +213,10 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
 
   std::unique_ptr<Matter> product;
   if (transitionTime != 0) {
-    int decorrelationSteps =
-        static_cast<int>(std::floor(params.parallel_replica_options().corr_time /
-                                        params.dynamics_options().time_step +
-                                    0.5));
+    int decorrelationSteps = static_cast<int>(
+        std::floor(params.parallel_replica_options().corr_time /
+                       params.dynamics_options().time_step +
+                   0.5));
     if (decorrelationSteps < 0) {
       decorrelationSteps = 0;
     }
@@ -265,8 +266,9 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
                            product->getPotentialEnergy());
       }
       out << std::format("{:f} speedup\n",
-                         simulationTime / (params.dynamics_options().steps *
-                                           params.dynamics_options().time_step));
+                         simulationTime /
+                             (params.dynamics_options().steps *
+                              params.dynamics_options().time_step));
     }
   }
 

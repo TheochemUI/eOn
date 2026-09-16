@@ -40,8 +40,9 @@ EonMtaPot *eon_mta_pot_create(const EonMtaConfig *cfg, char *errbuf,
   }
   try {
     eonc::Parameters params;
-    ParametersLoadAccess::potential_options(params).potential = eonc::PotType::METATOMIC;
-    auto &o = params.metatomic_options();
+    eonc::ParametersLoadAccess::potential_options(params).potential =
+        eonc::PotType::METATOMIC;
+    auto &o = eonc::ParametersLoadAccess::metatomic_options(params);
     o.model_path = cfg->model_path;
     o.device = nz(cfg->device)[0] ? cfg->device : "cpu";
     o.length_unit = nz(cfg->length_unit)[0] ? cfg->length_unit : "angstrom";

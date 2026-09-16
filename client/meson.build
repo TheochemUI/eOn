@@ -498,6 +498,7 @@ _deps += [vesin_dep]
 eoncbase_sources = [
     'fpe_handler.cpp',
     'PotRegistry.cpp',
+    'PotentialParams.cpp',
     'VesinNeighbors.cpp',
     'potentials/PluginLoader.cpp',
 ]
@@ -512,6 +513,52 @@ eoncbase = library(
 )
 
 _linkto += eoncbase
+
+# readcon-core: Rust-based .con file I/O (required).
+# Resolve before plugin subdirs. SocketNWChem includes <readcon-core.hpp>
+# and links rkr_*; library() snapshots dependencies at call time, so a
+# later _deps += readcon_dep does not reach libsocket_nwchem.so.
+# Prefer cargo-c / pkg-config install (conda-forge host package); fall back
+# to the meson subproject when the system package is not available.
+# ConFileIO needs 0.13+ (clone, bulk set_*_from_flat, compression_from_extension).
+# Wrap tag v0.14.10 still ships Cargo.toml 0.14.9 (eOn-aqmi / feedstock #31).
+# Accept the crate version so cargo-c pkg-config does not fail the check.
+readcon_dep = dependency(
+    'readcon-core',
+    version: '>=0.14.9',
+    method: 'pkg-config',
+    required: false,
+)
+readcon_order_srcs = []
+if not readcon_dep.found()
+    readcon_proj = subproject(
+        'readcon-core',
+        version: '>=0.14.9',
+        default_options: {
+            'with_tests': false,
+            'with_examples': false,
+            'default_library': 'static',
+        },
+    )
+    readcon_dep = readcon_proj.get_variable('readcon_dep')
+    # Order stamp: cargo still emits cdylib+staticlib. partial_dependency
+    # drops declare_dependency.sources, so attach the stamp here.
+    readcon_order_srcs += readcon_proj.get_variable('readcon_order')
+endif
+if is_windows
+    # On Windows, do not put cargo .lib/.dll on eonclib: llvm-ar treats
+    # the .lib as an archive name, and link rejects the DLL (LNK1107).
+    # The order stamp is attached on eclib sources; link_args stay on
+    # executables via _exe_deps. cargo-c/pkg-config has no custom_target.
+    # SocketNWChem is not built on Windows.
+    readcon_compile_dep = readcon_dep.partial_dependency(
+        includes: true,
+        compile_args: true,
+    )
+    _deps += [readcon_compile_dep]
+else
+    _deps += [readcon_dep]
+endif
 
 # Potentials
 subdir('potentials/EAM')
@@ -1226,55 +1273,11 @@ endif
 
 _linkto += potentials
 
-# readcon-core: Rust-based .con file I/O (required).
-# Prefer cargo-c / pkg-config install (conda-forge host package); fall back to
-# the meson subproject when the system package is not available. Upstreaming
-# this removes the need for use_readcon_pkgconfig.patch on the feedstock.
-# ConFileIO needs 0.13+ (clone, bulk set_*_from_flat, compression_from_extension).
-# Wrap tag v0.14.10 still ships Cargo.toml 0.14.9 (eOn-aqmi / feedstock #31).
-# Accept the crate version so cargo-c pkg-config does not fail the check.
-readcon_dep = dependency(
-    'readcon-core',
-    version: '>=0.14.9',
-    method: 'pkg-config',
-    required: false,
-)
-readcon_order_srcs = []
-if not readcon_dep.found()
-    readcon_proj = subproject(
-        'readcon-core',
-        version: '>=0.14.9',
-        default_options: {
-            'with_tests': false,
-            'with_examples': false,
-            'default_library': 'static',
-        },
-    )
-    readcon_dep = readcon_proj.get_variable('readcon_dep')
-    # Order stamp: cargo still emits cdylib+staticlib. partial_dependency
-    # drops declare_dependency.sources, so attach the stamp here.
-    readcon_order_srcs += readcon_proj.get_variable('readcon_order')
-endif
-if is_windows
-    # On Windows, do not put cargo .lib/.dll on eonclib: llvm-ar treats
-    # the .lib as an archive name, and link rejects the DLL (LNK1107).
-    # The order stamp is attached on eclib sources; link_args stay on
-    # executables via _exe_deps. cargo-c/pkg-config has no custom_target.
-    readcon_compile_dep = readcon_dep.partial_dependency(
-        includes: true,
-        compile_args: true,
-    )
-    _deps += [readcon_compile_dep]
-else
-    _deps += [readcon_dep]
-endif
-
 if get_option('with_metatomic')
     # The RGPOT metatomic engine .so compiles the same translation units as
-    # eonclib, so it needs every dependency eonclib has. readcon above is the
-    # last append to _deps, hence the snapshot lives here and not next to the
-    # metatomic block, which would miss tbb, artn, ira, the capnp deps and
-    # readcon itself. mts_dep and torch_deps are already on _deps.
+    # eonclib, so it needs every dependency eonclib has. Snapshot here, after
+    # tbb/artn/ira/capnp. readcon is already on _deps (before plugin subdirs).
+    # mts_dep and torch_deps are already on _deps.
     mta_plugin_deps = _deps
 endif
 

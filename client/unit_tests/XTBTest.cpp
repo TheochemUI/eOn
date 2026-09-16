@@ -68,11 +68,13 @@ TEST_CASE_METHOD(PotTest, "XTB", "[PotTest]") {
   ParametersLoadAccess::xtb_options(params).maxiter = 250;
   ParametersLoadAccess::xtb_options(params).charge = 0.0;
   ParametersLoadAccess::xtb_options(params).uhf = 0;
-  auto pot =
-      eonc::helpers::makePotential(params.potential_options().potential, params);
+  auto pot = eonc::helpers::makePotential(params.potential_options().potential,
+                                          params);
+  // GFN2 has no PBC multipoles. pos.con is a molecule; pass a vacuum box.
+  const double vacuum_box[9]{};
   pot->force(m1->numberOfAtoms(), m1->getPositions().data(),
              m1->getAtomicNrs().data(), f_mta.data(), &e_mta, nullptr,
-             m1->getCell().data());
+             vacuum_box);
   SECTION("Energy Check") {
     REQUIRE_THAT(e_mta, WithinAbs(expected_energy, threshold));
   }

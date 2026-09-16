@@ -11,6 +11,7 @@
 */
 
 #include "eon/potentials/MPIPot/MPIPot.h"
+#include "eon/Parameters.h"
 #include <mpi.h>
 #include <stdio.h>
 #include <time.h>

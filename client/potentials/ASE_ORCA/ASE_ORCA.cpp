@@ -13,6 +13,7 @@
 #include "eon/potentials/ASE_ORCA/ASE_ORCA.h"
 #include "eon/EnvHelpers.hpp"
 #include "eon/EonLogger.h"
+#include "eon/Parameters.h"
 #include "eon/PyGuard.h"
 #include "eon/fpe_handler.h"
 
@@ -72,7 +73,8 @@ ASEOrcaPot::ASEOrcaPot(const eonc::Parameters &a_params)
   std::string orcpth = eonc::helpers::get_value_from_env_or_param(
       "ORCA_COMMAND", a_params.ase_orca_options().path, "", "", true);
   std::string orca_simpleinput = eonc::helpers::get_value_from_env_or_param(
-      "ORCA_SIMPLEINPUT", a_params.ase_orca_options().simpleinput, "ENGRAD HF-3c",
+      "ORCA_SIMPLEINPUT", a_params.ase_orca_options().simpleinput,
+      "ENGRAD HF-3c",
       "Using ENGRAD HF-3c as a default input, set simpleinput or the "
       "environment variable ORCA_SIMPLEINPUT.\n");
 

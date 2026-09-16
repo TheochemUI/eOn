@@ -119,8 +119,9 @@ ReplicaExchangeJob::runFromMatter(std::shared_ptr<Matter> initial) {
                             params.replica_exchange_options().temperature_low) /
                    static_cast<double>(nReplicas - 1);
     for (long i = 0; i < nReplicas; i++) {
-      replicaTemperature[i] = params.replica_exchange_options().temperature_low *
-                              std::exp(kTemp * static_cast<double>(i));
+      replicaTemperature[i] =
+          params.replica_exchange_options().temperature_low *
+          std::exp(kTemp * static_cast<double>(i));
       replicaDynamics[i]->setTemperature(replicaTemperature[i]);
       replicaDynamics[i]->setThermalVelocity();
       QUILL_LOG_DEBUG(log, "replica: {} temperature {:.0f}", i + 1,

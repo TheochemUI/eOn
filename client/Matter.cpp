@@ -261,33 +261,6 @@ void Matter::resize(const long int length) {
       fileToMatter[static_cast<size_t>(i)] = i;
     }
   }
-  // Zero is a real size: leaving nAtoms at the old value there sends
-  // setMasses and every other nAtoms loop off the end of an empty array.
-  nAtoms = length;
-  positions.resize(length, 3);
-  positions.setZero();
-
-  velocities.resize(length, 3);
-  velocities.setZero();
-
-  biasForces.resize(length, 3);
-  biasForces.setZero();
-
-  forces.resize(length, 3);
-  forces.setZero();
-
-  masses.resize(length);
-  masses.setZero();
-
-  atomicNrs.resize(length);
-  atomicNrs.setZero();
-
-  isFixed.resize(length, 3);
-  isFixed.setZero();
-
-  atomIndex.resize(length);
-  for (long i = 0; i < length; i++)
-    atomIndex(i) = static_cast<std::int64_t>(i); // default: sequential
   recomputePotential = true;
   recomputeMaskedForces = true;
   recomputeFreeMask = true;
@@ -645,11 +618,15 @@ void Matter::computePotential() const {
       double var{0};
       potential->setFixedMask(nAtoms, isFixed.data());
       const auto n = static_cast<size_t>(nAtoms);
+      // Isolated molecules still store a box for I/O. Pots that infer PBC
+      // from a non-zero cell (GFN2) must see a zero box here.
+      const Matrix3d force_cell =
+          usePeriodicBoundaries ? cell : Matrix3d::Zero();
       potential->force(std::span<const double>(positions.data(), n * 3),
                        std::span<const int>(atomicNrs.data(), n),
                        std::span<double>(forces.data(), n * 3),
                        &potentialEnergy, &var,
-                       std::span<const double>(cell.data(), 9));
+                       std::span<const double>(force_cell.data(), 9));
       potential->forceCallCounter++;
       PotRegistry::get().on_force_call(potential->getType());
     }

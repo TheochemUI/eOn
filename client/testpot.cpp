@@ -22,7 +22,8 @@ int main() {
   std::string confile("pos.con");
   auto params = std::make_shared<eonc::Parameters>();
   eonc::ensure_interpreter();
-  ParametersLoadAccess::potential_options(*params).potential = eonc::PotType::CatLearn;
+  ParametersLoadAccess::potential_options(*params).potential =
+      eonc::PotType::CatLearn;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_unique<eonc::Matter>(pot, params);
   matter->con2matter(confile);

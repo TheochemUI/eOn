@@ -33,7 +33,8 @@ public:
         matter{nullptr},
         pot{nullptr},
         threshold{1e-6} {
-    ParametersLoadAccess::potential_options(params).potential = PotType::ASE_POT;
+    ParametersLoadAccess::potential_options(params).potential =
+        PotType::ASE_POT;
     auto script = std::filesystem::canonical("ase_lj.py").string();
     ParametersLoadAccess::potential_options(params).extPotPath = script;
 

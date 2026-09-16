@@ -226,7 +226,12 @@ def structure_to_matter(
     from pyeonclient import Matter
 
     if periodic is None:
-        periodic = bool(getattr(structure, "periodic", True))
+        raw = getattr(structure, "periodic", True)
+        # Structure.periodic is an (3,) bool array; bool(array) is ValueError.
+        if isinstance(raw, np.ndarray):
+            periodic = bool(np.any(raw))
+        else:
+            periodic = bool(raw)
     n = len(structure)
     m = Matter(potential, parameters)
     m.resize(n)

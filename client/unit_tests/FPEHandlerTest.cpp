@@ -30,6 +30,8 @@ TEST_CASE("enableFPE then divide-by-zero continues once (no re-trap storm)",
           "[fpe]") {
 #if defined(_WIN32)
   SKIP("Windows SEH FPE path covered separately");
+#elif defined(__APPLE__) && defined(__aarch64__)
+  SKIP("Apple Silicon raises SIGILL for FE traps, not SIGFPE");
 #else
   eonc::enableFPE();
 

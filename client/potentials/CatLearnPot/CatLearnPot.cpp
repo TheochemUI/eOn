@@ -12,6 +12,7 @@
 
 #include "eon/potentials/CatLearnPot/CatLearnPot.h"
 #include "Eigen/src/Core/Matrix.h"
+#include "eon/Parameters.h"
 
 CatLearnPot::CatLearnPot(const eonc::Parameters &a_params)
     : eonc::SurrogatePotential(eonc::PotType::CatLearn, a_params) {

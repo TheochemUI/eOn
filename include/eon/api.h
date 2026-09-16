@@ -22,15 +22,15 @@
 /// - `Parameters.h` does not include Eigen. `Matter` still does: public
 ///   accessors return Eigen types, and hiding those members is a later cut.
 
-#include "Matter.h"
-#include "Parameters.h"
-#include "Potential.h"
-#include "PotCapabilities.h"
+#include "HelperFunctions.h"
+#include "ImprovedDimer.h"
 #include "JobResult.h"
+#include "Lanczos.h"
+#include "Matter.h"
+#include "MinModeSaddleSearch.h"
 #include "NEBInitialPaths.hpp"
 #include "NudgedElasticBand.h"
-#include "MinModeSaddleSearch.h"
-#include "ImprovedDimer.h"
-#include "Lanczos.h"
 #include "Optimizer.h"
-#include "HelperFunctions.h"
+#include "Parameters.h"
+#include "PotCapabilities.h"
+#include "Potential.h"

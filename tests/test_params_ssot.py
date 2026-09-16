@@ -215,8 +215,8 @@ def test_parity_parameters_h_main_members():
     """Parameters.h main_options_t members map into SSoT Main snakes."""
     from eon import params_ssot
 
-    text = (REPO / "include" / "eon" / "Parameters.h").read_text()
-    m = re.search(r"struct main_options_t \{(.*?)\}\s*main_options;", text, re.S)
+    text = (REPO / "include" / "eon" / "ParametersOptions.h").read_text()
+    m = re.search(r"struct main_options_t \{(.*?)\};", text, re.S)
     assert m, "main_options_t not found"
     body = m.group(1)
     # C++ members: Type name{default}; or Type name;

@@ -11,6 +11,7 @@
 */
 #pragma once
 
+#include "eon/Parameters.h"
 #include "eon/Potential.h"
 #include <mutex>
 
@@ -107,7 +108,8 @@ public:
    */
   ~MetatomicPotential() override = default;
 
-  [[nodiscard]] std::shared_ptr<Potential> clonePotential() const override;
+  [[nodiscard]] std::shared_ptr<eonc::Potential>
+  clonePotential() const override;
 
   /**
    * @brief Calculates the energy and forces for a given atomic configuration.

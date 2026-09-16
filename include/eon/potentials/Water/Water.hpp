@@ -24,8 +24,7 @@ University of Iceland
 class Tip4p : public eonc::Potential, private forcefields::Tip4p {
 public:
   Tip4p(const eonc::Parameters &params)
-      : eonc::Potential(params),
-        forcefields::Tip4p(8.5, 1.0) {};
+      : eonc::Potential(params), forcefields::Tip4p(8.5, 1.0) {};
   // Functions
   // constructor and destructor
 
@@ -38,8 +37,7 @@ public:
 class SpceCcl : public eonc::Potential, private forcefields::SpceCcl {
 public:
   SpceCcl(const eonc::Parameters &params)
-      : eonc::Potential(params),
-        forcefields::SpceCcl(8.5, 1.0) {}
+      : eonc::Potential(params), forcefields::SpceCcl(8.5, 1.0) {}
   // Functions
   // constructor and destructor
 

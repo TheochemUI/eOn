@@ -70,18 +70,14 @@ protected:
 public:
   Optimizer(std::shared_ptr<ObjectiveFunction> a_objf,
             const OptimizerConfig &a_config)
-      : m_otype{a_config.opts.method},
-        m_optConfig{a_config},
-        m_objf{a_objf} {
+      : m_otype{a_config.opts.method}, m_optConfig{a_config}, m_objf{a_objf} {
     EONC_LOG_WARNING(
         "You should explicitly set an optimizer while constructing the "
         "optimizer!!\n Defaulting to opt_method from the parameters");
   }
   Optimizer(std::shared_ptr<ObjectiveFunction> a_objf, OptType a_optype,
             const OptimizerConfig &a_config)
-      : m_otype{a_optype},
-        m_optConfig{a_config},
-        m_objf{a_objf} {}
+      : m_otype{a_optype}, m_optConfig{a_config}, m_objf{a_objf} {}
 
   // Backward-compat constructors
   [[deprecated("Pass OptimizerConfig directly")]]

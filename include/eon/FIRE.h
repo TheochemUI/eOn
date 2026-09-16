@@ -23,16 +23,10 @@ public:
       : Optimizer(a_objf, OptType::FIRE, OptimizerConfig::fromParams(a_params)),
         m_dt{a_params.optimizer_options().time_step},
         m_dt_max{a_params.optimizer_options().max_time_step},
-        m_max_move{a_params.optimizer_options().max_move},
-        m_N_min{5},
-        m_N{0},
+        m_max_move{a_params.optimizer_options().max_move}, m_N_min{5}, m_N{0},
         m_vel{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
-        m_alpha_start{0.1},
-        m_alpha{m_alpha_start},
-        m_f_inc{1.1},
-        m_f_dec{0.5},
-        m_f_a{0.99},
-        m_iteration{0} {}
+        m_alpha_start{0.1}, m_alpha{m_alpha_start}, m_f_inc{1.1}, m_f_dec{0.5},
+        m_f_a{0.99}, m_iteration{0} {}
   virtual ~FIRE() = default;
 
   int step(double a_maxMove) override;

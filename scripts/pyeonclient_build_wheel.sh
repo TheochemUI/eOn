@@ -8,7 +8,7 @@
 #                                   # not flattened onto PyPI as 0.X.Y)
 #
 # Examples:
-#   pip install -U build nanobind numpy meson ninja meson-python
+#   pip install -U build 'nanobind>=2.4,<3' numpy meson ninja meson-python
 #   PYEONCLIENT_VARIANT=base ./scripts/pyeonclient_build_wheel.sh
 #   pip install torch metatomic-torch metatensor-torch vesin
 #   PYEONCLIENT_VARIANT=metatomic ./scripts/pyeonclient_build_wheel.sh
@@ -32,7 +32,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-python -m pip install -U pip build nanobind 'numpy>=1.26.4' meson ninja meson-python
+python -m pip install -U pip build 'nanobind>=2.4,<3' 'numpy>=1.26.4' meson ninja meson-python
 
 # A conda or pixi environment ships its .pc files under $CONDA_PREFIX but
 # leaves PKG_CONFIG_PATH empty, so pkg-config finds none of them. The base

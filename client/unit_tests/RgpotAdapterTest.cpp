@@ -38,7 +38,8 @@ TEST_CASE("Adapter LJ matches the pinned reference", "[pot][rgpot-adapter]") {
 TEST_CASE("Adapter LJCluster matches the pinned reference",
           "[pot][rgpot-adapter]") {
   Parameters params;
-  ParametersLoadAccess::potential_options(params).potential = PotType::LJCLUSTER;
+  ParametersLoadAccess::potential_options(params).potential =
+      PotType::LJCLUSTER;
   auto pot = eonc::helpers::makePotential(params);
   auto matter = std::make_shared<Matter>(pot, params);
   matter->con2matter(std::string("reactant.con"));

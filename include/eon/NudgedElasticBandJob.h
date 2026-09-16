@@ -23,8 +23,7 @@ class NudgedElasticBandJob : public Job {
 
 public:
   NudgedElasticBandJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)),
-        fCallsNEB{0} {}
+      : Job(std::move(parameters)), fCallsNEB{0} {}
   ~NudgedElasticBandJob(void) = default;
   std::vector<std::string> run(void);
 

@@ -23,24 +23,26 @@ using NpI32 = nb::ndarray<nb::numpy, int32_t, nb::c_contig, nb::device::cpu>;
 using NpI64 = nb::ndarray<nb::numpy, int64_t, nb::c_contig, nb::device::cpu>;
 
 /// Zero-copy (n, 3) float64 view of external/row-major AtomMatrix storage.
+/// Pass the owning Python object so nanobind does not copy the buffer.
 inline nb::ndarray<nb::numpy, double, nb::c_contig, nb::device::cpu>
-view_n3(double *data, long n) {
+view_n3(double *data, long n, nb::handle owner = {}) {
   if (n < 0) {
     throw std::invalid_argument("view_n3: negative n");
   }
   return nb::ndarray<nb::numpy, double, nb::c_contig, nb::device::cpu>(
-      data, {static_cast<size_t>(n), size_t{3}});
+      data, {static_cast<size_t>(n), size_t{3}}, owner);
 }
 
 inline nb::ndarray<nb::numpy, double, nb::c_contig, nb::device::cpu>
-view_n3(const double *data, long n) {
-  return view_n3(const_cast<double *>(data), n);
+view_n3(const double *data, long n, nb::handle owner = {}) {
+  return view_n3(const_cast<double *>(data), n, owner);
 }
 
 /// Zero-copy (n,3) view that cannot be written in place (assignment
 /// through the property is the only write path that dirties caches).
-inline nb::object view_n3_readonly(const double *data, long n) {
-  auto arr = view_n3(const_cast<double *>(data), n);
+inline nb::object view_n3_readonly(const double *data, long n,
+                                   nb::handle owner = {}) {
+  auto arr = view_n3(const_cast<double *>(data), n, owner);
   nb::object o = nb::cast(arr);
   o.attr("flags").attr("writeable") = false;
   return o;

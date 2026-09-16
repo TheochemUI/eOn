@@ -23,8 +23,7 @@ University of Iceland
 class Tip4p_Pt : public eonc::Potential, private forcefields::ZhuPhilpott<> {
 public:
   Tip4p_Pt(const eonc::Parameters &params)
-      : eonc::Potential(params),
-        forcefields::ZhuPhilpott<>(8.5, 1.0) {};
+      : eonc::Potential(params), forcefields::ZhuPhilpott<>(8.5, 1.0) {};
   // Functions
   // constructor and destructor
 

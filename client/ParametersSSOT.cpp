@@ -106,21 +106,34 @@ void apply_ssot_defaults(Parameters &p) {
   ParametersLoadAccess::main_options(p).quiet = GD::MAIN_QUIET;
   ParametersLoadAccess::main_options(p).writeLog = GD::MAIN_WRITE_LOG;
   ParametersLoadAccess::main_options(p).checkpoint = GD::MAIN_CHECKPOINT;
-  ParametersLoadAccess::main_options(p).iniFilename = std::string(GD::MAIN_INI_FILENAME);
-  ParametersLoadAccess::main_options(p).conFilename = std::string(GD::MAIN_CON_FILENAME);
-  ParametersLoadAccess::main_options(p).finiteDifference = GD::MAIN_FINITE_DIFFERENCE;
-  ParametersLoadAccess::main_options(p).maxForceCalls = GD::MAIN_MAX_FORCE_CALLS;
-  ParametersLoadAccess::main_options(p).removeNetForce = GD::MAIN_REMOVE_NET_FORCE;
-  ParametersLoadAccess::main_options(p).writeConForces = GD::MAIN_WRITE_CON_FORCES;
+  ParametersLoadAccess::main_options(p).iniFilename =
+      std::string(GD::MAIN_INI_FILENAME);
+  ParametersLoadAccess::main_options(p).conFilename =
+      std::string(GD::MAIN_CON_FILENAME);
+  ParametersLoadAccess::main_options(p).finiteDifference =
+      GD::MAIN_FINITE_DIFFERENCE;
+  ParametersLoadAccess::main_options(p).maxForceCalls =
+      GD::MAIN_MAX_FORCE_CALLS;
+  ParametersLoadAccess::main_options(p).removeNetForce =
+      GD::MAIN_REMOVE_NET_FORCE;
+  ParametersLoadAccess::main_options(p).writeConForces =
+      GD::MAIN_WRITE_CON_FORCES;
   ParametersLoadAccess::main_options(p).parallel = GD::MAIN_PARALLEL;
 
-  ParametersLoadAccess::potential_options(p).potential = pot_from_ssot(GD::POTENTIAL_POTENTIAL);
-  ParametersLoadAccess::potential_options(p).MPIPollPeriod = GD::POTENTIAL_MPI_POLL_PERIOD;
-  ParametersLoadAccess::potential_options(p).LAMMPSLogging = GD::POTENTIAL_LAMMPS_LOGGING;
-  ParametersLoadAccess::potential_options(p).LAMMPSThreads = GD::POTENTIAL_LAMMPS_THREADS;
-  ParametersLoadAccess::potential_options(p).EMTRasmussen = GD::POTENTIAL_EMT_RASMUSSEN;
-  ParametersLoadAccess::potential_options(p).LogPotential = GD::POTENTIAL_LOG_POTENTIAL;
-  ParametersLoadAccess::potential_options(p).extPotPath = std::string(GD::POTENTIAL_EXT_POT_PATH);
+  ParametersLoadAccess::potential_options(p).potential =
+      pot_from_ssot(GD::POTENTIAL_POTENTIAL);
+  ParametersLoadAccess::potential_options(p).MPIPollPeriod =
+      GD::POTENTIAL_MPI_POLL_PERIOD;
+  ParametersLoadAccess::potential_options(p).LAMMPSLogging =
+      GD::POTENTIAL_LAMMPS_LOGGING;
+  ParametersLoadAccess::potential_options(p).LAMMPSThreads =
+      GD::POTENTIAL_LAMMPS_THREADS;
+  ParametersLoadAccess::potential_options(p).EMTRasmussen =
+      GD::POTENTIAL_EMT_RASMUSSEN;
+  ParametersLoadAccess::potential_options(p).LogPotential =
+      GD::POTENTIAL_LOG_POTENTIAL;
+  ParametersLoadAccess::potential_options(p).extPotPath =
+      std::string(GD::POTENTIAL_EXT_POT_PATH);
   ParametersLoadAccess::potential_options(p).potentialsPath =
       std::string(GD::POTENTIAL_POTENTIALS_PATH);
 
@@ -130,40 +143,54 @@ void apply_ssot_defaults(Parameters &p) {
       GD::STRUCTURE_COMPARISON_NEIGHBOR_CUTOFF;
   ParametersLoadAccess::structure_comparison_options(p).check_rotation =
       GD::STRUCTURE_COMPARISON_CHECK_ROTATION;
-  ParametersLoadAccess::structure_comparison_options(p).indistinguishable_atoms =
+  ParametersLoadAccess::structure_comparison_options(p)
+      .indistinguishable_atoms =
       GD::STRUCTURE_COMPARISON_INDISTINGUISHABLE_ATOMS;
   ParametersLoadAccess::structure_comparison_options(p).energy_difference =
       GD::STRUCTURE_COMPARISON_ENERGY_DIFFERENCE;
   ParametersLoadAccess::structure_comparison_options(p).remove_translation =
       GD::STRUCTURE_COMPARISON_REMOVE_TRANSLATION;
 
-  ParametersLoadAccess::process_search_options(p).minimize_first = GD::PROCESS_SEARCH_MINIMIZE_FIRST;
+  ParametersLoadAccess::process_search_options(p).minimize_first =
+      GD::PROCESS_SEARCH_MINIMIZE_FIRST;
   ParametersLoadAccess::process_search_options(p).minimization_offset =
       GD::PROCESS_SEARCH_MINIMIZATION_OFFSET;
 
-  ParametersLoadAccess::optimizer_options(p).method = opt_from_ssot(GD::OPTIMIZER_OPT_METHOD);
+  ParametersLoadAccess::optimizer_options(p).method =
+      opt_from_ssot(GD::OPTIMIZER_OPT_METHOD);
   ParametersLoadAccess::optimizer_options(p).convergence_metric =
       std::string(GD::OPTIMIZER_CONVERGENCE_METRIC);
-  ParametersLoadAccess::optimizer_options(p).max_iterations = GD::OPTIMIZER_MAX_ITERATIONS;
+  ParametersLoadAccess::optimizer_options(p).max_iterations =
+      GD::OPTIMIZER_MAX_ITERATIONS;
   ParametersLoadAccess::optimizer_options(p).max_move = GD::OPTIMIZER_MAX_MOVE;
-  ParametersLoadAccess::optimizer_options(p).converged_force = GD::OPTIMIZER_CONVERGED_FORCE;
-  ParametersLoadAccess::optimizer_options(p).time_step_input = GD::OPTIMIZER_TIME_STEP;
-  ParametersLoadAccess::optimizer_options(p).max_time_step_input = GD::OPTIMIZER_MAX_TIME_STEP;
+  ParametersLoadAccess::optimizer_options(p).converged_force =
+      GD::OPTIMIZER_CONVERGED_FORCE;
+  ParametersLoadAccess::optimizer_options(p).time_step_input =
+      GD::OPTIMIZER_TIME_STEP;
+  ParametersLoadAccess::optimizer_options(p).max_time_step_input =
+      GD::OPTIMIZER_MAX_TIME_STEP;
 
-  ParametersLoadAccess::optimizer_options(p).lbfgs.memory = GD::OPTIMIZER_LBFGS_MEMORY;
+  ParametersLoadAccess::optimizer_options(p).lbfgs.memory =
+      GD::OPTIMIZER_LBFGS_MEMORY;
   ParametersLoadAccess::optimizer_options(p).lbfgs.inverse_curvature =
       GD::OPTIMIZER_LBFGS_INVERSE_CURVATURE;
   ParametersLoadAccess::optimizer_options(p).lbfgs.max_inverse_curvature =
       GD::OPTIMIZER_LBFGS_MAX_INVERSE_CURVATURE;
-  ParametersLoadAccess::optimizer_options(p).lbfgs.auto_scale = GD::OPTIMIZER_LBFGS_AUTO_SCALE;
-  ParametersLoadAccess::optimizer_options(p).lbfgs.angle_reset = GD::OPTIMIZER_LBFGS_ANGLE_RESET;
-  ParametersLoadAccess::optimizer_options(p).lbfgs.distance_reset = GD::OPTIMIZER_LBFGS_DISTANCE_RESET;
+  ParametersLoadAccess::optimizer_options(p).lbfgs.auto_scale =
+      GD::OPTIMIZER_LBFGS_AUTO_SCALE;
+  ParametersLoadAccess::optimizer_options(p).lbfgs.angle_reset =
+      GD::OPTIMIZER_LBFGS_ANGLE_RESET;
+  ParametersLoadAccess::optimizer_options(p).lbfgs.distance_reset =
+      GD::OPTIMIZER_LBFGS_DISTANCE_RESET;
 
-  ParametersLoadAccess::optimizer_options(p).cg.no_overshooting = GD::OPTIMIZER_CG_NO_OVERSHOOTING;
+  ParametersLoadAccess::optimizer_options(p).cg.no_overshooting =
+      GD::OPTIMIZER_CG_NO_OVERSHOOTING;
   ParametersLoadAccess::optimizer_options(p).cg.knock_out_max_move =
       GD::OPTIMIZER_CG_KNOCK_OUT_MAX_MOVE;
-  ParametersLoadAccess::optimizer_options(p).cg.line_search = GD::OPTIMIZER_CG_LINE_SEARCH;
-  ParametersLoadAccess::optimizer_options(p).cg.line_converged = GD::OPTIMIZER_CG_LINE_CONVERGED;
+  ParametersLoadAccess::optimizer_options(p).cg.line_search =
+      GD::OPTIMIZER_CG_LINE_SEARCH;
+  ParametersLoadAccess::optimizer_options(p).cg.line_converged =
+      GD::OPTIMIZER_CG_LINE_CONVERGED;
   ParametersLoadAccess::optimizer_options(p).cg.line_search_max_iter =
       GD::OPTIMIZER_CG_LINE_SEARCH_MAX_ITER;
   ParametersLoadAccess::optimizer_options(p).cg.max_iter_before_reset =
@@ -172,7 +199,8 @@ void apply_ssot_defaults(Parameters &p) {
   ParametersLoadAccess::optimizer_options(p).quickmin.steepest_descent =
       GD::OPTIMIZER_QUICKMIN_STEEPEST_DESCENT;
   ParametersLoadAccess::optimizer_options(p).sd.alpha = GD::OPTIMIZER_SD_ALPHA;
-  ParametersLoadAccess::optimizer_options(p).sd.two_point = GD::OPTIMIZER_SD_TWO_POINT;
+  ParametersLoadAccess::optimizer_options(p).sd.two_point =
+      GD::OPTIMIZER_SD_TWO_POINT;
 }
 
 bool ssot_has_field(const char *section, const char *key) {

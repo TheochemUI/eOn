@@ -23,8 +23,7 @@ class MonteCarlo {
 
 public:
   MonteCarlo(std::shared_ptr<Matter> const matterIn, const Parameters &paramsIn)
-      : matter{matterIn},
-        params{paramsIn} {}
+      : matter{matterIn}, params{paramsIn} {}
   ~MonteCarlo() = default;
 
   void run(int numSteps, double temperature, double stepSize);

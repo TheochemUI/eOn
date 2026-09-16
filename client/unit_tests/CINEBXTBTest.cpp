@@ -32,23 +32,25 @@ TEST_CASE("CI-NEB XTB regression", "[neb][xtb]") {
   ParametersLoadAccess::xtb_options(params).maxiter = 250;
 
   ParametersLoadAccess::neb_options(params).image_count = 10;
-  params.neb_options().spring.weighting.enabled = true;
-  params.neb_options().spring.weighting.k_min = 0.972;
-  params.neb_options().spring.weighting.k_max = 9.72;
-  params.neb_options().spring.weighting.trigger = 0.5;
-  params.neb_options().initialization.method = NEBInit::LINEAR;
-  params.neb_options().endpoints.minimize = false;
-  params.neb_options().climbing_image.enabled = true;
-  params.neb_options().climbing_image.converged_only = true;
-  params.neb_options().climbing_image.trigger_force = 0.5;
-  params.neb_options().climbing_image.trigger_factor = 0.8;
+  ParametersLoadAccess::neb_options(params).spring.weighting.enabled = true;
+  ParametersLoadAccess::neb_options(params).spring.weighting.k_min = 0.972;
+  ParametersLoadAccess::neb_options(params).spring.weighting.k_max = 9.72;
+  ParametersLoadAccess::neb_options(params).spring.weighting.trigger = 0.5;
+  ParametersLoadAccess::neb_options(params).initialization.method =
+      NEBInit::LINEAR;
+  ParametersLoadAccess::neb_options(params).endpoints.minimize = false;
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = true;
+  ParametersLoadAccess::neb_options(params).climbing_image.converged_only =
+      true;
+  ParametersLoadAccess::neb_options(params).climbing_image.trigger_force = 0.5;
+  ParametersLoadAccess::neb_options(params).climbing_image.trigger_factor = 0.8;
   ParametersLoadAccess::neb_options(params).force_tolerance = 0.0514221;
   ParametersLoadAccess::optimizer_options(params).method = OptType::LBFGS;
   ParametersLoadAccess::optimizer_options(params).max_iterations = 100;
   ParametersLoadAccess::optimizer_options(params).max_move = 0.1;
 
-  auto pot =
-      eonc::helpers::makePotential(params.potential_options().potential, params);
+  auto pot = eonc::helpers::makePotential(params.potential_options().potential,
+                                          params);
   auto initial = std::make_shared<Matter>(pot, params);
   auto final_state = std::make_shared<Matter>(pot, params);
 
@@ -56,6 +58,9 @@ TEST_CASE("CI-NEB XTB regression", "[neb][xtb]") {
   std::string prodFile("product.con");
   initial->con2matter(reactFile);
   final_state->con2matter(prodFile);
+  // 9-atom molecule in a 25 Å box. GFN2 has no PBC multipoles.
+  initial->setPeriodic(false);
+  final_state->setPeriodic(false);
 
   auto neb =
       std::make_unique<NudgedElasticBand>(initial, final_state, params, pot);

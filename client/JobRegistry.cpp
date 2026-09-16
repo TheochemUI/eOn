@@ -24,6 +24,7 @@ void registerJob(JobType type, JobFactory factory) {
 namespace eonc::helpers {
 
 std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params) {
+  eonc::forceJobRegistration();
   const JobType type = params->main_options().job;
   auto &t = eonc::jobTable();
   auto it = t.find(type);

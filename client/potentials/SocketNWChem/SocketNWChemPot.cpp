@@ -136,8 +136,8 @@ void SocketNWChemPot::forceOnce(long N, const double *R, const int *atomicNrs,
     symbols.reserve(N);
     for (long i = 0; i < N; ++i) {
       const int z = atomicNrs[i];
-      symbols.emplace_back(z > 0 ? readcon::z_to_symbol(static_cast<uint64_t>(z))
-                                 : "X");
+      symbols.emplace_back(
+          z > 0 ? readcon::z_to_symbol(static_cast<uint64_t>(z)) : "X");
     }
     if (make_template_input) {
       write_nwchem_template("nwchem_socket.nwi", N, symbols);

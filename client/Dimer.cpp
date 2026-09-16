@@ -24,9 +24,10 @@ Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
              std::shared_ptr<Potential> pot)
     : LowestEigenmode(pot, params) {
   // Give matterDimer its own potential for parallel force evaluation
-  auto dimerPot = (pot->needsPerImageInstance() && params.main_options().parallel)
-                      ? eonc::helpers::makePotential(params)
-                      : pot;
+  auto dimerPot =
+      (pot->needsPerImageInstance() && params.main_options().parallel)
+          ? eonc::helpers::makePotential(params)
+          : pot;
   matterCenter = std::make_shared<Matter>(pot, params);
   matterDimer = std::make_shared<Matter>(dimerPot, params);
   *matterCenter = *matter;

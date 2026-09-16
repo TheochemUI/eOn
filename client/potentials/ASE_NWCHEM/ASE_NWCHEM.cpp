@@ -1,6 +1,7 @@
 #include "eon/potentials/ASE_NWCHEM/ASE_NWCHEM.h"
 #include "eon/EnvHelpers.hpp"
 #include "eon/EonLogger.h"
+#include "eon/Parameters.h"
 #include "eon/PyGuard.h"
 #include "eon/fpe_handler.h"
 
@@ -104,12 +105,12 @@ ASENwchemPot::ASENwchemPot(const eonc::Parameters &a_params)
       "set"_a = py::dict("geom:dont_verify"_a = true),
       "command"_a = py::str(mpi_cmd),
       "memory"_a = py::str(a_params.ase_nwchem_options().memory),
-      "scf"_a = py::dict("nopen"_a = mult - 1,
-                         "thresh"_a = a_params.ase_nwchem_options().scf_thresh,
-                         "maxiter"_a = a_params.ase_nwchem_options().scf_maxiter),
+      "scf"_a =
+          py::dict("nopen"_a = mult - 1,
+                   "thresh"_a = a_params.ase_nwchem_options().scf_thresh,
+                   "maxiter"_a = a_params.ase_nwchem_options().scf_maxiter),
       "basis"_a = py::str(a_params.ase_nwchem_options().basis),
-      "task"_a = py::str("gradient"),
-      "directory"_a = workDir.string());
+      "task"_a = py::str("gradient"), "directory"_a = workDir.string());
 
   // Set flag for doublet (mult == 2)
   if (mult == 2) {
@@ -146,9 +147,8 @@ void ASENwchemPot::force(long nAtoms, const double *R, const int *atomicNrs,
     Eigen::VectorXi atmnmrs =
         Eigen::Map<Eigen::VectorXi>(const_cast<int *>(atomicNrs), nAtoms);
     if (!boxx.isIdentity(1e-6)) {
-      QUILL_LOG_WARNING(
-          eonc::log::get(),
-          "ASE-NWChem ignores the simulation cell; NWChem SCF is molecular only");
+      QUILL_LOG_WARNING(eonc::log::get(), "ASE-NWChem ignores the simulation "
+                                          "cell; NWChem SCF is molecular only");
     }
     py::object atoms = this->ase.attr("Atoms")("symbols"_a = atmnmrs,
                                                "positions"_a = positions);

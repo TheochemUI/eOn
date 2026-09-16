@@ -42,9 +42,10 @@ void bind_matter(nb::module_ &m) {
       // positions: zero-copy view via public getPositions() (binding-only cast)
       .def_prop_rw(
           "positions",
-          [](Matter &self) {
+          [](nb::object self_obj) {
+            auto &self = nb::cast<Matter &>(self_obj);
             return view_n3_readonly(matter_positions_ptr(self),
-                                    self.numberOfAtoms());
+                                    self.numberOfAtoms(), self_obj);
           },
           [](Matter &self, const NpF64 &arr) {
             matter_set_positions_buf(self,
@@ -99,13 +100,14 @@ void bind_matter(nb::module_ &m) {
       // forces: zero-copy via public getForces() / getForcesRaw()
       .def_prop_ro(
           "forces",
-          [](Matter &self) {
+          [](nb::object self_obj) {
+            auto &self = nb::cast<Matter &>(self_obj);
             {
               nb::gil_scoped_release release;
               (void)self.getForces(); // ensure force cache
             }
             return view_n3_readonly(matter_forces_ptr(self),
-                                    self.numberOfAtoms());
+                                    self.numberOfAtoms(), self_obj);
           },
           nb::rv_policy::reference_internal,
           "Forces with fixed atoms zeroed (read-only view of cache). "
@@ -114,13 +116,14 @@ void bind_matter(nb::module_ &m) {
           "Take np.array(...) of it to keep a value.")
       .def_prop_ro(
           "forces_raw",
-          [](Matter &self) {
+          [](nb::object self_obj) {
+            auto &self = nb::cast<Matter &>(self_obj);
             {
               nb::gil_scoped_release release;
               (void)self.getForcesRaw();
             }
             return view_n3_readonly(matter_forces_raw_ptr(self),
-                                    self.numberOfAtoms());
+                                    self.numberOfAtoms(), self_obj);
           },
           nb::rv_policy::reference_internal,
           "Forces without the fixed-atom mask (read-only view). Same "

@@ -358,7 +358,8 @@ public:
       return m_matter.getForcesFreeV().norm();
     } else if (params.optimizer_options().convergence_metric == "max_atom") {
       return m_matter.maxForce();
-    } else if (params.optimizer_options().convergence_metric == "max_component") {
+    } else if (params.optimizer_options().convergence_metric ==
+               "max_component") {
       return m_matter.getForces().cwiseAbs().maxCoeff();
     } else {
       EONC_LOG_CRITICAL("{} Unknown opt_convergence_metric: {}", "[Matter]",

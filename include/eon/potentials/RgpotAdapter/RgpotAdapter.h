@@ -30,7 +30,8 @@ public:
   /// Kernels construct in place from their config: several hold mutexes
   /// or other immovable state, so the adapter never copies or moves them.
   template <class Cfg>
-  RgpotAdapter(eonc::PotType ptype, const eonc::Parameters &params, const Cfg &cfg)
+  RgpotAdapter(eonc::PotType ptype, const eonc::Parameters &params,
+               const Cfg &cfg)
       : eonc::Potential(ptype, params), pot_(cfg) {
     validateCaps();
   }
@@ -42,7 +43,8 @@ public:
   }
 
   /// Take a pre-built kernel (ExprPot and other move-only constructors).
-  RgpotAdapter(eonc::PotType ptype, const eonc::Parameters &params, RPot &&kernel)
+  RgpotAdapter(eonc::PotType ptype, const eonc::Parameters &params,
+               RPot &&kernel)
       : eonc::Potential(ptype, params), pot_(std::move(kernel)) {
     validateCaps();
   }
@@ -121,8 +123,7 @@ private:
     if (caps.reentrancy != R::SharedInstance &&
         caps.reentrancy != R::PerInstance &&
         caps.reentrancy != R::ProcessSerial) {
-      throw std::runtime_error(
-          "rgpot kernel advertised an unknown reentrancy");
+      throw std::runtime_error("rgpot kernel advertised an unknown reentrancy");
     }
   }
 
@@ -132,14 +133,14 @@ private:
 /// Factory arm helper for kernels whose parameters are fixed tabulated
 /// data with no eOn-side configuration surface.
 template <class RPot>
-std::shared_ptr<eonc::Potential> makeRgpotDefault(eonc::PotType ptype,
-                                            const eonc::Parameters &params) {
+std::shared_ptr<eonc::Potential>
+makeRgpotDefault(eonc::PotType ptype, const eonc::Parameters &params) {
   return std::make_shared<RgpotAdapter<RPot>>(ptype, params);
 }
 
 /// Factory arm helper: construct the kernel from its config and wrap it.
 template <class RPot, class Cfg>
-std::shared_ptr<eonc::Potential> makeRgpot(eonc::PotType ptype, const eonc::Parameters &params,
-                                     const Cfg &cfg) {
+std::shared_ptr<eonc::Potential>
+makeRgpot(eonc::PotType ptype, const eonc::Parameters &params, const Cfg &cfg) {
   return std::make_shared<RgpotAdapter<RPot>>(ptype, params, cfg);
 }

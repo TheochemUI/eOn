@@ -40,7 +40,7 @@ namespace eonc {
 namespace {
 
 /// Create a ForceCallback that wraps an eOn Potential's force() method.
-ForceCallback makeForceCallback(std::shared_ptr<::Potential> pot) {
+ForceCallback makeForceCallback(std::shared_ptr<Potential> pot) {
   return [pot = std::move(pot)](long nAtoms, const double *positions,
                                 const int *atomicNrs, double *forces,
                                 double *energy, const double *box) {
@@ -88,7 +88,8 @@ void serveMultiple(const std::vector<ServeEndpoint> &endpoints,
   // Single endpoint: run in the main thread (no extra overhead)
   if (endpoints.size() == 1) {
     auto params = base_params;
-    ParametersLoadAccess::potential_options(params).potential = endpoints[0].potential;
+    ParametersLoadAccess::potential_options(params).potential =
+        endpoints[0].potential;
     serveMode(params, endpoints[0].host, endpoints[0].port);
     return;
   }

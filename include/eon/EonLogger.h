@@ -171,8 +171,7 @@ get_file(std::string_view name, std::string_view filename,
 struct Scoped {
   [[no_unique_address]] quill::Logger *logger{nullptr};
 
-  Scoped() noexcept
-      : logger(get()) {}
+  Scoped() noexcept : logger(get()) {}
 
   // Implicit conversion to Logger* for seamless use with QUILL_LOG_* macros
   operator quill::Logger *() const noexcept { return logger; }

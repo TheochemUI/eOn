@@ -48,18 +48,19 @@ void ensure_dynamics_steps(eonc::Parameters &params, long default_steps) {
     ParametersLoadAccess::dynamics_options(params).time_step =
         params.dynamics_options().time_step_input / params.constants().timeUnit;
     if (params.dynamics_options().time_step <= 0.0)
-      ParametersLoadAccess::dynamics_options(params).time_step = 1.0 / params.constants().timeUnit;
+      ParametersLoadAccess::dynamics_options(params).time_step =
+          1.0 / params.constants().timeUnit;
   }
 }
 
 void ensure_long_timescale_params(eonc::Parameters &params,
                                   long default_steps) {
   ensure_dynamics_steps(params, default_steps);
-  auto &dyn = params.dynamics_options();
+  auto &dyn = eonc::ParametersLoadAccess::dynamics_options(params);
   const double dt = dyn.time_step;
   const double horizon = dt * static_cast<double>(dyn.steps);
 
-  auto &pr = params.parallel_replica_options();
+  auto &pr = eonc::ParametersLoadAccess::parallel_replica_options(params);
   if (pr.state_check_interval <= 0.0)
     pr.state_check_interval = std::max(dt, horizon);
   if (pr.record_interval <= 0.0)
@@ -81,7 +82,7 @@ void ensure_long_timescale_params(eonc::Parameters &params,
       pr.dephase_loop_max = 2;
   }
 
-  auto &rex = params.replica_exchange_options();
+  auto &rex = eonc::ParametersLoadAccess::replica_exchange_options(params);
   if (rex.replicas < 2)
     rex.replicas = 2;
   if (rex.sampling_time <= 0.0 ||

@@ -228,7 +228,8 @@ int TADJob::dynamics() {
                   "Temperature : Average = {} ; Stddev = {} ; Factor = {}; "
                   "Average_Boost = {}",
                   avgT, std::sqrt(varT), varT / avgT / avgT * nFreeCoord / 2,
-                  minCorrectedTime / step / params.dynamics_options().time_step);
+                  minCorrectedTime / step /
+                      params.dynamics_options().time_step);
   if (std::isfinite(avgT) == 0) {
     QUILL_LOG_DEBUG(log, "Infinite average temperature, something went wrong!");
     newStateFlag = false;

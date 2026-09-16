@@ -15,8 +15,15 @@ fi
 if [[ -d "$BUILD" ]]; then
   echo "==> extract Fortran from $BUILD"
   RAW=$(mktemp)
-  lcov --directory "$BUILD" --capture --output-file "$RAW" 2>/dev/null \
-    || lcov --directory "$BUILD" --capture --output-file "$RAW"
+  # inih wrap builds unittest.c twice; lcov 2.x treats that as fatal
+  # inconsistent unless ignored. Those TUs are not Fortran coverage.
+  lcov --directory "$BUILD" --capture --output-file "$RAW" \
+    --ignore-errors inconsistent,inconsistent \
+    --exclude '*/subprojects/inih*' \
+    2>/dev/null \
+    || lcov --directory "$BUILD" --capture --output-file "$RAW" \
+      --ignore-errors inconsistent,inconsistent \
+      --exclude '*/subprojects/inih*'
   if lcov --extract "$RAW" \
     '*/client/potentials/*' '*/fortcuh2/*' '*/subprojects/fortcuh2/*' \
     --output-file "$OUT" 2>/dev/null; then
