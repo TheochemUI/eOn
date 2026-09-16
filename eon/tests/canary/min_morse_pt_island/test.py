@@ -2,9 +2,10 @@
 
 import os
 import sys
+from pathlib import Path
 
-test_path = os.path.split(os.path.realpath(__file__))[0]
-test_name = os.path.basename(test_path)
+test_path = str(Path(__file__).resolve().parent)
+test_name = Path(test_path).name
 
 # this first command will echo the output to stdout as well
 #os.system("../../client/client | tee minimization.txt")

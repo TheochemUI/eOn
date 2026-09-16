@@ -2,8 +2,9 @@
 import shutil
 import os
 import sys
+from pathlib import Path
 
-if not os.path.isfile("../../../client/client"):
+if not Path("../../../client/client").is_file():
     print("Client binary missing")
     sys.exit(1)
 tab = open('energies')
@@ -20,7 +21,7 @@ tab.close()
 
 for test in tests:
     #copy the reactant
-    shutil.copy(os.path.join('structs/',test['file']), 'pos.con')
+    shutil.copy(str(Path("structs") / test["file"]), "pos.con")
 
     #write the config
     conf = open('config.ini','w')
