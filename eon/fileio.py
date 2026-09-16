@@ -108,9 +108,10 @@ def atomic_write(path, mode='w'):
     mkstemp opens at 0600, so the destination's own mode carries over, or
     the umask default for a file that does not exist yet.
     '''
-    directory = os.path.dirname(os.path.abspath(path))
+    dest = Path(path)
+    directory = str(dest.resolve().parent)
     fd, temp_path = tempfile.mkstemp(dir=directory,
-                                     prefix='.' + os.path.basename(path) + '.',
+                                     prefix='.' + dest.name + '.',
                                      suffix='.tmp')
     try:
         with os.fdopen(fd, mode) as f:
@@ -234,7 +235,7 @@ def _atoms_to_frame(p):
 
 
 def _path_is_compressed_con(path):
-    name = os.path.basename(path).lower()
+    name = Path(path).name.lower()
     return name.endswith(".gz") or name.endswith(".zst")
 
 
@@ -266,7 +267,7 @@ def savecon(fileout, p, w = 'w'):
     if hasattr(fileout, 'write'):
         text = readcon.write_con_string([frame])
         fileout.write(text)
-    elif w == 'a' and os.path.exists(fileout) and os.path.getsize(fileout) > 0:
+    elif w == 'a' and Path(fileout).exists() and Path(fileout).stat().st_size > 0:
         if _path_is_compressed_con(fileout):
             existing = readcon.read_con(fileout)
             existing.append(frame)
@@ -559,13 +560,9 @@ class Dynamics:
 
     def __init__(self, filename):
         self.filename = filename
-        if not os.path.exists(filename):
-            f = open(self.filename, 'w')
+        if not Path(filename).exists():
             header = "%12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s  %12s\n" % ('step-number', 'reactant-id', 'process-id', 'product-id', 'step-time', 'total-time', 'barrier', 'rate', 'energy')
-            f.write(header)
-            f.write("-" * len(header))
-            f.write("\n")
-            f.close()
+            Path(self.filename).write_text(header + ("-" * len(header)) + "\n")
             self.next_step = 0
 
         # read last lines of the file to determine iteration nr
@@ -683,7 +680,7 @@ class Table:
         """Checks to see if self.filename exists. If it does self.rows
            will be initialized from disk."""
         self.initialized = True
-        if os.path.isfile(self.filename) and not self.overwrite:
+        if Path(self.filename).is_file() and not self.overwrite:
             self.read(self.filename)
         else:
             if self.columns is None:
