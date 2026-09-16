@@ -1,9 +1,9 @@
-import math
-import os
 import copy
+import logging
+import math
+from pathlib import Path
 
 import numpy
-import logging
 
 from eon import fileio as io
 
@@ -113,22 +113,27 @@ class ASKMC:
         # and increasing by one each time the superbasin criterion fails.
         # In order to keep track of it, it will be written to disk, along with "num_rate_changes".
         # "num_rate_changes" keeps up with how many times barriers were raised in the entire simulation.
-        if not os.path.isfile(os.path.join(self.path,"askmc_data.txt")):
+        data_path = Path(self.path) / "askmc_data.txt"
+        if not data_path.is_file():
             sb_check_count = 0
             num_rate_changes = 0
         else:
-            fi = open(os.path.join(self.path,"askmc_data.txt"),"r")
-            lines = fi.readlines()
+            lines = data_path.read_text().splitlines()
             sb_check_count = int(lines[1].strip().split()[-1])
             num_rate_changes = int(lines[2].strip().split()[-1])
         return sb_check_count, num_rate_changes
 
     def save_askmc_metadata(self, sb_check_count, num_rate_changes):
         """ Save the current values of the AS-KMC data. """
-        fo = open(os.path.join(self.path,"askmc_data.txt"),"w")
-        fo.write("[Info for the Chatterjee & Voter AS-KMC method]\n")
-        fo.write("sb_check_count = %d\n" % (sb_check_count))
-        fo.write("num_rate_changes = %d\n" % (num_rate_changes))
+        data_path = Path(self.path) / "askmc_data.txt"
+        data_path.write_text(
+            (
+                "[Info for the Chatterjee & Voter AS-KMC method]\n"
+                "sb_check_count = %d\n"
+                "num_rate_changes = %d\n"
+            )
+            % (sb_check_count, num_rate_changes)
+        )
 
     def get_real_process_table(self, current_state):
         """ Return the real process table. """
@@ -138,12 +143,10 @@ class ASKMC:
     def get_modified_process_table(self, current_state):
         """ Return the table of modified processes. If it doesn't exist yet, it's hopefully because the system is in the first state.
             These will be "substituted" in place of their corresponding rates in the normal rate table. """
-        mod_proctable_path = os.path.join(current_state.path,"askmc_processtable")
-        if not os.path.isfile(mod_proctable_path):
+        mod_proctable_path = Path(current_state.path) / "askmc_processtable"
+        if not mod_proctable_path.is_file():
             return {}
-        fi = open(mod_proctable_path)
-        lines = fi.readlines()
-        fi.close()
+        lines = mod_proctable_path.read_text().splitlines()
         procs = {}
         for l in lines[1:]:
             l = l.strip().split()
@@ -159,8 +162,8 @@ class ASKMC:
 
     def save_modified_process_table(self, current_state, current_state_mod_procs):
         """ Write the modified process table for the current state to disk. """
-        mod_proctable_path = os.path.join(current_state.path,"askmc_processtable")
-        with io.atomic_write(mod_proctable_path) as fo:
+        mod_proctable_path = Path(current_state.path) / "askmc_processtable"
+        with io.atomic_write(str(mod_proctable_path)) as fo:
             fo.write(mod_processtable_header)
             for process_id in list(current_state_mod_procs.keys()):
                 proc = current_state_mod_procs[process_id]
@@ -176,13 +179,11 @@ class ASKMC:
 
     def append_modified_process_table(self, current_state, process_id, saddle_energy, prefactor, product, product_energy, product_prefactor, barrier, rate, view_count):
         """ Append a single line to the modified process table on disk. """
-        mod_proctable_path = os.path.join(current_state.path,"askmc_processtable")
-        # If the file doesn't exist yet, save a ready copy with the header.
-        if not os.path.isfile(mod_proctable_path):
+        mod_proctable_path = Path(current_state.path) / "askmc_processtable"
+        if not mod_proctable_path.is_file():
             self.save_modified_process_table(current_state, {})
-        fo = open(mod_proctable_path, 'a')
-        fo.write(processtable_line % (process_id, saddle_energy, prefactor, product, product_energy, product_prefactor, barrier, rate, view_count))
-        fo.close()
+        with mod_proctable_path.open("a") as fo:
+            fo.write(processtable_line % (process_id, saddle_energy, prefactor, product, product_energy, product_prefactor, barrier, rate, view_count))
 
     def get_process_id(self, current_state_procs, next_state_num, flag):
         """ Return the process id of the process going from the current state
@@ -435,14 +436,12 @@ class ASKMC:
                     self.save_modified_process_table(state_b, state_b_mod_procs)
                 # If using super-basin recycling, write out the list of states that are present in this 'superbasin'.
                 if self.sb_recycling_on:
-                    if not os.path.isdir(self.recycle_path):
-                        os.mkdir(self.recycle_path)
-                    sb_data_path = os.path.join(self.recycle_path, "current_sb_states")
-                    fo = open(sb_data_path, "w")
-                    fo.write("Most recent 'superbasin' states:\n")
+                    recycle_path = Path(self.recycle_path)
+                    recycle_path.mkdir(exist_ok=True)
                     state_list = self.edgelist_to_statelist()
-                    fo.write(repr(state_list))
-                    fo.close()
+                    (recycle_path / "current_sb_states").write_text(
+                        "Most recent 'superbasin' states:\n" + repr(state_list)
+                    )
                 # Update the number of times rate constants have been adjusted.
                 num_rate_changes += 1
             # Finally, save the 'tallies' being kept track of
