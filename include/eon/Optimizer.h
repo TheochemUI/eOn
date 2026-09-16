@@ -55,7 +55,6 @@ struct OptimizerConfig {
   PotType potential{PotType::LJ};
 
   static OptimizerConfig fromParams(const Parameters &p) {
-<<<<<<< HEAD
     return {p.optimizer_options(), p.main_options().finiteDifference,
             p.saddle_search_options().confine_positive.bowl_breakout,
             p.potential_options().potential};
