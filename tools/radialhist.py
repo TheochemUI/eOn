@@ -4,14 +4,15 @@
 #radial histogram
 
 import sys
-import os
+from pathlib import Path
+
 import numpy
 
 import pathfix
 import fileio as io, atoms
 
 def usage():
-    print("usage: %s poscarfile" % (os.path.basename(sys.argv[0])))
+    print("usage: %s poscarfile" % Path(sys.argv[0]).name)
     sys.exit(1)
 
 if len(sys.argv) < 2:

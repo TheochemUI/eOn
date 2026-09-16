@@ -1,5 +1,5 @@
 import sys
-import os
+from pathlib import Path
 
-path = os.path.join(os.path.dirname(os.path.abspath(os.path.dirname(__file__))), 'eon')
+path = str(Path(__file__).resolve().parent.parent / "eon")
 sys.path.insert(0, path)

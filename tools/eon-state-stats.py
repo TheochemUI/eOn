@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
-import sys
+import glob
 import os
 import re
-import glob
+import sys
 from datetime import datetime
+from pathlib import Path
 
 time = datetime.strptime
 states = sys.argv[1:]
@@ -25,7 +26,7 @@ if(len(states) == 0):
     state_listdir.sort()
     for dir in state_listdir:
         state_dir = str(dir)
-        if(os.path.isdir(state_dir)):
+        if Path(state_dir).is_dir():
             states.append(str(dir))
 
 print("#{:>11s}:{:>12s}{:>12s}{:>12s}{:>12s}{:>12s}{:>12s}{:>12s}{:>20s}{:>20s}{:>20s}".format(
@@ -49,7 +50,7 @@ for state in states:
     state_dir = str(state)
 
     # read the search data for the state
-    if(os.path.isdir(state_dir)):
+    if Path(state_dir).is_dir():
         state_file = open(state_dir+"/search_results.txt",'r')
         state_data = state_file.read()
         state_data_lines = state_data.splitlines()[2:]

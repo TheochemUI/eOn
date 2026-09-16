@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import os
 import sys
+from pathlib import Path
 
 import numpy
 
@@ -28,7 +28,7 @@ minima_energies = [float(line.strip().split()[1]) for line in open("states/state
 num_minima = len(minima_energies)
 
 build_database = True
-if os.path.exists('tree.db'):
+if Path("tree.db").exists():
     print("Using existing tree.db file. If you want to see more recent information, delete tree.db first.")
     build_database = False
 
