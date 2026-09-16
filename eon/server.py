@@ -9,10 +9,9 @@ Entry points:
 
 from __future__ import annotations
 
-import glob
-import os
 import shutil
 from io import StringIO
+from pathlib import Path
 from typing import Callable, Optional
 
 from eon.config import ConfigClass
@@ -45,7 +44,7 @@ def select_job_runner(job: str) -> Optional[Callable[[ConfigClass], None]]:
 
 
 def _warn_pos_con_in_potfiles(config: ConfigClass) -> None:
-    fnames = [os.path.basename(f) for f in glob.glob(os.path.join(config.path_pot, "*"))]
+    fnames = [p.name for p in Path(config.path_pot).glob("*")]
     if "pos.con" in fnames:
         print(
             "WARNING: pos.con found in potfiles path. Are you sure you want this? "
@@ -63,16 +62,18 @@ def _fallback_single_job(config: ConfigClass) -> None:
     comm = communicator.get_communicator(config)
 
     job: dict = {}
-    files = [f for f in os.listdir(".") if os.path.isfile(f)]
-    for f in files:
-        with open(f) as fh:
-            if len(f.split(".")) > 1:
-                f_passed = f.split(".")[0] + "." + f.split(".")[1]
+    for path in Path(".").iterdir():
+        if not path.is_file():
+            continue
+        name = path.name
+        with path.open() as fh:
+            if len(name.split(".")) > 1:
+                f_passed = name.split(".")[0] + "." + name.split(".")[1]
                 job[f_passed] = StringIO(fh.read())
     job["id"] = "output"
-    if os.path.isdir("output_old"):
+    if Path("output_old").is_dir():
         shutil.rmtree("output_old")
-    if os.path.isdir("output"):
+    if Path("output").is_dir():
         shutil.move("output", "output_old")
     comm.submit_jobs([job], {})
 
