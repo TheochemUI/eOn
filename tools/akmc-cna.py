@@ -1,12 +1,11 @@
-
-import os
 from collections import Counter
+from pathlib import Path
 
 import eon
 
 i = 0
-while os.path.isdir(os.path.join('.', 'states', str(i))):
-	p = eon.fileio.loadcon(os.path.join('.', 'states', str(i), 'reactant.con'))
+while (Path("states") / str(i)).is_dir():
+	p = eon.fileio.loadcon(str(Path("states") / str(i) / "reactant.con"))
 	cna = eon.atoms.cnat(p,4.0)
 	count = Counter()
 	for c in cna:

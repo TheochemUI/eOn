@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 
-import os
 import configparser
+from pathlib import Path
 
 import pathfix
 import yaml
 
-yaml_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'eon', 'config.yaml')
-yaml_file = open(yaml_path)
-y = yaml.load(yaml_file)
-yaml_file.close()
+yaml_path = Path(__file__).resolve().parent.parent / "eon" / "config.yaml"
+y = yaml.load(yaml_path.read_text())
 
 for section in y:
     print()

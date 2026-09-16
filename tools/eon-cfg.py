@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-import os
 import math
+import os
 import time
+from pathlib import Path
 import gtk.gdk as gdk
 import gtk.glade as glade
 import numpy as np
@@ -17,7 +18,7 @@ import pathfix
 class eoncfg(object):
     def __init__(self):
         #adds glade file, creates an object for main window
-        gladetree = gtk.glade.XML(os.path.join(pathfix.path,"tools/eon-cfg.glade"))
+        gladetree = gtk.glade.XML(str(Path(pathfix.path) / "tools" / "eon-cfg.glade"))
         self.window = gladetree.get_widget("window1")
         #creates dialog windows
         self.jobDialog = gtk.MessageDialog(self.window,gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,gtk.MESSAGE_INFO, gtk.BUTTONS_CLOSE, None)
@@ -179,7 +180,7 @@ class eoncfg(object):
 
         #adds default config file if no config file exists
         self.config = ConfigParser.SafeConfigParser()
-        self.config.read(os.path.join(pathfix.path, "default_config.ini"))
+        self.config.read(str(Path(pathfix.path) / "default_config.ini"))
         try:
             self.config.read("./config.ini")
         except:

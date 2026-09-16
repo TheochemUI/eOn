@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-import os
 import math
+import os
 import time
+from pathlib import Path
 
 import gtk
 import gtk.gdk as gdk
@@ -32,7 +33,7 @@ class atomview(gtk.Window):
         self.connect("key_press_event", self.event_key_pressed)
         self.set_resizable(True)
         # Glade
-        gladetree = gtk.glade.XML(os.path.join(pathfix.path, "tools/atomview.glade"))
+        gladetree = gtk.glade.XML(str(Path(pathfix.path) / "tools" / "atomview.glade"))
         gladewindow = gladetree.get_widget("window")
         self.moviescale = gladetree.get_widget("moviescale")
         self.playbutton = gladetree.get_widget("playbutton")
