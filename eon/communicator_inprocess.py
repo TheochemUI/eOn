@@ -12,6 +12,7 @@ from __future__ import annotations
 import logging
 import os
 from io import StringIO
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -37,7 +38,7 @@ def _params_from_invariants(pc, invariants: dict) -> Any:
     params = pc.Parameters()
     # invariants values are (StringIO, mode) or StringIO
     for name, val in invariants.items():
-        base = os.path.basename(name)
+        base = Path(name).name
         if base not in ("config.ini", "config"):
             continue
         content = val[0] if isinstance(val, tuple) else val
