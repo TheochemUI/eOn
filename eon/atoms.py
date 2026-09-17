@@ -289,7 +289,7 @@ def _common_bond_stats(nl_sets, common):
     return bonds_nr, bonds_sum
 
 
-def cna(p, cutoff, brute=False):
+def cna(p, cutoff):
     """Common-neighbor labels for every atom in *p*.
 
     Labels match the C++ client (``EpiCenters::cna``): 0 fcc (421), 1 hcp
@@ -328,13 +328,13 @@ def cna(p, cutoff, brute=False):
                 can_values[i] = CNA_HCP
     return can_values
 
-def not_HCP_or_FCC(p, cutoff, brute=False):
+def not_HCP_or_FCC(p, cutoff):
     """Indices of atoms that are neither fcc nor hcp (CNA other)."""
-    cna_numbers = cna(p, cutoff, brute)
+    cna_numbers = cna(p, cutoff)
     return [i for i, label in enumerate(cna_numbers) if label == CNA_OTHER]
 
 
-def cnat(p, cutoff, brute=False):
+def cnat(p, cutoff):
     """ Returns a list of cna numbers for all atoms in p
         Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)"""
     can_values = numpy.zeros(len(p))
@@ -376,7 +376,7 @@ def cnat(p, cutoff, brute=False):
                 can_values[i] = 5
     return can_values
 
-def cnar(p, cutoff, brute=False):
+def cnar(p, cutoff):
     """ Returns a list of cna numbers for all atoms in p
         Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)"""
     # not compatible with older python versions
@@ -411,27 +411,25 @@ def cnar(p, cutoff, brute=False):
     return cna
 
 
-def not_TCP(p, cutoff, brute=False):
+def not_TCP(p, cutoff):
     """ Returns a list of indices for the atoms with cna = 0 """
     not_cna = []
-    cna_numbers = cnat(p, cutoff, brute)
+    cna_numbers = cnat(p, cutoff)
     for i in range(len(cna_numbers)):
         if cna_numbers[i] == 0 or cna_numbers[i] == 5:
             not_cna.append(i)
     return not_cna
 
-def not_TCP_or_BCC(p, cutoff, brute=False):
+def not_TCP_or_BCC(p, cutoff):
     """ Returns a list of indices for the atoms with cna = 0 """
     not_cna = []
-    cna_numbers = cnat(p, cutoff, brute)
+    cna_numbers = cnat(p, cutoff)
     for i in range(len(cna_numbers)):
         if cna_numbers[i] == 0:
             not_cna.append(i)
     return not_cna
 
 
-import sys
-sys.setrecursionlimit(10000)
 def get_mappings(a, b, eps_r, neighbor_cutoff, mappings=None):
     """Depth-first search for a complete atom mapping from a onto b.
 
