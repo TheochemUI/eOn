@@ -1,0 +1,1 @@
+NEB L-BFGS no longer runs the auto_scale finite-difference H0 probe. That probe treats the projected band force as a potential gradient and never built memory. The LJ13 job fixtures also pin climbing_image off, matching the unit tests.
