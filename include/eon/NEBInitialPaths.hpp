@@ -1,13 +1,28 @@
 #pragma once
 #include "Matter.h"
 #include <filesystem>
+#include <format>
 #include <memory>
 #include <span>
+#include <stdexcept>
+#include <string_view>
 
 namespace eonc {
 
 namespace helpers::neb_paths {
 namespace fs = std::filesystem;
+
+/// Abort before Eigen subtracts two position matrices of different size.
+inline void requireSameAtomCount(const Matter &a, const Matter &b,
+                                 std::string_view what) {
+  if (a.numberOfAtoms() == b.numberOfAtoms()) {
+    return;
+  }
+  throw std::invalid_argument(std::format(
+      "NEB: {} do not have the same number of atoms ({} vs {})", what,
+      a.numberOfAtoms(), b.numberOfAtoms()));
+}
+
 std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
                                const size_t nimgs);
 

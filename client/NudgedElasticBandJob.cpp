@@ -92,6 +92,13 @@ std::vector<std::string> NudgedElasticBandJob::run() {
     }
   }
 
+  eonc::helpers::neb_paths::requireSameAtomCount(*initial, *final_state,
+                                                 "reactant and product");
+  if (tsInterpolate) {
+    eonc::helpers::neb_paths::requireSameAtomCount(
+        *initial, *transitionState, "reactant and ts.con");
+  }
+
   // Endpoint minimization logic:
   // - If params.neb_options().endpoints.minimize is false: never minimize
   // endpoints.

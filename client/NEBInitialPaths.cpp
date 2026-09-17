@@ -29,6 +29,7 @@ std::shared_ptr<Potential> createZBLPotential() {
 
 std::vector<Matter> linearPath(const Matter &initImg, const Matter &finalImg,
                                const size_t nimgs) {
+  requireSameAtomCount(initImg, finalImg, "reactant and product");
   std::vector<Matter> all_images_on_path(nimgs + 2, initImg);
   all_images_on_path.front() = Matter(initImg);
   all_images_on_path.back() = Matter(finalImg);
@@ -61,6 +62,9 @@ std::vector<Matter> filePathInit(const std::vector<fs::path> &fsrcs,
     if (!eonc::io::io_ok(img.con2matter(filePath.string()))) {
       throw std::runtime_error("failed to load NEB path frame: " +
                                filePath.string());
+    }
+    if (!all_images_on_path.empty()) {
+      requireSameAtomCount(all_images_on_path.front(), img, "path images");
     }
     all_images_on_path.push_back(img);
   }
@@ -209,6 +213,7 @@ std::vector<Matter> idppCollectivePath(const Matter &initImg,
 
 // Helper to insert an image linearly between two others
 Matter interpolateImage(const Matter &A, const Matter &B, double fraction) {
+  requireSameAtomCount(A, B, "path images");
   Matter newImg(A);
   AtomMatrix posA = A.getPositions();
   AtomMatrix posB = B.getPositions();
