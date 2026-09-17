@@ -17,8 +17,6 @@
  *     Company: University of Iceland
  */
 
-#include <algorithm>
-
 #include "GPRDimerTest.h"
 #include "eon/AtomicGPDimer.h"
 #include "eon/GPRHelpers.h"

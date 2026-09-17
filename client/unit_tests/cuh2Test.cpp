@@ -17,8 +17,6 @@
  *     Company: University of Iceland
  */
 
-#include <algorithm>
-
 #include "CuH2Test.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
