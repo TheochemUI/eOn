@@ -19,7 +19,6 @@ University of Iceland
 #include "eon/potentials/Water/ccl.hpp"
 #include <cassert>
 #include <cmath>
-// #include "unit_system.hpp"
 
 namespace forcefields {
 namespace {
@@ -30,7 +29,6 @@ double const re_ = 0.9572 * unit_system::ANGSTROM;
 double const thetae_ = 104.52 * unit_system::DEGREE;
 
 double const re2_ = re_ * re_;
-//    double const ERGS_PER_ANGSTROM2=ERGS/ANGSTROM2;
 
 // ------------------------ Quadratic ---------------------------
 double const ro_2_ = 84.54e-12 * unit_system::ERGS_PER_ANGSTROM2;
@@ -66,7 +64,6 @@ double const re_ = 0.9572;                  // ANGSTROM
 double const thetae_ = 1.82421813418447321; // RADIANS
 
 double const re2_ = 0.91623184; // ANGSTROM^2
-//    double const ERGS_PER_ANGSTROM2 = 624150947960.771851; // eV / Angstrom^2
 
 // ------------------------ Quadratic ---------------------------
 double const ro_2_ = 52.7657211406036524;      // eV / Angstrom^2
