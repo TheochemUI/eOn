@@ -633,9 +633,8 @@ void NudgedElasticBand::updateForces(bool ci_active) {
 
   // Climbing requires an interior peak above both fixed endpoints.
   // A monotonic path retains the spring force on every interior image.
-  const double endpointEnergy =
-      std::max(path.front()->getPotentialEnergy(),
-               path.back()->getPotentialEnergy());
+  const double endpointEnergy = std::max(path.front()->getPotentialEnergy(),
+                                         path.back()->getPotentialEnergy());
   const bool climb = ci_active && maxEnergy > endpointEnergy;
   climbingImage = 0;
 
