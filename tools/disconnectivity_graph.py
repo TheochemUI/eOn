@@ -25,9 +25,7 @@ ytick_fontsize = 14.0
 marker_size = 50.0
 """
 
-import sys
 import os
-import re
 import glob
 import ast
 import pandas as pd

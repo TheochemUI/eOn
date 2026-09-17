@@ -4,7 +4,6 @@
 
 import pathfix
 import config
-import sys
 import os
 
 try:
