@@ -1,6 +1,5 @@
 import gauss_peak
 import numpy as np
-#import pylab
 
 class PES_2D():
     def __init__(self, x=None, y=None):

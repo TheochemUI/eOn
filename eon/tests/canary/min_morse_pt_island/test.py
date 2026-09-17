@@ -21,9 +21,6 @@ for line in open("minimization.test"):
         energydata = line.strip().split()
         r = float(energydata[2])
 
-#print "Test energy: ",u
-#print "Ref energy : ",r
-
 rel_err = abs(u-r)/abs(u)
 
 if rel_err > 0.01:
