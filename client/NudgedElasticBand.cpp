@@ -255,6 +255,12 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
 
   auto objf = std::make_shared<NEBObjectiveFunction>(this, params);
 
+  // Band force is a projected NEB residual, not ∇V. The L-BFGS auto_scale
+  // FD H0 probe often sees negative curvature and takes a max-move reset
+  // instead of building memory, so the job hits max_iterations (status 1)
+  // on the LJ13 integration fixtures.
+  ParametersLoadAccess::optimizer_options(params).lbfgs.auto_scale = false;
+
   bool switched{false};
   auto optim = eonc::helpers::create::mkOptim(
       objf, params.neb_options().opt_method, params);
