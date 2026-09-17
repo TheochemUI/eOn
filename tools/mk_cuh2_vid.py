@@ -40,8 +40,6 @@ true_e_dat = cuh2slab.plt_data(
     n_points=cuh2slab.PlotPoints(x_npt=40, y_npt=40)
 )
 
-# print([x.energy for x in true_e_dat.pltpts])
-
 def plot_band(_index, _band, _k, _method="eOn", _opt="QM", _ci="False"):
     plot_last = [ASE_MoveCoordTrain().transform(x) for x in _band]
     cuh2slab.contour_plot(

@@ -215,7 +215,6 @@ for dir in state_listdir:
        selected_procs = process_table[process_table['productID']>=0]
    for i in range(len(selected_procs['productID'])):
        ps_ID = selected_procs['productID'].iloc[i]
-       #print ps_ID
        if ps_ID >= paras['max_state_n']:
           continue
        try:
@@ -224,8 +223,6 @@ for dir in state_listdir:
        except:
          continue
 print("#of states:",len(db.minima()))
-#for mini in db.minima():
-#   print mini.coords
 Emax = paras['emax']
 if Emax is None:
    Emax = -1e20
@@ -234,7 +231,6 @@ if Emax is None:
          Emax = ts.energy
    print('max ts:', Emax)
 #check the structures with energy larger than check_e
-#print paras['check_structure']
 if paras['check_structure']:
    for ts in db.transition_states():
        if ts.energy > paras['check_e']:

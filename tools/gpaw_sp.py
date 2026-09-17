@@ -60,7 +60,6 @@ clients = int(os.environ["EON_NUMBER_OF_CLIENTS"])
 potential_group_size = potentials/clients
 
 my_client_rank = client_ranks[potential_ranks.index(rank)/potential_group_size]
-#print "pot: rank: %i my_client_rank: %i" % (world.rank, my_client_rank)
 
 for i in range(clients):
     s = potential_group_size
