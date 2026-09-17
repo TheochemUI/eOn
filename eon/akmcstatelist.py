@@ -68,7 +68,6 @@ class AKMCStateList(statelist.StateList):
         # Reverse process (prod->reac).
         # Have any processes been determined for the product state.
         if product.get_num_procs() != 0:
-            print("register_process: found process in product state")
             product.load_process_table()
             reverse_procs = product.get_process_table()
             candidates = []
@@ -80,7 +79,6 @@ class AKMCStateList(statelist.StateList):
                     candidates.append(id)
 
             if len(candidates):
-                print("register_process: some candidate reverse processes found")
                 reactant_conf = reactant.get_reactant()
                 for id in candidates:
                     conf = product.get_process_product(id)
@@ -92,7 +90,6 @@ class AKMCStateList(statelist.StateList):
                         reactant.load_process_table()
 
                         # Set equilibrium rate, if defined
-                        print("register_process: into eq rate test")
                         reverse_rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-(saddle_energy - product.get_energy()) / self.kT)
                         forward_barrier = saddle_energy - reactant.get_energy()
                         forward_rate = reactant.procs[process_id]['prefactor'] * math.exp(-forward_barrier / self.kT)
@@ -100,14 +97,12 @@ class AKMCStateList(statelist.StateList):
                         eq_rate_flag = False
                         if self.config.akmc_eq_rate > 0 and forward_rate > self.config.akmc_eq_rate and reverse_rate > self.config.akmc_eq_rate:
                             eq_rate_flag = True
-                            print("eq_rate exceeded, forward:", forward_rate, " reverse: ", reverse_rate)
                             if forward_rate < reverse_rate:
                                 forward_eq_rate = self.config.akmc_eq_rate
                                 reverse_eq_rate = self.config.akmc_eq_rate * (reverse_rate / forward_rate)
                             else:
                                 forward_eq_rate = self.config.akmc_eq_rate * (forward_rate / reverse_rate)
                                 reverse_eq_rate = self.config.akmc_eq_rate
-                            print("new eq forward rate:", forward_eq_rate, " reverse: ", reverse_eq_rate)
 
                         # Remember we are now looking at the reverse processes
                         reverse_procs[id]['product'] = reactant_number
@@ -121,7 +116,6 @@ class AKMCStateList(statelist.StateList):
 
                         # If equilibrium rate, change the forward and reverse rate
                         if eq_rate_flag:
-                            print("register_process: setting eq rates")
                             reactant.procs[process_id]['rate'] = forward_eq_rate
                             reverse_procs[id]['rate'] = reverse_eq_rate
                             reactant.save_process_table()
@@ -136,7 +130,6 @@ class AKMCStateList(statelist.StateList):
 
         else:
             # This must be a new state.
-            print("register_process: new product state")
             product.set_energy(reactant.procs[process_id]['product_energy'])
             reverse_process_id = None
 
@@ -170,11 +163,9 @@ class AKMCStateList(statelist.StateList):
                                      product_prefactor = reactant.procs[process_id]['prefactor'],
                                      barrier = barrier,
                                      rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-barrier / self.kT),
-#                                     rate = cur_rate,
                                      repeats = 0)
 
         # Set equilibrium rate, if defined
-        print("register_process: into eq rate test")
         forward_barrier = saddle_energy - reactant.get_energy()
         forward_rate = reactant.procs[process_id]['prefactor'] * math.exp(-forward_barrier / self.kT)
         reverse_rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-(saddle_energy - product.get_energy()) / self.kT)
@@ -182,18 +173,15 @@ class AKMCStateList(statelist.StateList):
         eq_rate_flag = False
         if self.config.akmc_eq_rate > 0 and forward_rate > self.config.akmc_eq_rate and reverse_rate > self.config.akmc_eq_rate:
             eq_rate_flag = True
-            print("eq_rate exceeded, forward:", forward_rate, " reverse: ", reverse_rate)
             if forward_rate < reverse_rate:
                 forward_eq_rate = self.config.akmc_eq_rate
                 reverse_eq_rate = self.config.akmc_eq_rate * (reverse_rate / forward_rate)
             else:
                 forward_eq_rate = self.config.akmc_eq_rate * (forward_rate / reverse_rate)
                 reverse_eq_rate = self.config.akmc_eq_rate
-            print("new eq forward rate:", forward_eq_rate, " reverse: ", reverse_eq_rate)
             reactant.procs[process_id]['rate'] = forward_eq_rate
             product.procs[reverse_process_id]['rate'] = reverse_eq_rate
 
-        #GH: added this first line
         reactant.save_process_table()
         product.save_process_table()
 
