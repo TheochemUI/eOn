@@ -19,7 +19,6 @@ University of Iceland
 #include <cassert>
 #include <cmath>
 #include <iostream>
-// #include "unit_system.hpp"
 
 namespace forcefields {
 
