@@ -519,11 +519,6 @@ void Matter::setFixedMask(long int indexAtom, std::array<bool, 3> mask) {
   recomputeMaskedForces = true;
 }
 
-// void Matter::setPotentialEnergy(double epot_input)
-//{
-//	potentialEnergy=epot_input;
-// }
-
 double Matter::getPotentialEnergy() const {
   if (nAtoms > 0) {
     computePotential();
