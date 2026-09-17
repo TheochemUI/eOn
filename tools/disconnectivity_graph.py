@@ -129,8 +129,6 @@ def type_convertion(para, value):
        return ast.literal_eval(value)
 
 def compareStru():
-#    if min1.cords == min2.cords:
-#       return True
     return False
 
 def get_coord(atoms):

@@ -16,9 +16,6 @@ if __name__ == "__main__":
     op.add_option("--box", action="store_true", dest="box", default=False,
                   help="relax the box along with the atomic coordinates")
     (options, args) = op.parse_args()
-#    if len(args) < 3:
-#        op.print_help()
-#        sys.exit()
 
 # get the input file
     posfile = "pos.con"
