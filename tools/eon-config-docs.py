@@ -17,7 +17,6 @@ class documentation():
     for i in range(len(config.format)):
         section = config.format[i].name.lower().replace(" ", "_")
         filename = '../docs/_autogen/config_%s.txt' % section
-        file(filename, 'w')
         f =open(filename, 'w')
         f.write("%s\n" %config.format[i].name)
         f.write("-"*len(config.format[i].name))

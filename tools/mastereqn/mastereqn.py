@@ -68,6 +68,6 @@ print('plot ' + ','.join(plots))
 
 for j in states:
     for t in numpy.logspace(-15, 0, 100):
-        print(t, abs(sum([ c0[i]*numpy.exp(-ew[i]*t)*ev[:,i] for i in xrange(N) ])[j]))
+        print(t, abs(sum([ c0[i]*numpy.exp(-ew[i]*t)*ev[:,i] for i in range(N) ])[j]))
     if j != states[-1]:
         print('e')
