@@ -743,7 +743,6 @@ class Table:
     def write(self):
         if not self.initialized:
             self.init()
-        #print("into table write: ",self.filename)
         with atomic_write(self.filename) as f:
             self.writefilehandle(f)
 
