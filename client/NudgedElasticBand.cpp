@@ -161,10 +161,17 @@ NudgedElasticBand::NudgedElasticBand(std::vector<Matter> initPath,
       params.optimizer_options().convergence_metric, "[Nudged Elastic Band]");
   this->status = NEBStatus::INIT;
   numImages = params.neb_options().image_count;
+  if (initPath.empty()) {
+    throw std::invalid_argument("NEB: initPath is empty");
+  }
   if (initPath.size() != static_cast<size_t>(numImages + 2)) {
     throw std::invalid_argument("NEB: initPath.size() must be image_count + 2");
   }
   atoms = initPath.front().numberOfAtoms();
+  for (size_t i = 1; i < initPath.size(); ++i) {
+    eonc::helpers::neb_paths::requireSameAtomCount(initPath.front(),
+                                                   initPath[i], "path images");
+  }
 
   // Common initialization logic
   path.resize(numImages + 2);
