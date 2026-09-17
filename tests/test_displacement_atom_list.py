@@ -4,8 +4,6 @@ import logging
 from pathlib import Path
 from unittest import mock
 
-import pytest
-
 from eon import _utils as utl
 
 

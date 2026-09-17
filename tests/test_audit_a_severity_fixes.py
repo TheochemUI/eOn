@@ -48,7 +48,6 @@ def test_process_search_requires_config():
 def test_superbasin_step_uses_self_config_when_amsel_off(tmp_path, monkeypatch):
     """amsel off: step must not NameError on bare config."""
     from eon.config import ConfigClass
-    from eon.superbasin import Superbasin
 
     # Minimal fake: Superbasin.step with empty states needs rate tables —
     # only exercise the amsel gate block by forcing early path.

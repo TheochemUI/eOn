@@ -7,7 +7,6 @@ import pytest
 
 pyec = pytest.importorskip("pyeonclient")
 ase = pytest.importorskip("ase")
-from ase import Atoms
 from ase.constraints import FixAtoms
 
 

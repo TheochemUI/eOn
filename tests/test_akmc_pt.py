@@ -1,6 +1,4 @@
 import sh
-import os
-import pytest
 from pathlib import Path
 
 p = Path(str(sh.pwd())) # Hacky way to get project root
