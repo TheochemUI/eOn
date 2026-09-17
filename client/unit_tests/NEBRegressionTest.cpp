@@ -155,6 +155,28 @@ TEST_CASE_METHOD(NEBRegressionFixture,
 }
 
 TEST_CASE_METHOD(NEBRegressionFixture,
+                 "NEB L-BFGS converges with fixed unrelaxed endpoints",
+                 "[neb][regression][lbfgs]") {
+  product->con2matter(std::string("product.con"));
+  ParametersLoadAccess::neb_options(params).image_count = 3;
+  ParametersLoadAccess::neb_options(params).spring.constant = 5.0;
+  ParametersLoadAccess::neb_options(params).max_iterations = 200;
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = true;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 200;
+  const AtomMatrix initial = reactant->getPositions();
+  const AtomMatrix final = product->getPositions();
+  REQUIRE(params.optimizer_options().lbfgs.auto_scale);
+
+  auto neb =
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  REQUIRE(neb->compute() == NudgedElasticBand::NEBStatus::GOOD);
+  CHECK(neb->convergenceForce() < params.neb_options().force_tolerance);
+  CHECK(neb->path.front()->getPositions().isApprox(initial, 0.0));
+  CHECK(neb->path.back()->getPositions().isApprox(final, 0.0));
+  CHECK(params.optimizer_options().lbfgs.auto_scale);
+}
+
+TEST_CASE_METHOD(NEBRegressionFixture,
                  "NEB convergence produces stable barrier height",
                  "[neb][regression]") {
   auto neb =
