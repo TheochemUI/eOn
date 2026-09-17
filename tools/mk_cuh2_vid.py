@@ -4,7 +4,6 @@ import ase.io
 import matplotlib.pyplot as plt
 import torch
 
-import sys
 import subprocess
 from pathlib import Path
 import configparser
