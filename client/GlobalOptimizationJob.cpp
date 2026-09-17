@@ -16,7 +16,6 @@
 #include <format>
 #include <memory>
 #include <stdexcept>
-// #include "eon/MinimizationJob.h"
 #include "eon/Dynamics.h"
 #include "eon/HelperFunctions.h"
 
@@ -26,12 +25,10 @@
 namespace eonc {
 
 std::vector<std::string> GlobalOptimizationJob::run() {
-  // int status;
   GlobalOptimization globopt = GlobalOptimization(params);
   std::string reactant_passed =
       eonc::helpers::getRelevantFile(params.main_options().conFilename);
   std::vector<std::string> returnFiles;
-  // returnFiles.push_back(reactant_output);
   auto matter_cur = std::make_unique<Matter>(pot, params);
   auto matter_hop = std::make_unique<Matter>(pot, params);
   if (!eonc::io::io_ok(matter_cur->con2matter(reactant_passed))) {
@@ -41,9 +38,6 @@ std::vector<std::string> GlobalOptimizationJob::run() {
   bool converged;
   long nstep = params.global_optimization_options().steps;
   AtomMatrix rat_t(matter_cur->numberOfAtoms(), 3);
-  // double epot_hop;
-  // std::vector<double> earr;
-  // std::vector<Matter> allmatter;
   QUILL_LOG_DEBUG(log, "\nBeginning minima hopping of {}",
                   reactant_passed.c_str());
   // long fcalls;
@@ -124,9 +118,6 @@ void GlobalOptimizationJob::analyze(Matter &matter_cur, Matter &matter_hop) {
 
 void GlobalOptimizationJob::examineEscape(Matter &matter_cur,
                                           Matter &matter_hop) {
-  // fSPDLOG_LOGGER_DEBUG(log, monfile,"%15.5f  %15.5f  %15.5f
-  // ",matter_hop.getPotentialEnergy(),
-  // matter_cur.getPotentialEnergy(),matter_hop.getPotentialEnergy()-matter_cur.getPotentialEnergy());
   double epot, epot_hop;
   epot = matter_cur.getPotentialEnergy();
   epot_hop = matter_hop.getPotentialEnergy();
@@ -135,8 +126,6 @@ void GlobalOptimizationJob::examineEscape(Matter &matter_cur,
     escapeResult = "failure";
   } else {
     escapeResult = "success";
-    // fprintf(monfile,"%15.5f  %15.5f  %15.5f           ", epot_hop, ediff,
-    // ekin);
   }
 }
 
