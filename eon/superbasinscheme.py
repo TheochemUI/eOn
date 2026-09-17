@@ -245,7 +245,6 @@ class EnergyLevel(SuperbasinScheme):
 
         # error
         if start_state == end_state and not self.config.comp_use_identical:
-        #if start_state == end_state:
             return
 
         # if the start state does not have an energy level yet, we set it to the energy of the state.

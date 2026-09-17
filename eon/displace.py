@@ -746,7 +746,6 @@ class Water:
 
     def get_displacement(self):
         """Returns Atom object containing displaced structure and an array containing the displacement."""
-        free = self.reactant.free
         displaced_atoms = self.reactant.copy()
         if self.random > 0:
             n = len(self.molecule_list)
@@ -760,9 +759,6 @@ class Water:
             h1 = i * 2
             h2 = i * 2 + 1
             o = i + self.n_water * 2
-            # don't displace if any of the three atoms is fixed
-            # if not (free[h1] and free[h2] and free[o]):
-            #    continue
             # Displace one of the free atoms by a gaussian distributed
             # random number with a standard deviation of self.std_dev.
             disp = numpy.random.normal(scale=self.stdev_translation, size=3)
