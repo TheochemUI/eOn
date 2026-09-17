@@ -87,9 +87,13 @@ if __name__ == "__main__":
             outfile = str(Path(os.environ.get("MESON_DIST_ROOT", "")) / outfile)
 
         # Print human readable output path
-        relpath = os.path.relpath(outfile)
+        out = Path(outfile)
+        try:
+            relpath = str(out.resolve().relative_to(Path.cwd()))
+        except ValueError:
+            relpath = str(out)
         if relpath.startswith("."):
-            relpath = outfile
+            relpath = str(out)
 
         with open(outfile, "w") as f:
             f.write(template)
