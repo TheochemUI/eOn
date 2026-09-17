@@ -93,7 +93,6 @@ std::vector<std::string> BasinHoppingJob::run() {
   *minimumEnergyStructure = *current;
   int nsteps = params.basin_hopping_options().steps +
                params.basin_hopping_options().quenching_steps;
-  long totalfc;
 
   QUILL_LOG_DEBUG(
       log, "[Basin Hopping] {:4s} {:12s} {:12s} {:12s} {:4s} {:5s} {:5s}",
@@ -133,9 +132,7 @@ std::vector<std::string> BasinHoppingJob::run() {
       }
     }
 
-    // Potential::fcalls = 0;
     minTrial->relax(true);
-    // int minfcalls = Potential::fcalls;
 
     double deltaE = minTrial->getPotentialEnergy() - currentEnergy;
     double p = 0.0;
@@ -230,22 +227,6 @@ std::vector<std::string> BasinHoppingJob::run() {
       }
     }
 
-    // totalfc = Potential::fcallsTotal;
-    char acceptReject[2];
-    acceptReject[1] = '\0';
-    if (accepted) {
-      acceptReject[0] = 'A';
-    } else {
-      acceptReject[0] = 'R';
-    }
-    // QUILL_LOG_DEBUG(log, "[Basin Hopping] %5i %12.3f %12.3f %12.3f %4i
-    // %5.3f %5.3f %1s\n",
-    //        step+1, currentEnergy, minTrial->getPotentialEnergy(),
-    //        minimumEnergy, minfcalls, totalAccept/((double)step+1),
-    //        curDisplacement, acceptReject);
-    // fprintf(pFile, "%6i %9ld %12.4e %12.4e\n",step+1,totalfc,currentEnergy,
-    // minTrial->getPotentialEnergy());
-
     if (minimumEnergy < params.basin_hopping_options().stop_energy) {
       break;
     }
@@ -284,8 +265,6 @@ std::vector<std::string> BasinHoppingJob::run() {
         curDisplacement *= 1.0 - adjustFraction;
       }
 
-      // QUILL_LOG_DEBUG(log, "recentRatio %.3f md: %.3f\n", recentRatio,
-      // curDisplacement);
       recentAccept = 0;
     }
   }
