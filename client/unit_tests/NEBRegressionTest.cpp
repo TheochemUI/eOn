@@ -84,6 +84,56 @@ TEST_CASE_METHOD(NEBRegressionFixture,
 }
 
 TEST_CASE_METHOD(NEBRegressionFixture,
+                 "NEB does not climb below the endpoint energies",
+                 "[neb][regression][climbing_image]") {
+  const bool reverse = GENERATE(false, true);
+  product->con2matter(std::string("product.con"));
+  if (reverse) {
+    std::swap(reactant, product);
+  }
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = true;
+  auto neb =
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  neb->updateForces();
+
+  const double endpointEnergy =
+      std::max(neb->path.front()->getPotentialEnergy(),
+               neb->path.back()->getPotentialEnergy());
+  REQUIRE(neb->path[neb->maxEnergyImage]->getPotentialEnergy() <
+          endpointEnergy);
+  CHECK(neb->climbingImage == 0);
+
+  std::vector<AtomMatrix> forces;
+  for (long i = 1; i <= neb->numImages; ++i) {
+    forces.push_back(*neb->projectedForce[i]);
+  }
+  neb->updateForces(false);
+  for (long i = 1; i <= neb->numImages; ++i) {
+    CHECK(forces[i - 1].isApprox(*neb->projectedForce[i], 1e-12));
+  }
+}
+
+TEST_CASE_METHOD(NEBRegressionFixture,
+                 "NEB clears the climbing image when an endpoint reaches the peak",
+                 "[neb][regression][climbing_image]") {
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = true;
+  product->setPositions(reactant->getPositions());
+  auto neb =
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  neb->path[2]->con2matter(std::string("product.con"));
+  neb->updateForces();
+
+  REQUIRE(neb->maxEnergyImage == 2);
+  REQUIRE(neb->path[2]->getPotentialEnergy() >
+          neb->path.front()->getPotentialEnergy());
+  REQUIRE(neb->climbingImage == 2);
+
+  neb->path.back()->setPositions(neb->path[2]->getPositions());
+  neb->updateForces();
+  CHECK(neb->climbingImage == 0);
+}
+
+TEST_CASE_METHOD(NEBRegressionFixture,
                  "NEB convergence produces stable barrier height",
                  "[neb][regression]") {
   auto neb =
