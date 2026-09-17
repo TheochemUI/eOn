@@ -289,7 +289,6 @@ class AKMCState(state.State):
 
         """
         # Possibly disable superbasin feature.
-        #if not self.config.sb_superbasin_confidence:
         try:
             if not self.config.sb_superbasin_confidence:
                 superbasin = None

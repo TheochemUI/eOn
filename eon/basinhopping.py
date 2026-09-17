@@ -144,12 +144,6 @@ def make_searches(comm, wuid, bhstates, config: ConfigClass):
         search['id'] = "%d" % wuid
         ini_changes = [ ('Main', 'random_seed', str(int(numpy.random.random()*2**32))) ]
 
-        #if config.bh_random_structure:
-        #    reactIO = StringIO()
-        #    io.savecon(reactIO, rs.generate())
-        #else:
-        #    reactIO = initial_react
-
         if config.bh_initial_state_pool_size == 0:
             reactIO = initial_react
         elif config.bh_initial_state_pool_size > 0:
@@ -188,8 +182,6 @@ def register_results(comm, bhstates, config):
         # results.dat - an array of strings containing the results
         # id - wuid
 
-        #result_id = result['id']
-        #del result['id']
         result_info = io.parse_results(result['results.dat'])
         if 'minimum_energy' not in result_info:
             continue
@@ -197,10 +189,6 @@ def register_results(comm, bhstates, config):
             if bhstates.add_state(result, result_info):
                 logger.info("New structure with energy %.8e",
                             result_info['minimum_energy'])
-
-            #logger.info("found new structure with energy %.3e", fe)
-            #if bhminima.add_minimum(fe, result['product.con'].getvalue()):
-            #    logger.info("found new low energy structure with energy %.3e", fe)
 
         num_registered += 1
 
