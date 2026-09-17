@@ -6,8 +6,8 @@ from os.path import basename
 from sys import argv, exit
 
 if len(argv) < 2:
-    print '%s: state [state ...]' % basename(argv[0])
-    print 'must be run in top level of the simulation directory'
+    print('%s: state [state ...]' % basename(argv[0]))
+    print('must be run in top level of the simulation directory')
     exit(2)
 
 numpy.set_printoptions(precision=5, suppress=True, linewidth=200, threshold=10000)
@@ -60,14 +60,14 @@ p0[0] = 1.0
 c0 = numpy.linalg.solve(ev, p0)
 
 states = [ int(a) for a in argv[1:] ]
-print 'set logscale x'
+print('set logscale x')
 plots = []
 for j in states:
     plots.append('"-" w l t "state %i"' % j)
-print 'plot ' + ','.join(plots)
+print('plot ' + ','.join(plots))
 
 for j in states:
     for t in numpy.logspace(-15, 0, 100):
-        print t, abs(sum([ c0[i]*numpy.exp(-ew[i]*t)*ev[:,i] for i in xrange(N) ])[j])
+        print(t, abs(sum([ c0[i]*numpy.exp(-ew[i]*t)*ev[:,i] for i in xrange(N) ])[j]))
     if j != states[-1]:
-        print 'e'
+        print('e')

@@ -136,7 +136,7 @@ def main():
         for thing in glob.glob('original/*'):
             shutil.copy(thing, '.')
         print('Sampling with radius %f and magnitude %f' % (rad, mag))
-        parser = configparser.SafeConfigParser()
+        parser = configparser.ConfigParser()
         parser.read('config.ini')
         parser.set('Saddle Search', 'displace_radius', str(rad))
         parser.set('Saddle Search', 'displace_magnitude', str(mag))

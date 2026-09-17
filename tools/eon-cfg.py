@@ -10,7 +10,7 @@ import numpy as np
 import pygtk
 import gtk
 import gtk.glade
-import ConfigParser
+import configparser
 import pathfix
 
 
@@ -179,12 +179,12 @@ class eoncfg(object):
         self.results_pathInfoButton.connect("button_press_event", rundialog, self.appnameDialog)
 
         #adds default config file if no config file exists
-        self.config = ConfigParser.SafeConfigParser()
+        self.config = configparser.ConfigParser()
         self.config.read(str(Path(pathfix.path) / "default_config.ini"))
         try:
             self.config.read("./config.ini")
         except:
-            print "No config.ini found in local directory, using default values."
+            print("No config.ini found in local directory, using default values.")
 
         #stores default data from cfg file into objects
         temperature = self.config.get("Main", "temperature")

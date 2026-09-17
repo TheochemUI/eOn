@@ -30,4 +30,4 @@ for i in range(sampleSize):
     f_positive.append(int(data[5].rsplit()[0]))
     f_negative.append(int(data[6].rsplit()[0]))
 
-print "Average nr of force call per saddle point: " + str((sum(f_negative) + sum(f_positive)) /float(sampleSize))
+print("Average nr of force call per saddle point: " + str((sum(f_negative) + sum(f_positive)) /float(sampleSize)))
