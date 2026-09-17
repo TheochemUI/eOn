@@ -113,9 +113,10 @@ TEST_CASE_METHOD(NEBRegressionFixture,
   }
 }
 
-TEST_CASE_METHOD(NEBRegressionFixture,
-                 "NEB clears the climbing image when an endpoint reaches the peak",
-                 "[neb][regression][climbing_image]") {
+TEST_CASE_METHOD(
+    NEBRegressionFixture,
+    "NEB clears the climbing image when an endpoint reaches the peak",
+    "[neb][regression][climbing_image]") {
   ParametersLoadAccess::neb_options(params).climbing_image.enabled = true;
   product->setPositions(reactant->getPositions());
   auto neb =
