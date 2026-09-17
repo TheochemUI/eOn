@@ -145,12 +145,6 @@ class ConfigClass:
 
         self.main_random_seed = parser.getint('Main', 'random_seed')
 
-#       try:
-#           self.main_random_seed = parser.getint('Main', 'random_seed')
-#           numpy.random.seed(self.main_random_seed)
-#       except:
-#           self.main_random_seed = None
-
         # Structure Comparison options
         self.comp_eps_e = parser.getfloat('Structure Comparison', 'energy_difference')
         self.comp_eps_r = parser.getfloat('Structure Comparison', 'distance_difference')
