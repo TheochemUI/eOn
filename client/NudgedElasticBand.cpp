@@ -255,15 +255,6 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
 
   auto objf = std::make_shared<NEBObjectiveFunction>(this, params);
 
-  // Band force is a projected NEB residual, not ∇V. The L-BFGS auto_scale
-  // FD H0 probe often sees negative curvature and takes a max-move reset
-  // instead of building memory, so the job hits max_iterations (status 1)
-  // on the LJ13 integration fixtures. Restore after mkOptim so later
-  // in-process L-BFGS jobs keep the user auto_scale setting.
-  const bool prev_lbfgs_auto_scale =
-      params.optimizer_options().lbfgs.auto_scale;
-  ParametersLoadAccess::optimizer_options(params).lbfgs.auto_scale = false;
-
   bool switched{false};
   auto optim = eonc::helpers::create::mkOptim(
       objf, params.neb_options().opt_method, params);
@@ -272,9 +263,6 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
     refine_optim = eonc::helpers::create::mkOptim(
         objf, params.optimizer_options().refine.method, params);
   }
-  ParametersLoadAccess::optimizer_options(params).lbfgs.auto_scale =
-      prev_lbfgs_auto_scale;
-
   // OCINEB controller
   auto ocinebCfg = eonc::neb::OCINEBController::fromParams(params);
   eonc::neb::OCINEBController ocineb(ocinebCfg);
@@ -643,9 +631,13 @@ void NudgedElasticBand::updateForces(bool ci_active) {
                      path[numImages + 1]->getPotentialEnergy());
   }
 
-  if (!ci_active) {
-    climbingImage = 0;
-  }
+  // Climbing requires an interior peak above both fixed endpoints.
+  // A monotonic path retains the spring force on every interior image.
+  const double endpointEnergy =
+      std::max(path.front()->getPotentialEnergy(),
+               path.back()->getPotentialEnergy());
+  const bool climb = ci_active && maxEnergy > endpointEnergy;
+  climbingImage = 0;
 
   // Spring strategy must be rebuilt each iteration (depends on maxEnergy,
   // E_ref). Tangent and projection strategies are cached as members.
@@ -696,7 +688,7 @@ void NudgedElasticBand::updateForces(bool ci_active) {
         spring);
 
     // Climbing image or projected force
-    if (ci_active && i == static_cast<long>(maxEnergyImage)) {
+    if (climb && i == static_cast<long>(maxEnergyImage)) {
       climbingImage = maxEnergyImage;
       // CI force: F - 2*(F.t)*t, plus DNEB correction if active
       AtomMatrix forceDNEB = AtomMatrix::Zero(atoms, 3);
