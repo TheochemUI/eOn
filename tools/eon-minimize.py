@@ -64,6 +64,5 @@ if __name__ == "__main__":
     cf.close()
 
     os.chdir(td)
-#    os.system(os.path.join(pathfix.path, "../client", "eonclient"))
     os.system("eonclient")
     shutil.copyfile(Path(td) / "min.con", Path(cwd) / "min.con")
