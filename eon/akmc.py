@@ -303,7 +303,6 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
             next_state = states.get_product_state(current_state.number, rate_table[nsid][0])
             mean_time = 1.0/ratesum
 
-        print("Meantime for Step "+str(steps)+": ", mean_time)
         # Accounting for time
         if config.debug_use_mean_time:
             step_time = mean_time
