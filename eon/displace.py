@@ -292,18 +292,6 @@ class Displace:
                 self.reactant, self.radius, self.config.comp_brute_neighbors
             )
 
-            #            print config.random_mode
-            #            print sorted(displaced_atoms)
-            #            print numpy.linalg.norm(displacement)
-
-            #            for atom_index in displaced_atoms:
-            #                print (atom_index)
-            #                print (self.neighbors_list[atom_index])
-            #                dist_list = []
-            #                for vec in self.neighbor_list_vectors[atom_index]:
-            #                    dist_list.append(numpy.linalg.norm(vec))
-            #                print (dist_list)
-
             ## treats the nearest neighbors as repulsive, since I keep finding
             ## interstitials
             pseudoelectrostatic_force = numpy.zeros(self.reactant.r.shape)
@@ -547,8 +535,6 @@ class ListedTypes(Displace):
             raise TypeError("displace helper requires a ConfigClass instance")
         Displace.__init__(self, reactant, std_dev, radius, hole_epicenters, config)
 
-        #        print self.config.disp_listed_types
-
         self.displace_all = displace_all
         # each item in this list is the index of a free atom
         self.listed_atoms = [
@@ -564,8 +550,6 @@ class ListedTypes(Displace):
             raise DisplaceError(
                 "Listed atom types are all frozen or not found in reactant"
             )
-
-    #        print self.listed_atoms
 
     def make_displacement(self):
         """Select a listed atom and displace all atoms in a radius about it."""
@@ -773,7 +757,6 @@ class Water:
         else:
             molecule_list = self.molecule_list
         for i in molecule_list:
-            # print 'displacing', i
             h1 = i * 2
             h2 = i * 2 + 1
             o = i + self.n_water * 2
