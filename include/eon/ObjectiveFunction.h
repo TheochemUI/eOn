@@ -30,6 +30,8 @@ public:
   virtual bool isConverged() = 0;
   virtual double getConvergence() = 0;
   virtual VectorXd difference(const VectorXd &a, const VectorXd &b) = 0;
+  // Allow the initial finite-difference curvature estimate used by L-BFGS.
+  virtual bool supportsFiniteDifferenceCurvature() const { return true; }
   // Packwood/Kermode pair preconditioner: MIC of one Cartesian pair.
   // Default leaves dr unchanged (no cell).
   virtual void minimumImage(Eigen::Ref<Eigen::Vector3d> /*dr*/) const {}

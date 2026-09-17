@@ -177,7 +177,8 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
     }
   }
 
-  if (m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale) {
+  if (m_iteration == 0 && m_optConfig.opts.lbfgs.auto_scale &&
+      m_objf->supportsFiniteDifferenceCurvature()) {
     m_objf->setPositions(r + m_optConfig.finiteDifference *
                                  eonc::safemath::safe_normalized(a_f));
     Eigen::VectorXd dg = m_objf->getGradient(true) + a_f;

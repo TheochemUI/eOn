@@ -121,6 +121,8 @@ public:
   bool isUncertain();
   double getConvergence();
   VectorXd difference(const VectorXd &a, const VectorXd &b);
+  // The band residual rotates with its tangent and is not a PES gradient.
+  bool supportsFiniteDifferenceCurvature() const override { return false; }
   NudgedElasticBand::NEBStatus status;
 
 private:
