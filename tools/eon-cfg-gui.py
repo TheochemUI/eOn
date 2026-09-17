@@ -123,7 +123,7 @@ class cfggui():
 #display
     def __init__(self):
         button_width = 100
-        self.config = configparser.SafeConfigParser()
+        self.config = configparser.ConfigParser()
         try:
             self.config.read("./config.ini")
         except:

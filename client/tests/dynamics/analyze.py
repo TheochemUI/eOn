@@ -2,10 +2,10 @@
 import ase
 import tsase
 
-print 'loading dynamics.con'
+print('loading dynamics.con')
 traj = tsase.io.read_con('dynamics.con')
 
-print 'averaging distances'
+print('averaging distances')
 total_distance = 0.0
 N = 0
 
@@ -18,4 +18,4 @@ for atoms in traj[start::skip]:
             if r < 3.3:
                 total_distance += 1
                 N += 1
-print total_distance/N
+print(total_distance/N)

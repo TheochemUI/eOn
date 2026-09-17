@@ -22,7 +22,7 @@ if __name__ == "__main__":
     if len(args) > 0:
         posfile = args[0]
 
-    config = configparser.SafeConfigParser()
+    config = configparser.ConfigParser()
     if Path("config.ini").is_file():
         isconfig = True
         config.read("config.ini")
