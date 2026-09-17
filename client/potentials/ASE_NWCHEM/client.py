@@ -48,5 +48,3 @@ client = SocketClient(unixsocket=label)
 # client.calculate(h2, use_stress=False)
 for i, _ in enumerate(client.irun(h2, use_stress=False)):
     print(".")
-    # print(f'step {i}: {h2.get_potential_energy()}')
-    # print(h2.get_forces())

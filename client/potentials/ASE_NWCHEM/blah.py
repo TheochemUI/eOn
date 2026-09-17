@@ -45,14 +45,11 @@ from ase.build import molecule
 
 h2 = molecule("H2")
 # h2.calc = nwchem
-# print(h2.get_potential_energy())
 # nwcalc = SocketIOCalculator(nwchem, unixsocket=label, log=sys.stdout)
 # # Perform calculations based on your needs
 # h2.calc=nwcalc
 # energy = h2.get_potential_energy()
 # forces = h2.get_forces()
-# print(f"Energy: {energy:.6f} eV")
-# print(f"Forces:\n{forces}")
 # nwcalc.close()
 with SocketIOCalculator(launch_client=nwchem, unixsocket=label, log=sys.stdout) as nwcalc:
     h2.calc = nwcalc
