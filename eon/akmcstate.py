@@ -185,7 +185,6 @@ class AKMCState(state.State):
                                   product_prefactor = resultdata["prefactor_product_to_reactant"],
                                   barrier =           barrier,
                                   rate =              resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT),
-                                  # rate =              forward_rate,
                                   repeats =           0)
 
         # If equilibrium rate, change the forward rate as well (persist so a
@@ -202,7 +201,6 @@ class AKMCState(state.State):
         return id
 
     def append_search_result(self, result, comment, superbasin):
-        #try:
         f = open(self.search_result_path, 'a')
         resultdata = result['results']
 
@@ -224,8 +222,6 @@ class AKMCState(state.State):
                  comment))
         f.close()
         self.info.set("MetaData", "searches", self.get_number_of_searches() + 1)
-        #except:
-        #    logger.warning("Failed to append search result.")
 
     def get_ratetable(self, superbasin=None):
         """ Loads the process table if it has not been loaded and generates a rate table
