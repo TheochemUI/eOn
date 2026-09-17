@@ -1,7 +1,6 @@
 from ase.calculators.nwchem import NWChem
 from ase.calculators.socketio import *
 import os
-import copy
 import psutil
 import shutil
 import sys

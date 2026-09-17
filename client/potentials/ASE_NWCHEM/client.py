@@ -3,7 +3,6 @@ from ase.calculators.socketio import SocketClient
 import os
 import psutil
 import shutil
-import sys
 from pathlib import Path
 
 run_path = Path.cwd() / "runs"  # Where things are run
