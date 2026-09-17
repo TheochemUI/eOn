@@ -2,7 +2,6 @@ import logging
 import shutil
 from pathlib import Path
 
-import numpy
 
 logger = logging.getLogger('kdb')
 

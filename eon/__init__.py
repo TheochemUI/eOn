@@ -1,4 +1,3 @@
-import importlib as _importlib
 
 try:
     from eon.version import version as __version__
