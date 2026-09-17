@@ -17,8 +17,6 @@
  *     Company: University of Iceland
  */
 
-#include <algorithm>
-
 #include "ObsTest.h"
 #include "eon/GPRHelpers.h"
 #include "eon/HelperFunctions.h"
