@@ -8,7 +8,6 @@ import tempfile
 from pathlib import Path
 
 logger = logging.getLogger("state")
-from configparser import ConfigParser
 
 from eon import fileio as io
 

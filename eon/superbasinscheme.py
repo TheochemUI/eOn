@@ -3,7 +3,6 @@ from pathlib import Path
 
 logger = logging.getLogger('superbasinscheme')
 
-import sys
 import math
 
 from eon import superbasin
