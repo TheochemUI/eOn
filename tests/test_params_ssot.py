@@ -3,9 +3,7 @@ from __future__ import annotations
 
 import ast
 import hashlib
-import json
 import re
-import shutil
 import subprocess
 import sys
 from pathlib import Path
