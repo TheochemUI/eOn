@@ -17,8 +17,8 @@
 namespace tests {
 class AtomsConfigurationTest : public ::testing::Test {
 public:
-  AtomsConfigurationTest();
-  virtual ~AtomsConfigurationTest();
+  AtomsConfigurationTest() = default;
+  virtual ~AtomsConfigurationTest() = default;
 };
 } /* namespace tests */
 
