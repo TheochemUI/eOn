@@ -16,11 +16,11 @@ while (Path("states") / str(i)).is_dir():
 	nc = 0
 	energy = 0
 	iterations = 0
-        nonlocalt = 0
-        barrier = 0
+	nonlocalt = 0
+	barrier = 0
 	unknown = 0
-        nonneg = 0
-        prefac = 0
+	nonneg = 0
+	prefac = 0
 	for r in results:
 		if 'good' in r:
 			good += 1
@@ -34,14 +34,14 @@ while (Path("states") / str(i)).is_dir():
 			iterations += 1
 		elif 'reverse' in r:
 			pass
-                elif 'Nonlocal' in r:
-                        nonlocalt += 1
-                elif 'barrier >' in r:
-                        barrier += 1
-                elif 'Nonneg' in r:
-                        nonneg += 1
-                elif 'Failed Prefactor Calculation' in r:
-                        prefac +=1
+		elif 'Nonlocal' in r:
+			nonlocalt += 1
+		elif 'barrier >' in r:
+			barrier += 1
+		elif 'Nonneg' in r:
+			nonneg += 1
+		elif 'Failed Prefactor Calculation' in r:
+			prefac +=1
 		else:
 			unknown += 1
 	print('%10d %10d %10d %10d %10d %10d %10d %10d %10d %10d' % (i, good, nc, energy, iterations, nonlocalt, barrier, nonneg, prefac, unknown))
