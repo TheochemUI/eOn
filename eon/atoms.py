@@ -152,6 +152,8 @@ def point_energy_match(file_a, energy_a, file_b, energy_b, eps_e, eps_r,
     if match(a, b, eps_r, neighbor_cutoff, False,
              check_rotation=check_rotation, use_identical=use_identical):
         return True
+    return False
+
 
 def points_energies_match(file_a, energy_a, files_b, energies_b, eps_e, eps_r,
                           neighbor_cutoff, check_rotation=False, use_identical=False):
@@ -206,97 +208,6 @@ def _rot_match_kabsch(a, b, eps_r):
     ta_r = numpy.dot(ta_r, R)
     dist = max(numpy.linalg.norm(ta_r - tb_r, axis=1))
     return dist < eps_r
-
-    ''' Quaternion algorithm
-    ta = a.copy()
-    tb = b.copy()
-    ta.r -= acm
-    tb.r -= bcm
-
-    #Horn, J. Opt. Soc. Am. A, 1987
-    m = numpy.dot(tb.r.transpose(), ta.r)
-    sxx = m[0][0]
-    sxy = m[0][1]
-    sxz = m[0][2]
-    syx = m[1][0]
-    syy = m[1][1]
-    syz = m[1][2]
-    szx = m[2][0]
-    szy = m[2][1]
-    szz = m[2][2]
-
-    n = numpy.zeros((4,4))
-    n[0][1] = syz-szy
-    n[0][2] = szx-sxz
-    n[0][3] = sxy-syx
-
-    n[1][2] = sxy+syx
-    n[1][3] = szx+sxz
-
-    n[2][3] = syz + szy
-
-    n += n.transpose()
-
-    n[0][0] = sxx + syy + szz
-    n[1][1] = sxx-syy-szz
-    n[2][2] = -sxx + syy -szz
-    n[3][3] = -sxx -syy + szz
-
-    w,v = numpy.linalg.eig(n)
-    maxw = 0
-    maxv = 0
-    for i in range(len(w)):
-        if w[i] > maxw:
-            maxw = w[i]
-            maxv = v[:,i]
-
-    R = numpy.zeros((3,3))
-
-    aa = maxv[0]**2
-    bb = maxv[1]**2
-    cc = maxv[2]**2
-    dd = maxv[3]**2
-    ab = maxv[0]*maxv[1]
-    ac = maxv[0]*maxv[2]
-    ad = maxv[0]*maxv[3]
-    bc = maxv[1]*maxv[2]
-    bd = maxv[1]*maxv[3]
-    cd = maxv[2]*maxv[3]
-
-    R[0][0] = aa + bb - cc - dd
-    R[0][1] = 2*(bc-ad)
-    R[0][2] = 2*(bd+ac)
-    R[1][0] = 2*(bc+ad)
-    R[1][1] = aa - bb + cc - dd
-    R[1][2] = 2*(cd-ab)
-    R[2][0] = 2*(bd-ac)
-    R[2][1] = 2*(cd+ab)
-    R[2][2] = aa - bb - cc + dd
-    tb.r = numpy.dot(tb.r, R.transpose())
-
-    dist = max(per_atom_norm(ta.r - tb.r, ta.box))
-    return dist < config.comp_eps_r
-    '''
-
-    ### This gives the RMSD faster, but does not give the optimial rotation
-    ### this could be amended by solving for the eigenvector corresponding to the largest eigenvalue
-    ### Theobald, Acta Crystallographica A, 2005
-    #
-    ##could be faster if done explicitly
-    #c0 = numpy.linalg.det(k)
-    #c1 = -8*numpy.linalg.det(m)
-    #c2 = -2*numpy.trace(numpy.dot(m.transpose(), m))
-
-    #ga = numpy.trace(numpy.dot(ta.r.transpose(), ta.r))
-    #gb = numpy.trace(numpy.dot(tb.r.transpose(), tb.r))
-    #
-    #lold = 0.0
-    #l = (ga + gb)/2.0
-    #while abs(lold - l) > 0.00001:
-    #    lold = l
-    #    l -= (l**4 + c2*l**2 + c1*l + c0)/(4*l**3 + 2*c2*l + c1)
-    #rmsd = sqrt((ga + gb - 2*l)/len(a))
-    #return rmsd < config.comp_rot_rmsd
 
 
 def rotm(axis, theta):
@@ -423,7 +334,6 @@ def not_HCP_or_FCC(p, cutoff, brute=False):
     return [i for i, label in enumerate(cna_numbers) if label == CNA_OTHER]
 
 
-# ### TShacked start
 def cnat(p, cutoff, brute=False):
     """ Returns a list of cna numbers for all atoms in p
         Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)"""
