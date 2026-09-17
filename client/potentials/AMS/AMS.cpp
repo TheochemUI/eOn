@@ -18,7 +18,6 @@
 #include <cstdint>
 #include <format>
 #include <fstream>
-#include <iostream>
 #include <iterator>
 #include <ranges>
 #include <readcon-core.hpp>
@@ -59,7 +58,6 @@ AMS::AMS(const eonc::Parameters &p)
     nativenv["PATH"] += p.ams_options().env.amsbin;
   }
   // Do not pass "" in the config files
-  // std::cout<<nativenv["PATH"].to_string()<<std::endl;
   amsevals = 0;
   // TODO: Optimize and reuse existing files Currently each Matter will
   // recreate the folders It should instead figure out if results exist and
@@ -121,8 +119,6 @@ void AMS::runAMS() {
     throw std::runtime_error("\n AMS error while running");
   } else {
     this->amsevals = amsevals + 1;
-    // std::cout << "Run completed normally" << std::endl;
-    // std::cerr << "NORMAL TERMINATION\n";
   }
 }
 
@@ -139,7 +135,6 @@ double AMS::extract_scalar_rkf(std::string key) {
   std::vector<double> extracted;
   execString = std::format("dmpkf {}.results/{}.rkf AMSResults%{}", this->cjob,
                            this->engine_lower, key);
-  // std::cout << execString << "\n";
   // Extract
   bp::child c(execString, nativenv,         // execute with the environment
               bp::std_in.close(),           // no input
@@ -154,8 +149,6 @@ double AMS::extract_scalar_rkf(std::string key) {
   if (rkferr.find("ERROR") != std::string::npos) {
     throw std::runtime_error(std::format(
         "\n AMS error while extracting {}, got:\n {}", key, rkferr));
-  } else {
-    // std::cout << "Extracting " << key << std::endl;
   }
 
   execDat = absl::StrSplit(rkfout, '\n');
@@ -173,9 +166,6 @@ double AMS::extract_scalar_rkf(std::string key) {
   }
   if (absl::SimpleAtod(execDat[3], &x)) {
     xval = x * this->energyConversion;
-    // std::cout << std::format(
-    //     "\n Got {:.4f} Hartree from AMS and converted to {:.4f} eV\n", x,
-    //     xval);
     return xval;
   } else {
     throw std::runtime_error(
@@ -195,7 +185,6 @@ std::vector<double> AMS::extract_cartesian_rkf(std::string key) {
   std::vector<double> extracted;
   execString = std::format("dmpkf {}.results/{}.rkf AMSResults%{}", this->cjob,
                            this->engine_lower, key);
-  // std::cout << execString << "\n";
 
   // Extract
   bp::child c(execString, nativenv,         // execute with the environment
@@ -212,8 +201,6 @@ std::vector<double> AMS::extract_cartesian_rkf(std::string key) {
   if (rkferr.find("ERROR") != std::string::npos) {
     throw std::runtime_error(std::format(
         "\n AMS error while extracting {}, got:\n {}", key, rkferr));
-  } else {
-    // std::cout << "Extracting " << key << std::endl;
   }
 
   execDat = absl::StrSplit(rkfout, '\n');
@@ -237,22 +224,10 @@ std::vector<double> AMS::extract_cartesian_rkf(std::string key) {
       // [8] = "0.457005740252359742E-004"
       if (!elem.empty() && absl::SimpleAtod(elem, &x)) {
         felem = x * this->forceConversion;
-        // std::cout << std::format(
-        //     "\n Gradient element={:.4f} Hartree/Bohr from AMS\n Force "
-        //     "element={:.4f} eV/Angstrom\n", x, felem);
         extracted.emplace_back(felem);
       }
     }
   }
-  // // Debug
-  // int counter = 0;
-  // for (int a = 0; a < N * 3; a++) {
-  //   std::cout << std::format("{:.25e} ", forces[a]);
-  //   counter++;
-  //   if (counter % 3 == 0) {
-  //     std::cout << std::endl;
-  //   }
-  // }
   return extracted;
 }
 
@@ -270,7 +245,6 @@ void AMS::updateCoord(long N, const double *R) {
   // Prep new run
   // Get the previous run's coordinates
   execString = std::format("dmpkf {}.results/ams.rkf Molecule%Coords", pjob);
-  // std::cout << execString << "\n";
   // Store Coordinates
   // TODO: Simplify this, we only need the first few lines
   bp::child cprog(execString, nativenv, bp::std_in.close(), bp::std_out > rdump,
@@ -299,7 +273,6 @@ void AMS::updateCoord(long N, const double *R) {
   coordDump = "#!/bin/sh\n udmpkf ";
   absl::StrAppend(&coordDump, pjob, ".results/ams.rkf <<EOF\n", newCoord,
                   "EOF");
-  // std::cout << coordDump;
   updCoord.open("updCoord.sh", std::ios::trunc);
   if (!updCoord) {
     throw std::runtime_error("Could not open updCoord.sh for writing");
@@ -320,13 +293,9 @@ void AMS::updateCoord(long N, const double *R) {
 
 void AMS::switchjob() {
   std::string tmp;
-  // std::cout << std::format("\nEntered Switch:\nCurrent:{}, Previous:{}\n",
-  // cjob, pjob);
   tmp = this->cjob;
   this->cjob = this->pjob;
   this->pjob = tmp;
-  // std::cout << std::format("\nSwitched\n Current:{}, Previous:{}\n", cjob,
-  // pjob);
 }
 
 void AMS::write_restart() {
@@ -378,8 +347,7 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
                 double *U, double *variance, const double *box) {
   variance = nullptr;
   if (not can_restart or first_run) {
-    // std::cout << std::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart,
-    // first_run); This holds true for all engines with no restart Also if an
+    // This holds true for all engines with no restart Also if an
     // engine supports being restarted, the first run needs this
     passToSystem(N, R, atomicNrs, box);
     runAMS();
@@ -390,7 +358,6 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
       first_run = false;
       // We need the "previous job" to pre-populate
       // clang-format off
-      // std::cout<<std::format("\nMoving {} to {} before switching during the first job\n", cjob, pjob);
       const auto copyOptions = std::filesystem::copy_options::overwrite_existing
                              | std::filesystem::copy_options::recursive
                              ;
@@ -400,8 +367,6 @@ void AMS::force(long N, const double *R, const int *atomicNrs, double *F,
     }
     return;
   } else {
-    // std::cout << std::format("\nCAN_RESTART:{}  FIRST_RUN:{}\n", can_restart,
-    // first_run);
     smallSys(N, R, atomicNrs, box); // writes run_AMS.sh
     updateCoord(N, R);              // updates coordinates in previous job
     write_restart();                // writes restart file using previous job
