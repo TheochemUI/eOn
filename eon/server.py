@@ -56,7 +56,6 @@ def _warn_pos_con_in_potfiles(config: ConfigClass) -> None:
 def _fallback_single_job(config: ConfigClass) -> None:
     """Submit the current working directory as one client job via communicator."""
     from eon import communicator
-    from eon import fileio as io
 
     config.path_scratch = config.path_root
     comm = communicator.get_communicator(config)

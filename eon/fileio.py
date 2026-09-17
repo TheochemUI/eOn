@@ -20,7 +20,6 @@ import shutil
 import stat
 import tempfile
 
-from eon.geometry.cell import box_to_length_angle, length_angle_to_box
 from eon.structure import Structure
 
 logger = logging.getLogger('io')
@@ -75,10 +74,6 @@ def get_prng_state(path):
     with open(path, 'rb') as fh:
         state = pickle.load(fh)
     numpy.random.set_state(state)
-
-# Re-export cell helpers (used by callers / POSCAR path)
-__all_cell__ = ("length_angle_to_box", "box_to_length_angle")
-
 
 def _process_umask():
     mask = os.umask(0)
