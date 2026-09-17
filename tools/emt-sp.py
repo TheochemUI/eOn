@@ -5,11 +5,8 @@
 
 import ase
 import gpaw
-import time
 import numpy
-import sys
 from gpaw.mpi import world
-from ase.utils import devnull
 
 def create_gpaw(comm):
     from gpaw import GPAW, FermiDirac, PoissonSolver, setup_paths

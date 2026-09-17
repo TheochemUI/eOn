@@ -4,7 +4,7 @@
 import sys
 
 import pathfix
-import io, atoms
+import io
 import config
 config.init(sys.argv[1])
 

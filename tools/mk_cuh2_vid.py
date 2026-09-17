@@ -1,14 +1,9 @@
 from pypotlib.systems import cu_slab_h2 as cuh2slab
 import ase
 import ase.io
-from ase.mep import NEB, NEBTools
-from ase.optimize import BFGS, MDMin, FIRE, LBFGS
 import matplotlib.pyplot as plt
 import torch
 
-import itertools as it
-import copy
-import os
 import sys
 import subprocess
 from pathlib import Path

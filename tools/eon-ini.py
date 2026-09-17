@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import configparser
 from pathlib import Path
 
 import pathfix
