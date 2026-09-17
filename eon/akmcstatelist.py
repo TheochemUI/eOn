@@ -91,12 +91,6 @@ class AKMCStateList(statelist.StateList):
                         # Reverse process table should be updated to ensure that the two processes (reac->prod & proc->reac) are symmetric.
                         reactant.load_process_table()
 
-                        # Set maximum rate, if defined
-#                        cur_rate = reactant.procs[process_id]['product_prefactor'] * math.exp( - ( saddle_energy - product.get_energy() ) /self.kT)
-#                        if self.config.akmc_max_rate > 0 and cur_rate > self.config.akmc_max_rate:
-#                            # print "max rate exceeded: ", cur_rate
-#                            cur_rate = self.config.akmc_max_rate
-
                         # Set equilibrium rate, if defined
                         print("register_process: into eq rate test")
                         reverse_rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-(saddle_energy - product.get_energy()) / self.kT)
@@ -168,13 +162,6 @@ class AKMCStateList(statelist.StateList):
         # Add the reverse process in the product state
         barrier = saddle_energy - product.get_energy()
 
-        # Set maximum rate, if defined
-        # print "max rate code"
-#        cur_rate = reactant.procs[process_id]['product_prefactor'] * math.exp(-barrier / self.kT)
-#        if self.config.akmc_max_rate > 0 and cur_rate > self.config.akmc_max_rate:
-#            # print "max rate exceeded: ", cur_rate
-#            cur_rate = self.config.akmc_max_rate
-
         product.append_process_table(id = reverse_process_id,
                                      saddle_energy = saddle_energy,
                                      prefactor = reactant.procs[process_id]['product_prefactor'],
@@ -238,11 +225,9 @@ class AKMCStateList(statelist.StateList):
         This function goes through the process tables of all states in the argument and checks if any of the
         unregistered processes connect these states. It thus tries to connect update the processtables of the states.
         '''
-        # print "connect_states, states: ",states
         for i in states:
             proc_tab = i.get_process_table()
             for j in proc_tab:
-                # print "checking state, process: ",i," ",j
                 if proc_tab[j]['product'] != -1:
                     continue
                 enew = proc_tab[j]['product_energy']
@@ -253,14 +238,11 @@ class AKMCStateList(statelist.StateList):
 
                 # Perform distance checks on the energetically close configurations.
                 if len(energetically_close) > 0:
-                    # print "energetically close: ",energetically_close
                     pnew = i.get_process_product(j)
                     for state in energetically_close:
                         p = state.get_reactant()
-                        # print "atoms.match between state, process, state: ",i," ",j," ",state
                         if atoms.match(p, pnew, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, True, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical):
                             # Update the reactant state to point at the new state id.
-                            # print "structures match"
                             self.register_process(i.number, state.number, j)
 
     def connect_state_sets(self, states1, states2):
@@ -268,11 +250,9 @@ class AKMCStateList(statelist.StateList):
         This function goes through the process tables of all states in states1 checks if any of the unregistered
         processes connect to a state in state2. It thus tries to connect update the processtables of the states.
         '''
-        # print "connect_state_sets: ",states1," ",states2
         for i in states1:
             proc_tab = i.get_process_table()
             for j in proc_tab:
-                # print "checking state, process: ",i," ",j
                 if proc_tab[j]['product'] != -1:
                     continue
                 enew = proc_tab[j]['product_energy']
@@ -283,20 +263,16 @@ class AKMCStateList(statelist.StateList):
 
                 # Perform distance checks on the energetically close configurations.
                 if len(energetically_close) > 0:
-                    # print "energetically close: ",energetically_close
                     pnew = i.get_process_product(j)
                     for state in energetically_close:
                         p = state.get_reactant()
-                        # print "atoms.match between state, process, state: ",i," ",j," ",state
                         if atoms.match(p, pnew, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, True, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical):
                             # Update the reactant state to point at the new state id.
-                            # print "structures match"
                             self.register_process(i.number, state.number, j)
 
         for i in states2:
             proc_tab = i.get_process_table()
             for j in proc_tab:
-                # print "checking state, process: ",i," ",j
                 if proc_tab[j]['product'] != -1:
                     continue
                 enew = proc_tab[j]['product_energy']
@@ -307,12 +283,9 @@ class AKMCStateList(statelist.StateList):
 
                 # Perform distance checks on the energetically close self.configurations.
                 if len(energetically_close) > 0:
-                    # print "energetically close: ",energetically_close
                     pnew = i.get_process_product(j)
                     for state in energetically_close:
                         p = state.get_reactant()
-                        # print "atoms.match between state, process, state: ",i," ",j," ",state
                         if atoms.match(p, pnew, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, True, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical):
                             # Update the reactant state to point at the new state id.
-                            # print "structures match"
                             self.register_process(i.number, state.number, j)

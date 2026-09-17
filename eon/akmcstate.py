@@ -161,12 +161,6 @@ class AKMCState(state.State):
             with io.atomic_write(path) as f:
                 f.writelines(result[key].getvalue())
 
-        # Set maximum rate, if defined
-#        forward_rate = resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT)
-#        if self.config.akmc_max_rate > 0 and cur_rate > self.config.akmc_max_rate:
-#            # print "max rate exceeded: ", cur_rate
-#            forward_rate = self.config.akmc_max_rate
-
         # Set equilibrium rate, if defined
         forward_rate = resultdata["prefactor_reactant_to_product"] * math.exp(-barrier / self.statelist.kT)
         reverse_barrier = barrier - (resultdata["potential_energy_product"] - reactant_energy)
@@ -175,14 +169,12 @@ class AKMCState(state.State):
         eq_rate_flag = False
         if self.config.akmc_eq_rate > 0 and forward_rate > self.config.akmc_eq_rate and reverse_rate > self.config.akmc_eq_rate:
             eq_rate_flag = True
-            #print "eq_rate exceeded, forward:", forward_rate, " reverse: ", reverse_rate
             if forward_rate < reverse_rate:
                 forward_eq_rate = self.config.akmc_eq_rate
                 reverse_eq_rate = self.config.akmc_eq_rate * (reverse_rate / forward_rate)
             else:
                 forward_eq_rate = self.config.akmc_eq_rate * (forward_rate / reverse_rate)
                 reverse_eq_rate = self.config.akmc_eq_rate
-            #print "new eq forward rate:", forward_eq_rate, " reverse: ", reverse_eq_rate
 
         # Append this barrier to the process table (in memory and on disk).
         self.append_process_table(id =                id,
@@ -370,7 +362,6 @@ class AKMCState(state.State):
             return sum(C)/float(m)
 
         elif self.config.akmc_confidence_scheme == 'dynamics':
-            #print("into dynamics confidence")
             # filter out recycled saddles if displace_moved_only is true
             dyn_saddles = set()
             if self.config.disp_moved_only:
@@ -398,7 +389,6 @@ class AKMCState(state.State):
             total_rate_found = 0.0
             T1 = self.config.main_temperature
             for T2, T2_time in list(self.get_time_by_temp().items()):
-                #print("out of get_time_by_temp")
                 if T2_time == 0.0:
                     continue
 
@@ -617,7 +607,6 @@ class AKMCState(state.State):
         return self.info.get("MetaData", "time", 0.0)
 
     def get_time_by_temp(self):
-        #print("into get_time_by_temp")
         try:
             return dict([int(temp), float(time)] for temp, time in self.info.items("SearchTime"))
         except configparser.NoSectionError:
@@ -627,10 +616,6 @@ class AKMCState(state.State):
             # to avoid endless recursion if the exception is raised
             # again).
             self.increment_time(0.0, self.config.saddle_dynamics_temperature)
-            #try:
-            #    print(self.info.items('SearchTime', raw=True))
-            #except Exception as e:
-            #    print("exception: " + str(e))
             return dict([int(temp), float(time)] for temp, time in self.info.items("SearchTime", raw=True))
 
     def get_number_of_searches(self):
@@ -658,7 +643,6 @@ class AKMCState(state.State):
 
     def register_bad_saddle(self, result, store=False, superbasin=None):
         """ Registers a bad saddle. """
-        #print ("bad saddle ",result["results"]["termination_reason"])
         result_state_code = ["Good",
                              "Init",
                              "Saddle Search No Convex Region",
