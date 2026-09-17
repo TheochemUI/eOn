@@ -9,13 +9,6 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-/*
- * CuH2Test.cpp
- *
- *  Created on: 15 Nov 2022
- *      Author: Rohit Goswami
- *     Company: University of Iceland
- */
 
 #include "CuH2Test.h"
 #include "eon/Matter.h"

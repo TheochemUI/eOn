@@ -9,13 +9,6 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-/*
- * GPRDimerTest.cpp
- *
- *  Created on: 07 Feb 2021
- *      Author: Rohit Goswami
- *     Company: University of Iceland
- */
 
 #include "GPRDimerTest.h"
 #include "eon/AtomicGPDimer.h"

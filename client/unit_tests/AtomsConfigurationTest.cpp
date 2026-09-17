@@ -9,13 +9,6 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-/*
- * AtomsConfigurationTest.cpp
- *
- *  Created on: 04 Feb 2021
- *      Author: Rohit Goswami
- *     Company: University of Iceland
- */
 
 #include "AtomsConfigurationTest.h"
 #include "eon/GPRHelpers.h"
