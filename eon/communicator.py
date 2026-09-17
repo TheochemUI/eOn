@@ -423,20 +423,14 @@ class MPI(Communicator):
         '''Moves work from scratchpath to results path.'''
 #        from mpi4py.MPI import ANY_SOURCE, Status
         import mpi4py.MPI as MPI
-        print("after import")
 
         status = MPI.Status()
         while self.comm.Iprobe(source=MPI.ANY_SOURCE, tag=0, status=status):
-            #buf = array('c', '\0'*1024)
             buf = numpy.array(['\0']*1024, dtype="S1")
             self.comm.Recv([buf, MPI.CHARACTER], source=status.source, tag=0)
-            #print("after Recv")
-            #print("buf: ",buf)
             strterm = numpy.where(buf == b'\0')
             strindex = strterm[0][0]
-            #jobdir = buf[:buf.index('\0')].tostring()
             jobdir = buf[:strindex].tostring()
-            #print("jobdir: ",jobdir.decode())
             jobdir = Path(jobdir.decode()).name
 
             if self.config.debug_keep_all_results:
