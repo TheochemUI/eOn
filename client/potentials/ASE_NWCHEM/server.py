@@ -1,8 +1,5 @@
-from ase.calculators.nwchem import NWChem
 from ase.calculators.socketio import SocketIOCalculator
-import psutil
 import sys
-from pathlib import Path
 
 # Example
 from ase.build import molecule
