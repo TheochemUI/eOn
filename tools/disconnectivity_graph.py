@@ -267,10 +267,7 @@ print('Max # of surface Au:',max_key)
 if paras['draw_symbol']:
    for i in range(len(paras['minima_to_draw'])):
       print(paras['minima_to_draw'][i],paras['symbol'][i],paras['color'][i])
-#      try:
       dg.draw_minima(Au_seg[int(paras['minima_to_draw'][i])],marker=paras['symbol'][i],c='tab:'+paras['color'][i], s=paras['marker_size'])
-#      except:
-#         continue
 
    if str(max_key) not in paras['minima_to_draw']:
       dg.draw_minima(Au_seg[max_key],marker='<',c='tab:'+paras['max_color'], s=paras['marker_size'])
