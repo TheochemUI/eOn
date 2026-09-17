@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import ase
 import tsase
 
 print('loading dynamics.con')
