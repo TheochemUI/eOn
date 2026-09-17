@@ -17,7 +17,9 @@
 
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/LBFGS.h"
 #include "eon/NudgedElasticBand.h"
+#include "eon/PotRegistry.h"
 
 namespace tests {
 
@@ -132,6 +134,24 @@ TEST_CASE_METHOD(
   neb->path.back()->setPositions(neb->path[2]->getPositions());
   neb->updateForces();
   CHECK(neb->climbingImage == 0);
+}
+
+TEST_CASE_METHOD(NEBRegressionFixture,
+                 "NEB L-BFGS scaling does not probe projected curvature",
+                 "[neb][regression][lbfgs]") {
+  ParametersLoadAccess::optimizer_options(params).lbfgs.auto_scale = true;
+  auto neb =
+      std::make_unique<NudgedElasticBand>(reactant, product, params, pot);
+  auto objective = std::make_shared<NEBObjectiveFunction>(neb.get(), params);
+  objective->getGradient();
+  LBFGS optimizer(objective, params);
+
+  const auto before = eonc::PotRegistry::get().total_force_calls();
+  optimizer.step(params.optimizer_options().max_move);
+  const auto calls = eonc::PotRegistry::get().total_force_calls() - before;
+
+  REQUIRE(calls == static_cast<size_t>(neb->numImages));
+  REQUIRE(params.optimizer_options().lbfgs.auto_scale);
 }
 
 TEST_CASE_METHOD(NEBRegressionFixture,
