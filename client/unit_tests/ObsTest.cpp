@@ -9,13 +9,6 @@
 ** Repo:
 ** https://github.com/TheochemUI/eOn
 */
-/*
- * ObsTest.cpp
- *
- *  Created on: 05 Feb 2021
- *      Author: Rohit Goswami
- *     Company: University of Iceland
- */
 
 #include "ObsTest.h"
 #include "eon/GPRHelpers.h"
