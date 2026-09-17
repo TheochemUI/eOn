@@ -8,7 +8,6 @@ Con(figuration) i/o library.
 '''
 import configparser
 import contextlib
-#from io import BytesIO as StringIO
 from io import StringIO
 import logging
 import numpy
