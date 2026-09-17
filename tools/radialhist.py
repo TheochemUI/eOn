@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy
 
 import pathfix
-import fileio as io, atoms
+import fileio as io
 
 def usage():
     print("usage: %s poscarfile" % Path(sys.argv[0]).name)
