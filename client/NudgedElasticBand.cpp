@@ -258,7 +258,10 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
   // Band force is a projected NEB residual, not ∇V. The L-BFGS auto_scale
   // FD H0 probe often sees negative curvature and takes a max-move reset
   // instead of building memory, so the job hits max_iterations (status 1)
-  // on the LJ13 integration fixtures.
+  // on the LJ13 integration fixtures. Restore after mkOptim so later
+  // in-process L-BFGS jobs keep the user auto_scale setting.
+  const bool prev_lbfgs_auto_scale =
+      params.optimizer_options().lbfgs.auto_scale;
   ParametersLoadAccess::optimizer_options(params).lbfgs.auto_scale = false;
 
   bool switched{false};
@@ -269,6 +272,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
     refine_optim = eonc::helpers::create::mkOptim(
         objf, params.optimizer_options().refine.method, params);
   }
+  ParametersLoadAccess::optimizer_options(params).lbfgs.auto_scale =
+      prev_lbfgs_auto_scale;
 
   // OCINEB controller
   auto ocinebCfg = eonc::neb::OCINEBController::fromParams(params);
