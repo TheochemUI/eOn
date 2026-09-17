@@ -147,20 +147,21 @@ TEST_CASE("LBFGS optimizer converges on quadratic", "[optimizer][lbfgs]") {
 TEST_CASE("LBFGS Zhang-Xu cautious nonmonotone converges on quadratic",
           "[optimizer][lbfgs][zhangxu]") {
   auto params = makeOptParams();
-  params.optimizer_options.lbfgs.secant = "zhangxu";
-  params.optimizer_options.lbfgs.curvature = "cautious";
-  params.optimizer_options.lbfgs.accept = "nonmonotone";
-  params.optimizer_options.lbfgs.h0 = "adaptive";
-  params.optimizer_options.lbfgs.extra_updates = 1;
-  params.optimizer_options.lbfgs.angle_reset = false;
-  params.optimizer_options.lbfgs.distance_reset = false;
+  ParametersLoadAccess::optimizer_options(params).lbfgs.secant = "zhangxu";
+  ParametersLoadAccess::optimizer_options(params).lbfgs.curvature = "cautious";
+  ParametersLoadAccess::optimizer_options(params).lbfgs.accept = "nonmonotone";
+  ParametersLoadAccess::optimizer_options(params).lbfgs.h0 = "adaptive";
+  ParametersLoadAccess::optimizer_options(params).lbfgs.extra_updates = 1;
+  ParametersLoadAccess::optimizer_options(params).lbfgs.angle_reset = false;
+  ParametersLoadAccess::optimizer_options(params).lbfgs.distance_reset = false;
   auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
   VectorXd start(2);
   start << 5.0, 3.0;
   objf->setPositions(start);
 
   LBFGS opt(objf, params);
-  int status = opt.run(1000, params.optimizer_options.max_move);
+  int status =
+      opt.run(1000, ParametersLoadAccess::optimizer_options(params).max_move);
   auto final_pos = objf->getPositions();
 
   REQUIRE(final_pos.norm() < 0.01);

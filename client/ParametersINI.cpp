@@ -574,16 +574,16 @@ int load_ini(INIReader &ini, Parameters &params) {
                     ParametersLoadAccess::optimizer_options(params)
                         .lbfgs.max_inverse_curvature);
     auto &lbfgs = ParametersLoadAccess::optimizer_options(params).lbfgs;
-    lbfgs.auto_scale = ini.GetBoolean(lbfgs_sec, "lbfgs_auto_scale",
-                                      lbfgs.auto_scale);
-    lbfgs.angle_reset = ini.GetBoolean(lbfgs_sec, "lbfgs_angle_reset",
-                                       lbfgs.angle_reset);
-    lbfgs.distance_reset = ini.GetBoolean(lbfgs_sec, "lbfgs_distance_reset",
-                                          lbfgs.distance_reset);
-    lbfgs.curvature = toLowerCase(
-        ini.Get(lbfgs_sec, "lbfgs_curvature", lbfgs.curvature));
-    lbfgs.project_rigid = ini.GetBoolean(lbfgs_sec, "lbfgs_project_rigid",
-                                         lbfgs.project_rigid);
+    lbfgs.auto_scale =
+        ini.GetBoolean(lbfgs_sec, "lbfgs_auto_scale", lbfgs.auto_scale);
+    lbfgs.angle_reset =
+        ini.GetBoolean(lbfgs_sec, "lbfgs_angle_reset", lbfgs.angle_reset);
+    lbfgs.distance_reset =
+        ini.GetBoolean(lbfgs_sec, "lbfgs_distance_reset", lbfgs.distance_reset);
+    lbfgs.curvature =
+        toLowerCase(ini.Get(lbfgs_sec, "lbfgs_curvature", lbfgs.curvature));
+    lbfgs.project_rigid =
+        ini.GetBoolean(lbfgs_sec, "lbfgs_project_rigid", lbfgs.project_rigid);
     lbfgs.secant =
         toLowerCase(ini.Get(lbfgs_sec, "lbfgs_secant", lbfgs.secant));
     lbfgs.precon =
@@ -592,8 +592,8 @@ int load_ini(INIReader &ini, Parameters &params) {
     lbfgs.h0 = toLowerCase(ini.Get(lbfgs_sec, "lbfgs_h0", lbfgs.h0));
     lbfgs.accept =
         toLowerCase(ini.Get(lbfgs_sec, "lbfgs_accept", lbfgs.accept));
-    lbfgs.extra_updates = ini.GetInteger(lbfgs_sec, "lbfgs_extra_updates",
-                                         lbfgs.extra_updates);
+    lbfgs.extra_updates =
+        ini.GetInteger(lbfgs_sec, "lbfgs_extra_updates", lbfgs.extra_updates);
     lbfgs.cautious_eps =
         ini.GetReal(lbfgs_sec, "lbfgs_cautious_eps", lbfgs.cautious_eps);
     lbfgs.cautious_alpha =
@@ -606,19 +606,20 @@ int load_ini(INIReader &ini, Parameters &params) {
   }
   {
     auto &xtsci = ParametersLoadAccess::optimizer_options(params).xtsci;
-    xtsci.method = toLowerCase(
-        ini.Get("Optimizer", "xtsci_method", xtsci.method));
+    xtsci.method =
+        toLowerCase(ini.Get("Optimizer", "xtsci_method", xtsci.method));
     if (ini.HasSection("Xtsci")) {
       xtsci.method = toLowerCase(ini.Get(
           "Xtsci", "method", ini.Get("Xtsci", "xtsci_method", xtsci.method)));
       xtsci.qn_step = toLowerCase(ini.Get("Xtsci", "qn_step", xtsci.qn_step));
       xtsci.precon = toLowerCase(ini.Get("Xtsci", "precon", xtsci.precon));
       xtsci.accept = toLowerCase(ini.Get("Xtsci", "accept", xtsci.accept));
-      xtsci.highs = ini.GetBoolean(
-          "Xtsci", "highs",
-          ini.GetBoolean("Xtsci", "xtsci_highs", xtsci.highs));
-      xtsci.manifold = toLowerCase(ini.Get(
-          "Xtsci", "manifold", ini.Get("Xtsci", "xtsci_manifold", xtsci.manifold)));
+      xtsci.highs =
+          ini.GetBoolean("Xtsci", "highs",
+                         ini.GetBoolean("Xtsci", "xtsci_highs", xtsci.highs));
+      xtsci.manifold = toLowerCase(
+          ini.Get("Xtsci", "manifold",
+                  ini.Get("Xtsci", "xtsci_manifold", xtsci.manifold)));
     }
     xtsci.highs = ini.GetBoolean("Optimizer", "xtsci_highs", xtsci.highs);
     ParametersLoadAccess::optimizer_options(params).xtsci_method = xtsci.method;
