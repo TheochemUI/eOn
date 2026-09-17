@@ -1,1 +1,1 @@
-NEB L-BFGS no longer runs the auto_scale finite-difference H0 probe. That probe treats the projected band force as a potential gradient and never built memory. The LJ13 job fixtures also pin climbing_image off, matching the unit tests.
+NEB preserves the configured L-BFGS automatic scaling and applies climbing-image forces only when an interior image exceeds both endpoint energies. Paths whose highest energy lies at an endpoint retain their spring forces; the convergence tests exercise the default climbing-image setting.
