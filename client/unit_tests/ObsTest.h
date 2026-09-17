@@ -17,8 +17,8 @@
 namespace tests {
 class ObsTest : public ::testing::Test {
 public:
-  ObsTest();
-  virtual ~ObsTest();
+  ObsTest() = default;
+  virtual ~ObsTest() = default;
 };
 } /* namespace tests */
 

@@ -28,14 +28,6 @@
 
 namespace tests {
 
-ObsTest::ObsTest() {
-  // TODO Auto-generated constructor stub
-}
-
-ObsTest::~ObsTest() {
-  // TODO Auto-generated destructor stub
-}
-
 TEST_F(ObsTest, TestMatter) {
   string confile("pos.con");
   Parameters parameters;

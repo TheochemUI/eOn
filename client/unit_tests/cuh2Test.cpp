@@ -26,14 +26,6 @@
 
 namespace tests {
 
-CuH2Test::CuH2Test() {
-  // TODO Auto-generated constructor stub
-}
-
-CuH2Test::~CuH2Test() {
-  // TODO Auto-generated destructor stub
-}
-
 TEST_F(CuH2Test, TestMatter) {
   string confile("pos.con");
   Parameters parameters;

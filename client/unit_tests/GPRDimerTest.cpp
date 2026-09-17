@@ -31,14 +31,6 @@
 
 namespace tests {
 
-GPRDimerTest::GPRDimerTest() {
-  // TODO Auto-generated constructor stub
-}
-
-GPRDimerTest::~GPRDimerTest() {
-  // TODO Auto-generated destructor stub
-}
-
 TEST_F(GPRDimerTest, TestMatter) {
   string reactantFilename("pos.con");
   string displacementFilename("displacement.con");

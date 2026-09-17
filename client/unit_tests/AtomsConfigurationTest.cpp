@@ -28,14 +28,6 @@
 
 namespace tests {
 
-AtomsConfigurationTest::AtomsConfigurationTest() {
-  // TODO Auto-generated constructor stub
-}
-
-AtomsConfigurationTest::~AtomsConfigurationTest() {
-  // TODO Auto-generated destructor stub
-}
-
 TEST_F(AtomsConfigurationTest, TestMatter) {
   Parameters parameters;
   ParametersLoadAccess::potential_options(parameters).potential =
