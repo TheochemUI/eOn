@@ -5,14 +5,12 @@ import shutil
 import logging
 logger = logging.getLogger('communicator')
 
-from time import sleep, time
+from time import sleep
 from subprocess import Popen, PIPE
-import tarfile
 from io import StringIO
 import pickle as pickle
 import re
 import numpy
-import sys
 
 from pathlib import Path
 
@@ -375,7 +373,6 @@ class MPI(Communicator):
             rank = ready_ranks.pop()
             tmp = numpy.empty(1, dtype='i')
             self.comm.Recv(tmp, source=rank, tag=1)
-            #buf = array('c', jobpath+'\0')
             buf = array('b')
             bufval = jobpath+'\0'
             buf.frombytes(bufval.encode())
@@ -394,7 +391,6 @@ class MPI(Communicator):
             jobpath = str(Path(self.scratchpath) / jobdir)
             tmp = numpy.empty(1, dtype='i')
             self.comm.Recv(tmp, source=rank, tag=1)
-            #buf = array('c', jobpath+'\0')
             buf = array('b')
             bufval = jobpath+'\0'
             buf.frombytes(bufval.encode())
@@ -405,7 +401,6 @@ class MPI(Communicator):
         for rank in self.client_ranks:
             ready = self.comm.Iprobe(rank, tag=1)
             if ready:
-                # logger.info("Rank %i is ready" % rank)
                 ready_ranks.append(rank)
         return ready_ranks
 
@@ -419,9 +414,7 @@ class MPI(Communicator):
 
     def get_results(self, resultspath, keep_result):
 
-        print("into get_results")
         '''Moves work from scratchpath to results path.'''
-#        from mpi4py.MPI import ANY_SOURCE, Status
         import mpi4py.MPI as MPI
 
         status = MPI.Status()
@@ -623,7 +616,6 @@ class Script(Communicator):
 
         # read in job ids
         try:
-#            f = open(self.job_id_path, "r")
             f = open(self.job_id_path, "rb")
             self.jobids = pickle.load(f)
             f.close()
@@ -632,7 +624,6 @@ class Script(Communicator):
             pass
 
     def save_jobids(self):
-#        f = open(self.job_id_path, "w")
         f = open(self.job_id_path, "wb")
         pickle.dump(self.jobids, f)
         f.close()
@@ -688,7 +679,6 @@ class Script(Communicator):
             eon_jobid = jobname.rsplit('_',1)[-1]
 
             cmd = "%s %s %s" % (self.submit_job_cmd, jobname, jobpath)
-#            status, output = commands.getstatusoutput(cmd)
             p = Popen([self.submit_job_cmd,jobname,jobpath], stdout=PIPE, stderr=PIPE)
             output, error = p.communicate()
             output = output.decode()
@@ -709,7 +699,6 @@ class Script(Communicator):
         for job_id in list(self.jobids.keys()):
             cmd = "%s %i" % (self.cancel_job_cmd, job_id)
             job_id_string = "%s" % (job_id)
-#            status, output = commands.getstatusoutput(cmd)
             p = Popen([self.cancel_job_cmd, job_id_string], stdout=PIPE, stderr=PIPE)
             output, error = p.communicate()
             output = output.decode()
@@ -726,7 +715,6 @@ class Script(Communicator):
         return len(list(self.jobids.keys()))
 
     def get_queued_jobs(self):
-#        status, output = commands.getstatusoutput(self.queued_jobs_cmd)
         p = Popen([self.queued_jobs_cmd,''], stdout=PIPE, stderr=PIPE)
         output, error = p.communicate()
         output = output.decode()

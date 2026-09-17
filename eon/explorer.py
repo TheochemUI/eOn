@@ -3,19 +3,15 @@ import logging
 logger = logging.getLogger('explorer')
 from time import time
 import shutil
-import io
 import os
-import sys
 import pickle as pickle
 from pathlib import Path
-from copy import copy
 import numpy
 
 from eon import atoms
 from eon import communicator
 from eon import displace
 from eon import fileio as io
-#import kdb
 from eon import recycling
 from eon import eon_kdb as kdb
 
@@ -232,7 +228,6 @@ class ClientMinModeExplorer(MinModeExplorer):
 
             weightsIO = io.StringIO()
             numpy.savetxt(weightsIO, mass_weights)
-#            file_permission = os.stat("masses.dat").st_mode
             invariants['masses.dat'] = (weightsIO, file_permission)
 
         atom_list_str = str(self.state.info.get("Saddle Search", "displace_atom_list", ""))
@@ -282,7 +277,6 @@ class ClientMinModeExplorer(MinModeExplorer):
             self.comm.submit_jobs(searches, invariants)
             t2 = time()
             logger.info( "Created " + str(len(searches)) + " searches")
-            #logger.debug( "Created " + str(num_to_make/(t2-t1)) + " searches per second")
             logger.debug( "Created %.2f searches per second", num_to_make/(t2-t1))
         except:
             logger.exception("Failed to submit searches")
@@ -472,7 +466,6 @@ class ServerMinModeExplorer(MinModeExplorer):
             if search_id not in self.process_searches:
                 continue
             self.job_info[search_id][searchdata_id]['status'] = 'complete'
-            #logger.info("got result for search_id %i" % search_id)
             final_result = self.process_searches[search_id].process_result(result)
             if final_result:
                 results_dict = io.parse_results(final_result['results.dat'])
