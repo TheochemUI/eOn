@@ -1,0 +1,1 @@
+NEB preserves the configured L-BFGS automatic scaling and applies climbing-image forces only when an interior image exceeds both endpoint energies. Paths whose highest energy lies at an endpoint retain their spring forces; the convergence tests exercise the default climbing-image setting.
