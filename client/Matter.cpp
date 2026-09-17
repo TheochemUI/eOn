@@ -163,17 +163,6 @@ Matter &Matter::operator=(Matter &&other) noexcept {
   return *this;
 }
 
-// The == comparison considers identity. This is crucial for process search.
-// bool Matter::operator==(const Matter& matter) {
-//     if(structComp.check_rotation) {
-//         return eonc::geometry::rotationMatch(this, &matter,
-//         structComp.distance_difference);
-//     }else{
-//         return (structComp.distance_difference)
-//         > perAtomNorm(matter);
-//     }
-// }
-
 bool Matter::compare(const Matter &matter, bool indistinguishable) {
   if (nAtoms != matter.numberOfAtoms())
     return false;
@@ -194,10 +183,6 @@ bool Matter::compare(const Matter &matter, bool indistinguishable) {
     return (structComp.distance_difference) > perAtomNorm(matter);
   }
 }
-
-// bool Matter::operator!=(const Matter& matter) {
-//     return !operator==(matter);
-// }
 
 // Returns the distance to the given matter object.
 double Matter::distanceTo(const Matter &matter) {
@@ -777,12 +762,6 @@ size_t Matter::getPotentialCalls() const {
 }
 
 double Matter::getEnergyVariance() const { return this->energyVariance; }
-
-// Eigen::VectorXd Matter::getForceVariance() {
-//   return this->variance.segment(1, numberOfFreeAtoms() * 3);
-// }
-
-// double Matter::getMaxVariance() { return this->variance.maxCoeff(); }
 
 std::shared_ptr<Potential> Matter::getPotential() { return this->potential; }
 
