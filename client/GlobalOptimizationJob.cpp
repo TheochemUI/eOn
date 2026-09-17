@@ -13,11 +13,11 @@
 #include "eon/EonLogger.h"
 #include "eon/GlobalOptimization.h"
 
+#include "eon/Dynamics.h"
+#include "eon/HelperFunctions.h"
 #include <format>
 #include <memory>
 #include <stdexcept>
-#include "eon/Dynamics.h"
-#include "eon/HelperFunctions.h"
 
 #include <algorithm>
 #include <cmath>
