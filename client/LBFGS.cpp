@@ -91,7 +91,7 @@ Eigen::VectorXd LBFGS::hessianStep(double a_maxMove,
   Eigen::VectorXd r = m_objf->getPositions();
   Eigen::VectorXd f = a_f;
   if (!usesPrecon()) {
-    return eonc::helpers::maxAtomMotionAppliedV(
+    return eonc::geometry::maxAtomMotionAppliedV(
         m_optConfig.opts.lbfgs.inverse_curvature * f, a_maxMove);
   }
   maybeProjectRigid(f, r, m_optConfig.opts.lbfgs.project_rigid);
@@ -108,18 +108,18 @@ Eigen::VectorXd LBFGS::hessianStep(double a_maxMove,
     A.row(n).head(n) = g.transpose();
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es(A);
     if (es.info() != Eigen::Success) {
-      return eonc::helpers::maxAtomMotionAppliedV(f, a_maxMove);
+      return eonc::geometry::maxAtomMotionAppliedV(f, a_maxMove);
     }
     const Eigen::VectorXd v = es.eigenvectors().col(0);
     if (std::abs(v(n)) < 1.0e-14) {
-      return eonc::helpers::maxAtomMotionAppliedV(f, a_maxMove);
+      return eonc::geometry::maxAtomMotionAppliedV(f, a_maxMove);
     }
     d = v.head(n) / v(n);
   } else {
     // Regularized Newton: H + mu I with mu = max(0, eps - lambda_min).
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es(H);
     if (es.info() != Eigen::Success) {
-      return eonc::helpers::maxAtomMotionAppliedV(f, a_maxMove);
+      return eonc::geometry::maxAtomMotionAppliedV(f, a_maxMove);
     }
     Eigen::VectorXd ev = es.eigenvalues();
     const double lmin = ev.minCoeff();
@@ -129,7 +129,7 @@ Eigen::VectorXd LBFGS::hessianStep(double a_maxMove,
         (es.eigenvectors().transpose() * g).cwiseQuotient(ev);
   }
   maybeProjectRigid(d, r, m_optConfig.opts.lbfgs.project_rigid);
-  return eonc::helpers::maxAtomMotionAppliedV(d, a_maxMove);
+  return eonc::geometry::maxAtomMotionAppliedV(d, a_maxMove);
 }
 
 Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
@@ -191,7 +191,7 @@ Eigen::VectorXd LBFGS::getStep(double a_maxMove, const Eigen::VectorXd &a_f) {
                         "eV/A^2, take max move step",
                         C);
       reset();
-      return eonc::helpers::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
+      return eonc::geometry::maxAtomMotionAppliedV(1000 * a_f, a_maxMove);
     }
     QUILL_LOG_DEBUG(m_log, "[LBFGS] Curvature calculated via FD: {:.4e} eV/A^2",
                     C);
