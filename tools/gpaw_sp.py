@@ -11,10 +11,9 @@ import sys
 import os
 from pathlib import Path
 from gpaw.mpi import world
-from ase.utils import devnull
 
 def create_gpaw(comm):
-    from gpaw import GPAW, FermiDirac, PoissonSolver, setup_paths
+    from gpaw import GPAW, FermiDirac, setup_paths
     from gpaw import Mixer
     setup_paths.insert(0,'.')
     calc = GPAW(xc='PBE',

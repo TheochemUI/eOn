@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import sys
-import numpy
 
 import pathfix
 import fileio as io
