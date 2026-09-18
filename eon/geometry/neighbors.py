@@ -276,12 +276,14 @@ def least_coordinated(
     p: StructureLike, cutoff: float, brute: bool = False
 ) -> List[int]:
     """Indices of free atoms with the lowest coordination number."""
+    from eon.structure import as_atom_free
+
     cn = coordination_numbers(p, cutoff, brute)
     if not cn:
         return []
     maxcoord = max(cn)
     mincoord = min(cn)
-    free = np.asarray(getattr(p, "free", np.ones(len(cn))), dtype=bool)
+    free = as_atom_free(getattr(p, "free", np.ones(len(cn))))
     while mincoord <= maxcoord:
         least = [i for i in range(len(cn)) if cn[i] <= mincoord and free[i]]
         if least:
