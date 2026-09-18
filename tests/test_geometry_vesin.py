@@ -8,6 +8,7 @@ import pytest
 from eon.structure import Structure
 from eon.geometry import (
     get_process_atoms,
+    least_coordinated,
     neighbor_list,
     neighbor_list_pairs,
     neighbor_list_vectors,
@@ -49,6 +50,24 @@ def test_neighbor_list_uses_vesin_and_is_symmetric():
 def test_brute_alias_matches_neighbor_list():
     p = _fcc(2, a=2.0)
     assert neighbor_list(p, 3.0) == brute_neighbor_list(p, 3.0)
+
+
+@pytest.mark.parametrize(
+    "free, expected",
+    [
+        ([1, 1, 1, 0], [0, 2]),
+        ([[0, 0, 0], [0, 1, 0], [0, 0, 0], [0, 0, 0]], [1]),
+        ([0, 0, 0, 0], []),
+    ],
+)
+def test_least_coordinated_selects_mobile_atoms(free, expected):
+    p = Structure(4)
+    p.r = np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0], [8, 0, 0]], dtype=float)
+    p.box = np.eye(3) * 20.0
+    p.pbc = False
+    p.free = free
+
+    assert least_coordinated(p, 1.1) == expected
 
 
 def test_neighbor_list_vectors_pbc():
