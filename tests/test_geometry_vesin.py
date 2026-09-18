@@ -64,7 +64,7 @@ def test_least_coordinated_selects_mobile_atoms(free, expected):
     p = Structure(4)
     p.r = np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0], [8, 0, 0]], dtype=float)
     p.box = np.eye(3) * 20.0
-    p.pbc = False
+    p.pbc = [False, False, False]
     p.free = free
 
     assert least_coordinated(p, 1.1) == expected
