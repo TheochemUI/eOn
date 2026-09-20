@@ -11,7 +11,6 @@
 */
 #include "eon/GlobalOptimizationJob.h"
 #include "eon/EonLogger.h"
-#include "eon/GlobalOptimization.h"
 
 #include "eon/Dynamics.h"
 #include "eon/HelperFunctions.h"
@@ -25,7 +24,6 @@
 namespace eonc {
 
 std::vector<std::string> GlobalOptimizationJob::run() {
-  GlobalOptimization globopt = GlobalOptimization(params);
   std::string reactant_passed =
       eonc::helpers::getRelevantFile(params.main_options().conFilename);
   std::vector<std::string> returnFiles;
@@ -40,15 +38,12 @@ std::vector<std::string> GlobalOptimizationJob::run() {
   AtomMatrix rat_t(matter_cur->numberOfAtoms(), 3);
   QUILL_LOG_DEBUG(log, "\nBeginning minima hopping of {}",
                   reactant_passed.c_str());
-  // long fcalls;
   QUILL_LOG_TRACE_L1(log, "fcalls= {}", matter_cur->getForceCalls());
   QUILL_LOG_TRACE_L1(log, "epot= {:24.15E}", matter_cur->getPotentialEnergy());
   converged =
       matter_cur->relax(false, params.debug_options().write_movies,
                         params.main_options().checkpoint, "min", "matter_cur");
   QUILL_LOG_DEBUG(log, "converged {}", (converged) ? "TRUE" : "FALSE");
-  // nlmin=0;
-  // if(nlmin==0)
   earr.push_back(matter_cur->getPotentialEnergy());
   *matter_hop = *matter_cur;
   GlobalOptimizationJob::report(*matter_hop);
@@ -75,13 +70,11 @@ std::vector<std::string> GlobalOptimizationJob::run() {
     earrfile << std::format("{:5}  {:15.5f}  {:15.5f}  {:15.5f}  ", i + 1,
                             earr[i], earr[i] - earr[0], earr[i] - earrim1);
   }
-  // globopt.run();
   return returnFiles;
 } // end of GlobalOptimizationJob::run
 
 void GlobalOptimizationJob::analyze(Matter &matter_cur, Matter &matter_hop) {
   if (escapeResult == "failure") {
-    // matter_hop=matter_cur;
     hoppingResult = "same";
     return;
   }
@@ -105,7 +98,6 @@ void GlobalOptimizationJob::analyze(Matter &matter_cur, Matter &matter_hop) {
     }
     insert(matter_cur);
   } else if (decisionResult == "rejected") {
-    // matter_hop=matter_cur;
   } else {
     log = eonc::log::traceback();
     QUILL_LOG_CRITICAL(
@@ -195,12 +187,10 @@ void GlobalOptimizationJob::decisionStep(Matter &matter_cur,
   decisionResult = "unknown";
   examineEscape(matter_cur, matter_hop);
   if (escapeResult == "failure") {
-    // matter_hop[0] = matter_cur[0];
     return;
   }
   if (params.global_optimization_options().decision_method == "npew") {
     acceptRejectNPEW(matter_cur, matter_hop);
-    // GlobalOptimizationJob::update_minhop_param(matter_hop);
   } else if (params.global_optimization_options().decision_method ==
              "boltzmann") {
     acceptRejectBoltzmann(matter_cur, matter_hop);
@@ -361,9 +351,8 @@ void GlobalOptimizationJob::mdescape(Matter &matter) {
 
 void GlobalOptimizationJob::velopt(Matter &matter) {
   AtomMatrix vat(matter.numberOfAtoms(), 3);
-  double tt1, tt2, tt3, vtot[3]; //, ekin_t;
+  double tt1, tt2, tt3, vtot[3];
   int iat;
-  // matter.numberOfAtoms();
   vtot[0] = 0.0;
   vtot[1] = 0.0;
   vtot[2] = 0.0;
@@ -404,29 +393,14 @@ void GlobalOptimizationJob::velopt(Matter &matter) {
   matter.setVelocities(vat * std::sqrt(temperature / kinT));
 }
 
-/*
-void ::rescaleVelocity()
-{
-    AtomMatrix velocity = matter->getVelocities();
-    double kinE = matter->getKineticEnergy();
-    double kinT = (2.0*kinE/nFreeCoords/kb);
-    matter->setVelocities(velocity*sqrt(temperature/kinT));
-}
-*/
-
 void GlobalOptimizationJob::insert(Matter &matter) {
   double epot;
-  // vector<double> epot_hop;
   size_t jlo, jlo_insert;
-  // vector<double>::iterator it;
   epot = matter.getPotentialEnergy();
   jlo = hunt(epot);
   QUILL_LOG_DEBUG(log, "JLO= {}  {:10.5f}  ", jlo, std::abs(epot - earr[jlo]));
-  // it=earr.begin()+jlo;
-  // epot_hop.push_back(epot);
   if (!(std::abs(epot - earr[jlo]) <
         params.structure_comparison_options().energy_difference)) {
-    // earr.insert(it,epot_hop.begin(),epot_hop.end());
     jlo_insert = jlo;
     if (epot > earr[jlo])
       jlo_insert++;
@@ -447,10 +421,7 @@ size_t GlobalOptimizationJob::hunt(double epot) {
   de = std::abs(epot - earr[jlo]);
   if (jlo > 0)
     if (std::abs(epot - earr[jlo - 1]) < de)
-      jlo--; //{jlo--;de=abs(epot-earr[jlo]);}
-  // if(jlo!=earr.size()-1)
-  // if(abs(epot-earr[jlo+1])<params.structure_comparison_options().energy_difference)
-  // jlo++;
+      jlo--;
   return jlo;
 }
 
