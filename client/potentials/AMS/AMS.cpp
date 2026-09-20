@@ -103,7 +103,6 @@ void AMS::runAMS() {
         std::format("Could not make {} executable", kRunScript));
   }
   nativenv["AMS_JOBNAME"] = cjob;
-  // assert(validate_order() == true);         // TODO: Debug only
   bp::child c(std::string(kRunScript),
               nativenv,                     // set the input
               bp::std_in.close(),           // no input
@@ -559,44 +558,3 @@ std::string AMS::generate_run(const eonc::Parameters &p) {
   // Never reach here
   throw std::runtime_error("Generic AMS engine error \n");
 }
-
-/*
-** Debugging Toggles
-** These functions validate the job ordering when added to
-*runAMS()
-*/
-
-// TODO: Only in debug
-// std::string AMS::readFile(std::filesystem::path path) {
-//   // Kanged: https://stackoverflow.com/a/40903508/1895378
-//   std::ifstream f(path, std::ios::in | std::ios::binary);
-//   const auto sz = std::filesystem::file_size(path);
-//   std::string stres(sz, '\0');
-//   f.read(stres.data(), sz);
-//   return stres;
-// }
-
-// bool AMS::validate_order() {
-//   // Validate all inputs
-//   if (not first_run) {
-//     std::string rfile = readFile("run_AMS.sh");
-//     std::string resfile = readFile("myrestart.in");
-//     std::string updcoord = readFile("updCoord.sh");
-//     // ifstream runfile("run_AMS.sh"), restartfile("myrestart.in"),
-//     // updcoord("updCoord.sh"); istream_iterator<string> rfiter(runfile),
-//     // refiter(restartfile), uciter(updcoord), eof; vector<string>
-//     // rfstore(rfiter, eof), refstore(refiter, eof), ucstore(uciter, eof);
-//     // (?<=AMS_JOBNAME=).*$
-//     // (?<=udmpkf ).*(?=\.results)
-//     // (?<=File ).*(?=\.results)
-//     // The logic here enforces that the current job restarts from the
-//     previous one, so
-//     // the coordinates of the previous job update, the restart
-//     references
-//     // the previous job, and then finally the current job executes with cjob
-//     assert(absl::StrContains(rfile, cjob));
-//     assert(absl::StrContains(resfile, pjob));
-//     assert(absl::StrContains(updcoord, pjob));
-//   }
-//   return true;
-// }
