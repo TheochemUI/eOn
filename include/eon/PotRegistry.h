@@ -21,10 +21,31 @@
 
 namespace eonc {
 
-class PotRegistry {
+// ---------------------------------------------------------------------------
+// IPotRegistry: injectable ABI. Production uses PotRegistry::get().
+// ---------------------------------------------------------------------------
+class IPotRegistry {
 public:
   using Clock = std::chrono::system_clock;
   using TimePoint = Clock::time_point;
+
+  virtual ~IPotRegistry() = default;
+  [[nodiscard]] virtual uint64_t on_created(PotType t) noexcept = 0;
+  virtual void on_destroyed(uint64_t id, PotType t, size_t force_calls,
+                            TimePoint created_at) = 0;
+  virtual void on_force_call(PotType t) noexcept = 0;
+
+  IPotRegistry(const IPotRegistry &) = delete;
+  IPotRegistry &operator=(const IPotRegistry &) = delete;
+
+protected:
+  IPotRegistry() = default;
+};
+
+class PotRegistry : public IPotRegistry {
+public:
+  using Clock = IPotRegistry::Clock;
+  using TimePoint = IPotRegistry::TimePoint;
 
   struct InstanceRecord {
     uint64_t id;
@@ -48,6 +69,8 @@ private:
   std::atomic<uint64_t> m_next_id{1};
 
 public:
+  PotRegistry() = default;
+
   /// Process-lifetime singleton. The instance is allocated on the heap
   /// and never destroyed, so Potential destructors can still record
   /// teardown after C++ static destruction.
@@ -55,10 +78,10 @@ public:
   void reset();
 
   // Lifecycle events
-  [[nodiscard]] uint64_t on_created(PotType t) noexcept;
+  [[nodiscard]] uint64_t on_created(PotType t) noexcept override;
   void on_destroyed(uint64_t id, PotType t, size_t force_calls,
-                    TimePoint created_at);
-  void on_force_call(PotType t) noexcept;
+                    TimePoint created_at) override;
+  void on_force_call(PotType t) noexcept override;
 
   // Per-type queries
   [[nodiscard]] size_t type_force_calls(PotType t) const noexcept;
