@@ -18,10 +18,7 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/potentials/LAMMPS/LAMMPSPot.h"
-#include "eon/potentials/PluginLoader.h"
 
-#include <filesystem>
-#include <fstream>
 #include <stdexcept>
 #include <string>
 
@@ -109,34 +106,6 @@ TEST_CASE("LammpsLoader: require_loaded is consistent with is_loaded",
       REQUIRE(loader.open_no_mpi == nullptr);
     }
   }
-}
-
-TEST_CASE("PluginLoader: lib_present is a filesystem probe",
-          "[plugin][loader]") {
-  auto &loader = eonc::PluginLoader::instance();
-  REQUIRE_FALSE(loader.lib_present("eon_no_such_potential_zzzz"));
-
-  const auto tmp =
-      std::filesystem::temp_directory_path() / "eon_plugin_probe_XXXXXX";
-  std::error_code ec;
-  std::filesystem::create_directories(tmp, ec);
-  REQUIRE_FALSE(ec);
-#ifdef _WIN32
-  const std::string libname = "eon_probe_dummy.dll";
-#else
-#ifdef __APPLE__
-  const std::string libname = "libeon_probe_dummy.dylib";
-#else
-  const std::string libname = "libeon_probe_dummy.so";
-#endif
-#endif
-  {
-    std::ofstream ofs(tmp / libname, std::ios::binary);
-    ofs << "not a real library";
-  }
-  loader.add_config_paths(tmp.string());
-  REQUIRE(loader.lib_present("eon_probe_dummy"));
-  std::filesystem::remove_all(tmp, ec);
 }
 
 } // namespace tests

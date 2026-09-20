@@ -11,9 +11,12 @@
 
 #include <memory>
 #include <stdexcept>
+#include <type_traits>
 #include <vector>
 
+#include "eon/Parameters.h"
 #include "eon/Potential.h"
+#include "eon/potentials/PluginLoader.h"
 
 #include "rgpot/ForceStructs.hpp"
 #include "rgpot/pot_caps.hpp"
@@ -29,24 +32,51 @@ template <class RPot> class RgpotAdapter final : public eonc::Potential {
 public:
   /// Kernels construct in place from their config: several hold mutexes
   /// or other immovable state, so the adapter never copies or moves them.
+  /// Production: process-default PluginLoader.
   template <class Cfg>
+    requires(!std::is_base_of_v<eonc::IPluginLoader, std::remove_cvref_t<Cfg>>)
   RgpotAdapter(eonc::PotType ptype, const eonc::Parameters &params,
                const Cfg &cfg)
-      : eonc::Potential(ptype, params), pot_(cfg) {
-    validateCaps();
+      : RgpotAdapter(ptype, params, cfg, eonc::PluginLoader::instance()) {}
+  /// Test seam: injected loader, no process-default search-path mutation.
+  template <class Cfg>
+    requires(!std::is_base_of_v<eonc::IPluginLoader, std::remove_cvref_t<Cfg>>)
+  RgpotAdapter(eonc::PotType ptype, const eonc::Parameters &params,
+               const Cfg &cfg, eonc::IPluginLoader &loader)
+      : eonc::Potential(ptype, params),
+        pot_(cfg),
+        loader_(loader) {
+    finishConstruct(params);
   }
 
   /// Kernels with no configuration surface default-construct in place.
   RgpotAdapter(eonc::PotType ptype, const eonc::Parameters &params)
-      : eonc::Potential(ptype, params), pot_() {
-    validateCaps();
+      : eonc::Potential(ptype, params),
+        pot_(),
+        loader_(eonc::PluginLoader::instance()) {
+    finishConstruct(params);
+  }
+  /// Test seam: injected loader, no process-default search-path mutation.
+  RgpotAdapter(eonc::PotType ptype, const eonc::Parameters &params,
+               eonc::IPluginLoader &loader)
+      : eonc::Potential(ptype, params),
+        pot_(),
+        loader_(loader) {
+    finishConstruct(params);
   }
 
   /// Take a pre-built kernel (ExprPot and other move-only constructors).
   RgpotAdapter(eonc::PotType ptype, const eonc::Parameters &params,
                RPot &&kernel)
-      : eonc::Potential(ptype, params), pot_(std::move(kernel)) {
-    validateCaps();
+      : RgpotAdapter(ptype, params, std::move(kernel),
+                     eonc::PluginLoader::instance()) {}
+  /// Test seam: injected loader, no process-default search-path mutation.
+  RgpotAdapter(eonc::PotType ptype, const eonc::Parameters &params,
+               RPot &&kernel, eonc::IPluginLoader &loader)
+      : eonc::Potential(ptype, params),
+        pot_(std::move(kernel)),
+        loader_(loader) {
+    finishConstruct(params);
   }
 
   void force(long N, const double *R, const int *atomicNrs, double *F,
@@ -117,6 +147,11 @@ public:
   [[nodiscard]] const RPot &kernel() const noexcept { return pot_; }
 
 private:
+  void finishConstruct(const eonc::Parameters &params) {
+    loader_.add_config_paths(params.potential_options().potentialsPath);
+    validateCaps();
+  }
+
   void validateCaps() const {
     const auto caps = pot_.caps();
     using R = rgpot::Reentrancy;
@@ -128,6 +163,7 @@ private:
   }
 
   RPot pot_;
+  eonc::IPluginLoader &loader_;
 };
 
 /// Factory arm helper for kernels whose parameters are fixed tabulated
