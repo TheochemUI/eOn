@@ -54,17 +54,3 @@ def test_one_pt_morse_gprdimer(datadir, shared_datadir, eonclient, monkeypatch):
     assert results["termination_reason"] == "0"
     # magic_enum writes the PotType identifier exactly as declared.
     assert results["potential_type"] == "MORSE_PT"
-
-# Broken AMS
-# def test_one_pt_ams_dimer(datadir, shared_datadir, eonclient):
-#     ddir=f"{shared_datadir}/one_Pt_on_frozenSurface"
-#     sh.cp(f"{datadir}/ams_io_dimer.ini",f"{ddir}/config.ini")
-#     sh.cd(ddir)
-#     files = sh.ls()
-#     diff = set(files.split()) ^ {'config.ini', 'displacement.con', 'direction.dat', 'pos.con'}
-#     assert not diff
-#     eonclient() # Runs eon
-#     with open(f"{ddir}/results.dat", 'r') as res:
-#         resText = res.readlines()
-#         assert resText[0] == "0 termination_reason\n"
-#         assert resText[3].split()[0] == "ams"
