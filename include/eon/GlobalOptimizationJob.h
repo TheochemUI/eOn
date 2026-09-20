@@ -22,9 +22,10 @@ namespace eonc {
 
 class GlobalOptimizationJob : public Job {
 public:
-  GlobalOptimizationJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)), nlmin{0}, ediff{1.E-1}, ekin{5.E-2},
-        beta1{params.global_optimization_options().beta},
+  GlobalOptimizationJob(std::unique_ptr<Parameters> parameters,
+                        Runtime rt = Runtime{})
+      : Job(std::move(parameters), std::move(rt)), nlmin{0}, ediff{1.E-1},
+        ekin{5.E-2}, beta1{params.global_optimization_options().beta},
         beta2{params.global_optimization_options().beta},
         beta3{1. / params.global_optimization_options().beta},
         alpha1{1. / params.global_optimization_options().alpha},

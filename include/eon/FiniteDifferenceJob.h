@@ -17,8 +17,9 @@ namespace eonc {
 
 class FiniteDifferenceJob : public Job {
 public:
-  FiniteDifferenceJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {}
+  FiniteDifferenceJob(std::unique_ptr<Parameters> parameters,
+                      Runtime rt = Runtime{})
+      : Job(std::move(parameters), std::move(rt)) {}
   ~FiniteDifferenceJob(void) = default;
   std::vector<std::string> run(void);
 };

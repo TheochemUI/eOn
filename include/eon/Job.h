@@ -12,6 +12,7 @@
 #pragma once
 #include "Parameters.h"
 #include "Potential.h"
+#include "Runtime.h"
 #include <string>
 #include <vector>
 
@@ -52,13 +53,15 @@ protected:
   // make const
   JobType jtype;
   Parameters params;
+  Runtime runtime;
   std::shared_ptr<Potential> pot;
 
 public:
-  Job(std::unique_ptr<Parameters> parameters)
+  Job(std::unique_ptr<Parameters> parameters, Runtime rt = Runtime{})
       : jtype{parameters->main_options().job}, params{*std::move(parameters)},
-        pot{helpers::makePotential(params.potential_options().potential,
-                                   params)} {}
+        runtime{std::move(rt)},
+        pot{helpers::makePotential(params.potential_options().potential, params,
+                                   runtime)} {}
   Job(std::shared_ptr<Potential> potPassed, const Parameters &parameters)
       : jtype{parameters.main_options().job}, params{parameters},
         pot{potPassed} {}
@@ -66,10 +69,14 @@ public:
   //! Virtual run; used solely for dynamic dispatch
   virtual std::vector<std::string> run() = 0;
   [[nodiscard]] JobType getType() { return this->jtype; };
+  [[nodiscard]] PotRegistry &pots() noexcept { return runtime.pots(); }
+  /// Drop the Potential so on_destroyed is recorded before Runtime dies.
+  void releasePotential() { pot.reset(); }
 };
 
 namespace helpers {
-std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params);
+std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params,
+                             Runtime runtime = Runtime{});
 } // namespace helpers
 
 } // namespace eonc

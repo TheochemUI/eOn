@@ -59,12 +59,13 @@ public:
   /// Load on first use, then throw if libmetatomic_pot is not available.
   void require_loaded() override;
 
+  ~MetatomicLoader() override;
   MetatomicLoader(const MetatomicLoader &) = delete;
   MetatomicLoader &operator=(const MetatomicLoader &) = delete;
 
 private:
   MetatomicLoader() = default;
-  ~MetatomicLoader() override;
+  friend class Runtime;
 
   bool m_loaded{false};
   dynlib::Handle m_handle{};

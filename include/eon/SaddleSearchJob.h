@@ -48,8 +48,9 @@ public:
   /*!
    * \param *params defined by the config.init file
    */
-  SaddleSearchJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)), fCallsSaddle{0} {}
+  SaddleSearchJob(std::unique_ptr<Parameters> parameters,
+                  Runtime rt = Runtime{})
+      : Job(std::move(parameters), std::move(rt)), fCallsSaddle{0} {}
   //! Saddle Search Job Deconstructor
   ~SaddleSearchJob(void) = default;
   //! Kicks off the Saddle Search

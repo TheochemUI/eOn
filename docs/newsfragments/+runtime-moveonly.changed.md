@@ -1,0 +1,1 @@
+eonc::Runtime is a move-only composition root. ClientEON constructs one and moves it into Job; Job builds the Potential from runtime.pots() rather than PotRegistry::get(). Catch2 uses a local Runtime. NEB image-force std::execution::par is unchanged.

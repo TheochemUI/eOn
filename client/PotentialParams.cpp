@@ -13,6 +13,22 @@
 #include "eon/Potential.h"
 
 namespace eonc {
+namespace {
+thread_local IPotRegistry *tls_construction_registry = nullptr;
+}
+
+PotentialConstructionScope::PotentialConstructionScope(IPotRegistry &registry)
+    : prev_(tls_construction_registry) {
+  tls_construction_registry = &registry;
+}
+
+PotentialConstructionScope::~PotentialConstructionScope() {
+  tls_construction_registry = prev_;
+}
+
+Potential::Potential(PotType a_ptype)
+    : Potential(a_ptype, tls_construction_registry ? *tls_construction_registry
+                                                   : PotRegistry::get()) {}
 
 Potential::Potential(PotType a_ptype, const Parameters &p)
     : Potential(a_ptype) {

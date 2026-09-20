@@ -24,6 +24,7 @@
 #include "eon/HelperFunctions.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
+#include "eon/Runtime.h"
 
 #ifdef WITH_CATLEARN
 #include "eon/potentials/CatLearnPot/CatLearnPot.h"
@@ -243,10 +244,13 @@ std::vector<rgpot::ExprPot::Term> parse_expr_terms(const Parameters &params) {
 } // namespace
 
 std::shared_ptr<Potential> makePotential(const Parameters &params) {
-  // Inject config-file path before any potential constructor runs
-  PluginLoader::instance().add_config_paths(
-      params.potential_options().potentialsPath);
   return makePotential(params.potential_options().potential, params);
+}
+std::shared_ptr<Potential>
+makePotential(PotType ptype, const Parameters &params, Runtime &runtime) {
+  PotentialConstructionScope scope(runtime.pots());
+  runtime.plugins().add_config_paths(params.potential_options().potentialsPath);
+  return makePotential(ptype, params);
 }
 std::shared_ptr<Potential> makePotential(PotType ptype,
                                          const Parameters &params) {

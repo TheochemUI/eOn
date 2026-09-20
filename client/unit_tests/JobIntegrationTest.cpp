@@ -144,10 +144,9 @@ protected:
     params = std::make_unique<Parameters>();
     params->load("config.ini");
 
-    size_t before = PotRegistry::get().total_force_calls();
-    auto job = eonc::helpers::makeJob(std::move(params));
+    auto job = eonc::helpers::makeJob(std::move(params), eonc::Runtime{});
     job->run();
-    forceCalls_ = PotRegistry::get().total_force_calls() - before;
+    forceCalls_ = job->pots().total_force_calls();
 
     std::filesystem::current_path(originalDir);
     return parseResultsDat((workdir / "results.dat").string());

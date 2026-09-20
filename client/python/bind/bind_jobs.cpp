@@ -13,6 +13,7 @@
 #include "eon/Job.h"
 #include "eon/Parameters.h"
 #include "eon/PotRegistry.h"
+#include "eon/Runtime.h"
 
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/shared_ptr.h>
@@ -51,8 +52,8 @@ void bind_jobs(nb::module_ &m) {
   m.def(
       "make_job",
       [](eonc::Parameters &params) {
-        auto job =
-            eonc::helpers::makeJob(std::make_unique<eonc::Parameters>(params));
+        auto job = eonc::helpers::makeJob(
+            std::make_unique<eonc::Parameters>(params), eonc::Runtime{});
         if (!job)
           throw std::runtime_error("make_job: unknown or unsupported job type");
         return std::shared_ptr<eonc::Job>(std::move(job));

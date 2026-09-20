@@ -40,8 +40,8 @@ namespace eonc {
 class OHTSTJob : public Job {
 
 public:
-  OHTSTJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {}
+  OHTSTJob(std::unique_ptr<Parameters> parameters, Runtime rt = Runtime{})
+      : Job(std::move(parameters), std::move(rt)) {}
   ~OHTSTJob(void) = default;
   std::vector<std::string> run(void);
 
