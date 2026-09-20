@@ -9,7 +9,7 @@ import numpy
 from gpaw.mpi import world
 
 def create_gpaw(comm):
-    from gpaw import GPAW, FermiDirac, PoissonSolver, setup_paths
+    from gpaw import GPAW, FermiDirac, setup_paths
     from gpaw import Mixer
     setup_paths.insert(0,'.')
     # gpaw calculator:
