@@ -23,39 +23,6 @@ class PES_2D():
     def get_fy(self):
         return self._fy
 
-#    def map_out_pes(self, interval_x, interval_y, res):
-#
-#        landscape = self._build_landscape()
-#        dx = (interval_x[1] - interval_x[0]) / float(res)
-#        dy = (interval_y[1] - interval_y[0]) / float(res)
-#
-#        data = []
-#        for i in range(res):
-#            data_line = []
-#            for j in range(res):
-#                x = interval_x[0] + i * dx
-#                y = interval_y[0] + j * dy
-#                r = np.array([x,y])
-#                self._calculate_landscape(r, landscape)
-#                data_line.append(self.get_E())
-#            data.append(data_line)
-#
-#            x_list = []
-#            y_list = []
-#        for j in range(res):
-#            x_list.append(interval_x[0] + j * dx)
-#            y_list.append(interval_y[0] + j * dy)
-#        x_data, y_data = pylab.meshgrid(np.array(x_list), np.array(y_list))
-#
-#        return np.array(data), x_data, y_data
-#
-#    def plot(self, interval_x, interval_y, res):
-#        data = self.map_out_pes(interval_x, interval_y, res)
-#        pylab.pcolor(data[1], data[2], data[0].T)
-#        pylab.xlim([interval_x[0],interval_x[1]])
-#        pylab.ylim([interval_y[0],interval_y[1]])
-#        pylab.axis('equal')
-
     ########################## THE LANDSCAPE #####################
 
     def _calculate_landscape(self, r, landscape):
