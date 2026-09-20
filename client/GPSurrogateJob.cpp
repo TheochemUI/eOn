@@ -269,8 +269,6 @@ Eigen::VectorXd make_target(Matter &m1, std::shared_ptr<Potential> true_pot) {
   m1.setPotential(true_pot);
   target(0) = m1.getPotentialEnergy();
   target.segment(1, ncols - 1) = m1.getForcesFreeV() * -1;
-  // EONC_LOG_TRACE("Generated Target:\n{}",
-  // fmt::streamed(target));
   return target;
 }
 std::pair<double, Eigen::VectorXd::Index>
@@ -286,9 +284,6 @@ getMaxUncertainty(const std::vector<std::shared_ptr<Matter>> &matobjs) {
   Eigen::VectorXd::Index maxIndex;
   double maxUnc{pathUncertainty.maxCoeff()};
   pathUncertainty.maxCoeff(&maxIndex);
-  // EONC_LOG_TRACE("Uncertainty along path
-  // is {}\nmax_index: {}, maxVal: {}",
-  //              fmt::streamed(pathUncertainty), maxIndex, maxUnc);
   return std::make_pair(maxUnc, maxIndex);
 }
 std::pair<Eigen::VectorXd, Eigen::VectorXd>
