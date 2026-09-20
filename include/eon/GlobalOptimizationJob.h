@@ -64,8 +64,6 @@ private:
   bool firstStep;
   std::vector<double> earr;
   std::string escapeResult;
-  // std::string moveFeedbackMethod;
-  // std::string decisionMethod;
   std::string decisionResult;
   std::string hoppingResult;
   std::ofstream monfile;
