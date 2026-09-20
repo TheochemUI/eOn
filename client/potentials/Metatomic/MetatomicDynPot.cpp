@@ -38,12 +38,15 @@ static EonMtaConfig config_from_params(const Parameters &params) {
 }
 
 MetatomicDynPot::MetatomicDynPot(const Parameters &params)
-    : eonc::Potential(PotType::METATOMIC) {
-  auto &loader = MetatomicLoader::instance();
-  loader.require_loaded();
+    : MetatomicDynPot(params, MetatomicLoader::instance()) {}
+
+MetatomicDynPot::MetatomicDynPot(const Parameters &params,
+                                 IMetatomicLoader &loader)
+    : eonc::Potential(PotType::METATOMIC), loader_{loader} {
+  loader_.require_loaded();
   std::array<char, 1024> err{};
   auto cfg = config_from_params(params);
-  m_handle = loader.create(&cfg, err.data(), err.size());
+  m_handle = loader_.create(&cfg, err.data(), err.size());
   if (!m_handle) {
     throw std::runtime_error(std::string("MetatomicDynPot: create failed: ") +
                              err.data());
@@ -52,7 +55,7 @@ MetatomicDynPot::MetatomicDynPot(const Parameters &params)
 
 MetatomicDynPot::~MetatomicDynPot() {
   if (m_handle) {
-    MetatomicLoader::instance().destroy(m_handle);
+    loader_.destroy(m_handle);
     m_handle = nullptr;
   }
 }
@@ -61,9 +64,8 @@ void MetatomicDynPot::force(long nAtoms, const double *positions,
                             const int *atomicNrs, double *forces,
                             double *energy, double *variance,
                             const double *box) {
-  auto &loader = MetatomicLoader::instance();
-  const int rc = loader.force(m_handle, nAtoms, positions, atomicNrs, forces,
-                              energy, variance, box);
+  const int rc = loader_.force(m_handle, nAtoms, positions, atomicNrs, forces,
+                               energy, variance, box);
   if (rc != 0) {
     throw std::runtime_error("MetatomicDynPot: eon_mta_pot_force failed rc=" +
                              std::to_string(rc));

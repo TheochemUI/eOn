@@ -760,6 +760,14 @@ endif
 
 eonclient_sources = ['ClientEON.cpp', 'CommandLine.cpp']
 
+# C ABI host always compiled so Catch2 can inject IMetatomicLoader without
+# the fat Torch-linked MetatomicPotential. Production still uses instance()
+# when -Dwith_metatomic=true builds libmetatomic_pot.
+eonclib_sources += [
+    'potentials/Metatomic/MetatomicLoader.cpp',
+    'potentials/Metatomic/MetatomicDynPot.cpp',
+]
+
 # ------------------- Options
 
 # gpr_optim (+ nested rgpot) must not land in the shared pot-plugin dep set:
@@ -1470,6 +1478,7 @@ if get_option('with_tests')
         ['test_ira_resource', 'IRAResourceTest.cpp', ''],
         ['test_artn_resource', 'ARTnResourceTest.cpp', ''],
         ['test_pot_registry', 'PotRegistryTest.cpp', ''],
+        ['test_metatomic_loader', 'MetatomicLoaderTest.cpp', ''],
         ['test_neb_lj', 'NEBMorseTest.cpp', 'neb_morse'],
         ['test_neb_regression', 'NEBRegressionTest.cpp', 'neb_morse'],
         ['test_dimer', 'DimerTest.cpp', 'neb_morse'],
