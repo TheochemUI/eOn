@@ -31,7 +31,10 @@
 
 namespace eonc {
 
-class ARTnResource {
+// ---------------------------------------------------------------------------
+// IARTnResource: injectable ABI. Production uses ARTnResource::instance().
+// ---------------------------------------------------------------------------
+class IARTnResource {
 public:
   // ARTn C API function pointer types (from artn.h)
   using artn_create_fn = int (*)();
@@ -59,40 +62,84 @@ public:
   /// C-string the caller must std::free. Zero leaves *cmsg null.
   using get_error_fn = int (*)(void **cmsg);
 
-  /// Singleton accessor (Meyer's pattern).
-  static ARTnResource &instance();
-
-  /// Global mutex to ensure only one thread accesses ARTn library at a time
+  /// Serializes access to the Fortran backend's shared global state.
   std::mutex library_mutex;
 
-  /// True if libartn was successfully loaded.
-  [[nodiscard]] bool is_loaded() const noexcept { return m_loaded; }
-
-  /// Throws std::runtime_error if libartn is not available.
-  void require_loaded() const;
-
-  // Function pointer accessors
-  artn_create_fn get_create_fn() const { return artn_create_; }
-  setup_artn_fn get_setup_fn() const { return setup_artn_; }
-  artn_fn get_artn_fn() const { return artn_; }
-  artn_destroy_fn get_destroy_fn() const { return artn_destroy_; }
-  set_param_fn get_set_param_fn() const { return set_param_; }
-  get_param_fn get_get_param_fn() const { return get_param_; }
-  get_runparam_fn get_get_runparam_fn() const { return get_runparam_; }
-  get_data_fn get_get_data_fn() const { return get_data_; }
-  print_caller_fn get_print_caller_fn() const { return print_caller_; }
-  artn_step_fn get_artn_step_fn() const { return artn_step_; }
+  virtual ~IARTnResource() = default;
+  virtual void require_loaded() = 0;
+  [[nodiscard]] virtual bool is_loaded() const noexcept = 0;
+  [[nodiscard]] virtual artn_create_fn get_create_fn() const = 0;
+  [[nodiscard]] virtual setup_artn_fn get_setup_fn() const = 0;
+  [[nodiscard]] virtual artn_fn get_artn_fn() const = 0;
+  [[nodiscard]] virtual artn_destroy_fn get_destroy_fn() const = 0;
+  [[nodiscard]] virtual set_param_fn get_set_param_fn() const = 0;
+  [[nodiscard]] virtual get_param_fn get_get_param_fn() const = 0;
+  [[nodiscard]] virtual get_runparam_fn get_get_runparam_fn() const = 0;
+  [[nodiscard]] virtual get_data_fn get_get_data_fn() const = 0;
+  [[nodiscard]] virtual print_caller_fn get_print_caller_fn() const = 0;
+  [[nodiscard]] virtual artn_step_fn get_artn_step_fn() const = 0;
   /// May be null on older pARTn builds that predate the C get_error
   /// wrapper; callers must null-check before dispatching.
-  get_error_fn get_get_error_fn() const { return get_error_; }
+  [[nodiscard]] virtual get_error_fn get_get_error_fn() const = 0;
 
-  /// Non-copyable, non-movable
+  IARTnResource(const IARTnResource &) = delete;
+  IARTnResource &operator=(const IARTnResource &) = delete;
+
+protected:
+  IARTnResource() = default;
+};
+
+// ---------------------------------------------------------------------------
+// ARTnResource: process-default loader (Meyer's singleton).
+// ---------------------------------------------------------------------------
+class ARTnResource : public IARTnResource {
+public:
+  /// Thread-safe singleton accessor (Meyer's pattern).
+  static ARTnResource &instance();
+
+  [[nodiscard]] bool is_loaded() const noexcept override { return m_loaded; }
+
+  /// Throws std::runtime_error if libartn is not available.
+  void require_loaded() override;
+
+  [[nodiscard]] artn_create_fn get_create_fn() const override {
+    return artn_create_;
+  }
+  [[nodiscard]] setup_artn_fn get_setup_fn() const override {
+    return setup_artn_;
+  }
+  [[nodiscard]] artn_fn get_artn_fn() const override { return artn_; }
+  [[nodiscard]] artn_destroy_fn get_destroy_fn() const override {
+    return artn_destroy_;
+  }
+  [[nodiscard]] set_param_fn get_set_param_fn() const override {
+    return set_param_;
+  }
+  [[nodiscard]] get_param_fn get_get_param_fn() const override {
+    return get_param_;
+  }
+  [[nodiscard]] get_runparam_fn get_get_runparam_fn() const override {
+    return get_runparam_;
+  }
+  [[nodiscard]] get_data_fn get_get_data_fn() const override {
+    return get_data_;
+  }
+  [[nodiscard]] print_caller_fn get_print_caller_fn() const override {
+    return print_caller_;
+  }
+  [[nodiscard]] artn_step_fn get_artn_step_fn() const override {
+    return artn_step_;
+  }
+  [[nodiscard]] get_error_fn get_get_error_fn() const override {
+    return get_error_;
+  }
+
   ARTnResource(const ARTnResource &) = delete;
   ARTnResource &operator=(const ARTnResource &) = delete;
 
 private:
   ARTnResource();
-  ~ARTnResource();
+  ~ARTnResource() override;
 
   bool m_loaded{false};
   dynlib::Handle m_handle{};

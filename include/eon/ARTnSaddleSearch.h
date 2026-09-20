@@ -21,6 +21,8 @@
 
 namespace eonc {
 
+class IARTnResource;
+
 /// Saddle search method using the Activation-Relaxation Technique nouveau.
 /// Wraps the pARTn Fortran library via its C API (artn.h).
 class ARTnSaddleSearch : public SaddleSearchMethod {
@@ -35,7 +37,10 @@ public:
                    const Parameters &paramsPassed);
   ~ARTnSaddleSearch() override;
 
+  /// Production: ARTnResource::instance() when built with WITH_ARTN.
   int run() override;
+  /// Test seam: injected resource, no process-default libartn load.
+  int run(IARTnResource &res);
   double getEigenvalue() override;
   AtomMatrix getEigenvector() override;
   std::string_view describeStatus(int status) const override;
