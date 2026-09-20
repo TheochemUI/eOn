@@ -749,6 +749,9 @@ eonclib_sources = [
     'IRACompare.cpp',
     # Runtime loader always compiled; compare path stubs without WITH_IRA.
     'libs/IRA/IRAResource.cpp',
+    # Runtime loader always compiled; saddle path stubs without WITH_ARTN.
+    'ARTnSaddleSearch.cpp',
+    'libs/ARTn/ARTnResource.cpp',
 ]
 
 if get_option('with_xtsci')
@@ -1220,8 +1223,6 @@ if get_option('with_artn')
     endif
     _deps += [artn_dep]
     _args += ['-DWITH_ARTN']
-    eonclib_sources += ['ARTnSaddleSearch.cpp']
-    eonclib_sources += ['libs/ARTn/ARTnResource.cpp']
 endif
 
 if get_option('with_ira')
@@ -1466,6 +1467,7 @@ if get_option('with_tests')
         ['test_helpers', 'HelperFunctionsTest.cpp', 'neb_morse'],
         ['test_lammps_loader', 'LammpsLoaderTest.cpp', ''],
         ['test_ira_resource', 'IRAResourceTest.cpp', ''],
+        ['test_artn_resource', 'ARTnResourceTest.cpp', ''],
         ['test_pot_registry', 'PotRegistryTest.cpp', ''],
         ['test_neb_lj', 'NEBMorseTest.cpp', 'neb_morse'],
         ['test_neb_regression', 'NEBRegressionTest.cpp', 'neb_morse'],

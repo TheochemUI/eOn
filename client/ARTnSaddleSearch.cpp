@@ -11,9 +11,7 @@
  */
 #include "eon/ARTnSaddleSearch.h"
 #include "eon/Eigen.h"
-#ifdef WITH_ARTN
 #include "eon/libs/ARTn/ARTnResource.h"
-#endif
 
 #include <cstdlib>
 #include <filesystem>
@@ -43,7 +41,15 @@ ARTnSaddleSearch::~ARTnSaddleSearch() {
 
 int ARTnSaddleSearch::run() {
 #ifdef WITH_ARTN
-  auto &res = get_artn_resource();
+  return run(get_artn_resource());
+#else
+  QUILL_LOG_ERROR(log, "ARTn support not compiled");
+  status = STATUS_BAD_ARTN_ERROR;
+  return status;
+#endif
+}
+
+int ARTnSaddleSearch::run(IARTnResource &res) {
   const int nat = matter->numberOfAtoms();
 
   if (mode.rows() != nat || mode.cols() != 3) {
@@ -419,12 +425,6 @@ int ARTnSaddleSearch::run() {
     res.get_destroy_fn()();
   }
   return status;
-
-#else
-  QUILL_LOG_ERROR(log, "ARTn support not compiled");
-  status = STATUS_BAD_ARTN_ERROR;
-  return status;
-#endif
 }
 
 double ARTnSaddleSearch::getEigenvalue() {
