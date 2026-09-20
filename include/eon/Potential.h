@@ -28,17 +28,23 @@ protected:
   PotType ptype;
 
 private:
+  IPotRegistry &registry_;
   uint64_t m_registry_id;
-  PotRegistry::TimePoint m_created_at;
+  IPotRegistry::TimePoint m_created_at;
   bool force_serial_{false};
 
 public:
   std::atomic<size_t> forceCallCounter;
 
-  // Main Constructor (no Parameters dependency)
+  /// Production: process-default PotRegistry::get().
   explicit Potential(PotType a_ptype)
-      : ptype{a_ptype}, m_registry_id{PotRegistry::get().on_created(a_ptype)},
-        m_created_at{PotRegistry::Clock::now()}, forceCallCounter{0} {}
+      : Potential(a_ptype, PotRegistry::get()) {}
+
+  /// Test seam: injected registry, no process-default get() counters.
+  Potential(PotType a_ptype, IPotRegistry &registry)
+      : ptype{a_ptype}, registry_{registry},
+        m_registry_id{registry.on_created(a_ptype)},
+        m_created_at{IPotRegistry::Clock::now()}, forceCallCounter{0} {}
 
   // Out-of-line in eoncbase (PotentialParams.cpp) so shared plugins
   // that link only eoncbase get the symbols. This header only
@@ -47,8 +53,8 @@ public:
   explicit Potential(const Parameters &a_params);
 
   virtual ~Potential() {
-    PotRegistry::get().on_destroyed(m_registry_id, ptype, forceCallCounter,
-                                    m_created_at);
+    registry_.on_destroyed(m_registry_id, ptype, forceCallCounter,
+                           m_created_at);
   }
 
   // Does not take into account the fixed / free atoms
@@ -156,7 +162,7 @@ public:
       if (variances)
         variances[i] = var;
       forceCallCounter++;
-      PotRegistry::get().on_force_call(ptype);
+      registry_.on_force_call(ptype);
     }
   }
 };

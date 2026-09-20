@@ -24,6 +24,8 @@ class DummyPotential : public Potential {
 public:
   DummyPotential(PotType pt, const Parameters &p)
       : Potential(pt, p) {}
+  DummyPotential(PotType pt, IPotRegistry &registry)
+      : Potential(pt, registry) {}
 
   void force(long nAtoms, const double *positions, const int *atomicNrs,
              double *forces, double *energy, double *variance,
@@ -39,6 +41,39 @@ TEST_CASE("PotRegistry get returns a stable process-lifetime instance",
   auto &a = PotRegistry::get();
   auto &b = PotRegistry::get();
   REQUIRE(&a == &b);
+}
+
+TEST_CASE("Dummy Potential against a local registry does not touch get() "
+          "counters",
+          "[PotRegistry][inject]") {
+  auto &proc = PotRegistry::get();
+  const auto alive_before = proc.type_alive(PotType::LJ);
+  const auto type_force_before = proc.type_force_calls(PotType::LJ);
+  const auto total_before = proc.total_force_calls();
+
+  PotRegistry local;
+  {
+    DummyPotential pot(PotType::LJ, local);
+    REQUIRE(local.type_alive(PotType::LJ) == 1);
+    REQUIRE(proc.type_alive(PotType::LJ) == alive_before);
+
+    AtomMatrix pos(2, 3);
+    pos << 0.0, 0.0, 0.0, 1.5, 0.0, 0.0;
+    VectorXi atmnrs(2);
+    atmnrs << 79, 79;
+    Matrix3d box = Matrix3d::Identity() * 10.0;
+    pot.get_ef(pos, atmnrs, box);
+
+    REQUIRE(pot.forceCallCounter == 1);
+    REQUIRE(local.type_force_calls(PotType::LJ) == 1);
+    REQUIRE(local.total_force_calls() == 1);
+    REQUIRE(proc.type_force_calls(PotType::LJ) == type_force_before);
+    REQUIRE(proc.total_force_calls() == total_before);
+  }
+  REQUIRE(local.type_alive(PotType::LJ) == 0);
+  REQUIRE(proc.type_alive(PotType::LJ) == alive_before);
+  REQUIRE(proc.type_force_calls(PotType::LJ) == type_force_before);
+  REQUIRE(proc.total_force_calls() == total_before);
 }
 
 TEST_CASE("PotRegistry tracks creation and destruction",
