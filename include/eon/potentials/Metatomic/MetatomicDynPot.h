@@ -9,13 +9,18 @@
 #pragma once
 
 #include "eon/Potential.h"
-#include "metatomic_c_abi.h"
+#include "eon/potentials/Metatomic/metatomic_c_abi.h"
 
 namespace eonc {
 
+class IMetatomicLoader;
+
 class MetatomicDynPot : public eonc::Potential {
 public:
+  /// Production: process-default MetatomicLoader::instance().
   explicit MetatomicDynPot(const eonc::Parameters &params);
+  /// Test seam: injected loader, no process-default libmetatomic_pot load.
+  MetatomicDynPot(const eonc::Parameters &params, IMetatomicLoader &loader);
   ~MetatomicDynPot() override;
 
   void force(long nAtoms, const double *positions, const int *atomicNrs,
@@ -28,6 +33,7 @@ public:
   }
 
 private:
+  IMetatomicLoader &loader_;
   EonMtaPot *m_handle{nullptr};
 };
 
