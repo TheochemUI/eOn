@@ -11,7 +11,6 @@ import logging
 import logging.handlers
 logger = logging.getLogger('akmc')
 import numpy
-from builtins import input
 from pathlib import Path
 
 numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
