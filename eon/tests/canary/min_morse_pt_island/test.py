@@ -7,8 +7,6 @@ from pathlib import Path
 test_path = str(Path(__file__).resolve().parent)
 test_name = Path(test_path).name
 
-# this first command will echo the output to stdout as well
-#os.system("../../client/client | tee minimization.txt")
 os.system("../../../../client/client > minimization.txt")
 
 for line in open("minimization.txt"):
