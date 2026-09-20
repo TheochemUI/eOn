@@ -229,7 +229,7 @@ class Superbasin:
 
     def get_confidence(self):
         return min(state.get_confidence(self)
-                   for state in self._get_filtered_states()) #self.states)
+                   for state in self._get_filtered_states())
 
     def get_lowest_confidence_state(self):
         # If there are several states with equal confidence, order by

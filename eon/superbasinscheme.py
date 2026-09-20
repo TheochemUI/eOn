@@ -181,7 +181,6 @@ class TransitionCounting(SuperbasinScheme):
 
         if start_count[end_state] >= self.num_transitions:
             logger.debug( "Making basin ....")
-            # self.make_basin([start_state, end_state])
             self.make_basin_from_sets(start_state, end_state)
 
     def write_data(self):
