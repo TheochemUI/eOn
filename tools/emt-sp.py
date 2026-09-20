@@ -74,7 +74,6 @@ for i in range(world.size):
 my_potential_rank = world.rank-first_potential_rank
 
 my_client_rank = client_ranks[my_potential_rank/potential_group_size]
-print("pot: rank: %i my_client_rank: %i" % (world.rank, my_client_rank))
 
 for i in range(clients):
     s = potential_group_size
