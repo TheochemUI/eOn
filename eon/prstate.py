@@ -52,15 +52,9 @@ class PRState(state.State):
             logger.exception("Reactant or product has incorrect format")
             return None
 
-        # Update the search result table.
-        #self.append_search_result(result, "good-%d" % self.get_num_procs())
-
         # Content-addressed id from product geometry (not table length).
         product_bytes = result['product.con'].getvalue()
         id = self.allocate_process_id(b"pr-product", product_bytes)
-
-        # Keep track of the number of searches, Ns.
-        #self.inc_proc_repeat_count(id)
 
         # Move the relevant files into the procdata directory.
         for path, content in ((self.proc_reactant_path(id), result['reactant.con'].getvalue()),
