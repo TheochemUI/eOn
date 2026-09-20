@@ -25,7 +25,6 @@ public:
 
   MatrixXd getHessian(Matter *matterIn, const VectorXi &atomsIn);
   VectorXd getFreqs(Matter *matterIn, const VectorXi &atomsIn);
-  //    VectorXd getModes(Matter *matterIn, VectorXi atomsIn);
   VectorXd removeZeroFreqs(const VectorXd &freqs);
 
 private:

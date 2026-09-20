@@ -31,10 +31,7 @@ private:
   void saveData();
 
   size_t forceCalls{0};
-  //        std::shared_ptr<Matter>*replica;
   std::shared_ptr<Matter> pos;
-  //        Dynamics **replicaDynamics;
-  //        double *replicaTemperature;
   std::vector<std::string> returnFiles;
   eonc::log::Scoped log;
 };
