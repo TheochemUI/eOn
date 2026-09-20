@@ -134,12 +134,13 @@ public:
     return get_error_;
   }
 
+  ~ARTnResource() override;
   ARTnResource(const ARTnResource &) = delete;
   ARTnResource &operator=(const ARTnResource &) = delete;
 
 private:
   ARTnResource();
-  ~ARTnResource() override;
+  friend class Runtime;
 
   bool m_loaded{false};
   dynlib::Handle m_handle{};

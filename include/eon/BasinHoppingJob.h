@@ -19,8 +19,9 @@ namespace eonc {
 
 class BasinHoppingJob : public Job {
 public:
-  BasinHoppingJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)),
+  BasinHoppingJob(std::unique_ptr<Parameters> parameters,
+                  Runtime rt = Runtime{})
+      : Job(std::move(parameters), std::move(rt)),
         current{std::make_shared<Matter>(pot, params)},
         trial{std::make_shared<Matter>(pot, params)}, fcalls{0} {}
   ~BasinHoppingJob(void) = default;

@@ -100,12 +100,13 @@ public:
     return libira_get_nmax_;
   }
 
+  ~IRAResource() override;
   IRAResource(const IRAResource &) = delete;
   IRAResource &operator=(const IRAResource &) = delete;
 
 private:
   IRAResource();
-  ~IRAResource() override;
+  friend class Runtime;
 
   bool m_loaded{false};
   dynlib::Handle m_handle{};

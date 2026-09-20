@@ -104,12 +104,13 @@ public:
   [[noreturn]] void throw_not_found(const char *lib_base,
                                     const char *description) const override;
 
+  ~PluginLoader() override;
   PluginLoader(const PluginLoader &) = delete;
   PluginLoader &operator=(const PluginLoader &) = delete;
 
 private:
   PluginLoader();
-  ~PluginLoader() override;
+  friend class Runtime;
 
   dynlib::Handle open_lib(const char *lib_base) override;
   std::vector<std::string> lib_names(const char *lib_base) const;

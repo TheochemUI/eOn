@@ -17,8 +17,8 @@ namespace eonc {
 
 class HessianJob : public Job {
 public:
-  HessianJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {}
+  HessianJob(std::unique_ptr<Parameters> parameters, Runtime rt = Runtime{})
+      : Job(std::move(parameters), std::move(rt)) {}
   ~HessianJob(void) = default;
   std::vector<std::string> run(void);
 };

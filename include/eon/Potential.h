@@ -22,6 +22,22 @@
 namespace eonc {
 
 class Parameters;
+class Runtime;
+
+/// RAII: Potential default construction records on this registry instead of
+/// PotRegistry::get(). Job/makePotential(Runtime&) uses this so the
+/// production path does not touch the process singleton.
+class PotentialConstructionScope {
+public:
+  explicit PotentialConstructionScope(IPotRegistry &registry);
+  ~PotentialConstructionScope();
+  PotentialConstructionScope(const PotentialConstructionScope &) = delete;
+  PotentialConstructionScope &
+  operator=(const PotentialConstructionScope &) = delete;
+
+private:
+  IPotRegistry *prev_;
+};
 
 class Potential {
 protected:
@@ -36,9 +52,8 @@ private:
 public:
   std::atomic<size_t> forceCallCounter;
 
-  /// Production: process-default PotRegistry::get().
-  explicit Potential(PotType a_ptype)
-      : Potential(a_ptype, PotRegistry::get()) {}
+  /// Production default: construction-scope registry, else PotRegistry::get().
+  explicit Potential(PotType a_ptype);
 
   /// Test seam: injected registry, no process-default get() counters.
   Potential(PotType a_ptype, IPotRegistry &registry)
@@ -171,6 +186,8 @@ namespace helpers {
 std::shared_ptr<Potential> makePotential(const Parameters &params);
 std::shared_ptr<Potential> makePotential(PotType ptype,
                                          const Parameters &params);
+std::shared_ptr<Potential>
+makePotential(PotType ptype, const Parameters &params, Runtime &runtime);
 } // namespace helpers
 
 } // namespace eonc

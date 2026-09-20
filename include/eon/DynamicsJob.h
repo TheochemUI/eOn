@@ -19,8 +19,8 @@ namespace eonc {
 class DynamicsJob : public Job {
 
 public:
-  DynamicsJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {}
+  DynamicsJob(std::unique_ptr<Parameters> parameters, Runtime rt = Runtime{})
+      : Job(std::move(parameters), std::move(rt)) {}
   ~DynamicsJob(void) = default;
   std::vector<std::string> run(void);
   std::vector<std::string> returnFiles;

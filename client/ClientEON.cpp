@@ -22,8 +22,8 @@
 #include "eon/HelperFunctions.h"
 #include "eon/Job.h"
 #include "eon/Parameters.h"
-#include "eon/PotRegistry.h"
 #include "eon/Potential.h"
+#include "eon/Runtime.h"
 #include "version.h"
 #include <cstdlib>
 #include <exception>
@@ -435,8 +435,9 @@ static int eonClientMain(int argc, char **argv) {
 
       // Determine what type of job we are running according to the parameters
       // file.
+      eonc::Runtime rt;
       auto job = eonc::helpers::makeJob(
-          std::make_unique<eonc::Parameters>(parameters));
+          std::make_unique<eonc::Parameters>(parameters), std::move(rt));
       if (job == nullptr) {
         QUILL_LOG_ERROR(logger, "error: Unknown job: {}",
                         std::string{magic_enum::enum_name<eonc::JobType>(
@@ -459,8 +460,9 @@ static int eonClientMain(int argc, char **argv) {
         return EXIT_FAILURE;
       }
 
-      job.reset(); // Force Potential destruction so PotRegistry records entries
-      eonc::PotRegistry::get().write_summary();
+      job->releasePotential();
+      job->pots().write_summary();
+      job.reset();
       filenames.push_back(std::string("_potcalls.json"));
       filenames.push_back(std::string("client_quill.log"));
       filenames.push_back(std::string("client_traceback.log"));

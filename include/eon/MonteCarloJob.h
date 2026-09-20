@@ -19,8 +19,8 @@ namespace eonc {
 
 class MonteCarloJob : public Job {
 public:
-  MonteCarloJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {}
+  MonteCarloJob(std::unique_ptr<Parameters> parameters, Runtime rt = Runtime{})
+      : Job(std::move(parameters), std::move(rt)) {}
   ~MonteCarloJob(void) = default;
   std::vector<std::string> run(void);
 

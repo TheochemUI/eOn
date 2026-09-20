@@ -18,8 +18,8 @@ namespace eonc {
 
 class PrefactorJob : public Job {
 public:
-  PrefactorJob(std::unique_ptr<Parameters> parameters)
-      : Job(std::move(parameters)) {}
+  PrefactorJob(std::unique_ptr<Parameters> parameters, Runtime rt = Runtime{})
+      : Job(std::move(parameters), std::move(rt)) {}
   ~PrefactorJob() = default;
   std::vector<std::string> run();
   // Ugly but OK for now I guess

@@ -14,7 +14,7 @@
 namespace eonc {
 
 using JobFactory =
-    std::function<std::unique_ptr<Job>(std::unique_ptr<Parameters>)>;
+    std::function<std::unique_ptr<Job>(std::unique_ptr<Parameters>, Runtime)>;
 
 void registerJob(JobType type, JobFactory factory);
 // Pulls Job.cpp into static links so the registrars run (MSVC).
