@@ -389,7 +389,6 @@ class akmcgui(atomview.atomview):
 
 
 if __name__ == "__main__":
-    print(os.getcwd())
     pid = os.fork()
     if pid:
         os._exit(0)
