@@ -50,8 +50,8 @@ namespace {
   const bool eon_reg_##CLS = [] {                                              \
     eonc::registerJob(                                                         \
         eonc::JobType::TYPE,                                                   \
-        [](std::unique_ptr<eonc::Parameters> p, eonc::Runtime rt) {            \
-          return std::make_unique<eonc::CLS>(std::move(p), std::move(rt));     \
+        [](std::unique_ptr<eonc::Parameters> p, eonc::Runtime &rt) {           \
+          return std::make_unique<eonc::CLS>(std::move(p), rt);                \
         });                                                                    \
     return true;                                                               \
   }()

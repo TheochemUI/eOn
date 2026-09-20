@@ -437,7 +437,7 @@ static int eonClientMain(int argc, char **argv) {
       // file.
       eonc::Runtime rt;
       auto job = eonc::helpers::makeJob(
-          std::make_unique<eonc::Parameters>(parameters), std::move(rt));
+          std::make_unique<eonc::Parameters>(parameters), rt);
       if (job == nullptr) {
         QUILL_LOG_ERROR(logger, "error: Unknown job: {}",
                         std::string{magic_enum::enum_name<eonc::JobType>(
@@ -461,7 +461,7 @@ static int eonClientMain(int argc, char **argv) {
       }
 
       job->releasePotential();
-      job->pots().write_summary();
+      rt.pots().write_summary();
       job.reset();
       filenames.push_back(std::string("_potcalls.json"));
       filenames.push_back(std::string("client_quill.log"));

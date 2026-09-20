@@ -18,9 +18,8 @@ namespace eonc {
 
 class StructureComparisonJob : public Job {
 public:
-  StructureComparisonJob(std::unique_ptr<Parameters> parameters,
-                         Runtime rt = Runtime{})
-      : Job(std::move(parameters), std::move(rt)) {}
+  StructureComparisonJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
+      : Job(std::move(parameters), rt) {}
   ~StructureComparisonJob(void) = default;
   std::vector<std::string> run(void);
 };

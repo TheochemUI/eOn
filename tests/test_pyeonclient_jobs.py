@@ -22,6 +22,30 @@ def test_make_job_minimization():
     assert job.get_type() == pyec.JobType.Minimization
 
 
+def test_session_make_job_and_summary(tmp_path):
+    """Session + make_job keep_alive: Job holds Session; summary uses session.pots."""
+    import gc
+    import weakref
+
+    params = pyec.Parameters()
+    params.job = pyec.JobType.Minimization
+    params.potential = pyec.PotType.LJ
+    params.quiet = True
+    session = pyec.Session()
+    wr = weakref.ref(session)
+    job = pyec.make_job(params, session)
+    assert job.get_type() == pyec.JobType.Minimization
+    del session
+    gc.collect()
+    assert wr() is not None
+    out = tmp_path / "_potcalls.json"
+    path = wr().write_potcall_summary(str(out))
+    assert path == str(out)
+    assert out.is_file()
+    del job
+    gc.collect()
+
+
 def test_client_steps_are_bound():
     """Each ClientEON post-job step is a real binding, not only a wrapper."""
     assert callable(pyec.write_potcall_summary)

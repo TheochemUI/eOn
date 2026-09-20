@@ -33,8 +33,7 @@ Typical job path (any JobType including NEB)::
 
     params = load_parameters("config.ini")
     t0 = steady_clock_now()
-    files = run_job(params)          # make_job + Job.run + drop Job
-    write_potcall_summary()
+    files = run_job(params)          # Session + make_job + Job.run + summary
     append_timing("results.dat", t0)
 
 Matter path (minimization without Job wrapper)::
@@ -57,7 +56,6 @@ See the user guide: https://eondocs.org/user_guide/pyeonclient.html
 
 from __future__ import annotations
 
-import os
 from contextlib import chdir
 from pathlib import Path
 from typing import Any, Sequence
@@ -69,12 +67,12 @@ from pyeonclient._core import (
     Potential,
     PotType,
     RunStatus,
+    Session,
     append_results_timing,
     get_process_times,
     make_job,
     make_potential,
     steady_clock_now,
-    write_potcall_summary,
 )
 
 
@@ -102,16 +100,18 @@ def write_neb_results(
 
 
 def run_job(params: Parameters) -> list[str]:
-    """Step: ``make_job`` → ``Job.run`` → destroy Job (Potential released).
+    """Step: ``Session`` → ``make_job`` → ``Job.run`` → drop Job → summary.
 
-    Does not write potcall summary or timing; call those next.
+    Writes ``_potcalls.json`` from the Session after the Job is destroyed.
+    Does not append timing; call that next.
     """
-    job = make_job(params)
+    session = Session()
+    job = make_job(params, session)
     try:
         return list(job.run())
     finally:
-        # Explicit drop so PotRegistry sees destruction before summary.
         del job
+        session.write_potcall_summary()
 
 
 def append_timing(
@@ -178,7 +178,8 @@ def minimize_workdir(
     with chdir(work):
         t0 = steady_clock_now()
         params = load_parameters("config.ini")
-        pot = make_potential(params.potential, params)
+        session = Session()
+        pot = make_potential(params.potential, params, session)
         matter = Matter(pot, params)
         from pyeonclient._core import io_ok
 
@@ -204,7 +205,7 @@ def minimize_workdir(
         files.append("results.dat")
         del matter
         del pot
-        write_potcall_summary("_potcalls.json")
+        session.write_potcall_summary("_potcalls.json")
         files.append("_potcalls.json")
         append_timing("results.dat", t0)
     return files
@@ -216,9 +217,10 @@ def run_job_in_directory(
 ) -> list[str]:
     """Compose ClientEON job steps in *workdir* (any job type, including NEB).
 
-    Steps: (optional load config.ini) → run_job → write_potcall_summary →
-    append_timing. Prefer :func:`minimize_workdir` when you want Matter.relax
-    control rather than MinimizationJob.
+    Steps: (optional load config.ini) → Session + make_job → run →
+    Session.write_potcall_summary → append_timing. Prefer
+    :func:`minimize_workdir` when you want Matter.relax control rather than
+    MinimizationJob.
     """
     work = Path(workdir).resolve()
     with chdir(work):
@@ -229,7 +231,6 @@ def run_job_in_directory(
         if ini.is_file():
             params.load(str(ini))
         files = run_job(params)
-        write_potcall_summary("_potcalls.json")
         if "_potcalls.json" not in files:
             files.append("_potcalls.json")
         append_timing("results.dat", t0)
@@ -260,7 +261,7 @@ def neb_workdir(
         find_extrema if GOOD
         neb_write_results
         del neb / pot
-        write_potcall_summary
+        session.write_potcall_summary
         append_timing
     """
     from pyeonclient._core import (
@@ -275,7 +276,8 @@ def neb_workdir(
     with chdir(work):
         t0 = steady_clock_now()
         params = load_parameters("config.ini")
-        pot = make_potential(params.potential, params)
+        session = Session()
+        pot = make_potential(params.potential, params, session)
 
         initial = Matter(pot, params)
         final = Matter(pot, params)
@@ -329,7 +331,7 @@ def neb_workdir(
         del initial
         del final
         del pot
-        write_potcall_summary("_potcalls.json")
+        session.write_potcall_summary("_potcalls.json")
         files.append("_potcalls.json")
         append_timing("results.dat", t0)
     return files
@@ -363,7 +365,6 @@ def rgpot_metatomic_workdir(
         # Prefer Job path (RgpotPot) over Matter.relax (native Metatomic only)
         t0 = steady_clock_now()
         files = run_job(params)
-        write_potcall_summary("_potcalls.json")
         if "_potcalls.json" not in files:
             files.append("_potcalls.json")
         append_timing("results.dat", t0)
@@ -390,7 +391,6 @@ def rgpot_metatomic_neb_workdir(
             params.metatomic_model_path = p
         t0 = steady_clock_now()
         files = run_job(params)
-        write_potcall_summary("_potcalls.json")
         if "_potcalls.json" not in files:
             files.append("_potcalls.json")
         append_timing("results.dat", t0)

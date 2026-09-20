@@ -53,7 +53,7 @@ GPSurrogateJob::runFromMatter(std::shared_ptr<Matter> initial,
   auto true_params = std::make_shared<Parameters>(params);
   ParametersLoadAccess::main_options(*true_params).job = params.sub_job;
   auto true_job = eonc::helpers::makeJob(
-      std::make_unique<Parameters>(*true_params), Runtime{});
+      std::make_unique<Parameters>(*true_params), *runtime_);
   auto pyparams = std::make_shared<Parameters>(params);
   ParametersLoadAccess::potential_options(*pyparams).potential =
       PotType::CatLearn;

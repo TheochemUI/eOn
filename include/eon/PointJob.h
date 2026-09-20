@@ -19,8 +19,8 @@ namespace eonc {
 
 class PointJob : public Job {
 public:
-  PointJob(std::unique_ptr<Parameters> parameters, Runtime rt = Runtime{})
-      : Job(std::move(parameters), std::move(rt)) {}
+  PointJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
+      : Job(std::move(parameters), rt) {}
   ~PointJob(void) = default;
   std::vector<std::string> run(void);
 
