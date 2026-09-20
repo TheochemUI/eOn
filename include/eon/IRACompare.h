@@ -18,6 +18,8 @@
 
 namespace eonc {
 
+class IIRAResource;
+
 /// C++ wrapper for the IRA (Iterative Rotations and Assignments) library.
 /// Provides structure comparison via CShDA and symmetry detection via SOFI.
 class IRACompare {
@@ -47,18 +49,27 @@ public:
 
   /// Same as match(), from packed (n,3) row-major coordinates and Z arrays.
   /// Used by the Python server so rot_match does not need a dummy Potential.
+  /// Production: IRAResource::instance() when built with WITH_IRA.
   static MatchResult matchArrays(int nat1, const int *typ1, const double *pos1,
                                  int nat2, const int *typ2, const double *pos2,
                                  double distThreshold);
+  /// Test seam: injected resource, no process-default libira load.
+  static MatchResult matchArrays(int nat1, const int *typ1, const double *pos1,
+                                 int nat2, const int *typ2, const double *pos2,
+                                 double distThreshold, IIRAResource &res);
 
   /// Atom assignment under periodic boundary conditions (CShDA only, no
   /// rotation/SVD). Returns permutation and per-atom distances.
   static MatchResult matchPBC(const Matter &m1, const Matter &m2,
                               double distThreshold);
+  static MatchResult matchPBC(const Matter &m1, const Matter &m2,
+                              double distThreshold, IIRAResource &res);
 
   /// Find all symmetry operations of a structure (SOFI algorithm).
   static SymmetryResult findSymmetry(const Matter &m, double threshold,
                                      bool prescreenIh = true);
+  static SymmetryResult findSymmetry(const Matter &m, double threshold,
+                                     bool prescreenIh, IIRAResource &res);
 
   /// Rigid-align + permute reactant onto product. Returns the match
   /// (error != 0 means reactant was left unchanged).

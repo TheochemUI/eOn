@@ -11,13 +11,14 @@
  */
 #include "eon/IRACompare.h"
 #include "eon/Eigen.h"
+#include "eon/libs/IRA/IRAResource.h"
 #include <cstdlib>
+#include <mutex>
 
 #ifdef WITH_IRA
 extern "C" {
 #include "iralib_interf.h"
 }
-#include "eon/libs/IRA/IRAResource.h" // Include IRA resource after IRA interfaces are defined
 #endif
 
 namespace eonc {
@@ -48,11 +49,21 @@ IRACompare::MatchResult IRACompare::matchArrays(int nat1, const int *typ1,
                                                 const int *typ2,
                                                 const double *pos2,
                                                 double distThreshold) {
-  MatchResult result;
 #ifdef WITH_IRA
-  auto &res = get_ira_resource();
+  return matchArrays(nat1, typ1, pos1, nat2, typ2, pos2, distThreshold,
+                     get_ira_resource());
+#else
+  MatchResult result;
+  result.error = -1;
+  return result;
+#endif
+}
 
-  // Lock the library for the duration of this specific comparison
+IRACompare::MatchResult
+IRACompare::matchArrays(int nat1, const int *typ1, const double *pos1, int nat2,
+                        const int *typ2, const double *pos2,
+                        double distThreshold, IIRAResource &res) {
+  MatchResult result;
   std::lock_guard<std::mutex> lock(res.library_mutex);
 
   try {
@@ -124,19 +135,24 @@ IRACompare::MatchResult IRACompare::matchArrays(int nat1, const int *typ1,
     std::free(tr_ptr);
   if (perm_ptr != perm_buf.data())
     std::free(perm_ptr);
-#else
-  result.error = -1;
-#endif
   return result;
 }
 
 IRACompare::MatchResult IRACompare::matchPBC(const Matter &m1, const Matter &m2,
                                              double distThreshold) {
-  MatchResult result;
 #ifdef WITH_IRA
-  auto &res = get_ira_resource();
+  return matchPBC(m1, m2, distThreshold, get_ira_resource());
+#else
+  MatchResult result;
+  result.error = -1;
+  return result;
+#endif
+}
 
-  // Lock the library for the duration of this specific comparison
+IRACompare::MatchResult IRACompare::matchPBC(const Matter &m1, const Matter &m2,
+                                             double distThreshold,
+                                             IIRAResource &res) {
+  MatchResult result;
   std::lock_guard<std::mutex> lock(res.library_mutex);
 
   try {
@@ -196,19 +212,25 @@ IRACompare::MatchResult IRACompare::matchPBC(const Matter &m1, const Matter &m2,
   result.rotation = Eigen::Matrix3d::Identity();
   result.translation = Eigen::Vector3d::Zero();
   result.error = 0;
-#else
-  result.error = -1;
-#endif
   return result;
 }
 
 IRACompare::SymmetryResult
 IRACompare::findSymmetry(const Matter &m, double threshold, bool prescreenIh) {
-  SymmetryResult result;
 #ifdef WITH_IRA
-  auto &res = get_ira_resource();
+  return findSymmetry(m, threshold, prescreenIh, get_ira_resource());
+#else
+  SymmetryResult result;
+  result.error = -1;
+  return result;
+#endif
+}
 
-  // Lock the library for the duration of this specific symmetry analysis
+IRACompare::SymmetryResult IRACompare::findSymmetry(const Matter &m,
+                                                    double threshold,
+                                                    bool prescreenIh,
+                                                    IIRAResource &res) {
+  SymmetryResult result;
   std::lock_guard<std::mutex> lock(res.library_mutex);
 
   try {
@@ -310,9 +332,6 @@ IRACompare::findSymmetry(const Matter &m, double threshold, bool prescreenIh) {
     std::free(pg);
   if (prin_ax != prin_ax_buf.data())
     std::free(prin_ax);
-#else
-  result.error = -1;
-#endif
   return result;
 }
 
