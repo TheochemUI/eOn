@@ -57,10 +57,10 @@ NB_MODULE(_core, m) {
 
   eonc::pybind::bind_enums(m);
   eonc::pybind::bind_parameters(m);
+  eonc::pybind::bind_jobs(m);
   eonc::pybind::bind_potential(m);
   eonc::pybind::bind_matter(m);
   eonc::pybind::bind_ase(m);
-  eonc::pybind::bind_jobs(m);
   eonc::pybind::bind_neb(m);
   eonc::pybind::bind_eigenmode(m);
   eonc::pybind::bind_saddle(m);

@@ -33,6 +33,20 @@ namespace eonc::pybind {
 namespace nb = nanobind;
 
 void bind_jobs(nb::module_ &m) {
+  nb::class_<eonc::Runtime>(m, "Session",
+                            "Long-lived composition root (owns PotRegistry and "
+                            "dlopen loaders). Jobs/Potentials borrow it.")
+      .def(nb::init<>())
+      .def(
+          "write_potcall_summary",
+          [](eonc::Runtime &self, const std::string &path) {
+            self.pots().write_summary(path);
+            return path;
+          },
+          nb::arg("path") = "_potcalls.json",
+          "Write this Session's force-call summary (call after Job/Potential "
+          "are destroyed so tallies are recorded).");
+
   nb::class_<eonc::Job>(m, "Job",
                         "Abstract eOn client job (Minimization, NEB, …)")
       .def("get_type", &eonc::Job::getType)
@@ -46,23 +60,44 @@ void bind_jobs(nb::module_ &m) {
           },
           "Run this job in the *current* working directory. Writes job "
           "artifacts (min.con / neb.dat / results.dat body). Does **not** "
-          "write _potcalls.json or timing — call write_potcall_summary and "
-          "append_results_timing after destroying the Job.");
+          "write _potcalls.json or timing — call Session.write_potcall_summary "
+          "and append_results_timing after destroying the Job.");
 
   m.def(
       "make_job",
       [](eonc::Parameters &params) {
-        auto job = eonc::helpers::makeJob(
-            std::make_unique<eonc::Parameters>(params), eonc::Runtime{});
+        auto job =
+            eonc::helpers::makeJob(std::make_unique<eonc::Parameters>(params));
         if (!job)
           throw std::runtime_error("make_job: unknown or unsupported job type");
         return std::shared_ptr<eonc::Job>(std::move(job));
       },
       nb::arg("parameters"),
-      "Construct a Job from Parameters.main.job (copies Parameters + builds "
-      "Potential).");
+      "Construct a Job from Parameters.main.job (one-shot; Job owns Runtime).");
+
+  m.def(
+      "make_job",
+      [](eonc::Parameters &params, eonc::Runtime &session) {
+        auto job = eonc::helpers::makeJob(
+            std::make_unique<eonc::Parameters>(params), session);
+        if (!job)
+          throw std::runtime_error("make_job: unknown or unsupported job type");
+        return std::shared_ptr<eonc::Job>(std::move(job));
+      },
+      nb::arg("parameters"), nb::arg("session"), nb::keep_alive<0, 2>(),
+      "Construct a Job that borrows Session. Job keeps Session alive.");
 
   // --- ClientEON post-job steps (explicit, not buried in a black box) ---
+
+  m.def(
+      "write_potcall_summary",
+      [](eonc::Runtime &session, const std::string &path) {
+        session.pots().write_summary(path);
+        return path;
+      },
+      nb::arg("session"), nb::arg("path") = "_potcalls.json",
+      "Write Session force-call summary (prefer "
+      "Session.write_potcall_summary).");
 
   m.def(
       "write_potcall_summary",
@@ -71,8 +106,8 @@ void bind_jobs(nb::module_ &m) {
         return path;
       },
       nb::arg("path") = "_potcalls.json",
-      "Write PotRegistry force-call summary (call after Job/Potential are "
-      "destroyed so tallies are recorded).");
+      "Deprecated: process-singleton PotRegistry::get() summary. Prefer "
+      "Session.write_potcall_summary.");
 
   m.def(
       "get_process_times",

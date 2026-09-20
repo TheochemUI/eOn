@@ -25,8 +25,8 @@ namespace eonc {
 
 class GPSurrogateJob : public Job {
 public:
-  GPSurrogateJob(std::unique_ptr<Parameters> parameters, Runtime rt = Runtime{})
-      : Job(std::move(parameters), std::move(rt)) {
+  GPSurrogateJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
+      : Job(std::move(parameters), rt) {
     eonc::ensure_interpreter();
 #ifndef NDEBUG
     py::module_ sys_mod = py::module_::import("sys");

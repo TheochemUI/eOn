@@ -6,6 +6,7 @@
 #include "eon/JobRegistry.h"
 
 #include <map>
+#include <memory>
 #include <stdexcept>
 
 namespace eonc {
@@ -23,8 +24,10 @@ void registerJob(JobType type, JobFactory factory) {
 
 namespace eonc::helpers {
 
-std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params,
-                             Runtime runtime) {
+namespace {
+
+std::unique_ptr<Job> makeJobFromFactory(std::unique_ptr<Parameters> params,
+                                        Runtime &runtime) {
   eonc::forceJobRegistration();
   const JobType type = params->main_options().job;
   auto &t = eonc::jobTable();
@@ -32,7 +35,35 @@ std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params,
   if (it == t.end()) {
     throw std::runtime_error("No known job could be constructed");
   }
-  return it->second(std::move(params), std::move(runtime));
+  return it->second(std::move(params), runtime);
+}
+
+} // namespace
+
+std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params,
+                             Runtime &runtime) {
+  return makeJobFromFactory(std::move(params), runtime);
+}
+
+std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params,
+                             std::unique_ptr<Runtime> runtime) {
+  if (!runtime) {
+    throw std::logic_error("makeJob: null Runtime");
+  }
+  Runtime &ref = *runtime;
+  auto job = makeJobFromFactory(std::move(params), ref);
+  job->adoptRuntime(std::move(runtime));
+  return job;
+}
+
+std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params,
+                             Runtime &&runtime) {
+  return makeJob(std::move(params),
+                 std::make_unique<Runtime>(std::move(runtime)));
+}
+
+std::unique_ptr<Job> makeJob(std::unique_ptr<Parameters> params) {
+  return makeJob(std::move(params), std::make_unique<Runtime>());
 }
 
 } // namespace eonc::helpers

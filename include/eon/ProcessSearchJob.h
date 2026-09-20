@@ -48,13 +48,16 @@ public:
   /*!
    * \param *params defined by the config.init file
    */
-  ProcessSearchJob(std::unique_ptr<Parameters> parameters,
-                   Runtime rt = Runtime{})
-      : Job(std::move(parameters), std::move(rt)), fCallsSaddle{0},
-        fCallsMin{0}, fCallsPrefactors{0} {}
+  ProcessSearchJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
+      : Job(std::move(parameters), rt),
+        fCallsSaddle{0},
+        fCallsMin{0},
+        fCallsPrefactors{0} {}
   ProcessSearchJob(std::shared_ptr<Potential> potPassed,
                    const Parameters &parameters)
-      : Job(std::move(potPassed), parameters), fCallsSaddle{0}, fCallsMin{0},
+      : Job(std::move(potPassed), parameters),
+        fCallsSaddle{0},
+        fCallsMin{0},
         fCallsPrefactors{0} {}
   //! Process Search job De-constructor
   ~ProcessSearchJob() = default;

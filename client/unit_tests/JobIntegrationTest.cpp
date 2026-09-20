@@ -1795,6 +1795,29 @@ TEST_CASE("makeJob creates correct job type for each JobType",
   REQUIRE(job != nullptr);
 }
 
+TEST_CASE("makeJob borrows stack Runtime", "[job][factory][runtime]") {
+  eonc::Runtime rt;
+  auto params = std::make_unique<Parameters>();
+  ParametersLoadAccess::potential_options(*params).potential = PotType::LJ;
+  ParametersLoadAccess::main_options(*params).job = JobType::Point;
+  auto job = eonc::helpers::makeJob(std::move(params), rt);
+  REQUIRE(job != nullptr);
+  REQUIRE(&job->pots() == &rt.pots());
+  job->releasePotential();
+  job.reset();
+}
+
+TEST_CASE("makeJob owns rvalue Runtime", "[job][factory][runtime]") {
+  eonc::Runtime rt;
+  eonc::PotRegistry *owned = &rt.pots();
+  auto params = std::make_unique<Parameters>();
+  ParametersLoadAccess::potential_options(*params).potential = PotType::LJ;
+  ParametersLoadAccess::main_options(*params).job = JobType::Point;
+  auto job = eonc::helpers::makeJob(std::move(params), std::move(rt));
+  REQUIRE(job != nullptr);
+  REQUIRE(&job->pots() == owned);
+}
+
 // -----------------------------------------------------------------------
 // SVN-verified point energy tests for Fortran potentials (Si diamond)
 // These require -Dwith_fortran=true at build time.

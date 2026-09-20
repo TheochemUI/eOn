@@ -19,9 +19,9 @@ namespace eonc {
 
 class MinimizationJob : public Job {
 public:
-  MinimizationJob(std::unique_ptr<Parameters> parameters,
-                  Runtime rt = Runtime{})
-      : Job(std::move(parameters), std::move(rt)), fcalls{0} {}
+  MinimizationJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
+      : Job(std::move(parameters), rt),
+        fcalls{0} {}
   ~MinimizationJob(void) = default;
   std::vector<std::string> run(void);
 

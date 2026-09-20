@@ -19,8 +19,9 @@ namespace eonc {
 
 class TestJob : public Job {
 public:
-  TestJob(std::unique_ptr<Parameters> params, Runtime rt = Runtime{})
-      : Job(std::move(params), std::move(rt)), tolerance{0.01} {}
+  TestJob(std::unique_ptr<Parameters> params, Runtime &rt)
+      : Job(std::move(params), rt),
+        tolerance{0.01} {}
   ~TestJob(void) = default;
   std::vector<std::string> run(void);
 

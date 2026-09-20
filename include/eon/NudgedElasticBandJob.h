@@ -22,9 +22,9 @@ namespace eonc {
 class NudgedElasticBandJob : public Job {
 
 public:
-  NudgedElasticBandJob(std::unique_ptr<Parameters> parameters,
-                       Runtime rt = Runtime{})
-      : Job(std::move(parameters), std::move(rt)), fCallsNEB{0} {}
+  NudgedElasticBandJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
+      : Job(std::move(parameters), rt),
+        fCallsNEB{0} {}
   ~NudgedElasticBandJob(void) = default;
   std::vector<std::string> run(void);
 

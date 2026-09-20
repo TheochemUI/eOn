@@ -1,0 +1,1 @@
+pyeonclient Session uniquely owns Runtime. make_job(params, session) borrows it with nanobind keep_alive so Jobs cannot outlive the Session. write_potcall_summary uses session.pots(); CLI Job borrows a stack Runtime. Stock nanobind, not jaxlib nb_class_ptr.

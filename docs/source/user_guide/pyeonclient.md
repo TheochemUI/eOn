@@ -37,8 +37,10 @@ call — the same engines the binary uses.
 | Opaque batch | `make_job` + `Job.run` | any `JobType` via factory |
 
 `make_job(params)` still constructs every `JobType` the C++ factory supports
-(process search, dynamics, basin hopping, TAD, …) for workdir-oriented runs.
-Prefer the Matter-first classes for Matter-in / Matter-out work.
+(process search, dynamics, basin hopping, TAD, …) for one-shot workdir runs
+that own a Runtime. Prefer `Session` plus `make_job(params, session)` so
+tallies land on `session.write_potcall_summary()`. Prefer the Matter-first
+classes for Matter-in / Matter-out work.
 
 ## Install
 
@@ -276,9 +278,11 @@ as a workdir-oriented job:
 
 ```{code-block} python
 params.job = pyec.JobType.Saddle_Search     # or Process_Search, Dynamics, …
-job = pyec.make_job(params)                 # reads cwd files like eonclient
+session = pyec.Session()
+job = pyec.make_job(params, session)        # reads cwd files like eonclient
 files = job.run()
-pyec.write_potcall_summary()
+del job
+session.write_potcall_summary()
 ```
 
 Use this for process search, dynamics, basin hopping, TAD, parallel replica,

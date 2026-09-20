@@ -5,6 +5,7 @@
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
+#include "eon/Runtime.h"
 #include <algorithm>
 #include <cstring>
 #include <nanobind/ndarray.h>
@@ -476,6 +477,20 @@ void bind_potential(nb::module_ &m) {
 
   m.def(
       "make_potential",
+      [](eonc::PotType ptype, eonc::Parameters &params,
+         eonc::Runtime &session) {
+        auto pot = eonc::helpers::makePotential(ptype, params, session);
+        if (!pot) {
+          throw std::runtime_error("make_potential returned null");
+        }
+        return pot;
+      },
+      nb::arg("pot_type"), nb::arg("parameters"), nb::arg("session"),
+      nb::keep_alive<0, 3>(),
+      "Construct a Potential that borrows Session (IPotRegistry inside).");
+
+  m.def(
+      "make_potential",
       [](const std::string &name, eonc::Parameters &params) {
         auto v = magic_enum::enum_cast<eonc::PotType>(
             name, magic_enum::case_insensitive);
@@ -502,6 +517,19 @@ void bind_potential(nb::module_ &m) {
         return pot;
       },
       nb::arg("parameters"), "Construct a Potential from Parameters.potential");
+
+  m.def(
+      "make_potential",
+      [](eonc::Parameters &params, eonc::Runtime &session) {
+        auto pot = eonc::helpers::makePotential(
+            params.potential_options().potential, params, session);
+        if (!pot) {
+          throw std::runtime_error("make_potential returned null");
+        }
+        return pot;
+      },
+      nb::arg("parameters"), nb::arg("session"), nb::keep_alive<0, 2>(),
+      "Construct a Potential from Parameters.potential, borrowing Session.");
 
   // ASE Calculator → Potential (runtime ASE; no -Dwith_ase compile flag).
   m.def(

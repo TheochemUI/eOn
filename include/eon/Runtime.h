@@ -22,7 +22,8 @@ class PluginLoader;
 class MetatomicLoader;
 
 /// Move-only composition root for process resources (dlopen loaders and
-/// the potential registry). ClientEON constructs one and moves it into Job.
+/// the potential registry). ClientEON constructs one and Job borrows it;
+/// one-shot makeJob owns a unique_ptr<Runtime>. Python Session is this type.
 class Runtime {
 public:
   Runtime();
