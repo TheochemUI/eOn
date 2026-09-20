@@ -76,7 +76,5 @@ private:
   std::vector<double>
   extract_cartesian_rkf(std::string key); // 3 x N quantities
   // Debugging utilities
-  bool validate_order();
-  std::string readFile(std::filesystem::path path);
   void recieveFromSystem(long N, double *F, double *U);
 };
