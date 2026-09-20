@@ -747,6 +747,8 @@ eonclib_sources = [
     'BasinHoppingSaddleSearch.cpp',
     # Stubs when -Dwith_ira=false; NudgedElasticBand always calls IRACompare.
     'IRACompare.cpp',
+    # Runtime loader always compiled; compare path stubs without WITH_IRA.
+    'libs/IRA/IRAResource.cpp',
 ]
 
 if get_option('with_xtsci')
@@ -1274,7 +1276,6 @@ if get_option('with_ira')
     endif
     _deps += [ira_dep]
     _args += ['-DWITH_IRA']
-    eonclib_sources += ['libs/IRA/IRAResource.cpp']
 endif
 
 if get_option('with_serve')
@@ -1464,6 +1465,7 @@ if get_option('with_tests')
         # neb_morse workdir: displacement synth test needs reactant.con (#189)
         ['test_helpers', 'HelperFunctionsTest.cpp', 'neb_morse'],
         ['test_lammps_loader', 'LammpsLoaderTest.cpp', ''],
+        ['test_ira_resource', 'IRAResourceTest.cpp', ''],
         ['test_pot_registry', 'PotRegistryTest.cpp', ''],
         ['test_neb_lj', 'NEBMorseTest.cpp', 'neb_morse'],
         ['test_neb_regression', 'NEBRegressionTest.cpp', 'neb_morse'],

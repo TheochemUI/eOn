@@ -31,7 +31,10 @@
 
 namespace eonc {
 
-class IRAResource {
+// ---------------------------------------------------------------------------
+// IIRAResource: injectable ABI. Production uses IRAResource::instance().
+// ---------------------------------------------------------------------------
+class IIRAResource {
 public:
   // IRA C API function pointer types (from iralib_interf.h)
   using libira_match_fn = void (*)(int nat1, const int *typ1,
@@ -53,33 +56,56 @@ public:
                char **pg, int *n_prin_ax, double **prin_ax, int *cerr);
   using libira_get_nmax_fn = int (*)();
 
-  /// Singleton accessor (Meyer's pattern).
-  static IRAResource &instance();
-
-  /// Global mutex to ensure only one thread accesses IRA library at a time
+  /// Serializes access to the Fortran backend's shared global state.
   std::mutex library_mutex;
 
-  /// True if libira was successfully loaded.
-  [[nodiscard]] bool is_loaded() const noexcept { return m_loaded; }
+  virtual ~IIRAResource() = default;
+  virtual void require_loaded() = 0;
+  [[nodiscard]] virtual bool is_loaded() const noexcept = 0;
+  [[nodiscard]] virtual libira_match_fn get_match_fn() const = 0;
+  [[nodiscard]] virtual libira_cshda_pbc_fn get_cshda_pbc_fn() const = 0;
+  [[nodiscard]] virtual libira_compute_all_fn get_compute_all_fn() const = 0;
+  [[nodiscard]] virtual libira_get_nmax_fn get_get_nmax_fn() const = 0;
+
+  IIRAResource(const IIRAResource &) = delete;
+  IIRAResource &operator=(const IIRAResource &) = delete;
+
+protected:
+  IIRAResource() = default;
+};
+
+// ---------------------------------------------------------------------------
+// IRAResource: process-default loader (Meyer's singleton).
+// ---------------------------------------------------------------------------
+class IRAResource : public IIRAResource {
+public:
+  /// Thread-safe singleton accessor (Meyer's pattern).
+  static IRAResource &instance();
+
+  [[nodiscard]] bool is_loaded() const noexcept override { return m_loaded; }
 
   /// Throws std::runtime_error if libira is not available.
-  void require_loaded() const;
+  void require_loaded() override;
 
-  // Function pointer accessors
-  libira_match_fn get_match_fn() const { return libira_match_; }
-  libira_cshda_pbc_fn get_cshda_pbc_fn() const { return libira_cshda_pbc_; }
-  libira_compute_all_fn get_compute_all_fn() const {
+  [[nodiscard]] libira_match_fn get_match_fn() const override {
+    return libira_match_;
+  }
+  [[nodiscard]] libira_cshda_pbc_fn get_cshda_pbc_fn() const override {
+    return libira_cshda_pbc_;
+  }
+  [[nodiscard]] libira_compute_all_fn get_compute_all_fn() const override {
     return libira_compute_all_;
   }
-  libira_get_nmax_fn get_get_nmax_fn() const { return libira_get_nmax_; }
+  [[nodiscard]] libira_get_nmax_fn get_get_nmax_fn() const override {
+    return libira_get_nmax_;
+  }
 
-  /// Non-copyable, non-movable
   IRAResource(const IRAResource &) = delete;
   IRAResource &operator=(const IRAResource &) = delete;
 
 private:
   IRAResource();
-  ~IRAResource();
+  ~IRAResource() override;
 
   bool m_loaded{false};
   dynlib::Handle m_handle{};
