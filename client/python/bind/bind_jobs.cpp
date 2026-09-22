@@ -33,7 +33,7 @@ namespace eonc::pybind {
 namespace nb = nanobind;
 
 void bind_jobs(nb::module_ &m) {
-  nb::class_<eonc::Runtime>(m, "Session",
+  nb::class_<eonc::Runtime>(m, "Session", nb::is_weak_referenceable(),
                             "Long-lived composition root (owns PotRegistry and "
                             "dlopen loaders). Jobs/Potentials borrow it.")
       .def(nb::init<>())

@@ -37,7 +37,7 @@ public:
                    const Parameters &paramsPassed);
   ~ARTnSaddleSearch() override;
 
-  /// Production: ARTnResource::instance() when built with WITH_ARTN.
+  /// Production path loads the process ARTn library when that library is linked.
   int run() override;
   /// Test seam: injected resource, no process-default libartn load.
   int run(IARTnResource &res);
