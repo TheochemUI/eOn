@@ -222,8 +222,7 @@ TEST_CASE_METHOD(DimerFixture, "gprdimer constructs AtomicGPDimer in place",
   REQUIRE(dynamic_cast<AtomicGPDimer *>(strategy.get()) != nullptr);
 }
 
-TEST_CASE_METHOD(DimerFixture,
-                 "gprdimer force box follows Matter periodicity",
+TEST_CASE_METHOD(DimerFixture, "gprdimer force box follows Matter periodicity",
                  "[eigenmode][strategy][gprdimer]") {
   const Matrix3d cell = Matrix3d::Identity() * 18.0;
   matter->setCell(cell);
