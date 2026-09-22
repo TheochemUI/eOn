@@ -81,10 +81,24 @@ int DynamicsSaddleSearch::run() {
   }
 
   BondBoost bondBoost(saddle.get(), params);
+  // setBiasPotential does not own this object. Clear it before bondBoost
+  // leaves the stack, including on the early returns below.
+  struct BiasGuard {
+    Matter *matter{nullptr};
+    ~BiasGuard() {
+      if (matter == nullptr) {
+        return;
+      }
+      matter->setBiasPotential(nullptr);
+      matter->setBiasForces(AtomMatrix::Zero(matter->numberOfAtoms(), 3));
+    }
+  } biasGuard;
   if (params.hyperdynamics_options().bias_potential ==
       Hyperdynamics::BOND_BOOST) {
     QUILL_LOG_DEBUG(log, "Initializing Bond Boost");
     bondBoost.initialize();
+    saddle->setBiasPotential(&bondBoost);
+    biasGuard.matter = saddle.get();
   }
 
   int checkInterval = static_cast<int>(
@@ -103,6 +117,12 @@ int DynamicsSaddleSearch::run() {
   }
 
   for (int step = 1; step <= params.dynamics_options().steps; step++) {
+    if (params.hyperdynamics_options().bias_potential ==
+        Hyperdynamics::BOND_BOOST) {
+      // oneStep() calls getAccelerations(), and therefore boost(), more
+      // than once. Advance the rmd_time counter once per MD step.
+      bondBoost.advance();
+    }
     dyn.oneStep(step);
 
     if (recordInterval != 0 && step % recordInterval == 0) {
