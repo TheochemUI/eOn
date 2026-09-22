@@ -248,11 +248,9 @@ int ARTnSaddleSearch::run(IARTnResource &res) {
     ityp[i] = matter->getAtomicNr(i);
   }
 
-  // Convert box to column-major 3x3 - copy to array
+  // pARTn reads lattice vectors as columns. Copy rows, do not transpose.
   Matrix3d cell = matter->getCell();
-  for (int i = 0; i < 3; i++)
-    for (int j = 0; j < 3; j++)
-      box_f[j * 3 + i] = cell(i, j);
+  lattice_rows_to_fortran_box(cell, box_f);
 
   int maxIter = params.artn_options().max_iterations;
 
