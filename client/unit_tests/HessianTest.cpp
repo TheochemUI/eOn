@@ -18,13 +18,46 @@
 #include "eon/SafeMath.h"
 
 #include <cstdio>
+#include <filesystem>
 #include <fstream>
+#include <string>
 
 namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
 
-TEST_CASE("Hessian on LJ cluster is symmetric", "[hessian]") {
+// Meson runs every neb_morse suite in this directory at once. Hessian
+// truncates hessian.dat in the current directory, and that path is also a
+// tracked fixture other tests copy. A private directory keeps the open off
+// that shared file (Windows denies the write while a copy holds it).
+class HessianScratch {
+protected:
+  std::filesystem::path originalDir;
+  std::filesystem::path workdir;
+  std::filesystem::path ptPos;
+
+  HessianScratch()
+      : originalDir(std::filesystem::current_path()) {
+    static int counter = 0;
+    workdir = std::filesystem::temp_directory_path() /
+              ("eon_test_hess_" + std::to_string(counter++));
+    std::filesystem::remove_all(workdir);
+    std::filesystem::create_directories(workdir);
+    std::filesystem::copy_file(originalDir / "reactant.con",
+                               workdir / "reactant.con");
+    ptPos = originalDir / ".." / "Pt_Heptamer_FrozenLayers" / "pos.con";
+    std::filesystem::current_path(workdir);
+  }
+
+  ~HessianScratch() {
+    std::error_code ec;
+    std::filesystem::current_path(originalDir, ec);
+    std::filesystem::remove_all(workdir, ec);
+  }
+};
+
+TEST_CASE_METHOD(HessianScratch, "Hessian on LJ cluster is symmetric",
+                 "[hessian]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
@@ -50,7 +83,8 @@ TEST_CASE("Hessian on LJ cluster is symmetric", "[hessian]") {
   }
 }
 
-TEST_CASE("Hessian getFreqs returns finite eigenvalues", "[hessian]") {
+TEST_CASE_METHOD(HessianScratch, "Hessian getFreqs returns finite eigenvalues",
+                 "[hessian]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
@@ -69,7 +103,9 @@ TEST_CASE("Hessian getFreqs returns finite eigenvalues", "[hessian]") {
   }
 }
 
-TEST_CASE("Hessian getFreqs rejects out-of-range atom indices", "[hessian]") {
+TEST_CASE_METHOD(HessianScratch,
+                 "Hessian getFreqs rejects out-of-range atom indices",
+                 "[hessian]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
@@ -84,8 +120,9 @@ TEST_CASE("Hessian getFreqs rejects out-of-range atom indices", "[hessian]") {
   REQUIRE(freqs.size() == 0);
 }
 
-TEST_CASE("Hessian mobile phva_atoms yields 3*n_mobile square matrix",
-          "[hessian]") {
+TEST_CASE_METHOD(HessianScratch,
+                 "Hessian mobile phva_atoms yields 3*n_mobile square matrix",
+                 "[hessian]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   // Mobile/displaced set = hybrid/PHVA-class active list
@@ -101,7 +138,9 @@ TEST_CASE("Hessian mobile phva_atoms yields 3*n_mobile square matrix",
   REQUIRE(H.cols() == 6);
 }
 
-TEST_CASE("Hessian column checkpoint resume matches full FD", "[hessian]") {
+TEST_CASE_METHOD(HessianScratch,
+                 "Hessian column checkpoint resume matches full FD",
+                 "[hessian]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   ParametersLoadAccess::hessian_options(params).fd_scheme = "one_sided";
@@ -178,8 +217,9 @@ TEST_CASE("Hessian column checkpoint resume matches full FD", "[hessian]") {
   REQUIRE(!std::ifstream(ckpt).good());
 }
 
-TEST_CASE("Hessian central fd_scheme produces finite symmetric H",
-          "[hessian]") {
+TEST_CASE_METHOD(HessianScratch,
+                 "Hessian central fd_scheme produces finite symmetric H",
+                 "[hessian]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   ParametersLoadAccess::hessian_options(params).fd_scheme = "central";
@@ -200,13 +240,14 @@ TEST_CASE("Hessian central fd_scheme produces finite symmetric H",
   }
 }
 
-TEST_CASE("Hessian on Pt frozen layers system handles mixed fixed/free",
-          "[hessian][morse_pt]") {
+TEST_CASE_METHOD(HessianScratch,
+                 "Hessian on Pt frozen layers system handles mixed fixed/free",
+                 "[hessian][morse_pt]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::MORSE_PT;
   auto pot = eonc::helpers::makePotential(PotType::MORSE_PT, params);
   auto matter = std::make_shared<Matter>(pot, params);
-  matter->con2matter(std::string("../Pt_Heptamer_FrozenLayers/pos.con"));
+  matter->con2matter(ptPos.string());
 
   // Build moved atom list (free atoms only)
   long nAtoms = matter->numberOfAtoms();
