@@ -10,7 +10,7 @@ from subprocess import Popen, PIPE
 from io import StringIO
 import pickle as pickle
 import re
-import numpy
+import numpy as np
 
 from pathlib import Path
 
@@ -371,7 +371,7 @@ class MPI(Communicator):
         ready_ranks = self.get_ready_ranks()
         for jobpath in self.make_bundles(data, invariants):
             rank = ready_ranks.pop()
-            tmp = numpy.empty(1, dtype='i')
+            tmp = np.empty(1, dtype='i')
             self.comm.Recv(tmp, source=rank, tag=1)
             buf = array('b')
             bufval = jobpath+'\0'
@@ -389,7 +389,7 @@ class MPI(Communicator):
             rank = ready_ranks.pop()
 
             jobpath = str(Path(self.scratchpath) / jobdir)
-            tmp = numpy.empty(1, dtype='i')
+            tmp = np.empty(1, dtype='i')
             self.comm.Recv(tmp, source=rank, tag=1)
             buf = array('b')
             bufval = jobpath+'\0'
@@ -419,9 +419,9 @@ class MPI(Communicator):
 
         status = MPI.Status()
         while self.comm.Iprobe(source=MPI.ANY_SOURCE, tag=0, status=status):
-            buf = numpy.array(['\0']*1024, dtype="S1")
+            buf = np.array(['\0']*1024, dtype="S1")
             self.comm.Recv([buf, MPI.CHARACTER], source=status.source, tag=0)
-            strterm = numpy.where(buf == b'\0')
+            strterm = np.where(buf == b'\0')
             strindex = strterm[0][0]
             jobdir = buf[:strindex].tostring()
             jobdir = Path(jobdir.decode()).name
@@ -447,7 +447,7 @@ class MPI(Communicator):
         for rank in self.client_ranks:
             if not self.comm.Iprobe(rank, tag=1):
                 continue
-            tmp = numpy.empty(1, dtype='i')
+            tmp = np.empty(1, dtype='i')
             self.comm.Recv(tmp, source=rank, tag=1)
             buf = array('b')
             buf.frombytes(b'STOPCAR\0')

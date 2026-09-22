@@ -4,8 +4,8 @@ from io import StringIO
 import logging
 import logging.handlers
 logger = logging.getLogger('basinhopping')
-import numpy
-numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
+import numpy as np
+np.seterr(divide="raise", over="raise", under="print", invalid="raise")
 import optparse
 import shutil
 import sys
@@ -141,7 +141,7 @@ def make_searches(comm, wuid, bhstates, config: ConfigClass):
     for i in range(num_to_make):
         search = {}
         search['id'] = "%d" % wuid
-        ini_changes = [ ('Main', 'random_seed', str(int(numpy.random.random()*2**32))) ]
+        ini_changes = [ ('Main', 'random_seed', str(int(np.random.random()*2**32))) ]
 
         if config.bh_initial_state_pool_size == 0:
             reactIO = initial_react

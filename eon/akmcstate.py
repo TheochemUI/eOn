@@ -9,7 +9,7 @@ from pathlib import Path
 
 logger = logging.getLogger("state")
 
-import numpy
+import numpy as np
 
 from eon import atoms, state
 from eon import fileio as io
@@ -347,10 +347,10 @@ class AKMCState(state.State):
             if n < 10: return 0.0
 
             # probabilities
-            ps = numpy.array(list(repeats.values()),dtype=float)
+            ps = np.array(list(repeats.values()),dtype=float)
             ps /= sum(ps)
 
-            C = numpy.zeros(m)
+            C = np.zeros(m)
             for i in range(n):
                 C += (1.0-C)*ps
 
@@ -388,15 +388,15 @@ class AKMCState(state.State):
                     continue
 
                 # rates are at T1
-                rates = numpy.array([ p[1] for p in rt ])
-                prefactors = numpy.array([ p[2] for p in rt ])
+                rates = np.array([ p[1] for p in rt ])
+                prefactors = np.array([ p[2] for p in rt ])
                 if len(rates) == 0: return 0.0
 
                 # extrapolate to T2
                 rates_md = prefactors*(rates/prefactors)**(T1/T2)
 
                 time = T2_time*1e-15
-                C = 1.0-numpy.exp(-time*rates_md)
+                C = 1.0-np.exp(-time*rates_md)
                 total_rate_found = sum(rates)
 
                 # Chill confidence

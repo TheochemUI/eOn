@@ -10,7 +10,7 @@ import configparser
 import contextlib
 from io import StringIO
 import logging
-import numpy
+import numpy as np
 import os
 from pathlib import Path
 
@@ -66,14 +66,14 @@ def prng_state_path(config):
 
 
 def save_prng_state(path):
-    state = numpy.random.get_state()
+    state = np.random.get_state()
     with open(path, 'wb') as fh:
         pickle.dump(state, fh, pickle.HIGHEST_PROTOCOL)
 
 def get_prng_state(path):
     with open(path, 'rb') as fh:
         state = pickle.load(fh)
-    numpy.random.set_state(state)
+    np.random.set_state(state)
 
 def _process_umask():
     mask = os.umask(0)
@@ -210,14 +210,14 @@ def _as_structure(p):
     """
     n = len(p)
     s = Structure(n)
-    s.box = numpy.asarray(p.box, dtype=float).reshape(3, 3).copy()
-    s.r = numpy.asarray(p.r, dtype=float).reshape(n, 3).copy()
-    s.free = numpy.asarray(p.free, dtype=float)
+    s.box = np.asarray(p.box, dtype=float).reshape(3, 3).copy()
+    s.r = np.asarray(p.r, dtype=float).reshape(n, 3).copy()
+    s.free = np.asarray(p.free, dtype=float)
     s.names = list(p.names)
-    s.mass = numpy.asarray(p.mass, dtype=float).reshape(n).copy()
+    s.mass = np.asarray(p.mass, dtype=float).reshape(n).copy()
     ids = getattr(p, 'atom_ids', None)
     if ids is not None:
-        s.atom_ids = numpy.asarray(ids, dtype=numpy.uint64).reshape(-1).copy()
+        s.atom_ids = np.asarray(ids, dtype=np.uint64).reshape(-1).copy()
     return s
 
 
@@ -294,7 +294,7 @@ def load_mode(modefilein):
             raise IOError("Malformed mode.dat line, expected three columns: %r" % line)
         for j in range(3):
             mode.append(float(l[j]))
-    return numpy.array(mode).reshape(len(mode)//3, 3)
+    return np.array(mode).reshape(len(mode)//3, 3)
 
 def save_mode(modefileout, displace_vector, free=None):
     '''
@@ -305,11 +305,11 @@ def save_mode(modefileout, displace_vector, free=None):
     17 significant digits round trip a double exactly, and match what the
     client's printf writers emit for the same value.
     '''
-    vec = numpy.asarray(displace_vector, dtype=float)
+    vec = np.asarray(displace_vector, dtype=float)
     if free is not None:
-        mask = numpy.asarray(free, dtype=float)
+        mask = np.asarray(free, dtype=float)
         if mask.ndim == 1:
-            mask = numpy.repeat(mask.reshape(-1, 1), 3, axis=1)
+            mask = np.repeat(mask.reshape(-1, 1), 3, axis=1)
         vec = vec * (mask > 0.5)
     with _maybe_open(modefileout, 'w', 'write') as f:
         for i in range(len(vec)):
@@ -385,10 +385,10 @@ def loadposcar(filein):
         # Line 2: scaling of coordinates
         scale = float(f.readline())
         # Lines 3-5: the box
-        box = numpy.zeros((3, 3))
+        box = np.zeros((3, 3))
         for i in range(3):
             line = f.readline().split()
-            box[i] = numpy.array([float(line[0]), float(line[1]), float(line[2])]) * scale
+            box[i] = np.array([float(line[0]), float(line[1]), float(line[2])]) * scale
         # Line 6 is either VASP 4 counts or VASP 5 species names.
         line = f.readline().split()
         if _tokens_are_ints(line):
@@ -429,9 +429,9 @@ def loadposcar(filein):
                     while len(flags) < 3:
                         flags.append(flags[0] if flags else 1.0)
                     p.free[atom_index] = flags
-                p.r[atom_index] = numpy.array([float(q) for q in pos])
+                p.r[atom_index] = np.array([float(q) for q in pos])
                 if direct_flag:
-                    p.r[atom_index] = numpy.dot(p.r[atom_index], p.box)
+                    p.r[atom_index] = np.dot(p.r[atom_index], p.box)
                 else:
                     p.r[atom_index] *= scale
                 atom_index += 1
@@ -473,12 +473,12 @@ def saveposcar(fileout, p, w='w', direct = False):
         poscar.write('Selective Dynamics\n') #line 7: selective dynamics
         if direct:
             poscar.write('Direct\n')  #line 8 cartesian coordinates
-            ibox = numpy.linalg.inv(numpy.array(p.box))
-            positions = numpy.dot(p.r, ibox)
+            ibox = np.linalg.inv(np.array(p.box))
+            positions = np.dot(p.r, ibox)
         else:
             poscar.write('Cartesian\n') #line 8 cartesian coordinates
             positions = p.r
-        free = numpy.asarray(p.free, dtype=float)
+        free = np.asarray(p.free, dtype=float)
         for i in order:
                 posline = " ".join(['%20.14f' % s for s in positions[i]]) + " "
                 if free.ndim == 1:

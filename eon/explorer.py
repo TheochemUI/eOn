@@ -6,7 +6,7 @@ import shutil
 import os
 import pickle as pickle
 from pathlib import Path
-import numpy
+import numpy as np
 
 from eon import atoms
 from eon import communicator
@@ -227,7 +227,7 @@ class ClientMinModeExplorer(MinModeExplorer):
                     mass_weights[i] = self.reactant.mass[i]
 
             weightsIO = io.StringIO()
-            numpy.savetxt(weightsIO, mass_weights)
+            np.savetxt(weightsIO, mass_weights)
             invariants['masses.dat'] = (weightsIO, file_permission)
 
         atom_list_str = str(self.state.info.get("Saddle Search", "displace_atom_list", ""))
@@ -245,7 +245,7 @@ class ClientMinModeExplorer(MinModeExplorer):
 
             ini_changes = [ ('Main', 'job', 'process_search'),
                             ('Main', 'random_seed',
-                                str(int(numpy.random.random()*10**9))),
+                                str(int(np.random.random()*10**9))),
                           ]
             # if we are recycling a saddle, but using "dynamics saddle search" we need
             # to switch to min_mode searches

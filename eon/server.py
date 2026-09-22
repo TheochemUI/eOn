@@ -12,12 +12,12 @@ from __future__ import annotations
 import shutil
 from io import StringIO
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable
 
 from eon.config import ConfigClass
 
 
-def select_job_runner(job: str) -> Optional[Callable[[ConfigClass], None]]:
+def select_job_runner(job: str) -> Callable[[ConfigClass], None] | None:
     """Return the registered server runner for *job*, or None for fallback.
 
     Job modules are imported lazily so ``import eon.server`` stays light and
