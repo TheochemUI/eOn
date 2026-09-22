@@ -235,6 +235,31 @@ static void fpe_signal_handler(int sig, siginfo_t *sip, void *scp) {
     }
     p += h->size;
   }
+#elif defined(__APPLE__) && defined(__x86_64__)
+  // Darwin restores SSE state from uc_mcontext->__fs. Mask bits have the
+  // same polarity as Linux MXCSR: set means the class does not trap. Without
+  // that update the faulting instruction re-executes and re-raises forever.
+  auto *ctx = static_cast<ucontext_t *>(scp);
+  if (ctx->uc_mcontext) {
+    auto &fs = ctx->uc_mcontext->__fs;
+    fs.__fpu_mxcsr &= ~0x3Fu;
+    fs.__fpu_mxcsr |= mxcsr_mask_bits;
+    if (mxcsr_mask_bits & MXCSR_MASK_ZM) {
+      fs.__fpu_fcw.__zdiv = 1;
+    }
+    if (mxcsr_mask_bits & MXCSR_MASK_IM) {
+      fs.__fpu_fcw.__invalid = 1;
+    }
+    if (mxcsr_mask_bits & MXCSR_MASK_OM) {
+      fs.__fpu_fcw.__ovrfl = 1;
+    }
+    fs.__fpu_fsw.__invalid = 0;
+    fs.__fpu_fsw.__denorm = 0;
+    fs.__fpu_fsw.__zdiv = 0;
+    fs.__fpu_fsw.__ovrfl = 0;
+    fs.__fpu_fsw.__undfl = 0;
+    fs.__fpu_fsw.__precis = 0;
+  }
 #elif defined(__APPLE__) && defined(__aarch64__)
   constexpr unsigned kFpcrIoe = 1u << 8;
   constexpr unsigned kFpcrDze = 1u << 9;
@@ -305,8 +330,20 @@ void disableFPE() {
   fegetenv(&env);
 #if defined(__aarch64__)
   env.__fpcr &= ~((1u << 8) | (1u << 9) | (1u << 10));
+#elif defined(__x86_64__)
+  // enableFPE clears MXCSR IM/ZM/OM. Restoring that environment unchanged
+  // leaves the traps armed.
+  env.__mxcsr |= (MXCSR_MASK_IM | MXCSR_MASK_ZM | MXCSR_MASK_OM);
+  env.__mxcsr &= ~0x3Fu;
+  env.__control = static_cast<unsigned short>(env.__control | (1u << 0) |
+                                               (1u << 2) | (1u << 3));
+  env.__status = static_cast<unsigned short>(env.__status & ~0x3Fu);
 #endif
   fesetenv(&env);
+#if defined(__x86_64__)
+  _MM_SET_EXCEPTION_MASK(_MM_GET_EXCEPTION_MASK() | _MM_MASK_INVALID |
+                         _MM_MASK_DIV_ZERO | _MM_MASK_OVERFLOW);
+#endif
 #endif
 }
 

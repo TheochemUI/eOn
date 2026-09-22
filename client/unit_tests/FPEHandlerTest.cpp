@@ -18,6 +18,10 @@
 #include <cmath>
 #include <limits>
 
+#if defined(__APPLE__) && defined(__x86_64__)
+#include <xmmintrin.h>
+#endif
+
 // The FPE handler must not re-trap the same instruction forever. Clearing
 // sticky flags alone re-executes the faulting op with trapping still enabled;
 // the handler must demote the exception mask so execution proceeds with Inf.
@@ -83,6 +87,21 @@ TEST_CASE("disableFPE demotes traps after enableFPE (worker path)",
           "[fpe][lammps]") {
 #if defined(_WIN32)
   SKIP("Windows SEH path uses _controlfp_s; covered by enable/disable pair");
+#elif defined(__APPLE__) && defined(__x86_64__)
+  eonc::enableFPE();
+  unsigned armed = _MM_GET_EXCEPTION_MASK();
+  REQUIRE((armed & _MM_MASK_DIV_ZERO) == 0);
+  REQUIRE((armed & _MM_MASK_INVALID) == 0);
+  REQUIRE((armed & _MM_MASK_OVERFLOW) == 0);
+  eonc::disableFPE();
+  unsigned masked = _MM_GET_EXCEPTION_MASK();
+  REQUIRE((masked & _MM_MASK_DIV_ZERO) != 0);
+  REQUIRE((masked & _MM_MASK_INVALID) != 0);
+  REQUIRE((masked & _MM_MASK_OVERFLOW) != 0);
+  // Soft IEEE: no SIGFPE, result is Inf.
+  volatile double r = 1.0 / 0.0;
+  REQUIRE(std::isinf(r));
+  feclearexcept(FE_ALL_EXCEPT);
 #elif defined(__unix__)
   eonc::enableFPE();
 #if defined(FE_DIVBYZERO)
