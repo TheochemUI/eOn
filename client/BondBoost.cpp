@@ -111,6 +111,17 @@ long BondBoost::rmdSteps() const {
 
 void BondBoost::advance() {
   const long RMDS = rmdSteps();
+  // nReg starts at 1, so a zero sample count never enters the average below
+  // and never divides by RMDS. TABLList would stay the zeros from
+  // initialize(), and BondSelect would keep every tagged pair at length 0.
+  if (RMDS <= 0) {
+    if (nBBs == 0) {
+      TABLList = Rmdsteps();
+      nBBs = BondSelect();
+    }
+    nReg++;
+    return;
+  }
   if (nReg <= RMDS) {
     // Equilibration: sample bond lengths once per MD step.
     Matrix<double, Eigen::Dynamic, 1> TABL_tmp = Rmdsteps();
@@ -129,13 +140,16 @@ void BondBoost::advance() {
 
 double BondBoost::boost() {
   const long RMDS = rmdSteps();
-  if (nReg <= RMDS) {
+  if (RMDS > 0 && nReg <= RMDS) {
     return 0.0;
   }
-  // RMDS == 0 and a caller that never advance()s still has to select bonds
-  // on the first evaluation; SafeHyper / ParallelReplica call advance()
-  // first and reach BondSelect there.
+  // Callers that never advance() still select on the first evaluation.
+  // With no equilibration samples that selection has to measure lengths
+  // first; SafeHyper and ParallelReplica advance() before they get here.
   if (nBBs == 0) {
+    if (RMDS <= 0) {
+      TABLList = Rmdsteps();
+    }
     nBBs = BondSelect();
   }
   Epsr_Q.resize(nBBs);
