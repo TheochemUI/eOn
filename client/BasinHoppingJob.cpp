@@ -141,12 +141,9 @@ std::vector<std::string> BasinHoppingJob::run() {
         p = 1.0;
       }
     } else {
-      if (deltaE <= 0.0) {
-        p = 1.0;
-      } else {
-        p = std::exp(-deltaE /
-                     (params.main_options().temperature * 8.6173324e-5));
-      }
+      // Divide only for an uphill hop at positive temperature.
+      p = metropolisProbability(deltaE, params.constants().kB,
+                                params.main_options().temperature);
     }
 
     bool accepted = false;
@@ -313,6 +310,17 @@ std::vector<std::string> BasinHoppingJob::run() {
 
   // minTrial and swapTrial automatically cleaned up by unique_ptr
   return returnFiles;
+}
+
+double BasinHoppingJob::metropolisProbability(double de, double kB,
+                                              double temperature) {
+  if (!(de > 0.0)) {
+    return 1.0;
+  }
+  if (!(temperature > 0.0) || !(kB > 0.0)) {
+    return 0.0;
+  }
+  return std::exp(-de / (kB * temperature));
 }
 
 AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
