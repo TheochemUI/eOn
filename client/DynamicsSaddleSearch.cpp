@@ -138,8 +138,8 @@ int DynamicsSaddleSearch::run() {
         }
         if (image < 0 || static_cast<size_t>(image) >= mdSnapshots.size() ||
             static_cast<size_t>(image) >= mdTimes.size()) {
-          QUILL_LOG_DEBUG(
-              log, "No MD snapshots; using the detecting configuration");
+          QUILL_LOG_DEBUG(log,
+                          "No MD snapshots; using the detecting configuration");
           time = step * params.dynamics_options().time_step;
         } else {
           *saddle = *mdSnapshots[static_cast<size_t>(image)];
@@ -149,9 +149,8 @@ int DynamicsSaddleSearch::run() {
                             mdTimes[ii] * params.constants().timeUnit);
           }
           // Subtract half the record interval to avoid systematic bias
-          time =
-              mdTimes[static_cast<size_t>(image)] -
-              params.saddle_search_options().dynamics.record_interval / 2.0;
+          time = mdTimes[static_cast<size_t>(image)] -
+                 params.saddle_search_options().dynamics.record_interval / 2.0;
         }
         QUILL_LOG_DEBUG(log, "Transition time {:.2f} fs",
                         time * params.constants().timeUnit);

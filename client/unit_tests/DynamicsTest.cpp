@@ -11,9 +11,9 @@
 */
 
 #include "eon/Dynamics.h"
-#include "eon/DynamicsSaddleSearch.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/DynamicsSaddleSearch.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 
@@ -211,8 +211,8 @@ TEST_CASE_METHOD(DynamicsFixture,
   ParametersLoadAccess::parallel_replica_options(params).dephase_time = 0.0;
   ParametersLoadAccess::saddle_search_options(params).dynamics.temperature =
       300.0;
-  ParametersLoadAccess::saddle_search_options(params)
-      .dynamics.record_interval = 0.0;
+  ParametersLoadAccess::saddle_search_options(params).dynamics.record_interval =
+      0.0;
   ParametersLoadAccess::saddle_search_options(params)
       .dynamics.state_check_interval = 1.0;
   ParametersLoadAccess::saddle_search_options(params).max_iterations = 1;
