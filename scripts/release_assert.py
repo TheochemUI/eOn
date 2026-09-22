@@ -27,6 +27,12 @@ SEMVER_RE = re.compile(
     r"(?:\+(?P<build>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
 )
 
+# Development tip is PEP 440 (3.3.1.dev0), not a SemVer pre-release hyphen.
+PEP440_DEV_RE = re.compile(
+    r"^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)"
+    r"(?:(?:a|b|rc)\d+|\.dev\d+|\.post\d+)?$"
+)
+
 
 # PyPI distribution name must not collide with occupied global names (see ci/gha/pypi.ncl).
 # `eon` on PyPI is EoN (epidemics); our wheel/sdist is eon-akmc (import package eon/).
@@ -84,6 +90,16 @@ def read_pyproject_version(path: Path) -> str:
     return proj["version"]
 
 
+def version_is_acceptable(current: str) -> bool:
+    """SemVer, or the same core with a PEP 440 dev, pre, or post marker."""
+    return bool(SEMVER_RE.match(current) or PEP440_DEV_RE.match(current))
+
+
+def is_development_tip(version: str) -> bool:
+    """True for a PEP 440 ``.devN`` tip. Towncrier writes the section at release."""
+    return bool(re.search(r"\.dev\d+$", version))
+
+
 def changelog_has_section(changelog: Path, version: str) -> bool:
     if not changelog.is_file():
         return False
@@ -124,7 +140,7 @@ def assert_lockstep(
         errors.append(f"version surfaces disagree: {detail}")
     else:
         current = next(iter(vals))
-        if not SEMVER_RE.match(current):
+        if not version_is_acceptable(current):
             errors.append(f"version {current!r} is not valid semver")
         if expected is not None and current != expected:
             errors.append(
@@ -143,7 +159,7 @@ def assert_lockstep(
         errors.append(f"failed to read project.name: {exc}")
 
     target = expected or (next(iter(vals)) if len(vals) == 1 else None)
-    if require_changelog and target:
+    if require_changelog and target and not is_development_tip(target):
         cl = root / "CHANGELOG.md"
         if not changelog_has_section(cl, target):
             errors.append(
@@ -244,7 +260,7 @@ def main(argv: list[str] | None = None) -> int:
         print(ver)
     else:
         print(f"ok: lockstep version {ver} (pyproject.toml, pixi.toml)")
-        if args.require_changelog:
+        if args.require_changelog and not is_development_tip(ver):
             print(f"ok: CHANGELOG.md has section for {ver}")
     return 0
 
