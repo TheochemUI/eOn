@@ -1492,7 +1492,6 @@ if get_option('with_tests')
         ['test_fpe_handler', 'FPEHandlerTest.cpp', ''],
         ['test_dynamics', 'DynamicsTest.cpp', 'neb_morse'],
         ['test_jobs', 'JobIntegrationTest.cpp', 'neb_morse'],
-        ['test_client_timing', 'ClientTimingTest.cpp', '', 60],
         ['test_hessian', 'HessianTest.cpp', 'neb_morse'],
         ['test_geom', 'GeometryAnalysisTest.cpp', 'neb_morse'],
         ['test_params_json', 'ParametersJSONTest.cpp', ''],
@@ -1501,6 +1500,10 @@ if get_option('with_tests')
         ['test_emt_cu', 'EMTCuTest.cpp', 'cu_fcc'],
         ['test_neb_subsystem', 'NEBSubsystemTest.cpp', ''],
     ]
+    # posix_spawn. On Windows the only case is skipped and Catch2 exits 4.
+    if not is_windows
+        test_array += [['test_client_timing', 'ClientTimingTest.cpp', '', 60]]
+    endif
     # Fortran potential tests: require Fortran shared libs at runtime
     if get_option('with_fortran')
         test_array += [
