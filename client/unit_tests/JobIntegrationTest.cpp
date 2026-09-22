@@ -778,6 +778,50 @@ max_iterations = 200
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
+                 "BasinHoppingJob stop_energy omits quenches that did not run",
+                 "[job][basin_hopping][integration]") {
+  EON_REQUIRE_TEST_DATA(".");
+  writeConfig(R"(
+[Main]
+job = basin_hopping
+random_seed = 42
+
+[Potential]
+potential = lj
+
+[Basin Hopping]
+steps = 3
+quenching_steps = 5
+stop_energy = 0.0
+temperature = 300.0
+displacement = 0.5
+push_apart_distance = 0.4
+swap_probability = 0.0
+jump_max = 0
+jump_steps = 0
+adjust_displacement = false
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.001
+max_iterations = 200
+)");
+
+  std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+
+  auto results = runJob();
+
+  // LJ energies are negative, so stop_energy 0 ends the run on the first
+  // hop, before the quench tail. That hop is one displacement and not a
+  // quench. Subtracting the configured quenching_steps would be negative.
+  REQUIRE(std::stod(results["minimum_energy"]) < 0.0);
+  REQUIRE(std::stod(results["total_normal_displacement_steps"]) ==
+          Catch::Approx(1.0));
+  REQUIRE(std::stod(results["total_jump_steps"]) == Catch::Approx(0.0));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
                  "DynamicsJob runs and produces final.con",
                  "[job][dynamics][integration]") {
   EON_REQUIRE_TEST_DATA(".");
