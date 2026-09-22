@@ -74,11 +74,13 @@ int BasinHoppingSaddleSearch::run() {
   AtomMatrix direction = (r_3 - r_1) / 2;
   MinModeSaddleSearch dim(neb.path[HighestImage], direction.normalized(),
                           ereactant, params, pot);
-  dim.run();
+  // ProcessSearchJob treats STATUS_GOOD as a saddle. The climb's own
+  // status is that decision; discarding it records a failed climb as found.
+  status = dim.run();
   *saddle = *neb.path[HighestImage];
   eigenvalue = dim.getEigenvalue();
   eigenvector = dim.getEigenvector();
-  return 0;
+  return status;
 }
 
 double BasinHoppingSaddleSearch::getEigenvalue() { return eigenvalue; }
