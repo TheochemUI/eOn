@@ -678,6 +678,7 @@ eonclib_sources = [
     'ParametersJSON.cpp',
     'ParametersSSOT.cpp',
     'ConFileIO.cpp',
+    'ReadconDbMirror.cpp',
     'GeometryAnalysis.cpp',
     'Optimizer.cpp',
     'IDPPObjectiveFunction.cpp',
