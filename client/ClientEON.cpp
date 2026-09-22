@@ -518,7 +518,9 @@ static int eonClientMain(int argc, char **argv) {
       MPI_Request eon_rq;
       MPI_Isend(&path[0], 1024, MPI_CHAR, server_rank, 0, MPI_COMM_WORLD,
                 &eon_rq);
-      MPI_Request_free(&eon_rq);
+      // path is destroyed at the end of this iteration. Request_free does
+      // not complete the send, so the buffer stays live until Wait returns.
+      MPI_Wait(&eon_rq, MPI_STATUS_IGNORE);
     }
 
     // End of MPI while loop
