@@ -142,11 +142,26 @@ def _frame_to_atoms(frame):
     return Structure.from_conframe(frame)
 
 
+def _mirror_con_path(path):
+    """Copy a con path into the corpus. A missing module leaves the file alone."""
+    try:
+        from eon.concorpus import mirror_con_path
+    except ImportError:
+        return
+    mirror_con_path(path)
+
+
+def _mirror_con_text(path, text):
+    try:
+        from eon.concorpus import mirror_con_text
+    except ImportError:
+        return
+    mirror_con_text(path, text)
+
+
 def loadcons(filename):
     frames = readcon.read_con(filename)
-    from eon.concorpus import mirror_con_path
-
-    mirror_con_path(filename)
+    _mirror_con_path(filename)
     return [_frame_to_atoms(f) for f in frames]
 
 
@@ -203,9 +218,7 @@ def loadcon(filein, reset = True):
             raise IOError("No frames found in con data")
         return _frame_to_atoms(frames[0])
     atoms = _frame_to_atoms(readcon.read_first_frame(filein))
-    from eon.concorpus import mirror_con_path
-
-    mirror_con_path(filein)
+    _mirror_con_path(filein)
     return atoms
 
 def _as_structure(p):
@@ -281,12 +294,10 @@ def savecon(fileout, p, w = 'w'):
     else:
         readcon.write_con(fileout, [frame])
     if not hasattr(fileout, 'write'):
-        from eon.concorpus import mirror_con_path, mirror_con_text
-
         if w == 'a':
-            mirror_con_text(fileout, frame_text)
+            _mirror_con_text(fileout, frame_text)
         else:
-            mirror_con_path(fileout)
+            _mirror_con_path(fileout)
 
 
 def load_mode(modefilein):
