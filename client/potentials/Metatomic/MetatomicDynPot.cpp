@@ -42,7 +42,8 @@ MetatomicDynPot::MetatomicDynPot(const Parameters &params)
 
 MetatomicDynPot::MetatomicDynPot(const Parameters &params,
                                  IMetatomicLoader &loader)
-    : eonc::Potential(PotType::METATOMIC), loader_{loader} {
+    : eonc::Potential(PotType::METATOMIC),
+      loader_{loader} {
   loader_.require_loaded();
   std::array<char, 1024> err{};
   auto cfg = config_from_params(params);
