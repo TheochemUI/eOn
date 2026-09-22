@@ -183,10 +183,9 @@ TEST_CASE_METHOD(
 // Basin hopping used to ignore MinModeSaddleSearch::run and return success.
 // One climb step cannot meet the force tolerance, so the hop must report
 // that failure on both the return value and getStatus().
-TEST_CASE_METHOD(
-    SaddleSearchFixture,
-    "BasinHoppingSaddleSearch reports a failed climb",
-    "[saddle_search][basin_hopping]") {
+TEST_CASE_METHOD(SaddleSearchFixture,
+                 "BasinHoppingSaddleSearch reports a failed climb",
+                 "[saddle_search][basin_hopping]") {
   ParametersLoadAccess::saddle_search_options(params).max_iterations = 1;
   ParametersLoadAccess::saddle_search_options(params).converged_force = 1e-20;
 
@@ -195,7 +194,8 @@ TEST_CASE_METHOD(
   fs::create_directories(tmp);
   struct CwdGuard {
     fs::path old;
-    explicit CwdGuard(const fs::path &next) : old(fs::current_path()) {
+    explicit CwdGuard(const fs::path &next)
+        : old(fs::current_path()) {
       fs::current_path(next);
     }
     ~CwdGuard() { fs::current_path(old); }
