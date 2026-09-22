@@ -882,11 +882,13 @@ if py_embed
 endif
 
 if get_option('with_mpi')
-    subdir('potentials/MPIPot')
-    potentials += [mpipot]
-    _args += ['-DEONMPI']
+    # library() in the MPIPot subdir snapshots _deps. mpi has to be on
+    # that list first or libmpipot is linked without libmpi.
     mpi_dep = dependency('mpi')
     _deps += [mpi_dep]
+    _args += ['-DEONMPI']
+    subdir('potentials/MPIPot')
+    potentials += [mpipot]
 endif
 
 # Fortran-backed potentials (SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe,
