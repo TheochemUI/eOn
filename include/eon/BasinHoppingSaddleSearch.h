@@ -35,6 +35,11 @@ public:
   int run(void);
   double getEigenvalue();
   AtomMatrix getEigenvector();
+
+  /// Highest-energy interior bead. Interiors are indices 1..numImages.
+  /// Returns 0 when numImages < 1 so the caller does not read path[-1].
+  [[nodiscard]] static int highestEnergyInteriorImage(
+      const std::vector<std::shared_ptr<Matter>> &path, long numImages);
   std::string_view describeStatus(int status) const override {
     return MinModeSaddleSearch::statusMessage(status);
   }

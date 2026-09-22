@@ -12,9 +12,12 @@
 
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/BasinHoppingSaddleSearch.h"
+#include "eon/ConFileIO.h"
 #include "eon/Matter.h"
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/Parameters.h"
+#include "eon/RandomNumbers.h"
 #include <filesystem>
 
 namespace tests {
@@ -239,6 +242,95 @@ TEST_CASE_METHOD(SaddleSearchFixture, "MinModeSaddleSearch with classic Dimer",
 
   REQUIRE(status >= MinModeSaddleSearch::STATUS_GOOD);
   REQUIRE(std::isfinite(search.getEigenvalue()));
+}
+
+TEST_CASE_METHOD(SaddleSearchFixture,
+                 "basin hopping keeps the last interior NEB image",
+                 "[saddle_search][basin_hopping]") {
+  const long nImages = 5;
+  std::vector<std::shared_ptr<Matter>> path;
+  path.reserve(static_cast<size_t>(nImages + 2));
+  for (long i = 0; i <= nImages + 1; i++) {
+    auto image = std::make_shared<Matter>(*matter);
+    image->setComputedPotential(static_cast<double>(i), 0.0);
+    path.push_back(std::move(image));
+  }
+  // Endpoints are higher. Only interiors 1..numImages are eligible, and the
+  // last of those is the maximum. An exclusive upper bound would return 4.
+  path[0]->setComputedPotential(100.0, 0.0);
+  path[static_cast<size_t>(nImages + 1)]->setComputedPotential(100.0, 0.0);
+  REQUIRE(BasinHoppingSaddleSearch::highestEnergyInteriorImage(path, nImages) ==
+          static_cast<int>(nImages));
+
+  path[1]->setComputedPotential(3.0, 0.0);
+  path[2]->setComputedPotential(9.0, 0.0);
+  path[3]->setComputedPotential(4.0, 0.0);
+  path[4]->setComputedPotential(8.0, 0.0);
+  path[5]->setComputedPotential(2.0, 0.0);
+  REQUIRE(BasinHoppingSaddleSearch::highestEnergyInteriorImage(path, nImages) ==
+          2);
+
+  // image_count 1: the only interior bead, not the reactant or the product.
+  path[1]->setComputedPotential(1.0, 0.0);
+  path[2]->setComputedPotential(50.0, 0.0);
+  REQUIRE(BasinHoppingSaddleSearch::highestEnergyInteriorImage(path, 1) == 1);
+  REQUIRE(BasinHoppingSaddleSearch::highestEnergyInteriorImage(path, 0) == 0);
+}
+
+namespace {
+
+struct CwdGuard {
+  std::filesystem::path old;
+  explicit CwdGuard(const std::filesystem::path &next)
+      : old(std::filesystem::current_path()) {
+    std::filesystem::current_path(next);
+  }
+  ~CwdGuard() { std::filesystem::current_path(old); }
+  CwdGuard(const CwdGuard &) = delete;
+  CwdGuard &operator=(const CwdGuard &) = delete;
+};
+
+} // namespace
+
+TEST_CASE_METHOD(SaddleSearchFixture,
+                 "basin hopping writes the last interior image",
+                 "[saddle_search][basin_hopping]") {
+  namespace fs = std::filesystem;
+  auto reactant = std::make_shared<Matter>(pot, params);
+  reactant->con2matter(std::string("reactant.con"));
+
+  // Force tolerance and the default image count stay put. The iteration
+  // caps only bound this band check; they are not a looser convergence target.
+  ParametersLoadAccess::main_options(params).temperature = 1.0e20;
+  ParametersLoadAccess::main_options(params).parallel = false;
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 20;
+  ParametersLoadAccess::neb_options(params).max_iterations = 20;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 20;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 20;
+  eonc::rng::random(42);
+
+  const auto tmp = fs::temp_directory_path() / "eon_bh_last_image";
+  fs::remove_all(tmp);
+  fs::create_directories(tmp);
+
+  auto runBand = [&](long imageCount) {
+    ParametersLoadAccess::neb_options(params).image_count = imageCount;
+    auto displaced = std::make_shared<Matter>(*matter);
+    CwdGuard guard(tmp);
+    std::error_code ec;
+    fs::remove("neb_initial_band.con", ec);
+    BasinHoppingSaddleSearch search(reactant, displaced, pot, params);
+    const int status = search.run();
+    const auto frames = readcon::read_all_frames("neb_initial_band.con");
+    // Reactant plus every interior bead, including path[numImages].
+    REQUIRE(frames.size() == static_cast<size_t>(imageCount) + 1);
+    REQUIRE(status >= MinModeSaddleSearch::STATUS_GOOD);
+    REQUIRE(status <= MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST);
+    REQUIRE(std::isfinite(search.getEigenvalue()));
+  };
+
+  runBand(5);
+  runBand(1);
 }
 
 } /* namespace tests */
