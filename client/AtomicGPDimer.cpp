@@ -89,10 +89,12 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
                    double *U, double *variance, const double *box) {
         potential->force(N, R, atomicNrs, F, U, variance, box);
       });
-  eonc::FPEHandler fpeh;
-  fpeh.eat_fpe();
-  atomic_dimer.execute(wrapper);
-  fpeh.restore_fpe();
+  // Restore traps if execute throws. The saddle-search catch must not
+  // leave later force calls running with traps still masked.
+  {
+    eonc::FPEGuard fpe;
+    atomic_dimer.execute(wrapper);
+  }
   // Forcefully set the right positions
   matter->setPositionsFreeV(atomic_dimer.getFinalCoordOfMidPoint());
   this->totalIterations = atomic_dimer.getIterations();
