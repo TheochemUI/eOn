@@ -392,6 +392,44 @@ TEST_CASE_METHOD(ConFileIOFixture, "XYZ append concatenates a matching frame",
 }
 
 TEST_CASE_METHOD(ConFileIOFixture,
+                 "XYZ append separates a frame with no trailing newline",
+                 "[confileio][xyz]") {
+  auto tmppath = std::filesystem::temp_directory_path() / "_test_xyz_nonewline";
+  auto refpath = std::filesystem::temp_directory_path() / "_test_xyz_ref";
+  REQUIRE(eonc::io::io_ok(
+      eonc::io::matter2xyz(*original, tmppath.string(), false)));
+  REQUIRE(eonc::io::io_ok(
+      eonc::io::matter2xyz(*original, refpath.string(), false)));
+  const std::string tmpfile = tmppath.string() + ".xyz";
+  const std::string reffile = refpath.string() + ".xyz";
+  const auto slurp = [](const std::string &path) {
+    std::ifstream in(path, std::ios::binary);
+    return std::string((std::istreambuf_iterator<char>(in)),
+                       std::istreambuf_iterator<char>());
+  };
+  const std::string frame = slurp(reffile);
+  std::string bytes = slurp(tmpfile);
+  REQUIRE(!frame.empty());
+  REQUIRE(frame.back() == '\n');
+  REQUIRE(bytes == frame);
+  bytes.pop_back();
+  {
+    std::ofstream out(tmpfile, std::ios::binary | std::ios::trunc);
+    out << bytes;
+    REQUIRE(static_cast<bool>(out));
+  }
+  REQUIRE(
+      eonc::io::io_ok(eonc::io::matter2xyz(*original, tmppath.string(), true)));
+  const std::string once = bytes + "\n" + frame;
+  REQUIRE(slurp(tmpfile) == once);
+  REQUIRE(
+      eonc::io::io_ok(eonc::io::matter2xyz(*original, tmppath.string(), true)));
+  REQUIRE(slurp(tmpfile) == once + frame);
+  std::filesystem::remove(tmpfile);
+  std::filesystem::remove(reffile);
+}
+
+TEST_CASE_METHOD(ConFileIOFixture,
                  "String interface write-read roundtrip preserves geometry",
                  "[confileio]") {
   // Write via string interface
