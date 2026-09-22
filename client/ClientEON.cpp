@@ -358,8 +358,6 @@ static int eonClientMain(int argc, char **argv) {
 
   eonc::enableFPE(); // from ExceptionsEON.h
 
-  auto start_time = std::chrono::steady_clock::now();
-
 #ifdef EONMPI
   // Server sends a path starting with STOPCAR to end this loop.
   char logfilename[1024];
@@ -413,6 +411,9 @@ static int eonClientMain(int argc, char **argv) {
 
     std::vector<std::string> bundledFilenames;
     for (int i = 0; i < bundleSize; i++) {
+      // This job only. A clock above the bundle or MPI loop also counts
+      // earlier jobs and the idle wait between them.
+      const auto start_time = std::chrono::steady_clock::now();
       if (bundleSize > 1)
         QUILL_LOG_INFO(logger, "Beginning Job {} of {}", i + 1, bundleSize);
       std::vector<std::string> unbundledFilenames;

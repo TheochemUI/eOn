@@ -1492,6 +1492,7 @@ if get_option('with_tests')
         ['test_fpe_handler', 'FPEHandlerTest.cpp', ''],
         ['test_dynamics', 'DynamicsTest.cpp', 'neb_morse'],
         ['test_jobs', 'JobIntegrationTest.cpp', 'neb_morse'],
+        ['test_client_timing', 'ClientTimingTest.cpp', '', 60],
         ['test_hessian', 'HessianTest.cpp', 'neb_morse'],
         ['test_geom', 'GeometryAnalysisTest.cpp', 'neb_morse'],
         ['test_params_json', 'ParametersJSONTest.cpp', ''],
@@ -1553,6 +1554,7 @@ if get_option('with_tests')
         'systems',
     )
     _test_env.set('EON_TEST_SYSTEMS_DIR', _systems_dir)
+    _test_env.set('EONCLIENT', ec.full_path())
     if _fortran_pot_dirs.length() > 0
         # FortranPotLoader splits on ';' on Windows (drive letters break ':').
         # Same pathsep rule as PATH: win=';' unix=':'.
@@ -1565,6 +1567,10 @@ if get_option('with_tests')
 
     foreach test : test_array
         test_timeout = test.get(3, 30)
+        _test_depends = []
+        if test.get(0) == 'test_client_timing'
+            _test_depends += [ec]
+        endif
         test(
             test.get(0),
             executable(
@@ -1586,6 +1592,7 @@ if get_option('with_tests')
                 2,
             ),
             timeout: test_timeout,
+            depends: _test_depends,
             env: _test_env,
         )
     endforeach
