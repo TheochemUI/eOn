@@ -207,7 +207,9 @@ TEST_CASE("ARTn nperp_limitation parse does not throw out of run",
           "[artn][resource][nperp]") {
   MockARTnResource mock;
 
-  for (const char *bad : {"1,", " ", "abc", "12abc", "2147483648"}) {
+  // "1," is not a blank token: getline stops at the trailing comma and
+  // never yields an empty field. These are the tokens that throw.
+  for (const char *bad : {",", " ", "1, ", "abc", "12abc", "2147483648"}) {
     reset_artn_stubs();
     Parameters params;
     ParametersLoadAccess::artn_options(params).nperp_limitation = bad;
