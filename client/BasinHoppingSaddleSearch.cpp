@@ -26,21 +26,19 @@ int BasinHoppingSaddleSearch::run() {
   saddle->relax(false, true, false, "displacementmin");
   product = std::make_shared<Matter>(pot, params);
   *product = *saddle;
-  // accept or reject based on boltzman
-  // exp(-de/(kB*params.main_options().temperature))
+  // Metropolis on the quenched energies: exp(-de/(kB*T)).
+  // Divide only for an uphill hop at positive temperature. T <= 0 rejects
+  // that hop (zero-temperature limit) and must not trap or flip the sign.
   double eproduct, ereactant, de;
   eproduct = product->getPotentialEnergy();
   ereactant = reactant->getPotentialEnergy();
   de = eproduct - ereactant;
   double kB = params.constants().kB;
   double Temperature = params.main_options().temperature;
-  double arg = -de / (kB * Temperature);
-  double p = std::exp(arg);
+  double p = metropolisProbability(de, kB, Temperature);
   double r = eonc::rng::random();
-  if (ereactant < eproduct) {
-    if (r > p) { // reject
-      return 1;
-    }
+  if (de > 0.0 && r > p) { // reject
+    return 1;
   }
   // NEB reactant to minimized "saddle"
   NudgedElasticBand neb(reactant, product, params, pot);
@@ -79,6 +77,17 @@ int BasinHoppingSaddleSearch::run() {
   eigenvalue = dim.getEigenvalue();
   eigenvector = dim.getEigenvector();
   return 0;
+}
+
+double BasinHoppingSaddleSearch::metropolisProbability(double de, double kB,
+                                                       double temperature) {
+  if (!(de > 0.0)) {
+    return 1.0;
+  }
+  if (!(temperature > 0.0) || !(kB > 0.0)) {
+    return 0.0;
+  }
+  return std::exp(-de / (kB * temperature));
 }
 
 double BasinHoppingSaddleSearch::getEigenvalue() { return eigenvalue; }
