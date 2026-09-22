@@ -20,6 +20,7 @@
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
 
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <memory>
@@ -113,6 +114,16 @@ int stub_get_data(const char *name, void **cval) {
   return 1;
 }
 
+int stub_get_data_no_tau(const char *name, void **cval) {
+  if (name != nullptr && std::strcmp(name, "tau_sad") == 0) {
+    if (cval) {
+      *cval = nullptr;
+    }
+    return 1;
+  }
+  return stub_get_data(name, cval);
+}
+
 class MockARTnResource : public eonc::IARTnResource {
 public:
   void require_loaded() override {}
@@ -149,6 +160,13 @@ public:
     return nullptr;
   }
 };
+
+class MockARTnResourceNoTau : public MockARTnResource {
+public:
+  [[nodiscard]] get_data_fn get_get_data_fn() const override {
+    return &stub_get_data_no_tau;
+  }
+};
 } // namespace
 
 TEST_CASE("ARTnSaddleSearch run with injected mock does not load singleton",
@@ -178,6 +196,31 @@ TEST_CASE("ARTnSaddleSearch run with injected mock does not load singleton",
   REQUIRE_THAT(search->getEigenvalue(),
                Catch::Matchers::WithinAbs(-1.0, 1e-12));
   REQUIRE(eonc::ARTnResource::instance().is_loaded() == singleton_loaded);
+}
+
+TEST_CASE("ARTnSaddleSearch run refuses success without tau_sad",
+          "[artn][resource][inject]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto matter = std::make_shared<Matter>(pot, params);
+  matter->resize(2);
+  VectorXi nrs(2);
+  nrs << 1, 1;
+  matter->setAtomicNrs(nrs);
+  AtomMatrix pos = AtomMatrix::Zero(2, 3);
+  pos(1, 0) = 1.5;
+  matter->setPositions(pos);
+  Matrix3d cell = Matrix3d::Identity() * 20.0;
+  matter->setCell(cell);
+  AtomMatrix mode = AtomMatrix::Zero(2, 3);
+  mode(0, 0) = 1.0;
+
+  MockARTnResourceNoTau mock;
+  auto search = std::make_unique<ARTnSaddleSearch>(matter, pot, mode, params);
+  REQUIRE(search->run(mock) == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR);
+  REQUIRE(matter->getPositions()(1, 0) == 1.5);
+  REQUIRE(std::isnan(search->getEigenvalue()));
 }
 
 } // namespace tests
