@@ -778,6 +778,69 @@ max_iterations = 200
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
+                 "Basin hopping jump keeps the minimized energy",
+                 "[job][basin_hopping][integration]") {
+  EON_REQUIRE_TEST_DATA(".");
+  // Zero displacement is accepted at once, then jump_max 0 runs the jump.
+  // significant_structure is off, so the jump must not evaluate the raw
+  // geometry. That call is one force evaluation and would replace the
+  // minimized energy.
+  const auto cfg = [](const char *jumpSteps) {
+    return std::string(R"(
+[Main]
+job = basin_hopping
+random_seed = 42
+temperature = 300.0
+
+[Potential]
+potential = lj
+
+[Basin Hopping]
+steps = 1
+displacement = 0.0
+push_apart_distance = 0.4
+significant_structure = false
+jump_max = 0
+adjust_displacement = false
+jump_steps = )") +
+           jumpSteps +
+           R"(
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.001
+max_iterations = 200
+)";
+  };
+  std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+
+  writeConfig(cfg("0"));
+  auto quiet = runJob();
+  const size_t callsQuiet = forceCalls_;
+  const double energyQuiet = std::stod(quiet["minimum_energy"]);
+
+  writeConfig(cfg("1"));
+  auto jumped = runJob();
+  REQUIRE(std::stod(jumped["total_jump_steps"]) == Catch::Approx(1.0));
+  REQUIRE(forceCalls_ == callsQuiet);
+  REQUIRE(std::stod(jumped["minimum_energy"]) ==
+          Catch::Approx(energyQuiet).epsilon(1e-8));
+
+  std::filesystem::current_path(workdir);
+  Parameters checkParams;
+  REQUIRE(checkParams.load("config.ini") == 0);
+  auto pot = eonc::helpers::makePotential(checkParams);
+  Matter stored(pot, checkParams);
+  REQUIRE(eonc::io::io_ok(stored.con2matter(std::string("min.con"))));
+  const double storedEnergy = stored.getPotentialEnergy();
+  REQUIRE(stored.relax(true));
+  REQUIRE(stored.getPotentialEnergy() ==
+          Catch::Approx(storedEnergy).margin(1e-3));
+  std::filesystem::current_path(originalDir);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
                  "DynamicsJob runs and produces final.con",
                  "[job][dynamics][integration]") {
   EON_REQUIRE_TEST_DATA(".");
