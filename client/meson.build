@@ -1565,6 +1565,16 @@ if get_option('with_tests')
 
     foreach test : test_array
         test_timeout = test.get(3, 30)
+        _case_env = _test_env
+        _case_depends = []
+        if test.get(0) == 'test_serve_spec'
+            # Spawn eonclient. The shared test env is one object, so this
+            # case gets its own copy plus the client path.
+            _case_env = environment()
+            _case_env.set('EON_TEST_SYSTEMS_DIR', _systems_dir)
+            _case_env.set('EONCLIENT', ec.full_path())
+            _case_depends = [ec]
+        endif
         test(
             test.get(0),
             executable(
@@ -1586,7 +1596,8 @@ if get_option('with_tests')
                 2,
             ),
             timeout: test_timeout,
-            env: _test_env,
+            env: _case_env,
+            depends: _case_depends,
         )
     endforeach
     if get_option('with_xtb')
