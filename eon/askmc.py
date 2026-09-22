@@ -3,7 +3,7 @@ import logging
 import math
 from pathlib import Path
 
-import numpy
+import numpy as np
 
 from eon import fileio as io
 
@@ -243,10 +243,10 @@ class ASKMC:
         """ Determine whether two arrays are equivalent.
             Because of the use of numpy, the natural python 'in' test does not work properly.  So this is a workaround.
             "test" should be a 1Xn (1X2) list, and "array" should be a mXn (mX2) array. """
-        test = numpy.array(test)
+        test = np.array(test)
         testvar = 0
         for i in array:
-            if numpy.array_equal(test, i):
+            if np.array_equal(test, i):
                 testvar = 1
                 break
         return testvar
@@ -352,7 +352,7 @@ class ASKMC:
                                 self.welltest = 0
                             # Otherwise, add this process to "edgelist" to note it's been viewed, and continue the search
                             else:
-                                self.edgelist = numpy.vstack((self.edgelist,[current_state.number, next_state_num]))
+                                self.edgelist = np.vstack((self.edgelist,[current_state.number, next_state_num]))
                                 self.locsearch(next_state, origEtrans)
 
     def raiseup(self, current_state, next_state, sb_check_count, num_rate_changes):
@@ -361,7 +361,7 @@ class ASKMC:
             lower the saddle energies and the barriers, and save the states in the basin. """
         # Preparing for the "locsearch" function.
         self.welltest = 1
-        self.edgelist = numpy.array([0,0])
+        self.edgelist = np.array([0,0])
         sb_check_count += 1
         current_state_mod_procs = self.get_modified_process_table(current_state)
         # Find the "process_id" of the next state

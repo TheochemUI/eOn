@@ -10,10 +10,10 @@ import optparse
 import logging
 import logging.handlers
 logger = logging.getLogger('akmc')
-import numpy
+import numpy as np
 from pathlib import Path
 
-numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
+np.seterr(divide="raise", over="raise", under="print", invalid="raise")
 
 from eon import version
 from eon.config import ConfigClass
@@ -241,7 +241,7 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
 
             ratesum = sum((row[1] for row in rate_table), 0.0)
 
-            u = numpy.random.random_sample()
+            u = np.random.random_sample()
             p = 0.0
             nsid = 1.1 # Next state process id, will throw exception if remains unchanged.
 
@@ -269,7 +269,7 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
                 procdata = Path(config.debug_target_trajectory) / "states" / str(stateid) / "procdata"
                 targetSaddleCon = io.loadcon(str(procdata / ("saddle_%d.con" % procid)))
                 targetProductCon = io.loadcon(str(procdata / ("product_%d.con" % procid)))
-                ibox = numpy.linalg.inv(targetSaddleCon.box)
+                ibox = np.linalg.inv(targetSaddleCon.box)
                 # See if we have this process
                 for i in range(len(rate_table)):
                     p1 = current_state.get_process_saddle(rate_table[i][0])
@@ -306,9 +306,9 @@ def kmc_step(current_state, states, time, kT, superbasining, steps=0, config: Co
         if config.debug_use_mean_time:
             step_time = mean_time
         else:
-            #numpy.random.random_sample() uses [0,1)
+            #np.random.random_sample() uses [0,1)
             #which could produce issues with math.log()
-            step_time = -mean_time*math.log(1 - numpy.random.random_sample())
+            step_time = -mean_time*math.log(1 - np.random.random_sample())
 
         time += step_time
 

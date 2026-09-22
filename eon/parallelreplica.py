@@ -5,8 +5,8 @@ from io import StringIO
 import logging
 import logging.handlers
 logger = logging.getLogger('pr')
-import numpy
-numpy.seterr(divide="raise", over="raise", under="print", invalid="raise")
+import numpy as np
+np.seterr(divide="raise", over="raise", under="print", invalid="raise")
 import optparse
 import shutil
 import sys
@@ -139,7 +139,7 @@ def make_searches(comm, current_state, wuid, config: ConfigClass = None):
         ini_changes = [
                         ('Main', 'job', client_job),
                         ('Main', 'random_seed',
-                            str(int(numpy.random.random()*10**9))),
+                            str(int(np.random.random()*10**9))),
                       ]
         search['config.ini'] = io.modify_config(config.config_path, ini_changes)
         searches.append(search)

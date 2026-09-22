@@ -4,7 +4,7 @@ logger = logging.getLogger("displace")
 
 import re
 from math import cos, sin
-import numpy
+import numpy as np
 
 from eon import atoms
 from eon import fileio as io
@@ -170,7 +170,7 @@ class DisplacementManager:
             "not_TCP",
             "water",
         ]
-        r = numpy.random.random_sample()
+        r = np.random.random_sample()
         i = 0
         while self.plist[i] < r:
             i += 1
@@ -233,7 +233,7 @@ class Displace:
         self.void_bias_fraction = 0.2  # self.config.void_bias_fraction
 
         # temporary numpy array of same size as self.reactant.r
-        self.temp_array = numpy.zeros(self.reactant.r.shape)
+        self.temp_array = np.zeros(self.reactant.r.shape)
 
         self.neighbors_list = None
 
@@ -248,7 +248,7 @@ class Displace:
                 self.reactant, self.radius, self.config.comp_brute_neighbors
             )
         displacement_norm = 0.0
-        displacement = numpy.zeros(self.reactant.r.shape)
+        displacement = np.zeros(self.reactant.r.shape)
         if hasattr(atom_index, "__getitem__"):
             logger.debug("Displacement epicenters: ", atom_index)
             neighbors = [
@@ -258,30 +258,30 @@ class Displace:
             ]
             # flatten
             neighbors = sum(neighbors, [])
-            neighbors = numpy.array(list(set(neighbors)), dtype=int)
+            neighbors = np.array(list(set(neighbors)), dtype=int)
 
-            displaced_atoms = numpy.append(atom_index, neighbors)
+            displaced_atoms = np.append(atom_index, neighbors)
         else:
             logger.debug("Displacement epicenter: %d" % atom_index)
             displaced_atoms = [atom_index] + self.neighbors_list[atom_index]
 
         # ensures that the total displacement vector exceeds a given length, but the current default is zero
         while displacement_norm <= self.config.disp_min_norm:
-            displacement = numpy.zeros(self.reactant.r.shape)
+            displacement = np.zeros(self.reactant.r.shape)
             for i in range(len(displaced_atoms)):
                 # don't displace frozen atoms
                 if not self.reactant.atom_is_free()[displaced_atoms[i]]:
                     continue
                 # Displace one of the free atoms by a gaussian distributed
                 # random number with a standard deviation of self.std_dev.
-                displacement[displaced_atoms[i]] = numpy.random.normal(
+                displacement[displaced_atoms[i]] = np.random.normal(
                     scale=self.std_dev, size=3
                 )
                 if self.config.displace_1d:
                     displacement[displaced_atoms[i]] = displacement[
                         displaced_atoms[i]
                     ] * [1, 0, 0]
-            displacement_norm = numpy.linalg.norm(displacement)
+            displacement_norm = np.linalg.norm(displacement)
 
         ### Mike W.
         ## this is a fraction of the total displacement magnitude so a small that
@@ -294,15 +294,15 @@ class Displace:
 
             ## treats the nearest neighbors as repulsive, since I keep finding
             ## interstitials
-            pseudoelectrostatic_force = numpy.zeros(self.reactant.r.shape)
+            pseudoelectrostatic_force = np.zeros(self.reactant.r.shape)
             for atom_index in displaced_atoms:
                 for vec in self.neighbor_list_vectors[atom_index]:
                     mag = (
-                        numpy.linalg.norm(vec) + 1e-6
+                        np.linalg.norm(vec) + 1e-6
                     )  # I just want to prevent NaNs in perfectly symmetric situations
                     pseudoelectrostatic_force[atom_index] += -vec / (mag**3)
             # now we norm it for mixing
-            void_vec = pseudoelectrostatic_force / numpy.linalg.norm(
+            void_vec = pseudoelectrostatic_force / np.linalg.norm(
                 pseudoelectrostatic_force
             )
 
@@ -319,7 +319,7 @@ class Displace:
             for i in range(len(displaced_atoms)):
                 if not self.reactant.atom_is_free()[displaced_atoms[i]]:
                     continue
-                displacement[displaced_atoms[i]] = numpy.random.normal(
+                displacement[displaced_atoms[i]] = np.random.normal(
                     scale=self.std_dev, size=3
                 )
                 if self.config.displace_1d:
@@ -327,8 +327,8 @@ class Displace:
                         displaced_atoms[i]
                     ] * [1, 0, 0]
 
-        displacement /= numpy.linalg.norm(displacement)
-        return displacement_atoms, displacement / numpy.linalg.norm(displacement)
+        displacement /= np.linalg.norm(displacement)
+        return displacement_atoms, displacement / np.linalg.norm(displacement)
 
     def filter_epicenters(self, epicenters):
         """Returns the epicenters that lie in the hole defined by Displace.hole_epicenters.
@@ -400,7 +400,7 @@ class Undercoordinated(Displace):
         if not self.initialized:
             self.init()
         epicenter = self.undercoordinated_atoms[
-            numpy.random.randint(len(self.undercoordinated_atoms))
+            np.random.randint(len(self.undercoordinated_atoms))
         ]
         return self.get_displacement(epicenter)
 
@@ -443,7 +443,7 @@ class Leastcoordinated(Displace):
     def make_displacement(self):
         """Select an undercoordinated atom and displace all atoms in a radius about it."""
         epicenter = self.leastcoordinated_atoms[
-            numpy.random.randint(len(self.leastcoordinated_atoms))
+            np.random.randint(len(self.leastcoordinated_atoms))
         ]
         return self.get_displacement(epicenter)
 
@@ -514,7 +514,7 @@ class ListedAtoms(Displace):
         if self.displace_all:
             epicenter = self.listed_atoms
         else:
-            epicenter = self.listed_atoms[numpy.random.randint(len(self.listed_atoms))]
+            epicenter = self.listed_atoms[np.random.randint(len(self.listed_atoms))]
         return self.get_displacement(epicenter)
 
 
@@ -557,7 +557,7 @@ class ListedTypes(Displace):
         if self.displace_all:
             epicenter = self.listed_atoms
         else:
-            epicenter = self.listed_atoms[numpy.random.randint(len(self.listed_atoms))]
+            epicenter = self.listed_atoms[np.random.randint(len(self.listed_atoms))]
         return self.get_displacement(epicenter)
 
 
@@ -587,7 +587,7 @@ class Random(Displace):
     def make_displacement(self):
         """Select a random atom and displace all atoms in a radius about it."""
         # chose a random atom
-        epicenter = self.free_atoms[numpy.random.randint(len(self.free_atoms))]
+        epicenter = self.free_atoms[np.random.randint(len(self.free_atoms))]
         return self.get_displacement(epicenter)
 
 
@@ -628,7 +628,7 @@ class NotFCCorHCP(Displace):
     def make_displacement(self):
         """Select an atom without HCP or FCC coordination and displace all atoms in a radius about it."""
         epicenter = self.not_HCP_or_FCC_atoms[
-            numpy.random.randint(len(self.not_HCP_or_FCC_atoms))
+            np.random.randint(len(self.not_HCP_or_FCC_atoms))
         ]
         return self.get_displacement(epicenter)
 
@@ -670,7 +670,7 @@ class NotTCPorBCC(Displace):
     def make_displacement(self):
         """Select an atom without TCP or BCC coordination and displace all atoms in a radius about it."""
         epicenter = self.not_TCP_or_BCC_atoms[
-            numpy.random.randint(len(self.not_TCP_or_BCC_atoms))
+            np.random.randint(len(self.not_TCP_or_BCC_atoms))
         ]
         return self.get_displacement(epicenter)
 
@@ -709,7 +709,7 @@ class NotTCP(Displace):
 
     def make_displacement(self):
         """Select an atom without HCP or FCC coordination and displace all atoms in a radius about it."""
-        epicenter = self.not_TCP_atoms[numpy.random.randint(len(self.not_TCP_atoms))]
+        epicenter = self.not_TCP_atoms[np.random.randint(len(self.not_TCP_atoms))]
         return self.get_displacement(epicenter)
 
 
@@ -751,7 +751,7 @@ class Water:
             n = len(self.molecule_list)
             molecule_list = list()
             for i in range(self.random):
-                i = int(numpy.random.uniform(0, n))
+                i = int(np.random.uniform(0, n))
                 molecule_list.append(self.molecule_list[i])
         else:
             molecule_list = self.molecule_list
@@ -761,14 +761,14 @@ class Water:
             o = i + self.n_water * 2
             # Displace one of the free atoms by a gaussian distributed
             # random number with a standard deviation of self.std_dev.
-            disp = numpy.random.normal(scale=self.stdev_translation, size=3)
+            disp = np.random.normal(scale=self.stdev_translation, size=3)
             displaced_atoms.r[h1] += disp
             displaced_atoms.r[h2] += disp
             displaced_atoms.r[o] += disp
             rh1 = displaced_atoms.r[h1]
             rh2 = displaced_atoms.r[h2]
             ro = displaced_atoms.r[o]
-            disp = numpy.random.normal(scale=self.stdev_rotation, size=3)
+            disp = np.random.normal(scale=self.stdev_rotation, size=3)
             rh1, rh2, ro = self.rotate_water(rh1, rh2, ro, disp[0], disp[1], disp[2])
             displaced_atoms.r[h1] = rh1
             displaced_atoms.r[h2] = rh2
@@ -778,7 +778,7 @@ class Water:
 
     ## Rotate a molecule of water.
     # Rotate around the centre of gravity of the molecule.
-    # @param[in] "hydrogen1, hydrogen2, oxygen" numpy.array: coordinates of atoms.
+    # @param[in] "hydrogen1, hydrogen2, oxygen" np.array: coordinates of atoms.
     # @param[in] "psi, theta, phi" float: Angle in @em radians of rotation around <em> x, y, z </em> axes.
     # @param[in] "hydrogenMass, oxygenMass" float: masses of the hydrogen and oxygen atoms.
     # @return "hydrogen1, hydrogen2, oxygen" coordinates of atoms after rotation
@@ -798,7 +798,7 @@ class Water:
         G = (hydrogen_mass * (hydrogen1 + hydrogen2) + oxygen_mass * oxygen) / (
             hydrogen_mass * 2.0 + oxygen_mass
         )
-        rot = numpy.array(
+        rot = np.array(
             [
                 [cos(theta) * cos(phi), cos(theta) * sin(phi), -sin(theta)],
                 [
@@ -813,9 +813,9 @@ class Water:
                 ],
             ]
         )
-        rh1 = numpy.tensordot(rot, (hydrogen1 - G), 1) + G
-        rh2 = numpy.tensordot(rot, (hydrogen2 - G), 1) + G
-        ro = numpy.tensordot(rot, (oxygen - G), 1) + G
+        rh1 = np.tensordot(rot, (hydrogen1 - G), 1) + G
+        rh2 = np.tensordot(rot, (hydrogen2 - G), 1) + G
+        ro = np.tensordot(rot, (oxygen - G), 1) + G
         return rh1, rh2, ro
 
 

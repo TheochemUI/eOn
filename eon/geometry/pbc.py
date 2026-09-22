@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Optional, Sequence, Union
+from typing import Sequence, Union
 
 import numpy as np
 
@@ -26,7 +26,7 @@ def _periodic_mask(periodic: PeriodicSpec | None) -> np.ndarray | None:
 
 
 def _pbc_numpy(
-    r, box, ibox: Optional[np.ndarray], periodic: PeriodicSpec | None = None
+    r, box, ibox: np.ndarray | None, periodic: PeriodicSpec | None = None
 ) -> np.ndarray:
     if ibox is None:
         ibox = np.linalg.inv(box)
@@ -41,7 +41,7 @@ def _pbc_numpy(
 def pbc(
     r,
     box,
-    ibox: Optional[np.ndarray] = None,
+    ibox: np.ndarray | None = None,
     periodic: PeriodicSpec | None = None,
 ) -> np.ndarray:
     """Minimum-image convention for displacement(s).
@@ -94,7 +94,7 @@ def pbc(
 
 
 def pbc_eon_legacy(
-    r, box, ibox: Optional[np.ndarray] = None, periodic: PeriodicSpec | None = None
+    r, box, ibox: np.ndarray | None = None, periodic: PeriodicSpec | None = None
 ) -> np.ndarray:
     """eOn numpy wrap. Kept so tests can compare it to minimage."""
     r = np.asarray(r, dtype=float)
@@ -105,7 +105,7 @@ def pbc_eon_legacy(
 def per_atom_norm(
     v,
     box,
-    ibox: Optional[np.ndarray] = None,
+    ibox: np.ndarray | None = None,
     periodic: PeriodicSpec | None = None,
 ) -> np.ndarray:
     """Per-row Euclidean norm after PBC (shape ``(N,)``)."""
@@ -116,7 +116,7 @@ def per_atom_norm(
 def per_atom_norm_gen(
     v,
     box,
-    ibox: Optional[np.ndarray] = None,
+    ibox: np.ndarray | None = None,
     periodic: PeriodicSpec | None = None,
 ):
     """Yield per-row norms after PBC (legacy generator API)."""
