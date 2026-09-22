@@ -392,10 +392,11 @@ static int eonClientMain(int argc, char **argv) {
       }
       QUILL_LOG_INFO(logger, "client: rank: {} chdir to {}", irank, path);
 
-      try {
-        std::filesystem::current_path(path.c_str());
-      } catch (const std::filesystem::filesystem_error &e) {
-        QUILL_LOG_ERROR(logger, "error: chdir: {}", e.what());
+      if (const auto chdirError =
+              eonc::helpers::enterJobDirectory(path.c_str())) {
+        QUILL_LOG_ERROR(logger, "error: chdir: {}", *chdirError);
+        logger->flush_log();
+        return EXIT_FAILURE;
       }
     }
 #endif

@@ -76,6 +76,16 @@ bool eonc::helpers::existsFile(std::string filename) {
   return std::filesystem::exists(filename);
 }
 
+std::optional<std::string>
+eonc::helpers::enterJobDirectory(std::string_view jobPath) {
+  try {
+    std::filesystem::current_path(std::filesystem::path{jobPath});
+  } catch (const std::filesystem::filesystem_error &err) {
+    return std::string{err.what()};
+  }
+  return std::nullopt;
+}
+
 std::string eonc::helpers::getRelevantFile(std::string filename) {
   const auto dot = filename.rfind('.');
   const std::string prefix =
