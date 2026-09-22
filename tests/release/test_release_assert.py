@@ -46,7 +46,10 @@ def test_assert_require_changelog_for_current_version_on_real_repo():
     ver = _current_version()
     proc = _run(ver, "--require-changelog")
     assert proc.returncode == 0, proc.stderr
-    assert "CHANGELOG.md has section" in proc.stdout
+    if ".dev" in ver:
+        assert "ok: lockstep version" in proc.stdout
+    else:
+        assert "CHANGELOG.md has section" in proc.stdout
 
 
 def test_assert_fails_wrong_expected_version():
@@ -138,6 +141,20 @@ def test_lockstep_helpers_on_fixture_tree(tmp_path: Path):
     (root / "CHANGELOG.md").write_text("# empty\n", encoding="utf-8")
     errs2 = ra.assert_lockstep(root, "1.2.3", require_changelog=True)
     assert errs2 and "CHANGELOG" in errs2[0]
+
+
+def test_semver_accepts_pep440_dev(tmp_path: Path):
+    sys.path.insert(0, str(REPO / "scripts"))
+    import release_assert as ra  # type: ignore
+
+    root = tmp_path / "devver"
+    root.mkdir()
+    (root / "pyproject.toml").write_text(
+        '[project]\nname = "eon-akmc"\nversion = "3.3.1.dev0"\n',
+        encoding="utf-8",
+    )
+    (root / "pixi.toml").write_text('version = "3.3.1.dev0"\n', encoding="utf-8")
+    assert ra.assert_lockstep(root) == []
 
 
 def test_semver_rejects_garbage(tmp_path: Path):
