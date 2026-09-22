@@ -12,6 +12,7 @@
 
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/BasinHoppingSaddleSearch.h"
 #include "eon/Matter.h"
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/Parameters.h"
@@ -177,6 +178,16 @@ TEST_CASE_METHOD(
   // report success (covers finalizeClimbStatus applied inside run()).
   REQUIRE(status != MinModeSaddleSearch::STATUS_GOOD);
   REQUIRE(status != MinModeSaddleSearch::STATUS_INIT);
+}
+
+TEST_CASE_METHOD(SaddleSearchFixture,
+                 "Basin hop rejection is not labeled Initialized",
+                 "[saddle_search][basin_hopping]") {
+  BasinHoppingSaddleSearch search(matter, matter, pot, params);
+  // Shared MinMode table still calls code 1 Initialized. This search does not.
+  REQUIRE(std::string(MinModeSaddleSearch::statusMessage(1)) == "Initialized");
+  REQUIRE(std::string(search.describeStatus(1)) == "Basin hop rejected");
+  REQUIRE(std::string(search.describeStatus(0)) == "Success");
 }
 
 TEST_CASE_METHOD(SaddleSearchFixture,

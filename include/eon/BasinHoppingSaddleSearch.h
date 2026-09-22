@@ -35,8 +35,12 @@ public:
   int run(void);
   double getEigenvalue();
   AtomMatrix getEigenvector();
-  std::string_view describeStatus(int status) const override {
-    return MinModeSaddleSearch::statusMessage(status);
+  std::string_view describeStatus(int code) const override {
+    // Code 1 is the Metropolis rejection, not MinMode STATUS_INIT.
+    if (code == 1) {
+      return "Basin hop rejected";
+    }
+    return MinModeSaddleSearch::statusMessage(code);
   }
   int getStatus() const override { return status; }
 

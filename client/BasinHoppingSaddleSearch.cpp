@@ -39,7 +39,8 @@ int BasinHoppingSaddleSearch::run() {
   double r = eonc::rng::random();
   if (ereactant < eproduct) {
     if (r > p) { // reject
-      return 1;
+      status = 1;
+      return status;
     }
   }
   // NEB reactant to minimized "saddle"
