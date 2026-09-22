@@ -11,6 +11,11 @@
 */
 
 #include "eon/Dimer.h"
+#ifdef WITH_GPRD
+// Before TestUtils.hpp: that header does `using namespace eonc`, and the
+// GP headers call ::log. After the using-directive, log is also eonc::log.
+#include "eon/AtomicGPDimer.h"
+#endif
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Davidson.h"
@@ -23,9 +28,6 @@
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/MobileAtoms.h"
 #include "eon/Parameters.h"
-#ifdef WITH_GPRD
-#include "eon/AtomicGPDimer.h"
-#endif
 
 #include <algorithm>
 #include <cmath>
@@ -218,6 +220,20 @@ TEST_CASE_METHOD(DimerFixture, "gprdimer constructs AtomicGPDimer in place",
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   REQUIRE(strategy != nullptr);
   REQUIRE(dynamic_cast<AtomicGPDimer *>(strategy.get()) != nullptr);
+}
+
+TEST_CASE_METHOD(DimerFixture,
+                 "gprdimer force box follows Matter periodicity",
+                 "[eigenmode][strategy][gprdimer]") {
+  const Matrix3d cell = Matrix3d::Identity() * 18.0;
+  matter->setCell(cell);
+  matter->setPeriodic(false);
+  AtomicGPDimer isolated(matter, params, pot);
+  REQUIRE(isolated.forceBox().cwiseAbs().maxCoeff() == 0.0);
+
+  matter->setPeriodic(true);
+  AtomicGPDimer periodic(matter, params, pot);
+  REQUIRE(periodic.forceBox().isApprox(cell, 1e-15));
 }
 #endif
 
