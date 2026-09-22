@@ -144,6 +144,9 @@ def _frame_to_atoms(frame):
 
 def loadcons(filename):
     frames = readcon.read_con(filename)
+    from eon.concorpus import mirror_con_path
+
+    mirror_con_path(filename)
     return [_frame_to_atoms(f) for f in frames]
 
 
@@ -199,7 +202,11 @@ def loadcon(filein, reset = True):
         if not frames:
             raise IOError("No frames found in con data")
         return _frame_to_atoms(frames[0])
-    return _frame_to_atoms(readcon.read_first_frame(filein))
+    atoms = _frame_to_atoms(readcon.read_first_frame(filein))
+    from eon.concorpus import mirror_con_path
+
+    mirror_con_path(filein)
+    return atoms
 
 def _as_structure(p):
     """Copy a Structure-like object into a Structure.
@@ -258,22 +265,28 @@ def savecon(fileout, p, w = 'w'):
     read the existing frames and rewrite the file.
     '''
     frame = _atoms_to_frame(p)
+    frame_text = readcon.write_con_string([frame])
     if hasattr(fileout, 'write'):
-        text = readcon.write_con_string([frame])
-        fileout.write(text)
+        fileout.write(frame_text)
     elif w == 'a' and Path(fileout).exists() and Path(fileout).stat().st_size > 0:
         if _path_is_compressed_con(fileout):
             existing = readcon.read_con(fileout)
             existing.append(frame)
             readcon.write_con(fileout, existing)
         else:
-            text = readcon.write_con_string([frame])
             with open(fileout, 'a') as fh:
                 if not _file_ends_with_newline(fileout):
                     fh.write('\n')
-                fh.write(text)
+                fh.write(frame_text)
     else:
         readcon.write_con(fileout, [frame])
+    if not hasattr(fileout, 'write'):
+        from eon.concorpus import mirror_con_path, mirror_con_text
+
+        if w == 'a':
+            mirror_con_text(fileout, frame_text)
+        else:
+            mirror_con_path(fileout)
 
 
 def load_mode(modefilein):
