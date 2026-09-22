@@ -12,6 +12,7 @@
 
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/BasinHoppingSaddleSearch.h"
 #include "eon/Matter.h"
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/Parameters.h"
@@ -239,6 +240,49 @@ TEST_CASE_METHOD(SaddleSearchFixture, "MinModeSaddleSearch with classic Dimer",
 
   REQUIRE(status >= MinModeSaddleSearch::STATUS_GOOD);
   REQUIRE(std::isfinite(search.getEigenvalue()));
+}
+
+TEST_CASE("basin hopping dimer direction uses the minimum image",
+          "[saddle_search][basin_hopping][pbc]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter image(pot, params);
+  image.resize(2);
+  image.setAtomicNr(0, 1);
+  image.setAtomicNr(1, 1);
+  image.setCell(Matrix3d::Identity() * 10.0);
+  image.setPeriodic(true);
+
+  AtomMatrix prev(2, 3);
+  AtomMatrix next(2, 3);
+  prev.setZero();
+  next.setZero();
+  // Atom 0 has crossed the cell: 0.2 and 9.8. The short step is -0.4.
+  prev(0, 0) = 0.2;
+  prev(0, 1) = 1.0;
+  prev(0, 2) = 2.0;
+  next(0, 0) = 9.8;
+  next(0, 1) = 1.0;
+  next(0, 2) = 2.0;
+  // Atom 1 stays inside the cell. The step must not be rewritten.
+  prev(1, 0) = 1.0;
+  next(1, 0) = 1.5;
+
+  AtomMatrix direction =
+      BasinHoppingSaddleSearch::initialDimerDirection(image, prev, next);
+  REQUIRE(direction(0, 0) == Catch::Approx(-0.2).margin(1e-12));
+  REQUIRE(direction(0, 1) == Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(direction(0, 2) == Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(direction(1, 0) == Catch::Approx(0.25).margin(1e-12));
+  REQUIRE(direction(1, 1) == Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(direction(1, 2) == Catch::Approx(0.0).margin(1e-12));
+
+  image.setPeriodic(false);
+  AtomMatrix raw =
+      BasinHoppingSaddleSearch::initialDimerDirection(image, prev, next);
+  REQUIRE(raw(0, 0) == Catch::Approx(4.8).margin(1e-12));
+  REQUIRE(raw(1, 0) == Catch::Approx(0.25).margin(1e-12));
 }
 
 } /* namespace tests */
