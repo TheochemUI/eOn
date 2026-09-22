@@ -61,8 +61,10 @@ AtomicGPDimer::AtomicGPDimer(std::shared_ptr<Matter> matter,
 
 void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
                             AtomMatrix initialDirectionAtomMatrix) {
+  // Saddle search moves this Matter after the solver is constructed.
+  *matterCenter = *matter;
   atoms_config = eonc::helpers::eon_matter_to_atmconf(matter.get());
-  copyAtomMatrixToCoord(matterCenter->getPositionsFree(), R_init);
+  copyAtomMatrixToCoord(matter->getPositionsFree(), R_init);
   init_middle_point.clear();
   init_middle_point.R = R_init;
   init_observations.clear();
