@@ -18,11 +18,13 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/BaseStructures.h"
+#include "eon/BasinHoppingJob.h"
 #include "eon/Job.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
+#include "eon/RandomNumbers.h"
 #ifdef WITH_ARTN
 #include "eon/ARTnSaddleSearch.h"
 #include "eon/libs/ARTn/ARTnResource.h"
@@ -35,6 +37,20 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+
+namespace eonc {
+class BasinHoppingDisplaceAccess {
+public:
+  static void resizeCoincident(BasinHoppingJob &job, long n) {
+    job.current->resize(n);
+    job.trial->resize(n);
+  }
+
+  static AtomMatrix displace(BasinHoppingJob &job, double step) {
+    return job.displaceRandom(step);
+  }
+};
+} // namespace eonc
 
 namespace tests {
 
@@ -775,6 +791,30 @@ max_iterations = 200
   // 50% acceptance ratio
   double ar = std::stod(results["acceptance_ratio"]);
   REQUIRE(ar == Catch::Approx(0.500).margin(0.05));
+}
+
+TEST_CASE("Basin hopping scaled displacement stays finite at the center",
+          "[job][basin_hopping]") {
+  eonc::Runtime rt;
+  const double step = 0.5;
+  for (const char *algorithm : {"linear", "quadratic"}) {
+    auto params = std::make_unique<Parameters>();
+    ParametersLoadAccess::potential_options(*params).potential = PotType::LJ;
+    ParametersLoadAccess::basin_hopping_options(*params)
+        .displacement_algorithm = algorithm;
+    ParametersLoadAccess::basin_hopping_options(*params)
+        .displacement_distribution = "uniform";
+    eonc::rng::random(42);
+    BasinHoppingJob job(std::move(params), rt);
+    BasinHoppingDisplaceAccess::resizeCoincident(job, 3);
+    const AtomMatrix displacement =
+        BasinHoppingDisplaceAccess::displace(job, step);
+    REQUIRE(displacement.rows() == 3);
+    REQUIRE(displacement.cols() == 3);
+    REQUIRE(displacement.array().isFinite().all());
+    REQUIRE(displacement.cwiseAbs().maxCoeff() > 0.0);
+    REQUIRE(displacement.cwiseAbs().maxCoeff() <= step);
+  }
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,

@@ -322,6 +322,10 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
   displacement.resize(trial->numberOfAtoms(), 3);
   displacement.setZero();
   VectorXd distvec = calculateDistanceFromCenter(current.get());
+  // Coincident atoms share a zero radius. Dividing by it writes NaN and
+  // the hop cannot leave the center. Those atoms are the outer shell, so
+  // the step stays the unscaled displacement.
+  const double radius = distvec.size() > 0 ? distvec.maxCoeff() : 0.0;
   int num = trial->numberOfAtoms();
   int m = 0;
   if (params.basin_hopping_options().single_atom_displace) {
@@ -334,20 +338,24 @@ AtomMatrix BasinHoppingJob::displaceRandom(double curDisplacement) {
     double disp = 0.0; // displacement size, possibly scaled
 
     if (!trial->getFixed(i)) {
-      if (params.basin_hopping_options().displacement_algorithm == "standard") {
+      const std::string &algorithm =
+          params.basin_hopping_options().displacement_algorithm;
+      if (algorithm == "standard") {
         disp = curDisplacement;
       }
       // scale displacement linearly with the particle radius
-      else if (params.basin_hopping_options().displacement_algorithm ==
-               "linear") {
-        double Cs = curDisplacement / distvec.maxCoeff();
-        disp = Cs * dist;
+      else if (algorithm == "linear") {
+        disp =
+            radius == 0.0 ? curDisplacement : curDisplacement * (dist / radius);
       }
       // scale displacement quadratically with the particle radius
-      else if (params.basin_hopping_options().displacement_algorithm ==
-               "quadratic") {
-        double Cq = curDisplacement / (distvec.maxCoeff() * distvec.maxCoeff());
-        disp = Cq * dist * dist;
+      else if (algorithm == "quadratic") {
+        if (radius == 0.0) {
+          disp = curDisplacement;
+        } else {
+          const double scale = dist / radius;
+          disp = curDisplacement * scale * scale;
+        }
       } else {
         log = eonc::log::traceback();
         QUILL_LOG_CRITICAL(log, "Unknown displacement_algorithm\n");
