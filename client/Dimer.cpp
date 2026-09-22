@@ -106,10 +106,12 @@ void Dimer::compute(std::shared_ptr<Matter> matter,
       doneRotating = true;
     }
 
-    double rotForce1 = matDot(rotationalForce, rotationalPlane);
-    rotate(params.dimer_options().rotation_angle);
-
+    // A probe after acceptance would return rotation_angle off the
+    // direction whose curvature was just measured.
     if (!doneRotating) {
+      double rotForce1 = matDot(rotationalForce, rotationalPlane);
+      rotate(params.dimer_options().rotation_angle);
+
       curvature = calcRotationalForceReturnCurvature(rotationalForce);
       double rotForce2 = matDot(rotationalForce, rotationalPlane);
 
