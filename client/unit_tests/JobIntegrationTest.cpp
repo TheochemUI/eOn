@@ -375,8 +375,8 @@ potential = lj
 neighbor_cutoff = 3.3
 )");
 
-  constexpr std::array<double, 9> dRs{
-      1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 5e-3, 0.01, 0.05, 0.1};
+  constexpr std::array<double, 9> dRs{1e-7, 1e-6, 1e-5, 1e-4, 1e-3,
+                                      5e-3, 0.01, 0.05, 0.1};
   std::vector<double> expect;
   {
     std::filesystem::current_path(workdir);
