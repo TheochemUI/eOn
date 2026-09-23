@@ -137,9 +137,15 @@ int DynamicsSaddleSearch::run() {
           QUILL_LOG_DEBUG(log, "MDTimes[{}] = {:.3f}", ii,
                           mdTimes[ii] * params.constants().timeUnit);
         }
-        // Subtract half the record interval to avoid systematic bias
-        time = mdTimes[image] -
-               params.saddle_search_options().dynamics.record_interval / 2.0;
+        // image is the first snapshot that left the reactant. Half a
+        // record interval before that frame is the unbiased crossing,
+        // and it must not fall before the preceding reactant frame.
+        const double halfRecord =
+            params.saddle_search_options().dynamics.record_interval / 2.0;
+        time = mdTimes[image] - halfRecord;
+        if (image > 0 && time < mdTimes[image - 1]) {
+          time = mdTimes[image - 1];
+        }
         QUILL_LOG_DEBUG(log, "Transition time {:.2f} fs",
                         time * params.constants().timeUnit);
 
@@ -338,7 +344,12 @@ int DynamicsSaddleSearch::refineTransition(
     }
   }
 
-  return (lo + hi) / 2;
+  // Adjacent brackets make (lo + hi) / 2 equal lo, the snapshot that
+  // still minimizes to the reactant. The transition is the higher index.
+  if (hi < 0) {
+    return 0;
+  }
+  return hi;
 }
 
 double DynamicsSaddleSearch::getEigenvalue() { return eigenvalue; }
