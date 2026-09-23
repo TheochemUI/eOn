@@ -1,0 +1,1 @@
+OHTSTJob::symmetryReflect measures distance to each product half-line, so a configuration behind the reactant uses the distance back to that endpoint instead of the perpendicular distance to the infinite line.

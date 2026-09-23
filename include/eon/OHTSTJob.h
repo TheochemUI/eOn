@@ -74,6 +74,7 @@ private:
   //! true when a reflection was applied.
   bool symmetryReflect(const VectorXd &xR, VectorXd &x, VectorXd &v,
                        const VectorXd &xOld, const VectorXd *normal);
+  friend struct OHTSTSymmetryTest;
 
   std::vector<VectorXd> m_symDirs; //!< p-hat_i, index 0 = primary
   VectorXd m_symXR;                //!< reactant anchor R of the half-lines

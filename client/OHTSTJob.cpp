@@ -83,7 +83,8 @@ bool OHTSTJob::symmetryReflect(const VectorXd &xR, VectorXd &x, VectorXd &v,
     return false;
   }
   // Eq 15: distance from the configuration to each half-line
-  // l_i = { R + t p_i, t >= 0 }.
+  // l_i = { R + t p_i, t >= 0 }. For t < 0 the closest point is the
+  // reactant endpoint, not the foot on the infinite line.
   const VectorXd rel = x - xR;
   const double rel2 = rel.squaredNorm();
   double dPrimary = 0.0;
@@ -91,7 +92,7 @@ bool OHTSTJob::symmetryReflect(const VectorXd &xR, VectorXd &x, VectorXd &v,
   double dMin = 0.0;
   for (size_t i = 0; i < m_symDirs.size(); ++i) {
     const double proj = rel.dot(m_symDirs[i]);
-    const double d2 = std::max(0.0, rel2 - proj * proj);
+    const double d2 = (proj < 0.0) ? rel2 : std::max(0.0, rel2 - proj * proj);
     const double d = std::sqrt(d2);
     if (i == 0) {
       dPrimary = d;
