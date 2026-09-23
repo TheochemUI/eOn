@@ -35,6 +35,8 @@ std::vector<std::string> BasinHoppingJob::run() {
   jump_count = 0; // count of jump movies
   swap_count = 0; // count of swap moves
   disp_count = 0; // count of displacement moves
+  // Quench tail may not run when stop_energy breaks first.
+  int quench_displacements = 0;
   int consecutive_rejected_trials = 0;
   double totalAccept = 0.0;
   std::unique_ptr<Matter> minTrial = std::make_unique<Matter>(pot, params);
@@ -117,6 +119,9 @@ std::vector<std::string> BasinHoppingJob::run() {
     } else {
       AtomMatrix displacement;
       displacement = displaceRandom(curDisplacement);
+      if (step >= params.basin_hopping_options().steps) {
+        quench_displacements++;
+      }
 
       trial->setPositions(current->getPositions() + displacement);
       swapMove = false;
@@ -240,22 +245,25 @@ std::vector<std::string> BasinHoppingJob::run() {
         jump_count++;
         jump = displaceRandom(curDisplacement);
         current->setPositions(current->getPositions() + jump);
+        // Only a minimized jump is a basin. The raw geometry must not become
+        // the Metropolis reference or the stored global minimum.
         if (params.basin_hopping_options().significant_structure) {
           eonc::geometry::pushApart(
               current, params.basin_hopping_options().push_apart_distance);
           current->relax(true);
-        }
-        currentEnergy = current->getPotentialEnergy();
-        if (currentEnergy < minimumEnergy) {
-          minimumEnergy = currentEnergy;
-          *minimumEnergyStructure = *current;
+          currentEnergy = current->getPotentialEnergy();
+          if (currentEnergy < minimumEnergy) {
+            minimumEnergy = currentEnergy;
+            *minimumEnergyStructure = *current;
+          }
         }
       }
     }
 
     int nadjust = params.basin_hopping_options().adjust_period;
     double adjustFraction = params.basin_hopping_options().adjust_fraction;
-    if ((step + 1) % nadjust == 0 &&
+    // A zero period is not an interval; the modulo would divide by zero.
+    if (nadjust != 0 && (step + 1) % nadjust == 0 &&
         params.basin_hopping_options().adjust_displacement) {
       double recentRatio =
           static_cast<double>(recentAccept) / static_cast<double>(nadjust);
@@ -294,8 +302,7 @@ std::vector<std::string> BasinHoppingJob::run() {
     }
     env.extras.emplace_back(
         "total_normal_displacement_steps",
-        static_cast<double>(disp_count - jump_count -
-                            params.basin_hopping_options().quenching_steps));
+        static_cast<double>(disp_count - jump_count - quench_displacements));
     env.extras.emplace_back("total_jump_steps",
                             static_cast<double>(jump_count));
     env.extras.emplace_back("total_swap_steps",
@@ -426,18 +433,22 @@ void BasinHoppingJob::randomSwap(Matter *matter) {
 }
 
 std::vector<long> BasinHoppingJob::getElements(Matter *matter) {
-  std::array<int, 118> allElements{};
+  // Z is 0..118. A 118-slot table stores 118 one past the end.
+  constexpr int kElementSlots = 119;
+  std::array<int, kElementSlots> allElements{};
   std::vector<long> elements;
 
   for (long y = 0; y < matter->numberOfAtoms(); ++y) {
     if (!matter->getFixed(y)) {
-      const int index = matter->getAtomicNr(y);
-      allElements[index] = 1;
+      const long z = matter->getAtomicNr(y);
+      if (z >= 0 && z < kElementSlots) {
+        allElements[static_cast<size_t>(z)] = 1;
+      }
     }
   }
 
-  for (int i = 0; i < 118; ++i) {
-    if (allElements[i] != 0) {
+  for (int i = 0; i < kElementSlots; ++i) {
+    if (allElements[static_cast<size_t>(i)] != 0) {
       elements.push_back(i);
     }
   }

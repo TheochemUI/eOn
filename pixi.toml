@@ -37,6 +37,7 @@ rust = ">=1.88"
 [pypi-dependencies]
 towncrier = ">=25.8.0, <26"
 readcon = ">=0.14.9"
+readcon-db = ">=0.1.6"
 vesin = ">=0.6.1, <0.7"
 nanobind = ">=2.4.0, <3"  # pyeonclient (stable ABI / free-threaded); not pybind11
 xxhash = ">=3.4.0, <4"

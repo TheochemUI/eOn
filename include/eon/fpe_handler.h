@@ -34,4 +34,17 @@ private:
   std::mutex mutex_;
 };
 
+// eat_fpe for one scope. The destructor restores traps on every exit,
+// including when the guarded call throws.
+class FPEGuard {
+public:
+  FPEGuard() { handler_.eat_fpe(); }
+  ~FPEGuard() { handler_.restore_fpe(); }
+  FPEGuard(const FPEGuard &) = delete;
+  FPEGuard &operator=(const FPEGuard &) = delete;
+
+private:
+  FPEHandler handler_;
+};
+
 } // namespace eonc

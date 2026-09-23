@@ -257,43 +257,59 @@ void Dynamics::noseHooverVerlet() {
 }
 
 /// Langevin dynamics (velocity-Verlet with friction and random forces).
+/// Matter::getFixed(atom) is true only when every axis is fixed, so noise
+/// and the position kick are applied per free axis.
 void Dynamics::langevinVerlet() {
-  double gamma = m_config.langevin_friction;
+  const double gamma = m_config.langevin_friction;
   AtomMatrix pos = matter->getPositions();
   AtomMatrix vel = matter->getVelocities();
   AtomMatrix acc = matter->getAccelerations();
-  AtomMatrix noise = acc; // same shape
-  auto mass = matter->getMasses();
+  AtomMatrix noise = AtomMatrix::Zero(nAtoms, 3);
+  const auto mass = matter->getMasses();
 
-  // Generate friction + stochastic forces
-  AtomMatrix friction = -gamma * vel;
-  for (long i = 0; i < nAtoms; i++) {
-    if (!matter->getFixed(i)) {
+  // Zero a frozen axis by assignment. Multiplying by the free mask leaves
+  // a NaN in place, and setPositions stores every component.
+  auto holdFixed = [&](AtomMatrix &m) {
+    for (long i = 0; i < nAtoms; i++) {
       for (int j = 0; j < 3; j++) {
+        if (matter->getFixed(i, j)) {
+          m(i, j) = 0.0;
+        }
+      }
+    }
+  };
+  auto addNoise = [&]() {
+    noise.setZero();
+    for (long i = 0; i < nAtoms; i++) {
+      for (int j = 0; j < 3; j++) {
+        if (matter->getFixed(i, j)) {
+          continue;
+        }
         noise(i, j) = std::sqrt(4.0 * gamma * kB * temperature / dt / mass[i]) *
                       eonc::rng::gaussRandom(0.0, 1.0);
       }
     }
-  }
+  };
+
+  addNoise();
+  AtomMatrix friction = -gamma * vel;
+  holdFixed(friction);
+  holdFixed(acc);
   acc += friction + noise;
 
   vel += acc * 0.5 * dt;
+  holdFixed(vel);
   pos += vel * dt;
   matter->setPositions(pos);
 
-  // Second half-step
   acc = matter->getAccelerations();
+  addNoise();
   friction = -gamma * vel;
-  for (long i = 0; i < nAtoms; i++) {
-    if (!matter->getFixed(i)) {
-      for (int j = 0; j < 3; j++) {
-        noise(i, j) = std::sqrt(4.0 * gamma * kB * temperature / dt / mass[i]) *
-                      eonc::rng::gaussRandom(0.0, 1.0);
-      }
-    }
-  }
+  holdFixed(friction);
+  holdFixed(acc);
   acc += friction + noise;
   vel += 0.5 * dt * acc;
+  holdFixed(vel);
   matter->setVelocities(vel);
 }
 

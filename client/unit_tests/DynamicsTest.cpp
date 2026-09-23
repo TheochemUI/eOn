@@ -222,4 +222,30 @@ TEST_CASE("Nose-Hoover targets unfixed axes of a partly fixed atom",
   REQUIRE(matter.getVelocities()(0, 2) == Catch::Approx(0.0).margin(0.0));
 }
 
+TEST_CASE_METHOD(DynamicsFixture,
+                 "Dynamics Langevin holds a per-axis frozen coordinate",
+                 "[dynamics][langevin][fixed]") {
+  // Whole-atom getFixed is false; only z is frozen.
+  matter->setFixed(0, 2, 1);
+  matter->setPeriodic(false);
+  ParametersLoadAccess::thermostat_options(params).kind = "langevin";
+  ParametersLoadAccess::thermostat_options(params).langevin_friction = 0.01;
+  eonc::rng::random(42);
+  Dynamics dyn(matter, params);
+  dyn.setTemperature(300.0);
+  dyn.setThermalVelocity();
+
+  const AtomMatrix before = matter->getPositions();
+  const double frozenZ = before(0, 2);
+  for (int i = 0; i < 8; i++) {
+    dyn.oneStep();
+  }
+  const AtomMatrix after = matter->getPositions();
+  REQUIRE(after(0, 2) == frozenZ);
+  const double freeMove = std::abs(after(0, 0) - before(0, 0)) +
+                          std::abs(after(0, 1) - before(0, 1));
+  REQUIRE(freeMove > 1e-8);
+  REQUIRE(matter->getVelocities()(0, 2) == 0.0);
+}
+
 } /* namespace tests */
