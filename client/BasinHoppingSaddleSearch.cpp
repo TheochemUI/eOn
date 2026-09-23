@@ -70,9 +70,9 @@ int BasinHoppingSaddleSearch::run() {
   // do dimer
   // Calculate initial direction
   AtomMatrix r_1 = neb.path[HighestImage - 1]->getPositions();
-  AtomMatrix r_2 = neb.path[HighestImage]->getPositions();
   AtomMatrix r_3 = neb.path[HighestImage + 1]->getPositions();
-  AtomMatrix direction = (r_3 - r_1) / 2;
+  AtomMatrix direction =
+      initialDimerDirection(*neb.path[HighestImage], r_1, r_3);
   MinModeSaddleSearch dim(neb.path[HighestImage], direction.normalized(),
                           ereactant, params, pot);
   dim.run();

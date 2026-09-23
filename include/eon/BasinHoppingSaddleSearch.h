@@ -32,6 +32,14 @@ public:
   }
   ~BasinHoppingSaddleSearch() = default;
 
+  // Minimum-image (next - prev) / 2. setPositions wraps into the cell, so a
+  // raw central difference is a box-length jump when a bead crosses a face.
+  [[nodiscard]] static AtomMatrix
+  initialDimerDirection(const Matter &image, const AtomMatrix &prev,
+                        const AtomMatrix &next) {
+    return image.pbc(next - prev) / 2.0;
+  }
+
   int run(void);
   double getEigenvalue();
   AtomMatrix getEigenvector();
