@@ -19,6 +19,7 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Davidson.h"
+#include "eon/Dimer.h"
 #include "eon/DimerRotationDispatch.h"
 #include "eon/EigenmodeStrategy.h"
 #include "eon/ImprovedDimer.h"
@@ -92,6 +93,39 @@ TEST_CASE_METHOD(DimerFixture,
   double eigenvalue = dimer->getEigenvalue();
   REQUIRE(std::isfinite(eigenvalue));
   REQUIRE(eigenvalue < 0.0);
+}
+
+TEST_CASE_METHOD(DimerFixture,
+                 "Classic Dimer keeps the accepted orientation at convergence",
+                 "[dimer][eigenmode]") {
+  ParametersLoadAccess::dimer_options(params).improved = false;
+  ParametersLoadAccess::dimer_options(params).remove_rotation = false;
+  // torque_min above any rotational force accepts on the first check,
+  // before a finite-difference probe can move the mode.
+  ParametersLoadAccess::dimer_options(params).torque_min = 1.0e9;
+
+  auto dimer = std::make_unique<Dimer>(matter, params, pot);
+  dimer->compute(matter, mode);
+
+  const AtomMatrix got = dimer->getEigenvector();
+  AtomMatrix expected = mode;
+  for (long i = 0; i < matter->numberOfAtoms(); ++i) {
+    if (matter->getFixed(i)) {
+      expected.row(i).setZero();
+    }
+  }
+  const double gotNorm = got.norm();
+  const double expectedNorm = expected.norm();
+  REQUIRE(std::isfinite(dimer->getEigenvalue()));
+  REQUIRE(gotNorm > 0.0);
+  REQUIRE(expectedNorm > 0.0);
+  const double cosang = std::clamp((got.array() * expected.array()).sum() /
+                                       (gotNorm * expectedNorm),
+                                   -1.0, 1.0);
+  // rotation_angle is the probe that used to survive convergence. The
+  // accepted seed must sit well inside that angle.
+  const double probe = params.dimer_options().rotation_angle;
+  REQUIRE(std::acos(cosang) < probe * 0.01);
 }
 
 // --- ImprovedDimer tests ---
@@ -222,6 +256,35 @@ TEST_CASE_METHOD(DimerFixture, "gprdimer constructs AtomicGPDimer in place",
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   REQUIRE(strategy != nullptr);
   REQUIRE(dynamic_cast<AtomicGPDimer *>(strategy.get()) != nullptr);
+}
+
+TEST_CASE_METHOD(DimerFixture, "GP dimer searches the Matter passed to compute",
+                 "[eigenmode][gprdimer][geometry]") {
+  // One phase so the written geometry stays next to the seed. This is not
+  // a convergence check, and the product iteration caps are unchanged.
+  ParametersLoadAccess::gpr_dimer_options(params).max_outer_iterations = 1;
+  ParametersLoadAccess::gpr_dimer_options(params).max_inner_iterations = 1;
+  ParametersLoadAccess::gpr_dimer_options(params).init_rotations_max = 1;
+  ParametersLoadAccess::gpr_dimer_options(params).opt_params.max_iterations =
+      20;
+  ParametersLoadAccess::gpr_dimer_options(params).debug_params.debug_level = 0;
+  ParametersLoadAccess::gpr_dimer_options(params).debug_params.report_level = 0;
+
+  const AtomMatrix builtAt = matter->getPositions();
+  auto dimer = std::make_unique<AtomicGPDimer>(matter, params, pot);
+
+  AtomMatrix shifted = builtAt;
+  shifted.col(0).array() += 6.0;
+  matter->setPositions(shifted);
+
+  dimer->compute(matter, mode);
+
+  const AtomMatrix after = matter->getPositions();
+  const double toShifted = (after - shifted).norm();
+  const double toBuilt = (after - builtAt).norm();
+  REQUIRE(dimer->totalForceCalls > 0);
+  REQUIRE(toShifted < toBuilt);
+  REQUIRE(std::isfinite(dimer->getEigenvalue()));
 }
 
 TEST_CASE_METHOD(DimerFixture, "gprdimer force box follows Matter periodicity",

@@ -19,17 +19,21 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/BaseStructures.h"
 #include "eon/BasinHoppingJob.h"
+#include "eon/Bundling.h"
 #include "eon/Job.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
+#include "eon/fpe_handler.h"
 #ifdef WITH_ARTN
 #include "eon/ARTnSaddleSearch.h"
 #include "eon/libs/ARTn/ARTnResource.h"
 #endif
 
+#include <algorithm>
 #include <array>
+#include <cfenv>
 #include <cmath>
 #include <cstdlib>
 #include <filesystem>
@@ -83,6 +87,7 @@ protected:
   std::unique_ptr<Parameters> params;
   /// Force calls made by just this job (delta, not global total).
   size_t forceCalls_{0};
+  std::vector<std::string> returnFiles_;
 
   JobIntegrationFixture()
       : originalDir{std::filesystem::current_path()} {
@@ -156,7 +161,7 @@ protected:
     params->load("config.ini");
 
     auto job = eonc::helpers::makeJob(std::move(params), eonc::Runtime{});
-    job->run();
+    returnFiles_ = job->run();
     forceCalls_ = job->pots().total_force_calls();
 
     std::filesystem::current_path(originalDir);
@@ -788,6 +793,31 @@ max_iterations = 200
   REQUIRE(ar == Catch::Approx(0.500).margin(0.05));
 }
 
+TEST_CASE("basin hopping Metropolis rejects uphill hops at non-positive "
+          "temperature",
+          "[job][basin_hopping]") {
+  const double kB = 8.6173324e-5;
+  const double de = 0.05;
+  const double temperature = 300.0;
+  using Job = eonc::BasinHoppingJob;
+  REQUIRE(Job::metropolisProbability(-1.0, kB, 0.0) == 1.0);
+  REQUIRE(Job::metropolisProbability(0.0, kB, 0.0) == 1.0);
+  REQUIRE(Job::metropolisProbability(1.0, kB, 0.0) == 0.0);
+  REQUIRE(Job::metropolisProbability(1.0, kB, -25.0) == 0.0);
+  REQUIRE(Job::metropolisProbability(1.0, 0.0, 300.0) == 0.0);
+  REQUIRE(Job::metropolisProbability(de, kB, temperature) ==
+          Catch::Approx(std::exp(-de / (kB * temperature))));
+
+#if !defined(_WIN32) && !(defined(__APPLE__) && defined(__aarch64__))
+  eonc::enableFPE();
+  REQUIRE(Job::metropolisProbability(1.0, kB, 0.0) == 0.0);
+  REQUIRE(Job::metropolisProbability(-2.0, kB, 0.0) == 1.0);
+  REQUIRE(Job::metropolisProbability(1.0, kB, -10.0) == 0.0);
+  eonc::disableFPE();
+  feclearexcept(FE_ALL_EXCEPT);
+#endif
+}
+
 TEST_CASE("BasinHoppingJob getElements keeps atomic number 118",
           "[job][basin_hopping][unit]") {
   Parameters params;
@@ -1061,6 +1091,17 @@ step_size = 0.001
   double energy = std::stod(results["potential_energy"]);
   REQUIRE(std::isfinite(energy));
   REQUIRE(results.count("total_force_calls") > 0);
+
+  // One out.con entry: bundle() renames that path, so a second copy is gone.
+  REQUIRE(std::count(returnFiles_.begin(), returnFiles_.end(),
+                     std::string("out.con")) == 1);
+  REQUIRE(std::filesystem::exists(workdir / "out.con"));
+  std::filesystem::current_path(workdir);
+  std::vector<std::string> bundled;
+  eonc::bundle(0, returnFiles_, &bundled);
+  std::filesystem::current_path(originalDir);
+  REQUIRE(bundled.size() == returnFiles_.size());
+  REQUIRE(std::filesystem::exists(workdir / "out_0.con"));
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,

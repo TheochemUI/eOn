@@ -16,6 +16,7 @@
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/NudgedElasticBand.h"
 
+#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <limits>
@@ -81,16 +82,35 @@ int DynamicsSaddleSearch::run() {
   }
 
   BondBoost bondBoost(saddle.get(), params);
+  // setBiasPotential does not own this object. Clear it before bondBoost
+  // leaves the stack, including on the early returns below.
+  struct BiasGuard {
+    Matter *matter{nullptr};
+    ~BiasGuard() {
+      if (matter == nullptr) {
+        return;
+      }
+      matter->setBiasPotential(nullptr);
+      matter->setBiasForces(AtomMatrix::Zero(matter->numberOfAtoms(), 3));
+    }
+  } biasGuard;
   if (params.hyperdynamics_options().bias_potential ==
       Hyperdynamics::BOND_BOOST) {
     QUILL_LOG_DEBUG(log, "Initializing Bond Boost");
     bondBoost.initialize();
+    saddle->setBiasPotential(&bondBoost);
+    biasGuard.matter = saddle.get();
   }
 
   int checkInterval = static_cast<int>(
       params.saddle_search_options().dynamics.state_check_interval /
           params.dynamics_options().time_step +
       0.5);
+  // A zero or sub-step interval floors to 0. step % 0 is undefined, and a
+  // state check shorter than one dynamics step still has to run.
+  if (checkInterval < 1) {
+    checkInterval = 1;
+  }
   int recordInterval =
       static_cast<int>(params.saddle_search_options().dynamics.record_interval /
                            params.dynamics_options().time_step +
@@ -103,6 +123,12 @@ int DynamicsSaddleSearch::run() {
   }
 
   for (int step = 1; step <= params.dynamics_options().steps; step++) {
+    if (params.hyperdynamics_options().bias_potential ==
+        Hyperdynamics::BOND_BOOST) {
+      // oneStep() calls getAccelerations(), and therefore boost(), more
+      // than once. Advance the rmd_time counter once per MD step.
+      bondBoost.advance();
+    }
     dyn.oneStep(step);
 
     if (recordInterval != 0 && step % recordInterval == 0) {
@@ -151,6 +177,11 @@ int DynamicsSaddleSearch::run() {
           // Subtract half the record interval to avoid systematic bias
           time = mdTimes[static_cast<size_t>(image)] -
                  params.saddle_search_options().dynamics.record_interval / 2.0;
+          // Half a record interval before the leaving frame is the unbiased
+          // crossing, and it must not fall before the preceding reactant frame.
+          if (image > 0 && time < mdTimes[static_cast<size_t>(image - 1)]) {
+            time = mdTimes[static_cast<size_t>(image - 1)];
+          }
         }
         QUILL_LOG_DEBUG(log, "Transition time {:.2f} fs",
                         time * params.constants().timeUnit);
@@ -281,7 +312,24 @@ int DynamicsSaddleSearch::run() {
             }
           }
         } else {
+          // No NEB iterations: the middle image of the initial band is the
+          // guess, and the dimer still needs an n-atom tangent. An empty
+          // mode replaces the dimer direction and then indexes every atom.
           neb.maxEnergyImage = neb.numImages / 2 + 1;
+          const int img = static_cast<int>(neb.maxEnergyImage);
+          const int last = static_cast<int>(neb.path.size()) - 1;
+          const int from = std::clamp(img, 0, last);
+          const int to = std::clamp(img + 1, 0, last);
+          mode = saddle->pbc(neb.path[to]->getPositions() -
+                             neb.path[from]->getPositions());
+          if (mode.norm() > 0.0) {
+            mode.normalize();
+          } else {
+            mode = AtomMatrix::Zero(saddle->numberOfAtoms(), 3);
+            if (mode.rows() > 0) {
+              mode(0, 0) = 1.0;
+            }
+          }
         }
 
         QUILL_LOG_DEBUG(
@@ -351,7 +399,12 @@ int DynamicsSaddleSearch::refineTransition(
     }
   }
 
-  return (lo + hi) / 2;
+  // Adjacent brackets make (lo + hi) / 2 equal lo, the snapshot that
+  // still minimizes to the reactant. The transition is the higher index.
+  if (hi < 0) {
+    return 0;
+  }
+  return hi;
 }
 
 double DynamicsSaddleSearch::getEigenvalue() { return eigenvalue; }

@@ -16,8 +16,13 @@
 
 #include <cfenv>
 #include <cmath>
+#include <cstdint>
 #include <limits>
 #include <stdexcept>
+
+#if defined(__APPLE__) && defined(__x86_64__)
+#include <xmmintrin.h>
+#endif
 
 // The FPE handler must not re-trap the same instruction forever. Clearing
 // sticky flags alone re-executes the faulting op with trapping still enabled;
@@ -27,11 +32,22 @@
 //
 // Also covers SafeMath guards that keep application code off the trap path.
 
+TEST_CASE("Windows continue MxCsr sets exception masks and clears sticky flags",
+          "[fpe]") {
+  // Fault-time word: ZE sticky, IM/ZM/OM unmasked, DM/UM/PM masked, RZ mode.
+  const std::uint32_t fault =
+      (1u << 2) | (1u << 8) | (1u << 11) | (1u << 12) | (1u << 13) | (1u << 14);
+  const auto masked = eonc::maskWindowsMxcsrForContinue(fault);
+  REQUIRE((masked & 0x3Fu) == 0u);
+  REQUIRE((masked & eonc::kWindowsMxcsrExceptionMasks) ==
+          eonc::kWindowsMxcsrExceptionMasks);
+  REQUIRE((masked & (1u << 13)) != 0u);
+  REQUIRE((masked & (1u << 14)) != 0u);
+}
+
 TEST_CASE("enableFPE then divide-by-zero continues once (no re-trap storm)",
           "[fpe]") {
-#if defined(_WIN32)
-  SKIP("Windows SEH FPE path covered separately");
-#elif defined(__APPLE__) && defined(__aarch64__)
+#if defined(__APPLE__) && defined(__aarch64__)
   SKIP("Apple Silicon raises SIGILL for FE traps, not SIGFPE");
 #else
   eonc::enableFPE();
@@ -49,6 +65,51 @@ TEST_CASE("enableFPE then divide-by-zero continues once (no re-trap storm)",
 
   eonc::disableFPE();
   // Restore a clean environment for later tests in the same process.
+  feclearexcept(FE_ALL_EXCEPT);
+#endif
+}
+
+// #DE points at the DIV. Masking MXCSR and returning re-executes it.
+// The handler must step past that instruction. C++ integer division by
+// zero is undefined and a compiler may delete it, so the fault is a
+// real IDIV.
+TEST_CASE("enableFPE integer divide does not restart the faulting instruction",
+          "[fpe]") {
+#if defined(_WIN32) || !(defined(__x86_64__) || defined(__i386__))
+  SKIP("integer divide continue is x86 only");
+#else
+  eonc::enableFPE();
+  int num = 1;
+  int den = 0;
+  int quot = -1;
+  // Register constraints so the address of a memory operand cannot
+  // live in eax, which the instruction itself overwrites.
+  asm volatile("xorl %%edx, %%edx\n\t"
+               "idivl %%ecx\n\t"
+               : "=a"(quot)
+               : "a"(num), "c"(den)
+               : "edx", "cc");
+  REQUIRE(quot == 0);
+  int again = -1;
+  asm volatile("xorl %%edx, %%edx\n\t"
+               "idivl %%ecx\n\t"
+               : "=a"(again)
+               : "a"(num), "c"(den)
+               : "edx", "cc");
+  REQUIRE(again == 0);
+  int marker = 5;
+  REQUIRE(marker == 5);
+  // Overflow form of #DE: the quotient does not fit in the destination.
+  int lo = std::numeric_limits<int>::min();
+  int minus = -1;
+  int ovf = -1;
+  asm volatile("cdq\n\t"
+               "idivl %%ecx\n\t"
+               : "=a"(ovf)
+               : "a"(lo), "c"(minus)
+               : "edx", "cc");
+  REQUIRE(ovf == 0);
+  eonc::disableFPE();
   feclearexcept(FE_ALL_EXCEPT);
 #endif
 }
@@ -84,6 +145,21 @@ TEST_CASE("disableFPE demotes traps after enableFPE (worker path)",
           "[fpe][lammps]") {
 #if defined(_WIN32)
   SKIP("Windows SEH path uses _controlfp_s; covered by enable/disable pair");
+#elif defined(__APPLE__) && defined(__x86_64__)
+  eonc::enableFPE();
+  unsigned armed = _MM_GET_EXCEPTION_MASK();
+  REQUIRE((armed & _MM_MASK_DIV_ZERO) == 0);
+  REQUIRE((armed & _MM_MASK_INVALID) == 0);
+  REQUIRE((armed & _MM_MASK_OVERFLOW) == 0);
+  eonc::disableFPE();
+  unsigned masked = _MM_GET_EXCEPTION_MASK();
+  REQUIRE((masked & _MM_MASK_DIV_ZERO) != 0);
+  REQUIRE((masked & _MM_MASK_INVALID) != 0);
+  REQUIRE((masked & _MM_MASK_OVERFLOW) != 0);
+  // Soft IEEE: no SIGFPE, result is Inf.
+  volatile double r = 1.0 / 0.0;
+  REQUIRE(std::isinf(r));
+  feclearexcept(FE_ALL_EXCEPT);
 #elif defined(__unix__)
   eonc::enableFPE();
 #if defined(FE_DIVBYZERO)

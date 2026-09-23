@@ -81,6 +81,27 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB path constructor rejects a short path",
                     std::invalid_argument);
 }
 
+TEST_CASE_METHOD(NEBLJFixture, "NEB restarts from copied Matter images",
+                 "[neb][construction]") {
+  auto neb = makeNEB();
+  std::vector<Matter> previous;
+  previous.reserve(neb->path.size());
+  for (const auto &image : neb->path) {
+    REQUIRE(image);
+    previous.push_back(*image);
+  }
+  ParametersLoadAccess::neb_options(params).climbing_image.enabled = false;
+  auto restarted =
+      std::make_unique<NudgedElasticBand>(std::move(previous), params, pot);
+  REQUIRE(restarted->numImages == 5);
+  REQUIRE(restarted->path.size() ==
+          static_cast<size_t>(restarted->numImages + 2));
+  for (size_t i = 0; i < neb->path.size(); ++i) {
+    REQUIRE(restarted->path[i]->getPositions().isApprox(
+        neb->path[i]->getPositions(), 1e-10));
+  }
+}
+
 TEST_CASE_METHOD(NEBLJFixture, "NEB construction and basic state",
                  "[neb][construction]") {
   auto neb = makeNEB();

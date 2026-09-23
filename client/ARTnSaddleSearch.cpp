@@ -112,13 +112,11 @@ int ARTnSaddleSearch::run(IARTnResource &res) {
   }
   int dim_mode[2] = {3, nat};
 
-  // 1. Library Initialization, Configuration, and Initial Push (Locked)
-  //    Held as a single critical section so concurrent ARTn searches in
-  //    the same process cannot interleave create(), set_param(), setup,
-  //    or push_init calls on pARTn's non-thread-safe global state.
+  // Hold library_mutex from create() through destroy(). pARTn keeps one
+  // process-global Fortran search; releasing the mutex between artn_step
+  // calls lets another run artn_create or artn_step and corrupt it.
+  std::lock_guard<std::mutex> lock(res.library_mutex);
   {
-    std::lock_guard<std::mutex> lock(res.library_mutex);
-
     try {
       res.require_loaded();
     } catch (const std::exception &e) {
@@ -273,9 +271,9 @@ int ARTnSaddleSearch::run(IARTnResource &res) {
                           result);
       }
     }
-  }
+  } // setup only; library_mutex stays held until destroy
 
-  // Per-atom metadata for the Fortran step (no pARTn state, unlocked).
+  // Per-atom metadata for the Fortran step (no pARTn state).
   std::vector<int> ityp(nat);
   std::vector<int> if_pos(3 * nat, 1); // all atoms free by default
   double box_f[9];
@@ -299,27 +297,21 @@ int ARTnSaddleSearch::run(IARTnResource &res) {
   // before the increment and the post-loop value is k, matching log output.
   iteration = 0;
   while (iteration < maxIter && !lconv) {
-    // 2. Parallel PES Evaluation (UNLOCKED)
-    // Concurrent ARTn searches in the same process would share the same
-    // PES call, so the potential evaluation itself is not serialized here.
+    // The potential call does not touch pARTn, but it stays inside the
+    // library lock. Releasing the mutex here would let another search
+    // artn_step on the same Fortran state before this one continues.
     double energy = matter->getPotentialEnergy();
     forces = matter->getForces(); // Returns RowMajor Nx3
     this->forcecalls++;
 
-    // 3. ARTn State Update (LOCKED)
-    // Serialize only the interaction with the non-thread-safe backend.
-    //
     // Perf note (artn-plugin >= 9dab2053): the inner Lanczos eigenvector
     // reconstruction now uses intrinsic matmul on a reshaped Vmat slice,
     // which allocates a temporary [3*nat, ilanc] array per Lanczos iteration.
     // Negligible at our sizes (small molecules, ilanc < O(20)); revisit if
     // we ever drive artn against large supercell DFT.
-    {
-      std::unique_lock<std::mutex> lock(res.library_mutex);
-      res.get_artn_step_fn()(nat, energy, force_map.data(), ityp.data(),
-                             pos_map.data(), box_f, if_pos.data(),
-                             disp_map.data(), &lconv);
-    }
+    res.get_artn_step_fn()(nat, energy, force_map.data(), ityp.data(),
+                           pos_map.data(), box_f, if_pos.data(),
+                           disp_map.data(), &lconv);
 
     if (!lconv) {
       // Apply displacement and update Matter (PES-specific, typically
@@ -330,10 +322,8 @@ int ARTnSaddleSearch::run(IARTnResource &res) {
     }
   }
 
-  // 4. Data Retrieval (LOCKED)
+  // 4. Data Retrieval (lock still held)
   if (lconv) {
-    std::lock_guard<std::mutex> lock(res.library_mutex);
-
     // pARTn exposes a dedicated C get_error() that returns both the error
     // code and a c_malloc'd message pointer (see m_artn_error.f90 in
     // artn-plugin). Prefer it when available; fall back to the has_error
@@ -391,15 +381,20 @@ int ARTnSaddleSearch::run(IARTnResource &res) {
       double *tau_sad_ptr = nullptr;
       int result_tau_sad = res.get_get_data_fn()(
           "tau_sad", reinterpret_cast<void **>(&tau_sad_ptr));
-      if (result_tau_sad == 0 && tau_sad_ptr) {
-        matter->setPositions(eonc::from_fortran_layout_vector(
-            std::vector<double>(tau_sad_ptr, tau_sad_ptr + 3 * nat), nat));
-        std::free(tau_sad_ptr);
-      } else {
+      // has_sad without coordinates leaves Matter on the pre-convergence
+      // geometry. Callers treat STATUS_GOOD as the saddle, so that is an error.
+      if (result_tau_sad != 0 || tau_sad_ptr == nullptr) {
         QUILL_LOG_WARNING(
             log, "Failed to retrieve tau_sad (result={}, ptr_valid={})",
             result_tau_sad, tau_sad_ptr != nullptr);
+        std::free(tau_sad_ptr);
+        status = STATUS_BAD_ARTN_ERROR;
+        res.get_destroy_fn()();
+        return status;
       }
+      matter->setPositions(eonc::from_fortran_layout_vector(
+          std::vector<double>(tau_sad_ptr, tau_sad_ptr + 3 * nat), nat));
+      std::free(tau_sad_ptr);
 
       // Retrieve eigenvalue
       double *eigval_ptr = nullptr;
@@ -457,11 +452,8 @@ int ARTnSaddleSearch::run(IARTnResource &res) {
                     iteration);
   status = STATUS_BAD_MAX_ITERATIONS;
 
-  // Clean up in all cases
-  {
-    std::lock_guard<std::mutex> lock(res.library_mutex);
-    res.get_destroy_fn()();
-  }
+  // Clean up in all cases. The library lock is still held.
+  res.get_destroy_fn()();
   return status;
 }
 
