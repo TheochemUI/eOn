@@ -219,6 +219,17 @@ TEST_CASE("OCINEB walkHelped scores the walked image", "[neb][ocineb]") {
   REQUIRE_FALSE(OCINEBController::walkHelped(2.3855, 2.3855, 0));
 }
 
+TEST_CASE("OCINEB positive curvature is not a converged climb",
+          "[neb][ocineb]") {
+  using eonc::neb::OCINEBController;
+  REQUIRE(OCINEBController::convergedClimb(0.001, 0.01, 0));
+  REQUIRE(OCINEBController::convergedClimb(0.001, 0.01, 1));
+  REQUIRE(OCINEBController::convergedClimb(0.001, 0.01, -1));
+  REQUIRE_FALSE(OCINEBController::convergedClimb(0.001, 0.01, -2));
+  REQUIRE_FALSE(OCINEBController::convergedClimb(0.01, 0.01, 0));
+  REQUIRE_FALSE(OCINEBController::convergedClimb(0.01, 0.01, -2));
+}
+
 TEST_CASE("climbingImageForce: includes DNEB contribution", "[neb]") {
   AtomMatrix tangent = make3({1, 0, 0, 0, 0, 0, 0, 0, 0});
   tangent /= tangent.norm();

@@ -60,6 +60,14 @@ public:
     return walkedForce < convForce && mmfStatus != -2;
   }
 
+  // Positive curvature (status -2) is a well, not a saddle. A band
+  // force under tolerance after that walk is not convergence; run()
+  // restores the climbing image first.
+  static bool convergedClimb(double bandForce, double forceTolerance,
+                             int mmfStatus) {
+    return bandForce < forceTolerance && mmfStatus != -2;
+  }
+
   void resetStability() { ciStabilityCounter_ = 0; }
   void updateStability(long climbingImage);
   int stabilityCount() const { return ciStabilityCounter_; }
