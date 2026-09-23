@@ -142,8 +142,10 @@ void resetConAppendState();
 /**
  * Write one extended-XYZ frame: Lattice= cell and 17-digit coordinates.
  *
- * `append` concatenates another frame. A target whose last frame has a
- * different atom count yields InvalidArgument and is left unchanged.
+ * `append` concatenates another frame. A tail that does not end in a
+ * newline gets one before the next atom count, so the frames stay
+ * separate. A target whose last frame has a different atom count yields
+ * InvalidArgument and is left unchanged.
  * Chemfiles in readcon is ingress (XYZ/PDB/GRO into ConFrame), not
  * XYZ egress, so this writer emits the Lattice= comment ASE and
  * chemfiles already read.

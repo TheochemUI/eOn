@@ -16,9 +16,30 @@
 
 #include <cassert>
 #include <cmath>
+#include <stdexcept>
 #include <thread>
 
 namespace eonc {
+
+namespace {
+
+// A NaN batch force makes torque NaN. Every rotation-exit comparison then
+// fails, including rotations_max, so the loop never returns.
+bool batchForcesFinite(long nAtoms, const double *forces, double energy) {
+  if (forces == nullptr || !std::isfinite(energy)) {
+    return false;
+  }
+  return Eigen::Map<const AtomMatrix>(forces, nAtoms, 3).allFinite();
+}
+
+void rejectNonFiniteBatch(long nAtoms, const double *forces, double energy) {
+  if (!batchForcesFinite(nAtoms, forces, energy)) {
+    throw std::runtime_error("Dimer::calcRotationalForceReturnCurvature: "
+                             "non-finite batch forces");
+  }
+}
+
+} // namespace
 
 Dimer::Dimer(std::shared_ptr<Matter> matter, const Parameters &params,
              std::shared_ptr<Potential> pot)
@@ -199,6 +220,8 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce) {
       const double *boxVec[] = {box0.data(), box1.data()};
       pot->forceBatch(2, nAtoms, posVec, nrsVec, frcVec, energies, vars,
                       boxVec);
+      rejectNonFiniteBatch(nAtoms, frcVec[0], energies[0]);
+      rejectNonFiniteBatch(nAtoms, frcVec[1], energies[1]);
       matterCenter->setComputedPotential(energies[0], vars[0]);
       matterDimer->setComputedPotential(energies[1], vars[1]);
     } else if (dimerDirty) {
@@ -212,6 +235,7 @@ double Dimer::calcRotationalForceReturnCurvature(AtomMatrix &rotationalForce) {
       const double *boxVec[] = {box.data()};
       pot->forceBatch(1, nAtoms, posVec, nrsVec, frcVec, energies, vars,
                       boxVec);
+      rejectNonFiniteBatch(nAtoms, frcVec[0], energies[0]);
       matterDimer->setComputedPotential(energies[0], vars[0]);
     } else if (centerDirty) {
       // Only center moved (rare)

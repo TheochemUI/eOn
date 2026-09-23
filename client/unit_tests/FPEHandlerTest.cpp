@@ -17,6 +17,11 @@
 #include <cfenv>
 #include <cmath>
 #include <limits>
+#include <stdexcept>
+
+#if defined(__APPLE__) && defined(__x86_64__)
+#include <xmmintrin.h>
+#endif
 
 // The FPE handler must not re-trap the same instruction forever. Clearing
 // sticky flags alone re-executes the faulting op with trapping still enabled;
@@ -83,6 +88,21 @@ TEST_CASE("disableFPE demotes traps after enableFPE (worker path)",
           "[fpe][lammps]") {
 #if defined(_WIN32)
   SKIP("Windows SEH path uses _controlfp_s; covered by enable/disable pair");
+#elif defined(__APPLE__) && defined(__x86_64__)
+  eonc::enableFPE();
+  unsigned armed = _MM_GET_EXCEPTION_MASK();
+  REQUIRE((armed & _MM_MASK_DIV_ZERO) == 0);
+  REQUIRE((armed & _MM_MASK_INVALID) == 0);
+  REQUIRE((armed & _MM_MASK_OVERFLOW) == 0);
+  eonc::disableFPE();
+  unsigned masked = _MM_GET_EXCEPTION_MASK();
+  REQUIRE((masked & _MM_MASK_DIV_ZERO) != 0);
+  REQUIRE((masked & _MM_MASK_INVALID) != 0);
+  REQUIRE((masked & _MM_MASK_OVERFLOW) != 0);
+  // Soft IEEE: no SIGFPE, result is Inf.
+  volatile double r = 1.0 / 0.0;
+  REQUIRE(std::isinf(r));
+  feclearexcept(FE_ALL_EXCEPT);
 #elif defined(__unix__)
   eonc::enableFPE();
 #if defined(FE_DIVBYZERO)
@@ -117,6 +137,42 @@ TEST_CASE("FPEHandler::eat_fpe demotes traps for external pot scopes",
     REQUIRE(std::isinf(r));
     fpeh.restore_fpe();
   }
+  eonc::disableFPE();
+  feclearexcept(FE_ALL_EXCEPT);
+#endif
+}
+
+// AtomicGPDimer::compute masks traps around execute. A throw must not
+// leave them masked for the saddle-search catch and later force calls.
+TEST_CASE("FPEGuard restores traps when the guarded call throws", "[fpe]") {
+#if defined(_WIN32) || !defined(__unix__)
+  SKIP("FPEGuard / feholdexcept path exercised on unix");
+#else
+  eonc::enableFPE();
+#if defined(FE_DIVBYZERO)
+  REQUIRE((fegetexcept() & FE_DIVBYZERO) != 0);
+#endif
+  {
+    eonc::FPEGuard guard;
+#if defined(FE_DIVBYZERO)
+    REQUIRE((fegetexcept() & FE_DIVBYZERO) == 0);
+#endif
+    volatile double quiet = 1.0 / 0.0;
+    REQUIRE(std::isinf(quiet));
+  }
+#if defined(FE_DIVBYZERO)
+  REQUIRE((fegetexcept() & FE_DIVBYZERO) != 0);
+#endif
+  try {
+    eonc::FPEGuard guard;
+    throw std::runtime_error("execute");
+  } catch (const std::runtime_error &) {
+  }
+#if defined(FE_DIVBYZERO)
+  REQUIRE((fegetexcept() & FE_DIVBYZERO) != 0);
+  REQUIRE((fegetexcept() & FE_INVALID) != 0);
+  REQUIRE((fegetexcept() & FE_OVERFLOW) != 0);
+#endif
   eonc::disableFPE();
   feclearexcept(FE_ALL_EXCEPT);
 #endif

@@ -47,6 +47,12 @@ public:
   static double metropolisProbability(double de, double kB, double temperature);
   double getEigenvalue();
   AtomMatrix getEigenvector();
+
+  /// Highest-energy interior bead. Interiors are indices 1..numImages.
+  /// Returns 0 when numImages < 1 so the caller does not read path[-1].
+  [[nodiscard]] static int
+  highestEnergyInteriorImage(const std::vector<std::shared_ptr<Matter>> &path,
+                             long numImages);
   std::string_view describeStatus(int code) const override {
     // Code 1 is the Metropolis rejection, not MinMode STATUS_INIT.
     if (code == 1) {
