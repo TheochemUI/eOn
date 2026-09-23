@@ -114,9 +114,9 @@ TEST_CASE_METHOD(DimerFixture,
   REQUIRE(std::isfinite(dimer->getEigenvalue()));
   REQUIRE(gotNorm > 0.0);
   REQUIRE(expectedNorm > 0.0);
-  const double cosang = std::clamp(
-      (got.array() * expected.array()).sum() / (gotNorm * expectedNorm), -1.0,
-      1.0);
+  const double cosang = std::clamp((got.array() * expected.array()).sum() /
+                                       (gotNorm * expectedNorm),
+                                   -1.0, 1.0);
   // rotation_angle is the probe that used to survive convergence. The
   // accepted seed must sit well inside that angle.
   const double probe = params.dimer_options().rotation_angle;
