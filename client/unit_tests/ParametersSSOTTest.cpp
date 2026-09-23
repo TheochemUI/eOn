@@ -69,6 +69,94 @@ TEST_CASE("Parameters::load INI still overrides SSoT defaults",
   fs::remove_all(dir);
 }
 
+TEST_CASE("Parameters::load accepts AMS DFTB and FORCEFIELD engines",
+          "[params][ams]") {
+  namespace fs = std::filesystem;
+  auto dir = fs::temp_directory_path() /
+             ("eon_ams_engine_" + std::to_string(std::rand()));
+  fs::create_directories(dir);
+  const auto ini = dir / "config.ini";
+  const auto load_body = [&](const char *body) {
+    {
+      std::ofstream out(ini);
+      out << body;
+    }
+    Parameters loaded;
+    const int rc = loaded.load(ini.string());
+    return std::make_pair(rc, std::move(loaded));
+  };
+
+  {
+    const auto [rc, loaded] = load_body("[Potential]\n"
+                                        "potential = ams\n"
+                                        "[AMS]\n"
+                                        "engine = DFTB\n"
+                                        "resources = DFTB\n");
+    REQUIRE(rc == 0);
+    REQUIRE(loaded.potential_options().potential == PotType::AMS);
+    REQUIRE(loaded.ams_options().engine == "DFTB");
+    REQUIRE(loaded.ams_options().resources == "DFTB");
+    REQUIRE(loaded.ams_options().forcefield.empty());
+    REQUIRE(loaded.ams_options().model.empty());
+    REQUIRE(loaded.ams_options().xc.empty());
+    REQUIRE(loaded.last_load_error() == 0);
+  }
+  {
+    const auto [rc, loaded] = load_body("[Potential]\n"
+                                        "potential = ams\n"
+                                        "[AMS]\n"
+                                        "engine = forcefield\n");
+    REQUIRE(rc == 0);
+    REQUIRE(loaded.ams_options().engine == "forcefield");
+    REQUIRE(loaded.last_load_error() == 0);
+  }
+  {
+    const auto [rc, loaded] = load_body("[Potential]\n"
+                                        "potential = ams_io\n"
+                                        "[AMS_IO]\n"
+                                        "engine = FORCEFIELD\n");
+    REQUIRE(rc == 0);
+    REQUIRE(loaded.potential_options().potential == PotType::AMS_IO);
+    REQUIRE(loaded.ams_options().engine == "FORCEFIELD");
+    REQUIRE(loaded.last_load_error() == 0);
+  }
+  {
+    const auto [rc, loaded] = load_body("[Potential]\n"
+                                        "potential = ams\n"
+                                        "[AMS]\n"
+                                        "engine = DFTB\n");
+    REQUIRE(rc != 0);
+    REQUIRE(loaded.last_load_error() != 0);
+  }
+  {
+    const auto rejected = load_body("[Potential]\n"
+                                    "potential = ams\n"
+                                    "[AMS]\n"
+                                    "engine = MOPAC\n");
+    REQUIRE(rejected.first != 0);
+  }
+  {
+    const auto [rc, loaded] = load_body("[Potential]\n"
+                                        "potential = ams\n"
+                                        "[AMS]\n"
+                                        "engine = MOPAC\n"
+                                        "model = PM3\n");
+    REQUIRE(rc == 0);
+    REQUIRE(loaded.ams_options().model == "PM3");
+  }
+  {
+    const auto rejected = load_body("[Potential]\n"
+                                    "potential = ams\n"
+                                    "[AMS]\n"
+                                    "engine = MOPAC\n"
+                                    "forcefield = ff\n"
+                                    "model = PM3\n"
+                                    "xc = LDA\n");
+    REQUIRE(rejected.first != 0);
+  }
+  fs::remove_all(dir);
+}
+
 TEST_CASE("Parameters load-state Impl records a missing file",
           "[params][pimpl]") {
   Parameters p;

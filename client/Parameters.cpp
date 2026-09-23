@@ -17,12 +17,32 @@
 
 #include <INIReader.h>
 
+#include <cctype>
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
+#include <string_view>
 #include <utility>
 
 #include "eon/EonLogger.h"
+
+namespace {
+
+bool ams_engine_name_is(std::string_view got, std::string_view name) {
+  if (got.size() != name.size()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < got.size(); ++i) {
+    const auto left = static_cast<unsigned char>(got[i]);
+    const auto right = static_cast<unsigned char>(name[i]);
+    if (std::toupper(left) != std::toupper(right)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+} // namespace
 
 namespace eonc {
 
@@ -150,8 +170,15 @@ int Parameters::load(std::string_view filename) {
 
   if (potential_options_.potential == PotType::AMS ||
       potential_options_.potential == PotType::AMS_IO) {
+    // generate_run allows DFTB with resources and FORCEFIELD alone.
+    const bool dftb_with_resources =
+        ams_engine_name_is(ams_options_.engine, "DFTB") &&
+        !ams_options_.resources.empty();
+    const bool forcefield_engine =
+        ams_engine_name_is(ams_options_.engine, "FORCEFIELD");
     if (ams_options_.forcefield.empty() && ams_options_.model.empty() &&
-        ams_options_.xc.empty()) {
+        ams_options_.xc.empty() && !dftb_with_resources &&
+        !forcefield_engine) {
       EONC_LOG_ERROR("[AMS] Must provide atleast forcefield or model or xc");
       error = 1;
     }
