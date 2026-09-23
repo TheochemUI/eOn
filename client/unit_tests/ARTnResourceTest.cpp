@@ -26,6 +26,7 @@
 #include <memory>
 #include <mutex>
 #include <thread>
+#include <type_traits>
 #include <vector>
 
 namespace tests {
@@ -83,6 +84,27 @@ void stub_step(const int nat, const double /*etot*/, double *const /*force*/,
     *lconv = g_steps >= g_converge_after;
   }
 }
+int stub_get_outptr(void **cval, int stored) {
+  if (cval == nullptr) {
+    return 1;
+  }
+  auto *value = static_cast<int *>(std::malloc(sizeof(int)));
+  if (value == nullptr) {
+    return 1;
+  }
+  *value = stored;
+  *cval = value;
+  return 0;
+}
+
+int stub_get_param(const char * /*name*/, void **cval) {
+  return stub_get_outptr(cval, 7);
+}
+
+int stub_get_runparam(const char * /*name*/, void **cval) {
+  return stub_get_outptr(cval, 11);
+}
+
 int stub_get_data(const char *name, void **cval) {
   if (name == nullptr || cval == nullptr) {
     return 1;
@@ -172,10 +194,10 @@ public:
     return &stub_set_param;
   }
   [[nodiscard]] get_param_fn get_get_param_fn() const override {
-    return nullptr;
+    return &stub_get_param;
   }
   [[nodiscard]] get_runparam_fn get_get_runparam_fn() const override {
-    return nullptr;
+    return &stub_get_runparam;
   }
   [[nodiscard]] get_data_fn get_get_data_fn() const override {
     return &stub_get_data;
@@ -255,6 +277,28 @@ std::unique_ptr<ARTnSaddleSearch> make_artn_search(Parameters &params) {
   return std::make_unique<ARTnSaddleSearch>(matter, pot, mode, params);
 }
 } // namespace
+
+TEST_CASE("ARTn get_param and get_runparam write through void**",
+          "[artn][resource][get_param]") {
+  using eonc::IARTnResource;
+  static_assert(std::is_same_v<IARTnResource::get_param_fn,
+                               int (*)(const char *, void **)>);
+  static_assert(std::is_same_v<IARTnResource::get_runparam_fn,
+                               int (*)(const char *, void **)>);
+
+  MockARTnResource mock;
+  void *param = nullptr;
+  REQUIRE(mock.get_get_param_fn()("forc_thr", &param) == 0);
+  REQUIRE(param != nullptr);
+  REQUIRE(*static_cast<int *>(param) == 7);
+  std::free(param);
+
+  void *runparam = nullptr;
+  REQUIRE(mock.get_get_runparam_fn()("PERP", &runparam) == 0);
+  REQUIRE(runparam != nullptr);
+  REQUIRE(*static_cast<int *>(runparam) == 11);
+  std::free(runparam);
+}
 
 TEST_CASE("ARTnSaddleSearch run with injected mock does not load singleton",
           "[artn][resource][inject]") {
