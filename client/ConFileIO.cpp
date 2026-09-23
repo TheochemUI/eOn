@@ -825,6 +825,12 @@ IoStatus matter2xyz(Matter &m, std::string filename, bool append) {
     return IoStatus::OpenError;
   }
 
+  // A frame header must start its own line. eOn's own frames end in a
+  // newline; a hand-written or foreign tail may not.
+  if (append && !ends_with_newline(filename)) {
+    out.put('\n');
+  }
+
   const Matrix3d cell = m.getCell();
   out << std::format(
       "{}\nLattice=\"{:.17g} {:.17g} {:.17g} {:.17g} {:.17g} {:.17g} "

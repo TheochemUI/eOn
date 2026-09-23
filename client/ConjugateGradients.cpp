@@ -84,11 +84,13 @@ int ConjugateGradients::line_search(double a_maxMove) {
     // Determine curvature from last step (Secant method)
     curvature = std::fabs(eonc::safemath::safe_div(
         projectedForceBeforeStep - projectedForce, stepSize, 0.0));
-    stepSize = eonc::safemath::safe_div(projectedForce, curvature, a_maxMove);
+    // A negative max move is a length (bowl breakout), not a backward step.
+    const double maxMove = std::fabs(a_maxMove);
+    stepSize = eonc::safemath::safe_div(projectedForce, curvature, maxMove);
 
-    if (a_maxMove < std::fabs(stepSize)) {
+    if (maxMove < std::fabs(stepSize)) {
       // first part get the sign of stepSize
-      stepSize = ((stepSize > 0) - (stepSize < 0)) * a_maxMove;
+      stepSize = ((stepSize > 0) - (stepSize < 0)) * maxMove;
     }
 
     forceBeforeStep = m_force;
