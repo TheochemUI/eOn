@@ -107,15 +107,10 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
     }
 
     beta = r.norm();
+    // A vanished residual closes this Krylov block. Take the Ritz pair from
+    // the current T; breaking first keeps the previous subspace.
+    const bool krylovClosed = beta <= 1e-10 * std::fabs(alpha);
 
-    if (beta <= 1e-10 * std::fabs(alpha)) {
-      if (i == 0) {
-        ew = alpha;
-        evEst = Q.col(0);
-      }
-      QUILL_LOG_ERROR(log, "[ILanczos] ERROR: linear dependence");
-      break;
-    }
     if (i >= 1) {
       Eigen::SelfAdjointEigenSolver<MatrixXd> es(T.block(0, 0, i + 1, i + 1));
       ew = es.eigenvalues()(0);
@@ -135,6 +130,10 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
                      "{:10.6f} {:7.3f} {:5} n_mobile={}",
                      "----", "----", "----", "----", ew, ewAbsRelErr,
                      statsAngle, i, mobile.size());
+      if (krylovClosed) {
+        QUILL_LOG_ERROR(log, "[ILanczos] ERROR: linear dependence");
+        break;
+      }
       if (ewAbsRelErr < params.lanczos_options().tolerance) {
         QUILL_LOG_INFO(log, "[ILanczos] Tolerance reached: {}",
                        params.lanczos_options().tolerance);
@@ -145,6 +144,10 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
       ewOld = ew;
       evEst = Q.col(0);
       evOldEst = Q.col(0);
+      if (krylovClosed) {
+        QUILL_LOG_ERROR(log, "[ILanczos] ERROR: linear dependence");
+        break;
+      }
       if (lowestEw != 0.0 && params.lanczos_options().quit_early) {
         double Cprev = lowestEw;
         double Cnew = u.dot(Q.col(i));
