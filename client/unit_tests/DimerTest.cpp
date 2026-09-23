@@ -19,6 +19,7 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Davidson.h"
+#include "eon/Dimer.h"
 #include "eon/DimerRotationDispatch.h"
 #include "eon/EigenmodeStrategy.h"
 #include "eon/ImprovedDimer.h"
@@ -255,6 +256,35 @@ TEST_CASE_METHOD(DimerFixture, "gprdimer constructs AtomicGPDimer in place",
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   REQUIRE(strategy != nullptr);
   REQUIRE(dynamic_cast<AtomicGPDimer *>(strategy.get()) != nullptr);
+}
+
+TEST_CASE_METHOD(DimerFixture, "GP dimer searches the Matter passed to compute",
+                 "[eigenmode][gprdimer][geometry]") {
+  // One phase so the written geometry stays next to the seed. This is not
+  // a convergence check, and the product iteration caps are unchanged.
+  ParametersLoadAccess::gpr_dimer_options(params).max_outer_iterations = 1;
+  ParametersLoadAccess::gpr_dimer_options(params).max_inner_iterations = 1;
+  ParametersLoadAccess::gpr_dimer_options(params).init_rotations_max = 1;
+  ParametersLoadAccess::gpr_dimer_options(params).opt_params.max_iterations =
+      20;
+  ParametersLoadAccess::gpr_dimer_options(params).debug_params.debug_level = 0;
+  ParametersLoadAccess::gpr_dimer_options(params).debug_params.report_level = 0;
+
+  const AtomMatrix builtAt = matter->getPositions();
+  auto dimer = std::make_unique<AtomicGPDimer>(matter, params, pot);
+
+  AtomMatrix shifted = builtAt;
+  shifted.col(0).array() += 6.0;
+  matter->setPositions(shifted);
+
+  dimer->compute(matter, mode);
+
+  const AtomMatrix after = matter->getPositions();
+  const double toShifted = (after - shifted).norm();
+  const double toBuilt = (after - builtAt).norm();
+  REQUIRE(dimer->totalForceCalls > 0);
+  REQUIRE(toShifted < toBuilt);
+  REQUIRE(std::isfinite(dimer->getEigenvalue()));
 }
 
 TEST_CASE_METHOD(DimerFixture, "gprdimer force box follows Matter periodicity",
