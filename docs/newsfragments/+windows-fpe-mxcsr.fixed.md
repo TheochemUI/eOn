@@ -1,0 +1,1 @@
+The Windows floating-point exception filter stores the exception-mask bits in ContextRecord->MxCsr before EXCEPTION_CONTINUE_EXECUTION. _controlfp_s alone does not survive that restore, so the faulting instruction trapped again.
