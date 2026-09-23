@@ -51,6 +51,68 @@ TEST_CASE("getRelevantFile accepts a name with no extension", "[helpers]") {
   fs::remove_all(dir);
 }
 
+TEST_CASE("stageReturnLog copies a launch log into the job directory",
+          "[helpers]") {
+  namespace fs = std::filesystem;
+  const auto root = fs::temp_directory_path() / "eon_stage_return_log";
+  fs::remove_all(root);
+  const auto launch = root / "launch";
+  const auto job = root / "job";
+  fs::create_directories(launch);
+  fs::create_directories(job);
+  {
+    std::ofstream out{launch / "client_quill.log"};
+    out << "from-launch\n";
+  }
+  struct Restore {
+    fs::path old;
+    fs::path root;
+    ~Restore() {
+      std::error_code ec;
+      fs::current_path(old, ec);
+      fs::remove_all(root, ec);
+    }
+  } restore{fs::current_path(), root};
+
+  fs::current_path(job);
+  REQUIRE(eonc::helpers::stageReturnLog(launch.string(), "client_quill.log"));
+  {
+    std::ifstream in{"client_quill.log"};
+    std::string line;
+    std::getline(in, line);
+    REQUIRE(line == "from-launch");
+  }
+  {
+    std::ofstream out{launch / "client_quill.log"};
+    out << "later\n";
+  }
+  REQUIRE(eonc::helpers::stageReturnLog(launch.string(), "client_quill.log"));
+  {
+    std::ifstream in{"client_quill.log"};
+    std::string line;
+    std::getline(in, line);
+    REQUIRE(line == "later");
+  }
+  REQUIRE_FALSE(
+      eonc::helpers::stageReturnLog(launch.string(), "client_traceback.log"));
+  REQUIRE_FALSE(fs::exists("client_traceback.log"));
+  REQUIRE_FALSE(
+      eonc::helpers::stageReturnLog(launch.string(), "../outside.log"));
+
+  fs::current_path(launch);
+  {
+    std::ofstream out{"client_quill.log"};
+    out << "live\n";
+  }
+  REQUIRE(eonc::helpers::stageReturnLog(launch.string(), "client_quill.log"));
+  {
+    std::ifstream in{"client_quill.log"};
+    std::string line;
+    std::getline(in, line);
+    REQUIRE(line == "live");
+  }
+}
+
 TEST_CASE("HelperFunctions: random() returns value in [0,1)", "[helpers]") {
   double r = eonc::rng::random();
   REQUIRE_FALSE(std::isnan(r));
