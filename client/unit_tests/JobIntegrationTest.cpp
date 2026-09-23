@@ -36,9 +36,11 @@
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <iterator>
 #include <memory>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace eonc {
@@ -2119,5 +2121,154 @@ potential = lenosky_si
           Catch::Approx(-17.284558).epsilon(1e-4));
 }
 #endif // WITH_FORTRAN
+
+// Move the first free atom of reactant.con so |P-R| survives the
+// rigid-drift removal. The checked-in neb_morse product is a 0.5 A
+// shuffle and OH-TST rejects that guideline.
+static bool shiftFirstCoordinate(const std::filesystem::path &src,
+                                 const std::filesystem::path &dst, double dx) {
+  std::ifstream in(src);
+  std::ofstream out(dst);
+  if (!in || !out) {
+    return false;
+  }
+  std::string line;
+  bool inCoords = false;
+  bool shifted = false;
+  while (std::getline(in, line)) {
+    if (!shifted && inCoords) {
+      std::istringstream iss(line);
+      double x = 0.0;
+      double y = 0.0;
+      double z = 0.0;
+      if (!(iss >> x >> y >> z)) {
+        return false;
+      }
+      std::string rest;
+      std::getline(iss, rest);
+      out << "  " << (x + dx) << "  " << y << "  " << z << rest << '\n';
+      shifted = true;
+      continue;
+    }
+    if (line.find("Coordinates of Component") != std::string::npos) {
+      inCoords = true;
+    }
+    out << line << '\n';
+  }
+  return shifted && static_cast<bool>(out);
+}
+
+// Data rows in oh_tst_progression.dat, and the plane index from a
+// "# converged at plane N" marker when the adaptive loop broke.
+static long progressionPlaneRows(const std::filesystem::path &path,
+                                 long &convergedAt) {
+  std::ifstream in(path);
+  std::string line;
+  long rows = 0;
+  convergedAt = -1;
+  while (std::getline(in, line)) {
+    constexpr std::string_view marker = "# converged at plane ";
+    if (line.starts_with(marker)) {
+      convergedAt = std::stol(line.substr(marker.size()));
+      continue;
+    }
+    if (line.empty() || line[0] == '#') {
+      continue;
+    }
+    ++rows;
+  }
+  return rows;
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "OHTSTJob planes_used includes the converged plane",
+                 "[job][oh_tst][integration]") {
+  EON_REQUIRE_TEST_DATA(".");
+  // Production force_tol and max_delta_a are unchanged. This run
+  // widens both so a one-step sample can take the convergence break;
+  // planes_used must then be the 0-based index plus one.
+  writeConfig(R"(
+[Main]
+job = oh_tst
+random_seed = 42
+temperature = 0.01
+
+[Potential]
+potential = lj
+
+[OH_TST]
+reactant_filename = reactant.con
+product_filename = product.con
+equil_steps = 0
+sample_steps = 1
+reactant_md_steps = 1
+max_planes = 20
+force_tol = 1000000
+time_step = 0.05
+max_delta_a = 1000
+)");
+  REQUIRE(shiftFirstCoordinate(workdir / "reactant.con",
+                               workdir / "product.con", 3.0));
+
+  auto results = runJob();
+  long convergedAt = -1;
+  const auto progPath = workdir / "oh_tst_progression.dat";
+  const long rows = progressionPlaneRows(progPath, convergedAt);
+  const long used = std::stol(results["planes_used"]);
+  std::ifstream progIn(progPath);
+  INFO(std::string(std::istreambuf_iterator<char>(progIn),
+                   std::istreambuf_iterator<char>()));
+  INFO(results["converged"]);
+  INFO(used);
+  REQUIRE(results["converged"] == "1");
+  REQUIRE(convergedAt >= 0);
+  REQUIRE(used == convergedAt + 1);
+  REQUIRE(used == rows);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "OHTSTJob planes_used matches a finished scan",
+                 "[job][oh_tst][integration]") {
+  EON_REQUIRE_TEST_DATA(".");
+  // A finished loop leaves the index at scan_planes. Adding one on
+  // that path would report an extra plane.
+  writeConfig(R"(
+[Main]
+job = oh_tst
+random_seed = 42
+temperature = 1.0
+
+[Potential]
+potential = lj
+
+[OH_TST]
+reactant_filename = reactant.con
+product_filename = product.con
+equil_steps = 0
+sample_steps = 1
+reactant_md_steps = 1
+pmf_scan = true
+scan_planes = 4
+time_step = 0.05
+max_delta_a = 1000
+)");
+  REQUIRE(shiftFirstCoordinate(workdir / "reactant.con",
+                               workdir / "product.con", 3.0));
+
+  auto results = runJob();
+  long convergedAt = -1;
+  const auto progPath = workdir / "oh_tst_progression.dat";
+  const long rows = progressionPlaneRows(progPath, convergedAt);
+  const long used = std::stol(results["planes_used"]);
+  std::ifstream progIn(progPath);
+  INFO(std::string(std::istreambuf_iterator<char>(progIn),
+                   std::istreambuf_iterator<char>()));
+  INFO(results["converged"]);
+  INFO(used);
+  REQUIRE(results["converged"] == "1");
+  REQUIRE(convergedAt < 0);
+  REQUIRE(used == 4);
+  REQUIRE(rows == 4);
+}
 
 } /* namespace tests */

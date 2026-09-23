@@ -674,6 +674,11 @@ std::vector<std::string> OHTSTJob::run(void) {
   if (scanMode && plane >= nPlanes)
     converged = true;
 
+  // `break` leaves `plane` at the 0-based index of the plane just
+  // sampled. A finished loop leaves it at nPlanes. planes_used is
+  // the number of planes sampled in either case.
+  const long planesUsed = (plane < nPlanes) ? plane + 1 : plane;
+
   // Direction-dependent effective mass (Eq 24) and the one-sided
   // thermal flux factor sqrt(kBT / 2 pi mu) (Eq 23).
   const double mu = (m_masses3N.array() * nBest.array().square()).sum();
@@ -697,7 +702,7 @@ std::vector<std::string> OHTSTJob::run(void) {
   }
   out << "oh_tst job_type\n";
   out << std::format("{} converged\n", converged ? 1 : 0);
-  out << std::format("{} planes_used\n", plane);
+  out << std::format("{} planes_used\n", planesUsed);
   out << std::format("{:.8f} free_energy_barrier_eV\n", aBest);
   out << std::format("{:.8f} delta_a_trans_eV\n", aTrans);
   out << std::format("{:.8f} delta_a_rot_eV\n", aRot);
@@ -719,7 +724,7 @@ std::vector<std::string> OHTSTJob::run(void) {
   }
   EONC_LOG_INFO("[oh_tst] {} after {} planes: A = {:.4f} eV at s/L = {:.4f}, "
                 "k = {:.4e} 1/s at {:.1f} K",
-                converged ? "converged" : "max planes", plane, aBest,
+                converged ? "converged" : "max planes", planesUsed, aBest,
                 sBest / guideLen, kSI, temperature);
   return returnFiles;
 }
