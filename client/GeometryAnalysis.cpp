@@ -364,54 +364,75 @@ struct by_atom {
     }
   }
 };
+
+namespace {
+
+bool pairInside(const Matter &m1, const Matter &m2, const AtomMatrix &r1,
+                const AtomMatrix &r2, int left, int right, double tolerance) {
+  return std::fabs((m1.pbc(r1.row(left) - r2.row(right))).norm()) < tolerance &&
+         m1.getAtomicNr(left) == m2.getAtomicNr(right);
+}
+
+// Augmenting path for one left atom. Index-aligned pairs are not reserved.
+bool identicalAugment(int left, const std::vector<std::vector<int>> &adj,
+                      std::vector<int> &matchRight, std::vector<char> &seen) {
+  for (int right : adj[static_cast<size_t>(left)]) {
+    if (seen[static_cast<size_t>(right)] != 0) {
+      continue;
+    }
+    seen[static_cast<size_t>(right)] = 1;
+    const int taken = matchRight[static_cast<size_t>(right)];
+    if (taken < 0 || identicalAugment(taken, adj, matchRight, seen)) {
+      matchRight[static_cast<size_t>(right)] = left;
+      return true;
+    }
+  }
+  return false;
+}
+
+} // namespace
+
 } // namespace eonc::geometry
 
 bool eonc::geometry::identical(const Matter &m1, const Matter &m2,
                                const double distanceDifference) {
-
   AtomMatrix r1 = m1.getPositions();
   AtomMatrix r2 = m2.getPositions();
-
-  std::set<int> matchedLeft;
-  std::set<int> usedRight;
-  double tolerance = distanceDifference;
-
   if (r1.rows() != r2.rows()) {
     return false;
   }
-  int N = r1.rows();
+  const int nAtoms = static_cast<int>(r1.rows());
+  const double tolerance = distanceDifference;
 
-  for (int i = 0; i < N; i++) {
-    if (std::fabs((m1.pbc(r1.row(i) - r2.row(i))).norm()) < tolerance &&
-        m1.getAtomicNr(i) == m2.getAtomicNr(i)) {
-      matchedLeft.insert(i);
-      usedRight.insert(i);
+  bool indexAligned = true;
+  for (int i = 0; i < nAtoms; i++) {
+    if (!pairInside(m1, m2, r1, r2, i, i, tolerance)) {
+      indexAligned = false;
+      break;
     }
   }
+  if (indexAligned) {
+    return true;
+  }
 
-  for (int j = 0; j < N; j++) {
-
-    if (matchedLeft.count(j) == 1)
-      continue;
-
-    for (int k = 0; k < N; k++) {
-      if (usedRight.count(k) == 1)
-        continue;
-
-      if (std::fabs((m1.pbc(r1.row(j) - r2.row(k))).norm()) < tolerance &&
-          m1.getAtomicNr(j) == m2.getAtomicNr(k)) {
-        matchedLeft.insert(j);
-        usedRight.insert(k);
-        break;
+  std::vector<std::vector<int>> adj(static_cast<size_t>(nAtoms));
+  for (int left = 0; left < nAtoms; left++) {
+    for (int right = 0; right < nAtoms; right++) {
+      if (pairInside(m1, m2, r1, r2, left, right, tolerance)) {
+        adj[static_cast<size_t>(left)].push_back(right);
       }
     }
   }
 
-  if (matchedLeft.size() == static_cast<unsigned>(N)) {
-    return true;
-  } else {
-    return false;
+  std::vector<int> matchRight(static_cast<size_t>(nAtoms), -1);
+  int matched = 0;
+  for (int left = 0; left < nAtoms; left++) {
+    std::vector<char> seen(static_cast<size_t>(nAtoms), 0);
+    if (identicalAugment(left, adj, matchRight, seen)) {
+      matched++;
+    }
   }
+  return matched == nAtoms;
 }
 
 bool eonc::geometry::sortedR(const Matter &m1, const Matter &m2,
