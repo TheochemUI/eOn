@@ -336,7 +336,7 @@ void disableFPE() {
   env.__mxcsr |= (MXCSR_MASK_IM | MXCSR_MASK_ZM | MXCSR_MASK_OM);
   env.__mxcsr &= ~0x3Fu;
   env.__control = static_cast<unsigned short>(env.__control | (1u << 0) |
-                                               (1u << 2) | (1u << 3));
+                                              (1u << 2) | (1u << 3));
   env.__status = static_cast<unsigned short>(env.__status & ~0x3Fu);
 #endif
   fesetenv(&env);
