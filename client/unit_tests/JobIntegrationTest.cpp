@@ -1153,6 +1153,63 @@ corr_time = 10.0
   REQUIRE(transition == 0);
 }
 
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "ParallelReplicaJob keeps the dynamics budget when "
+                 "stop_after_transition is false",
+                 "[job][parallel_replica][integration]") {
+  EON_REQUIRE_TEST_DATA(".");
+  std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+
+  // Same seed and budget. The only difference is stop_after_transition.
+  // speedup is simulation time over the full step budget, so an early break
+  // is strictly below 1 and a completed loop is 1.
+  const char *shared = R"(
+[Main]
+job = parallel_replica
+temperature = 10000
+random_seed = 42
+
+[Potential]
+potential = lj
+
+[Dynamics]
+time_step = 1.0
+time = 1000.0
+thermostat = andersen
+andersen_collision_steps = 10
+andersen_alpha = 1.0
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.001
+max_iterations = 200
+
+[Parallel Replica]
+dephase_time = 20.0
+dephase_loop_max = 2
+state_check_interval = 40.0
+refine_transition = false
+post_transition_time = 20.0
+)";
+
+  writeConfig(std::string(shared) + "stop_after_transition = true\n");
+  auto stopped = runJob();
+  REQUIRE(stopped.count("transition_found") > 0);
+  REQUIRE(std::stoi(stopped["transition_found"]) == 1);
+  REQUIRE(stopped.count("speedup") > 0);
+  double stoppedSpeedup = std::stod(stopped["speedup"]);
+  REQUIRE(stoppedSpeedup < 1.0);
+
+  writeConfig(std::string(shared) + "stop_after_transition = false\n");
+  auto continued = runJob();
+  REQUIRE(continued.count("transition_found") > 0);
+  REQUIRE(std::stoi(continued["transition_found"]) == 1);
+  REQUIRE(continued.count("speedup") > 0);
+  REQUIRE(std::stod(continued["speedup"]) == Catch::Approx(1.0).epsilon(1e-6));
+  REQUIRE(std::stod(continued["speedup"]) > stoppedSpeedup);
+}
+
 TEST_CASE_METHOD(JobIntegrationFixture, "ReplicaExchangeJob runs on LJ cluster",
                  "[job][replica_exchange][integration]") {
   EON_REQUIRE_TEST_DATA(".");
