@@ -436,8 +436,13 @@ std::vector<std::string> OHTSTJob::run(void) {
 
   const bool scanMode = params.oh_tst_options().pmf_scan;
   const long nScan = std::max(2L, params.oh_tst_options().scan_planes);
-  const double dsScan = scanMode ? (guideLen / (double)(nScan - 1)) : 0.0;
   const long nPlanes = scanMode ? nScan : params.oh_tst_options().max_planes;
+  // Adaptive runs start at s_init, off the force-free reactant. A PMF
+  // scan is a uniform reactant->product grid, so plane 0 is s = 0.
+  if (scanMode) {
+    s = pmfScanS(0, nScan, guideLen);
+    sBest = s;
+  }
   long plane = 0;
   bool converged = false;
   // Sec IIC guideline refinement: after the translational force first
@@ -450,6 +455,9 @@ std::vector<std::string> OHTSTJob::run(void) {
   VectorXd gDir = u;
   long rotOnlySteps = 0;
   for (; plane < nPlanes; ++plane) {
+    if (scanMode) {
+      s = pmfScanS(plane, nScan, guideLen);
+    }
     const VectorXd gamma = gOrigin + s * gDir;
     PlaneAverages avg = samplePlane(walker, gamma, n);
 
@@ -547,7 +555,7 @@ std::vector<std::string> OHTSTJob::run(void) {
       gSPrev = gS;
       gRotPrev = gRot;
       havePrev = true;
-      s = (double)(plane + 1) * dsScan;
+      s = pmfScanS(plane + 1, nScan, guideLen);
       const VectorXd gammaNext = xR + s * u;
       VectorXd xStart = walker.getPositionsFreeV();
       xStart -= u * (u.dot(xStart - gammaNext));
@@ -682,7 +690,9 @@ std::vector<std::string> OHTSTJob::run(void) {
   // Q^ZR/Q^R at the FIRST plane of the progression (Z^R), whose
   // reversible work to the optimal plane is what aBest measures.
   Matter rWalker(*reactant);
-  const VectorXd gammaR = xR + (params.oh_tst_options().s_init * guideLen) * u;
+  const double sFirst = scanMode ? pmfScanS(0, nScan, guideLen)
+                                 : params.oh_tst_options().s_init * guideLen;
+  const VectorXd gammaR = xR + sFirst * u;
   const double qRatio = reactantQRatio(rWalker, gammaR, u);
 
   // Rate in internal units (1/internal-time), then SI.

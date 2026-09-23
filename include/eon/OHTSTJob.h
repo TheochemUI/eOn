@@ -17,6 +17,13 @@
 
 namespace eonc {
 
+/// Uniform PMF-scan coordinate. Plane 0 is the reactant (s = 0) and
+/// plane nScan-1 is the product (s = guideLen). s_init is not applied.
+inline double pmfScanS(long plane, long nScan, double guideLen) {
+  const long n = nScan < 2L ? 2L : nScan;
+  return static_cast<double>(plane) * guideLen / static_cast<double>(n - 1);
+}
+
 /**
  * @file
  * @ingroup Jobs
