@@ -1477,6 +1477,7 @@ if get_option('with_tests')
         ['test_storage_order', 'StorageOrderTest.cpp', ''],
         # neb_morse workdir: displacement synth test needs reactant.con (#189)
         ['test_helpers', 'HelperFunctionsTest.cpp', 'neb_morse'],
+        ['test_bundling', 'BundlingTest.cpp', ''],
         ['test_lammps_loader', 'LammpsLoaderTest.cpp', ''],
         ['test_plugin_loader', 'PluginLoaderTest.cpp', ''],
         ['test_ira_resource', 'IRAResourceTest.cpp', ''],
