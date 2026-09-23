@@ -188,8 +188,7 @@ TEST_CASE("Nose-Hoover targets unfixed axes of a partly fixed atom",
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   ParametersLoadAccess::main_options(params).temperature = 300.0;
-  ParametersLoadAccess::thermostat_options(params).kind =
-      Dynamics::NOSE_HOOVER;
+  ParametersLoadAccess::thermostat_options(params).kind = Dynamics::NOSE_HOOVER;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   Matter matter(pot, params);
   matter.resize(1);
@@ -209,8 +208,7 @@ TEST_CASE("Nose-Hoover targets unfixed axes of a partly fixed atom",
   AtomMatrix vel(1, 3);
   vel << speed, speed, 99.0;
   matter.setVelocities(vel);
-  REQUIRE(matter.getKineticEnergy() ==
-          Catch::Approx(keTarget).epsilon(1e-12));
+  REQUIRE(matter.getKineticEnergy() == Catch::Approx(keTarget).epsilon(1e-12));
   REQUIRE(matter.getVelocities()(0, 2) == Catch::Approx(0.0).margin(0.0));
 
   Dynamics dyn(&matter, DynamicsConfig::fromParams(params));
