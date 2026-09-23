@@ -34,12 +34,39 @@ if ! command -v rustc >/dev/null 2>&1; then
 fi
 command -v cbindgen >/dev/null 2>&1 || cargo install cbindgen
 
+# capnproto.org has dropped the TLS handshake mid-build (curl exit 35).
+# Retry, then take the same tag from GitHub. The GitHub archive wraps the
+# C++ tree in c++/; the release tarball is already that tree.
+fetch_tarball() {
+  local dest="$1"
+  shift
+  local url attempt
+  for url in "$@"; do
+    for attempt in 1 2 3; do
+      if curl -fsSL --retry 5 --retry-delay 2 --retry-connrefused -o "${dest}" "${url}"; then
+        return 0
+      fi
+      echo "download failed (${url}, attempt ${attempt})" >&2
+      rm -f "${dest}"
+      sleep $((attempt * 2))
+    done
+  done
+  echo "could not download ${dest}" >&2
+  return 1
+}
+
 if ! pkg-config --exists capnp 2>/dev/null; then
   rm -rf /tmp/capnp-src /tmp/capnp-build
-  curl -fsSL -o /tmp/capnp.tgz https://capnproto.org/capnproto-c++-1.0.2.tar.gz
+  fetch_tarball /tmp/capnp.tgz \
+    https://github.com/capnproto/capnproto/archive/refs/tags/v1.0.2.tar.gz \
+    https://capnproto.org/capnproto-c++-1.0.2.tar.gz
   mkdir -p /tmp/capnp-src
   tar -xzf /tmp/capnp.tgz -C /tmp/capnp-src --strip-components=1
-  cmake -S /tmp/capnp-src -B /tmp/capnp-build \
+  capnp_src=/tmp/capnp-src
+  if [[ -f /tmp/capnp-src/c++/CMakeLists.txt ]]; then
+    capnp_src=/tmp/capnp-src/c++
+  fi
+  cmake -S "${capnp_src}" -B /tmp/capnp-build \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX="${PREFIX}" \
     -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
@@ -58,7 +85,8 @@ pkg-config --modversion capnp
 
 if ! pkg-config --exists quill 2>/dev/null; then
   rm -rf /tmp/quill-src /tmp/quill-build
-  curl -fsSL -o /tmp/quill.tgz https://github.com/odygrd/quill/archive/refs/tags/v11.0.2.tar.gz
+  fetch_tarball /tmp/quill.tgz \
+    https://github.com/odygrd/quill/archive/refs/tags/v11.0.2.tar.gz
   mkdir -p /tmp/quill-src
   tar -xzf /tmp/quill.tgz -C /tmp/quill-src --strip-components=1
   cmake -S /tmp/quill-src -B /tmp/quill-build \
