@@ -94,6 +94,39 @@ TEST_CASE_METHOD(DimerFixture,
   REQUIRE(eigenvalue < 0.0);
 }
 
+TEST_CASE_METHOD(DimerFixture,
+                 "Classic Dimer keeps the accepted orientation at convergence",
+                 "[dimer][eigenmode]") {
+  ParametersLoadAccess::dimer_options(params).improved = false;
+  ParametersLoadAccess::dimer_options(params).remove_rotation = false;
+  // torque_min above any rotational force accepts on the first check,
+  // before a finite-difference probe can move the mode.
+  ParametersLoadAccess::dimer_options(params).torque_min = 1.0e9;
+
+  auto dimer = std::make_unique<Dimer>(matter, params, pot);
+  dimer->compute(matter, mode);
+
+  const AtomMatrix got = dimer->getEigenvector();
+  AtomMatrix expected = mode;
+  for (long i = 0; i < matter->numberOfAtoms(); ++i) {
+    if (matter->getFixed(i)) {
+      expected.row(i).setZero();
+    }
+  }
+  const double gotNorm = got.norm();
+  const double expectedNorm = expected.norm();
+  REQUIRE(std::isfinite(dimer->getEigenvalue()));
+  REQUIRE(gotNorm > 0.0);
+  REQUIRE(expectedNorm > 0.0);
+  const double cosang = std::clamp((got.array() * expected.array()).sum() /
+                                       (gotNorm * expectedNorm),
+                                   -1.0, 1.0);
+  // rotation_angle is the probe that used to survive convergence. The
+  // accepted seed must sit well inside that angle.
+  const double probe = params.dimer_options().rotation_angle;
+  REQUIRE(std::acos(cosang) < probe * 0.01);
+}
+
 // --- ImprovedDimer tests ---
 
 TEST_CASE_METHOD(DimerFixture, "ImprovedDimer computes negative eigenvalue",

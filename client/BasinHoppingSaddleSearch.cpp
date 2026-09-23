@@ -17,9 +17,25 @@
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/NudgedElasticBand.h"
 #include <cmath>
+#include <cstddef>
 #include <cstdio>
 
 namespace eonc {
+
+int BasinHoppingSaddleSearch::highestEnergyInteriorImage(
+    const std::vector<std::shared_ptr<Matter>> &path, long numImages) {
+  double emax = -1e100;
+  int highest = 0;
+  for (long i = 1; i <= numImages; i++) {
+    double etest = path[static_cast<size_t>(i)]->getPotentialEnergy();
+    QUILL_LOG_DEBUG(eonc::log::get(), "i: {} Etest: {:.1f}", i, etest);
+    if (etest > emax) {
+      emax = etest;
+      highest = static_cast<int>(i);
+    }
+  }
+  return highest;
+}
 
 int BasinHoppingSaddleSearch::run() {
   // minimize "saddle"
@@ -49,23 +65,20 @@ int BasinHoppingSaddleSearch::run() {
           neb.path[0]->matter2con("neb_initial_band.con", false))) {
     QUILL_LOG_WARNING(log, "Failed to write neb_initial_band.con");
   }
-  for (int j = 1; j < neb.numImages; j++) {
-    if (!eonc::io::io_ok(neb.path[j]->matter2con("neb_initial_band", true))) {
+  // Reactant is frame 0. Interiors are 1..numImages, including the last.
+  for (int j = 1; j <= neb.numImages; j++) {
+    if (!eonc::io::io_ok(
+            neb.path[j]->matter2con("neb_initial_band.con", true))) {
       QUILL_LOG_WARNING(log, "Failed to append neb_initial_band frame");
     }
   }
   neb.compute();
   // pick the maximum energy image along the band
-  double Emax = -1e100;
-  int HighestImage = 0;
-
-  for (int i = 1; i < neb.numImages; i++) {
-    double Etest = neb.path[i]->getPotentialEnergy();
-    QUILL_LOG_DEBUG(log, "i: {} Etest: {:.1f}", i, Etest);
-    if (Etest > Emax) {
-      Emax = Etest;
-      HighestImage = i;
-    }
+  int HighestImage = highestEnergyInteriorImage(neb.path, neb.numImages);
+  if (HighestImage < 1) {
+    QUILL_LOG_WARNING(log, "No interior NEB image for basin hopping");
+    status = MinModeSaddleSearch::STATUS_BAD_NO_BARRIER;
+    return status;
   }
   // do dimer
   // Calculate initial direction

@@ -1,0 +1,1 @@
+With no equilibration samples (hyperdynamics rmd_time of zero), BondBoost::advance and BondBoost::boost measure the current tagged-bond lengths before BondSelect. The bias is no longer stuck at dvmax, so a stretched bond can turn the hypertime factor off.

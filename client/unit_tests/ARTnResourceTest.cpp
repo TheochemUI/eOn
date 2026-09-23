@@ -23,6 +23,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+#include <mutex>
+#include <thread>
 #include <type_traits>
 #include <vector>
 
@@ -32,12 +34,22 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 namespace {
 int g_nat = 0;
+int g_steps = 0;
+int g_converge_after = 1;
+std::mutex *g_mutex = nullptr;
+int g_force_checks = 0;
+int g_force_dropped = 0;
 int g_destroy_calls = 0;
 int g_nperp_calls = 0;
 std::vector<int> g_nperp_vals;
 
 void reset_artn_stubs() {
   g_nat = 0;
+  g_steps = 0;
+  g_converge_after = 1;
+  g_mutex = nullptr;
+  g_force_checks = 0;
+  g_force_dropped = 0;
   g_destroy_calls = 0;
   g_nperp_calls = 0;
   g_nperp_vals.clear();
@@ -66,8 +78,9 @@ void stub_step(const int nat, const double /*etot*/, double *const /*force*/,
                const double * /*box*/, const int * /*if_pos*/,
                double * /*displ_vec*/, bool *lconv) {
   g_nat = nat;
+  g_steps++;
   if (lconv) {
-    *lconv = true;
+    *lconv = g_steps >= g_converge_after;
   }
 }
 int stub_get_outptr(void **cval, int stored) {
@@ -188,6 +201,45 @@ public:
     return nullptr;
   }
 };
+// Records whether library_mutex is free during force(). try_lock from the
+// search thread is undefined if that thread already owns the mutex, so the
+// probe runs on another thread.
+class LockProbePotential : public eonc::Potential {
+public:
+  LockProbePotential()
+      : eonc::Potential(PotType::LJ) {}
+
+  void force(long nAtoms, const double * /*positions*/,
+             const int * /*atomicNrs*/, double *forces, double *energy,
+             double *variance, const double * /*box*/) override {
+    for (long i = 0; i < nAtoms * 3; ++i) {
+      forces[i] = 0.0;
+    }
+    if (energy) {
+      *energy = 0.0;
+    }
+    if (variance) {
+      *variance = 0.0;
+    }
+    if (g_mutex == nullptr) {
+      return;
+    }
+    bool acquired = false;
+    std::thread probe([&] {
+      for (int attempt = 0; attempt < 32 && !acquired; ++attempt) {
+        if (g_mutex->try_lock()) {
+          acquired = true;
+          g_mutex->unlock();
+        }
+      }
+    });
+    probe.join();
+    g_force_checks += 1;
+    if (acquired) {
+      g_force_dropped += 1;
+    }
+  }
+};
 
 std::unique_ptr<ARTnSaddleSearch> make_artn_search(Parameters &params) {
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
@@ -245,6 +297,42 @@ TEST_CASE("ARTnSaddleSearch run with injected mock does not load singleton",
   REQUIRE_THAT(search->getEigenvalue(),
                Catch::Matchers::WithinAbs(-1.0, 1e-12));
   REQUIRE(eonc::ARTnResource::instance().is_loaded() == singleton_loaded);
+}
+
+TEST_CASE("ARTnSaddleSearch holds library_mutex across force calls",
+          "[artn][resource][lock]") {
+  g_steps = 0;
+  g_converge_after = 2;
+  g_force_checks = 0;
+  g_force_dropped = 0;
+  g_mutex = nullptr;
+
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = std::make_shared<LockProbePotential>();
+  auto matter = std::make_shared<Matter>(pot, params);
+  matter->resize(2);
+  VectorXi nrs(2);
+  nrs << 1, 1;
+  matter->setAtomicNrs(nrs);
+  AtomMatrix pos = AtomMatrix::Zero(2, 3);
+  pos(1, 0) = 1.5;
+  matter->setPositions(pos);
+  Matrix3d cell = Matrix3d::Identity() * 20.0;
+  matter->setCell(cell);
+  AtomMatrix mode = AtomMatrix::Zero(2, 3);
+  mode(0, 0) = 1.0;
+
+  MockARTnResource mock;
+  g_mutex = &mock.library_mutex;
+  auto search = std::make_unique<ARTnSaddleSearch>(matter, pot, mode, params);
+  const int status = search->run(mock);
+  g_mutex = nullptr;
+
+  REQUIRE(status == ARTnSaddleSearch::STATUS_GOOD);
+  REQUIRE(g_steps >= 2);
+  REQUIRE(g_force_checks >= 2);
+  REQUIRE(g_force_dropped == 0);
 }
 
 TEST_CASE("ARTn nperp_limitation parse does not throw out of run",
