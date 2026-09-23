@@ -13,14 +13,35 @@
 #include "eon/Dynamics.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/DynamicsSaddleSearch.h"
 #include "eon/Matter.h"
+#include "eon/MinModeSaddleSearch.h"
 #include "eon/Parameters.h"
 
 #include <cmath>
+#include <filesystem>
 
 namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
+
+// Zero force, so relax stays on the stored frame at the default cap.
+struct FlatPot final : Potential {
+  FlatPot()
+      : Potential(PotType::LJ) {}
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    (void)positions;
+    (void)atomicNrs;
+    (void)box;
+    *energy = 0.0;
+    *variance = 0.0;
+    for (long i = 0; i < nAtoms * 3; ++i) {
+      forces[i] = 0.0;
+    }
+  }
+};
 
 class DynamicsFixture {
 protected:
@@ -220,6 +241,108 @@ TEST_CASE("Nose-Hoover targets unfixed axes of a partly fixed atom",
   REQUIRE(matter.getKineticEnergy() == Catch::Approx(keTarget).epsilon(1e-9));
   REQUIRE(matter.getPositions()(0, 2) == Catch::Approx(0.0).margin(1e-15));
   REQUIRE(matter.getVelocities()(0, 2) == Catch::Approx(0.0).margin(0.0));
+}
+
+TEST_CASE_METHOD(
+    DynamicsFixture,
+    "refineTransition returns the first snapshot that left the reactant",
+    "[dynamics]") {
+  auto pot = std::make_shared<FlatPot>();
+  auto reactant = std::make_shared<Matter>(pot, params);
+  REQUIRE(eonc::io::io_ok(reactant->con2matter(std::string("reactant.con"))));
+
+  auto saddle = std::make_shared<Matter>(*reactant);
+  eonc::DynamicsSaddleSearch search(saddle, params);
+  auto product = std::make_shared<Matter>(*reactant);
+
+  auto frame = [&](bool reactantFrame) {
+    auto snap = std::make_shared<Matter>(*reactant);
+    if (!reactantFrame) {
+      AtomMatrix pos = snap->getPositions();
+      pos(0, 0) += 1.0;
+      snap->setPositions(pos);
+    }
+    return snap;
+  };
+
+  std::vector<std::shared_ptr<Matter>> two{frame(true), frame(false)};
+  REQUIRE(search.refineTransition(two, product) == 1);
+
+  std::vector<std::shared_ptr<Matter>> four{frame(true), frame(true),
+                                            frame(false), frame(false)};
+  const int image = search.refineTransition(four, product);
+  REQUIRE(image == 2);
+  REQUIRE(four[static_cast<size_t>(image - 1)]->compare(*search.reactant));
+  REQUIRE_FALSE(four[static_cast<size_t>(image)]->compare(*search.reactant));
+}
+
+TEST_CASE_METHOD(DynamicsFixture,
+                 "DynamicsSaddleSearch skipped NEB keeps an n-atom mode",
+                 "[dynamics][saddle_search]") {
+  namespace fs = std::filesystem;
+  // Relax is a no-op so a short trajectory cannot fall back into the
+  // reactant basin before the state check. Caps here are the test's own.
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 0;
+  ParametersLoadAccess::neb_options(params).max_iterations = 0;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 1;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 2;
+  ParametersLoadAccess::dimer_options(params).rotations_min = 1;
+  // Geometric, not a basin test: any MD step must count as a new state.
+  ParametersLoadAccess::structure_comparison_options(params)
+      .distance_difference = 1e-6;
+  auto shared = std::make_shared<Matter>(pot, params);
+  shared->con2matter(std::string("reactant.con"));
+  const double dt = params.dynamics_options().time_step;
+  REQUIRE(dt > 0.0);
+  ParametersLoadAccess::dynamics_options(params).steps = 40;
+  ParametersLoadAccess::parallel_replica_options(params).dephase_time = 0.0;
+  ParametersLoadAccess::saddle_search_options(params).dynamics.temperature =
+      5000.0;
+  ParametersLoadAccess::saddle_search_options(params)
+      .dynamics.state_check_interval = dt;
+  ParametersLoadAccess::saddle_search_options(params).dynamics.record_interval =
+      dt;
+
+  const auto tmp = fs::temp_directory_path() / "eon_dyn_skip_neb";
+  fs::remove_all(tmp);
+  fs::create_directories(tmp);
+  struct CwdGuard {
+    fs::path old;
+    explicit CwdGuard(const fs::path &next)
+        : old(fs::current_path()) {
+      fs::current_path(next);
+    }
+    ~CwdGuard() { fs::current_path(old); }
+  } guard(tmp);
+
+  eonc::rng::random(42);
+  eonc::DynamicsSaddleSearch search(shared, params);
+  const int status = search.run();
+  REQUIRE(status !=
+          eonc::MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT);
+  const AtomMatrix mode = search.getEigenvector();
+  REQUIRE(mode.rows() == matter->numberOfAtoms());
+  REQUIRE(mode.cols() == 3);
+  REQUIRE(mode.array().isFinite().all());
+}
+
+TEST_CASE_METHOD(DynamicsFixture,
+                 "Dynamics saddle search survives a zero state-check interval",
+                 "[dynamics][saddle_search]") {
+  // state_check_interval 0 floors to 0 steps. The search must not take
+  // step % 0; the check still runs, and a cold short trajectory stays put.
+  ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
+  ParametersLoadAccess::dynamics_options(params).steps = 1;
+  ParametersLoadAccess::parallel_replica_options(params).dephase_time = 0.0;
+  ParametersLoadAccess::saddle_search_options(params)
+      .dynamics.state_check_interval = 0.0;
+  ParametersLoadAccess::saddle_search_options(params).dynamics.temperature =
+      0.0;
+
+  auto saddle = std::make_shared<Matter>(*matter);
+  DynamicsSaddleSearch search(saddle, params);
+  int status = search.run();
+  REQUIRE(status == MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT);
 }
 
 TEST_CASE_METHOD(DynamicsFixture,

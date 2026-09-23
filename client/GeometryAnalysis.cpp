@@ -459,11 +459,9 @@ bool eonc::geometry::sortedR(const Matter &m1, const Matter &m2,
     for (int x = 0; x < r2.rows(); x++) {
       auto it2 = rdf2[x].begin();
       auto it = rdf1[i1].begin();
-      int c = 0;
       int counter = 0;
-      for (; c < r1.rows(); c++) {
-        if (it == rdf1[i1].end() || it2 == rdf2[x].end())
-          break;
+      // Shell length is the neighbor set, which is not the atom count.
+      for (; it != rdf1[i1].end() && it2 != rdf2[x].end(); ++it, ++it2) {
         atom k1 = *it;
         atom k2 = *it2;
         if (std::fabs(k1.r - k2.r) < tolerance && k1.z == k2.z) {
@@ -472,10 +470,9 @@ bool eonc::geometry::sortedR(const Matter &m1, const Matter &m2,
           EONC_LOG_INFO("No match");
           break;
         }
-        ++it;
-        ++it2;
       }
-      if (counter == r1.rows()) {
+      if (static_cast<size_t>(counter) == rdf1[i1].size() &&
+          it2 == rdf2[x].end()) {
         matches++;
       } else {
         EONC_LOG_INFO("No match");
@@ -495,34 +492,43 @@ void eonc::geometry::pushApart(std::shared_ptr<Matter> m1, double minDistance) {
   double f = 0.025;
   double cut = minDistance;
   double pushAparts = 500;
-  for (int p = 0; p < r1.rows(); p++) {
-    for (int axis = 0; axis <= 2; axis++) {
-      Force(p, axis) = 0;
-    }
-  }
+  Force.setZero();
   for (int count = 0; count < pushAparts; count++) {
     int moved = 0;
     for (int i = 0; i < r1.rows(); i++) {
       for (int j = i + 1; j < r1.rows(); j++) {
-        double d = m1->distance(i, j);
-        if (d < cut) {
-          moved++;
-          for (int axis = 0; axis <= 2; axis++) {
-            double componant = f * (r1(i, axis) - r1(j, axis)) / d;
-            Force(i, axis) += componant;
-            Force(j, axis) -= componant;
-          }
+        // distance() is the minimum-image length. The step has to use that
+        // same vector: the raw Cartesian separation is the long box diagonal
+        // when the close pair straddles a periodic face.
+        AtomMatrix delta(1, 3);
+        delta.row(0) = r1.row(i) - r1.row(j);
+        delta = m1->pbc(delta);
+        const double d = delta.norm();
+        if (!(d < cut)) {
+          continue;
+        }
+        moved++;
+        // A zero minimum-image vector has no direction. Take the finite
+        // step a unit separation would, along +x, instead of dividing.
+        if (!(d > eonc::safemath::eps)) {
+          Force(i, 0) += f;
+          Force(j, 0) -= f;
+          continue;
+        }
+        for (int axis = 0; axis <= 2; axis++) {
+          const double component = f * delta(0, axis) / d;
+          Force(i, axis) += component;
+          Force(j, axis) -= component;
         }
       }
     }
     if (moved == 0)
       break;
-    for (int k = 0; k < r1.rows(); k++) {
-      for (int axis = 0; axis <= 2; axis++) {
-        r1(k, axis) += Force(k, axis);
-        Force(k, axis) = 0;
-      }
-    }
+    r1 += Force;
+    Force.setZero();
     m1->setPositions(r1);
+    // setPositions wraps when periodic boundaries are on. The next pass
+    // has to see those wrapped coordinates, not the pre-wrap copy.
+    r1 = m1->getPositions();
   }
 }

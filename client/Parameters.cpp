@@ -117,7 +117,7 @@ void Parameters::record_load(std::string_view source, int error) {
 
 int Parameters::load(std::string_view filename) {
   INIReader ini{std::string(filename)};
-  if (ini.ParseError() < 0) {
+  if (ini.ParseError() != 0) {
     EONC_LOG_ERROR("Can't load INI file: {}", filename);
     record_load(filename, 1);
     return 1;
@@ -200,7 +200,7 @@ int Parameters::load(FILE *file) {
   }
 
   INIReader ini(buffer.c_str(), buffer.size());
-  if (ini.ParseError() < 0) {
+  if (ini.ParseError() != 0) {
     EONC_LOG_ERROR("Couldn't parse the ini file from FILE*");
     record_load(kFileSource, 1);
     return 1;
@@ -227,7 +227,7 @@ int Parameters::load(FILE *file) {
 int Parameters::load_ini_text(std::string_view ini_text) {
   constexpr std::string_view kIniSource{"<ini>"};
   INIReader ini(ini_text.data(), ini_text.size());
-  if (ini.ParseError() < 0) {
+  if (ini.ParseError() != 0) {
     EONC_LOG_ERROR("Couldn't parse INI from memory");
     record_load(kIniSource, 1);
     return 1;

@@ -1,0 +1,1 @@
+fpe_signal_handler no longer returns into an x86 integer divide. FPE_INTDIV and FPE_INTOVF step past the faulting instruction instead of only masking floating-point traps, so sigreturn does not re-execute that divide.

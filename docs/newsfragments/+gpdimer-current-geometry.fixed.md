@@ -1,0 +1,1 @@
+AtomicGPDimer::compute copies the Matter it is given before it builds the GP midpoint. A saddle search that moves the geometry after the solver is constructed is the geometry that is searched and written back.
