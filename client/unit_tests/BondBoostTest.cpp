@@ -13,9 +13,12 @@
 #include "eon/BondBoost.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/DynamicsSaddleSearch.h"
 #include "eon/Matter.h"
+#include "eon/RandomNumbers.h"
 
 #include <cmath>
+#include <memory>
 #include <stdexcept>
 
 namespace tests {
@@ -267,6 +270,57 @@ TEST_CASE("BondBoost garbage list is not treated as all", "[bondboost][list]") {
   matter.con2matter(std::string("reactant.con"));
   BondBoost bb(&matter, params);
   REQUIRE_THROWS_AS(bb.initialize(), std::invalid_argument);
+}
+
+TEST_CASE("Dynamics saddle search applies bond-boost forces",
+          "[bondboost][dynamics]") {
+  Parameters base;
+  ParametersLoadAccess::potential_options(base).potential = PotType::LJ;
+  ParametersLoadAccess::main_options(base).randomSeed = 42;
+  ParametersLoadAccess::saddle_search_options(base).dynamics.temperature =
+      300.0;
+  const double dt = base.dynamics_options().time_step;
+  REQUIRE(dt > 0.0);
+  // One equilibration sample, then several boosted steps. A zero rmd_time
+  // never records equilibrium lengths, so the bias force stays zero.
+  ParametersLoadAccess::dynamics_options(base).steps = 6;
+  ParametersLoadAccess::parallel_replica_options(base).dephase_time = 0.0;
+  ParametersLoadAccess::saddle_search_options(base)
+      .dynamics.state_check_interval = 1.0e6;
+  ParametersLoadAccess::saddle_search_options(base).dynamics.record_interval =
+      0.0;
+  ParametersLoadAccess::hyperdynamics_options(base).rmd_time = dt;
+  ParametersLoadAccess::hyperdynamics_options(base).dvmax = 5.0;
+  ParametersLoadAccess::hyperdynamics_options(base).qrr = 0.2;
+  ParametersLoadAccess::hyperdynamics_options(base).prr = 0.95;
+  ParametersLoadAccess::hyperdynamics_options(base).boost_atom_list = "All";
+
+  auto pot = eonc::helpers::makePotential(PotType::LJ, base);
+
+  auto finalPositions = [&](const char *bias) {
+    eonc::rng::random(42);
+    Parameters params = base;
+    ParametersLoadAccess::hyperdynamics_options(params).bias_potential = bias;
+    auto matter = std::make_shared<Matter>(pot, params);
+    matter->con2matter(std::string("reactant.con"));
+
+    DynamicsSaddleSearch search(matter, params);
+    const int status = search.run();
+    REQUIRE(status == MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT);
+    // The boost object is gone. Accelerations must not call through it.
+    REQUIRE_NOTHROW(matter->getBiasForces());
+    REQUIRE(matter->getBiasForces().isZero(0.0));
+    return AtomMatrix(matter->getPositions());
+  };
+
+  const AtomMatrix plain = finalPositions(Hyperdynamics::NONE);
+  const AtomMatrix plainAgain = finalPositions(Hyperdynamics::NONE);
+  const AtomMatrix boosted = finalPositions(Hyperdynamics::BOND_BOOST);
+
+  REQUIRE(plain.allFinite());
+  REQUIRE(boosted.allFinite());
+  REQUIRE((plain - plainAgain).norm() < 1e-10);
+  REQUIRE((plain - boosted).norm() > 1e-4);
 }
 
 } /* namespace tests */
