@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+#include <vector>
 
 namespace tests {
 
@@ -31,11 +32,27 @@ static eonc::helpers::test::QuillTestLogger _quill_setup;
 
 namespace {
 int g_nat = 0;
+int g_destroy_calls = 0;
+int g_nperp_calls = 0;
+std::vector<int> g_nperp_vals;
+
+void reset_artn_stubs() {
+  g_nat = 0;
+  g_destroy_calls = 0;
+  g_nperp_calls = 0;
+  g_nperp_vals.clear();
+}
 
 int stub_create() { return 0; }
-void stub_destroy() {}
-int stub_set_param(const char *const /*name*/, const int /*crank*/,
-                   const int * /*csize*/, const void * /*cval*/) {
+void stub_destroy() { g_destroy_calls++; }
+int stub_set_param(const char *const name, const int /*crank*/,
+                   const int *csize, const void *cval) {
+  if (name != nullptr && std::strcmp(name, "nperp_limitation") == 0 &&
+      csize != nullptr && cval != nullptr && *csize > 0) {
+    g_nperp_calls++;
+    const auto *vals = static_cast<const int *>(cval);
+    g_nperp_vals.assign(vals, vals + *csize);
+  }
   return 0;
 }
 void stub_setup(const int nat, bool *cerr) {
@@ -160,20 +177,14 @@ public:
     return nullptr;
   }
 };
-
 class MockARTnResourceNoTau : public MockARTnResource {
 public:
   [[nodiscard]] get_data_fn get_get_data_fn() const override {
     return &stub_get_data_no_tau;
   }
 };
-} // namespace
 
-TEST_CASE("ARTnSaddleSearch run with injected mock does not load singleton",
-          "[artn][resource][inject]") {
-  const bool singleton_loaded = eonc::ARTnResource::instance().is_loaded();
-
-  Parameters params;
+std::unique_ptr<ARTnSaddleSearch> make_artn_search(Parameters &params) {
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
   auto pot = eonc::helpers::makePotential(PotType::LJ, params);
   auto matter = std::make_shared<Matter>(pot, params);
@@ -188,11 +199,22 @@ TEST_CASE("ARTnSaddleSearch run with injected mock does not load singleton",
   matter->setCell(cell);
   AtomMatrix mode = AtomMatrix::Zero(2, 3);
   mode(0, 0) = 1.0;
+  return std::make_unique<ARTnSaddleSearch>(matter, pot, mode, params);
+}
+} // namespace
 
+TEST_CASE("ARTnSaddleSearch run with injected mock does not load singleton",
+          "[artn][resource][inject]") {
+  reset_artn_stubs();
+  const bool singleton_loaded = eonc::ARTnResource::instance().is_loaded();
+
+  Parameters params;
   MockARTnResource mock;
-  auto search = std::make_unique<ARTnSaddleSearch>(matter, pot, mode, params);
+  auto search = make_artn_search(params);
   REQUIRE(search->run(mock) == ARTnSaddleSearch::STATUS_GOOD);
   REQUIRE(search->getForceCalls() > 0);
+  REQUIRE(g_nperp_calls == 0);
+  REQUIRE(g_destroy_calls == 1);
   REQUIRE_THAT(search->getEigenvalue(),
                Catch::Matchers::WithinAbs(-1.0, 1e-12));
   REQUIRE(eonc::ARTnResource::instance().is_loaded() == singleton_loaded);
@@ -221,6 +243,36 @@ TEST_CASE("ARTnSaddleSearch run refuses success without tau_sad",
   REQUIRE(search->run(mock) == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR);
   REQUIRE(matter->getPositions()(1, 0) == 1.5);
   REQUIRE(std::isnan(search->getEigenvalue()));
+}
+
+TEST_CASE("ARTn nperp_limitation parse does not throw out of run",
+          "[artn][resource][nperp]") {
+  MockARTnResource mock;
+
+  // "1," is not a blank token: getline stops at the trailing comma and
+  // never yields an empty field. These are the tokens that throw.
+  for (const char *bad : {",", " ", "1, ", "abc", "12abc", "2147483648"}) {
+    reset_artn_stubs();
+    Parameters params;
+    ParametersLoadAccess::artn_options(params).nperp_limitation = bad;
+    auto search = make_artn_search(params);
+    int status = 0;
+    REQUIRE_NOTHROW(status = search->run(mock));
+    REQUIRE(status == ARTnSaddleSearch::STATUS_BAD_ARTN_ERROR);
+    REQUIRE(search->getForceCalls() == 0);
+    REQUIRE(g_destroy_calls == 1);
+    REQUIRE(g_nperp_calls == 0);
+  }
+
+  reset_artn_stubs();
+  Parameters params;
+  ParametersLoadAccess::artn_options(params).nperp_limitation = "20, 30";
+  auto search = make_artn_search(params);
+  REQUIRE(search->run(mock) == ARTnSaddleSearch::STATUS_GOOD);
+  REQUIRE(search->getForceCalls() > 0);
+  REQUIRE(g_nperp_calls == 1);
+  REQUIRE(g_nperp_vals == std::vector<int>{20, 30});
+  REQUIRE(g_destroy_calls == 1);
 }
 
 } // namespace tests

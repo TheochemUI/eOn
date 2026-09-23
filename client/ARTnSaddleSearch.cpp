@@ -14,10 +14,43 @@
 #include "eon/libs/ARTn/ARTnResource.h"
 
 #include <cstdlib>
+#include <exception>
 #include <filesystem>
 #include <limits>
 #include <sstream>
+#include <string>
+
 namespace eonc {
+namespace {
+
+// False when any comma-separated token is blank or not a whole integer.
+// An empty string has no tokens and is not a parse error.
+bool parse_nperp_limitation(const std::string &text, std::vector<int> &out) {
+  out.clear();
+  std::istringstream ss(text);
+  std::string token;
+  while (std::getline(ss, token, ',')) {
+    const auto begin = token.find_first_not_of(" \t\r\n");
+    if (begin == std::string::npos) {
+      return false;
+    }
+    const auto end = token.find_last_not_of(" \t\r\n");
+    const std::string trimmed = token.substr(begin, end - begin + 1);
+    try {
+      std::size_t consumed = 0;
+      const int value = std::stoi(trimmed, &consumed);
+      if (consumed != trimmed.size()) {
+        return false;
+      }
+      out.push_back(value);
+    } catch (const std::exception &) {
+      return false;
+    }
+  }
+  return true;
+}
+
+} // namespace
 
 ARTnSaddleSearch::ARTnSaddleSearch(std::shared_ptr<Matter> matterPassed,
                                    std::shared_ptr<Potential> potPassed,
@@ -169,12 +202,19 @@ int ARTnSaddleSearch::run(IARTnResource &res) {
     // pARTn defaults are tuned for exploration from minimum. For refinement
     // near a saddle, -1 (unlimited) or 20-30 (for ML potentials) is better.
     if (params.artn_options().nperp_limitation != "default") {
-      // Parse comma-separated integers into a vector
+      // Parse comma-separated integers into a vector. std::stoi throws on a
+      // blank or non-integer token; that must not escape run() after
+      // artn_create, or artn_destroy is skipped.
       std::vector<int> nperp_vals;
-      std::istringstream ss(params.artn_options().nperp_limitation);
-      std::string token;
-      while (std::getline(ss, token, ',')) {
-        nperp_vals.push_back(std::stoi(token));
+      if (!parse_nperp_limitation(params.artn_options().nperp_limitation,
+                                  nperp_vals)) {
+        QUILL_LOG_ERROR(log,
+                        "artn_options.nperp_limitation '{}' is not a "
+                        "comma-separated integer list",
+                        params.artn_options().nperp_limitation);
+        res.get_destroy_fn()();
+        status = STATUS_BAD_ARTN_ERROR;
+        return status;
       }
       if (!nperp_vals.empty()) {
         int nperp_size = static_cast<int>(nperp_vals.size());
@@ -248,11 +288,9 @@ int ARTnSaddleSearch::run(IARTnResource &res) {
     ityp[i] = matter->getAtomicNr(i);
   }
 
-  // Convert box to column-major 3x3 - copy to array
+  // pARTn reads lattice vectors as columns. Copy rows, do not transpose.
   Matrix3d cell = matter->getCell();
-  for (int i = 0; i < 3; i++)
-    for (int j = 0; j < 3; j++)
-      box_f[j * 3 + i] = cell(i, j);
+  lattice_rows_to_fortran_box(cell, box_f);
 
   int maxIter = params.artn_options().max_iterations;
 
