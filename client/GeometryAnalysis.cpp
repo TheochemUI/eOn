@@ -459,11 +459,9 @@ bool eonc::geometry::sortedR(const Matter &m1, const Matter &m2,
     for (int x = 0; x < r2.rows(); x++) {
       auto it2 = rdf2[x].begin();
       auto it = rdf1[i1].begin();
-      int c = 0;
       int counter = 0;
-      for (; c < r1.rows(); c++) {
-        if (it == rdf1[i1].end() || it2 == rdf2[x].end())
-          break;
+      // Shell length is the neighbor set, which is not the atom count.
+      for (; it != rdf1[i1].end() && it2 != rdf2[x].end(); ++it, ++it2) {
         atom k1 = *it;
         atom k2 = *it2;
         if (std::fabs(k1.r - k2.r) < tolerance && k1.z == k2.z) {
@@ -472,10 +470,9 @@ bool eonc::geometry::sortedR(const Matter &m1, const Matter &m2,
           EONC_LOG_INFO("No match");
           break;
         }
-        ++it;
-        ++it2;
       }
-      if (counter == r1.rows()) {
+      if (static_cast<size_t>(counter) == rdf1[i1].size() &&
+          it2 == rdf2[x].end()) {
         matches++;
       } else {
         EONC_LOG_INFO("No match");

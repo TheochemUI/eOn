@@ -181,13 +181,31 @@ TEST_CASE("pushApart follows the minimum image", "[geometry][pushApart]") {
   REQUIRE(after(1, 2) == Catch::Approx(0.0).margin(1e-12));
 }
 
-TEST_CASE_METHOD(GeomFixture, "sortedR exercises RDF comparison path",
+TEST_CASE_METHOD(GeomFixture, "sortedR matches an identical geometry",
                  "[geometry][sortedR]") {
-  // sortedR compares radial distribution functions
-  // May fail on small clusters due to tolerance sensitivity
-  bool result = eonc::geometry::sortedR(*m1, *m2, 1.0);
-  // Just verify it runs without crashing and returns a bool
-  CHECK((result == true || result == false));
+  REQUIRE(eonc::geometry::sortedR(*m1, *m2, 1.0));
+}
+
+TEST_CASE_METHOD(GeomFixture,
+                 "sortedR matches a homonuclear diatomic to itself",
+                 "[geometry][sortedR]") {
+  m1->resize(2);
+  m2->resize(2);
+  m1->setAtomicNr(0, 1);
+  m1->setAtomicNr(1, 1);
+  m2->setAtomicNr(0, 1);
+  m2->setAtomicNr(1, 1);
+
+  AtomMatrix pos(2, 3);
+  pos.setZero();
+  pos(1, 0) = 1.0;
+  m1->setPositions(pos);
+  m2->setPositions(pos);
+  REQUIRE(eonc::geometry::sortedR(*m1, *m2, 1.0));
+
+  pos(1, 0) = 2.5;
+  m2->setPositions(pos);
+  REQUIRE_FALSE(eonc::geometry::sortedR(*m1, *m2, 1.0));
 }
 
 TEST_CASE_METHOD(GeomFixture, "projectOutRotTrans removes rigid body modes",
