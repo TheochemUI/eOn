@@ -95,6 +95,185 @@ static constexpr unsigned MXCSR_MASK_IM = 1u << 7;
 static constexpr unsigned MXCSR_MASK_ZM = 1u << 9;
 static constexpr unsigned MXCSR_MASK_OM = 1u << 10;
 
+// One DIV/IDIV. length 0 means the bytes at IP are not that instruction.
+// width is the operand size in bytes (1, 2, 4, or 8).
+struct DecodedDiv {
+  int length;
+  int width;
+};
+
+// #DE is a fault: the saved IP points at the divide. Only DIV and IDIV
+// raise it. Prefixes and a ModRM (plus SIB/displacement) are enough to
+// measure that one instruction; anything else is left untouched.
+static DecodedDiv decode_div_insn(const unsigned char *code, bool long_mode) {
+  DecodedDiv out{0, 0};
+  const unsigned char *p = code;
+  const unsigned char *limit = code + 15;
+  bool operand16 = false;
+  bool rex_w = false;
+  bool addr16 = false;
+  while (p < limit) {
+    unsigned char c = *p;
+    if (c == 0x66) {
+      operand16 = true;
+      ++p;
+      continue;
+    }
+    if (c == 0x67) {
+      if (!long_mode) {
+        addr16 = true;
+      }
+      ++p;
+      continue;
+    }
+    if (c == 0xF0 || c == 0xF2 || c == 0xF3 || c == 0x26 || c == 0x2E ||
+        c == 0x36 || c == 0x3E || c == 0x64 || c == 0x65) {
+      ++p;
+      continue;
+    }
+    if (long_mode && c >= 0x40 && c <= 0x4F) {
+      rex_w = (c & 0x08) != 0;
+      ++p;
+      continue;
+    }
+    break;
+  }
+  if (addr16 || p >= limit) {
+    return out;
+  }
+  unsigned char opcode = *p++;
+  if (opcode != 0xF6 && opcode != 0xF7) {
+    return out;
+  }
+  if (p >= limit) {
+    return out;
+  }
+  unsigned char modrm = *p++;
+  unsigned mod = modrm >> 6;
+  unsigned reg = (modrm >> 3) & 7u;
+  unsigned rm = modrm & 7u;
+  if (reg != 6u && reg != 7u) {
+    return out;
+  }
+  if (mod != 3u) {
+    bool have_sib = rm == 4u;
+    unsigned sib_base = 0;
+    if (have_sib) {
+      if (p >= limit) {
+        return out;
+      }
+      sib_base = static_cast<unsigned>(*p++ & 7u);
+    }
+    if ((mod == 0u && rm == 5u) || (have_sib && mod == 0u && sib_base == 5u) ||
+        mod == 2u) {
+      if (p + 4 > limit) {
+        return out;
+      }
+      p += 4;
+    } else if (mod == 1u) {
+      if (p + 1 > limit) {
+        return out;
+      }
+      ++p;
+    }
+  }
+  int length = static_cast<int>(p - code);
+  if (length < 2 || length > 15) {
+    return out;
+  }
+  out.length = length;
+  if (opcode == 0xF6) {
+    out.width = 1;
+  } else if (rex_w) {
+    out.width = 8;
+  } else if (operand16) {
+    out.width = 2;
+  } else {
+    out.width = 4;
+  }
+  return out;
+}
+
+struct X86DivRegs {
+  uintptr_t *ip;
+  uintptr_t *ax;
+  uintptr_t *dx;
+};
+
+static X86DivRegs x86_div_regs(void *scp) {
+  X86DivRegs regs{nullptr, nullptr, nullptr};
+  if (scp == nullptr) {
+    return regs;
+  }
+  auto *ctx = static_cast<ucontext_t *>(scp);
+#if defined(__linux__) && defined(__x86_64__)
+  regs.ip = reinterpret_cast<uintptr_t *>(&ctx->uc_mcontext.gregs[REG_RIP]);
+  regs.ax = reinterpret_cast<uintptr_t *>(&ctx->uc_mcontext.gregs[REG_RAX]);
+  regs.dx = reinterpret_cast<uintptr_t *>(&ctx->uc_mcontext.gregs[REG_RDX]);
+#elif defined(__linux__) && defined(__i386__)
+  regs.ip = reinterpret_cast<uintptr_t *>(&ctx->uc_mcontext.gregs[REG_EIP]);
+  regs.ax = reinterpret_cast<uintptr_t *>(&ctx->uc_mcontext.gregs[REG_EAX]);
+  regs.dx = reinterpret_cast<uintptr_t *>(&ctx->uc_mcontext.gregs[REG_EDX]);
+#elif defined(__APPLE__) && defined(__x86_64__)
+  if (ctx->uc_mcontext != nullptr) {
+    regs.ip = reinterpret_cast<uintptr_t *>(&ctx->uc_mcontext->__ss.__rip);
+    regs.ax = reinterpret_cast<uintptr_t *>(&ctx->uc_mcontext->__ss.__rax);
+    regs.dx = reinterpret_cast<uintptr_t *>(&ctx->uc_mcontext->__ss.__rdx);
+  }
+#elif defined(__APPLE__) && defined(__i386__)
+  if (ctx->uc_mcontext != nullptr) {
+    regs.ip = reinterpret_cast<uintptr_t *>(&ctx->uc_mcontext->__ss.__eip);
+    regs.ax = reinterpret_cast<uintptr_t *>(&ctx->uc_mcontext->__ss.__eax);
+    regs.dx = reinterpret_cast<uintptr_t *>(&ctx->uc_mcontext->__ss.__edx);
+  }
+#else
+  (void)ctx;
+#endif
+  return regs;
+}
+
+// Advance past a faulting DIV/IDIV and clear its quotient. Returns false
+// when IP does not point at a divide (INTO's trap IP is already next).
+static bool advance_integer_div(void *scp) {
+  X86DivRegs regs = x86_div_regs(scp);
+  if (regs.ip == nullptr || regs.ax == nullptr || regs.dx == nullptr) {
+    return false;
+  }
+  const auto *code = reinterpret_cast<const unsigned char *>(*regs.ip);
+  DecodedDiv div = decode_div_insn(code, sizeof(void *) == 8);
+  if (div.length == 0) {
+    return false;
+  }
+  if (div.width <= 2) {
+    *regs.ax &= ~uintptr_t{0xFFFFu};
+    if (div.width == 2) {
+      *regs.dx &= ~uintptr_t{0xFFFFu};
+    }
+  } else {
+    *regs.ax = 0;
+    *regs.dx = 0;
+  }
+  *regs.ip += static_cast<uintptr_t>(div.length);
+  return true;
+}
+
+static void write_fault_rip(void *scp) {
+#if defined(__linux__) && defined(__x86_64__)
+  auto *ctx_log = static_cast<ucontext_t *>(scp);
+  unsigned long rip =
+      static_cast<unsigned long>(ctx_log->uc_mcontext.gregs[REG_RIP]);
+  char hex[] = "FPE rip=0x0000000000000000\n";
+  for (int i = 0; i < 16; ++i) {
+    unsigned nibble = static_cast<unsigned>((rip >> (4 * (15 - i))) & 0xFu);
+    hex[10 + i] =
+        static_cast<char>(nibble < 10 ? '0' + nibble : 'a' + (nibble - 10));
+  }
+  write(STDERR_FILENO, hex, sizeof(hex) - 1);
+#else
+  (void)scp;
+#endif
+}
+
 static void fpe_signal_handler(int sig, siginfo_t *sip, void *scp) {
   // Async-signal-safe only: write(2) and sig_atomic_t. No iostream, malloc,
   // backtrace, or fenv helpers (fedisableexcept / feclearexcept are not
@@ -112,6 +291,7 @@ static void fpe_signal_handler(int sig, siginfo_t *sip, void *scp) {
   static volatile sig_atomic_t reported_inv = 0;
   static volatile sig_atomic_t reported_ovf = 0;
   static volatile sig_atomic_t reported_unk = 0;
+  static volatile sig_atomic_t reported_int = 0;
 
   static constexpr char prefix[] = "FPE (continuing, masking further): ";
   static constexpr char msg_div[] = "division by zero\n";
@@ -125,6 +305,31 @@ static void fpe_signal_handler(int sig, siginfo_t *sip, void *scp) {
   volatile sig_atomic_t *reported = &reported_unk;
   const char *msg = msg_unk;
   size_t msg_len = sizeof(msg_unk) - 1;
+
+  // Integer #DE has no mask bit. Returning here re-executes the divide.
+  if (sip->si_code == FPE_INTDIV || sip->si_code == FPE_INTOVF) {
+    if (reported_int == 0) {
+      reported_int = 1;
+      static constexpr char iprefix[] = "FPE (continuing, skipping divide): ";
+      static constexpr char msg_idiv[] = "integer divide\n";
+      static constexpr char msg_iovf[] = "integer overflow\n";
+      const char *imsg = sip->si_code == FPE_INTDIV ? msg_idiv : msg_iovf;
+      size_t imsg_len = sizeof(msg_iovf) - 1;
+      if (sip->si_code == FPE_INTDIV) {
+        imsg_len = sizeof(msg_idiv) - 1;
+      }
+      write(STDERR_FILENO, iprefix, sizeof(iprefix) - 1);
+      write(STDERR_FILENO, imsg, imsg_len);
+      write_fault_rip(scp);
+    }
+    if (!advance_integer_div(scp) && sip->si_code == FPE_INTDIV) {
+      static constexpr char stuck[] =
+          "FPE integer divide: could not skip faulting instruction\n";
+      write(STDERR_FILENO, stuck, sizeof(stuck) - 1);
+      _exit(128 + SIGFPE);
+    }
+    return;
+  }
 
   switch (sip->si_code) {
   case FPE_FLTDIV:
@@ -153,19 +358,8 @@ static void fpe_signal_handler(int sig, siginfo_t *sip, void *scp) {
     *reported = 1;
     write(STDERR_FILENO, prefix, sizeof(prefix) - 1);
     write(STDERR_FILENO, msg, msg_len);
-#if defined(__linux__) && defined(__x86_64__)
     // First-fault RIP for post-mortem addr2line / offline diagnosis.
-    ucontext_t *ctx_log = static_cast<ucontext_t *>(scp);
-    unsigned long rip =
-        static_cast<unsigned long>(ctx_log->uc_mcontext.gregs[REG_RIP]);
-    char hex[] = "FPE rip=0x0000000000000000\n";
-    for (int i = 0; i < 16; ++i) {
-      unsigned nibble = static_cast<unsigned>((rip >> (4 * (15 - i))) & 0xFu);
-      hex[10 + i] =
-          static_cast<char>(nibble < 10 ? '0' + nibble : 'a' + (nibble - 10));
-    }
-    write(STDERR_FILENO, hex, sizeof(hex) - 1);
-#endif
+    write_fault_rip(scp);
   }
 
 #if defined(__linux__) && (defined(__x86_64__) || defined(__i386__))
@@ -234,6 +428,31 @@ static void fpe_signal_handler(int sig, siginfo_t *sip, void *scp) {
       break;
     }
     p += h->size;
+  }
+#elif defined(__APPLE__) && defined(__x86_64__)
+  // Darwin restores SSE state from uc_mcontext->__fs. Mask bits have the
+  // same polarity as Linux MXCSR: set means the class does not trap. Without
+  // that update the faulting instruction re-executes and re-raises forever.
+  auto *ctx = static_cast<ucontext_t *>(scp);
+  if (ctx->uc_mcontext) {
+    auto &fs = ctx->uc_mcontext->__fs;
+    fs.__fpu_mxcsr &= ~0x3Fu;
+    fs.__fpu_mxcsr |= mxcsr_mask_bits;
+    if (mxcsr_mask_bits & MXCSR_MASK_ZM) {
+      fs.__fpu_fcw.__zdiv = 1;
+    }
+    if (mxcsr_mask_bits & MXCSR_MASK_IM) {
+      fs.__fpu_fcw.__invalid = 1;
+    }
+    if (mxcsr_mask_bits & MXCSR_MASK_OM) {
+      fs.__fpu_fcw.__ovrfl = 1;
+    }
+    fs.__fpu_fsw.__invalid = 0;
+    fs.__fpu_fsw.__denorm = 0;
+    fs.__fpu_fsw.__zdiv = 0;
+    fs.__fpu_fsw.__ovrfl = 0;
+    fs.__fpu_fsw.__undfl = 0;
+    fs.__fpu_fsw.__precis = 0;
   }
 #elif defined(__APPLE__) && defined(__aarch64__)
   constexpr unsigned kFpcrIoe = 1u << 8;
@@ -305,8 +524,20 @@ void disableFPE() {
   fegetenv(&env);
 #if defined(__aarch64__)
   env.__fpcr &= ~((1u << 8) | (1u << 9) | (1u << 10));
+#elif defined(__x86_64__)
+  // enableFPE clears MXCSR IM/ZM/OM. Restoring that environment unchanged
+  // leaves the traps armed.
+  env.__mxcsr |= (MXCSR_MASK_IM | MXCSR_MASK_ZM | MXCSR_MASK_OM);
+  env.__mxcsr &= ~0x3Fu;
+  env.__control = static_cast<unsigned short>(env.__control | (1u << 0) |
+                                              (1u << 2) | (1u << 3));
+  env.__status = static_cast<unsigned short>(env.__status & ~0x3Fu);
 #endif
   fesetenv(&env);
+#if defined(__x86_64__)
+  _MM_SET_EXCEPTION_MASK(_MM_GET_EXCEPTION_MASK() | _MM_MASK_INVALID |
+                         _MM_MASK_DIV_ZERO | _MM_MASK_OVERFLOW);
+#endif
 #endif
 }
 

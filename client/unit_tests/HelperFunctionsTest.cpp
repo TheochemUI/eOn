@@ -29,6 +29,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <string>
+#include <system_error>
 #include <thread>
 #include <vector>
 
@@ -49,6 +50,50 @@ TEST_CASE("getRelevantFile accepts a name with no extension", "[helpers]") {
   REQUIRE(eonc::helpers::getRelevantFile("config") == "config_cp");
   fs::current_path(old);
   fs::remove_all(dir);
+}
+
+TEST_CASE("enterJobDirectory does not change directory when chdir fails",
+          "[helpers]") {
+  namespace fs = std::filesystem;
+  struct Restore {
+    fs::path dir;
+    ~Restore() {
+      std::error_code ec;
+      fs::current_path(dir, ec);
+    }
+  } restore{fs::current_path()};
+
+  const auto launch = restore.dir;
+  const auto root = fs::temp_directory_path() / "eon_enter_job_dir";
+  fs::remove_all(root);
+  fs::create_directories(root);
+  const auto missing = root / "missing";
+  const auto file = root / "not_a_dir";
+  const auto job = root / "job";
+  {
+    std::ofstream out{file};
+    REQUIRE(out.good());
+  }
+  fs::create_directories(job);
+
+  auto err = eonc::helpers::enterJobDirectory(missing.string());
+  REQUIRE(err.has_value());
+  REQUIRE(fs::equivalent(fs::current_path(), launch));
+
+  err = eonc::helpers::enterJobDirectory(file.string());
+  REQUIRE(err.has_value());
+  REQUIRE(fs::equivalent(fs::current_path(), launch));
+
+  err = eonc::helpers::enterJobDirectory(job.string());
+  REQUIRE_FALSE(err.has_value());
+  REQUIRE(fs::equivalent(fs::current_path(), job));
+
+  err = eonc::helpers::enterJobDirectory(missing.string());
+  REQUIRE(err.has_value());
+  REQUIRE(fs::equivalent(fs::current_path(), job));
+
+  fs::current_path(launch);
+  fs::remove_all(root);
 }
 
 TEST_CASE("stageReturnLog copies a launch log into the job directory",

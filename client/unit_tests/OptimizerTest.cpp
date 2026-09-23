@@ -204,6 +204,25 @@ TEST_CASE("CG with line search converges on quadratic",
   REQUIRE(final_pos.norm() < 0.1);
 }
 
+TEST_CASE("CG line search keeps a negative max move forward",
+          "[optimizer][cg][line_search]") {
+  auto params = makeOptParams();
+  ParametersLoadAccess::saddle_search_options(params)
+      .confine_positive.bowl_breakout = true;
+  ParametersLoadAccess::optimizer_options(params).cg.line_search = true;
+  ParametersLoadAccess::optimizer_options(params).cg.line_search_max_iter = 1;
+  auto objf = std::make_shared<QuadraticObjectiveFunction>(params);
+  VectorXd start(2);
+  start << 5.0, 3.0;
+  objf->setPositions(start);
+
+  ConjugateGradients opt(objf, params);
+  opt.step(-0.2);
+  auto pos = objf->getPositions();
+
+  REQUIRE(pos.norm() == Catch::Approx(start.norm() - 0.2).margin(1e-8));
+}
+
 TEST_CASE("CG with no_overshooting converges on quadratic",
           "[optimizer][cg][no_overshoot]") {
   auto params = makeOptParams();

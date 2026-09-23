@@ -72,8 +72,10 @@ Matrix3d AtomicGPDimer::forceBox() const {
 
 void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
                             AtomMatrix initialDirectionAtomMatrix) {
+  // Saddle search moves this Matter after the solver is constructed.
+  *matterCenter = *matter;
   atoms_config = eonc::helpers::eon_matter_to_atmconf(matter.get());
-  copyAtomMatrixToCoord(matterCenter->getPositionsFree(), R_init);
+  copyAtomMatrixToCoord(matter->getPositionsFree(), R_init);
   init_middle_point.clear();
   init_middle_point.R = R_init;
   init_observations.clear();
@@ -100,10 +102,12 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
                    double *U, double *variance, const double *box) {
         potential->force(N, R, atomicNrs, F, U, variance, box);
       });
-  eonc::FPEHandler fpeh;
-  fpeh.eat_fpe();
-  atomic_dimer.execute(wrapper);
-  fpeh.restore_fpe();
+  // Restore traps if execute throws. The saddle-search catch must not
+  // leave later force calls running with traps still masked.
+  {
+    eonc::FPEGuard fpe;
+    atomic_dimer.execute(wrapper);
+  }
   // Forcefully set the right positions
   matter->setPositionsFreeV(atomic_dimer.getFinalCoordOfMidPoint());
   this->totalIterations = atomic_dimer.getIterations();

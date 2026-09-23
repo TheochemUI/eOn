@@ -1,0 +1,1 @@
+``ARTnSaddleSearch::run`` holds ``library_mutex`` from ``artn_create`` through ``artn_destroy``, including force calls between ``artn_step`` invocations, so another search cannot touch the process-global Fortran state mid-run.

@@ -15,6 +15,8 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Matter.h"
 
+#include <cmath>
+
 namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
@@ -114,17 +116,96 @@ TEST_CASE_METHOD(GeomFixture, "pushApart separates overlapping atoms",
 
   // After pushApart, distance should be >= minDistance
   auto newPos = m1->getPositions();
+  REQUIRE(newPos.allFinite());
   double dist = (newPos.row(0) - newPos.row(1)).norm();
+  REQUIRE(std::isfinite(dist));
   REQUIRE(dist >= 0.5); // should be pushed apart
+  REQUIRE(m1->distance(0, 1) >= 0.5);
 }
 
-TEST_CASE_METHOD(GeomFixture, "sortedR exercises RDF comparison path",
+TEST_CASE("pushApart separates a coincident pair", "[geometry][pushApart]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto m = std::make_shared<Matter>(pot, params);
+  m->resize(2);
+  m->setAtomicNr(0, 1);
+  m->setAtomicNr(1, 1);
+  m->setCell(Matrix3d::Identity() * 10.0);
+  m->setPeriodic(false);
+  AtomMatrix pos(2, 3);
+  pos.setZero();
+  pos.row(0) << 1.0, 2.0, 3.0;
+  pos.row(1) << 1.0, 2.0, 3.0;
+  m->setPositions(pos);
+
+  eonc::geometry::pushApart(m, 1.0);
+
+  const auto after = m->getPositions();
+  REQUIRE(after.allFinite());
+  REQUIRE(m->distance(0, 1) >= 1.0 - 1e-8);
+}
+
+TEST_CASE("pushApart follows the minimum image", "[geometry][pushApart]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto m = std::make_shared<Matter>(pot, params);
+  m->resize(2);
+  m->setAtomicNr(0, 1);
+  m->setAtomicNr(1, 1);
+  m->setCell(Matrix3d::Identity() * 10.0);
+  m->setPeriodic(true);
+  AtomMatrix pos(2, 3);
+  pos.setZero();
+  // 0.1 across the periodic face, 9.9 the long way through the cell.
+  pos(0, 0) = 0.05;
+  pos(1, 0) = 9.95;
+  m->setPositions(pos);
+  REQUIRE(m->distance(0, 1) == Catch::Approx(0.1).margin(1e-8));
+
+  eonc::geometry::pushApart(m, 1.0);
+
+  const auto after = m->getPositions();
+  REQUIRE(after.allFinite());
+  REQUIRE(m->distance(0, 1) >= 1.0 - 1e-8);
+  // Still on opposite sides of the face. A step along the long diagonal
+  // throws both atoms into the middle of the cell.
+  REQUIRE(after(0, 0) > 0.05);
+  REQUIRE(after(0, 0) < 2.0);
+  REQUIRE(after(1, 0) < 9.95);
+  REQUIRE(after(1, 0) > 8.0);
+  REQUIRE(after(0, 1) == Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(after(1, 1) == Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(after(0, 2) == Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(after(1, 2) == Catch::Approx(0.0).margin(1e-12));
+}
+
+TEST_CASE_METHOD(GeomFixture, "sortedR matches an identical geometry",
                  "[geometry][sortedR]") {
-  // sortedR compares radial distribution functions
-  // May fail on small clusters due to tolerance sensitivity
-  bool result = eonc::geometry::sortedR(*m1, *m2, 1.0);
-  // Just verify it runs without crashing and returns a bool
-  CHECK((result == true || result == false));
+  REQUIRE(eonc::geometry::sortedR(*m1, *m2, 1.0));
+}
+
+TEST_CASE_METHOD(GeomFixture,
+                 "sortedR matches a homonuclear diatomic to itself",
+                 "[geometry][sortedR]") {
+  m1->resize(2);
+  m2->resize(2);
+  m1->setAtomicNr(0, 1);
+  m1->setAtomicNr(1, 1);
+  m2->setAtomicNr(0, 1);
+  m2->setAtomicNr(1, 1);
+
+  AtomMatrix pos(2, 3);
+  pos.setZero();
+  pos(1, 0) = 1.0;
+  m1->setPositions(pos);
+  m2->setPositions(pos);
+  REQUIRE(eonc::geometry::sortedR(*m1, *m2, 1.0));
+
+  pos(1, 0) = 2.5;
+  m2->setPositions(pos);
+  REQUIRE_FALSE(eonc::geometry::sortedR(*m1, *m2, 1.0));
 }
 
 TEST_CASE_METHOD(GeomFixture, "projectOutRotTrans removes rigid body modes",

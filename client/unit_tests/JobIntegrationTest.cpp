@@ -25,12 +25,14 @@
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 #include "eon/RandomNumbers.h"
+#include "eon/fpe_handler.h"
 #ifdef WITH_ARTN
 #include "eon/ARTnSaddleSearch.h"
 #include "eon/libs/ARTn/ARTnResource.h"
 #endif
 
 #include <array>
+#include <cfenv>
 #include <cmath>
 #include <cstdlib>
 #include <filesystem>
@@ -827,6 +829,31 @@ TEST_CASE("Basin hopping scaled displacement stays finite at the center",
   }
 }
 
+TEST_CASE("basin hopping Metropolis rejects uphill hops at non-positive "
+          "temperature",
+          "[job][basin_hopping]") {
+  const double kB = 8.6173324e-5;
+  const double de = 0.05;
+  const double temperature = 300.0;
+  using Job = eonc::BasinHoppingJob;
+  REQUIRE(Job::metropolisProbability(-1.0, kB, 0.0) == 1.0);
+  REQUIRE(Job::metropolisProbability(0.0, kB, 0.0) == 1.0);
+  REQUIRE(Job::metropolisProbability(1.0, kB, 0.0) == 0.0);
+  REQUIRE(Job::metropolisProbability(1.0, kB, -25.0) == 0.0);
+  REQUIRE(Job::metropolisProbability(1.0, 0.0, 300.0) == 0.0);
+  REQUIRE(Job::metropolisProbability(de, kB, temperature) ==
+          Catch::Approx(std::exp(-de / (kB * temperature))));
+
+#if !defined(_WIN32) && !(defined(__APPLE__) && defined(__aarch64__))
+  eonc::enableFPE();
+  REQUIRE(Job::metropolisProbability(1.0, kB, 0.0) == 0.0);
+  REQUIRE(Job::metropolisProbability(-2.0, kB, 0.0) == 1.0);
+  REQUIRE(Job::metropolisProbability(1.0, kB, -10.0) == 0.0);
+  eonc::disableFPE();
+  feclearexcept(FE_ALL_EXCEPT);
+#endif
+}
+
 TEST_CASE("BasinHoppingJob getElements keeps atomic number 118",
           "[job][basin_hopping][unit]") {
   Parameters params;
@@ -870,6 +897,151 @@ TEST_CASE("BasinHoppingJob getElements keeps atomic number 118",
             m.setAtomicNr(1, 119);
             m.setAtomicNr(2, -1);
           }) == std::vector<long>{118});
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "Basin hopping jump keeps the minimized energy",
+                 "[job][basin_hopping][integration]") {
+  EON_REQUIRE_TEST_DATA(".");
+  // Zero displacement is accepted at once, then jump_max 0 runs the jump.
+  // significant_structure is off, so the jump must not evaluate the raw
+  // geometry. That call is one force evaluation and would replace the
+  // minimized energy.
+  const auto cfg = [](const char *jumpSteps) {
+    return std::string(R"(
+[Main]
+job = basin_hopping
+random_seed = 42
+temperature = 300.0
+
+[Potential]
+potential = lj
+
+[Basin Hopping]
+steps = 1
+displacement = 0.0
+push_apart_distance = 0.4
+significant_structure = false
+jump_max = 0
+adjust_displacement = false
+jump_steps = )") +
+           jumpSteps +
+           R"(
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.001
+max_iterations = 200
+)";
+  };
+  std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+
+  writeConfig(cfg("0"));
+  auto quiet = runJob();
+  const size_t callsQuiet = forceCalls_;
+  const double energyQuiet = std::stod(quiet["minimum_energy"]);
+
+  writeConfig(cfg("1"));
+  auto jumped = runJob();
+  REQUIRE(std::stod(jumped["total_jump_steps"]) == Catch::Approx(1.0));
+  REQUIRE(forceCalls_ == callsQuiet);
+  REQUIRE(std::stod(jumped["minimum_energy"]) ==
+          Catch::Approx(energyQuiet).epsilon(1e-8));
+
+  std::filesystem::current_path(workdir);
+  Parameters checkParams;
+  REQUIRE(checkParams.load("config.ini") == 0);
+  auto pot = eonc::helpers::makePotential(checkParams);
+  Matter stored(pot, checkParams);
+  REQUIRE(eonc::io::io_ok(stored.con2matter(std::string("min.con"))));
+  const double storedEnergy = stored.getPotentialEnergy();
+  REQUIRE(stored.relax(true));
+  REQUIRE(stored.getPotentialEnergy() ==
+          Catch::Approx(storedEnergy).margin(1e-3));
+  std::filesystem::current_path(originalDir);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "BasinHoppingJob stop_energy omits quenches that did not run",
+                 "[job][basin_hopping][integration]") {
+  EON_REQUIRE_TEST_DATA(".");
+  writeConfig(R"(
+[Main]
+job = basin_hopping
+random_seed = 42
+
+[Potential]
+potential = lj
+
+[Basin Hopping]
+steps = 3
+quenching_steps = 5
+stop_energy = 0.0
+temperature = 300.0
+displacement = 0.5
+push_apart_distance = 0.4
+swap_probability = 0.0
+jump_max = 0
+jump_steps = 0
+adjust_displacement = false
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.001
+max_iterations = 200
+)");
+
+  std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+
+  auto results = runJob();
+
+  // LJ energies are negative, so stop_energy 0 ends the run on the first
+  // hop, before the quench tail. That hop is one displacement and not a
+  // quench. Subtracting the configured quenching_steps would be negative.
+  REQUIRE(std::stod(results["minimum_energy"]) < 0.0);
+  REQUIRE(std::stod(results["total_normal_displacement_steps"]) ==
+          Catch::Approx(1.0));
+  REQUIRE(std::stod(results["total_jump_steps"]) == Catch::Approx(0.0));
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "BasinHoppingJob adjust_period zero finishes",
+                 "[job][basin_hopping][integration]") {
+  EON_REQUIRE_TEST_DATA(".");
+  writeConfig(R"(
+[Main]
+job = basin_hopping
+random_seed = 42
+
+[Potential]
+potential = lj
+
+[Basin Hopping]
+steps = 20
+temperature = 300.0
+displacement = 0.5
+push_apart_distance = 0.4
+adjust_displacement = true
+adjust_period = 0
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.001
+max_iterations = 200
+)");
+
+  std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+
+  auto results = runJob();
+
+  REQUIRE(results.count("termination_reason") > 0);
+  REQUIRE(std::isfinite(std::stod(results["minimum_energy"])));
+  double ar = std::stod(results["acceptance_ratio"]);
+  REQUIRE(ar >= 0.0);
+  REQUIRE(ar <= 1.0);
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
