@@ -11,9 +11,9 @@
 */
 
 #include "eon/Dynamics.h"
-#include "eon/DynamicsSaddleSearch.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/DynamicsSaddleSearch.h"
 #include "eon/Matter.h"
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/Parameters.h"
@@ -196,6 +196,11 @@ TEST_CASE_METHOD(DynamicsFixture,
   ParametersLoadAccess::saddle_search_options(params).max_iterations = 1;
   ParametersLoadAccess::dimer_options(params).rotations_max = 2;
   ParametersLoadAccess::dimer_options(params).rotations_min = 1;
+  // Geometric, not a basin test: any MD step must count as a new state.
+  ParametersLoadAccess::structure_comparison_options(params)
+      .distance_difference = 1e-6;
+  auto shared = std::make_shared<Matter>(pot, params);
+  shared->con2matter(std::string("reactant.con"));
   const double dt = params.dynamics_options().time_step;
   REQUIRE(dt > 0.0);
   ParametersLoadAccess::dynamics_options(params).steps = 40;
@@ -212,14 +217,14 @@ TEST_CASE_METHOD(DynamicsFixture,
   fs::create_directories(tmp);
   struct CwdGuard {
     fs::path old;
-    explicit CwdGuard(const fs::path &next) : old(fs::current_path()) {
+    explicit CwdGuard(const fs::path &next)
+        : old(fs::current_path()) {
       fs::current_path(next);
     }
     ~CwdGuard() { fs::current_path(old); }
   } guard(tmp);
 
   eonc::rng::random(42);
-  auto shared = std::make_shared<Matter>(*matter);
   eonc::DynamicsSaddleSearch search(shared, params);
   const int status = search.run();
   REQUIRE(status !=
