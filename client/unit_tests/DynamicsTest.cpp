@@ -287,6 +287,25 @@ TEST_CASE_METHOD(DynamicsFixture,
 }
 
 TEST_CASE_METHOD(DynamicsFixture,
+                 "Dynamics saddle search survives a zero state-check interval",
+                 "[dynamics][saddle_search]") {
+  // state_check_interval 0 floors to 0 steps. The search must not take
+  // step % 0; the check still runs, and a cold short trajectory stays put.
+  ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
+  ParametersLoadAccess::dynamics_options(params).steps = 1;
+  ParametersLoadAccess::parallel_replica_options(params).dephase_time = 0.0;
+  ParametersLoadAccess::saddle_search_options(params)
+      .dynamics.state_check_interval = 0.0;
+  ParametersLoadAccess::saddle_search_options(params).dynamics.temperature =
+      0.0;
+
+  auto saddle = std::make_shared<Matter>(*matter);
+  DynamicsSaddleSearch search(saddle, params);
+  int status = search.run();
+  REQUIRE(status == MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT);
+}
+
+TEST_CASE_METHOD(DynamicsFixture,
                  "Dynamics Langevin holds a per-axis frozen coordinate",
                  "[dynamics][langevin][fixed]") {
   // Whole-atom getFixed is false; only z is frozen.

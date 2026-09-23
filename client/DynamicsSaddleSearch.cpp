@@ -106,6 +106,11 @@ int DynamicsSaddleSearch::run() {
       params.saddle_search_options().dynamics.state_check_interval /
           params.dynamics_options().time_step +
       0.5);
+  // A zero or sub-step interval floors to 0. step % 0 is undefined, and a
+  // state check shorter than one dynamics step still has to run.
+  if (checkInterval < 1) {
+    checkInterval = 1;
+  }
   int recordInterval =
       static_cast<int>(params.saddle_search_options().dynamics.record_interval /
                            params.dynamics_options().time_step +
