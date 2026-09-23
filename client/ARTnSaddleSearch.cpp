@@ -381,15 +381,20 @@ int ARTnSaddleSearch::run(IARTnResource &res) {
       double *tau_sad_ptr = nullptr;
       int result_tau_sad = res.get_get_data_fn()(
           "tau_sad", reinterpret_cast<void **>(&tau_sad_ptr));
-      if (result_tau_sad == 0 && tau_sad_ptr) {
-        matter->setPositions(eonc::from_fortran_layout_vector(
-            std::vector<double>(tau_sad_ptr, tau_sad_ptr + 3 * nat), nat));
-        std::free(tau_sad_ptr);
-      } else {
+      // has_sad without coordinates leaves Matter on the pre-convergence
+      // geometry. Callers treat STATUS_GOOD as the saddle, so that is an error.
+      if (result_tau_sad != 0 || tau_sad_ptr == nullptr) {
         QUILL_LOG_WARNING(
             log, "Failed to retrieve tau_sad (result={}, ptr_valid={})",
             result_tau_sad, tau_sad_ptr != nullptr);
+        std::free(tau_sad_ptr);
+        status = STATUS_BAD_ARTN_ERROR;
+        res.get_destroy_fn()();
+        return status;
       }
+      matter->setPositions(eonc::from_fortran_layout_vector(
+          std::vector<double>(tau_sad_ptr, tau_sad_ptr + 3 * nat), nat));
+      std::free(tau_sad_ptr);
 
       // Retrieve eigenvalue
       double *eigval_ptr = nullptr;
