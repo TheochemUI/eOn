@@ -10,9 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 
+#include "eon/Dimer.h"
 #ifdef WITH_GPRD
-// Before TestUtils.hpp. That header does `using namespace eonc`, and the
-// GP headers call log(); eonc::log would make that name ambiguous.
+// Before TestUtils.hpp: that header does `using namespace eonc`, and the
+// GP headers call ::log. After the using-directive, log is also eonc::log.
 #include "eon/AtomicGPDimer.h"
 #endif
 #include "TestUtils.hpp"
@@ -249,6 +250,19 @@ TEST_CASE_METHOD(DimerFixture, "GP dimer searches the Matter passed to compute",
   REQUIRE(dimer->totalForceCalls > 0);
   REQUIRE(toShifted < toBuilt);
   REQUIRE(std::isfinite(dimer->getEigenvalue()));
+}
+
+TEST_CASE_METHOD(DimerFixture, "gprdimer force box follows Matter periodicity",
+                 "[eigenmode][strategy][gprdimer]") {
+  const Matrix3d cell = Matrix3d::Identity() * 18.0;
+  matter->setCell(cell);
+  matter->setPeriodic(false);
+  AtomicGPDimer isolated(matter, params, pot);
+  REQUIRE(isolated.forceBox().cwiseAbs().maxCoeff() == 0.0);
+
+  matter->setPeriodic(true);
+  AtomicGPDimer periodic(matter, params, pot);
+  REQUIRE(periodic.forceBox().isApprox(cell, 1e-15));
 }
 #endif
 

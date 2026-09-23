@@ -18,6 +18,7 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/BaseStructures.h"
+#include "eon/BasinHoppingJob.h"
 #include "eon/Job.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
@@ -33,8 +34,18 @@
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <memory>
 #include <sstream>
 #include <string>
+#include <vector>
+
+namespace eonc {
+struct BasinHoppingElementsTest {
+  static std::vector<long> of(BasinHoppingJob &job, Matter *matter) {
+    return job.getElements(matter);
+  }
+};
+} // namespace eonc
 
 namespace tests {
 
@@ -775,6 +786,51 @@ max_iterations = 200
   // 50% acceptance ratio
   double ar = std::stod(results["acceptance_ratio"]);
   REQUIRE(ar == Catch::Approx(0.500).margin(0.05));
+}
+
+TEST_CASE("BasinHoppingJob getElements keeps atomic number 118",
+          "[job][basin_hopping][unit]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Runtime runtime;
+
+  auto elements = [&](auto &&fill) {
+    Matter matter(pot, params);
+    fill(matter);
+    auto owned = std::make_unique<Parameters>(params);
+    BasinHoppingJob job(std::move(owned), runtime);
+    return BasinHoppingElementsTest::of(job, &matter);
+  };
+
+  REQUIRE(elements([](Matter &m) {
+            m.resize(1);
+            m.setAtomicNr(0, 118);
+          }) == std::vector<long>{118});
+
+  REQUIRE(elements([](Matter &m) {
+            m.resize(2);
+            m.setAtomicNr(0, 118);
+            m.setAtomicNr(1, 1);
+          }) == std::vector<long>{1, 118});
+
+  REQUIRE(elements([](Matter &m) {
+            m.resize(2);
+            m.setAtomicNr(1, 118);
+          }) == std::vector<long>{0, 118});
+
+  REQUIRE(elements([](Matter &m) {
+            m.resize(1);
+            m.setAtomicNr(0, 118);
+            m.setFixed(0, 1);
+          }) == std::vector<long>{});
+
+  REQUIRE(elements([](Matter &m) {
+            m.resize(3);
+            m.setAtomicNr(0, 118);
+            m.setAtomicNr(1, 119);
+            m.setAtomicNr(2, -1);
+          }) == std::vector<long>{118});
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,

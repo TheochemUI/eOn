@@ -38,6 +38,10 @@ bool relaxMatter(Matter &matter, const Parameters &params, bool quiet = false,
                  std::vector<readcon::ConFrame> *outFrames = nullptr);
 void getTime(double *real, double *user, double *sys);
 bool existsFile(std::string filename); // does filename exist
+/// Copy `name` from `logHome` into the current directory when that file is
+/// not already this directory's copy. True only when a regular file of
+/// that name is then present.
+bool stageReturnLog(std::string_view logHome, std::string_view name);
 std::string
 getRelevantFile(std::string filename); // return filename containing _checkpoint
                                        // or _passed if such a file exists

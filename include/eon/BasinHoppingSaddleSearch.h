@@ -32,11 +32,23 @@ public:
   }
   ~BasinHoppingSaddleSearch() = default;
 
+  // Minimum-image (next - prev) / 2. setPositions wraps into the cell, so a
+  // raw central difference is a box-length jump when a bead crosses a face.
+  [[nodiscard]] static AtomMatrix
+  initialDimerDirection(const Matter &image, const AtomMatrix &prev,
+                        const AtomMatrix &next) {
+    return image.pbc(next - prev) / 2.0;
+  }
+
   int run(void);
   double getEigenvalue();
   AtomMatrix getEigenvector();
-  std::string_view describeStatus(int status) const override {
-    return MinModeSaddleSearch::statusMessage(status);
+  std::string_view describeStatus(int code) const override {
+    // Code 1 is the Metropolis rejection, not MinMode STATUS_INIT.
+    if (code == 1) {
+      return "Basin hop rejected";
+    }
+    return MinModeSaddleSearch::statusMessage(code);
   }
   int getStatus() const override { return status; }
 
