@@ -95,8 +95,7 @@ GPSurrogateJob::runFromMatter(std::shared_ptr<Matter> initial,
     eonc::helpers::eigen::addVectorRow(features, feature);
     eonc::helpers::eigen::addVectorRow(targets, target);
     surpot->train_optimize(features, targets);
-    ParametersLoadAccess::neb_options(*pyparams).climbing_image.enabled =
-        false;
+    ParametersLoadAccess::neb_options(*pyparams).climbing_image.enabled = false;
     ParametersLoadAccess::optimizer_options(*pyparams).converged_force =
         params.optimizer_options().converged_force * 0.8;
     for (auto &&obj : neb->path) {
