@@ -10,7 +10,7 @@ aselite-era mini-Atoms type without requiring ASE.
 
 from __future__ import annotations
 
-from typing import List, Optional, Sequence
+from typing import List, Sequence
 
 import numpy as np
 import readcon
@@ -201,7 +201,7 @@ class Structure:
     def fixed_mask(self) -> np.ndarray:
         return ~self.free_mask()
 
-    def append(self, r, free, name, mass, atom_id: Optional[int] = None) -> None:
+    def append(self, r, free, name, mass, atom_id: int | None = None) -> None:
         """Add one atom at the end.
 
         An atom_id of None takes one past the largest in use, keeping the ids
@@ -281,8 +281,8 @@ class Structure:
 
     def to_conframe(
         self,
-        prebox_header: Optional[Sequence[str]] = None,
-        postbox_header: Optional[Sequence[str]] = None,
+        prebox_header: Sequence[str] | None = None,
+        postbox_header: Sequence[str] | None = None,
     ) -> "readcon.ConFrame":
         """Convert to a readcon ConFrame for writing.
 

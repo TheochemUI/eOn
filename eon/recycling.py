@@ -1,7 +1,7 @@
 import ast
 from pathlib import Path
 
-import numpy
+import numpy as np
 
 from eon import atoms
 from eon import fileio as io
@@ -226,7 +226,7 @@ class SB_Recycling:
                 # If the any of the atoms has the same basic location and the same name,
                 # it will be considered the same atom, and will be moved as it did in the triggering process.
                 for j in range(num_atoms):
-                    if (numpy.linalg.norm(sb_state_reactant.r[j] - previous_reactant.r[i]) < self.move_distance
+                    if (np.linalg.norm(sb_state_reactant.r[j] - previous_reactant.r[i]) < self.move_distance
                       and sb_state_reactant.names[j] == previous_reactant.names[i]):
                         # Move it to where it moved in the trigger process
                         new_state_reactant.r[j] = current_reactant.r[i]
@@ -349,7 +349,7 @@ class Recycling:
                 else:
                     self.moved.append(i)
         # Set up the mode to be modified for process suggestions.
-        self.mode = numpy.zeros((len(self.curr_reactant), 3))
+        self.mode = np.zeros((len(self.curr_reactant), 3))
 
     def make_suggestion(self):
         """ Makes a saddle suggestion and returns True.

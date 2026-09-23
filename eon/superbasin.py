@@ -2,7 +2,7 @@
 import shutil
 from pathlib import Path
 
-import numpy
+import numpy as np
 from eon import fileio as io
 from eon.mcamc import mcamc
 import logging
@@ -108,15 +108,15 @@ class Superbasin:
                     index += 1
 
         # Build c.
-        c = numpy.zeros(len(self.state_numbers))
+        c = np.zeros(len(self.state_numbers))
         for number in self.state_numbers:
             procs = self.state_dict[number].get_process_table()
             for id, proc in list(procs.items()):
                 c[st2i[number]] += proc['rate']
 
         # Build Q and R.
-        Q = numpy.zeros((len(self.state_numbers), len(self.state_numbers)))
-        R = numpy.zeros((len(self.state_numbers), len(col2st)))
+        Q = np.zeros((len(self.state_numbers), len(self.state_numbers)))
+        R = np.zeros((len(self.state_numbers), len(col2st)))
         for number in self.state_numbers:
             procs = self.state_dict[number].get_process_table()
             for id, proc in list(procs.items()):
@@ -130,7 +130,7 @@ class Superbasin:
 
         b = B[st2i[entry_state.number],:]
         p = 0.0
-        u = numpy.random.sample()
+        u = np.random.sample()
         for i in range(len(b)):
             p += b[i]
             if p >= u:
