@@ -340,6 +340,92 @@ potential = morse_pt
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
+                 "FiniteDifferenceJob keeps a partially fixed axis fixed",
+                 "[job][finite_difference][fixed]") {
+  // Atom 0 is fully fixed. Atom 1 is frozen in x and z, free in y.
+  // One positive free component normalizes to +1, so the curvature does
+  // not depend on the random draw.
+  {
+    Parameters writeParams;
+    ParametersLoadAccess::potential_options(writeParams).potential =
+        PotType::LJ;
+    auto pot = eonc::helpers::makePotential(PotType::LJ, writeParams);
+    Matter m(pot, writeParams);
+    m.resize(2);
+    m.setCell(20.0 * Matrix3d::Identity());
+    m.setAtomicNr(0, 29);
+    m.setAtomicNr(1, 29);
+    m.setMass(0, 63.55);
+    m.setMass(1, 63.55);
+    m.setPosition(1, 0, 1.5);
+    m.setFixed(0, 1);
+    m.setFixedMask(1, {true, false, true});
+    REQUIRE(eonc::io::io_ok(m.matter2con((workdir / "pos.con").string())));
+  }
+
+  writeConfig(R"(
+[Main]
+job = finite_difference
+random_seed = 42
+
+[Potential]
+potential = lj
+
+[Structure Comparison]
+neighbor_cutoff = 3.3
+)");
+
+  constexpr std::array<double, 9> dRs{
+      1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 5e-3, 0.01, 0.05, 0.1};
+  std::vector<double> expect;
+  {
+    std::filesystem::current_path(workdir);
+    Parameters oracleParams;
+    REQUIRE(oracleParams.load("config.ini") == 0);
+    auto pot = eonc::helpers::makePotential(
+        oracleParams.potential_options().potential, oracleParams);
+    Matter matter(pot, oracleParams);
+    REQUIRE(eonc::io::io_ok(matter.con2matter("pos.con")));
+    REQUIRE(matter.getFixed(0) == 1);
+    REQUIRE(matter.getFixed(1) == 0);
+    REQUIRE(matter.getFixed(1, 0) == 1);
+    REQUIRE(matter.getFixed(1, 1) == 0);
+    REQUIRE(matter.getFixed(1, 2) == 1);
+
+    const AtomMatrix posA = matter.getPositions();
+    const AtomMatrix forceA = matter.getForces();
+    AtomMatrix displacement = AtomMatrix::Zero(matter.numberOfAtoms(), 3);
+    displacement(1, 1) = 1.0;
+    expect.reserve(dRs.size());
+    for (double dR : dRs) {
+      matter.setPositions(posA + displacement * dR);
+      const AtomMatrix forceB = matter.getForces();
+      expect.push_back(matDot(forceB - forceA, displacement) / dR);
+    }
+    std::filesystem::current_path(originalDir);
+  }
+  REQUIRE(std::abs(expect.front()) > 1e-3);
+
+  auto results = runJob();
+  (void)results;
+  std::ifstream fd_results((workdir / "curvature.dat").string());
+  std::string header;
+  std::getline(fd_results, header);
+  std::vector<std::pair<double, double>> fd_data;
+  double dr = 0.0;
+  double curv = 0.0;
+  while (fd_results >> dr >> curv) {
+    fd_data.emplace_back(dr, curv);
+  }
+  REQUIRE(fd_data.size() == expect.size());
+  for (size_t i = 0; i < expect.size(); ++i) {
+    // curvature.dat prints eight digits after the decimal.
+    REQUIRE(fd_data[i].first == Catch::Approx(dRs[i]).margin(1.5e-8));
+    REQUIRE(fd_data[i].second == Catch::Approx(expect[i]).margin(1.5e-8));
+  }
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
                  "HessianJob force calls match SVN reference",
                  "[job][hessian][integration]") {
   EON_REQUIRE_TEST_DATA(".");
