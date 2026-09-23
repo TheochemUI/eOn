@@ -800,7 +800,8 @@ TEST_CASE_METHOD(
 // Quadratic one-atom potential: energy Hessian is diag(-10, 0.1, 5).
 class DiagonalHessian final : public Potential {
 public:
-  DiagonalHessian() : Potential(PotType::UNKNOWN) {}
+  DiagonalHessian()
+      : Potential(PotType::UNKNOWN) {}
 
   void force(long nAtoms, const double *positions, const int *atomicNrs,
              double *forces, double *energy, double *variance,
