@@ -39,6 +39,9 @@ public:
   double getEigenvalue() override;
   AtomMatrix getEigenvector() override;
 
+  // Cell forwarded to potential force calls. Zero unless Matter is periodic.
+  [[nodiscard]] Matrix3d forceBox() const;
+
 private:
   std::shared_ptr<Matter> matterCenter; // initial center of the dimer
   AtomMatrix direction;                 // direction along the dimer

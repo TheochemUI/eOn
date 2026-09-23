@@ -230,14 +230,24 @@ double BondBoost::Booststeps() {
 
     long a1 = BBAList[2 * i];
     long a2 = BBAList[2 * i + 1];
-    double R = CBBLList(i, 0);
-    if (!(R > 0.0) || !(EBBLList(i, 0) > 0.0)) {
+    if (!(EBBLList(i, 0) > 0.0)) {
+      continue;
+    }
+    // distance() minimum-images the whole bond. pdistance minimum-images one
+    // Cartesian axis after zeroing the other two, which is not that vector
+    // when the cell is non-orthogonal.
+    AtomMatrix delta(1, 3);
+    delta.row(0) =
+        matter->getPositions().row(a1) - matter->getPositions().row(a2);
+    delta = matter->pbc(delta);
+    const double R = delta.norm();
+    if (!(R > 0.0)) {
       continue;
     }
 
     for (int j = 0; j < 3; j++) {
-      double rij = matter->pdistance(a1, a2, j);
-      double fij = rij / R * dforce;
+      const double rij = delta(0, j);
+      const double fij = rij / R * dforce;
       addForces(i, j) = fij;
       TADF(a1, j) += fij;
       TADF(a2, j) -= fij;
