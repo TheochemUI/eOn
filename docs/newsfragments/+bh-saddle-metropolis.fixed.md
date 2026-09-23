@@ -1,0 +1,1 @@
+BasinHoppingSaddleSearch::run applies `exp(-dE/(kB T))` only when the quenched hop is uphill and temperature is positive. Temperature at or below zero rejects that hop instead of dividing by temperature before the test.

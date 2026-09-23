@@ -41,6 +41,10 @@ public:
   }
 
   int run(void);
+  /// Quenched Metropolis weight for energy change `de`.
+  /// Divides by `kB * temperature` only for an uphill hop when both are
+  /// positive. Non-positive temperature or `kB` refuses that hop.
+  static double metropolisProbability(double de, double kB, double temperature);
   double getEigenvalue();
   AtomMatrix getEigenvector();
 

@@ -18,7 +18,11 @@
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/Parameters.h"
 #include "eon/RandomNumbers.h"
+#include "eon/fpe_handler.h"
+#include <cfenv>
+#include <cmath>
 #include <filesystem>
+#include <system_error>
 
 namespace tests {
 
@@ -269,6 +273,84 @@ TEST_CASE_METHOD(SaddleSearchFixture,
   REQUIRE(status >= MinModeSaddleSearch::STATUS_GOOD);
   REQUIRE(status <= MinModeSaddleSearch::STATUS_DIMER_RESTORED_BEST);
   REQUIRE(std::isfinite(search.getEigenvalue()));
+}
+
+TEST_CASE("basin hop Metropolis divides only after the uphill test",
+          "[saddle_search][basin_hopping]") {
+  const double kB = 8.6173324e-5;
+  const double de = 0.05;
+  const double temperature = 300.0;
+  using Search = eonc::BasinHoppingSaddleSearch;
+  REQUIRE(Search::metropolisProbability(-1.0, kB, 0.0) == 1.0);
+  REQUIRE(Search::metropolisProbability(0.0, kB, 0.0) == 1.0);
+  REQUIRE(Search::metropolisProbability(1.0, kB, 0.0) == 0.0);
+  REQUIRE(Search::metropolisProbability(1.0, kB, -25.0) == 0.0);
+  REQUIRE(Search::metropolisProbability(1.0, 0.0, 300.0) == 0.0);
+  REQUIRE(Search::metropolisProbability(de, kB, temperature) ==
+          Catch::Approx(std::exp(-de / (kB * temperature))));
+
+#if !defined(_WIN32) && !(defined(__APPLE__) && defined(__aarch64__))
+  eonc::enableFPE();
+  REQUIRE(Search::metropolisProbability(1.0, kB, 0.0) == 0.0);
+  REQUIRE(Search::metropolisProbability(-2.0, kB, 0.0) == 1.0);
+  REQUIRE(Search::metropolisProbability(1.0, kB, -10.0) == 0.0);
+  eonc::disableFPE();
+  feclearexcept(FE_ALL_EXCEPT);
+#endif
+}
+
+TEST_CASE_METHOD(
+    SaddleSearchFixture,
+    "BasinHoppingSaddleSearch rejects uphill hops at non-positive temperature",
+    "[saddle_search][basin_hopping]") {
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 0;
+  ParametersLoadAccess::neb_options(params).max_iterations = 1;
+  ParametersLoadAccess::neb_options(params).image_count = 3;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 1;
+
+  auto displaced = std::make_shared<Matter>(pot, params);
+  *displaced = *matter;
+  auto pos = displaced->getPositions();
+  // Park atom 0 on atom 1. The contact is uphill for LJ, and max_iterations
+  // is 0 so relax does not walk it back downhill before the accept test.
+  pos.row(0) = pos.row(1);
+  pos(0, 0) += 0.05;
+  displaced->setPositions(pos);
+  REQUIRE(displaced->getPotentialEnergy() > matter->getPotentialEnergy());
+
+  struct RestoreCwd {
+    std::filesystem::path old;
+    std::filesystem::path tmp;
+    explicit RestoreCwd(std::filesystem::path next)
+        : old(std::filesystem::current_path()),
+          tmp(std::move(next)) {
+      std::filesystem::create_directories(tmp);
+      std::filesystem::current_path(tmp);
+    }
+    ~RestoreCwd() {
+      std::error_code ec;
+      std::filesystem::current_path(old, ec);
+      std::filesystem::remove_all(tmp, ec);
+    }
+  } cwd(std::filesystem::temp_directory_path() / "eon_bh_metro");
+
+  ParametersLoadAccess::main_options(params).temperature = -100.0;
+  {
+    eonc::BasinHoppingSaddleSearch search(matter, displaced, pot, params);
+    REQUIRE(search.run() == 1);
+  }
+
+#if !defined(_WIN32) && !(defined(__APPLE__) && defined(__aarch64__))
+  eonc::enableFPE();
+#endif
+  ParametersLoadAccess::main_options(params).temperature = 0.0;
+  eonc::BasinHoppingSaddleSearch search(matter, displaced, pot, params);
+  const int status = search.run();
+#if !defined(_WIN32) && !(defined(__APPLE__) && defined(__aarch64__))
+  eonc::disableFPE();
+  feclearexcept(FE_ALL_EXCEPT);
+#endif
+  REQUIRE(status == 1);
 }
 
 TEST_CASE_METHOD(SaddleSearchFixture, "MinModeSaddleSearch with classic Dimer",
