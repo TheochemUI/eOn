@@ -30,8 +30,8 @@
 TEST_CASE("Windows continue MxCsr sets exception masks and clears sticky flags",
           "[fpe]") {
   // Fault-time word: ZE sticky, IM/ZM/OM unmasked, DM/UM/PM masked, RZ mode.
-  const std::uint32_t fault = (1u << 2) | (1u << 8) | (1u << 11) | (1u << 12) |
-                              (1u << 13) | (1u << 14);
+  const std::uint32_t fault =
+      (1u << 2) | (1u << 8) | (1u << 11) | (1u << 12) | (1u << 13) | (1u << 14);
   const auto masked = eonc::maskWindowsMxcsrForContinue(fault);
   REQUIRE((masked & 0x3Fu) == 0u);
   REQUIRE((masked & eonc::kWindowsMxcsrExceptionMasks) ==

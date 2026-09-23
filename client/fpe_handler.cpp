@@ -91,8 +91,7 @@ static LONG WINAPI windowsFPEHandler(EXCEPTION_POINTERS *info) {
   _controlfp_s(&control, _MCW_EM, _MCW_EM);
 #if defined(_M_X64) || defined(__x86_64__)
   if (info->ContextRecord != nullptr) {
-    const DWORD mxcsr =
-        maskWindowsMxcsrForContinue(info->ContextRecord->MxCsr);
+    const DWORD mxcsr = maskWindowsMxcsrForContinue(info->ContextRecord->MxCsr);
     info->ContextRecord->MxCsr = mxcsr;
     info->ContextRecord->FltSave.MxCsr = mxcsr;
     info->ContextRecord->FltSave.StatusWord &= static_cast<WORD>(~0x3Fu);
