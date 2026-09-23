@@ -38,6 +38,13 @@ findSplineExtrema(const std::vector<std::shared_ptr<Matter>> &path,
                   const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
                   long numImages);
 
+/// Unit tangent at a fractional image index. End intervals use the geometric
+/// endpoint displacement because stored endpoint tangents stay zero.
+[[nodiscard]] AtomMatrix
+interpolatedPeakMode(const std::vector<std::shared_ptr<Matter>> &path,
+                     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
+                     long numImages, double posFraction);
+
 /// Print NEB image data to log and optionally to file.
 void printImageData(
     const std::vector<std::shared_ptr<Matter>> &path,

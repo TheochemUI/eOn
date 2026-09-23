@@ -641,10 +641,8 @@ void bind_neb(nb::module_ &m) {
             if (!eonc::io::io_ok(peakPos.matter2con(peakPosFile)))
               throw std::runtime_error("neb_write_results: " + peakPosFile);
             returnFiles.push_back(peakPosFile);
-            AtomMatrix peakMode =
-                (1.0 - f) * (*neb.tangent[static_cast<size_t>(leftIdx)]) +
-                f * (*neb.tangent[static_cast<size_t>(leftIdx + 1)]);
-            peakMode.normalize();
+            AtomMatrix peakMode = eonc::neb::interpolatedPeakMode(
+                neb.path, neb.tangent, neb.numImages, posFraction);
             std::string peakModeFile =
                 std::format("peak{:02d}_mode.dat", peakCount);
             {

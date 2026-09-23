@@ -29,6 +29,27 @@ void normalizeOrZero(AtomMatrix &v) {
   }
 }
 
+// Stored endpoint tangents are left at zero. The band direction there is the
+// normalized minimum-image step to the neighboring image.
+AtomMatrix
+storedOrEndpointTangent(const std::vector<std::shared_ptr<Matter>> &path,
+                        const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
+                        long numImages, long imageIndex) {
+  AtomMatrix tang;
+  if (imageIndex == 0) {
+    tang = path[0]->pbc(path[1]->getPositions() - path[0]->getPositions());
+    normalizeOrZero(tang);
+    return tang;
+  }
+  if (imageIndex == numImages + 1) {
+    tang = path[numImages]->pbc(path[numImages + 1]->getPositions() -
+                                path[numImages]->getPositions());
+    normalizeOrZero(tang);
+    return tang;
+  }
+  return *tangent[static_cast<size_t>(imageIndex)];
+}
+
 eonc::io::ConFrameMetadata neb_frame_metadata(
     const std::vector<std::shared_ptr<Matter>> &path,
     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
@@ -168,6 +189,24 @@ findSplineExtrema(const std::vector<std::shared_ptr<Matter>> &path,
   }
 
   return result;
+}
+
+AtomMatrix
+interpolatedPeakMode(const std::vector<std::shared_ptr<Matter>> &path,
+                     const std::vector<std::shared_ptr<AtomMatrix>> &tangent,
+                     long numImages, double posFraction) {
+  const int nat = path.empty() ? 0 : path[0]->numberOfAtoms();
+  const auto leftIdx = static_cast<long>(std::floor(posFraction));
+  if (path.size() < 2 || leftIdx < 0 || leftIdx >= numImages + 1 ||
+      leftIdx + 1 >= static_cast<long>(path.size())) {
+    return AtomMatrix::Zero(nat, 3);
+  }
+  const double f = posFraction - static_cast<double>(leftIdx);
+  AtomMatrix mode =
+      (1.0 - f) * storedOrEndpointTangent(path, tangent, numImages, leftIdx) +
+      f * storedOrEndpointTangent(path, tangent, numImages, leftIdx + 1);
+  normalizeOrZero(mode);
+  return mode;
 }
 
 void printImageData(
