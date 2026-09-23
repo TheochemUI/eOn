@@ -883,11 +883,13 @@ if py_embed
 endif
 
 if get_option('with_mpi')
-    subdir('potentials/MPIPot')
-    potentials += [mpipot]
-    _args += ['-DEONMPI']
+    # library() in the MPIPot subdir snapshots _deps. mpi has to be on
+    # that list first or libmpipot is linked without libmpi.
     mpi_dep = dependency('mpi')
     _deps += [mpi_dep]
+    _args += ['-DEONMPI']
+    subdir('potentials/MPIPot')
+    potentials += [mpipot]
 endif
 
 # Fortran-backed potentials (SW, EDIP, Lenosky, Tersoff, EAM-Al, FeHe,
@@ -1475,6 +1477,7 @@ if get_option('with_tests')
         ['test_storage_order', 'StorageOrderTest.cpp', ''],
         # neb_morse workdir: displacement synth test needs reactant.con (#189)
         ['test_helpers', 'HelperFunctionsTest.cpp', 'neb_morse'],
+        ['test_bundling', 'BundlingTest.cpp', ''],
         ['test_lammps_loader', 'LammpsLoaderTest.cpp', ''],
         ['test_plugin_loader', 'PluginLoaderTest.cpp', ''],
         ['test_ira_resource', 'IRAResourceTest.cpp', ''],
@@ -1601,6 +1604,23 @@ if get_option('with_tests')
             depends: _case_depends,
         )
     endforeach
+    # potential_base.cpp is enough for computePt. The rest of the water
+    # library is not part of the default build.
+    test(
+        'test_compute_pt',
+        executable(
+            'test_compute_pt',
+            sources: [
+                'unit_tests/ComputePtTest.cpp',
+                'potentials/Water/potential_base.cpp',
+                'thirdparty/catch2/catch_amalgamated.cpp',
+            ],
+            include_directories: _incdirs,
+            cpp_args: test_args,
+        ),
+        timeout: 30,
+        env: _test_env,
+    )
     if get_option('with_xtb')
         # Timing harness for linked ship vs rgpot dlopen (not a Catch suite).
         executable(
