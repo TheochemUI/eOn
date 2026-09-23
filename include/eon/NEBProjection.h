@@ -61,7 +61,6 @@ ProjectionStrategy buildProjectionStrategy(const Parameters &params);
 /// spring remainder is unscaled.
 AtomMatrix computeDNEBComponent(const AtomMatrix &forceSpring,
                                 const AtomMatrix &tangent,
-                                const AtomMatrix &forcePerp,
-                                bool useSwitching);
+                                const AtomMatrix &forcePerp, bool useSwitching);
 
 } // namespace eonc::neb
