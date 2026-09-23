@@ -68,6 +68,29 @@ double OHTSTJob::gaussDraw() {
   return r * std::cos(2.0 * helpers::pi * u2);
 }
 
+AtomMatrix minImageRemoveRigidDrift(const Matter &reference, AtomMatrix diff,
+                                    Eigen::RowVector3d *totalDrift) {
+  // AV-embedded frames ride the defect (drift = one hop vector, a/2<011>
+  // observed). Atoms near a cell boundary min-image inconsistently until
+  // that drift is gone, so min-image and de-drift iterate to a fixed point.
+  // The residual is the localized reaction coordinate.
+  Eigen::RowVector3d total = Eigen::RowVector3d::Zero();
+  for (int pass = 0; pass < 6; ++pass) {
+    diff = reference.pbc(diff);
+    const Eigen::RowVector3d drift =
+        diff.colwise().sum() / static_cast<double>(diff.rows());
+    diff.rowwise() -= drift;
+    total += drift;
+    if (drift.norm() < 1e-6) {
+      break;
+    }
+  }
+  if (totalDrift != nullptr) {
+    *totalDrift = total;
+  }
+  return diff;
+}
+
 void OHTSTJob::drawThermalVelocities(VectorXd &vel, const VectorXd *normal) {
   for (long k = 0; k < vel.size(); ++k) {
     vel[k] = std::sqrt(m_kbt / m_masses3N[k]) * gaussDraw();
@@ -329,22 +352,8 @@ std::vector<std::string> OHTSTJob::run(void) {
   VectorXd diff = product->getPositionsFreeV() - xR;
   {
     AtomMatrix d(AtomMatrix::Map(diff.data(), diff.size() / 3, 3));
-    // Rigid-translation alignment under PBC: AV-embedded state frames
-    // ride the defect (drift = one hop vector, a/2<011> observed), so
-    // atoms near cell boundaries min-image inconsistently until the
-    // drift is gone. Iterate min-image -> de-drift to the fixed point;
-    // the converged residual is the localized reaction coordinate.
     Eigen::RowVector3d total_drift = Eigen::RowVector3d::Zero();
-    for (int pass = 0; pass < 6; ++pass) {
-      d = reactant->pbc(d);
-      const Eigen::RowVector3d drift =
-          d.colwise().sum() / static_cast<double>(d.rows());
-      d.rowwise() -= drift;
-      total_drift += drift;
-      if (drift.norm() < 1e-6) {
-        break;
-      }
-    }
+    d = minImageRemoveRigidDrift(*reactant, std::move(d), &total_drift);
     EONC_LOG_INFO("[oh_tst] rigid drift removed: ({:.4f}, {:.4f}, "
                   "{:.4f}) A per atom",
                   total_drift[0], total_drift[1], total_drift[2]);
@@ -386,7 +395,7 @@ std::vector<std::string> OHTSTJob::run(void) {
       }
       VectorXd d = other.getPositionsFreeV() - xR;
       AtomMatrix dm(AtomMatrix::Map(d.data(), d.size() / 3, 3));
-      dm = reactant->pbc(dm);
+      dm = minImageRemoveRigidDrift(*reactant, std::move(dm), nullptr);
       d = VectorXd::Map(dm.data(), d.size());
       const double dn = d.norm();
       if (dn > 1e-8) {
