@@ -19,6 +19,8 @@
 #include "eon/potentials/CatLearnPot/CatLearnPot.h"
 
 #include "eon/EonLogger.h"
+#include "eon/NEBInitialPaths.hpp"
+#include <fstream>
 #include <sstream>
 #include <stdexcept>
 
