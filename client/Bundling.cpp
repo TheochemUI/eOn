@@ -13,7 +13,6 @@
 #include "eon/Bundling.h"
 #include "eon/EonLogger.h"
 
-#include <algorithm>
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>
@@ -105,12 +104,20 @@ std::vector<std::string> unbundle(int number) {
       continue;
     }
 
-    std::string numstr = originalFilename.substr(upos + 1, dpos - upos - 1);
-    if (numstr.empty() ||
-        !std::all_of(numstr.begin(), numstr.end(),
-                     [](unsigned char c) { return std::isdigit(c); })) {
+    // bundle() writes results_3.con.gz. The span from the last underscore
+    // to the last dot is "3.con", so the index is only the digit run.
+    const size_t numBegin = upos + 1;
+    size_t numEnd = numBegin;
+    while (numEnd < originalFilename.size() &&
+           std::isdigit(static_cast<unsigned char>(originalFilename[numEnd]))) {
+      ++numEnd;
+    }
+    if (numEnd == numBegin || numEnd >= originalFilename.size() ||
+        originalFilename[numEnd] != '.') {
       continue;
     }
+    const std::string numstr =
+        originalFilename.substr(numBegin, numEnd - numBegin);
     const int bundleNumber = std::atoi(numstr.c_str());
     if (bundleNumber != number) {
       continue;
