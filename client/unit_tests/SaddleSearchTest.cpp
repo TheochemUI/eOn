@@ -180,6 +180,41 @@ TEST_CASE_METHOD(
   REQUIRE(status != MinModeSaddleSearch::STATUS_INIT);
 }
 
+// Basin hopping used to ignore MinModeSaddleSearch::run and return success.
+// One climb step cannot meet the force tolerance, so the hop must report
+// that failure on both the return value and getStatus().
+TEST_CASE_METHOD(SaddleSearchFixture,
+                 "BasinHoppingSaddleSearch reports a failed climb",
+                 "[saddle_search][basin_hopping]") {
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 1;
+  ParametersLoadAccess::saddle_search_options(params).converged_force = 1e-20;
+
+  namespace fs = std::filesystem;
+  const auto tmp = fs::temp_directory_path() / "eon_bh_climb_status";
+  fs::create_directories(tmp);
+  struct CwdGuard {
+    fs::path old;
+    explicit CwdGuard(const fs::path &next)
+        : old(fs::current_path()) {
+      fs::current_path(next);
+    }
+    ~CwdGuard() { fs::current_path(old); }
+  };
+
+  int status = MinModeSaddleSearch::STATUS_INIT;
+  {
+    CwdGuard guard(tmp);
+    auto hop = std::make_shared<Matter>(*matter);
+    BasinHoppingSaddleSearch search(matter, hop, pot, params);
+    status = search.run();
+    REQUIRE(search.getStatus() == status);
+  }
+  fs::remove_all(tmp);
+
+  REQUIRE(status != MinModeSaddleSearch::STATUS_GOOD);
+  REQUIRE(status != MinModeSaddleSearch::STATUS_INIT);
+}
+
 TEST_CASE_METHOD(SaddleSearchFixture,
                  "Basin hop rejection is not labeled Initialized",
                  "[saddle_search][basin_hopping]") {
