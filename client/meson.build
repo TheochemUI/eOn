@@ -1496,6 +1496,7 @@ if get_option('with_tests')
         ['test_fpe_handler', 'FPEHandlerTest.cpp', ''],
         ['test_dynamics', 'DynamicsTest.cpp', 'neb_morse'],
         ['test_jobs', 'JobIntegrationTest.cpp', 'neb_morse'],
+        ['test_ohtst_scan', 'OHTSTScanTest.cpp', ''],
         ['test_hessian', 'HessianTest.cpp', 'neb_morse'],
         ['test_geom', 'GeometryAnalysisTest.cpp', 'neb_morse'],
         ['test_params_json', 'ParametersJSONTest.cpp', ''],
