@@ -487,4 +487,70 @@ TEST_CASE("findExtrema: no extremum when derivative has no real root in [0,1]",
   REQUIRE(disc < 0.0);
 }
 
+// One interval, images one angstrom apart along x, so the projected force
+// times the spacing is the force itself. Energy and forces are stamped;
+// the potential is not evaluated.
+eonc::neb::ExtremaResult bandExtrema(double energy0, double force0,
+                                     double energy1, double force1) {
+  Parameters params;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  auto image = [&](double x, double energy, double forceX) {
+    auto matter = std::make_shared<Matter>(pot, params);
+    matter->resize(1);
+    matter->setPeriodic(false);
+    AtomMatrix pos(1, 3);
+    pos.setZero();
+    pos(0, 0) = x;
+    matter->setPositions(pos);
+    AtomMatrix force(1, 3);
+    force.setZero();
+    force(0, 0) = forceX;
+    matter->setForces(force);
+    matter->setComputedPotential(energy, 0.0);
+    return matter;
+  };
+  std::vector<std::shared_ptr<Matter>> path{image(0.0, energy0, force0),
+                                            image(1.0, energy1, force1)};
+  std::vector<std::shared_ptr<AtomMatrix>> tangent;
+  return eonc::neb::findSplineExtrema(path, tangent, 0);
+}
+
+TEST_CASE("findSplineExtrema: zero cubic term stores the barrier once",
+          "[neb]") {
+  // U1 = U2 = 0, F1 = -1, F2 = 1 => d = 0, one maximum at f = 0.5.
+  auto result = bandExtrema(0.0, -1.0, 0.0, 1.0);
+  REQUIRE(result.numExtrema == 1);
+  REQUIRE(result.positions[0] == Catch::Approx(0.5).margin(1e-12));
+  REQUIRE(result.energies[0] == Catch::Approx(0.25).margin(1e-12));
+  REQUIRE(result.curvatures[0] == Catch::Approx(-2.0).margin(1e-12));
+}
+
+TEST_CASE("findSplineExtrema: repeated cubic root is stored once", "[neb]") {
+  // d = 1, c = -1.5, b = 0.75 => discriminant 0, one root at f = 0.5.
+  auto result = bandExtrema(0.0, -0.75, 0.25, -0.75);
+  REQUIRE(result.numExtrema == 1);
+  REQUIRE(result.positions[0] == Catch::Approx(0.5).margin(1e-12));
+  REQUIRE(result.energies[0] == Catch::Approx(0.125).margin(1e-12));
+  REQUIRE(result.curvatures[0] == Catch::Approx(0.0).margin(1e-12));
+}
+
+TEST_CASE("findSplineExtrema: two distinct roots in range are both kept",
+          "[neb]") {
+  // Roots at f = 0.25 and f = 0.75.
+  auto result = bandExtrema(0.0, -0.5625, 0.0625, -0.5625);
+  REQUIRE(result.numExtrema == 2);
+  REQUIRE(result.positions[0] == Catch::Approx(0.25).margin(1e-12));
+  REQUIRE(result.positions[1] == Catch::Approx(0.75).margin(1e-12));
+  REQUIRE(result.energies[0] == Catch::Approx(0.0625).margin(1e-12));
+  REQUIRE(result.energies[1] == Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(result.curvatures[0] == Catch::Approx(-1.5).margin(1e-12));
+  REQUIRE(result.curvatures[1] == Catch::Approx(1.5).margin(1e-12));
+}
+
+TEST_CASE("findSplineExtrema: no real stationary point stores nothing",
+          "[neb]") {
+  auto result = bandExtrema(0.0, -20.0, 10.0, -20.0);
+  REQUIRE(result.numExtrema == 0);
+}
+
 } // namespace tests
