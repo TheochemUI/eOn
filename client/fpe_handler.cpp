@@ -83,9 +83,22 @@ static LONG WINAPI windowsFPEHandler(EXCEPTION_POINTERS *info) {
     return EXCEPTION_CONTINUE_SEARCH;
   }
   // Re-mask every class we care about so CONTINUE_EXECUTION does not re-trap.
+  // The continue restores MxCsr from ContextRecord. _controlfp_s changes the
+  // live register only, so the unmasked fault word would be reloaded and the
+  // same instruction would trap again.
   _clearfp();
   unsigned int control = 0;
   _controlfp_s(&control, _MCW_EM, _MCW_EM);
+#if defined(_M_X64) || defined(__x86_64__)
+  if (info->ContextRecord != nullptr) {
+    const DWORD mxcsr =
+        maskWindowsMxcsrForContinue(info->ContextRecord->MxCsr);
+    info->ContextRecord->MxCsr = mxcsr;
+    info->ContextRecord->FltSave.MxCsr = mxcsr;
+    info->ContextRecord->FltSave.StatusWord &= static_cast<WORD>(~0x3Fu);
+    info->ContextRecord->FltSave.ControlWord |= static_cast<WORD>(0x3Fu);
+  }
+#endif
   return EXCEPTION_CONTINUE_EXECUTION;
 }
 #else

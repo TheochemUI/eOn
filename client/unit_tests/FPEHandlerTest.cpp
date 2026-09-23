@@ -16,6 +16,7 @@
 
 #include <cfenv>
 #include <cmath>
+#include <cstdint>
 #include <limits>
 
 // The FPE handler must not re-trap the same instruction forever. Clearing
@@ -26,11 +27,22 @@
 //
 // Also covers SafeMath guards that keep application code off the trap path.
 
+TEST_CASE("Windows continue MxCsr sets exception masks and clears sticky flags",
+          "[fpe]") {
+  // Fault-time word: ZE sticky, IM/ZM/OM unmasked, DM/UM/PM masked, RZ mode.
+  const std::uint32_t fault = (1u << 2) | (1u << 8) | (1u << 11) | (1u << 12) |
+                              (1u << 13) | (1u << 14);
+  const auto masked = eonc::maskWindowsMxcsrForContinue(fault);
+  REQUIRE((masked & 0x3Fu) == 0u);
+  REQUIRE((masked & eonc::kWindowsMxcsrExceptionMasks) ==
+          eonc::kWindowsMxcsrExceptionMasks);
+  REQUIRE((masked & (1u << 13)) != 0u);
+  REQUIRE((masked & (1u << 14)) != 0u);
+}
+
 TEST_CASE("enableFPE then divide-by-zero continues once (no re-trap storm)",
           "[fpe]") {
-#if defined(_WIN32)
-  SKIP("Windows SEH FPE path covered separately");
-#elif defined(__APPLE__) && defined(__aarch64__)
+#if defined(__APPLE__) && defined(__aarch64__)
   SKIP("Apple Silicon raises SIGILL for FE traps, not SIGFPE");
 #else
   eonc::enableFPE();
