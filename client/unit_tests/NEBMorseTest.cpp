@@ -19,6 +19,7 @@
 #include "eon/PotCapabilities.h"
 #include "eon/PotRegistry.h"
 #include "eon/api.h"
+#include <cmath>
 #include <fstream>
 #include <stdexcept>
 #include <thread>
@@ -237,13 +238,18 @@ TEST_CASE_METHOD(NEBLJFixture, "Uniform spring forces",
 TEST_CASE_METHOD(NEBLJFixture, "Energy-weighted springs differ from uniform",
                  "[neb][spring_energy_weighted]") {
   // Equal spacing below the higher endpoint keeps every weighted spring
-  // at k_min, so the parallel spring matches a uniform band. Lift one
-  // interior image above both endpoints before comparing.
+  // at k_min, so the parallel spring matches a uniform band. Put one
+  // atom 0.15 A from a neighbor so that image is above both endpoints.
   auto lift_interior = [](NudgedElasticBand &neb) {
     auto pos = neb.path[2]->getPositions();
-    pos(0, 0) += 2.0;
-    pos(0, 1) += 2.0;
-    pos(0, 2) += 2.0;
+    const double dx = pos(1, 0) - pos(0, 0);
+    const double dy = pos(1, 1) - pos(0, 1);
+    const double dz = pos(1, 2) - pos(0, 2);
+    const double n = std::sqrt(dx * dx + dy * dy + dz * dz);
+    const double scale = 1.0 - 0.15 / n;
+    pos(0, 0) += scale * dx;
+    pos(0, 1) += scale * dy;
+    pos(0, 2) += scale * dz;
     neb.path[2]->setPositions(pos);
   };
 
