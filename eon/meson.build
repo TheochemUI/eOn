@@ -9,6 +9,7 @@ py.install_sources(
         'basinhopping.py',
         'communicator.py',
         'communicator_inprocess.py',
+        'concorpus.py',
         'config.py',
         'config.yaml',
         'displace.py',

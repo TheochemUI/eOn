@@ -17,6 +17,7 @@
 #include "eon/Matter.h"
 #include "eon/RandomNumbers.h"
 
+#include <cmath>
 #include <memory>
 #include <stdexcept>
 
@@ -112,6 +113,87 @@ TEST_CASE("BondBoost listed index out of range throws", "[bondboost][list]") {
   matter.con2matter(std::string("reactant.con"));
   BondBoost bb(&matter, params);
   REQUIRE_THROWS_AS(bb.initialize(), std::out_of_range);
+}
+
+TEST_CASE("BondBoost bias force is the minimum-image bond gradient",
+          "[bondboost][pbc]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
+  ParametersLoadAccess::hyperdynamics_options(params).rmd_time = 1.0;
+  ParametersLoadAccess::hyperdynamics_options(params).dvmax = 0.5;
+  ParametersLoadAccess::hyperdynamics_options(params).qrr = 0.4;
+  ParametersLoadAccess::hyperdynamics_options(params).prr = 0.95;
+  ParametersLoadAccess::hyperdynamics_options(params).qcut = 3.0;
+  ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "All";
+
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter matter(pot, params);
+  matter.resize(2);
+  matter.setAtomicNr(0, 1);
+  matter.setAtomicNr(1, 1);
+  matter.setPeriodic(true);
+
+  // Rows are lattice vectors. The shear makes a per-axis minimum image
+  // differ from the bond vector distance() uses.
+  Matrix3d cell = Matrix3d::Zero();
+  cell(0, 0) = 4.0;
+  cell(1, 0) = 2.0;
+  cell(1, 1) = 4.0;
+  cell(2, 2) = 4.0;
+  matter.setCell(cell);
+
+  AtomMatrix eq(2, 3);
+  eq.setZero();
+  eq(0, 0) = 0.3;
+  eq(0, 1) = 0.2;
+  eq(0, 2) = 1.0;
+  eq(1, 0) = 1.5;
+  eq(1, 1) = 0.2;
+  eq(1, 2) = 1.0;
+  matter.setPositions(eq);
+
+  BondBoost bb(&matter, params);
+  bb.initialize();
+  bb.advance();
+
+  AtomMatrix pos(2, 3);
+  pos.setZero();
+  pos(0, 0) = 0.3;
+  pos(0, 1) = 0.2;
+  pos(0, 2) = 1.0;
+  pos(1, 0) = 5.6;
+  pos(1, 1) = 3.6;
+  pos(1, 2) = 1.0;
+  matter.setPositions(pos);
+
+  AtomMatrix delta(1, 3);
+  delta.row(0) = matter.getPositions().row(0) - matter.getPositions().row(1);
+  delta = matter.pbc(delta);
+  REQUIRE(std::abs(matter.pdistance(0, 1, 0) - delta(0, 0)) > 0.5);
+
+  const double h = 1e-5;
+  auto energy = [&](double dx, double dy) {
+    AtomMatrix shifted = pos;
+    shifted(0, 0) += dx;
+    shifted(0, 1) += dy;
+    matter.setPositions(shifted);
+    return bb.boost();
+  };
+  const double dEdx = (energy(h, 0.0) - energy(-h, 0.0)) / (2.0 * h);
+  const double dEdy = (energy(0.0, h) - energy(0.0, -h)) / (2.0 * h);
+
+  matter.setPositions(pos);
+  const double bias = bb.boost();
+  REQUIRE(std::isfinite(bias));
+  REQUIRE(std::abs(bias) > 1e-3);
+  const AtomMatrix force = matter.getBiasForces();
+  REQUIRE(std::abs(force(0, 0)) > 0.1);
+  REQUIRE(force(0, 0) == Catch::Approx(-dEdx).margin(1e-4));
+  REQUIRE(force(0, 1) == Catch::Approx(-dEdy).margin(1e-4));
+  REQUIRE(force(0, 2) == Catch::Approx(0.0).margin(1e-8));
+  REQUIRE(force(1, 0) == Catch::Approx(-force(0, 0)).epsilon(0).margin(1e-12));
+  REQUIRE(force(1, 1) == Catch::Approx(-force(0, 1)).epsilon(0).margin(1e-12));
 }
 
 TEST_CASE("BondBoost garbage list is not treated as all", "[bondboost][list]") {

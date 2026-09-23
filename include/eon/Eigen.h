@@ -63,4 +63,17 @@ from_fortran_layout_vector(const std::vector<double> &flat_colmajor, int nat) {
   return Eigen::Map<const AtomMatrix>(flat_colmajor.data(), nat, 3);
 }
 
+/// Pack an eOn cell for pARTn `artn_step`.
+///
+/// Lattice vector i is row i here and Fortran column i there (`box(:,i)`).
+/// Row-major `cell` memory is already that column-major layout. Filling
+/// `box` so Fortran `box(i,j)` equals `cell(i,j)` sends the transpose.
+inline void lattice_rows_to_fortran_box(const Matrix3d &cell, double *box) {
+  for (int vec = 0; vec < 3; ++vec) {
+    for (int comp = 0; comp < 3; ++comp) {
+      box[vec * 3 + comp] = cell(vec, comp);
+    }
+  }
+}
+
 } // namespace eonc

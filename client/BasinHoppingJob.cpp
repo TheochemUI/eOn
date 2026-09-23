@@ -426,18 +426,22 @@ void BasinHoppingJob::randomSwap(Matter *matter) {
 }
 
 std::vector<long> BasinHoppingJob::getElements(Matter *matter) {
-  std::array<int, 118> allElements{};
+  // Z is 0..118. A 118-slot table stores 118 one past the end.
+  constexpr int kElementSlots = 119;
+  std::array<int, kElementSlots> allElements{};
   std::vector<long> elements;
 
   for (long y = 0; y < matter->numberOfAtoms(); ++y) {
     if (!matter->getFixed(y)) {
-      const int index = matter->getAtomicNr(y);
-      allElements[index] = 1;
+      const long z = matter->getAtomicNr(y);
+      if (z >= 0 && z < kElementSlots) {
+        allElements[static_cast<size_t>(z)] = 1;
+      }
     }
   }
 
-  for (int i = 0; i < 118; ++i) {
-    if (allElements[i] != 0) {
+  for (int i = 0; i < kElementSlots; ++i) {
+    if (allElements[static_cast<size_t>(i)] != 0) {
       elements.push_back(i);
     }
   }
