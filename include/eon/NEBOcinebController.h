@@ -55,8 +55,7 @@ public:
   // Help is the walked image's raw force, not band convergenceForce().
   // After a downhill dimer step maxEnergyImage can hop; the band CI
   // force is then a neighbor and is the wrong score for restore.
-  static bool walkHelped(double walkedForce, double convForce,
-                         int mmfStatus) {
+  static bool walkHelped(double walkedForce, double convForce, int mmfStatus) {
     return walkedForce < convForce && mmfStatus != -2;
   }
 
