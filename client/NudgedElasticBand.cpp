@@ -569,7 +569,11 @@ void NudgedElasticBand::updateForces(bool ci_active) {
 
       for (long idx : dirty) {
         nrsStore.push_back(path[idx]->getAtomicNrs());
-        boxStore.push_back(path[idx]->getCell());
+        // Isolated molecules still store a box for I/O. Pots that infer
+        // PBC from a non-zero cell must see a zero box, as
+        // Matter::computePotential does on the endpoints.
+        boxStore.push_back(path[idx]->getPeriodic() ? path[idx]->getCell()
+                                                    : Matrix3d::Zero());
       }
       for (long j = 0; j < nDirty; j++) {
         auto idx = dirty[static_cast<size_t>(j)];

@@ -18,6 +18,7 @@
 #include "eon/NudgedElasticBand.h"
 #include "eon/PotCapabilities.h"
 #include "eon/PotRegistry.h"
+#include "eon/Potential.h"
 #include "eon/api.h"
 #include <fstream>
 #include <stdexcept>
@@ -845,6 +846,103 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB Onsager-Machlup spring",
 
   for (long i = 1; i <= neb->numImages; i++) {
     REQUIRE(neb->projectedForce[i]->allFinite());
+  }
+}
+
+namespace {
+
+// Records the boxes updateForces hands to forceBatch.
+struct BoxRecordingBatchPot final : Potential {
+  std::vector<Matrix3d> seen;
+
+  BoxRecordingBatchPot()
+      : Potential(PotType::LJ) {}
+
+  void force(long nAtoms, const double * /*positions*/,
+             const int * /*atomicNrs*/, double *forces, double *energy,
+             double *variance, const double * /*box*/) override {
+    *energy = 0.0;
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+    for (long i = 0; i < nAtoms * 3; ++i) {
+      forces[i] = 0.0;
+    }
+  }
+
+  [[nodiscard]] bool supportsBatchEvaluation() const noexcept override {
+    return true;
+  }
+
+  void forceBatch(long nSystems, long nAtoms,
+                  const double *const * /*positions*/,
+                  const int *const * /*atomicNrs*/, double *const *forces,
+                  double *energies, double *variances,
+                  const double *const *boxes) override {
+    seen.assign(static_cast<size_t>(nSystems), Matrix3d::Zero());
+    for (long s = 0; s < nSystems; ++s) {
+      for (int k = 0; k < 9; ++k) {
+        seen[static_cast<size_t>(s)].data()[k] = boxes[s][k];
+      }
+      energies[s] = 0.0;
+      if (variances != nullptr) {
+        variances[s] = 0.0;
+      }
+      for (long i = 0; i < nAtoms * 3; ++i) {
+        forces[s][i] = 0.0;
+      }
+    }
+  }
+};
+
+} // namespace
+
+TEST_CASE_METHOD(NEBLJFixture,
+                 "batched NEB forces zero the cell when PBC is off",
+                 "[neb][updateForces][batch]") {
+  const Matrix3d cell = Matrix3d::Identity() * 12.0;
+  reactant->setPeriodic(false);
+  product->setPeriodic(false);
+  reactant->setCell(cell);
+  product->setCell(cell);
+  auto batch = std::make_shared<BoxRecordingBatchPot>();
+  reactant->setPotential(batch);
+  product->setPotential(batch);
+  pot = batch;
+
+  auto neb = makeNEB();
+  REQUIRE(neb->numImages > 1);
+  REQUIRE_FALSE(neb->path[1]->getPeriodic());
+  REQUIRE(neb->path[1]->getCell().isApprox(cell, 1e-12));
+  neb->updateForces();
+
+  REQUIRE(batch->seen.size() == static_cast<size_t>(neb->numImages));
+  for (const auto &box : batch->seen) {
+    REQUIRE(box.isZero(0.0));
+  }
+}
+
+TEST_CASE_METHOD(NEBLJFixture,
+                 "batched NEB forces keep the stored cell when PBC is on",
+                 "[neb][updateForces][batch]") {
+  const Matrix3d cell = Matrix3d::Identity() * 12.0;
+  reactant->setPeriodic(true);
+  product->setPeriodic(true);
+  reactant->setCell(cell);
+  product->setCell(cell);
+  auto batch = std::make_shared<BoxRecordingBatchPot>();
+  reactant->setPotential(batch);
+  product->setPotential(batch);
+  pot = batch;
+
+  auto neb = makeNEB();
+  REQUIRE(neb->path[1]->getPeriodic());
+  REQUIRE(neb->path[1]->getCell().isApprox(cell, 1e-12));
+  neb->updateForces();
+
+  REQUIRE(batch->seen.size() == static_cast<size_t>(neb->numImages));
+  for (const auto &box : batch->seen) {
+    REQUIRE(box.isApprox(cell, 1e-12));
   }
 }
 
