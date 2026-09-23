@@ -49,6 +49,36 @@ TEST_CASE_METHOD(GeomFixture, "displaced structure is not identical",
   REQUIRE_FALSE(eonc::geometry::identical(*m1, *m2, 0.1));
 }
 
+namespace {
+
+void placePair(Matter &m, double x0, double x1, int z0, int z1) {
+  m.resize(2);
+  m.setPeriodic(false);
+  m.setAtomicNr(0, z0);
+  m.setAtomicNr(1, z1);
+  AtomMatrix pos(2, 3);
+  pos.setZero();
+  pos(0, 0) = x0;
+  pos(1, 0) = x1;
+  m.setPositions(pos);
+}
+
+} // namespace
+
+TEST_CASE_METHOD(GeomFixture,
+                 "identical accepts the permutation inside tolerance",
+                 "[geometry][identical]") {
+  // Index 0 is inside tolerance of index 0, but that lock leaves index 1
+  // without a partner. The crossed pairing is a bijection.
+  placePair(*m1, 0.0, 1.0, 1, 1);
+  placePair(*m2, 0.05, 0.0, 1, 1);
+  REQUIRE(eonc::geometry::identical(*m1, *m2, 1.0));
+  REQUIRE_FALSE(eonc::geometry::identical(*m1, *m2, 0.5));
+
+  placePair(*m2, 0.05, 0.0, 1, 2);
+  REQUIRE_FALSE(eonc::geometry::identical(*m1, *m2, 1.0));
+}
+
 TEST_CASE_METHOD(GeomFixture, "rotationExtract returns valid rotation matrix",
                  "[geometry][rotation]") {
   auto r1 = m1->getPositions();
