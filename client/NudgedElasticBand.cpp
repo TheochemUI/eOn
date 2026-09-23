@@ -247,8 +247,8 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
 
   QUILL_LOG_DEBUG(log, "Nudged elastic band calculation started.");
 
-  // Initialize E_ref for energy weighting
-  E_ref = std::min(path[0]->getPotentialEnergy(),
+  // Higher endpoint: springs stay at k_min until an image exceeds it.
+  E_ref = std::max(path[0]->getPotentialEnergy(),
                    path[numImages + 1]->getPotentialEnergy());
 
   updateForces();
@@ -637,9 +637,10 @@ void NudgedElasticBand::updateForces(bool ci_active) {
   maxEnergyImage = std::distance(path.begin(), it);
   double maxEnergy = (*it)->getPotentialEnergy();
 
-  // Update E_ref for energy weighting
+  // Update E_ref for energy weighting. The higher endpoint keeps the
+  // soft spring on the side below that minimum.
   if (params.neb_options().spring.weighting.enabled) {
-    E_ref = std::min(path[0]->getPotentialEnergy(),
+    E_ref = std::max(path[0]->getPotentialEnergy(),
                      path[numImages + 1]->getPotentialEnergy());
   }
 
