@@ -19,6 +19,7 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/BaseStructures.h"
 #include "eon/BasinHoppingJob.h"
+#include "eon/Bundling.h"
 #include "eon/Job.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
@@ -29,6 +30,7 @@
 #include "eon/libs/ARTn/ARTnResource.h"
 #endif
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstdlib>
@@ -83,6 +85,7 @@ protected:
   std::unique_ptr<Parameters> params;
   /// Force calls made by just this job (delta, not global total).
   size_t forceCalls_{0};
+  std::vector<std::string> returnFiles_;
 
   JobIntegrationFixture()
       : originalDir{std::filesystem::current_path()} {
@@ -156,7 +159,7 @@ protected:
     params->load("config.ini");
 
     auto job = eonc::helpers::makeJob(std::move(params), eonc::Runtime{});
-    job->run();
+    returnFiles_ = job->run();
     forceCalls_ = job->pots().total_force_calls();
 
     std::filesystem::current_path(originalDir);
@@ -1061,6 +1064,17 @@ step_size = 0.001
   double energy = std::stod(results["potential_energy"]);
   REQUIRE(std::isfinite(energy));
   REQUIRE(results.count("total_force_calls") > 0);
+
+  // One out.con entry: bundle() renames that path, so a second copy is gone.
+  REQUIRE(std::count(returnFiles_.begin(), returnFiles_.end(),
+                     std::string("out.con")) == 1);
+  REQUIRE(std::filesystem::exists(workdir / "out.con"));
+  std::filesystem::current_path(workdir);
+  std::vector<std::string> bundled;
+  eonc::bundle(0, returnFiles_, &bundled);
+  std::filesystem::current_path(originalDir);
+  REQUIRE(bundled.size() == returnFiles_.size());
+  REQUIRE(std::filesystem::exists(workdir / "out_0.con"));
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,

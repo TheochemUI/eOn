@@ -57,13 +57,6 @@ std::vector<std::string> MonteCarloJob::run(void) {
     QUILL_LOG_ERROR(log, "Failed to write {}", posOutFilename);
   }
 
-  QUILL_LOG_DEBUG(log, "Saving result to {}", posOutFilename);
-  if (eonc::io::io_ok(matter->matter2con(posOutFilename))) {
-    returnFiles.push_back(posOutFilename);
-  } else {
-    QUILL_LOG_ERROR(log, "Failed to write {}", posOutFilename);
-  }
-
   std::string resultsFilename("results.dat");
   auto env = JobResultEnvelope::fromMinimization(
       RunStatus::GOOD, params.potential_options().potential,
