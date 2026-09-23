@@ -13,12 +13,31 @@
 #include "eon/Dynamics.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/DynamicsSaddleSearch.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 
 namespace tests {
 
 static eonc::helpers::test::QuillTestLogger _quill_setup;
+
+// Zero force, so relax stays on the stored frame at the default cap.
+struct FlatPot final : Potential {
+  FlatPot()
+      : Potential(PotType::LJ) {}
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    (void)positions;
+    (void)atomicNrs;
+    (void)box;
+    *energy = 0.0;
+    *variance = 0.0;
+    for (long i = 0; i < nAtoms * 3; ++i) {
+      forces[i] = 0.0;
+    }
+  }
+};
 
 class DynamicsFixture {
 protected:
@@ -179,6 +198,39 @@ TEST_CASE_METHOD(DynamicsFixture,
 
   double E = matter->getPotentialEnergy();
   REQUIRE(std::isfinite(E));
+}
+
+TEST_CASE_METHOD(
+    DynamicsFixture,
+    "refineTransition returns the first snapshot that left the reactant",
+    "[dynamics]") {
+  auto pot = std::make_shared<FlatPot>();
+  auto reactant = std::make_shared<Matter>(pot, params);
+  REQUIRE(eonc::io::io_ok(reactant->con2matter(std::string("reactant.con"))));
+
+  auto saddle = std::make_shared<Matter>(*reactant);
+  eonc::DynamicsSaddleSearch search(saddle, params);
+  auto product = std::make_shared<Matter>(*reactant);
+
+  auto frame = [&](bool reactantFrame) {
+    auto snap = std::make_shared<Matter>(*reactant);
+    if (!reactantFrame) {
+      AtomMatrix pos = snap->getPositions();
+      pos(0, 0) += 1.0;
+      snap->setPositions(pos);
+    }
+    return snap;
+  };
+
+  std::vector<std::shared_ptr<Matter>> two{frame(true), frame(false)};
+  REQUIRE(search.refineTransition(two, product) == 1);
+
+  std::vector<std::shared_ptr<Matter>> four{frame(true), frame(true),
+                                            frame(false), frame(false)};
+  const int image = search.refineTransition(four, product);
+  REQUIRE(image == 2);
+  REQUIRE(four[static_cast<size_t>(image - 1)]->compare(*search.reactant));
+  REQUIRE_FALSE(four[static_cast<size_t>(image)]->compare(*search.reactant));
 }
 
 } /* namespace tests */
