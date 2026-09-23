@@ -15,6 +15,10 @@
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 
+namespace tests {
+struct OHTSTPlaneWrapTest;
+}
+
 namespace eonc {
 
 /**
@@ -55,8 +59,13 @@ private:
     VectorXd pos;     //!< <r>, anchors Eq 18 and the Eq 12 restart
   };
 
-  PlaneAverages samplePlane(Matter &matter, const VectorXd &gamma,
+  // x is the unwrapped free configuration. It is not read back from
+  // Matter: setPositionsFreeV wraps into the primary cell, and the
+  // projection of that image is a different 3N point.
+  PlaneAverages samplePlane(Matter &matter, VectorXd &x, const VectorXd &gamma,
                             const VectorXd &normal);
+
+  friend struct ::tests::OHTSTPlaneWrapTest;
 
   //! Eq 22: Q^ZR/Q^R from crossing statistics of an unconstrained
   //! reactant-basin trajectory through the plane (gammaR, normal).
