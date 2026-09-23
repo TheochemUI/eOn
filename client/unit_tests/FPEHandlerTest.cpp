@@ -65,22 +65,20 @@ TEST_CASE("enableFPE integer divide does not restart the faulting instruction",
   int num = 1;
   int den = 0;
   int quot = -1;
-  asm volatile("movl %[n], %%eax\n\t"
-               "xorl %%edx, %%edx\n\t"
-               "idivl %[d]\n\t"
-               "movl %%eax, %[q]\n\t"
-               : [q] "=m"(quot)
-               : [n] "m"(num), [d] "m"(den)
-               : "eax", "edx", "cc", "memory");
+  // Register constraints so the address of a memory operand cannot
+  // live in eax, which the instruction itself overwrites.
+  asm volatile("xorl %%edx, %%edx\n\t"
+               "idivl %%ecx\n\t"
+               : "=a"(quot)
+               : "a"(num), "c"(den)
+               : "edx", "cc");
   REQUIRE(quot == 0);
   int again = -1;
-  asm volatile("movl %[n], %%eax\n\t"
-               "xorl %%edx, %%edx\n\t"
-               "idivl %[d]\n\t"
-               "movl %%eax, %[q]\n\t"
-               : [q] "=m"(again)
-               : [n] "m"(num), [d] "m"(den)
-               : "eax", "edx", "cc", "memory");
+  asm volatile("xorl %%edx, %%edx\n\t"
+               "idivl %%ecx\n\t"
+               : "=a"(again)
+               : "a"(num), "c"(den)
+               : "edx", "cc");
   REQUIRE(again == 0);
   int marker = 5;
   REQUIRE(marker == 5);
@@ -88,14 +86,11 @@ TEST_CASE("enableFPE integer divide does not restart the faulting instruction",
   int lo = std::numeric_limits<int>::min();
   int minus = -1;
   int ovf = -1;
-  asm volatile("movl %[n], %%eax\n\t"
-               "movl %[d], %%ecx\n\t"
-               "cdq\n\t"
+  asm volatile("cdq\n\t"
                "idivl %%ecx\n\t"
-               "movl %%eax, %[q]\n\t"
-               : [q] "=m"(ovf)
-               : [n] "m"(lo), [d] "m"(minus)
-               : "eax", "ecx", "edx", "cc", "memory");
+               : "=a"(ovf)
+               : "a"(lo), "c"(minus)
+               : "edx", "cc");
   REQUIRE(ovf == 0);
   eonc::disableFPE();
   feclearexcept(FE_ALL_EXCEPT);
