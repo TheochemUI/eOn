@@ -1,15 +1,15 @@
 #!/usr/bin/env python
-import numpy
+import numpy as np
 from time import time
 from .mcamc import mcamc, guess_precision
 
 
 def random_chain(t,r,p):
-    Q = numpy.random.random((t,t))
+    Q = np.random.random((t,t))
     for i in range(len(Q)):
         Q[i,i] = 0.0
-    R = p*numpy.random.random((t,r))
-    c = numpy.ones(t)
+    R = p*np.random.random((t,r))
+    c = np.ones(t)
     return Q,R,c
 
 def main():

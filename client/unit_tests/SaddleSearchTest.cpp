@@ -182,6 +182,51 @@ TEST_CASE_METHOD(
   REQUIRE(status != MinModeSaddleSearch::STATUS_INIT);
 }
 
+// Basin hopping used to ignore MinModeSaddleSearch::run and return success.
+// One climb step cannot meet the force tolerance, so the hop must report
+// that failure on both the return value and getStatus().
+TEST_CASE_METHOD(SaddleSearchFixture,
+                 "BasinHoppingSaddleSearch reports a failed climb",
+                 "[saddle_search][basin_hopping]") {
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 1;
+  ParametersLoadAccess::saddle_search_options(params).converged_force = 1e-20;
+
+  namespace fs = std::filesystem;
+  const auto tmp = fs::temp_directory_path() / "eon_bh_climb_status";
+  fs::create_directories(tmp);
+  struct CwdGuard {
+    fs::path old;
+    explicit CwdGuard(const fs::path &next)
+        : old(fs::current_path()) {
+      fs::current_path(next);
+    }
+    ~CwdGuard() { fs::current_path(old); }
+  };
+
+  int status = MinModeSaddleSearch::STATUS_INIT;
+  {
+    CwdGuard guard(tmp);
+    auto hop = std::make_shared<Matter>(*matter);
+    BasinHoppingSaddleSearch search(matter, hop, pot, params);
+    status = search.run();
+    REQUIRE(search.getStatus() == status);
+  }
+  fs::remove_all(tmp);
+
+  REQUIRE(status != MinModeSaddleSearch::STATUS_GOOD);
+  REQUIRE(status != MinModeSaddleSearch::STATUS_INIT);
+}
+
+TEST_CASE_METHOD(SaddleSearchFixture,
+                 "Basin hop rejection is not labeled Initialized",
+                 "[saddle_search][basin_hopping]") {
+  BasinHoppingSaddleSearch search(matter, matter, pot, params);
+  // Shared MinMode table still calls code 1 Initialized. This search does not.
+  REQUIRE(std::string(MinModeSaddleSearch::statusMessage(1)) == "Initialized");
+  REQUIRE(std::string(search.describeStatus(1)) == "Basin hop rejected");
+  REQUIRE(std::string(search.describeStatus(0)) == "Success");
+}
+
 TEST_CASE_METHOD(SaddleSearchFixture,
                  "MinModeSaddleSearch forces on fixed atoms remain zero",
                  "[saddle_search][fixed_atoms]") {
@@ -331,6 +376,49 @@ TEST_CASE_METHOD(SaddleSearchFixture,
 
   runBand(5);
   runBand(1);
+}
+
+TEST_CASE("basin hopping dimer direction uses the minimum image",
+          "[saddle_search][basin_hopping][pbc]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter image(pot, params);
+  image.resize(2);
+  image.setAtomicNr(0, 1);
+  image.setAtomicNr(1, 1);
+  image.setCell(Matrix3d::Identity() * 10.0);
+  image.setPeriodic(true);
+
+  AtomMatrix prev(2, 3);
+  AtomMatrix next(2, 3);
+  prev.setZero();
+  next.setZero();
+  // Atom 0 has crossed the cell: 0.2 and 9.8. The short step is -0.4.
+  prev(0, 0) = 0.2;
+  prev(0, 1) = 1.0;
+  prev(0, 2) = 2.0;
+  next(0, 0) = 9.8;
+  next(0, 1) = 1.0;
+  next(0, 2) = 2.0;
+  // Atom 1 stays inside the cell. The step must not be rewritten.
+  prev(1, 0) = 1.0;
+  next(1, 0) = 1.5;
+
+  AtomMatrix direction =
+      BasinHoppingSaddleSearch::initialDimerDirection(image, prev, next);
+  REQUIRE(direction(0, 0) == Catch::Approx(-0.2).margin(1e-12));
+  REQUIRE(direction(0, 1) == Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(direction(0, 2) == Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(direction(1, 0) == Catch::Approx(0.25).margin(1e-12));
+  REQUIRE(direction(1, 1) == Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(direction(1, 2) == Catch::Approx(0.0).margin(1e-12));
+
+  image.setPeriodic(false);
+  AtomMatrix raw =
+      BasinHoppingSaddleSearch::initialDimerDirection(image, prev, next);
+  REQUIRE(raw(0, 0) == Catch::Approx(4.8).margin(1e-12));
+  REQUIRE(raw(1, 0) == Catch::Approx(0.25).margin(1e-12));
 }
 
 } /* namespace tests */

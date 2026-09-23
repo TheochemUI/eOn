@@ -8,6 +8,7 @@ authors = [
 dependencies = [
     "numpy>=1.26.4",
     "readcon>=0.14.9",
+    "readcon-db>=0.1.6",
     "vesin>=0.6.1",
     "eon-schema>=0.2.0",
     "xxhash>=3.4.0",

@@ -55,7 +55,8 @@ int BasinHoppingSaddleSearch::run() {
   double r = eonc::rng::random();
   if (ereactant < eproduct) {
     if (r > p) { // reject
-      return 1;
+      status = 1;
+      return status;
     }
   }
   // NEB reactant to minimized "saddle"
@@ -82,16 +83,18 @@ int BasinHoppingSaddleSearch::run() {
   // do dimer
   // Calculate initial direction
   AtomMatrix r_1 = neb.path[HighestImage - 1]->getPositions();
-  AtomMatrix r_2 = neb.path[HighestImage]->getPositions();
   AtomMatrix r_3 = neb.path[HighestImage + 1]->getPositions();
-  AtomMatrix direction = (r_3 - r_1) / 2;
+  AtomMatrix direction =
+      initialDimerDirection(*neb.path[HighestImage], r_1, r_3);
   MinModeSaddleSearch dim(neb.path[HighestImage], direction.normalized(),
                           ereactant, params, pot);
-  dim.run();
+  // ProcessSearchJob treats STATUS_GOOD as a saddle. The climb's own
+  // status is that decision; discarding it records a failed climb as found.
+  status = dim.run();
   *saddle = *neb.path[HighestImage];
   eigenvalue = dim.getEigenvalue();
   eigenvector = dim.getEigenvector();
-  return 0;
+  return status;
 }
 
 double BasinHoppingSaddleSearch::getEigenvalue() { return eigenvalue; }

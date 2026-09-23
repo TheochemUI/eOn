@@ -10,11 +10,27 @@ Geometry kernels
     :mod:`eon.geometry`. This module re-exports them for compatibility and
     keeps structure-matching / CNA helpers plus a radius/color overlay.
 """
-import numpy
 import logging
-logger = logging.getLogger("atoms")
 
+import numpy as np
+
+from eon.geometry import (  # noqa: F401
+    box_to_length_angle,
+    brute_neighbor_list,
+    coordination_numbers,
+    get_process_atoms,
+    least_coordinated,
+    length_angle_to_box,
+    neighbor_list,
+    neighbor_list_pairs,
+    neighbor_list_vectors,
+    pbc,
+    per_atom_norm,
+    per_atom_norm_gen,
+)
 from eon.structure import Atoms, Structure  # noqa: F401
+
+logger = logging.getLogger("atoms")
 
 
 def _readcon_z_helpers():
@@ -37,7 +53,7 @@ def _readcon_z_helpers():
 
 def atomic_number(symbol_or_z):
     """Z for a symbol. Integers pass through. Symbol lookup is readcon."""
-    if isinstance(symbol_or_z, (int, numpy.integer)):
+    if isinstance(symbol_or_z, (int, np.integer)):
         return int(symbol_or_z)
     if symbol_or_z in {"Xx", "X"}:
         return 0
@@ -59,21 +75,6 @@ def symbol_for_z(z):
         return str(symbol)
     raise KeyError(f"unknown Z {z!r}")
 
-
-from eon.geometry import (  # noqa: F401
-    box_to_length_angle,
-    brute_neighbor_list,
-    coordination_numbers,
-    get_process_atoms,
-    least_coordinated,
-    length_angle_to_box,
-    neighbor_list,
-    neighbor_list_pairs,
-    neighbor_list_vectors,
-    pbc,
-    per_atom_norm,
-    per_atom_norm_gen,
-)
 
 # --- structure comparison / CNA (unchanged algorithms) ---
 
@@ -98,7 +99,7 @@ def identical(atoms1, atoms2, epsilon_r):
                 )
                 return False
     box = atoms1.box
-    ibox = numpy.linalg.inv(box)
+    ibox = np.linalg.inv(box)
 
     mismatch = []
     pan = per_atom_norm(atoms1.r - atoms2.r, box, ibox)
@@ -138,7 +139,7 @@ def match(a, b, eps_r, neighbor_cutoff, indistinguishable,
             return identical(a, b, eps_r)
         else:
             diff = pbc(a.r - b.r, a.box)
-            return numpy.max(numpy.sum(diff**2.0, axis=1)) < eps_r**2.0
+            return np.max(np.sum(diff**2.0, axis=1)) < eps_r**2.0
 
 
 def point_energy_match(file_a, energy_a, file_b, energy_b, eps_e, eps_r,
@@ -175,12 +176,12 @@ def rot_match(a, b, eps_r):
 
         ira = getattr(_core, "ira_match", None)
         if ira is not None:
-            z1 = numpy.asarray([atomic_number(s) for s in a.names], dtype=numpy.int64)
-            z2 = numpy.asarray([atomic_number(s) for s in b.names], dtype=numpy.int64)
+            z1 = np.asarray([atomic_number(s) for s in a.names], dtype=np.int64)
+            z2 = np.asarray([atomic_number(s) for s in b.names], dtype=np.int64)
             hd, err = ira(
-                numpy.ascontiguousarray(a.r, dtype=float),
+                np.ascontiguousarray(a.r, dtype=float),
                 z1,
-                numpy.ascontiguousarray(b.r, dtype=float),
+                np.ascontiguousarray(b.r, dtype=float),
                 z2,
                 float(eps_r),
             )
@@ -198,14 +199,14 @@ def _rot_match_kabsch(a, b, eps_r):
     # SVD algorithm ("Least-Squares Fitting of Two 3-D Point Sets" by Arun, Huang, and Blostein)
     ta_r = a.r - acm
     tb_r = b.r - bcm
-    H = numpy.dot(ta_r.transpose() , tb_r)
-    U, S, V = numpy.linalg.svd(H)
-    R = numpy.dot(U, V)
-    if numpy.linalg.det(R) < 0:
+    H = np.dot(ta_r.transpose() , tb_r)
+    U, S, V = np.linalg.svd(H)
+    R = np.dot(U, V)
+    if np.linalg.det(R) < 0:
         V[2] *= -1
-        R = numpy.dot(U, V)
-    ta_r = numpy.dot(ta_r, R)
-    dist = max(numpy.linalg.norm(ta_r - tb_r, axis=1))
+        R = np.dot(U, V)
+    ta_r = np.dot(ta_r, R)
+    dist = max(np.linalg.norm(ta_r - tb_r, axis=1))
     return dist < eps_r
 
 
@@ -219,12 +220,12 @@ def rotm(axis, theta):
     u2 = u*u
     v2 = v*v
     w2 = w*w
-    ct = numpy.cos(theta)
-    st = numpy.sin(theta)
-    mag = numpy.linalg.norm(axis)
+    ct = np.cos(theta)
+    st = np.sin(theta)
+    mag = np.linalg.norm(axis)
     if (mag*mag == 0 or theta == 0.0):
-        return numpy.identity(3)
-    return numpy.array([
+        return np.identity(3)
+    return np.array([
         [u2 +(v2 +w2)*ct, u*v*(1-ct)-w*mag*st, u*w*(1-ct)+v*mag*st],
         [u*v*(1-ct)+w*mag*st, v2 +(u2 +w2)*ct, v*w*(1-ct)-u*mag*st],
         [u*w*(1-ct)-v*mag*st, v*w*(1-ct)+u*mag*st, w2 +(v2 +u2)*ct]
@@ -243,14 +244,14 @@ def _adjacency_from_pairs(n, i, j):
     Each row is increasing atom index, matching ``EpiCenters.cpp`` insertion
     order so the CNA bond-sum still distinguishes 421 (fcc) from 422 (hcp).
     """
-    i = numpy.asarray(i, dtype=numpy.int64)
-    j = numpy.asarray(j, dtype=numpy.int64)
+    i = np.asarray(i, dtype=np.int64)
+    j = np.asarray(j, dtype=np.int64)
     mask = i != j
     i, j = i[mask], j[mask]
     nl = [[] for _ in range(n)]
     if i.size == 0:
         return nl
-    packed = numpy.unique(i * numpy.int64(n) + j)
+    packed = np.unique(i * np.int64(n) + j)
     for a, b in zip((packed // n).tolist(), (packed % n).tolist()):
         nl[int(a)].append(int(b))
     return nl
@@ -296,9 +297,9 @@ def cna(p, cutoff):
     (wiki.fysik.dtu.dk/asap).
     """
     n = len(p)
-    can_values = numpy.full(n, CNA_OTHER, dtype=int)
-    nr_FCC = numpy.zeros(n, dtype=int)
-    nr_HCP = numpy.zeros(n, dtype=int)
+    can_values = np.full(n, CNA_OTHER, dtype=int)
+    nr_FCC = np.zeros(n, dtype=int)
+    nr_HCP = np.zeros(n, dtype=int)
     nl = _neighbor_lists(p, cutoff)
     nl_sets = _neighbor_sets(nl)
 
@@ -336,9 +337,9 @@ def not_HCP_or_FCC(p, cutoff):
 def cnat(p, cutoff):
     """ Returns a list of cna numbers for all atoms in p
         Inspired by the CNA code provided by Asap (wiki.fysik.dtu.dk/asap)"""
-    can_values = numpy.zeros(len(p))
-    nr_5 = numpy.zeros(len(p))
-    nr_6 = numpy.zeros(len(p))
+    can_values = np.zeros(len(p))
+    nr_5 = np.zeros(len(p))
+    nr_6 = np.zeros(len(p))
     nl = _neighbor_lists(p, cutoff)
     nl_sets = _neighbor_sets(nl)
 
@@ -460,15 +461,15 @@ def get_mappings(a, b, eps_r, neighbor_cutoff, mappings=None):
     unmapped_a = next((i for i in range(n) if i not in mapped_a), n)
     mapped_idx = list(mapped_a.keys())
     diffs = pbc(a.r[unmapped_a] - a.r[mapped_idx], a.box)
-    dists = numpy.linalg.norm(numpy.atleast_2d(diffs), axis=1)
+    dists = np.linalg.norm(np.atleast_2d(diffs), axis=1)
     b_of_mapped = [mapped_a[i] for i in mapped_idx]
     want_name = a.names[unmapped_a]
     for b_atom in range(len(b)):
         if b_atom in mapped_b or b.names[b_atom] != want_name:
             continue
         b_diffs = pbc(b.r[b_atom] - b.r[b_of_mapped], b.box)
-        b_dists = numpy.linalg.norm(numpy.atleast_2d(b_diffs), axis=1)
-        if numpy.max(numpy.abs(dists - b_dists)) > eps_r:
+        b_dists = np.linalg.norm(np.atleast_2d(b_diffs), axis=1)
+        if np.max(np.abs(dists - b_dists)) > eps_r:
             continue
         new_map = mapped_a.copy()
         new_map[unmapped_a] = b_atom
@@ -480,13 +481,13 @@ def get_mappings(a, b, eps_r, neighbor_cutoff, mappings=None):
     return None
 
 def get_rotation_matrix(axis, theta):
-    axis = axis / numpy.linalg.norm(axis)
+    axis = axis / np.linalg.norm(axis)
     t = theta
-    ct = numpy.cos(t)
-    st = numpy.sin(t)
+    ct = np.cos(t)
+    st = np.sin(t)
     T = 1.0 - ct
     rx, ry, rz = axis
-    rotmat = numpy.zeros((3, 3))
+    rotmat = np.zeros((3, 3))
     rotmat[0][0] = T*rx*rx + ct
     rotmat[0][1] = T*ry*rx + rz*st
     rotmat[0][2] = T*rz*rx - ry*st
@@ -505,7 +506,7 @@ def rotate(r, axis, center, angle):
     rotmat = get_rotation_matrix(axis, angle)
     center = center.copy()
     new_r -= center
-    new_r = numpy.dot(new_r, rotmat)
+    new_r = np.dot(new_r, rotmat)
     new_r += center
     return new_r
 
@@ -516,17 +517,17 @@ def internal_motion(a, b):
     object. """
     b = b.copy()
     b.r -= a.r[0] - b.r[0]
-    a0a1 = (a.r[1] - a.r[0]) / numpy.linalg.norm(a.r[1] - a.r[0])
-    b0b1 = (b.r[1] - b.r[0]) / numpy.linalg.norm(b.r[1] - b.r[0])
-    axis1 = numpy.cross(b0b1, a0a1) / numpy.linalg.norm(numpy.cross(b0b1, a0a1))
-    theta1 = numpy.arccos((a0a1*b0b1).sum())
+    a0a1 = (a.r[1] - a.r[0]) / np.linalg.norm(a.r[1] - a.r[0])
+    b0b1 = (b.r[1] - b.r[0]) / np.linalg.norm(b.r[1] - b.r[0])
+    axis1 = np.cross(b0b1, a0a1) / np.linalg.norm(np.cross(b0b1, a0a1))
+    theta1 = np.arccos((a0a1*b0b1).sum())
     b.r = rotate(b.r, axis1, a.r[0], theta1)
-    axis2 = (a.r[2] - a.r[0]) / numpy.linalg.norm(a.r[2] - a.r[0])
+    axis2 = (a.r[2] - a.r[0]) / np.linalg.norm(a.r[2] - a.r[0])
     va = a.r[2] - ((a.r[2] - a.r[0]) * axis2).sum() * axis2
-    va = va / numpy.linalg.norm(va)
+    va = va / np.linalg.norm(va)
     vb = b.r[2] - ((b.r[2] - a.r[0]) * axis2).sum() * axis2
-    vb = vb / numpy.linalg.norm(vb)
-    theta2 = numpy.arccos((va * vb).sum())
+    vb = vb / np.linalg.norm(vb)
+    theta2 = np.arccos((va * vb).sum())
     b.r = rotate(b.r, axis2, a.r[0], theta2)
     return b
 

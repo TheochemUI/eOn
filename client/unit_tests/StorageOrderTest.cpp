@@ -65,4 +65,24 @@ TEST_CASE("Eigen Storage Order and Mapping", "[Core][Eigen]") {
   }
 }
 
+TEST_CASE("pARTn box columns are eOn lattice rows", "[Core][Eigen]") {
+  // Non-orthogonal and non-symmetric: the transpose is a different cell.
+  Matrix3d cell;
+  cell << 10.0, 1.0, 0.0, 0.5, 11.0, 2.0, 0.0, 0.25, 12.0;
+
+  double box[9] = {};
+  eonc::lattice_rows_to_fortran_box(cell, box);
+
+  for (int vec = 0; vec < 3; ++vec) {
+    for (int comp = 0; comp < 3; ++comp) {
+      // Fortran column vec, component comp, is stored at vec * 3 + comp.
+      REQUIRE(box[vec * 3 + comp] == cell(vec, comp));
+    }
+  }
+
+  // The previous fill set Fortran box(i,j) equal to cell(i,j).
+  REQUIRE(box[1] == 1.0);
+  REQUIRE(box[1] != cell(1, 0));
+}
+
 } // namespace tests

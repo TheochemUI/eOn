@@ -4,7 +4,7 @@ import os
 import sys
 from pathlib import Path
 
-import numpy
+import numpy as np
 import yaml
 
 
@@ -30,14 +30,14 @@ class ConfigClass:
             Loader=yaml.BaseLoader,
         )
 
-        for sectionName in y:
-            section = ConfigSection(sectionName)
-            for key in y[sectionName]['options']:
-                kattr = y[sectionName]['options'][key]
-                ck = ConfigKey(key, kattr['kind'], kattr['default'])
+        for section_name in y:
+            section = ConfigSection(section_name)
+            for key in y[section_name]['options']:
+                key_attr = y[section_name]['options'][key]
+                ck = ConfigKey(key, key_attr['kind'], key_attr['default'])
                 section.keys.append(ck)
-                if 'values' in kattr:
-                    for value in kattr['values']:
+                if 'values' in key_attr:
+                    for value in key_attr['values']:
                         ck.values.append(value)
             self.format.append(section)
 
@@ -203,7 +203,7 @@ class ConfigClass:
             if Path(prng_path).is_file():
                 io.get_prng_state(prng_path)
             else:
-                numpy.random.seed(self.main_random_seed)
+                np.random.seed(self.main_random_seed)
         else:
             self.main_random_seed = None
 
