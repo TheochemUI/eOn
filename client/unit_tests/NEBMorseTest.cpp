@@ -12,6 +12,7 @@
 
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/ConFileIO.h"
 #include "eon/IDPPObjectiveFunction.hpp"
 #include "eon/NEBInitialPaths.hpp"
 #include "eon/NEBOcinebController.h"
@@ -19,6 +20,7 @@
 #include "eon/PotCapabilities.h"
 #include "eon/PotRegistry.h"
 #include "eon/api.h"
+#include <filesystem>
 #include <fstream>
 #include <stdexcept>
 #include <thread>
@@ -137,6 +139,65 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB endpoints match input structures",
   auto prodPos = product->getPositions();
   auto lastPos = neb->path[neb->numImages + 1]->getPositions();
   REQUIRE(prodPos.isApprox(lastPos, 1e-10));
+}
+
+TEST_CASE_METHOD(NEBLJFixture, "NEB file init keeps passed endpoints",
+                 "[neb][construction][file_init]") {
+  namespace fs = std::filesystem;
+  const auto dir = fs::temp_directory_path() / "eon-neb-file-init-endpoints";
+  fs::create_directories(dir);
+
+  const long nImages = params.neb_options().image_count;
+  const auto reactPos = reactant->getPositions();
+  const auto prodPos = product->getPositions();
+  std::vector<fs::path> frames;
+  frames.reserve(static_cast<size_t>(nImages + 2));
+  for (long i = 0; i <= nImages + 1; ++i) {
+    const double frac =
+        static_cast<double>(i) / static_cast<double>(nImages + 1);
+    Matter frame(*reactant);
+    frame.setPositions(reactPos + frac * (prodPos - reactPos));
+    const auto framePath = dir / ("frame" + std::to_string(i) + ".con");
+    REQUIRE(eonc::io::io_ok(frame.matter2con(framePath.string())));
+    frames.push_back(framePath);
+  }
+
+  const auto listPath = dir / "initial_path.txt";
+  {
+    std::ofstream list(listPath);
+    REQUIRE(list);
+    for (const auto &framePath : frames) {
+      list << framePath.string() << '\n';
+    }
+  }
+
+  auto shiftedReact = reactant->getPositions();
+  auto shiftedProd = product->getPositions();
+  shiftedReact(0, 0) += 1.25;
+  shiftedProd(0, 0) -= 0.75;
+  reactant->setPositions(shiftedReact);
+  product->setPositions(shiftedProd);
+
+  ParametersLoadAccess::neb_options(params).initialization.method =
+      NEBInit::FILE;
+  ParametersLoadAccess::neb_options(params).initialization.input_path =
+      listPath.string();
+
+  auto neb = makeNEB();
+  REQUIRE(neb->path[0]->getPositions().isApprox(reactant->getPositions(),
+                                                 1e-10));
+  REQUIRE(neb->path[nImages + 1]->getPositions().isApprox(
+      product->getPositions(), 1e-10));
+
+  Matter fileReact(*reactant);
+  REQUIRE(eonc::io::io_ok(fileReact.con2matter(frames.front().string())));
+  REQUIRE_FALSE(neb->path[0]->getPositions().isApprox(
+      fileReact.getPositions(), 1e-8));
+
+  Matter fileInterior(*reactant);
+  REQUIRE(eonc::io::io_ok(fileInterior.con2matter(frames[1].string())));
+  REQUIRE(neb->path[1]->getPositions().isApprox(fileInterior.getPositions(),
+                                                 1e-10));
 }
 
 // --- Linear interpolation tests ---

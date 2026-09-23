@@ -82,6 +82,10 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
                   eonc::helpers::neb_paths::readFilePaths(init_opt.input_path);
               path = eonc::helpers::neb_paths::filePathInit(
                   file_paths, *initialPassed, base_count);
+              // filePathInit reloads every frame, including ends the caller
+              // may already have minimized.
+              path.front() = Matter(*initialPassed);
+              path.back() = Matter(*finalPassed);
               break;
             }
             case NEBInit::IDPP:
