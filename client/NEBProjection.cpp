@@ -25,8 +25,8 @@ AtomMatrix NEB_Projection::project(const ImageForceData &d) const {
 
 AtomMatrix DNEB_Projection::project(const ImageForceData &d) const {
   AtomMatrix fPerp = eonc::neb::forcePerp(d.force, d.tangent);
-  AtomMatrix forceDNEB =
-      computeDNEBComponent(d.springResult.forceSpring, d.tangent, fPerp);
+  AtomMatrix forceDNEB = computeDNEBComponent(d.springResult.forceSpring,
+                                              d.tangent, fPerp, use_switching);
   return d.springResult.forceSpringPar + fPerp + forceDNEB;
 }
 
@@ -40,15 +40,15 @@ ProjectionStrategy buildProjectionStrategy(const Parameters &params) {
   }
   if (params.neb_options().spring.doubly_nudged && !omActive &&
       !weightedActive) {
-    return DNEB_Projection{};
+    return DNEB_Projection{params.neb_options().spring.use_switching};
   }
   return NEB_Projection{};
 }
 
 AtomMatrix computeDNEBComponent(const AtomMatrix &forceSpring,
                                 const AtomMatrix &tangent,
-                                const AtomMatrix &fPerp) {
-  return eonc::neb::computeDNEB(forceSpring, tangent, fPerp);
+                                const AtomMatrix &fPerp, bool useSwitching) {
+  return eonc::neb::computeDNEB(forceSpring, tangent, fPerp, useSwitching);
 }
 
 } // namespace eonc::neb

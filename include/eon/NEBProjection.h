@@ -41,8 +41,9 @@ struct NEB_Projection {
 
 /// Trygubenko & Wales, JCP 120:2082, 2004.
 /// Doubly-nudged elastic band: NEB projection + perpendicular spring
-/// correction.
+/// correction. use_switching is spring.doubly_nudged_switching.
 struct DNEB_Projection {
+  bool use_switching{false};
   AtomMatrix project(const ImageForceData &d) const;
 };
 
@@ -56,8 +57,11 @@ ProjectionStrategy buildProjectionStrategy(const Parameters &params);
 
 /// Compute the DNEB force component for a given image.
 /// Returned separately so it can be added to the CI force when DNEB is active.
+/// useSwitching applies the (2/pi)*atan scale. Otherwise the perpendicular
+/// spring remainder is unscaled.
 AtomMatrix computeDNEBComponent(const AtomMatrix &forceSpring,
                                 const AtomMatrix &tangent,
-                                const AtomMatrix &forcePerp);
+                                const AtomMatrix &forcePerp,
+                                bool useSwitching);
 
 } // namespace eonc::neb
