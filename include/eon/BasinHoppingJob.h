@@ -37,6 +37,7 @@ private:
   std::shared_ptr<Matter> current;
   std::shared_ptr<Matter> trial; // initial configuration
   std::vector<long> getElements(Matter *matter);
+  friend struct BasinHoppingElementsTest;
   std::vector<std::string> returnFiles;
   int jump_count{0}; // count of jump moves
   int disp_count{0}; // count of displacement moves
