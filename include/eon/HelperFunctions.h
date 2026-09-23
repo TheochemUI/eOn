@@ -43,6 +43,10 @@ bool existsFile(std::string filename); // does filename exist
 /// filesystem error, so the caller must not run the job or report the path
 /// as finished.
 std::optional<std::string> enterJobDirectory(std::string_view jobPath);
+/// Copy `name` from `logHome` into the current directory when that file is
+/// not already this directory's copy. True only when a regular file of
+/// that name is then present.
+bool stageReturnLog(std::string_view logHome, std::string_view name);
 std::string
 getRelevantFile(std::string filename); // return filename containing _checkpoint
                                        // or _passed if such a file exists

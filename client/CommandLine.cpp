@@ -99,10 +99,12 @@ void commandLine(int argc, char **argv) {
 
 #ifdef WITH_SERVE_MODE
   std::optional<std::string> serve_spec;
-  std::optional<std::string> serve_host("localhost");
-  std::optional<uint16_t> serve_port(12345);
-  std::optional<size_t> replicas(1);
-  std::optional<bool> gateway(false);
+  // Empty until the matching flag is passed. A value here makes has_value()
+  // true, so -p alone takes the serve path and never reads a structure file.
+  std::optional<std::string> serve_host;
+  std::optional<uint16_t> serve_port;
+  std::optional<size_t> replicas;
+  std::optional<bool> gateway;
 #endif
 
   auto params = Parameters{};
@@ -287,9 +289,11 @@ void commandLine(int argc, char **argv) {
     std::exit(EXIT_SUCCESS);
   }
 
-  // Handle -p with serve flags (single potential serve mode)
+  // Handle -p with serve flags (single potential serve mode).
+  // Defaults are applied below with value_or; has_value() is the flag.
   if (pflag && !sflag && !mflag && !cflag &&
-      (serve_port.has_value() || replicas.has_value() || gateway.has_value())) {
+      (serve_host.has_value() || serve_port.has_value() ||
+       replicas.has_value() || gateway.has_value())) {
     for (auto &ch : potential) {
       ch = std::tolower(static_cast<unsigned char>(ch));
     }

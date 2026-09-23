@@ -175,6 +175,8 @@ static int eonClientMain(int argc, char **argv) {
           "%(message)\n[end %(log_level)]"},
       quill::ClockSourceType::System);
   //--- End logging setup
+  // File sinks above open relative to this directory. MPI jobs chdir later.
+  const auto logHome = std::filesystem::current_path();
   eonc::Parameters parameters;
 
 #if defined WITH_ASE_ORCA || EMBED_PYTHON || WITH_ASE_NWCHEM
@@ -465,18 +467,6 @@ static int eonClientMain(int argc, char **argv) {
       rt.pots().write_summary();
       job.reset();
       filenames.push_back(std::string("_potcalls.json"));
-      filenames.push_back(std::string("client_quill.log"));
-      filenames.push_back(std::string("client_traceback.log"));
-
-      {
-        std::ofstream manifest("return_files.dat");
-        if (manifest) {
-          for (const auto &fn : filenames) {
-            manifest << fn << "\n";
-          }
-        }
-        filenames.push_back(std::string("return_files.dat"));
-      }
 
       // Finalize Timing Information
       auto end_time = std::chrono::steady_clock::now();
@@ -502,6 +492,32 @@ static int eonClientMain(int argc, char **argv) {
       } else {
         QUILL_LOG_ERROR(logger, "Failed to write timing to results.dat");
       }
+      result_file.close();
+
+      logger->flush_log();
+      if (auto *trace =
+              quill::Frontend::get_logger(std::string{"_traceback"})) {
+        trace->flush_log();
+      }
+      // Quill opens these before an MPI job chdir. Copy them into the job
+      // directory so return_files.dat does not name a missing log.
+      constexpr std::string_view jobLogs[] = {"client_quill.log",
+                                              "client_traceback.log"};
+      for (const std::string_view logName : jobLogs) {
+        if (eonc::helpers::stageReturnLog(logHome.string(), logName)) {
+          filenames.push_back(std::string{logName});
+        }
+      }
+
+      {
+        std::ofstream manifest("return_files.dat");
+        if (manifest) {
+          for (const auto &fn : filenames) {
+            manifest << fn << "\n";
+          }
+        }
+        filenames.push_back(std::string("return_files.dat"));
+      }
 
       if (bundlingEnabled) {
         eonc::bundle(i, filenames, &bundledFilenames);
@@ -519,7 +535,9 @@ static int eonClientMain(int argc, char **argv) {
       MPI_Request eon_rq;
       MPI_Isend(&path[0], 1024, MPI_CHAR, server_rank, 0, MPI_COMM_WORLD,
                 &eon_rq);
-      MPI_Request_free(&eon_rq);
+      // path is destroyed at the end of this iteration. Request_free does
+      // not complete the send, so the buffer stays live until Wait returns.
+      MPI_Wait(&eon_rq, MPI_STATUS_IGNORE);
     }
 
     // End of MPI while loop

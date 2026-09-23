@@ -86,6 +86,39 @@ eonc::helpers::enterJobDirectory(std::string_view jobPath) {
   return std::nullopt;
 }
 
+bool eonc::helpers::stageReturnLog(std::string_view logHome,
+                                   std::string_view name) {
+  namespace fs = std::filesystem;
+  if (name.empty() || name == "." || name == ".." ||
+      name.find('/') != std::string_view::npos ||
+      name.find('\\') != std::string_view::npos) {
+    return false;
+  }
+  const fs::path dest{std::string{name}};
+  std::error_code ec;
+  const bool destFile = fs::is_regular_file(dest, ec);
+  if (logHome.empty()) {
+    return destFile;
+  }
+  const fs::path src = fs::path{std::string{logHome}} / dest.filename();
+  ec.clear();
+  if (!fs::is_regular_file(src, ec)) {
+    return destFile;
+  }
+  ec.clear();
+  if (destFile && fs::equivalent(src, dest, ec)) {
+    return true;
+  }
+  ec.clear();
+  fs::copy_file(src, dest, fs::copy_options::overwrite_existing, ec);
+  if (ec) {
+    EONC_LOG_ERROR("stageReturnLog: cannot copy {} to {}: {}", src.string(),
+                   dest.string(), ec.message());
+    return fs::is_regular_file(dest);
+  }
+  return true;
+}
+
 std::string eonc::helpers::getRelevantFile(std::string filename) {
   const auto dot = filename.rfind('.');
   const std::string prefix =
