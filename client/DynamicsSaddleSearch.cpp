@@ -16,6 +16,7 @@
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/NudgedElasticBand.h"
 
+#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <limits>
@@ -275,7 +276,24 @@ int DynamicsSaddleSearch::run() {
             }
           }
         } else {
+          // No NEB iterations: the middle image of the initial band is the
+          // guess, and the dimer still needs an n-atom tangent. An empty
+          // mode replaces the dimer direction and then indexes every atom.
           neb.maxEnergyImage = neb.numImages / 2 + 1;
+          const int img = static_cast<int>(neb.maxEnergyImage);
+          const int last = static_cast<int>(neb.path.size()) - 1;
+          const int from = std::clamp(img, 0, last);
+          const int to = std::clamp(img + 1, 0, last);
+          mode = saddle->pbc(neb.path[to]->getPositions() -
+                             neb.path[from]->getPositions());
+          if (mode.norm() > 0.0) {
+            mode.normalize();
+          } else {
+            mode = AtomMatrix::Zero(saddle->numberOfAtoms(), 3);
+            if (mode.rows() > 0) {
+              mode(0, 0) = 1.0;
+            }
+          }
         }
 
         QUILL_LOG_DEBUG(
