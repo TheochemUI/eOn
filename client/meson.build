@@ -1603,6 +1603,23 @@ if get_option('with_tests')
             depends: _case_depends,
         )
     endforeach
+    # potential_base.cpp is enough for computePt. The rest of the water
+    # library is not part of the default build.
+    test(
+        'test_compute_pt',
+        executable(
+            'test_compute_pt',
+            sources: [
+                'unit_tests/ComputePtTest.cpp',
+                'potentials/Water/potential_base.cpp',
+                'thirdparty/catch2/catch_amalgamated.cpp',
+            ],
+            include_directories: _incdirs,
+            cpp_args: test_args,
+        ),
+        timeout: 30,
+        env: _test_env,
+    )
     if get_option('with_xtb')
         # Timing harness for linked ship vs rgpot dlopen (not a Catch suite).
         executable(
