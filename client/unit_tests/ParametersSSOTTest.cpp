@@ -3,9 +3,11 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Parameters.h"
 
+#include <cstdio>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <string>
 #include <utility>
 
 namespace tests {
@@ -80,5 +82,50 @@ TEST_CASE("Parameters load-state Impl records a missing file",
   Parameters moved = std::move(p);
   REQUIRE(moved.last_load_source() == "no-such-eon-config.ini");
   REQUIRE(p.last_load_source().empty());
+}
+
+TEST_CASE("Parameters::load rejects INI parse errors", "[params][ini]") {
+  Parameters memory;
+  const std::string missing_equals =
+      "[Main]\ntemperature 450\njob = minimization\n";
+  REQUIRE(memory.load_ini_text(missing_equals) != 0);
+  REQUIRE(memory.last_load_source() == "<ini>");
+  REQUIRE(memory.last_load_error() != 0);
+  REQUIRE(memory.main_options().job == JobType::Process_Search);
+  REQUIRE(memory.main_options().temperature == Catch::Approx(300.0));
+
+  namespace fs = std::filesystem;
+  const auto dir = fs::temp_directory_path() /
+                   ("eon_ini_parse_" + std::to_string(std::rand()));
+  fs::create_directories(dir);
+  const auto path = dir / "config.ini";
+  {
+    std::ofstream out(path);
+    out << "[Main]\njob minimization\n";
+  }
+  Parameters from_path;
+  REQUIRE(from_path.load(path.string()) != 0);
+  REQUIRE(from_path.last_load_error() != 0);
+  REQUIRE(from_path.main_options().job == JobType::Process_Search);
+
+  {
+    std::ofstream out(path);
+    // Longer than INI_MAX_LINE (65536).
+    out << "[Main]\ntemperature = 450" << std::string(70000, '0') << '\n';
+  }
+  Parameters overlong;
+  REQUIRE(overlong.load(path.string()) != 0);
+  REQUIRE(overlong.last_load_error() != 0);
+  REQUIRE(overlong.main_options().temperature == Catch::Approx(300.0));
+
+  FILE *handle = std::fopen(path.string().c_str(), "rb");
+  REQUIRE(handle != nullptr);
+  Parameters from_file;
+  REQUIRE(from_file.load(handle) != 0);
+  REQUIRE(from_file.last_load_source() == "<FILE*>");
+  REQUIRE(from_file.last_load_error() != 0);
+  REQUIRE(from_file.main_options().temperature == Catch::Approx(300.0));
+  std::fclose(handle);
+  fs::remove_all(dir);
 }
 } // namespace tests
