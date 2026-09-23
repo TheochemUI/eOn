@@ -46,8 +46,11 @@ public:
   using artn_destroy_fn = void (*)();
   using set_param_fn = int (*)(const char *const name, const int crank,
                                const int *csize, const void *cval);
-  using get_param_fn = int (*)(const char *name, void *cval);
-  using get_runparam_fn = int (*)(const char *name, void *cval);
+  /// pARTn bind(C) get_param / get_runparam: type(c_ptr), intent(out).
+  /// That is void** in C. The artn.h comment says void*. A void* out
+  /// parameter writes the allocated pointer at the wrong address.
+  using get_param_fn = int (*)(const char *name, void **cval);
+  using get_runparam_fn = int (*)(const char *name, void **cval);
   using get_data_fn = int (*)(const char *name, void **cval);
   using print_caller_fn = void (*)();
   using artn_step_fn = void (*)(const int nat, const double etot,
