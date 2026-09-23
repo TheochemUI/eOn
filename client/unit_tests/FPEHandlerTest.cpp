@@ -52,6 +52,56 @@ TEST_CASE("enableFPE then divide-by-zero continues once (no re-trap storm)",
 #endif
 }
 
+// #DE points at the DIV. Masking MXCSR and returning re-executes it.
+// The handler must step past that instruction. C++ integer division by
+// zero is undefined and a compiler may delete it, so the fault is a
+// real IDIV.
+TEST_CASE("enableFPE integer divide does not restart the faulting instruction",
+          "[fpe]") {
+#if defined(_WIN32) || !(defined(__x86_64__) || defined(__i386__))
+  SKIP("integer divide continue is x86 only");
+#else
+  eonc::enableFPE();
+  int num = 1;
+  int den = 0;
+  int quot = -1;
+  asm volatile("movl %[n], %%eax\n\t"
+               "xorl %%edx, %%edx\n\t"
+               "idivl %[d]\n\t"
+               "movl %%eax, %[q]\n\t"
+               : [q] "=m"(quot)
+               : [n] "m"(num), [d] "m"(den)
+               : "eax", "edx", "cc", "memory");
+  REQUIRE(quot == 0);
+  int again = -1;
+  asm volatile("movl %[n], %%eax\n\t"
+               "xorl %%edx, %%edx\n\t"
+               "idivl %[d]\n\t"
+               "movl %%eax, %[q]\n\t"
+               : [q] "=m"(again)
+               : [n] "m"(num), [d] "m"(den)
+               : "eax", "edx", "cc", "memory");
+  REQUIRE(again == 0);
+  int marker = 5;
+  REQUIRE(marker == 5);
+  // Overflow form of #DE: the quotient does not fit in the destination.
+  int lo = std::numeric_limits<int>::min();
+  int minus = -1;
+  int ovf = -1;
+  asm volatile("movl %[n], %%eax\n\t"
+               "movl %[d], %%ecx\n\t"
+               "cdq\n\t"
+               "idivl %%ecx\n\t"
+               "movl %%eax, %[q]\n\t"
+               : [q] "=m"(ovf)
+               : [n] "m"(lo), [d] "m"(minus)
+               : "eax", "ecx", "edx", "cc", "memory");
+  REQUIRE(ovf == 0);
+  eonc::disableFPE();
+  feclearexcept(FE_ALL_EXCEPT);
+#endif
+}
+
 TEST_CASE("safe_div returns fallback on zero denom without trapping",
           "[fpe][safemath]") {
   eonc::enableFPE();
