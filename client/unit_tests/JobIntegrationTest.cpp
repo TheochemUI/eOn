@@ -24,12 +24,14 @@
 #include "eon/Parameters.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
+#include "eon/fpe_handler.h"
 #ifdef WITH_ARTN
 #include "eon/ARTnSaddleSearch.h"
 #include "eon/libs/ARTn/ARTnResource.h"
 #endif
 
 #include <array>
+#include <cfenv>
 #include <cmath>
 #include <cstdlib>
 #include <filesystem>
@@ -786,6 +788,31 @@ max_iterations = 200
   // 50% acceptance ratio
   double ar = std::stod(results["acceptance_ratio"]);
   REQUIRE(ar == Catch::Approx(0.500).margin(0.05));
+}
+
+TEST_CASE("basin hopping Metropolis rejects uphill hops at non-positive "
+          "temperature",
+          "[job][basin_hopping]") {
+  const double kB = 8.6173324e-5;
+  const double de = 0.05;
+  const double temperature = 300.0;
+  using Job = eonc::BasinHoppingJob;
+  REQUIRE(Job::metropolisProbability(-1.0, kB, 0.0) == 1.0);
+  REQUIRE(Job::metropolisProbability(0.0, kB, 0.0) == 1.0);
+  REQUIRE(Job::metropolisProbability(1.0, kB, 0.0) == 0.0);
+  REQUIRE(Job::metropolisProbability(1.0, kB, -25.0) == 0.0);
+  REQUIRE(Job::metropolisProbability(1.0, 0.0, 300.0) == 0.0);
+  REQUIRE(Job::metropolisProbability(de, kB, temperature) ==
+          Catch::Approx(std::exp(-de / (kB * temperature))));
+
+#if !defined(_WIN32) && !(defined(__APPLE__) && defined(__aarch64__))
+  eonc::enableFPE();
+  REQUIRE(Job::metropolisProbability(1.0, kB, 0.0) == 0.0);
+  REQUIRE(Job::metropolisProbability(-2.0, kB, 0.0) == 1.0);
+  REQUIRE(Job::metropolisProbability(1.0, kB, -10.0) == 0.0);
+  eonc::disableFPE();
+  feclearexcept(FE_ALL_EXCEPT);
+#endif
 }
 
 TEST_CASE("BasinHoppingJob getElements keeps atomic number 118",

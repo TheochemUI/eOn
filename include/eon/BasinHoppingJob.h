@@ -22,11 +22,14 @@ public:
   BasinHoppingJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
       : Job(std::move(parameters), rt),
         current{std::make_shared<Matter>(pot, params)},
-        trial{std::make_shared<Matter>(pot, params)},
-        fcalls{0} {}
+        trial{std::make_shared<Matter>(pot, params)}, fcalls{0} {}
   ~BasinHoppingJob(void) = default;
 
   std::vector<std::string> run(void) override;
+  /// Metropolis weight for energy change `de`.
+  /// Divides by `kB * temperature` only for an uphill hop when both are
+  /// positive. Non-positive temperature or `kB` refuses that hop.
+  static double metropolisProbability(double de, double kB, double temperature);
 
 private:
   VectorXd calculateDistanceFromCenter(Matter *matter);
