@@ -58,13 +58,15 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
   Dynamics dynamics(trajectory.get(), params);
   BondBoost bondBoost(trajectory.get(), params);
 
+  BondBoost *bias = nullptr;
   if (params.hyperdynamics_options().bias_potential ==
       Hyperdynamics::BOND_BOOST) {
     bondBoost.initialize();
     trajectory->setBiasPotential(&bondBoost);
+    bias = &bondBoost;
   }
 
-  dephase(*trajectory);
+  dephase(*trajectory, bias);
 
   int stateCheckInterval = static_cast<int>(
       std::floor(params.parallel_replica_options().state_check_interval /
@@ -281,8 +283,10 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
   return trajectory;
 }
 
-void ParallelReplicaJob::dephase(Matter &trajectory) {
+void ParallelReplicaJob::dephase(Matter &trajectory, BondBoost *bias) {
   Dynamics dynamics(&trajectory, params);
+  // Copy assignment clears biasPotential. The boost object still names this
+  // Matter, so the pointer has to be restored before oneStep.
 
   const double dt = params.dynamics_options().time_step;
   if (!(dt > 0.0)) {
@@ -303,6 +307,7 @@ void ParallelReplicaJob::dephase(Matter &trajectory) {
 
   for (long loop = 0; loop < maxLoops; ++loop) {
     trajectory = initial;
+    trajectory.setBiasPotential(bias);
     dynamics.setThermalVelocity();
 
     for (int step = 1; step <= dephaseSteps; step++) {
