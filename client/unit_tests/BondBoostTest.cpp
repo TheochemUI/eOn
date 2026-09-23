@@ -112,6 +112,70 @@ TEST_CASE("BondBoost listed index out of range throws", "[bondboost][list]") {
   REQUIRE_THROWS_AS(bb.initialize(), std::out_of_range);
 }
 
+static void requireBiasTracksStretch(Matter &matter, BondBoost &bb) {
+  const double atEq = bb.boost();
+  REQUIRE(std::isfinite(atEq));
+  // Every selected bond is at the sampled length, so the bias is dvmax
+  // and the bond gradient is zero.
+  REQUIRE(atEq == Catch::Approx(1.0).margin(1e-8));
+  REQUIRE(matter.getBiasForces().squaredNorm() ==
+          Catch::Approx(0.0).margin(1e-8));
+
+  matter.setPosition(0, 0, matter.getPosition(0, 0) + 0.05);
+  const double nudged = bb.boost();
+  REQUIRE(std::isfinite(nudged));
+  REQUIRE(nudged > 0.0);
+  REQUIRE(nudged < atEq);
+  REQUIRE(matter.getBiasForces().squaredNorm() > 0.0);
+
+  matter.setPosition(0, 0, matter.getPosition(0, 0) + 10.0);
+  const double stretched = bb.boost();
+  REQUIRE(std::isfinite(stretched));
+  REQUIRE(stretched == Catch::Approx(0.0).margin(1e-8));
+}
+
+static Parameters zeroSampleParams() {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
+  ParametersLoadAccess::hyperdynamics_options(params).rmd_time = 0.0;
+  ParametersLoadAccess::hyperdynamics_options(params).dvmax = 1.0;
+  ParametersLoadAccess::hyperdynamics_options(params).qrr = 0.2;
+  ParametersLoadAccess::hyperdynamics_options(params).prr = 0.95;
+  ParametersLoadAccess::hyperdynamics_options(params).qcut = 3.0;
+  ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "All";
+  return params;
+}
+
+TEST_CASE("BondBoost with no equilibration samples uses the current lengths",
+          "[bondboost][rmd]") {
+  // SafeHyper and ParallelReplica call advance() once per step, then boost().
+  {
+    const Parameters params = zeroSampleParams();
+    auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+    Matter matter(pot, params);
+    matter.con2matter(std::string("reactant.con"));
+    BondBoost bb(&matter, params);
+    bb.initialize();
+    REQUIRE(bb.scheduleStep() == 1);
+    bb.advance();
+    REQUIRE(bb.scheduleStep() == 2);
+    requireBiasTracksStretch(matter, bb);
+    REQUIRE(bb.scheduleStep() == 2);
+  }
+  // A caller that never advance()s still has to measure before BondSelect.
+  {
+    const Parameters params = zeroSampleParams();
+    auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+    Matter matter(pot, params);
+    matter.con2matter(std::string("reactant.con"));
+    BondBoost bb(&matter, params);
+    bb.initialize();
+    requireBiasTracksStretch(matter, bb);
+    REQUIRE(bb.scheduleStep() == 1);
+  }
+}
+
 TEST_CASE("BondBoost bias force is the minimum-image bond gradient",
           "[bondboost][pbc]") {
   Parameters params;
