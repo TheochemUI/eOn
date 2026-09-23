@@ -38,6 +38,11 @@ bool relaxMatter(Matter &matter, const Parameters &params, bool quiet = false,
                  std::vector<readcon::ConFrame> *outFrames = nullptr);
 void getTime(double *real, double *user, double *sys);
 bool existsFile(std::string filename); // does filename exist
+/// Enter jobPath as the working directory. Returns nullopt on success. On
+/// failure the working directory is unchanged and the string is the
+/// filesystem error, so the caller must not run the job or report the path
+/// as finished.
+std::optional<std::string> enterJobDirectory(std::string_view jobPath);
 /// Copy `name` from `logHome` into the current directory when that file is
 /// not already this directory's copy. True only when a regular file of
 /// that name is then present.
