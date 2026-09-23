@@ -240,15 +240,17 @@ std::vector<std::string> BasinHoppingJob::run() {
         jump_count++;
         jump = displaceRandom(curDisplacement);
         current->setPositions(current->getPositions() + jump);
+        // Only a minimized jump is a basin. The raw geometry must not become
+        // the Metropolis reference or the stored global minimum.
         if (params.basin_hopping_options().significant_structure) {
           eonc::geometry::pushApart(
               current, params.basin_hopping_options().push_apart_distance);
           current->relax(true);
-        }
-        currentEnergy = current->getPotentialEnergy();
-        if (currentEnergy < minimumEnergy) {
-          minimumEnergy = currentEnergy;
-          *minimumEnergyStructure = *current;
+          currentEnergy = current->getPotentialEnergy();
+          if (currentEnergy < minimumEnergy) {
+            minimumEnergy = currentEnergy;
+            *minimumEnergyStructure = *current;
+          }
         }
       }
     }

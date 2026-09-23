@@ -1,0 +1,1 @@
+Basin hopping keeps the minimized energy as the Metropolis reference when a jump does not relax. With significant_structure off, the raw jump energy is no longer stored and that geometry is not saved as the global minimum.
