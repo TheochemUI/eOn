@@ -35,6 +35,8 @@ std::vector<std::string> BasinHoppingJob::run() {
   jump_count = 0; // count of jump movies
   swap_count = 0; // count of swap moves
   disp_count = 0; // count of displacement moves
+  // Quench tail may not run when stop_energy breaks first.
+  int quench_displacements = 0;
   int consecutive_rejected_trials = 0;
   double totalAccept = 0.0;
   std::unique_ptr<Matter> minTrial = std::make_unique<Matter>(pot, params);
@@ -117,6 +119,9 @@ std::vector<std::string> BasinHoppingJob::run() {
     } else {
       AtomMatrix displacement;
       displacement = displaceRandom(curDisplacement);
+      if (step >= params.basin_hopping_options().steps) {
+        quench_displacements++;
+      }
 
       trial->setPositions(current->getPositions() + displacement);
       swapMove = false;
@@ -296,8 +301,7 @@ std::vector<std::string> BasinHoppingJob::run() {
     }
     env.extras.emplace_back(
         "total_normal_displacement_steps",
-        static_cast<double>(disp_count - jump_count -
-                            params.basin_hopping_options().quenching_steps));
+        static_cast<double>(disp_count - jump_count - quench_displacements));
     env.extras.emplace_back("total_jump_steps",
                             static_cast<double>(jump_count));
     env.extras.emplace_back("total_swap_steps",

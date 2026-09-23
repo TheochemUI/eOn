@@ -1,0 +1,1 @@
+Basin hopping `total_normal_displacement_steps` subtracts only quench displacements that ran. A `stop_energy` break no longer counts configured `quenching_steps` that never executed, which could make that total negative.
