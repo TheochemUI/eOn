@@ -941,6 +941,44 @@ max_iterations = 200
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture,
+                 "BasinHoppingJob adjust_period zero finishes",
+                 "[job][basin_hopping][integration]") {
+  EON_REQUIRE_TEST_DATA(".");
+  writeConfig(R"(
+[Main]
+job = basin_hopping
+random_seed = 42
+
+[Potential]
+potential = lj
+
+[Basin Hopping]
+steps = 20
+temperature = 300.0
+displacement = 0.5
+push_apart_distance = 0.4
+adjust_displacement = true
+adjust_period = 0
+
+[Optimizer]
+opt_method = lbfgs
+converged_force = 0.001
+max_iterations = 200
+)");
+
+  std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+
+  auto results = runJob();
+
+  REQUIRE(results.count("termination_reason") > 0);
+  REQUIRE(std::isfinite(std::stod(results["minimum_energy"])));
+  double ar = std::stod(results["acceptance_ratio"]);
+  REQUIRE(ar >= 0.0);
+  REQUIRE(ar <= 1.0);
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
                  "DynamicsJob runs and produces final.con",
                  "[job][dynamics][integration]") {
   EON_REQUIRE_TEST_DATA(".");

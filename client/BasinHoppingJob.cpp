@@ -262,7 +262,8 @@ std::vector<std::string> BasinHoppingJob::run() {
 
     int nadjust = params.basin_hopping_options().adjust_period;
     double adjustFraction = params.basin_hopping_options().adjust_fraction;
-    if ((step + 1) % nadjust == 0 &&
+    // A zero period is not an interval; the modulo would divide by zero.
+    if (nadjust != 0 && (step + 1) % nadjust == 0 &&
         params.basin_hopping_options().adjust_displacement) {
       double recentRatio =
           static_cast<double>(recentAccept) / static_cast<double>(nadjust);
