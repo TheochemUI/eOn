@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/ConFileIO.h"
+#include "ReadconDbMirror.h"
 #include "eon/Eigen.h"
 #include "eon/EonLogger.h"
 #include "eon/HelperFunctions.h"
@@ -596,6 +597,9 @@ IoStatus matter2con(Matter &m, std::string filename, bool append,
                                   : write_frames(path, frames, kConPrecision);
   if (io_ok(status)) {
     remember_stamp(key, path);
+    if (!concatenate) {
+      mirror_con_corpus(path.string());
+    }
   } else {
     append_stamps().erase(key);
   }
@@ -606,7 +610,11 @@ IoStatus con2matter(Matter &m, std::string filename) {
   filename = ensure_extension(std::move(filename), ".con");
   try {
     auto frame = readcon::read_first_frame(filename);
-    return con2matter(m, frame, nullptr);
+    const IoStatus status = con2matter(m, frame, nullptr);
+    if (io_ok(status)) {
+      mirror_con_corpus(filename);
+    }
+    return status;
   } catch (const std::exception &e) {
     EONC_LOG_ERROR("Failed to read {}: {}", filename, e.what());
     return IoStatus::ReadError;
@@ -758,7 +766,11 @@ IoStatus matter2convel(Matter &m, std::string filename) {
     auto frame = frame_from_matter(m, nullptr, /*with_velocities=*/true);
     std::vector<readcon::ConFrame> frames;
     frames.push_back(std::move(frame));
-    return write_frames(filename, frames, kConvelPrecision);
+    const IoStatus status = write_frames(filename, frames, kConvelPrecision);
+    if (io_ok(status)) {
+      mirror_con_corpus(filename);
+    }
+    return status;
   } catch (const std::exception &e) {
     EONC_LOG_ERROR("Failed to write convel {}: {}", filename, e.what());
     return IoStatus::WriteError;
@@ -769,7 +781,11 @@ IoStatus convel2matter(Matter &m, std::string filename) {
   filename = ensure_extension(std::move(filename), ".convel");
   try {
     auto frame = readcon::read_first_frame(filename);
-    return con2matter(m, frame, nullptr);
+    const IoStatus status = con2matter(m, frame, nullptr);
+    if (io_ok(status)) {
+      mirror_con_corpus(filename);
+    }
+    return status;
   } catch (const std::exception &e) {
     EONC_LOG_ERROR("Failed to read convel {}: {}", filename, e.what());
     return IoStatus::ReadError;
@@ -807,6 +823,12 @@ IoStatus matter2xyz(Matter &m, std::string filename, bool append) {
   if (!out) {
     EONC_LOG_ERROR("matter2xyz: cannot open {}", filename);
     return IoStatus::OpenError;
+  }
+
+  // A frame header must start its own line. eOn's own frames end in a
+  // newline; a hand-written or foreign tail may not.
+  if (append && !ends_with_newline(filename)) {
+    out.put('\n');
   }
 
   const Matrix3d cell = m.getCell();
@@ -936,6 +958,7 @@ IoStatus writeConFrames(std::string filename,
   const auto status = write_frames(path, frames, kConPrecision);
   if (io_ok(status)) {
     remember_stamp(key, path);
+    mirror_con_corpus(path.string());
   } else {
     append_stamps().erase(key);
   }

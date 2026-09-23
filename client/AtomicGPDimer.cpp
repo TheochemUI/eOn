@@ -53,10 +53,21 @@ AtomicGPDimer::AtomicGPDimer(std::shared_ptr<Matter> matter,
   matterCenter = std::make_shared<Matter>(pot, params);
   *matterCenter = *matter;
   p = eonc::helpers::eon_parameters_to_gpr(params);
-  const Matrix3d cell = matter->getCell();
+  // XTBPot treats a non-zero box as periodic. Matter::computePotential sends
+  // a zero box when periodic boundaries are off; the GP force box must match.
+  const Matrix3d cell =
+      matter->getPeriodic() ? matter->getCell() : Matrix3d::Zero();
   for (int i = 0; i < 9; i++) {
     p.cell_dimensions.value[i] = cell.data()[i];
   }
+}
+
+Matrix3d AtomicGPDimer::forceBox() const {
+  Matrix3d box = Matrix3d::Zero();
+  for (int i = 0; i < 9; ++i) {
+    box.data()[i] = p.cell_dimensions.value[i];
+  }
+  return box;
 }
 
 void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
@@ -89,10 +100,12 @@ void AtomicGPDimer::compute(std::shared_ptr<Matter> matter,
                    double *U, double *variance, const double *box) {
         potential->force(N, R, atomicNrs, F, U, variance, box);
       });
-  eonc::FPEHandler fpeh;
-  fpeh.eat_fpe();
-  atomic_dimer.execute(wrapper);
-  fpeh.restore_fpe();
+  // Restore traps if execute throws. The saddle-search catch must not
+  // leave later force calls running with traps still masked.
+  {
+    eonc::FPEGuard fpe;
+    atomic_dimer.execute(wrapper);
+  }
   // Forcefully set the right positions
   matter->setPositionsFreeV(atomic_dimer.getFinalCoordOfMidPoint());
   this->totalIterations = atomic_dimer.getIterations();

@@ -11,6 +11,11 @@
 */
 
 #include "eon/Dimer.h"
+#ifdef WITH_GPRD
+// Before TestUtils.hpp: that header does `using namespace eonc`, and the
+// GP headers call ::log. After the using-directive, log is also eonc::log.
+#include "eon/AtomicGPDimer.h"
+#endif
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Davidson.h"
@@ -23,12 +28,11 @@
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/MobileAtoms.h"
 #include "eon/Parameters.h"
-#ifdef WITH_GPRD
-#include "eon/AtomicGPDimer.h"
-#endif
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
+#include <stdexcept>
 
 namespace tests {
 
@@ -218,6 +222,19 @@ TEST_CASE_METHOD(DimerFixture, "gprdimer constructs AtomicGPDimer in place",
   auto strategy = eonc::buildEigenmodeStrategy(matter, params, pot);
   REQUIRE(strategy != nullptr);
   REQUIRE(dynamic_cast<AtomicGPDimer *>(strategy.get()) != nullptr);
+}
+
+TEST_CASE_METHOD(DimerFixture, "gprdimer force box follows Matter periodicity",
+                 "[eigenmode][strategy][gprdimer]") {
+  const Matrix3d cell = Matrix3d::Identity() * 18.0;
+  matter->setCell(cell);
+  matter->setPeriodic(false);
+  AtomicGPDimer isolated(matter, params, pot);
+  REQUIRE(isolated.forceBox().cwiseAbs().maxCoeff() == 0.0);
+
+  matter->setPeriodic(true);
+  AtomicGPDimer periodic(matter, params, pot);
+  REQUIRE(periodic.forceBox().isApprox(cell, 1e-15));
 }
 #endif
 
@@ -693,6 +710,91 @@ TEST_CASE_METHOD(DimerFixture, "Lanczos All equals explicit free list",
   }
   REQUIRE(std::fabs(dot) / (std::sqrt(na * nb) + 1e-30) ==
           Catch::Approx(1.0).margin(1e-5));
+}
+
+namespace {
+
+// Batch pot so classic Dimer takes forceBatch rather than getForces.
+struct BatchForcePot final : Potential {
+  bool nonfinite{false};
+
+  explicit BatchForcePot(bool nonfiniteIn)
+      : Potential(PotType::LJ),
+        nonfinite(nonfiniteIn) {}
+
+  void force(long nAtoms, const double * /*positions*/,
+             const int * /*atomicNrs*/, double *forces, double *energy,
+             double *variance, const double * /*box*/) override {
+    *energy = 0.0;
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+    for (long i = 0; i < nAtoms * 3; ++i) {
+      forces[i] = 0.0;
+    }
+  }
+
+  [[nodiscard]] bool supportsBatchEvaluation() const noexcept override {
+    return true;
+  }
+
+  void forceBatch(long nSystems, long nAtoms,
+                  const double *const * /*positions*/,
+                  const int *const * /*atomicNrs*/, double *const *forces,
+                  double *energies, double *variances,
+                  const double *const * /*boxes*/) override {
+    const double value =
+        nonfinite ? std::numeric_limits<double>::quiet_NaN() : 0.0;
+    for (long s = 0; s < nSystems; ++s) {
+      energies[s] = value;
+      if (variances != nullptr) {
+        variances[s] = 0.0;
+      }
+      for (long i = 0; i < nAtoms * 3; ++i) {
+        forces[s][i] = value;
+      }
+    }
+  }
+};
+
+} // namespace
+
+TEST_CASE_METHOD(DimerFixture, "Classic dimer accepts finite batch forces",
+                 "[dimer][eigenmode][batch]") {
+  ParametersLoadAccess::dimer_options(params).improved = false;
+  auto batch = std::make_shared<BatchForcePot>(false);
+  Dimer dimer(matter, params, batch);
+  REQUIRE_NOTHROW(dimer.compute(matter, mode));
+  REQUIRE(std::isfinite(dimer.getEigenvalue()));
+  REQUIRE(dimer.getEigenvalue() == Catch::Approx(0.0).margin(1e-12));
+}
+
+TEST_CASE_METHOD(DimerFixture,
+                 "Classic dimer rotation rejects non-finite batch forces",
+                 "[dimer][eigenmode][batch]") {
+  ParametersLoadAccess::dimer_options(params).improved = false;
+  auto batch = std::make_shared<BatchForcePot>(true);
+  Dimer dimer(matter, params, batch);
+  // Both images are dirty, so this is the two-system forceBatch path.
+  REQUIRE_THROWS_AS(dimer.compute(matter, mode), std::runtime_error);
+  REQUIRE_THROWS_WITH(
+      Dimer(matter, params, batch).compute(matter, mode),
+      Catch::Matchers::ContainsSubstring("non-finite batch forces"));
+}
+
+TEST_CASE_METHOD(
+    DimerFixture,
+    "Classic dimer rotation rejects a non-finite single-image batch",
+    "[dimer][eigenmode][batch]") {
+  ParametersLoadAccess::dimer_options(params).improved = false;
+  // Mark the center clean so only the displaced image is evaluated.
+  REQUIRE_NOTHROW(matter->getForces());
+  REQUIRE_FALSE(matter->needsForceUpdate());
+  auto batch = std::make_shared<BatchForcePot>(true);
+  Dimer dimer(matter, params, batch);
+  REQUIRE_THROWS_WITH(
+      dimer.compute(matter, mode),
+      Catch::Matchers::ContainsSubstring("non-finite batch forces"));
 }
 
 } /* namespace tests */

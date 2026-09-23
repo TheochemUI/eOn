@@ -668,7 +668,9 @@ void PotentialBase::computePt(int const nAtoms, double positions[],
                            // some functions to work.
   for (int i = nAtoms - 1; i > 0; --i) {
     for (int j = i - 1; j >= 0; --j) {
-      if (not fixed[i] and not fixed[j]) {
+      // A fixed neighbor still exerts a force on a movable atom. Skip only
+      // a pair in which both atoms are fixed.
+      if (not fixed[i] or not fixed[j]) {
         lennardJonesWithCutoff(r[i], r[j], f[i], f[j], energy, EPSILON_PT,
                                SIGMA_PT);
       };
