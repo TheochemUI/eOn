@@ -31,6 +31,8 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
+#include <stdexcept>
 
 namespace tests {
 
@@ -90,6 +92,39 @@ TEST_CASE_METHOD(DimerFixture,
   double eigenvalue = dimer->getEigenvalue();
   REQUIRE(std::isfinite(eigenvalue));
   REQUIRE(eigenvalue < 0.0);
+}
+
+TEST_CASE_METHOD(DimerFixture,
+                 "Classic Dimer keeps the accepted orientation at convergence",
+                 "[dimer][eigenmode]") {
+  ParametersLoadAccess::dimer_options(params).improved = false;
+  ParametersLoadAccess::dimer_options(params).remove_rotation = false;
+  // torque_min above any rotational force accepts on the first check,
+  // before a finite-difference probe can move the mode.
+  ParametersLoadAccess::dimer_options(params).torque_min = 1.0e9;
+
+  auto dimer = std::make_unique<Dimer>(matter, params, pot);
+  dimer->compute(matter, mode);
+
+  const AtomMatrix got = dimer->getEigenvector();
+  AtomMatrix expected = mode;
+  for (long i = 0; i < matter->numberOfAtoms(); ++i) {
+    if (matter->getFixed(i)) {
+      expected.row(i).setZero();
+    }
+  }
+  const double gotNorm = got.norm();
+  const double expectedNorm = expected.norm();
+  REQUIRE(std::isfinite(dimer->getEigenvalue()));
+  REQUIRE(gotNorm > 0.0);
+  REQUIRE(expectedNorm > 0.0);
+  const double cosang = std::clamp((got.array() * expected.array()).sum() /
+                                       (gotNorm * expectedNorm),
+                                   -1.0, 1.0);
+  // rotation_angle is the probe that used to survive convergence. The
+  // accepted seed must sit well inside that angle.
+  const double probe = params.dimer_options().rotation_angle;
+  REQUIRE(std::acos(cosang) < probe * 0.01);
 }
 
 // --- ImprovedDimer tests ---
@@ -708,6 +743,91 @@ TEST_CASE_METHOD(DimerFixture, "Lanczos All equals explicit free list",
   }
   REQUIRE(std::fabs(dot) / (std::sqrt(na * nb) + 1e-30) ==
           Catch::Approx(1.0).margin(1e-5));
+}
+
+namespace {
+
+// Batch pot so classic Dimer takes forceBatch rather than getForces.
+struct BatchForcePot final : Potential {
+  bool nonfinite{false};
+
+  explicit BatchForcePot(bool nonfiniteIn)
+      : Potential(PotType::LJ),
+        nonfinite(nonfiniteIn) {}
+
+  void force(long nAtoms, const double * /*positions*/,
+             const int * /*atomicNrs*/, double *forces, double *energy,
+             double *variance, const double * /*box*/) override {
+    *energy = 0.0;
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+    for (long i = 0; i < nAtoms * 3; ++i) {
+      forces[i] = 0.0;
+    }
+  }
+
+  [[nodiscard]] bool supportsBatchEvaluation() const noexcept override {
+    return true;
+  }
+
+  void forceBatch(long nSystems, long nAtoms,
+                  const double *const * /*positions*/,
+                  const int *const * /*atomicNrs*/, double *const *forces,
+                  double *energies, double *variances,
+                  const double *const * /*boxes*/) override {
+    const double value =
+        nonfinite ? std::numeric_limits<double>::quiet_NaN() : 0.0;
+    for (long s = 0; s < nSystems; ++s) {
+      energies[s] = value;
+      if (variances != nullptr) {
+        variances[s] = 0.0;
+      }
+      for (long i = 0; i < nAtoms * 3; ++i) {
+        forces[s][i] = value;
+      }
+    }
+  }
+};
+
+} // namespace
+
+TEST_CASE_METHOD(DimerFixture, "Classic dimer accepts finite batch forces",
+                 "[dimer][eigenmode][batch]") {
+  ParametersLoadAccess::dimer_options(params).improved = false;
+  auto batch = std::make_shared<BatchForcePot>(false);
+  Dimer dimer(matter, params, batch);
+  REQUIRE_NOTHROW(dimer.compute(matter, mode));
+  REQUIRE(std::isfinite(dimer.getEigenvalue()));
+  REQUIRE(dimer.getEigenvalue() == Catch::Approx(0.0).margin(1e-12));
+}
+
+TEST_CASE_METHOD(DimerFixture,
+                 "Classic dimer rotation rejects non-finite batch forces",
+                 "[dimer][eigenmode][batch]") {
+  ParametersLoadAccess::dimer_options(params).improved = false;
+  auto batch = std::make_shared<BatchForcePot>(true);
+  Dimer dimer(matter, params, batch);
+  // Both images are dirty, so this is the two-system forceBatch path.
+  REQUIRE_THROWS_AS(dimer.compute(matter, mode), std::runtime_error);
+  REQUIRE_THROWS_WITH(
+      Dimer(matter, params, batch).compute(matter, mode),
+      Catch::Matchers::ContainsSubstring("non-finite batch forces"));
+}
+
+TEST_CASE_METHOD(
+    DimerFixture,
+    "Classic dimer rotation rejects a non-finite single-image batch",
+    "[dimer][eigenmode][batch]") {
+  ParametersLoadAccess::dimer_options(params).improved = false;
+  // Mark the center clean so only the displaced image is evaluated.
+  REQUIRE_NOTHROW(matter->getForces());
+  REQUIRE_FALSE(matter->needsForceUpdate());
+  auto batch = std::make_shared<BatchForcePot>(true);
+  Dimer dimer(matter, params, batch);
+  REQUIRE_THROWS_WITH(
+      dimer.compute(matter, mode),
+      Catch::Matchers::ContainsSubstring("non-finite batch forces"));
 }
 
 } /* namespace tests */

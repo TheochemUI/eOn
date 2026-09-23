@@ -19,6 +19,10 @@
 #include <mutex>
 #include <vector>
 
+#ifdef EONMPI
+#include <mpi.h>
+#endif
+
 namespace eonc {
 class ILammpsLoader;
 }
