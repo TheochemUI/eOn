@@ -28,7 +28,8 @@ std::vector<std::string> GPSurrogateJob::run() {
   std::string reactantFilename = eonc::helpers::getRelevantFile("reactant.con");
   std::string productFilename = eonc::helpers::getRelevantFile("product.con");
   auto true_params = std::make_shared<Parameters>(params);
-  ParametersLoadAccess::main_options(*true_params).job = params.sub_job;
+  ParametersLoadAccess::main_options(*true_params).job =
+      params.gp_surrogate_options().sub_job;
   auto initial = std::make_shared<Matter>(pot, *true_params);
   if (!eonc::io::io_ok(initial->con2matter(reactantFilename))) {
     EONC_LOG_CRITICAL("Failed to load {}", reactantFilename);
@@ -51,7 +52,8 @@ GPSurrogateJob::runFromMatter(std::shared_ptr<Matter> initial,
   }
   // Clone and setup "true" params
   auto true_params = std::make_shared<Parameters>(params);
-  ParametersLoadAccess::main_options(*true_params).job = params.sub_job;
+  ParametersLoadAccess::main_options(*true_params).job =
+      params.gp_surrogate_options().sub_job;
   auto true_job = eonc::helpers::makeJob(
       std::make_unique<Parameters>(*true_params), *runtime_);
   auto pyparams = std::make_shared<Parameters>(params);
@@ -69,7 +71,7 @@ GPSurrogateJob::runFromMatter(std::shared_ptr<Matter> initial,
   auto targets = eonc::helpers::surrogate::get_targets(init_data, pot);
 
   // Setup a GPR Potential
-  auto surpot = eonc::helpers::create::makeSurrogatePotential(
+  auto surpot = ::helpers::create::makeSurrogatePotential(
       params.gp_surrogate_options().potential, params);
   surpot->train_optimize(features, targets);
   auto neb = std::make_unique<NudgedElasticBand>(initial, final_state,
@@ -77,7 +79,6 @@ GPSurrogateJob::runFromMatter(std::shared_ptr<Matter> initial,
   auto status_neb{neb->compute()};
   bool job_not_finished{true};
   size_t n_gp{0};
-  double unc_conv{pyparams->gp_uncertainty};
   while (job_not_finished) { // outer loop?
     n_gp++;
     if (n_gp > 750) {
@@ -92,15 +93,22 @@ GPSurrogateJob::runFromMatter(std::shared_ptr<Matter> initial,
     eonc::helpers::eigen::addVectorRow(features, feature);
     eonc::helpers::eigen::addVectorRow(targets, target);
     surpot->train_optimize(features, targets);
-    pyparams->nebClimbingImageMethod = false;
+    ParametersLoadAccess::neb_options(*pyparams).climbing_image.enabled =
+        false;
     ParametersLoadAccess::optimizer_options(*pyparams).converged_force =
         params.optimizer_options().converged_force * 0.8;
     for (auto &&obj : neb->path) {
       obj->setPotential(surpot);
     }
-    if (!(pyparams->gp_linear_path_always)) {
+    if (!(pyparams->gp_surrogate_options().linear_path_always)) {
       EONC_LOG_TRACE("Using previous path");
-      neb = std::make_unique<NudgedElasticBand>(neb->path, *pyparams, surpot);
+      std::vector<Matter> previous;
+      previous.reserve(neb->path.size());
+      for (const auto &image : neb->path) {
+        previous.push_back(*image);
+      }
+      neb = std::make_unique<NudgedElasticBand>(std::move(previous), *pyparams,
+                                                surpot);
     } else {
       EONC_LOG_TRACE("Using linear interpolation");
       neb = std::make_unique<NudgedElasticBand>(initial, final_state, *pyparams,
