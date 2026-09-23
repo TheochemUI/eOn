@@ -10,9 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 
+#include "eon/GPRHelpers.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
-#include "eon/GPRHelpers.h"
 #include "eon/Parameters.h"
 
 namespace tests {
