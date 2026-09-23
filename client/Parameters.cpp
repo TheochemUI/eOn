@@ -177,8 +177,7 @@ int Parameters::load(std::string_view filename) {
     const bool forcefield_engine =
         ams_engine_name_is(ams_options_.engine, "FORCEFIELD");
     if (ams_options_.forcefield.empty() && ams_options_.model.empty() &&
-        ams_options_.xc.empty() && !dftb_with_resources &&
-        !forcefield_engine) {
+        ams_options_.xc.empty() && !dftb_with_resources && !forcefield_engine) {
       EONC_LOG_ERROR("[AMS] Must provide atleast forcefield or model or xc");
       error = 1;
     }
