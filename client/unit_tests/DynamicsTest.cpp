@@ -11,10 +11,14 @@
 */
 
 #include "eon/Dynamics.h"
+#include "eon/DynamicsSaddleSearch.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/Matter.h"
+#include "eon/MinModeSaddleSearch.h"
 #include "eon/Parameters.h"
+
+#include <filesystem>
 
 namespace tests {
 
@@ -179,6 +183,51 @@ TEST_CASE_METHOD(DynamicsFixture,
 
   double E = matter->getPotentialEnergy();
   REQUIRE(std::isfinite(E));
+}
+
+TEST_CASE_METHOD(DynamicsFixture,
+                 "DynamicsSaddleSearch skipped NEB keeps an n-atom mode",
+                 "[dynamics][saddle_search]") {
+  namespace fs = std::filesystem;
+  // Relax is a no-op so a short trajectory cannot fall back into the
+  // reactant basin before the state check. Caps here are the test's own.
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 0;
+  ParametersLoadAccess::neb_options(params).max_iterations = 0;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 1;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 2;
+  ParametersLoadAccess::dimer_options(params).rotations_min = 1;
+  const double dt = params.dynamics_options().time_step;
+  REQUIRE(dt > 0.0);
+  ParametersLoadAccess::dynamics_options(params).steps = 40;
+  ParametersLoadAccess::parallel_replica_options(params).dephase_time = 0.0;
+  ParametersLoadAccess::saddle_search_options(params).dynamics.temperature =
+      5000.0;
+  ParametersLoadAccess::saddle_search_options(params)
+      .dynamics.state_check_interval = dt;
+  ParametersLoadAccess::saddle_search_options(params).dynamics.record_interval =
+      dt;
+
+  const auto tmp = fs::temp_directory_path() / "eon_dyn_skip_neb";
+  fs::remove_all(tmp);
+  fs::create_directories(tmp);
+  struct CwdGuard {
+    fs::path old;
+    explicit CwdGuard(const fs::path &next) : old(fs::current_path()) {
+      fs::current_path(next);
+    }
+    ~CwdGuard() { fs::current_path(old); }
+  } guard(tmp);
+
+  eonc::rng::random(42);
+  auto shared = std::make_shared<Matter>(*matter);
+  eonc::DynamicsSaddleSearch search(shared, params);
+  const int status = search.run();
+  REQUIRE(status !=
+          eonc::MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT);
+  const AtomMatrix mode = search.getEigenvector();
+  REQUIRE(mode.rows() == matter->numberOfAtoms());
+  REQUIRE(mode.cols() == 3);
+  REQUIRE(mode.array().isFinite().all());
 }
 
 } /* namespace tests */
