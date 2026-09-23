@@ -1504,6 +1504,10 @@ if get_option('with_tests')
         ['test_emt_cu', 'EMTCuTest.cpp', 'cu_fcc'],
         ['test_neb_subsystem', 'NEBSubsystemTest.cpp', ''],
     ]
+    # posix_spawn. On Windows the only case is skipped and Catch2 exits 4.
+    if not is_windows
+        test_array += [['test_client_timing', 'ClientTimingTest.cpp', '', 60]]
+    endif
     # Fortran potential tests: require Fortran shared libs at runtime
     if get_option('with_fortran')
         test_array += [
@@ -1557,6 +1561,7 @@ if get_option('with_tests')
         'systems',
     )
     _test_env.set('EON_TEST_SYSTEMS_DIR', _systems_dir)
+    _test_env.set('EONCLIENT', ec.full_path())
     if _fortran_pot_dirs.length() > 0
         # FortranPotLoader splits on ';' on Windows (drive letters break ':').
         # Same pathsep rule as PATH: win=';' unix=':'.
@@ -1571,7 +1576,9 @@ if get_option('with_tests')
         test_timeout = test.get(3, 30)
         _case_env = _test_env
         _case_depends = []
-        if test.get(0) == 'test_serve_spec'
+        if test.get(0) == 'test_client_timing'
+            _case_depends += [ec]
+        elif test.get(0) == 'test_serve_spec'
             # Spawn eonclient. The shared test env is one object, so this
             # case gets its own copy plus the client path.
             _case_env = environment()
