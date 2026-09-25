@@ -1,0 +1,1 @@
+`eon_schema.jobs` writes an `eon.trajectory.v1` manifest of exact frame geometry digests and the rgpot potential identity. Landfold embedding and FES inputs are read from that manifest, not from `results.dat`.

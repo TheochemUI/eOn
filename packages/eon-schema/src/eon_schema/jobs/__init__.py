@@ -8,6 +8,19 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict, Mapping, Optional
 
+from .trajectory import (
+    TrajectoryManifestError,
+    geometry_digest,
+    landfold_consume,
+    landfold_embedding_inputs,
+    landfold_fes_inputs,
+    potential_digest,
+    rgpot_identity,
+    trajectory_manifest,
+    trajectory_manifest_dumps,
+    trajectory_manifest_loads,
+)
+
 _PKG = Path(__file__).resolve().parent
 _VEND_CAPNP = _PKG / "eon_job_result.capnp"
 _MONO_CAPNP = Path(__file__).resolve().parents[5] / "schema" / "eon_job_result.capnp"
@@ -319,4 +332,14 @@ __all__ = [
     "job_result_from_wire",
     "job_result_dumps",
     "job_result_loads",
+    "TrajectoryManifestError",
+    "geometry_digest",
+    "rgpot_identity",
+    "potential_digest",
+    "trajectory_manifest",
+    "trajectory_manifest_dumps",
+    "trajectory_manifest_loads",
+    "landfold_embedding_inputs",
+    "landfold_fes_inputs",
+    "landfold_consume",
 ]
