@@ -188,7 +188,10 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
         QUILL_LOG_DEBUG(log, "[ParallelReplica] Transition time: {:.3e} s",
                         transitionTime * params.constants().timeUnit * 1e-15);
         *trajectory = transitionStructure;
-        break;
+        // A false stop_after_transition keeps the remaining dynamics steps.
+        if (params.parallel_replica_options().auto_stop) {
+          break;
+        }
 
       } else if (step + 1 == params.dynamics_options().steps &&
                  transitionTime == 0) {
