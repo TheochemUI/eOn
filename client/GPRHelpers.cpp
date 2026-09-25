@@ -57,8 +57,11 @@ eonc::helpers::eon_parameters_to_gpr(const Parameters &parameters) {
   p.prior_mu.value = parameters.gpr_dimer_options().gpr_params.prior_mu;
   p.prior_nu.value = parameters.gpr_dimer_options().gpr_params.prior_nu;
   p.prior_s2.value = parameters.gpr_dimer_options().gpr_params.prior_sigma2;
+  // gpr_optim enables the check only when this string equals "true".
+  // A bool assigns as one char, so the flag never turns on.
   p.check_derivative.value =
-      parameters.gpr_dimer_options().opt_params.check_derivatives;
+      parameters.gpr_dimer_options().opt_params.check_derivatives ? "true"
+                                                                  : "false";
   p.max_iter.value = parameters.gpr_dimer_options().opt_params.max_iterations;
   p.tolerance_func.value = parameters.gpr_dimer_options().opt_params.tol_func;
   p.tolerance_sol.value = parameters.gpr_dimer_options().opt_params.tol_sol;

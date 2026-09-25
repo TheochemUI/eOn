@@ -1538,6 +1538,9 @@ if get_option('with_tests')
     if get_option('with_ira')
         test_array += [['test_ira', 'IRATest.cpp', 'saddle_search']]
     endif
+    if get_option('with_gprd')
+        test_array += [['test_gpr_helpers', 'GPRHelpersTest.cpp', '']]
+    endif
     # Build the Fortran potential library search path for tests.
     # Each Fortran shared lib lives in its subdir of the build tree,
     # matching the source layout: build/client/potentials/<Name>/
