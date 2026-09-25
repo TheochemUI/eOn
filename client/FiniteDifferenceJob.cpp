@@ -47,10 +47,13 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
   for (int i = 0; i < reactant->numberOfAtoms(); i++) {
     if (reactant->distance(epicenter, i) <= cutoff) {
       printf(" %i", i);
+      // getFixed(atom) is true only when every axis is fixed. A column-4
+      // mask that freezes one axis must not enter the step or its norm.
       for (int j = 0; j < 3; j++) {
-        if (!reactant->getFixed(i)) {
-          displacement(i, j) = eonc::rng::randomDouble(1.0);
+        if (reactant->getFixed(i, j)) {
+          continue;
         }
+        displacement(i, j) = eonc::rng::randomDouble(1.0);
       }
     }
   }
