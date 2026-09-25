@@ -670,7 +670,7 @@ void MetatomicPotential::forceBatch(long nSystems, long nAtoms,
       forceBatchNative(nSystems, nAtoms, positions, atomicNrs, forces, energies,
                        variances, boxes);
       forceCallCounter += nSystems;
-      eonc::PotRegistry::get().on_force_call(ptype);
+      notifyForceCall();
       return;
     } catch (const std::exception &e) {
       QUILL_LOG_WARNING(m_log,
@@ -686,7 +686,7 @@ void MetatomicPotential::forceBatch(long nSystems, long nAtoms,
     if (variances)
       variances[s] = var;
     forceCallCounter++;
-    eonc::PotRegistry::get().on_force_call(ptype);
+    notifyForceCall();
   }
 }
 

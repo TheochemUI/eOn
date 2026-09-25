@@ -24,6 +24,8 @@ class DummyPotential : public Potential {
 public:
   DummyPotential(PotType pt, const Parameters &p)
       : Potential(pt, p) {}
+  DummyPotential(PotType pt, PotRegistry *registry)
+      : Potential(pt, registry) {}
 
   void force(long nAtoms, const double *positions, const int *atomicNrs,
              double *forces, double *energy, double *variance,
@@ -260,4 +262,60 @@ TEST_CASE("PotRegistry instance records capture correct force_calls",
 
   REQUIRE(content.find("\"force_calls\": 5") != std::string::npos);
   REQUIRE(content.find("\"force_calls\": 0") != std::string::npos);
+}
+
+TEST_CASE("Potential binds a local registry without touching process counters",
+          "[PotRegistry][inject]") {
+  auto &global = PotRegistry::get();
+  const auto alive = global.type_alive(PotType::LJ);
+  const auto calls = global.total_force_calls();
+  const auto type_calls = global.type_force_calls(PotType::LJ);
+
+  PotRegistry local;
+  AtomMatrix pos(2, 3);
+  pos << 0.0, 0.0, 0.0, 1.5, 0.0, 0.0;
+  VectorXi atmnrs(2);
+  atmnrs << 79, 79;
+  Matrix3d box = Matrix3d::Identity() * 10.0;
+
+  {
+    DummyPotential pot(PotType::LJ, &local);
+    REQUIRE(local.type_alive(PotType::LJ) == 1);
+    REQUIRE(global.type_alive(PotType::LJ) == alive);
+    pot.get_ef(pos, atmnrs, box);
+    REQUIRE(pot.forceCallCounter == 1);
+    REQUIRE(local.type_force_calls(PotType::LJ) == 1);
+    REQUIRE(local.total_force_calls() == 1);
+    REQUIRE(global.total_force_calls() == calls);
+    REQUIRE(global.type_force_calls(PotType::LJ) == type_calls);
+  }
+
+  REQUIRE(local.type_alive(PotType::LJ) == 0);
+  REQUIRE(global.type_alive(PotType::LJ) == alive);
+  REQUIRE(global.total_force_calls() == calls);
+  REQUIRE(global.type_force_calls(PotType::LJ) == type_calls);
+}
+
+TEST_CASE("Potential null sink does not touch the process registry",
+          "[PotRegistry][inject]") {
+  auto &global = PotRegistry::get();
+  const auto alive = global.type_alive(PotType::LJ);
+  const auto calls = global.total_force_calls();
+
+  AtomMatrix pos(1, 3);
+  pos << 0.0, 0.0, 0.0;
+  VectorXi atmnrs(1);
+  atmnrs << 1;
+  Matrix3d box = Matrix3d::Identity() * 10.0;
+
+  {
+    DummyPotential pot(PotType::LJ, nullptr);
+    pot.get_ef(pos, atmnrs, box);
+    REQUIRE(pot.forceCallCounter == 1);
+    REQUIRE(global.type_alive(PotType::LJ) == alive);
+    REQUIRE(global.total_force_calls() == calls);
+  }
+
+  REQUIRE(global.type_alive(PotType::LJ) == alive);
+  REQUIRE(global.total_force_calls() == calls);
 }

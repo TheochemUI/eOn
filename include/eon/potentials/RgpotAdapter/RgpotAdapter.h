@@ -100,7 +100,7 @@ public:
         variances[i] = out[i].variance;
       }
       forceCallCounter++;
-      eonc::PotRegistry::get().on_force_call(ptype);
+      notifyForceCall();
     }
   }
 
