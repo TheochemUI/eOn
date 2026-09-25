@@ -1,0 +1,1 @@
+`NudgedElasticBand::updateForces` passes a zero cell into `forceBatch` when `Matter::getPeriodic` is false. Interior images no longer look periodic to a batch evaluator that infers boundaries from the stored box.
