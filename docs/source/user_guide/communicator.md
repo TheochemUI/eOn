@@ -65,9 +65,13 @@ Dispatch follows `Parameters.job`:
 | point | energy / forces only |
 | process_search / saddle_search | `ProcessSearch` on the Matter |
 
-`results.dat` is still synthesized as text so the classic explorer can parse
-it. The result dict also carries `_matter` / `_structure` so callers do not
-have to re-read CON.
+A job carries geometry as a `Structure` or a `readcon.ConFrame`
+(`structure`, `conframe`, `reactant`, `pos`, or `pos.con`). `.con` text is
+refused. The result dict returns `product` and, when a saddle exists,
+`saddle` as `ConFrame` objects. Those frames are not written to disk.
+`_matter` stays the potential-bearing client object and `_structure` the
+numpy working set. `results.dat` is still synthesized as text so the classic
+explorer can parse scalars.
 
 ## Additional topics
 
