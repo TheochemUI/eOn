@@ -289,6 +289,7 @@ features_list = [
     ['WITH_RGPOT', 'RGPOT direct in-process (NWChemPot/CPMDPot dlopen)'],
     ['EMBED_PYTHON', 'Embedded Python'],
     ['WITH_XTSCI', 'xtsci-optimize backend'],
+    ['WITH_RGSADDLE', 'rgsaddle band and min-mode'],
 ]
 
 # features_string + version.h are assembled AFTER optional with_* blocks append
@@ -324,6 +325,17 @@ if get_option('with_xtsci')
         _deps += eindir_dep
         _args += ['-DWITH_EINDIR']
     endif
+endif
+
+if get_option('with_rgsaddle')
+    rgsaddle_dep = dependency(
+        'rgsaddle',
+        version: '>=0.1.0',
+        method: 'pkg-config',
+        required: true,
+    )
+    _deps += rgsaddle_dep
+    _args += ['-DWITH_RGSADDLE']
 endif
 
 eigen_dep = dependency('eigen3', required: false)
@@ -817,6 +829,10 @@ eonclib_sources = [
 eonclib_sources += ['XtsciEindir.cpp']
 if get_option('with_xtsci')
     eonclib_sources += ['XtsciOptimizer.cpp']
+endif
+
+if get_option('with_rgsaddle')
+    eonclib_sources += ['XtsciBand.cpp', 'XtsciMinMode.cpp']
 endif
 
 eonclient_sources = ['ClientEON.cpp', 'CommandLine.cpp']
@@ -1710,6 +1726,9 @@ if get_option('with_tests')
     endif
     if get_option('with_artn')
         test_array += [['test_artn', 'ARTnTest.cpp', 'neb_morse']]
+    endif
+    if get_option('with_rgsaddle')
+        test_array += [['test_rgsaddle_band', 'RgsaddleBandTest.cpp', 'neb_morse']]
     endif
     if get_option('with_ira')
         test_array += [['test_ira', 'IRATest.cpp', 'saddle_search']]

@@ -29,6 +29,9 @@
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/MobileAtoms.h"
 #include "eon/Parameters.h"
+#ifdef WITH_RGSADDLE
+#include "eon/XtsciMinMode.h"
+#endif
 
 #include <algorithm>
 #include <cmath>
@@ -917,4 +920,21 @@ TEST_CASE("Lanczos keeps the closed Krylov Ritz pair", "[lanczos][eigenmode]") {
   REQUIRE(std::fabs(ev(0, 2)) == Catch::Approx(0.0).margin(1e-6));
 }
 
+#ifdef WITH_RGSADDLE
+TEST_CASE_METHOD(DimerFixture, "XtsciMinMode returns a finite curvature",
+                 "[dimer][eigenmode][rgsaddle]") {
+  ParametersLoadAccess::saddle_search_options(params).minmode_method =
+      LowestEigenmode::MINMODE_XTSCI;
+  ParametersLoadAccess::optimizer_options(params).xtsci.method = "fire";
+  auto modeSolver = std::make_unique<XtsciMinMode>(matter, params, pot);
+  const auto before = matter->getPositions();
+  modeSolver->compute(matter, mode);
+  REQUIRE(std::isfinite(modeSolver->getEigenvalue()));
+  REQUIRE(modeSolver->getEigenvector().rows() == matter->numberOfAtoms());
+  // Rotation does not climb. The host saddle search owns the step.
+  REQUIRE(before.isApprox(matter->getPositions(), 0.0));
+}
+#endif
+
 } /* namespace tests */
+

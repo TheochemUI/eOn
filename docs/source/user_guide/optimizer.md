@@ -141,3 +141,17 @@ keyprefix: opt-
 ```
 
 [^1]: e.g. as may be found in `scipy` or `ceres` for instance
+
+### Rgsaddle band and min-mode
+
+``[Nudged Elastic Band] opt_method = xtsci`` with ``-Dwith_rgsaddle=true`` steps the band
+through a rgsaddle session instead of the flattened band objective.
+``[Xtsci] method = fire`` is the band stepper. ``method = lbfgs``
+selects the L-BFGS session. Matter still owns the images, and the NEB
+loop still owns climbing policy, resampling, and the spline.
+
+``min_mode_method = xtsci`` rotates the lowest mode in that session
+with a zero translation cap. The min-mode saddle search still climbs
+with the selected optimizer. ``[Xtsci] method = lanczos`` selects the
+Krylov estimate; any other method is the dimer rotation.
+

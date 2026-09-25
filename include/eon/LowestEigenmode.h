@@ -36,6 +36,7 @@ public:
   static const char MINMODE_GPRDIMER[];
   static const char MINMODE_LANCZOS[];
   static const char MINMODE_DAVIDSON[];
+  static const char MINMODE_XTSCI[];
 
   LowestEigenmode(std::shared_ptr<Potential> potPassed,
                   const Parameters &parameters)

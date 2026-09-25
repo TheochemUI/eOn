@@ -26,6 +26,9 @@
 #include "eon/PotCapabilities.h"
 #include "eon/SafeMath.h"
 #include "eon/SolidStateNEB.h"
+#ifdef WITH_RGSADDLE
+#include "eon/XtsciBand.h"
+#endif
 #include "magic_enum/magic_enum.hpp"
 
 #include "ForEachImage.h"
@@ -33,6 +36,7 @@
 #include <cmath>
 #include <exception>
 #include <format>
+#include <memory>
 #include <mutex>
 #include <stdexcept>
 #include <thread>
@@ -294,12 +298,23 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
   auto objf = std::make_shared<NEBObjectiveFunction>(this, params);
 
   bool switched{false};
-  auto optim = eonc::helpers::create::mkOptim(
-      objf, params.neb_options().opt_method, params);
-  std::unique_ptr<Optimizer> refine_optim{nullptr};
-  if (params.optimizer_options().refine.method != OptType::None) {
-    refine_optim = eonc::helpers::create::mkOptim(
-        objf, params.optimizer_options().refine.method, params);
+#ifdef WITH_RGSADDLE
+  std::unique_ptr<XtsciBand> rustBand;
+#endif
+  std::unique_ptr<Optimizer> optim;
+  std::unique_ptr<Optimizer> refine_optim;
+#ifdef WITH_RGSADDLE
+  if (params.neb_options().opt_method == OptType::XTSCI) {
+    rustBand = std::make_unique<XtsciBand>(*this, params);
+  } else
+#endif
+  {
+    optim = eonc::helpers::create::mkOptim(objf, params.neb_options().opt_method,
+                                          params);
+    if (params.optimizer_options().refine.method != OptType::None) {
+      refine_optim = eonc::helpers::create::mkOptim(
+          objf, params.optimizer_options().refine.method, params);
+    }
   }
   // OCINEB controller
   auto ocinebCfg = eonc::neb::OCINEBController::fromParams(params);
@@ -492,8 +507,16 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
         // Reset optimizer AFTER reparameterization so fresh L-BFGS
         // starts from the redistributed positions.
         if (result.shouldResetOptimizer || didResample) {
-          optim = eonc::helpers::create::mkOptim(
-              objf, params.neb_options().opt_method, params);
+#ifdef WITH_RGSADDLE
+          if (rustBand) {
+            rustBand->syncFromPath();
+            rustBand->reset();
+          } else
+#endif
+          {
+            optim = eonc::helpers::create::mkOptim(
+                objf, params.neb_options().opt_method, params);
+          }
         }
       }
 
@@ -516,20 +539,27 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
       // applies the correct force projection.
       setCIEnabled(ci_active);
 
-      auto &activeOptim =
-          (refine_optim &&
-           convForce <= params.optimizer_options().refine.threshold)
-              ? refine_optim
-              : optim;
-      if (refine_optim &&
-          convForce <= params.optimizer_options().refine.threshold &&
-          !switched) {
-        switched = true;
-        EONC_LOG_DEBUG("Switched to {}",
-                       magic_enum::enum_name<OptType>(
-                           params.optimizer_options().refine.method));
+#ifdef WITH_RGSADDLE
+      if (rustBand) {
+        rustBand->step(params.optimizer_options().max_move);
+      } else
+#endif
+      {
+        auto &activeOptim =
+            (refine_optim &&
+             convForce <= params.optimizer_options().refine.threshold)
+                ? refine_optim
+                : optim;
+        if (refine_optim &&
+            convForce <= params.optimizer_options().refine.threshold &&
+            !switched) {
+          switched = true;
+          EONC_LOG_DEBUG("Switched to {}",
+                         magic_enum::enum_name<OptType>(
+                             params.optimizer_options().refine.method));
+        }
+        activeOptim->step(params.optimizer_options().max_move);
       }
-      activeOptim->step(params.optimizer_options().max_move);
 
       setCIEnabled(params.neb_options().climbing_image.enabled);
     }

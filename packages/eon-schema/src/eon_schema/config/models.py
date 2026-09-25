@@ -1134,9 +1134,9 @@ class SaddleSearchConfig(BaseModel):
         relaxation internally. ``direction.dat`` is optional and only biases
         the initial push when present.
     """
-    min_mode_method: Literal["dimer", "lanczos", "davidson", "gprdimer", "artn"] = (
-        Field(default="dimer", description="Min-mode method to use.")
-    )
+    min_mode_method: Literal[
+        "dimer", "lanczos", "davidson", "gprdimer", "artn", "xtsci"
+    ] = Field(default="dimer", description="Min-mode method to use.")
     """
     Options:
      - ``dimer``: Use the dimer min-mode method from :cite:t:`ss-henkelmanDimerMethodFinding1999`
@@ -1145,6 +1145,8 @@ class SaddleSearchConfig(BaseModel):
      - ``gprdimer``: GP dimer. The Linux default is ``-Dwith_gprd=auto``, which links ``subprojects/gpr_optim`` when that subproject configures. A failed fetch leaves the dimer off.
      - ``artn``: Use ARTn as a drop-in for min-mode search. eOn's displacement
        seeds the initial mode; ARTn takes over from the displaced structure.
+     - ``xtsci``: Rotate the lowest mode in a rgsaddle session. Needs
+       ``-Dwith_rgsaddle=true``. The saddle search still climbs.
      """
     disp_at_random: int = Field(
         default=1,

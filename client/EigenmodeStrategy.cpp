@@ -18,6 +18,10 @@
 #include "eon/Parameters.h"
 #include <stdexcept>
 
+#ifdef WITH_RGSADDLE
+#include "eon/XtsciMinMode.h"
+#endif
+
 #ifdef WITH_GPRD
 #include "eon/AtomicGPDimer.h"
 #endif
@@ -41,6 +45,15 @@ buildEigenmodeStrategy(std::shared_ptr<Matter> matter, const Parameters &params,
   if (params.saddle_search_options().minmode_method ==
       LowestEigenmode::MINMODE_DAVIDSON) {
     return std::make_shared<Davidson>(matter, params, pot);
+  }
+  if (params.saddle_search_options().minmode_method ==
+      LowestEigenmode::MINMODE_XTSCI) {
+#ifdef WITH_RGSADDLE
+    return std::make_shared<XtsciMinMode>(matter, params, pot);
+#else
+    throw std::runtime_error(
+        "min_mode_method=xtsci requires -Dwith_rgsaddle=true");
+#endif
   }
   if (params.saddle_search_options().minmode_method ==
       LowestEigenmode::MINMODE_GPRDIMER) {
