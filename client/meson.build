@@ -842,7 +842,25 @@ if get_option('with_xtb')
     # Try finding system 'xtb' via pkg-config or cmake.
     # Users who need to build xtb from source can place it in subprojects/
     # and Meson's implicit fallback will find it.
-    xtb_dep = dependency('xtb', required: true)
+    if host_machine.system() == 'windows'
+        # conda-forge installs the MinGW import library as libxtb.dll.a, not xtb.lib.
+        xtb_dep = cppc.find_library('xtb', required: false)
+        if not xtb_dep.found()
+            _xtb_pc = dependency('xtb', method: 'pkg-config', required: true)
+            _xtb_libdir = _xtb_pc.get_variable(pkgconfig: 'libdir')
+            _xtb_implib = _xtb_libdir / 'libxtb.dll.a'
+            if not fs.exists(_xtb_implib)
+                error('xtb import library not found: ' + _xtb_implib)
+            endif
+            xtb_dep = declare_dependency(
+                compile_args: ['-I' + _xtb_pc.get_variable(pkgconfig: 'includedir')],
+                link_args: [_xtb_implib],
+                version: _xtb_pc.version(),
+            )
+        endif
+    else
+        xtb_dep = dependency('xtb', required: true)
+    endif
 
     _deps += [xtb_dep]
     subdir('potentials/XTBPot')
