@@ -20,8 +20,10 @@
 ///   `sizeof(Parameters)` is that pointer. Const accessors and
 ///   `ParametersLoadAccess` are the read and write surface. Option-group
 ///   types remain in the installed `ParametersOptions.h`.
-/// - `Parameters.h` does not include Eigen. `Matter` still does: public
-///   accessors return Eigen types, and hiding those members is a later cut.
+/// - `Parameters.h` does not include Eigen. `Matter` still does, because
+///   accessors return Eigen types. Those accessors are defined in the
+///   library. The matrices live in `Matter::Impl`, so `sizeof(Matter)` does
+///   not embed them.
 
 #include "HelperFunctions.h"
 #include "ImprovedDimer.h"
