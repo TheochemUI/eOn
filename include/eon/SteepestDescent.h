@@ -25,7 +25,9 @@ class SteepestDescent final : public Optimizer {
 public:
   SteepestDescent(std::shared_ptr<ObjectiveFunction> a_objf,
                   const Parameters &a_params)
-      : Optimizer(a_objf, OptType::SD, a_params), iteration{0} {}
+      : Optimizer(a_objf, OptType::SD, OptimizerConfig::fromParams(a_params)),
+        m_rPrev{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
+        m_fPrev{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())} {}
   ~SteepestDescent() = default;
 
   int step(double a_maxMove) override;

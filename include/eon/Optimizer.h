@@ -91,14 +91,15 @@ public:
             const Parameters &a_params)
       : Optimizer(a_objf, a_optype, OptimizerConfig::fromParams(a_params)) {}
 
-  virtual ~Optimizer() {};
+  virtual ~Optimizer() = default;
   virtual int step(double a_maxMove) = 0;
   virtual int run(size_t a_maxIterations, double a_maxMove) = 0;
 };
 
 namespace helpers::create {
-std::unique_ptr<Optimizer> mkOptim(std::shared_ptr<ObjectiveFunction> a_objf,
-                                   OptType a_otype, const Parameters &a_params);
+[[nodiscard]] std::unique_ptr<Optimizer>
+mkOptim(std::shared_ptr<ObjectiveFunction> a_objf, OptType a_otype,
+        const Parameters &a_params);
 }
 
 } // namespace eonc

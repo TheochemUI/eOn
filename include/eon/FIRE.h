@@ -16,7 +16,7 @@
 
 namespace eonc {
 
-class FIRE : public Optimizer {
+class FIRE final : public Optimizer {
 
 public:
   FIRE(std::shared_ptr<ObjectiveFunction> a_objf, const Parameters &a_params)
@@ -27,7 +27,7 @@ public:
         m_vel{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
         m_alpha_start{0.1}, m_alpha{m_alpha_start}, m_f_inc{1.1}, m_f_dec{0.5},
         m_f_a{0.99}, m_iteration{0} {}
-  virtual ~FIRE() = default;
+  ~FIRE() = default;
 
   int step(double a_maxMove) override;
   int run(size_t a_maxIterations, double a_maxMove) override;
