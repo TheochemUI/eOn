@@ -55,9 +55,16 @@ public:
   // Help is the walked image's raw force, not band convergenceForce().
   // After a downhill dimer step maxEnergyImage can hop; the band CI
   // force is then a neighbor and is the wrong score for restore.
-  static bool walkHelped(double walkedForce, double convForce,
-                         int mmfStatus) {
+  static bool walkHelped(double walkedForce, double convForce, int mmfStatus) {
     return walkedForce < convForce && mmfStatus != -2;
+  }
+
+  // Positive curvature (status -2) is a well, not a saddle. A band
+  // force under tolerance after that walk is not convergence; run()
+  // restores the climbing image first.
+  static bool convergedClimb(double bandForce, double forceTolerance,
+                             int mmfStatus) {
+    return bandForce < forceTolerance && mmfStatus != -2;
   }
 
   void resetStability() { ciStabilityCounter_ = 0; }

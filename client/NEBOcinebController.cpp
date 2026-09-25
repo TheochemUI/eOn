@@ -91,8 +91,10 @@ OCINEBController::MMFResult OCINEBController::run(eonc::NudgedElasticBand &neb,
   neb.updateForces();
   double newForce = neb.convergenceForce();
 
-  // Check convergence
-  if (newForce < cfg_.force_tolerance) {
+  // A positive-curvature walk can put the band force under tolerance
+  // while the climbing image sits in a well. Restore that image
+  // before accepting the band.
+  if (convergedClimb(newForce, cfg_.force_tolerance, mmfResult)) {
     QUILL_LOG_DEBUG(log, "NEB converged after MMF. Force: {:.4f}", newForce);
     return {newForce, true, false};
   }
