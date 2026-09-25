@@ -1,11 +1,12 @@
 # Public C++ surface
 
 The installed `include/eon` tree still ships internal headers. The
-Job factory has landed. `Parameters` now has a private load-state
-`Impl` (`last_load_source` / `last_load_error`); option-group layout
-stays in the installed header and is **not** ABI-stable. `Matter`
-still exposes Eigen members in the header (accessors return Eigen
-types). Treat only these as the extension contract:
+Job factory has landed. `Parameters` stores load state and option groups
+in a private `Impl`, so `sizeof(Parameters)` is that pointer. Const
+accessors and `ParametersLoadAccess` are the read and write surface.
+Option-group types remain in the installed `ParametersOptions.h`.
+`Matter` still exposes Eigen members in the header (accessors return
+Eigen types). Treat only these as the extension contract:
 
 | Type | Pure virtuals | Notes |
 |---|---|---|
