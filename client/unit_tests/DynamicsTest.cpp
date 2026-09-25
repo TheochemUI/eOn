@@ -18,6 +18,7 @@
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/Parameters.h"
 
+#include <cmath>
 #include <filesystem>
 
 namespace tests {
@@ -201,6 +202,45 @@ TEST_CASE_METHOD(DynamicsFixture,
 
   double E = matter->getPotentialEnergy();
   REQUIRE(std::isfinite(E));
+}
+
+TEST_CASE("Nose-Hoover targets unfixed axes of a partly fixed atom",
+          "[dynamics][nose_hoover]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::main_options(params).temperature = 300.0;
+  ParametersLoadAccess::thermostat_options(params).kind = Dynamics::NOSE_HOOVER;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter matter(pot, params);
+  matter.resize(1);
+  matter.setAtomicNr(0, 18);
+  matter.setMass(0, 1.0);
+  matter.setPeriodic(false);
+  // Free in x and y. numberOfFreeAtoms() still counts this atom.
+  matter.setFixed(0, 2, 1);
+  REQUIRE(matter.getFixed(0) == 0);
+  REQUIRE(matter.numberOfFreeAtoms() == 1);
+
+  const double temperature = 300.0;
+  const double kB = params.constants().kB;
+  // Equipartition on the two free axes: each holds kT/2.
+  const double keTarget = kB * temperature;
+  const double speed = std::sqrt(keTarget);
+  AtomMatrix vel(1, 3);
+  vel << speed, speed, 99.0;
+  matter.setVelocities(vel);
+  REQUIRE(matter.getKineticEnergy() == Catch::Approx(keTarget).epsilon(1e-12));
+  REQUIRE(matter.getVelocities()(0, 2) == Catch::Approx(0.0).margin(0.0));
+
+  Dynamics dyn(&matter, DynamicsConfig::fromParams(params));
+  dyn.setTemperature(temperature);
+  dyn.oneStep();
+
+  // G1 is zero when 2*KE equals n_free*kT, and a lone atom has no force,
+  // so the free-axis kinetic energy does not climb toward three axes.
+  REQUIRE(matter.getKineticEnergy() == Catch::Approx(keTarget).epsilon(1e-9));
+  REQUIRE(matter.getPositions()(0, 2) == Catch::Approx(0.0).margin(1e-15));
+  REQUIRE(matter.getVelocities()(0, 2) == Catch::Approx(0.0).margin(0.0));
 }
 
 TEST_CASE_METHOD(

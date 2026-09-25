@@ -30,7 +30,15 @@ Dynamics::Dynamics(Matter *matter_in, const DynamicsConfig &config)
   }
   dt = m_config.time_step;
   nAtoms = matter->numberOfAtoms();
-  nFreeCoords = matter->numberOfFreeAtoms() * 3;
+  // Unfixed axes only. A partly fixed atom is not three degrees of freedom.
+  nFreeCoords = 0;
+  for (long i = 0; i < nAtoms; ++i) {
+    for (int axis = 0; axis < 3; ++axis) {
+      if (!matter->getFixed(i, axis)) {
+        ++nFreeCoords;
+      }
+    }
+  }
   temperature = m_config.temperature;
   kB = m_config.kB;
   vxi1 = vxi2 = xi1 = xi2 = 0.0;
