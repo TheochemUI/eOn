@@ -58,7 +58,7 @@ double IDPPObjectiveFunction::getEnergy() {
   return energy;
 }
 
-VectorXd IDPPObjectiveFunction::getGradient(bool fdstep) {
+VectorXd IDPPObjectiveFunction::getGradient(bool /*fdstep*/) {
   int natoms = matter->numberOfAtoms();
   AtomMatrix pos = matter->getPositions();
   AtomMatrix forces = AtomMatrix::Zero(natoms, 3);
@@ -74,7 +74,6 @@ VectorXd IDPPObjectiveFunction::getGradient(bool fdstep) {
 
       double diff = r - d_target(i, j);
       double r2 = r * r;
-      double r5 = r2 * r2 * r;
 
       // Derivative of E_pair = 0.5 * (1/r^4) * (r - d_target)^2
       // dE/dr = (r - d_target)/r^4 - 2(r - d_target)^2 / r^5
@@ -136,7 +135,7 @@ CollectiveIDPPObjectiveFunction::getIDPPForces(const Matter &m,
   return forces;
 }
 
-VectorXd CollectiveIDPPObjectiveFunction::getGradient(bool fdstep) {
+VectorXd CollectiveIDPPObjectiveFunction::getGradient(bool /*fdstep*/) {
   int nImgs = path.size() - 2; // Exclude fixed endpoints
   int nfree = static_cast<int>(path[0].numberOfFreeAtoms());
   VectorXd totalGradient(3 * nfree * nImgs);

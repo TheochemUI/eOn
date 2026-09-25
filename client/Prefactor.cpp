@@ -81,8 +81,7 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
     min2Freqs = hessian.removeZeroFreqs(min2Freqs);
   }
 
-  // check Hessian sizes
-  // BUG FIX: original checked min1 vs saddle twice, never min2
+  // Both minima must match the saddle Hessian length.
   if ((min1Freqs.size() != saddleFreqs.size()) ||
       (min2Freqs.size() != saddleFreqs.size())) {
     if (!parameters.main_options().quiet) {
@@ -158,18 +157,16 @@ int eonc::Prefactor::getPrefactors(const Parameters &parameters, Matter *min1,
     double temp = (h_bar / (2.0 * kB_T));
 
     for (int i = 0; i < min1Freqs.size(); i++) {
-      pref1 = pref1 * (std::sinh(temp * (std::sqrt(min1Freqs[i]) / 10.18e-15)));
-      pref2 = pref2 * (std::sinh(temp * (std::sqrt(min2Freqs[i]) / 10.18e-15)));
+      pref1 *= std::sinh(temp * (std::sqrt(min1Freqs[i]) / 10.18e-15));
+      pref2 *= std::sinh(temp * (std::sqrt(min2Freqs[i]) / 10.18e-15));
 
       if (saddleFreqs[i] > 0) {
-        pref1 =
-            pref1 / (std::sinh(temp * (std::sqrt(saddleFreqs[i]) / 10.18e-15)));
-        pref2 =
-            pref2 / (std::sinh(temp * (std::sqrt(saddleFreqs[i]) / 10.18e-15)));
+        pref1 /= std::sinh(temp * (std::sqrt(saddleFreqs[i]) / 10.18e-15));
+        pref2 /= std::sinh(temp * (std::sqrt(saddleFreqs[i]) / 10.18e-15));
       }
     }
-    pref1 = 2. * kB_T / (h)*pref1;
-    pref2 = 2. * kB_T / (h)*pref2;
+    pref1 = (2.0 * kB_T / h) * pref1;
+    pref2 = (2.0 * kB_T / h) * pref2;
   }
   EONC_LOG_DEBUG("[Prefactor] reactant to product prefactor: {:.3e}", pref1);
   EONC_LOG_DEBUG("[Prefactor] product to reactant prefactor: {:.3e}", pref2);

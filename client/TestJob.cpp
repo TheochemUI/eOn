@@ -15,6 +15,7 @@
 #include "eon/Potential.h"
 
 #include "magic_enum/magic_enum.hpp"
+#include <array>
 #include <cmath>
 #include <fstream>
 #include <stdexcept>
@@ -43,7 +44,7 @@ void TestJob::checkFullSearch() {
 }
 
 void TestJob::checkPotentials() {
-  const PotRef cases[] = {
+  const std::array<PotRef, 8> cases{{
       {"lj", eonc::PotType::LJ, -1475.984331, 2.007213},
       {"emt", eonc::PotType::EMT, 46.086312, 0.357493},
       {"edip", eonc::PotType::EDIP, -1033.250950, 7.080115},
@@ -52,7 +53,7 @@ void TestJob::checkPotentials() {
       {"lenosky_si", eonc::PotType::LENOSKY_SI, -1410.679106, 2.320168},
       {"eam_al", eonc::PotType::EAM_AL, -1206.825825, 0.000246},
       {"tip4p", eonc::PotType::TIP4P, 4063.865115, 73.655248},
-  };
+  }};
 
   std::ofstream out("results.dat");
   for (const auto &c : cases) {
@@ -74,7 +75,7 @@ void TestJob::checkPotentials() {
   }
 }
 
-double TestJob::getEnergyDiff(std::string potTag, double refEnergy) {
+double TestJob::getEnergyDiff(const std::string &potTag, double refEnergy) {
   auto type = magic_enum::enum_cast<eonc::PotType>(
       potTag, magic_enum::case_insensitive);
   if (!type) {
@@ -90,7 +91,7 @@ double TestJob::getEnergyDiff(std::string potTag, double refEnergy) {
   return pos.getPotentialEnergy() - refEnergy;
 }
 
-double TestJob::getForceDiff(std::string potTag, double refForce) {
+double TestJob::getForceDiff(const std::string &potTag, double refForce) {
   auto type = magic_enum::enum_cast<eonc::PotType>(
       potTag, magic_enum::case_insensitive);
   if (!type) {

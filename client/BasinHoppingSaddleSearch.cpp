@@ -10,15 +10,10 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/BasinHoppingSaddleSearch.h"
-#include "eon/Dimer.h"
-#include "eon/ImprovedDimer.h"
-#include "eon/Lanczos.h"
-#include "eon/LowestEigenmode.h"
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/NudgedElasticBand.h"
 #include <cmath>
 #include <cstddef>
-#include <cstdio>
 
 namespace eonc {
 
@@ -71,7 +66,13 @@ int BasinHoppingSaddleSearch::run() {
     }
   }
   neb.compute();
-  // pick the maximum energy image along the band
+  // Interior images only. Endpoints are fixed, and a band with fewer than
+  // two images has no finite-difference tangent.
+  if (neb.numImages < 2) {
+    QUILL_LOG_WARNING(log, "No interior NEB image for basin hopping");
+    status = MinModeSaddleSearch::STATUS_BAD_NO_BARRIER;
+    return status;
+  }
   int HighestImage = highestEnergyInteriorImage(neb.path, neb.numImages);
   if (HighestImage < 1) {
     QUILL_LOG_WARNING(log, "No interior NEB image for basin hopping");

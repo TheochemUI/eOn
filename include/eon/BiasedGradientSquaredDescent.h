@@ -16,6 +16,7 @@
 #include "Matter.h"
 #include "MinModeSaddleSearch.h"
 #include "SaddleSearchMethod.h"
+#include <utility>
 #include <vector>
 
 namespace eonc {
@@ -26,9 +27,7 @@ public:
                                double reactantEnergyPassed,
                                const Parameters &parametersPassed)
       : SaddleSearchMethod(matterPassed->getPotential(), parametersPassed),
-        saddle{matterPassed} {
-    reactantEnergy = reactantEnergyPassed;
-    saddle = matterPassed;
+        saddle{std::move(matterPassed)}, reactantEnergy{reactantEnergyPassed} {
     eigenvector.resize(saddle->numberOfAtoms(), 3);
     eigenvector.setZero();
   }
@@ -42,12 +41,12 @@ public:
   }
   int getStatus() const override { return status; }
 
-  double eigenvalue;
+  double eigenvalue{0.0};
   AtomMatrix eigenvector;
 
   std::shared_ptr<Matter> saddle;
 
-  int status;
+  int status{0};
 
 private:
   double reactantEnergy;
