@@ -16,6 +16,8 @@
 #include "Matter.h"
 #include "Parameters.h"
 
+#include <vector>
+
 namespace eonc {
 
 class Hessian {
@@ -37,7 +39,21 @@ private:
 
   VectorXi atoms;
   bool calculate();
+  bool finalizeHessian(int size);
+  bool calculateColored(double cutoff, double dr, bool useCentral);
+  bool calculateSerial(double dr, bool useCentral);
   eonc::log::Scoped log;
 };
+
+/// Greedy coloring of an undirected graph. ``adj[v]`` lists neighbors of
+/// ``v`` (self-loops ignored). Colors are dense from 0 in vertex order.
+std::vector<int>
+greedyColorCutoffGraph(const std::vector<std::vector<int>> &adj);
+
+/// Conflict graph on ``atoms``: two mobile atoms share an edge when their
+/// closed cutoff neighborhoods intersect, then greedy-colored. Empty when
+/// the neighbor list cannot be built.
+std::vector<int> colorMobileCutoffGraph(const Matter &matter,
+                                        const VectorXi &atoms, double cutoff);
 
 } // namespace eonc

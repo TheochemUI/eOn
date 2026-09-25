@@ -16,9 +16,13 @@
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 #include "eon/SafeMath.h"
+#include "eon/potentials/RgpotAdapter/RgpotAdapter.h"
+#include "rgpot/LennardJones/LJPot.hpp"
 
+#include <algorithm>
 #include <cstdio>
 #include <fstream>
+#include <vector>
 
 namespace tests {
 
@@ -231,6 +235,102 @@ TEST_CASE("Hessian on Pt frozen layers system handles mixed fixed/free",
   REQUIRE(freqs.size() == expectedSize);
   for (long i = 0; i < freqs.size(); i++) {
     REQUIRE(std::isfinite(freqs(i)));
+  }
+}
+
+TEST_CASE("Colored FD Hessian matches serial central difference",
+          "[hessian][color]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::main_options(params).finiteDifference = 1e-5;
+  ParametersLoadAccess::main_options(params).removeNetForce = false;
+  ParametersLoadAccess::hessian_options(params).fd_scheme = "central";
+
+  // Nearest-neighbor chain: cutoff 1.5, spacing 1.2. Atoms 0 and 3 are
+  // not adjacent and share a color of the squared cutoff graph.
+  constexpr double kCutoff = 1.5;
+  auto pot = std::make_shared<RgpotAdapter<rgpot::LJPot>>(
+      PotType::LJ, params, rgpot::LJConfig{.cutoff = kCutoff});
+  REQUIRE(pot->finiteCutoff() == kCutoff);
+
+  auto matter = std::make_shared<Matter>(pot, params);
+  matter->resize(4);
+  for (long i = 0; i < 4; ++i) {
+    matter->setAtomicNr(i, 1);
+    matter->setMass(i, 1.0);
+  }
+  AtomMatrix pos(4, 3);
+  pos.setZero();
+  pos(0, 0) = 0.0;
+  pos(1, 0) = 1.2;
+  pos(2, 0) = 2.4;
+  pos(3, 0) = 3.6;
+  matter->setPositions(pos);
+  matter->setCell(Matrix3d::Identity() * 40.0);
+  matter->setPeriodic(false);
+
+  VectorXi all(4);
+  all << 0, 1, 2, 3;
+
+  const std::vector<int> colors =
+      eonc::colorMobileCutoffGraph(*matter, all, pot->finiteCutoff());
+  REQUIRE(colors.size() == 4);
+  bool shared = false;
+  for (int i = 0; i < 4; ++i) {
+    for (int j = i + 1; j < 4; ++j) {
+      if (colors[static_cast<size_t>(i)] != colors[static_cast<size_t>(j)]) {
+        continue;
+      }
+      REQUIRE(matter->distance(i, j) > kCutoff);
+      shared = true;
+    }
+  }
+  REQUIRE(shared);
+  int nColors = 0;
+  for (int c : colors) {
+    nColors = std::max(nColors, c + 1);
+  }
+  REQUIRE(nColors == 3);
+
+  pot->forceCallCounter.store(0);
+  Hessian hess(params, matter.get());
+  MatrixXd H = hess.getHessian(matter.get(), all);
+  REQUIRE(H.rows() == 12);
+  // Central difference: two evaluations per direction per color, plus the
+  // undisplaced gradient. Strictly below one column per coordinate.
+  const auto calls = pot->forceCallCounter.load();
+  REQUIRE(calls == static_cast<size_t>(1 + 2 * 3 * nColors));
+  REQUIRE(calls < static_cast<size_t>(1 + 2 * 12));
+
+  const double dr = params.main_options().finiteDifference;
+  Matter probe(*matter);
+  MatrixXd serial = MatrixXd::Zero(12, 12);
+  for (int i = 0; i < 12; ++i) {
+    AtomMatrix disp = AtomMatrix::Zero(4, 3);
+    disp(all(i / 3), i % 3) = dr;
+    probe.setPositions(pos + disp);
+    AtomMatrix fp = probe.getForces();
+    probe.setPositions(pos - disp);
+    AtomMatrix fm = probe.getForces();
+    for (int j = 0; j < 12; ++j) {
+      const double dF = fp(all(j / 3), j % 3) - fm(all(j / 3), j % 3);
+      serial(i, j) = -dF / (2.0 * dr);
+      const double effMass =
+          std::sqrt(matter->getMass(all(j / 3)) * matter->getMass(all(i / 3)));
+      serial(i, j) = eonc::safemath::safe_div(serial(i, j), effMass, 0.0);
+    }
+  }
+  for (int i = 0; i < 12; ++i) {
+    for (int j = 0; j < i; ++j) {
+      serial(i, j) = (serial(i, j) + serial(j, i)) / 2.0;
+      serial(j, i) = serial(i, j);
+    }
+  }
+
+  for (int i = 0; i < 12; ++i) {
+    for (int j = 0; j < 12; ++j) {
+      REQUIRE_THAT(H(i, j), Catch::Matchers::WithinAbs(serial(i, j), 1e-8));
+    }
   }
 }
 

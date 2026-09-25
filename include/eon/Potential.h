@@ -83,6 +83,11 @@ public:
 
   [[nodiscard]] PotType getType() const { return this->ptype; }
 
+  /// Finite interaction range in position length units.
+  /// 0 means the potential is not finite-cutoff; the FD Hessian then
+  /// stays one column per coordinate.
+  [[nodiscard]] virtual double finiteCutoff() const noexcept { return 0.0; }
+
   /// Whether this is a surrogate (GP) potential. Override in
   /// SurrogatePotential.
   [[nodiscard]] virtual bool isSurrogate() const noexcept { return false; }

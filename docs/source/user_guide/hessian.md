@@ -45,6 +45,19 @@ One-sided is preferred for classical EAM AKMC cost; central reduces \(O(h)\) bia
 when validating prefactors. The assembled matrix is symmetrized \((H+H^T)/2\)
 before diagonalization. Mass-weighting uses \(\tilde H_{ij} = H_{ij}/\sqrt{m_i m_j}\).
 
+### Cutoff coloring
+
+A potential that reports a finite interaction range (`Potential::finiteCutoff`,
+including classical rgpot kernels with `config().cutoff`) does not need one
+displacement per coordinate. Mobile atoms are greedy-colored so that two atoms
+share a color only when their closed cutoff neighborhoods are disjoint. One
+displacement of a whole color along x, y, or z fills every column of that
+color. With central differences that is two force evaluations per Cartesian
+direction per color, independent of the number of atoms. The same matrix is
+built one column at a time when the potential is not finite-range, when
+`[Main] remove_net_force` couples every atom, or when a column checkpoint is
+in use.
+
 ### Column resume
 
 Long partial Hessians can checkpoint FD columns to `checkpoint_path` (e.g.
