@@ -35,7 +35,7 @@ namespace eonc {
  * Decleration of the Conjugate Gradients optimizer
  */
 
-class ConjugateGradients : public Optimizer {
+class ConjugateGradients final : public Optimizer {
 public:
   //! Conjugate Gradients optimizer constructor
   /*!
@@ -45,10 +45,12 @@ public:
    */
   ConjugateGradients(std::shared_ptr<ObjectiveFunction> a_objf,
                      const Parameters &a_params)
-      : Optimizer(a_objf, OptType::CG, a_params),
-        m_directionOld{(a_objf->getPositions()).setZero()},
-        m_forceOld{(a_objf->getPositions()).setZero()}, // use setZero instead
-        m_cg_i{0} {}
+      : Optimizer(a_objf, OptType::CG, OptimizerConfig::fromParams(a_params)),
+        m_direction{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
+        m_directionOld{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
+        m_directionNorm{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
+        m_force{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())},
+        m_forceOld{Eigen::VectorXd::Zero(a_objf->degreesOfFreedom())} {}
   //! Conjugant Gradient deconstructor
   ~ConjugateGradients() = default;
 
@@ -81,7 +83,7 @@ private:
   eonc::log::FileScoped m_log{"cg", "_cg.log"};
 
   //! Counts the number of discrete steps until algorithm convergence
-  size_t m_cg_i;
+  size_t m_cg_i{0};
 
   //! Steps the conjugate gradient
   /**
