@@ -19,6 +19,7 @@
 #include "eon/HelperFunctions.h"
 #include "eon/NEBForceProjection.h"
 #include "eon/NEBOcinebController.h"
+#include "eon/NEBProjection.h"
 #include "eon/NEBSplineExtrema.h"
 #include "eon/NEBSpringForce.h"
 #include "eon/NEBTangent.h"
@@ -280,6 +281,55 @@ TEST_CASE("computeDNEB: switching function behavior", "[neb]") {
   // Other components should be zero (no y or x contribution)
   REQUIRE(dneb(0, 0) == Catch::Approx(0.0).margin(1e-12));
   REQUIRE(dneb(0, 1) == Catch::Approx(0.0).margin(1e-12));
+}
+
+TEST_CASE("computeDNEB: without switching keeps the perpendicular remainder",
+          "[neb]") {
+  AtomMatrix tangent = make3({1, 0, 0, 0, 0, 0, 0, 0, 0});
+  tangent /= tangent.norm();
+
+  AtomMatrix fSpring = make3({0, 0, 2, 0, 0, 0, 0, 0, 0});
+  AtomMatrix fPerp = make3({0, 1, 0, 0, 0, 0, 0, 0, 0});
+
+  AtomMatrix dneb = eonc::neb::computeDNEB(fSpring, tangent, fPerp, false);
+
+  REQUIRE(dneb(0, 2) == Catch::Approx(2.0).epsilon(1e-10));
+  REQUIRE(dneb(0, 0) == Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(dneb(0, 1) == Catch::Approx(0.0).margin(1e-12));
+}
+
+TEST_CASE("DNEB_Projection honors doubly_nudged_switching", "[neb]") {
+  AtomMatrix tangent = make3({1, 0, 0, 0, 0, 0, 0, 0, 0});
+  tangent /= tangent.norm();
+  AtomMatrix force = make3({0, 1, 0, 0, 0, 0, 0, 0, 0});
+  AtomMatrix fSpring = make3({0, 0, 2, 0, 0, 0, 0, 0, 0});
+  eonc::neb::SpringResult spring{AtomMatrix::Zero(3, 3), fSpring};
+  eonc::neb::ImageForceData data{force, tangent, spring, 3, 3};
+
+  AtomMatrix off = eonc::neb::DNEB_Projection{false}.project(data);
+  AtomMatrix on = eonc::neb::DNEB_Projection{true}.project(data);
+
+  double expectedSwitch = 2.0 / eonc::helpers::pi * std::atan(1.0 / 4.0);
+  REQUIRE(off(0, 1) == Catch::Approx(1.0).epsilon(1e-10));
+  REQUIRE(off(0, 2) == Catch::Approx(2.0).epsilon(1e-10));
+  REQUIRE(on(0, 1) == Catch::Approx(1.0).epsilon(1e-10));
+  REQUIRE(on(0, 2) == Catch::Approx(2.0 * expectedSwitch).epsilon(1e-10));
+}
+
+TEST_CASE("buildProjectionStrategy stores doubly_nudged_switching", "[neb]") {
+  Parameters params;
+  ParametersLoadAccess::neb_options(params).spring.doubly_nudged = true;
+  ParametersLoadAccess::neb_options(params).spring.use_switching = false;
+  auto strat = eonc::neb::buildProjectionStrategy(params);
+  const auto *off = std::get_if<eonc::neb::DNEB_Projection>(&strat);
+  REQUIRE(off != nullptr);
+  REQUIRE_FALSE(off->use_switching);
+
+  ParametersLoadAccess::neb_options(params).spring.use_switching = true;
+  strat = eonc::neb::buildProjectionStrategy(params);
+  const auto *on = std::get_if<eonc::neb::DNEB_Projection>(&strat);
+  REQUIRE(on != nullptr);
+  REQUIRE(on->use_switching);
 }
 
 // ===== zeroTranslation =====================================================

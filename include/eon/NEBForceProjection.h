@@ -33,8 +33,10 @@ AtomMatrix climbingImageForce(const AtomMatrix &force,
                               const AtomMatrix &forceDNEB);
 
 /// Compute the doubly-nudged elastic band perpendicular spring force.
+/// useSwitching multiplies the remainder by (2/pi)*atan(|F_perp|^2 /
+/// |F_spring_perp|^2).
 AtomMatrix computeDNEB(const AtomMatrix &forceSpring, const AtomMatrix &tangent,
-                       const AtomMatrix &forcePerp);
+                       const AtomMatrix &forcePerp, bool useSwitching = true);
 
 /// Zero net translational force for fully free systems.
 void zeroTranslation(AtomMatrix &projectedForce, int nFreeAtoms, int nAtoms);

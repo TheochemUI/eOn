@@ -700,11 +700,12 @@ void NudgedElasticBand::updateForces(bool ci_active) {
       climbingImage = maxEnergyImage;
       // CI force: F - 2*(F.t)*t, plus DNEB correction if active
       AtomMatrix forceDNEB = AtomMatrix::Zero(atoms, 3);
-      if (std::holds_alternative<eonc::neb::DNEB_Projection>(
-              projectionStrat_)) {
+      if (const auto *dnebProj =
+              std::get_if<eonc::neb::DNEB_Projection>(&projectionStrat_)) {
         AtomMatrix fPerp = eonc::neb::forcePerp(force, *tangent[i]);
         forceDNEB = eonc::neb::computeDNEBComponent(springResult.forceSpring,
-                                                    *tangent[i], fPerp);
+                                                    *tangent[i], fPerp,
+                                                    dnebProj->use_switching);
       }
       *projectedForce[i] =
           eonc::neb::climbingImageForce(force, *tangent[i], forceDNEB);
