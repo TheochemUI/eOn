@@ -34,7 +34,7 @@
 // Cap'n Proto generated header (from Potentials.capnp).
 // This defines `class Potential` -- which collides with eOn's Potential class,
 // hence the separate translation unit.
-#include "Potentials.capnp.h"
+#include "rgpot/rpc/Potentials.capnp.h"
 
 namespace eonc {
 
