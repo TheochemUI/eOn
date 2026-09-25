@@ -40,7 +40,7 @@ public:
 
 private:
   AtomMatrix lowestEv;
-  double lowestEw;
+  double lowestEw{0.0};
   eonc::log::Scoped log;
 };
 

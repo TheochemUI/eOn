@@ -15,10 +15,9 @@
 
 #include <algorithm>
 #include <cctype>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <charconv>
 #include <filesystem>
+#include <format>
 #include <system_error>
 #include <utility>
 
@@ -56,9 +55,11 @@ int getBundleSize() {
     }
 
     std::string numstr = name.substr(upos + 1, dpos - upos - 1);
-    if (!numstr.empty() &&
-        std::isdigit(static_cast<unsigned char>(numstr[0]))) {
-      int i = std::atoi(numstr.c_str()) + 1;
+    int value = 0;
+    const auto parsed =
+        std::from_chars(numstr.data(), numstr.data() + numstr.size(), value);
+    if (parsed.ec == std::errc{} && parsed.ptr != numstr.data()) {
+      const int i = value + 1;
       if (i > num_bundle) {
         num_bundle = i;
       }
@@ -66,16 +67,6 @@ int getBundleSize() {
   }
 
   return num_bundle;
-}
-
-int strchrcount(const char *haystack, char needle) {
-  int count = 0;
-  for (const char *ch = haystack; *ch != '\0'; ch++) {
-    if (*ch == needle) {
-      count++;
-    }
-  }
-  return count;
 }
 
 std::vector<std::string> unbundle(int number) {
@@ -88,8 +79,7 @@ std::vector<std::string> unbundle(int number) {
       continue;
     }
 
-    int numUnderscores = strchrcount(originalFilename.c_str(), '_');
-    if (numUnderscores < 1) {
+    if (std::ranges::count(originalFilename, '_') < 1) {
       continue;
     }
 
@@ -111,7 +101,13 @@ std::vector<std::string> unbundle(int number) {
                      [](unsigned char c) { return std::isdigit(c); })) {
       continue;
     }
-    const int bundleNumber = std::atoi(numstr.c_str());
+    int bundleNumber = 0;
+    const auto parsed = std::from_chars(
+        numstr.data(), numstr.data() + numstr.size(), bundleNumber);
+    if (parsed.ec != std::errc{} ||
+        parsed.ptr != numstr.data() + numstr.size()) {
+      continue;
+    }
     if (bundleNumber != number) {
       continue;
     }
@@ -180,7 +176,7 @@ void bundle(int number, const std::vector<std::string> &filenames,
   for (const auto &filename : filenames) {
     const auto [baseName, ext] = splitBundleExtension(filename);
     const std::string newFilename =
-        baseName + "_" + std::to_string(number) + ext;
+        std::format("{}_{}{}", baseName, number, ext);
 
     try {
       fs::rename(filename, newFilename);
