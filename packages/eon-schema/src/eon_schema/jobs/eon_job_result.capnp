@@ -72,6 +72,29 @@ struct ScalarExtra {
   value @1 :Float64;
 }
 
+# Engine stamp carried with an analysis artifact. Ordinals are append-only.
+struct EngineCompatibility {
+  schema @0 :Text;
+  engineId @1 :Text;
+  protocolFamily @2 :Text;
+  protocolMajor @3 :UInt16 = 0;
+  protocolMinor @4 :UInt16 = 0;
+  abiMajor @5 :UInt16 = 0;
+  abiMinor @6 :UInt16 = 0;
+  layoutRevision @7 :UInt32 = 0;
+  buildIdentity @8 :Text;
+}
+
+# Reference to a Landfold analysis product. The geometry stays on JobResult;
+# this names the artifact schema, the run that produced the inputs, the
+# input digest, and the engine the artifact was built against.
+struct LandfoldArtifact {
+  schema @0 :Text;
+  sourceRunId @1 :Text;
+  inputDigest @2 :Text;
+  engineCompatibility @3 :EngineCompatibility;
+}
+
 # Historical results.dat termination_reason integers.
 # Ordinals match MinModeSaddleSearch::Status; do not reorder.
 enum TerminationCode {
@@ -148,6 +171,8 @@ struct JobResult {
     neb @33 :NEBBody;
     processSearch @34 :ProcessSearchBody;
   }
+  # Append-only. @31-@34 belong to the body union.
+  landfoldArtifacts @35 :List(LandfoldArtifact);
 }
 
 struct MinimizationBody {
