@@ -842,16 +842,48 @@ if get_option('with_xtb')
     # Try finding system 'xtb' via pkg-config or cmake.
     # Users who need to build xtb from source can place it in subprojects/
     # and Meson's implicit fallback will find it.
-    if host_machine.system() == 'windows'
-        # conda-forge installs the MinGW import library as libxtb.dll.a, not xtb.lib.
+    if host_machine.system() == 'windows' and cppc.get_id() == 'msvc'
+        # conda-forge win-64 xtb is MinGW: libxtb-6.dll and libxtb.dll.a.
+        # link.exe ignores the GNU import library and asks for xtb.lib.
+        # An existing MSVC import lib is used as-is; otherwise dumpbin and
+        # lib /DEF write xtb.lib from the DLL export table.
         xtb_dep = cppc.find_library('xtb', required: false)
         if not xtb_dep.found()
             _xtb_pc = dependency('xtb', method: 'pkg-config', required: true)
+            _xtb_prefix = _xtb_pc.get_variable(pkgconfig: 'prefix')
             _xtb_libdir = _xtb_pc.get_variable(pkgconfig: 'libdir')
-            _xtb_implib = _xtb_libdir / 'libxtb.dll.a'
-            if not fs.exists(_xtb_implib)
-                error('xtb import library not found: ' + _xtb_implib)
+            _xtb_dll = ''
+            foreach _cand : [
+                _xtb_prefix / 'bin' / 'libxtb-6.dll',
+                _xtb_prefix / 'bin' / 'libxtb.dll',
+                _xtb_prefix / 'Library' / 'bin' / 'libxtb-6.dll',
+                _xtb_prefix / 'Library' / 'bin' / 'libxtb.dll',
+                _xtb_libdir / 'libxtb-6.dll',
+                _xtb_libdir / 'libxtb.dll',
+                _xtb_prefix / 'bin' / 'xtb.dll',
+            ]
+                if _xtb_dll == '' and fs.exists(_cand)
+                    _xtb_dll = _cand
+                endif
+            endforeach
+            if _xtb_dll == ''
+                error('MSVC xtb: libxtb DLL not found under ' + _xtb_prefix)
             endif
+            _xtb_machine = 'x64'
+            if host_machine.cpu_family() == 'x86'
+                _xtb_machine = 'X86'
+            elif host_machine.cpu_family() == 'aarch64'
+                _xtb_machine = 'ARM64'
+            endif
+            _xtb_implib = meson.current_build_dir() / 'xtb.lib'
+            run_command(
+                py,
+                files('../scripts/ci/msvc_xtb_implib.py'),
+                _xtb_dll,
+                _xtb_implib,
+                _xtb_machine,
+                check: true,
+            )
             xtb_dep = declare_dependency(
                 compile_args: ['-I' + _xtb_pc.get_variable(pkgconfig: 'includedir')],
                 link_args: [_xtb_implib],
