@@ -344,6 +344,15 @@ if not quill_dep.found()
         'Quill',
         method: 'cmake',
         modules: ['quill::quill'],
+        required: false,
+    )
+endif
+if not quill_dep.found()
+    # No installed quill: build the one subprojects/quill.wrap pins, inside
+    # the version range pixi.toml allows.
+    quill_dep = dependency(
+        'quill',
+        fallback: ['quill', 'quill_dep'],
         required: true,
     )
 endif
