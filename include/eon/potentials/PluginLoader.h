@@ -38,15 +38,47 @@
 
 namespace eonc {
 
-class PluginLoader {
+// ---------------------------------------------------------------------------
+// IPluginLoader: injectable ABI. Production uses PluginLoader::instance().
+// ---------------------------------------------------------------------------
+class IPluginLoader {
 public:
-  /// Thread-safe singleton accessor (Meyer's pattern).
-  static PluginLoader &instance();
+  virtual ~IPluginLoader() = default;
 
   /// Inject search paths from the eOn config file.
   /// @param colon_paths  colon-separated directory list (may be empty)
   /// These paths are inserted before the EON_POTENTIALS_PATH paths.
-  void add_config_paths(const std::string &colon_paths);
+  virtual void add_config_paths(const std::string &colon_paths) = 0;
+
+  /// Throw a descriptive error for a missing potential library.
+  [[noreturn]] virtual void throw_not_found(const char *lib_base,
+                                            const char *description) const = 0;
+
+  /// Filesystem probe: a matching library file is on the configured
+  /// search path. Does not dlopen, so plugin static initializers
+  /// (banners) do not run.
+  [[nodiscard]] virtual bool lib_present(const char *lib_base) const = 0;
+
+  /// Get the current search paths (for diagnostics).
+  [[nodiscard]] virtual const std::vector<std::string> &
+  search_paths() const noexcept = 0;
+
+  IPluginLoader(const IPluginLoader &) = delete;
+  IPluginLoader &operator=(const IPluginLoader &) = delete;
+
+protected:
+  IPluginLoader() = default;
+};
+
+// ---------------------------------------------------------------------------
+// PluginLoader: process-default loader (Meyer's singleton).
+// ---------------------------------------------------------------------------
+class PluginLoader : public IPluginLoader {
+public:
+  /// Thread-safe singleton accessor (Meyer's pattern).
+  static PluginLoader &instance();
+
+  void add_config_paths(const std::string &colon_paths) override;
 
   /// Load a symbol from a named potential library.
   /// @param lib_base  Base name without platform prefix/suffix (e.g. "eon_sw")
@@ -60,17 +92,13 @@ public:
     return dynlib::loadSym<Fn>(h, sym_name);
   }
 
-  /// Throw a descriptive error for a missing potential library.
   [[noreturn]] void throw_not_found(const char *lib_base,
-                                    const char *description) const;
+                                    const char *description) const override;
 
-  /// Filesystem probe: a matching library file is on the configured
-  /// search path. Does not dlopen, so plugin static initializers
-  /// (banners) do not run.
-  [[nodiscard]] bool lib_present(const char *lib_base) const;
+  [[nodiscard]] bool lib_present(const char *lib_base) const override;
 
-  /// Get the current search paths (for diagnostics).
-  [[nodiscard]] const std::vector<std::string> &search_paths() const noexcept {
+  [[nodiscard]] const std::vector<std::string> &
+  search_paths() const noexcept override {
     return m_search_paths;
   }
 
@@ -79,7 +107,7 @@ public:
 
 private:
   PluginLoader();
-  ~PluginLoader();
+  ~PluginLoader() override;
 
   dynlib::Handle open_lib(const char *lib_base);
   std::vector<std::string> lib_names(const char *lib_base) const;

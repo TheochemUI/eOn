@@ -243,17 +243,23 @@ std::vector<rgpot::ExprPot::Term> parse_expr_terms(const Parameters &params) {
 } // namespace
 
 std::shared_ptr<Potential> makePotential(const Parameters &params) {
+  return makePotential(params, PluginLoader::instance());
+}
+std::shared_ptr<Potential> makePotential(const Parameters &params,
+                                         IPluginLoader &loader) {
   // Inject config-file path before any potential constructor runs
-  PluginLoader::instance().add_config_paths(
-      params.potential_options().potentialsPath);
-  return makePotential(params.potential_options().potential, params);
+  loader.add_config_paths(params.potential_options().potentialsPath);
+  return makePotential(params.potential_options().potential, params, loader);
 }
 std::shared_ptr<Potential> makePotential(PotType ptype,
                                          const Parameters &params) {
+  return makePotential(ptype, params, PluginLoader::instance());
+}
+std::shared_ptr<Potential>
+makePotential(PotType ptype, const Parameters &params, IPluginLoader &loader) {
   // Inject config-file path before any potential constructor runs.
   // Called on every code path including Job::Job which uses this overload.
-  PluginLoader::instance().add_config_paths(
-      params.potential_options().potentialsPath);
+  loader.add_config_paths(params.potential_options().potentialsPath);
   switch (ptype) {
   // TODO: Every potential must know their own type
   case PotType::EMT: {
