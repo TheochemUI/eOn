@@ -186,20 +186,20 @@ TEST_CASE_METHOD(NEBLJFixture, "NEB file init keeps passed endpoints",
       listPath.string();
 
   auto neb = makeNEB();
-  REQUIRE(neb->path[0]->getPositions().isApprox(reactant->getPositions(),
-                                                 1e-10));
+  REQUIRE(
+      neb->path[0]->getPositions().isApprox(reactant->getPositions(), 1e-10));
   REQUIRE(neb->path[nImages + 1]->getPositions().isApprox(
       product->getPositions(), 1e-10));
 
   Matter fileReact(*reactant);
   REQUIRE(eonc::io::io_ok(fileReact.con2matter(frames.front().string())));
-  REQUIRE_FALSE(neb->path[0]->getPositions().isApprox(
-      fileReact.getPositions(), 1e-8));
+  REQUIRE_FALSE(
+      neb->path[0]->getPositions().isApprox(fileReact.getPositions(), 1e-8));
 
   Matter fileInterior(*reactant);
   REQUIRE(eonc::io::io_ok(fileInterior.con2matter(frames[1].string())));
   REQUIRE(neb->path[1]->getPositions().isApprox(fileInterior.getPositions(),
-                                                 1e-10));
+                                                1e-10));
 }
 
 // --- Linear interpolation tests ---

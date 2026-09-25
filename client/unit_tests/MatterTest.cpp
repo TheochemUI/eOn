@@ -163,8 +163,7 @@ TEST_CASE("OH-TST symmetry products share rigid-drift removal",
 
   AtomMatrix rigid = AtomMatrix::Zero(3, 3);
   rigid.rowwise() += Eigen::RowVector3d(2.0, 0.0, 0.0);
-  const AtomMatrix rigidAligned =
-      minImageRemoveRigidDrift(m, rigid, nullptr);
+  const AtomMatrix rigidAligned = minImageRemoveRigidDrift(m, rigid, nullptr);
   REQUIRE(rigidAligned.norm() < 1e-12);
   REQUIRE(m.pbc(rigid).norm() > 1.0);
 }
