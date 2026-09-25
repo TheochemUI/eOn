@@ -56,16 +56,28 @@ jobs:
         shell: bash
         run: command -v cbindgen || cargo install --root "$CONDA_PREFIX" cbindgen
 
-      - name: Generate Docs
+      - name: Install eonclient
         shell: pixi run -e docs-mta bash -e {0}
-        env:
-          NB_EXECUTION_MODE: ${{ env.NB_EXECUTION_MODE }}
         run: |
           # One meson build/install only (eonclient + python package into pixi prefix).
           # Do not pip install . here — that would re-run meson-python and compile twice.
           meson setup bbdir --prefix=$CONDA_PREFIX --libdir=lib --buildtype release \
             -Dwith_metatomic=True -Dtorch_version=2.10 -Dpip_metatomic=True
           meson install --skip-subprojects -C bbdir
+
+      - name: Regenerate tutorial figures
+        shell: pixi run -e docs-mta bash -e {0}
+        env:
+          MPLBACKEND: Agg
+          RGPYCRUMBS_AUTO_DEPS: "1"
+        run: |
+          python scripts/regen_tutorial_figures.py
+
+      - name: Generate Docs
+        shell: pixi run -e docs-mta bash -e {0}
+        env:
+          NB_EXECUTION_MODE: ${{ env.NB_EXECUTION_MODE }}
+        run: |
           sphinx-build -b html -j auto docs/source docs/build/html
           pixi run -e docs-mta install-doxyhtml
 
