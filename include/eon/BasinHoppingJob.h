@@ -17,6 +17,8 @@
 
 namespace eonc {
 
+class BasinHoppingDisplaceAccess;
+
 class BasinHoppingJob : public Job {
 public:
   BasinHoppingJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
@@ -32,6 +34,7 @@ public:
   static double metropolisProbability(double de, double kB, double temperature);
 
 private:
+  friend class BasinHoppingDisplaceAccess;
   VectorXd calculateDistanceFromCenter(Matter *matter);
   AtomMatrix displaceRandom(double maxDisplacement);
   void randomSwap(Matter *matter);
