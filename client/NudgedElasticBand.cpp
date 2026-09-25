@@ -481,13 +481,8 @@ double NudgedElasticBand::convergenceForce() {
       return projectedForce[i]->norm();
     }
     if (params.optimizer_options().convergence_metric == "max_atom") {
-      double f = 0;
-      for (int j = 0; j < path[0]->numberOfAtoms(); j++) {
-        if (path[0]->getFixed(j))
-          continue;
-        f = std::max(f, projectedForce[i]->row(j).norm());
-      }
-      return f;
+      // Every image shares the reactant constraint mask.
+      return path[0]->maxFreeAtomForce(*projectedForce[i]);
     }
     if (params.optimizer_options().convergence_metric == "max_component") {
       return projectedForce[i]->cwiseAbs().maxCoeff();

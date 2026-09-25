@@ -12,12 +12,16 @@
 #include "eon/Matter.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/ForceNorm.h"
 #include "eon/MonteCarlo.h"
 #include "eon/Parameters.h"
 #include "eon/Prefactor.h"
+#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <memory>
+#include <stdexcept>
+#include <vector>
 
 using namespace Catch::Matchers;
 using eonc::Potential;
@@ -531,6 +535,68 @@ TEST_CASE("movedAtomsPct skips atoms fixed in min1",
   for (int i = 0; i < moved.size(); ++i) {
     REQUIRE(moved[i] != 0);
   }
+}
+
+TEST_CASE("maxFreeAtomForceNorm masks fully fixed atoms",
+          "[MatterTest][maxForce][highway]") {
+  const long lengths[] = {0, 1, 2, 3, 4, 5, 7, 8, 13, 17, 31, 32, 33};
+  for (long n : lengths) {
+    std::vector<double> forces(static_cast<size_t>(3 * std::max(n, 0L)), 0.0);
+    std::vector<double> fixed(forces.size(), 0.0);
+    double expect = 0.0;
+    for (long i = 0; i < n; ++i) {
+      const double x = 0.1 * static_cast<double>((i * 3) % 7) - 0.2;
+      const double y = 0.05 * static_cast<double>(i % 5);
+      const double z = (i % 4 == 0) ? -0.3 : 0.15;
+      forces[static_cast<size_t>(3 * i)] = x;
+      forces[static_cast<size_t>(3 * i + 1)] = y;
+      forces[static_cast<size_t>(3 * i + 2)] = z;
+      if (i % 5 == 0) {
+        fixed[static_cast<size_t>(3 * i)] = 1.0;
+        fixed[static_cast<size_t>(3 * i + 1)] = 1.0;
+        fixed[static_cast<size_t>(3 * i + 2)] = 1.0;
+      } else if (i % 5 == 1) {
+        fixed[static_cast<size_t>(3 * i)] = 1.0;
+      }
+      if (i % 5 == 0) {
+        continue;
+      }
+      expect = std::max(expect, std::sqrt((x * x + y * y) + z * z));
+    }
+    const double *fdata = forces.empty() ? nullptr : forces.data();
+    const double *mdata = fixed.empty() ? nullptr : fixed.data();
+    const double got = eonc::maxFreeAtomForceNorm(fdata, mdata, n);
+    REQUIRE(got == Catch::Approx(expect).margin(1e-12));
+    const double unmasked = eonc::maxFreeAtomForceNorm(fdata, nullptr, n);
+    if (n > 0) {
+      REQUIRE(unmasked + 1e-15 >= got);
+    } else {
+      REQUIRE(unmasked == Catch::Approx(0.0).margin(0.0));
+    }
+  }
+}
+
+TEST_CASE("maxForce skips fully fixed atoms and keeps partial atoms",
+          "[MatterTest][maxForce]") {
+  auto [m1, params] = makeLJCluster();
+  const long n = m1->numberOfAtoms();
+  REQUIRE(n >= 3);
+  AtomMatrix inj = AtomMatrix::Zero(n, 3);
+  inj.row(0) << 9.0, 0.0, 0.0;
+  inj.row(1) << 3.0, 4.0, 0.0;
+  inj.row(2) << 0.0, 3.0, 4.0;
+  m1->setFixed(0, true);
+  m1->setFixedMask(1, {true, false, true});
+  m1->setForces(inj);
+  // Atom 0 is fully fixed. Atom 1 keeps only the free y component (4).
+  // Atom 2 is free with norm 5.
+  REQUIRE(m1->maxForce() == Catch::Approx(5.0).margin(1e-12));
+  AtomMatrix raw = AtomMatrix::Zero(n, 3);
+  raw.row(0) << 8.0, 0.0, 0.0;
+  raw.row(2) << 0.0, 0.0, 1.0;
+  REQUIRE(m1->maxFreeAtomForce(raw) == Catch::Approx(1.0).margin(1e-12));
+  AtomMatrix bad(n + 1, 3);
+  REQUIRE_THROWS_AS(m1->maxFreeAtomForce(bad), std::invalid_argument);
 }
 
 } /* namespace tests */

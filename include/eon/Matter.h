@@ -237,6 +237,10 @@ public:
 
   double maxForce(void) const;
 
+  /// Max per-atom Euclidean norm of `rows`. Atoms fixed on every axis are
+  /// ignored. `rows` must have one row per atom.
+  [[nodiscard]] double maxFreeAtomForce(const AtomMatrix &rows) const;
+
   /// Parameters.main_options().writeConForces for this Matter, if bound.
   [[nodiscard]] bool getWriteConForces() const noexcept;
 
