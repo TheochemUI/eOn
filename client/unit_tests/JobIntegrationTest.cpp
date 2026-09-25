@@ -483,7 +483,7 @@ max_energy = 10.0
 
   // Eigenvalue must be negative (true saddle point).
   // SVN printed -1.014995. Dimer::rotate now updates the plane from the
-  // pre-rotation direction (eOn-00lg); the FD curvature on this fixture
+  // pre-rotation direction; the FD curvature on this fixture
   // is -1.010564. Energy still matches the SVN saddle.
   double eigenvalue = std::stod(results["final_eigenvalue"]);
   REQUIRE(eigenvalue < 0.0);
@@ -1382,7 +1382,7 @@ max_energy = 10.0
   int status = std::stoi(results["termination_reason"]);
   REQUIRE(status == 0);
 
-  // SVN printed 67 force calls. The corrected dimer rotate (eOn-00lg)
+  // SVN printed 67 force calls. The corrected dimer rotate
   // takes two extra evaluations on this fixture; energies still match.
   REQUIRE(forceCalls_ <= 69);
 
@@ -1784,7 +1784,7 @@ steps = 5
 }
 
 // SafeHyperJob requires element-specific BondBoost parameters (SIGFPE on
-// generic LJ clusters). Needs proper metallic test system on cosmolab.
+// generic LJ clusters). Needs a metallic test system.
 
 TEST_CASE_METHOD(JobIntegrationFixture,
                  "StructureComparisonJob matches identical structures",
