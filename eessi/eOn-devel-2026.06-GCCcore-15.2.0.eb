@@ -40,10 +40,21 @@ modextravars = {
 
 # cargo ignores CURL_CA_BUNDLE, which EESSI's init sets on systems whose CA
 # bundle is not at the Debian path; readcon-core's cargo build needs it.
+#
+# EESSI builds rpath the GCCcore runtime and keep LD_LIBRARY_PATH out of their
+# modules, so a hand build finds the compat layer's libstdc++ instead. That one
+# is GCC 14's (up to GLIBCXX_3.4.33) while the compiler is GCC 15.2
+# (GLIBCXX_3.4.34). Put the GCCcore runtime on the rpath of what meson links.
+# EESSI's own answer for manual builds is a buildenv/default-foss-<gen> module
+# with RPATH compiler wrappers; 2026.06 has none yet, so this sets LDFLAGS.
 modluafooter = """
 local ca = os.getenv("CURL_CA_BUNDLE")
 if ca and ca ~= "" then
     setenv("CARGO_HTTP_CAINFO", ca)
+end
+local sw = os.getenv("EESSI_SOFTWARE_PATH")
+if sw and sw ~= "" then
+    setenv("LDFLAGS", "-Wl,-rpath," .. pathJoin(sw, "software/GCCcore/%(toolchain_version)s/lib64"))
 end
 """
 
