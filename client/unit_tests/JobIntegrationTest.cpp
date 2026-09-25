@@ -22,6 +22,7 @@
 #include "eon/Bundling.h"
 #include "eon/Job.h"
 #include "eon/Matter.h"
+#include "eon/ParallelReplicaJob.h"
 #include "eon/Parameters.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
@@ -1317,6 +1318,109 @@ corr_time = 10.0
   REQUIRE(results.count("transition_found") > 0);
   int transition = std::stoi(results["transition_found"]);
   REQUIRE(transition == 0);
+}
+
+// Same seeded dephase and production steps as ParallelReplicaJob, with the
+// bond-boost pointer either put back after the trajectory copy or left null.
+static AtomMatrix replicaBiasPositions(const Parameters &spec, bool keepBias) {
+  eonc::rng::random(spec.main_options().randomSeed);
+  auto pot = eonc::helpers::makePotential(PotType::LJ, spec);
+  auto matter = std::make_shared<Matter>(pot, spec);
+  matter->con2matter(std::string("pos.con"));
+  matter->relax();
+  // runFromMatter writes the reactant before copying, which wraps PBC.
+  (void)matter->matter2con("reactant.con");
+
+  auto trajectory = std::make_shared<Matter>(pot, spec);
+  *trajectory = *matter;
+  Dynamics dynamics(trajectory.get(), spec);
+  BondBoost bondBoost(trajectory.get(), spec);
+  bondBoost.initialize();
+  trajectory->setBiasPotential(&bondBoost);
+
+  Matter saved(pot, spec);
+  saved = *trajectory;
+  *trajectory = saved;
+  if (keepBias) {
+    trajectory->setBiasPotential(&bondBoost);
+  }
+
+  const double dt = spec.dynamics_options().time_step;
+  int dephaseSteps = static_cast<int>(
+      std::floor(spec.parallel_replica_options().dephase_time / dt + 0.5));
+  if (dephaseSteps < 1) {
+    dephaseSteps = 1;
+  }
+  dynamics.setThermalVelocity();
+  for (int step = 1; step <= dephaseSteps; ++step) {
+    dynamics.oneStep(step);
+  }
+
+  for (long step = 1; step <= spec.dynamics_options().steps; ++step) {
+    bondBoost.advance();
+    dynamics.oneStep();
+    (void)bondBoost.boost();
+  }
+  return trajectory->getPositionsCopy();
+}
+
+TEST_CASE_METHOD(JobIntegrationFixture,
+                 "ParallelReplicaJob dephase keeps bond-boost forces",
+                 "[job][parallel_replica][bond_boost]") {
+  EON_REQUIRE_TEST_DATA(".");
+  writeConfig(R"(
+[Main]
+job = parallel_replica
+temperature = 300
+random_seed = 42
+
+[Potential]
+potential = lj
+
+[Dynamics]
+time_step = 1.0
+time = 8.0
+thermostat = none
+
+[Parallel Replica]
+dephase_time = 1.0
+dephase_loop_max = 1
+state_check_interval = 1000.0
+refine_transition = false
+post_transition_time = 0.0
+
+[Hyperdynamics]
+bias_potential = bond_boost
+bb_rmd_time = 2.0
+bb_dvmax = 0.4
+bb_boost_atomlist = all
+)");
+
+  std::filesystem::copy_file(workdir / "reactant.con", workdir / "pos.con",
+                             std::filesystem::copy_options::overwrite_existing);
+
+  auto oldDir = std::filesystem::current_path();
+  std::filesystem::current_path(workdir);
+  auto loaded = std::make_unique<Parameters>();
+  loaded->load("config.ini");
+  const Parameters spec = *loaded;
+  REQUIRE(spec.parallel_replica_options().dephase_loop_max == 1);
+  REQUIRE(spec.thermostat_options().kind == "none");
+  REQUIRE(spec.dynamics_options().steps >= 4);
+
+  AtomMatrix kept = replicaBiasPositions(spec, true);
+  AtomMatrix dropped = replicaBiasPositions(spec, false);
+  REQUIRE((kept - dropped).norm() > 1e-4);
+
+  eonc::rng::random(spec.main_options().randomSeed);
+  auto pot = eonc::helpers::makePotential(PotType::LJ, spec);
+  auto matter = std::make_shared<Matter>(pot, spec);
+  matter->con2matter(std::string("pos.con"));
+  ParallelReplicaJob job(pot, spec);
+  auto result = job.runFromMatter(matter);
+  REQUIRE(result->getPositions().isApprox(kept, 1e-8));
+
+  std::filesystem::current_path(oldDir);
 }
 
 TEST_CASE_METHOD(JobIntegrationFixture, "ReplicaExchangeJob runs on LJ cluster",

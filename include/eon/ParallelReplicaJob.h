@@ -32,7 +32,7 @@ private:
   std::vector<std::string> returnFiles;
   std::shared_ptr<Matter> reactant;
 
-  void dephase(Matter &trajectory);
+  void dephase(Matter &trajectory, BondBoost *bias);
   int refineTransition(const std::vector<std::shared_ptr<Matter>> &snapshots,
                        bool fake = false);
   eonc::log::Scoped log;
