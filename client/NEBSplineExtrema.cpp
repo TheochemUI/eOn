@@ -143,9 +143,13 @@ findSplineExtrema(const std::vector<std::shared_ptr<Matter>> &path,
         result.curvatures[result.numExtrema] = 6.0 * d[i] * f + 2 * c[i];
         result.numExtrema++;
       }
-      // Cubic case 2
-      if (d[i] != 0) {
-        f = (-(c[i] - std::sqrt(discriminant)) / (3. * d[i]));
+      // Cubic case 2. A zero cubic coefficient leaves f at the quadratic
+      // root, and a zero discriminant is that same cubic root. Storing
+      // either again doubles one stationary point.
+      if (d[i] != 0 && discriminant != 0.0) {
+        f = -(c[i] - std::sqrt(discriminant)) / (3. * d[i]);
+      } else {
+        f = -1;
       }
       if ((f >= 0) && (f <= 1)) {
         result.positions[result.numExtrema] = i + f;
