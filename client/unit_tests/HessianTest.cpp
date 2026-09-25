@@ -19,8 +19,10 @@
 #include "eon/potentials/RgpotAdapter/RgpotAdapter.h"
 #include "rgpot/LennardJones/LJPot.hpp"
 
+#include <algorithm>
 #include <cstdio>
 #include <fstream>
+#include <vector>
 
 namespace tests {
 
@@ -284,10 +286,21 @@ TEST_CASE("Colored FD Hessian matches serial central difference",
     }
   }
   REQUIRE(shared);
+  int nColors = 0;
+  for (int c : colors) {
+    nColors = std::max(nColors, c + 1);
+  }
+  REQUIRE(nColors == 3);
 
+  pot->forceCallCounter.store(0);
   Hessian hess(params, matter.get());
   MatrixXd H = hess.getHessian(matter.get(), all);
   REQUIRE(H.rows() == 12);
+  // Central difference: two evaluations per direction per color, plus the
+  // undisplaced gradient. Strictly below one column per coordinate.
+  const auto calls = pot->forceCallCounter.load();
+  REQUIRE(calls == static_cast<size_t>(1 + 2 * 3 * nColors));
+  REQUIRE(calls < static_cast<size_t>(1 + 2 * 12));
 
   const double dr = params.main_options().finiteDifference;
   Matter probe(*matter);
