@@ -1,10 +1,9 @@
 """In-process communicator: jobs run as pyeonclient.Matter (no eonclient binary).
 
-This is the Matter-through path:
-  Structure/Atoms  →  pyeonclient.Matter  →  relax / (future jobs)  →  Structure
-
-Requires the pyeonclient extension (``-Dwith_pyeonclient=true``). Cluster/MPI
-still use the file-based communicators.
+Geometry crosses the job dict as a Structure (numpy working set) or a
+readcon.ConFrame. Matter is the potential-bearing client object. Result
+saddle and product values are ConFrames. This path does not read or write
+.con text.
 """
 
 from __future__ import annotations
@@ -20,6 +19,8 @@ import numpy as np
 from eon.communicator import Communicator, CommunicatorError
 
 logger = logging.getLogger("communicator")
+
+_GEOMETRY_KEYS = ("structure", "conframe", "reactant", "pos", "pos.con")
 
 
 def _require_pyeonclient():
@@ -69,21 +70,64 @@ def _params_from_invariants(pc, invariants: dict) -> Any:
     return params
 
 
-def _structure_from_job_con(job: dict, key: str = "pos.con"):
-    from eon import fileio as io
+def _is_structure(obj) -> bool:
+    from eon.structure import Structure
 
-    blob = job.get(key)
-    if blob is None:
-        raise CommunicatorError(f"job missing {key}")
-    if hasattr(blob, "getvalue"):
-        text = blob.getvalue()
-    elif hasattr(blob, "read"):
-        if hasattr(blob, "seek"):
-            blob.seek(0)
-        text = blob.read()
-    else:
-        text = str(blob)
-    return io.loadcon(StringIO(text))
+    return isinstance(obj, Structure)
+
+
+def _is_conframe(obj) -> bool:
+    cls = type(obj)
+    return cls.__name__ == "ConFrame" and "readcon" in cls.__module__
+
+
+def _is_con_text(obj) -> bool:
+    if _is_structure(obj) or _is_conframe(obj):
+        return False
+    return (
+        hasattr(obj, "getvalue")
+        or hasattr(obj, "read")
+        or isinstance(obj, (str, bytes))
+    )
+
+
+def _structure_from_geometry(blob, where: str):
+    """Structure or ConFrame to the numpy working set. Rejects .con text."""
+    if _is_con_text(blob):
+        raise CommunicatorError(
+            f"{where} must be a Structure or ConFrame, not .con text"
+        )
+    if _is_structure(blob):
+        return blob
+    if _is_conframe(blob):
+        from eon.structure import Structure
+
+        return Structure.from_conframe(blob)
+    raise CommunicatorError(
+        f"{where} must be a Structure or ConFrame, got {type(blob).__name__}"
+    )
+
+
+def _structure_from_job(job: dict, invariants: dict | None):
+    for key in _GEOMETRY_KEYS:
+        if key in job and job[key] is not None:
+            return _structure_from_geometry(job[key], f"job[{key!r}]")
+    if invariants:
+        for key in _GEOMETRY_KEYS:
+            if key not in invariants or invariants[key] is None:
+                continue
+            val = invariants[key]
+            blob = val[0] if isinstance(val, tuple) else val
+            if _is_structure(blob) or _is_conframe(blob):
+                return _structure_from_geometry(blob, f"invariants[{key!r}]")
+    raise CommunicatorError(
+        "inprocess job needs a Structure or ConFrame "
+        "(structure, conframe, reactant, pos, or pos.con)"
+    )
+
+
+def _conframe_of(structure):
+    return structure.to_conframe()
 
 
 def _run_inprocess_job(pc, job_kind, matter, pot, params, job: dict) -> dict:
@@ -234,32 +278,6 @@ def _results_dat(status: int, energy: float, force_calls: int, job_type: str) ->
     )
 
 
-class _LazyCon:
-    """CON text only if a caller reads it (eOn-uwvr)."""
-
-    def __init__(self, structure):
-        self._structure = structure
-        self._text: str | None = None
-
-    def _materialize(self) -> str:
-        if self._text is None:
-            import eon.fileio as fio
-
-            buf = StringIO()
-            fio.savecon(buf, self._structure)
-            self._text = buf.getvalue()
-        return self._text
-
-    def getvalue(self) -> str:
-        return self._materialize()
-
-    def seek(self, *args, **kwargs):
-        return 0
-
-    def read(self, *args, **kwargs) -> str:
-        return self._materialize()
-
-
 class LocalInProcess(Communicator):
     """Run client work in-process via Matter (nanobind), not a subprocess."""
 
@@ -280,28 +298,31 @@ class LocalInProcess(Communicator):
         return 0
 
     def submit_jobs(self, data, invariants):
-        """Run each job dict in-process. Supports minimization-like jobs.
+        """Run each job dict in-process.
 
-        Job dict keys (legacy file names kept for explorer compatibility):
-          * pos.con — reactant structure (StringIO of .con text)
-          * id — job id string
-        Dispatch follows Parameters.job (minimization, point, process_search,
-        saddle_search). Other types raise CommunicatorError.
+        Geometry is a Structure or a readcon.ConFrame on one of
+        ``structure``, ``conframe``, ``reactant``, ``pos``, or ``pos.con``,
+        or the same objects on the invariant dict. ``.con`` text is refused.
+        The result carries ``product`` and, for a saddle search, ``saddle``
+        as ConFrames. Nothing is written to disk.
         """
         pc = self._pc
         params = _params_from_invariants(pc, invariants)
         pot = pc.make_potential(params)
         job_kind = getattr(params, "job", pc.JobType.Minimization)
 
+        from pyeonclient.bridge import structure_to_matter, matter_to_structure
+
         for job in data:
             jid = job.get("id", "job")
             try:
-                structure = _structure_from_job_con(job, "pos.con")
+                structure = _structure_from_job(job, invariants)
+            except CommunicatorError:
+                logger.exception("inprocess: missing geometry for %s", jid)
+                raise
             except Exception as e:
-                logger.exception("inprocess: failed to parse pos.con for %s", jid)
+                logger.exception("inprocess: failed to read geometry for %s", jid)
                 raise CommunicatorError(str(e)) from e
-
-            from pyeonclient.bridge import structure_to_matter, matter_to_structure
 
             matter = structure_to_matter(structure, pot, params)
             payload = _run_inprocess_job(pc, job_kind, matter, pot, params, job)
@@ -318,19 +339,17 @@ class LocalInProcess(Communicator):
                 "id": jid,
                 "number": 0,
                 "name": str(jid),
-                "_structure": out,
-                "min.con": _LazyCon(out),
+                "product": _conframe_of(out),
                 "results.dat": results,
                 "_matter": matter,
                 "_structure": out,
                 "_energy": energy,
                 "_converged": bool(payload.get("converged", status == 0)),
             }
-            if payload.get("saddle") is not None:
-                rec["_saddle"] = payload["saddle"]
-                rec["saddle.con"] = _LazyCon(
-                    matter_to_structure(payload["saddle"])
-                )
+            saddle = payload.get("saddle")
+            if saddle is not None:
+                rec["saddle"] = _conframe_of(matter_to_structure(saddle))
+                rec["_saddle"] = saddle
             self._finished.append(rec)
             logger.info(
                 "inprocess job %s type=%s status=%s E=%.6f fcalls=%s",
@@ -342,10 +361,9 @@ class LocalInProcess(Communicator):
             )
 
     def get_results(self, resultspath=None, keep_result=None):
-        """Return finished job dicts (legacy StringIO + Matter fields)."""
+        """Return finished job dicts. Geometry is ConFrame, not a file."""
         out = self._finished
         self._finished = []
-        # Compatibility: some callers expect a list of lists from unbundle
         if not out:
             return []
         return out
