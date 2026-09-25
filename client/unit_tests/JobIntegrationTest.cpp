@@ -24,6 +24,7 @@
 #include "eon/Matter.h"
 #include "eon/ParallelReplicaJob.h"
 #include "eon/OHTSTJob.h"
+#include "eon/OHTSTJob.h"
 #include "eon/Parameters.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
@@ -2432,6 +2433,59 @@ potential = lenosky_si
           Catch::Approx(-17.284558).epsilon(1e-4));
 }
 #endif // WITH_FORTRAN
+
+// samplePlane is private. A coordinate just outside the cell must not be
+// reloaded after setPositionsFreeV wraps it.
+struct OHTSTPlaneWrapTest {
+  static void keepsUnwrappedRestart() {
+    auto params = std::make_unique<Parameters>();
+    ParametersLoadAccess::potential_options(*params).potential = PotType::LJ;
+    ParametersLoadAccess::main_options(*params).job = JobType::OH_TST;
+    ParametersLoadAccess::oh_tst_options(*params).equil_steps = 0;
+    ParametersLoadAccess::oh_tst_options(*params).sample_steps = 0;
+    eonc::Runtime rt;
+    eonc::OHTSTJob job(std::move(params), rt);
+    job.m_masses3N = VectorXd::Ones(6);
+    job.m_kbt = 0.025;
+
+    Matter matter(job.pot, job.params);
+    matter.resize(2);
+    matter.setAtomicNr(0, 1);
+    matter.setAtomicNr(1, 1);
+    matter.setPeriodic(true);
+    matter.setPbcConvention(eonc::PbcConvention::Legacy);
+    matter.setCell(Matrix3d::Identity() * 10.0);
+    AtomMatrix inside(2, 3);
+    inside << 1.0, 1.0, 5.0, 3.0, 8.0, 5.0;
+    matter.setPositions(inside);
+
+    // On the plane n.(x - gamma) = 0, with atom 0 just outside the cell.
+    VectorXd x(6);
+    x << -0.2, 1.0, 5.0, 0.2, 8.0, 5.0;
+    VectorXd normal(6);
+    normal << 1.0, 0.0, 0.0, 1.0, 0.0, 0.0;
+    normal.normalize();
+    const VectorXd gamma = VectorXd::Zero(6);
+    REQUIRE(std::abs(normal.dot(x - gamma)) < 1e-12);
+
+    job.samplePlane(matter, x, gamma, normal);
+    const VectorXd wrapped = matter.getPositionsFreeV();
+    REQUIRE(wrapped(0) == Catch::Approx(9.8).margin(1e-8));
+    REQUIRE(x(0) == Catch::Approx(-0.2).margin(1e-8));
+    REQUIRE(std::abs(normal.dot(x - gamma)) < 1e-8);
+
+    job.samplePlane(matter, x, gamma, normal);
+    REQUIRE(x(0) == Catch::Approx(-0.2).margin(1e-8));
+    REQUIRE(x(3) == Catch::Approx(0.2).margin(1e-8));
+    REQUIRE(std::abs(normal.dot(x - gamma)) < 1e-8);
+    REQUIRE((x - wrapped).norm() > 1.0);
+  }
+};
+
+TEST_CASE("OH-TST plane restart stays unwrapped across the periodic cell",
+          "[job][ohtst][pbc]") {
+  OHTSTPlaneWrapTest::keepsUnwrappedRestart();
+}
 
 // Move the first free atom of reactant.con so |P-R| survives the
 // rigid-drift removal. The checked-in neb_morse product is a 0.5 A

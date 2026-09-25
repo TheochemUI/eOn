@@ -146,15 +146,17 @@ bool OHTSTJob::symmetryReflect(const VectorXd &xR, VectorXd &x, VectorXd &v,
   return true;
 }
 
-OHTSTJob::PlaneAverages OHTSTJob::samplePlane(Matter &matter,
+OHTSTJob::PlaneAverages OHTSTJob::samplePlane(Matter &matter, VectorXd &x,
                                               const VectorXd &gamma,
                                               const VectorXd &normal) {
   const long equilSteps = params.oh_tst_options().equil_steps;
   const long sampleSteps = params.oh_tst_options().sample_steps;
   const double alphaRot = params.oh_tst_options().alpha_rot;
 
-  // Constrain the current geometry exactly onto the plane.
-  VectorXd x = matter.getPositionsFreeV();
+  // Constrain the unwrapped free coordinates onto the plane. Matter
+  // stores the periodic image: a coordinate just outside the cell comes
+  // back from getPositionsFreeV shifted by a lattice vector, and
+  // projecting that image lands on a different 3N point.
   x -= normal * normal.dot(x - gamma);
   matter.setPositionsFreeV(x);
 
@@ -422,6 +424,9 @@ std::vector<std::string> OHTSTJob::run(void) {
   const double fTol = params.oh_tst_options().force_tol;
 
   Matter walker(*reactant);
+  // Carry the unwrapped free coordinates. The next plane must not reload
+  // them after setPositionsFreeV has wrapped the configuration.
+  VectorXd xFree = walker.getPositionsFreeV();
 
   // Reversible-work accumulators and the previous plane's averages
   // for the trapezoid rules of Eqs 18-19.
@@ -469,7 +474,7 @@ std::vector<std::string> OHTSTJob::run(void) {
       s = pmfScanS(plane, nScan, guideLen);
     }
     const VectorXd gamma = gOrigin + s * gDir;
-    PlaneAverages avg = samplePlane(walker, gamma, n);
+    PlaneAverages avg = samplePlane(walker, xFree, gamma, n);
 
     // Driving forces: translation climbs against <F.n> (Eq 5 with the
     // reversed-force convention); the normal is driven along
@@ -567,9 +572,8 @@ std::vector<std::string> OHTSTJob::run(void) {
       havePrev = true;
       s = pmfScanS(plane + 1, nScan, guideLen);
       const VectorXd gammaNext = xR + s * u;
-      VectorXd xStart = walker.getPositionsFreeV();
-      xStart -= u * (u.dot(xStart - gammaNext));
-      walker.setPositionsFreeV(xStart);
+      xFree -= u * (u.dot(xFree - gammaNext));
+      walker.setPositionsFreeV(xFree);
       continue;
     }
     // Damped two-force Verlet on s (Eqs 6-7): the velocity is zeroed
@@ -663,9 +667,9 @@ std::vector<std::string> OHTSTJob::run(void) {
     } else {
       gammaNew = gOrigin + sNew * gDir;
     }
-    VectorXd xStart = gammaNew + armNew;
-    xStart -= n * n.dot(xStart - gammaNew);
-    walker.setPositionsFreeV(xStart);
+    xFree = gammaNew + armNew;
+    xFree -= n * n.dot(xFree - gammaNew);
+    walker.setPositionsFreeV(xFree);
 
     fnPrev = avg.fn;
     nPrev = nOld;
