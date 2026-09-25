@@ -860,4 +860,61 @@ TEST_CASE_METHOD(
       Catch::Matchers::ContainsSubstring("non-finite batch forces"));
 }
 
+// Quadratic one-atom potential: energy Hessian is diag(-10, 0.1, 5).
+class DiagonalHessian final : public Potential {
+public:
+  DiagonalHessian()
+      : Potential(PotType::UNKNOWN) {}
+
+  void force(long nAtoms, const double *positions, const int *atomicNrs,
+             double *forces, double *energy, double *variance,
+             const double *box) override {
+    (void)atomicNrs;
+    (void)box;
+    const double curvature[3] = {-10.0, 0.1, 5.0};
+    double e = 0.0;
+    for (long a = 0; a < nAtoms; ++a) {
+      for (int c = 0; c < 3; ++c) {
+        const double x = positions[3 * a + c];
+        forces[3 * a + c] = -curvature[c] * x;
+        e += 0.5 * curvature[c] * x * x;
+      }
+    }
+    if (energy != nullptr) {
+      *energy = e;
+    }
+    if (variance != nullptr) {
+      *variance = 0.0;
+    }
+  }
+};
+
+TEST_CASE("Lanczos keeps the closed Krylov Ritz pair", "[lanczos][eigenmode]") {
+  Parameters params;
+  auto pot = std::make_shared<DiagonalHessian>();
+  auto matter = std::make_shared<Matter>(pot, params);
+  matter->resize(1);
+  matter->setAtomicNr(0, 1);
+  matter->setMass(0, 1.0);
+  matter->setPeriodic(false);
+  matter->setCell(Matrix3d::Identity() * 20.0);
+  matter->setPositions(AtomMatrix::Zero(1, 3));
+
+  AtomMatrix seed(1, 3);
+  seed << 1.0, 1.0, 1.0;
+  seed /= std::sqrt(3.0);
+
+  Lanczos lanczos(matter, params, pot);
+  lanczos.compute(matter, seed);
+
+  // Full space is invariant. The lowest curvature is the x curvature, not
+  // the two-vector Ritz value from the previous iteration.
+  REQUIRE(lanczos.getEigenvalue() == Catch::Approx(-10.0).margin(1e-6));
+  const AtomMatrix ev = lanczos.getEigenvector();
+  REQUIRE(ev.rows() == 1);
+  REQUIRE(std::fabs(ev(0, 0)) == Catch::Approx(1.0).margin(1e-6));
+  REQUIRE(std::fabs(ev(0, 1)) == Catch::Approx(0.0).margin(1e-6));
+  REQUIRE(std::fabs(ev(0, 2)) == Catch::Approx(0.0).margin(1e-6));
+}
+
 } /* namespace tests */
