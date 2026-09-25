@@ -24,11 +24,17 @@ __version__ = "0.2.3"
 from eon_schema.ssot import capnp_path, catalog_path, load_catalog
 from eon_schema.jobs import (
     dict_to_results_dat,
+    geometry_digest,
     job_result_capnp_path,
     job_result_dumps,
     job_result_loads,
     job_result_scalars_from_results_dat,
+    landfold_consume,
     results_dat_to_dict,
+    rgpot_identity,
+    trajectory_manifest,
+    trajectory_manifest_dumps,
+    trajectory_manifest_loads,
 )
 
 __all__ = [
@@ -42,4 +48,10 @@ __all__ = [
     "job_result_scalars_from_results_dat",
     "job_result_dumps",
     "job_result_loads",
+    "geometry_digest",
+    "rgpot_identity",
+    "trajectory_manifest",
+    "trajectory_manifest_dumps",
+    "trajectory_manifest_loads",
+    "landfold_consume",
 ]
