@@ -702,6 +702,7 @@ eonclib_sources = [
     'Prefactor.cpp',
     'ConjugateGradients.cpp',
     'Matter.cpp',
+    'PbcSimd.cpp',
     'FiniteDifferenceJob.cpp',
     'Lanczos.cpp',
     'Davidson.cpp',

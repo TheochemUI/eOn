@@ -297,6 +297,55 @@ TEST_CASE("isolated molecule pot hard-fails if PBC re-enabled (#188)",
   REQUIRE_THROWS_AS(m.getPotentialEnergy(), std::runtime_error);
 }
 
+TEST_CASE("PBC wrap matches floor and fmod on a wide matrix",
+          "[MatterTest][pbc][simd]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter m(pot, params);
+  constexpr long n = 67;
+  m.resize(n);
+  VectorXi z = VectorXi::Ones(n);
+  m.setAtomicNrs(z);
+  Matrix3d cell = Matrix3d::Zero();
+  cell(0, 0) = 4.0;
+  cell(1, 1) = 5.0;
+  cell(2, 2) = 6.0;
+  cell(1, 0) = 0.4;
+  m.setCell(cell);
+  m.setPeriodic(true);
+
+  AtomMatrix diff(n, 3);
+  for (long i = 0; i < n; ++i) {
+    for (int axis = 0; axis < 3; ++axis) {
+      const double x = static_cast<double>((i * 3 + axis) % 17) - 8.5;
+      diff(i, axis) = x + 0.125 * static_cast<double>((i + axis) % 5);
+    }
+  }
+  // Half-bin edges and a value more than one cell negative.
+  diff(0, 0) = 0.5 * cell(0, 0);
+  diff(1, 1) = -0.5 * cell(1, 1);
+  diff(2, 2) = -2.3 * cell(2, 2);
+
+  const Matrix3d inv = cell.inverse();
+  AtomMatrix frac = diff * inv;
+  frac.array() -= (frac.array() + 0.5).floor();
+  const AtomMatrix expect = frac * cell;
+  REQUIRE(m.pbc(diff).isApprox(expect, 1e-12));
+
+  m.setPbcConvention(eonc::PbcConvention::Legacy);
+  m.setPositions(diff);
+  AtomMatrix legacy_expect = diff * inv;
+  for (long i = 0; i < n; ++i) {
+    for (int axis = 0; axis < 3; ++axis) {
+      legacy_expect(i, axis) =
+          std::fmod(legacy_expect(i, axis) + 1.0, 1.0);
+    }
+  }
+  legacy_expect = legacy_expect * cell;
+  REQUIRE(m.getPositions().isApprox(legacy_expect, 1e-12));
+}
+
 TEST_CASE("MinimumImage PBC centers fractional coords",
           "[MatterTest][pbc][convention]") {
   auto [m1, params] = makeLJCluster();
