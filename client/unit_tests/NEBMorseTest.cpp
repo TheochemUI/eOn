@@ -300,8 +300,7 @@ TEST_CASE_METHOD(NEBLJFixture, "Energy-weighted E_ref is the higher endpoint",
   const double e0 = neb->path.front()->getPotentialEnergy();
   const double e1 = neb->path.back()->getPotentialEnergy();
   REQUIRE(std::abs(e0 - e1) > 1e-8);
-  REQUIRE_THAT(neb->E_ref,
-               Catch::Matchers::WithinAbs(std::max(e0, e1), 1e-12));
+  REQUIRE_THAT(neb->E_ref, Catch::Matchers::WithinAbs(std::max(e0, e1), 1e-12));
 }
 
 TEST_CASE_METHOD(NEBLJFixture, "Doubly nudged elastic band springs",
