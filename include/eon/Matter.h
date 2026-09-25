@@ -12,12 +12,12 @@
 #pragma once
 #include "ConFileIO.h"
 #include "Eigen.h"
+#include "PbcSimd.h"
 #include "EonLogger.h"
 #include "Potential.h"
 #include "StructureComparisonOptions.h"
 #include "SurrogatePotential.h"
 #include <array>
-#include <cmath>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -42,11 +42,10 @@ namespace pbc {
 // Minimum-image on a difference vector (fractional in [-0.5, 0.5)).
 inline AtomMatrix apply(const AtomMatrix &diff, const Matrix3d &cell,
                         const Matrix3d &cellInverse) {
-  // Transform to fractional coordinates, wrap to [-0.5, 0.5), transform back.
-  // Uses floor(x + 0.5) instead of double-fmod: single x86 vroundsd instruction
-  // vs expensive fmod library call. Vectorized via Eigen .array() operations.
+  // Fractional coordinates, minimum-image wrap to [-0.5, 0.5), back to Cartesian.
+  // x - floor(x + 0.5), Highway when the build has it.
   AtomMatrix frac = diff * cellInverse;
-  frac.array() -= (frac.array() + 0.5).floor();
+  wrapMinimumImage(frac.data(), static_cast<size_t>(frac.size()));
   return frac * cell;
 }
 
@@ -55,11 +54,8 @@ inline AtomMatrix apply(const AtomMatrix &diff, const Matrix3d &cell,
 inline AtomMatrix applyLegacy(const AtomMatrix &coords, const Matrix3d &cell,
                               const Matrix3d &cellInverse) {
   AtomMatrix frac = coords * cellInverse;
-  for (int i = 0; i < frac.rows(); i++) {
-    for (int j = 0; j < 3; j++) {
-      frac(i, j) = std::fmod(frac(i, j) + 1.0, 1.0);
-    }
-  }
+  // Same values as fmod(x + 1, 1): (x + 1) - trunc(x + 1).
+  wrapLegacyUnit(frac.data(), static_cast<size_t>(frac.size()));
   return frac * cell;
 }
 
