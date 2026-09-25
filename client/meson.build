@@ -10,7 +10,7 @@ fs = import('fs')
 
 # Argum (C++20 argument parser) - single header in thirdparty
 
-add_languages('c', required: true)
+add_languages('c', native: false, required: true)
 cc = meson.get_compiler('c')
 cppc = meson.get_compiler('cpp')
 # PGI/nvc++ cannot link_whole a static inih into a shared eonclib.
@@ -29,7 +29,7 @@ endif
 # RgpotAdapter arms in Potential.cpp, not any compilation here.
 use_fortran = false
 if get_option('with_fortran') or get_option('with_cuh2')
-    use_fortran = add_languages('fortran', required: false)
+    use_fortran = add_languages('fortran', native: false, required: false)
     if use_fortran
         fc = meson.get_compiler('fortran')
         _fargs += fc.get_supported_arguments(['-fno-implicit-none'])
@@ -252,7 +252,7 @@ endif
 
 # Get the version, build date, and git hash
 version_script = find_program('get_version.py')
-version_output = run_command(version_script).stdout().strip()
+version_output = run_command(version_script, check: true).stdout().strip()
 version_bits = version_output.split(',')
 version = version_bits[0]
 build_date = version_bits[1]
