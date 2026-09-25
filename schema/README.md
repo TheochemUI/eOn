@@ -37,5 +37,9 @@ Runtime control-plane types for kill-file-IPC (not parameter authoring):
 - `JobRequest` / `JobResult` — status codes, barriers, force-call buckets, optional geometries, append-only `landfoldArtifacts`
 
 Python: `eon_schema.jobs` (path helper + `results.dat` adapters).
+Landfold trajectories use `trajectory_manifest`: exact per-frame geometry
+digests and an rgpot potential identity, not `results.dat` lines.
+`landfold_consume` checks those digests and returns embedding coordinates
+and, when every frame has an energy, FES samples.
 
 `.con` / `results.dat` remain **durable adapters**, not the in-process primary API.
