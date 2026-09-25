@@ -116,6 +116,16 @@ public:
 
   [[nodiscard]] const RPot &kernel() const noexcept { return pot_; }
 
+  /// Classical kernels expose ``config().cutoff``. Anything else is not
+  /// treated as finite-range.
+  [[nodiscard]] double finiteCutoff() const noexcept override {
+    if constexpr (requires(const RPot &k) { k.config().cutoff; }) {
+      return pot_.config().cutoff;
+    } else {
+      return 0.0;
+    }
+  }
+
 private:
   void validateCaps() const {
     const auto caps = pot_.caps();
