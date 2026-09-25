@@ -13,6 +13,7 @@
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/MonteCarlo.h"
+#include "eon/OHTSTJob.h"
 #include "eon/Parameters.h"
 #include "eon/Prefactor.h"
 #include <cmath>
@@ -128,6 +129,44 @@ TEST_CASE("pbc is identity when periodic is off", "[MatterTest][acc]") {
   d << 15.0, 0.0, 0.0, -15.0, 0.0, 0.0;
   AtomMatrix wrapped = m.pbc(d);
   REQUIRE(wrapped.isApprox(d, 1e-12));
+}
+
+TEST_CASE("OH-TST symmetry products share rigid-drift removal",
+          "[MatterTest][ohtst]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter m(pot, params);
+  m.resize(3);
+  m.setAtomicNr(0, 1);
+  m.setAtomicNr(1, 1);
+  m.setAtomicNr(2, 1);
+  m.setCell(Matrix3d::Identity() * 10.0);
+  m.setPeriodic(true);
+
+  // One minimum-image pass folds the atom past the half-cell and leaves
+  // a rigid drift. The fixed point is the localized hop with that drift gone.
+  AtomMatrix hopped(3, 3);
+  hopped << 4.0, 0.0, 0.0, 4.0, 0.0, 0.0, 6.0, 0.0, 0.0;
+  const AtomMatrix once = m.pbc(hopped);
+  const Eigen::RowVector3d onceCom = once.colwise().sum() / 3.0;
+  REQUIRE(onceCom.norm() > 1.0);
+
+  Eigen::RowVector3d total = Eigen::RowVector3d::Zero();
+  const AtomMatrix aligned = minImageRemoveRigidDrift(m, hopped, &total);
+  const Eigen::RowVector3d com = aligned.colwise().sum() / 3.0;
+  REQUIRE(com.norm() < 1e-12);
+  REQUIRE_FALSE(aligned.isApprox(once, 1e-8));
+  AtomMatrix expect(3, 3);
+  expect << -2.0 / 3.0, 0.0, 0.0, -2.0 / 3.0, 0.0, 0.0, 4.0 / 3.0, 0.0, 0.0;
+  REQUIRE(aligned.isApprox(expect, 1e-12));
+
+  AtomMatrix rigid = AtomMatrix::Zero(3, 3);
+  rigid.rowwise() += Eigen::RowVector3d(2.0, 0.0, 0.0);
+  const AtomMatrix rigidAligned =
+      minImageRemoveRigidDrift(m, rigid, nullptr);
+  REQUIRE(rigidAligned.norm() < 1e-12);
+  REQUIRE(m.pbc(rigid).norm() > 1.0);
 }
 
 TEST_CASE("removeNetForce is skipped for a single free atom",

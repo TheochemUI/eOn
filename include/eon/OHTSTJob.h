@@ -96,4 +96,10 @@ private:
   double m_gaussSpare{0.0};
 };
 
+/// Minimum-image a free-atom difference and remove rigid translation.
+/// One pbc pass wraps boundary atoms while a uniform drift remains, so
+/// the primary guideline and each symmetry product share this fixed point.
+AtomMatrix minImageRemoveRigidDrift(const Matter &reference, AtomMatrix diff,
+                                    Eigen::RowVector3d *totalDrift);
+
 } // namespace eonc
