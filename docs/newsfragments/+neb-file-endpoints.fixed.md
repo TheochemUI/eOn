@@ -1,0 +1,1 @@
+NEB file initialization keeps the endpoint structures passed to NudgedElasticBand. Frames listed in initial_path_in still fill the interior images, and minimize_endpoints_for_ipath is no longer overwritten by those files.
