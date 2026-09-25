@@ -1,0 +1,1 @@
+Parallel replica keeps its bond boost across the copies it makes of the trajectory: the dephase reset and, when ``stop_after_transition`` is false, the transition structure. ``Matter::assignKeepingBias`` does the copy.

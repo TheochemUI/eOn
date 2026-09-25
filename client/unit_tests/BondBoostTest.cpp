@@ -45,6 +45,41 @@ TEST_CASE("BondBoost initializes on LJ cluster", "[bondboost]") {
   REQUIRE(boostE >= 0.0);
 }
 
+TEST_CASE("assignKeepingBias copies the structure and keeps the bond boost",
+          "[bondboost][matter]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::hyperdynamics_options(params).dvmax = 0.0;
+  ParametersLoadAccess::hyperdynamics_options(params).qrr = 0.2;
+  ParametersLoadAccess::hyperdynamics_options(params).prr = 0.95;
+  ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "All";
+
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter trajectory(pot, params);
+  trajectory.con2matter(std::string("reactant.con"));
+  BondBoost bb(&trajectory, params);
+  bb.initialize();
+  trajectory.setBiasPotential(&bb);
+
+  // A displaced copy stands in for the transition structure.
+  Matter source(pot, params);
+  source = trajectory;
+  AtomMatrix shifted = source.getPositions();
+  shifted(0, 0) += 0.1;
+  source.setPositions(shifted);
+  REQUIRE(source.getBiasPotential() == nullptr);
+
+  // Plain copy assignment drops the bias: this is what the job must avoid.
+  Matter plain(pot, params);
+  plain.setBiasPotential(&bb);
+  plain = source;
+  REQUIRE(plain.getBiasPotential() == nullptr);
+
+  trajectory.assignKeepingBias(source);
+  REQUIRE(trajectory.getBiasPotential() == &bb);
+  REQUIRE(trajectory.getPositions().isApprox(source.getPositions(), 1e-12));
+}
+
 TEST_CASE("BondBoost returns zero boost at equilibrium", "[bondboost]") {
   Parameters params;
   ParametersLoadAccess::potential_options(params).potential = PotType::LJ;

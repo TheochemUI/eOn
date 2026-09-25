@@ -171,6 +171,11 @@ public:
   void setVelocities(const AtomMatrix &v);
   void setBiasForces(const AtomMatrix &bf);
   void setBiasPotential(BondBoost *bondBoost);
+  /// The bias potential added to this Matter's forces, or nullptr.
+  BondBoost *getBiasPotential() const;
+  /// Copy another structure in and keep this Matter's own bias potential.
+  /// operator= clears the bias pointer, because it names the source's boost.
+  void assignKeepingBias(const Matter &other);
   void setForces(const AtomMatrix &f);
   AtomMatrix getAccelerations();
 

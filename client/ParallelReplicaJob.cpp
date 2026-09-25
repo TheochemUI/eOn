@@ -187,10 +187,9 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
         }
         QUILL_LOG_DEBUG(log, "[ParallelReplica] Transition time: {:.3e} s",
                         transitionTime * params.constants().timeUnit * 1e-15);
-        *trajectory = transitionStructure;
-        // Copy assignment clears the bias pointer. A run that keeps going
-        // after the transition must keep the bond boost it started with.
-        trajectory->setBiasPotential(bias);
+        // A run that keeps going after the transition keeps the bond boost
+        // it started with; plain copy assignment would clear it.
+        trajectory->assignKeepingBias(transitionStructure);
         // A false stop_after_transition keeps the remaining dynamics steps.
         if (params.parallel_replica_options().auto_stop) {
           break;
@@ -291,8 +290,9 @@ ParallelReplicaJob::runFromMatter(std::shared_ptr<Matter> initial) {
 
 void ParallelReplicaJob::dephase(Matter &trajectory, BondBoost *bias) {
   Dynamics dynamics(&trajectory, params);
-  // Copy assignment clears biasPotential. The boost object still names this
-  // Matter, so the pointer has to be restored before oneStep.
+  // The boost object names this Matter. Attach it here, and reset the
+  // trajectory with assignKeepingBias so each dephase loop keeps it.
+  trajectory.setBiasPotential(bias);
 
   const double dt = params.dynamics_options().time_step;
   if (!(dt > 0.0)) {
@@ -312,8 +312,7 @@ void ParallelReplicaJob::dephase(Matter &trajectory, BondBoost *bias) {
   initial = trajectory;
 
   for (long loop = 0; loop < maxLoops; ++loop) {
-    trajectory = initial;
-    trajectory.setBiasPotential(bias);
+    trajectory.assignKeepingBias(initial);
     dynamics.setThermalVelocity();
 
     for (int step = 1; step <= dephaseSteps; step++) {

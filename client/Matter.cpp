@@ -376,6 +376,14 @@ void Matter::setBiasPotential(BondBoost *bondBoost) {
   biasPotential = bondBoost;
 }
 
+BondBoost *Matter::getBiasPotential() const { return biasPotential; }
+
+void Matter::assignKeepingBias(const Matter &other) {
+  BondBoost *keep = biasPotential;
+  *this = other;
+  biasPotential = keep;
+}
+
 void Matter::setBiasForces(const AtomMatrix &bf) {
   biasForces = bf.array() * getFree().array();
 }
