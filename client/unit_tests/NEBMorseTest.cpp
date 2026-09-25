@@ -15,6 +15,7 @@
 #include "eon/IDPPObjectiveFunction.hpp"
 #include "eon/NEBInitialPaths.hpp"
 #include "eon/NEBOcinebController.h"
+#include "eon/NEBSplineExtrema.h"
 #include "eon/NudgedElasticBand.h"
 #include "eon/PotCapabilities.h"
 #include "eon/PotRegistry.h"
@@ -469,6 +470,59 @@ TEST_CASE("NEB writes MMF peak seeds by default", "[neb][xr04]") {
   REQUIRE(ParametersLoadAccess::neb_options(params).mmf_peaks.enabled);
   REQUIRE(ParametersLoadAccess::neb_options(params).mmf_peaks.tolerance ==
           Catch::Approx(0.05).margin(1e-12));
+}
+
+TEST_CASE_METHOD(NEBLJFixture,
+                 "peak mode keeps the endpoint tangent on an end interval",
+                 "[neb][mmf]") {
+  ParametersLoadAccess::neb_options(params).image_count = 1;
+  Matter mid(*reactant);
+  auto midPos = mid.getPositions();
+  midPos(0, 0) += 1.0;
+  mid.setPositions(midPos);
+
+  auto neb = std::make_unique<NudgedElasticBand>(
+      std::vector<Matter>{*reactant, mid, *product}, params, pot);
+
+  REQUIRE(neb->tangent[0]->norm() == 0.0);
+  REQUIRE(neb->tangent[neb->numImages + 1]->norm() == 0.0);
+
+  AtomMatrix interior = AtomMatrix::Zero(neb->atoms, 3);
+  interior(0, 1) = 1.0;
+  *neb->tangent[1] = interior;
+
+  AtomMatrix reactantTang = neb->path[0]->pbc(neb->path[1]->getPositions() -
+                                              neb->path[0]->getPositions());
+  reactantTang /= reactantTang.norm();
+  AtomMatrix productTang = neb->path[neb->numImages]->pbc(
+      neb->path[neb->numImages + 1]->getPositions() -
+      neb->path[neb->numImages]->getPositions());
+  productTang /= productTang.norm();
+  REQUIRE(std::abs(matDot(reactantTang, interior)) < 0.5);
+  REQUIRE(std::abs(matDot(productTang, interior)) < 0.99);
+
+  AtomMatrix atStart = eonc::neb::interpolatedPeakMode(neb->path, neb->tangent,
+                                                       neb->numImages, 0.0);
+  REQUIRE_THAT(atStart, eonc::helpers::test::IsApprox(reactantTang, 1e-10));
+  REQUIRE(atStart.allFinite());
+
+  const double f = 0.35;
+  AtomMatrix first = eonc::neb::interpolatedPeakMode(neb->path, neb->tangent,
+                                                     neb->numImages, f);
+  AtomMatrix expectedFirst = (1.0 - f) * reactantTang + f * interior;
+  expectedFirst /= expectedFirst.norm();
+  REQUIRE_THAT(first, eonc::helpers::test::IsApprox(expectedFirst, 1e-10));
+  AtomMatrix dropped = interior;
+  REQUIRE_FALSE(first.isApprox(dropped, 1e-6));
+
+  const double g = 0.4;
+  const double pos = static_cast<double>(neb->numImages) + g;
+  AtomMatrix last = eonc::neb::interpolatedPeakMode(neb->path, neb->tangent,
+                                                    neb->numImages, pos);
+  AtomMatrix expectedLast = (1.0 - g) * interior + g * productTang;
+  expectedLast /= expectedLast.norm();
+  REQUIRE_THAT(last, eonc::helpers::test::IsApprox(expectedLast, 1e-10));
+  REQUIRE_FALSE(last.isApprox(dropped, 1e-6));
 }
 
 TEST_CASE("Potential isThreadSafe defaults to true",

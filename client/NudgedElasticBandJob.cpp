@@ -284,9 +284,8 @@ void NudgedElasticBandJob::saveData(NudgedElasticBand::NEBStatus status,
         returnFiles.push_back(peakPosFile);
 
         // 2. Write Interpolated Tangent as standard mode.dat
-        AtomMatrix peakMode = (1.0 - f) * (*neb->tangent[leftIdx]) +
-                              f * (*neb->tangent[leftIdx + 1]);
-        peakMode.normalize();
+        AtomMatrix peakMode = eonc::neb::interpolatedPeakMode(
+            neb->path, neb->tangent, neb->numImages, posFraction);
 
         std::string peakModeFile =
             std::format("peak{:02d}_mode.dat", peakCount);
