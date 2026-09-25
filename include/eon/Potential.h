@@ -22,6 +22,7 @@
 namespace eonc {
 
 class Parameters;
+class IPluginLoader;
 
 class Potential {
 protected:
@@ -99,7 +100,7 @@ public:
   /// separate instances would enable true parallelism.
   [[nodiscard]] virtual bool isThreadSafe() const noexcept { return true; }
 
-  /// How the pot is executed (eOn-12x7). Combine with bitwise or.
+  /// How the pot is executed. Combine with bitwise or.
   enum class PotLayout : unsigned {
     InProcess = 1u << 0,
     NeedsWorkingDirectory = 1u << 1,
@@ -163,8 +164,12 @@ public:
 
 namespace helpers {
 std::shared_ptr<Potential> makePotential(const Parameters &params);
+std::shared_ptr<Potential> makePotential(const Parameters &params,
+                                         IPluginLoader &loader);
 std::shared_ptr<Potential> makePotential(PotType ptype,
                                          const Parameters &params);
+std::shared_ptr<Potential>
+makePotential(PotType ptype, const Parameters &params, IPluginLoader &loader);
 } // namespace helpers
 
 } // namespace eonc

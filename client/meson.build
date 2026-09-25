@@ -853,6 +853,18 @@ endif
 # LAMMPS: always compiled, loaded at runtime via dlopen
 subdir('potentials/LAMMPS')
 potentials += [lammps_pot]
+# Metatomic C ABI host: dlopen, no compile-time torch dependency.
+metatomic_dyn = library(
+    'metatomic_dyn',
+    'potentials/Metatomic/MetatomicLoader.cpp',
+    'potentials/Metatomic/MetatomicDynPot.cpp',
+    dependencies: _deps,
+    cpp_args: _args,
+    link_with: _linkto,
+    include_directories: _incdirs,
+    install: true,
+)
+potentials += [metatomic_dyn]
 # features_list scans _args for -DLAMMPS_POT; the arm is unconditional.
 _args += ['-DLAMMPS_POT']
 
@@ -1464,6 +1476,7 @@ if get_option('with_tests')
         # neb_morse workdir: displacement synth test needs reactant.con (#189)
         ['test_helpers', 'HelperFunctionsTest.cpp', 'neb_morse'],
         ['test_lammps_loader', 'LammpsLoaderTest.cpp', ''],
+        ['test_metatomic_loader', 'MetatomicLoaderTest.cpp', ''],
         ['test_pot_registry', 'PotRegistryTest.cpp', ''],
         ['test_neb_lj', 'NEBMorseTest.cpp', 'neb_morse'],
         ['test_neb_regression', 'NEBRegressionTest.cpp', 'neb_morse'],
