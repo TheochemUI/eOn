@@ -727,15 +727,9 @@ IoStatus con2matter(Matter &m, const readcon::ConFrame &frame,
     // mark clean without setComputedPotential's net-force adjustment on zeros.
     const bool has_force_section = any_force || frame.has_forces();
     if (meta.energy && has_force_section) {
-      m.forces = forces;
-      m.potentialEnergy = *meta.energy;
-      m.energyVariance = 0.0;
-      m.recomputePotential = false;
-      m.recomputeMaskedForces = true;
+      m.restoreFileForces(forces, true, *meta.energy);
     } else if (has_force_section) {
-      m.forces = forces;
-      m.recomputePotential = true;
-      m.recomputeMaskedForces = true;
+      m.restoreFileForces(forces, false, 0.0);
     } else {
       // Classic geometry-only files: always recompute pot (main-era behavior).
       m.recomputePotential = true;

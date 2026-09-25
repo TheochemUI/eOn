@@ -88,7 +88,7 @@ inline VectorXd applyV(const VectorXd &diffVector, const Matrix3d &cell,
 
 class Matter {
 public:
-  ~Matter() = default;
+  ~Matter();
   Matter(std::shared_ptr<Potential> pot, const Parameters &params);
   Matter(const Matter &matter);                  // create a copy of matter
   const Matter &operator=(const Matter &matter); // copy the matter object
@@ -134,18 +134,8 @@ public:
     return std::move(movie_frames_);
   }
 
-  AtomMatrix pbc(const AtomMatrix &diff) const {
-    if (!usePeriodicBoundaries) {
-      return diff;
-    }
-    return eonc::pbc::apply(diff, cell, cellInverse);
-  }
-  VectorXd pbcV(const VectorXd &diff) const {
-    if (!usePeriodicBoundaries) {
-      return diff;
-    }
-    return eonc::pbc::applyV(diff, cell, cellInverse);
-  }
+  AtomMatrix pbc(const AtomMatrix &diff) const;
+  VectorXd pbcV(const VectorXd &diff) const;
 
   size_t getPotentialCalls() const;
   const AtomMatrix &getPositions() const; // return coordinates of atoms
@@ -213,7 +203,7 @@ public:
 
   /// Mutable access to force storage for batched potential evaluation.
   /// Caller must also call setComputedPotential() after writing forces.
-  double *forcesData() { return forces.data(); }
+  double *forcesData();
 
   /// Set energy/variance from external batched evaluation and mark forces
   /// as up-to-date (recomputePotential = false).
@@ -279,12 +269,8 @@ public:
   /// .con column-5 index (pre-grouping); public for I/O / bindings.
   /// Held 64-bit wide: readcon carries the column as a uint64_t, and a
   /// 32-bit slot drops the high half of any id past 2^31.
-  [[nodiscard]] std::int64_t getAtomIndex(long int atom) const {
-    return atomIndex(atom);
-  }
-  void setAtomIndex(long int atom, std::int64_t index) {
-    atomIndex(atom) = index;
-  }
+  [[nodiscard]] std::int64_t getAtomIndex(long int atom) const;
+  void setAtomIndex(long int atom, std::int64_t index);
 
   /// Map a CON file-order row onto the Matter row after matter_order.
   /// Identity when the Matter was not loaded from a .con, or the ids
@@ -358,24 +344,18 @@ private:
   // Full Parameters pointer retained solely for relax() delegation
   const Parameters *parameters;
   long nAtoms;
-  AtomMatrix positions;
-  AtomMatrix velocities;
-  mutable AtomMatrix forces;
-  AtomMatrix biasForces;
+  /// Eigen matrices (positions, forces, cell, masks, masses). Incomplete
+  /// here so this header does not embed their layout in Matter.
+  struct Impl;
+  std::unique_ptr<Impl> impl_;
   BondBoost *biasPotential{nullptr};
-  VectorXd masses;
-  VectorXi atomicNrs;
-  AtomMatrix isFixed; // Nx3; 1.0 if that axis is fixed, 0.0 if free
-  Eigen::Matrix<std::int64_t, Eigen::Dynamic, 1>
-      atomIndex;                  // original atom index from .con column 5
   std::vector<long> fileToMatter; // CON file row -> Matter row
-  mutable AtomMatrix freeMask; // cached Nx3 mask (1.0 for free, 0.0 for fixed)
-  mutable AtomMatrix maskedForces;      // cached forces with fixed atoms zeroed
+  /// Write .con forces without the fixed-atom mask setForces applies.
+  void restoreFileForces(const AtomMatrix &fileForces, bool trustEnergy,
+                         double energy);
   mutable std::vector<int> freeIndices; // cached indices of free atoms
   mutable bool recomputeFreeMask{true};
   mutable bool recomputeMaskedForces{true};
-  Matrix3d cell;
-  Matrix3d cellInverse;
   mutable double energyVariance;
   std::vector<readcon::ConFrame> movie_frames_;
   mutable double potentialEnergy;
