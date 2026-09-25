@@ -16,6 +16,8 @@
 #include <cstdint>
 #include <format>
 #include <fstream>
+#include <optional>
+#include <readcon-core.hpp>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -44,10 +46,65 @@ struct JobResultEnvelope {
   bool has_saddle{false};
   bool has_reactant{false};
   bool has_product{false};
+  bool process_search_layout{false};
+  std::uint64_t force_calls_minimization{0};
+  std::uint64_t force_calls_saddle{0};
+  std::uint64_t force_calls_prefactors{0};
+  double barrier_reactant_to_product{0.0};
+  double barrier_product_to_reactant{0.0};
+  double prefactor_reactant_to_product{0.0};
+  double prefactor_product_to_reactant{0.0};
+  double displacement_saddle_distance{0.0};
+  double simulation_time{0.0};
+  double md_temperature{0.0};
+  bool has_dynamics{false};
+  std::optional<readcon::ConFrame> reactant_frame;
+  std::optional<readcon::ConFrame> saddle_frame;
+  std::optional<readcon::ConFrame> product_frame;
   std::vector<std::pair<std::string, double>> extras;
   std::vector<std::pair<std::string, std::string>> tags;
 
+  std::string processSearchString() const {
+    std::ostringstream out;
+    out << status_code << " termination_reason\n";
+    if (!status_text.empty()) {
+      out << status_text << " termination_reason_text\n";
+    }
+    out << random_seed << " random_seed\n";
+    if (!potential_type.empty()) {
+      out << potential_type << " potential_type\n";
+    }
+    out << force_calls << " total_force_calls\n";
+    out << force_calls_minimization << " force_calls_minimization\n";
+    out << force_calls_saddle << " force_calls_saddle\n";
+    out << std::format("{:.12e} potential_energy_saddle\n",
+                       potential_energy_saddle);
+    out << std::format("{:.12e} potential_energy_reactant\n",
+                       potential_energy_reactant);
+    out << std::format("{:.12e} potential_energy_product\n",
+                       potential_energy_product);
+    out << std::format("{:.12e} barrier_reactant_to_product\n",
+                       barrier_reactant_to_product);
+    out << std::format("{:.12e} barrier_product_to_reactant\n",
+                       barrier_product_to_reactant);
+    out << std::format("{:.12e} displacement_saddle_distance\n",
+                       displacement_saddle_distance);
+    if (has_dynamics) {
+      out << std::format("{:.12e} simulation_time\n", simulation_time);
+      out << std::format("{:.12e} md_temperature\n", md_temperature);
+    }
+    out << force_calls_prefactors << " force_calls_prefactors\n";
+    out << std::format("{:.12e} prefactor_reactant_to_product\n",
+                       prefactor_reactant_to_product);
+    out << std::format("{:.12e} prefactor_product_to_reactant\n",
+                       prefactor_product_to_reactant);
+    return out.str();
+  }
+
   std::string toString() const {
+    if (process_search_layout) {
+      return processSearchString();
+    }
     std::ostringstream out;
     out << status_code << " termination_reason\n";
     if (!status_text.empty()) {
@@ -109,6 +166,40 @@ struct JobResultEnvelope {
     e.force_calls = fcalls;
     e.has_energy = hasE;
     e.potential_energy = energy;
+    return e;
+  }
+
+  static JobResultEnvelope fromProcessSearch(
+      int status, std::string statusText, PotType pot, std::int64_t seed,
+      std::uint64_t fMin, std::uint64_t fSaddle, std::uint64_t fPref,
+      double eSaddle, double eReactant, double eProduct, double barrierFwd,
+      double barrierRev, double displacement, double prefFwd, double prefRev,
+      bool dynamics, double simTime, double mdTemp) {
+    JobResultEnvelope e;
+    e.process_search_layout = true;
+    e.job_type = "process_search";
+    e.status_code = status;
+    e.status_text = std::move(statusText);
+    e.potential_type = std::string(magic_enum::enum_name<PotType>(pot));
+    e.random_seed = seed;
+    e.force_calls_minimization = fMin;
+    e.force_calls_saddle = fSaddle;
+    e.force_calls_prefactors = fPref;
+    e.force_calls = fMin + fSaddle + fPref;
+    e.has_saddle = true;
+    e.has_reactant = true;
+    e.has_product = true;
+    e.potential_energy_saddle = eSaddle;
+    e.potential_energy_reactant = eReactant;
+    e.potential_energy_product = eProduct;
+    e.barrier_reactant_to_product = barrierFwd;
+    e.barrier_product_to_reactant = barrierRev;
+    e.displacement_saddle_distance = displacement;
+    e.prefactor_reactant_to_product = prefFwd;
+    e.prefactor_product_to_reactant = prefRev;
+    e.has_dynamics = dynamics;
+    e.simulation_time = simTime;
+    e.md_temperature = mdTemp;
     return e;
   }
 };

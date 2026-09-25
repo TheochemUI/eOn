@@ -12,6 +12,7 @@ from eon import atoms
 from eon import communicator
 from eon import displace
 from eon import fileio as io
+from eon.job_result import results_mapping
 from eon import recycling
 from eon import process_catalog as catalog
 
@@ -340,7 +341,7 @@ class ClientMinModeExplorer(MinModeExplorer):
                 state = self.state
 
             # read in the results
-            result['results'] = io.parse_results(result['results.dat'])
+            result['results'] = results_mapping(result)
             if result['results']['termination_reason'] == 0:
                 state.add_process(result, self.superbasin)
             else:
@@ -457,7 +458,7 @@ class ServerMinModeExplorer(MinModeExplorer):
             self.job_info[search_id][searchdata_id]['status'] = 'complete'
             final_result = self.process_searches[search_id].process_result(result)
             if final_result:
-                results_dict = io.parse_results(final_result['results.dat'])
+                results_dict = results_mapping(final_result)
                 reason = results_dict['termination_reason']
                 if reason == 0:
                     self.state.add_process(final_result)
@@ -641,7 +642,7 @@ class ProcessSearch:
         return None, None
 
     def process_result(self, result):
-        results_dat = io.parse_results(result['results.dat'])
+        results_dat = results_mapping(result)
         job_type = results_dat['job_type']
         termination_code = results_dat['termination_reason']
 
@@ -751,15 +752,15 @@ class ProcessSearch:
         atoms1 = io.loadcon(result1['min.con'])
         atoms2 = io.loadcon(result2['min.con'])
 
-        results_dat1 = io.parse_results(result1['results.dat'])
-        results_dat2 = io.parse_results(result2['results.dat'])
+        results_dat1 = results_mapping(result1)
+        results_dat2 = results_mapping(result2)
         self.data['force_calls_minimization'] += results_dat1['total_force_calls']
         self.data['force_calls_minimization'] += results_dat2['total_force_calls']
 
         is_reactant = lambda a: atoms.match(a, self.reactant, self.config.comp_eps_r, self.config.comp_neighbor_cutoff, False, check_rotation=self.config.comp_check_rotation, use_identical=self.config.comp_use_identical, remove_translation=self.config.comp_remove_translation)
 
-        tc1 = io.parse_results(result1['results.dat'])['termination_reason']
-        tc2 = io.parse_results(result2['results.dat'])['termination_reason']
+        tc1 = results_mapping(result1)['termination_reason']
+        tc2 = results_mapping(result2)['termination_reason']
 
         termination_reason1 = self.job_termination_reasons['minimization'][tc1]
         termination_reason2 = self.job_termination_reasons['minimization'][tc2]
@@ -823,7 +824,7 @@ class ProcessSearch:
         return job
 
     def finish_search(self, result):
-        results_dat = io.parse_results(result['results.dat'])
+        results_dat = results_mapping(result)
         self.data.update(results_dat)
         reactant_energy = results_dat['potential_energy_reactant']
         barrier = results_dat['potential_energy_saddle'] - reactant_energy
