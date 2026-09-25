@@ -7,9 +7,11 @@ accepts both this VASP 5 layout and the VASP 4 files kdb produces.
 """
 
 import sys
+from io import StringIO
 from pathlib import Path
 
 from eon import fileio as io
+from eon.concorpus import frame_texts_for_paths
 
 
 def make_movie(movie_type, path_root, states, separate_files=False):
@@ -137,18 +139,16 @@ def dynamics(path_root, states, unique=False):
     else:
         trajectory = list(range(states.get_num_states()))
 
-    atoms_list = []
-
     if len(trajectory) == 0:
         print("error: There have been no dynamics steps")
         sys.exit(1)
 
+    paths = []
     for n in trajectory:
-        state = states.get_state(n)
-        reactant = state.get_reactant()
-        atoms_list.append(reactant)
-
-    return atoms_list
+        paths.append(states.get_state(n).reactant_path)
+    # Files stay authoritative. The corpus is a read-only index of this tree.
+    texts = frame_texts_for_paths(path_root, paths)
+    return [io.loadcon(StringIO(text)) for text in texts]
 
 
 def make_graph(states):
