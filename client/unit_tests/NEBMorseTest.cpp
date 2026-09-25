@@ -22,6 +22,7 @@
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
 #include "eon/api.h"
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <stdexcept>
@@ -299,9 +300,26 @@ TEST_CASE_METHOD(NEBLJFixture, "Uniform spring forces",
 
 TEST_CASE_METHOD(NEBLJFixture, "Energy-weighted springs differ from uniform",
                  "[neb][spring_energy_weighted]") {
+  // Equal spacing below the higher endpoint keeps every weighted spring
+  // at k_min, so the parallel spring matches a uniform band. Put one
+  // atom 0.15 A from a neighbor so that image is above both endpoints.
+  auto lift_interior = [](NudgedElasticBand &neb) {
+    auto pos = neb.path[2]->getPositions();
+    const double dx = pos(1, 0) - pos(0, 0);
+    const double dy = pos(1, 1) - pos(0, 1);
+    const double dz = pos(1, 2) - pos(0, 2);
+    const double n = std::sqrt(dx * dx + dy * dy + dz * dz);
+    const double scale = 1.0 - 0.15 / n;
+    pos(0, 0) += scale * dx;
+    pos(0, 1) += scale * dy;
+    pos(0, 2) += scale * dz;
+    neb.path[2]->setPositions(pos);
+  };
+
   ParametersLoadAccess::neb_options(params).spring.weighting.enabled = false;
   ParametersLoadAccess::neb_options(params).spring.constant = 5.0;
   auto neb_uniform = makeNEB();
+  lift_interior(*neb_uniform);
   neb_uniform->updateForces();
 
   std::vector<double> uniform_norms;
@@ -313,7 +331,13 @@ TEST_CASE_METHOD(NEBLJFixture, "Energy-weighted springs differ from uniform",
   ParametersLoadAccess::neb_options(params).spring.weighting.k_min = 1.0;
   ParametersLoadAccess::neb_options(params).spring.weighting.k_max = 10.0;
   auto neb_weighted = makeNEB();
+  lift_interior(*neb_weighted);
   neb_weighted->updateForces();
+
+  const double higher =
+      std::max(neb_weighted->path.front()->getPotentialEnergy(),
+               neb_weighted->path.back()->getPotentialEnergy());
+  REQUIRE(neb_weighted->path[2]->getPotentialEnergy() > higher);
 
   bool any_differ = false;
   for (long i = 1; i <= neb_weighted->numImages; i++) {
@@ -324,6 +348,22 @@ TEST_CASE_METHOD(NEBLJFixture, "Energy-weighted springs differ from uniform",
     }
   }
   REQUIRE(any_differ);
+}
+
+TEST_CASE_METHOD(NEBLJFixture, "Energy-weighted E_ref is the higher endpoint",
+                 "[neb][spring_energy_weighted]") {
+  const bool reverse = GENERATE(false, true);
+  if (reverse) {
+    std::swap(reactant, product);
+  }
+  ParametersLoadAccess::neb_options(params).spring.weighting.enabled = true;
+  auto neb = makeNEB();
+  neb->updateForces();
+
+  const double e0 = neb->path.front()->getPotentialEnergy();
+  const double e1 = neb->path.back()->getPotentialEnergy();
+  REQUIRE(std::abs(e0 - e1) > 1e-8);
+  REQUIRE_THAT(neb->E_ref, Catch::Matchers::WithinAbs(std::max(e0, e1), 1e-12));
 }
 
 TEST_CASE_METHOD(NEBLJFixture, "Doubly nudged elastic band springs",
