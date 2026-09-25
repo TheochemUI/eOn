@@ -23,6 +23,7 @@
 #include "eon/Job.h"
 #include "eon/Matter.h"
 #include "eon/ParallelReplicaJob.h"
+#include "eon/OHTSTJob.h"
 #include "eon/Parameters.h"
 #include "eon/PotRegistry.h"
 #include "eon/Potential.h"
@@ -49,6 +50,16 @@ namespace eonc {
 struct BasinHoppingElementsTest {
   static std::vector<long> of(BasinHoppingJob &job, Matter *matter) {
     return job.getElements(matter);
+  }
+};
+
+struct OHTSTSymmetryTest {
+  static void setDirs(OHTSTJob &job, std::vector<VectorXd> dirs) {
+    job.m_symDirs = std::move(dirs);
+  }
+  static bool reflect(OHTSTJob &job, const VectorXd &xR, VectorXd &x,
+                      VectorXd &v, const VectorXd &xOld) {
+    return job.symmetryReflect(xR, x, v, xOld, nullptr);
   }
 };
 } // namespace eonc
@@ -2419,5 +2430,65 @@ potential = lenosky_si
           Catch::Approx(-17.284558).epsilon(1e-4));
 }
 #endif // WITH_FORTRAN
+
+TEST_CASE("OH-TST symmetry distance uses the half-line endpoint",
+          "[job][oh_tst][unit]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  Runtime runtime;
+  auto owned = std::make_unique<Parameters>(params);
+  OHTSTJob job(std::move(owned), runtime);
+
+  VectorXd primary(2);
+  primary << 1.0, 0.0;
+  VectorXd other(2);
+  other << 0.0, 1.0;
+  std::vector<VectorXd> dirs;
+  dirs.push_back(primary);
+  dirs.push_back(other);
+  OHTSTSymmetryTest::setDirs(job, std::move(dirs));
+
+  const VectorXd anchor = VectorXd::Zero(2);
+  VectorXd previous(2);
+  previous << 0.25, 0.25;
+
+  // Behind the reactant on the non-primary line. The infinite line
+  // would report distance 0 and reflect; the half-line ends at the
+  // reactant, so both distances match and the step stays put.
+  VectorXd x(2);
+  x << 0.0, -1.0;
+  VectorXd v(2);
+  v << 1.0, 0.0;
+  REQUIRE_FALSE(OHTSTSymmetryTest::reflect(job, anchor, x, v, previous));
+  REQUIRE(x[0] == Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(x[1] == Catch::Approx(-1.0).margin(1e-12));
+  REQUIRE(v[0] == Catch::Approx(1.0).margin(1e-12));
+  REQUIRE(v[1] == Catch::Approx(0.0).margin(1e-12));
+
+  // Just off the backward non-primary ray. The perpendicular distance
+  // to that infinite line is the smaller one; the half-line distance
+  // is back to the reactant and the primary ray is closer.
+  x << 0.1, -3.0;
+  v << 1.0, 0.0;
+  REQUIRE_FALSE(OHTSTSymmetryTest::reflect(job, anchor, x, v, previous));
+  REQUIRE(x[0] == Catch::Approx(0.1).margin(1e-12));
+  REQUIRE(x[1] == Catch::Approx(-3.0).margin(1e-12));
+
+  // Forward of the other product: reflect about the mirror and step back.
+  x << 0.2, 1.0;
+  v << 1.0, 0.0;
+  REQUIRE(OHTSTSymmetryTest::reflect(job, anchor, x, v, previous));
+  REQUIRE(x[0] == Catch::Approx(previous[0]).margin(1e-12));
+  REQUIRE(x[1] == Catch::Approx(previous[1]).margin(1e-12));
+  REQUIRE(v[0] == Catch::Approx(0.0).margin(1e-12));
+  REQUIRE(v[1] == Catch::Approx(1.0).margin(1e-12));
+
+  // On the primary half-line: no reflection.
+  x << 2.0, 0.0;
+  v << 0.0, 1.0;
+  REQUIRE_FALSE(OHTSTSymmetryTest::reflect(job, anchor, x, v, previous));
+  REQUIRE(x[0] == Catch::Approx(2.0).margin(1e-12));
+  REQUIRE(v[1] == Catch::Approx(1.0).margin(1e-12));
+}
 
 } /* namespace tests */
