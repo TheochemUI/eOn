@@ -346,6 +346,72 @@ TEST_CASE_METHOD(DynamicsFixture,
 }
 
 TEST_CASE_METHOD(DynamicsFixture,
+                 "refineTransition returns no index for an empty snapshot list",
+                 "[dynamics][saddle]") {
+  auto cluster = std::make_shared<Matter>(*matter);
+  DynamicsSaddleSearch search(cluster, params);
+  std::vector<std::shared_ptr<Matter>> empty;
+  auto prod = std::make_shared<Matter>(*cluster);
+  REQUIRE(search.refineTransition(empty, prod) == -1);
+
+  std::vector<std::shared_ptr<Matter>> one{std::make_shared<Matter>(*cluster)};
+  REQUIRE(search.refineTransition(one, prod) == 0);
+}
+
+TEST_CASE_METHOD(DynamicsFixture,
+                 "dynamics saddle search keeps the detecting frame when no "
+                 "snapshots were recorded",
+                 "[dynamics][saddle]") {
+  // Relax must not pull the kicked geometry back onto the reactant, or the
+  // state check never enters the empty-snapshot branch.
+  ParametersLoadAccess::optimizer_options(params).max_iterations = 0;
+  ParametersLoadAccess::structure_comparison_options(params)
+      .distance_difference = 1e-8;
+  ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
+  ParametersLoadAccess::dynamics_options(params).steps = 1;
+  ParametersLoadAccess::parallel_replica_options(params).dephase_time = 0.0;
+  ParametersLoadAccess::saddle_search_options(params).dynamics.temperature =
+      300.0;
+  ParametersLoadAccess::saddle_search_options(params).dynamics.record_interval =
+      0.0;
+  ParametersLoadAccess::saddle_search_options(params)
+      .dynamics.state_check_interval = 1.0;
+  ParametersLoadAccess::saddle_search_options(params).max_iterations = 1;
+  ParametersLoadAccess::neb_options(params).max_iterations = 1;
+  ParametersLoadAccess::dimer_options(params).max_iterations = 1;
+  ParametersLoadAccess::dimer_options(params).rotations_max = 1;
+
+  auto cluster = std::make_shared<Matter>(pot, params);
+  cluster->con2matter(std::string("reactant.con"));
+  REQUIRE(cluster->numberOfAtoms() > 0);
+  cluster->setMasses(Eigen::VectorXd::Constant(cluster->numberOfAtoms(), 1.0));
+
+  const auto dir =
+      std::filesystem::temp_directory_path() / "eon_dyn_saddle_empty";
+  std::filesystem::create_directories(dir);
+  struct CwdGuard {
+    std::filesystem::path previous;
+    std::filesystem::path dir;
+    CwdGuard(std::filesystem::path next)
+        : previous{std::filesystem::current_path()},
+          dir{std::move(next)} {
+      std::filesystem::current_path(dir);
+    }
+    ~CwdGuard() {
+      std::filesystem::current_path(previous);
+      std::filesystem::remove_all(dir);
+    }
+  } guard(dir);
+
+  eonc::rng::random(42);
+  DynamicsSaddleSearch search(cluster, params);
+  const int status = search.run();
+  REQUIRE(status != MinModeSaddleSearch::STATUS_BAD_MD_TRAJECTORY_TOO_SHORT);
+  REQUIRE(std::isfinite(search.time));
+  REQUIRE(search.time == Catch::Approx(1.0).margin(1e-12));
+}
+
+TEST_CASE_METHOD(DynamicsFixture,
                  "Dynamics Langevin holds a per-axis frozen coordinate",
                  "[dynamics][langevin][fixed]") {
   // Whole-atom getFixed is false; only z is frozen.

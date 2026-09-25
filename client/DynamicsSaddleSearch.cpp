@@ -156,21 +156,32 @@ int DynamicsSaddleSearch::run() {
 
       if (!product->compare(*reactant)) {
         QUILL_LOG_DEBUG(log, "Found new state");
-        int image = refineTransition(mdSnapshots, product);
-        *saddle = *mdSnapshots[image];
-        QUILL_LOG_DEBUG(log, "Found transition at snapshot image {}", image);
-        for (int ii = 0; ii < static_cast<int>(mdTimes.size()); ii++) {
-          QUILL_LOG_DEBUG(log, "MDTimes[{}] = {:.3f}", ii,
-                          mdTimes[ii] * params.constants().timeUnit);
+        // A record interval that rounds to 0 stores nothing. refineTransition
+        // then has no frame, and subscript 0 is outside the vector.
+        int image = -1;
+        if (!mdSnapshots.empty()) {
+          image = refineTransition(mdSnapshots, product);
         }
-        // image is the first snapshot that left the reactant. Half a
-        // record interval before that frame is the unbiased crossing,
-        // and it must not fall before the preceding reactant frame.
-        const double halfRecord =
-            params.saddle_search_options().dynamics.record_interval / 2.0;
-        time = mdTimes[image] - halfRecord;
-        if (image > 0 && time < mdTimes[image - 1]) {
-          time = mdTimes[image - 1];
+        if (image < 0 || static_cast<size_t>(image) >= mdSnapshots.size() ||
+            static_cast<size_t>(image) >= mdTimes.size()) {
+          QUILL_LOG_DEBUG(log,
+                          "No MD snapshots; using the detecting configuration");
+          time = step * params.dynamics_options().time_step;
+        } else {
+          *saddle = *mdSnapshots[static_cast<size_t>(image)];
+          QUILL_LOG_DEBUG(log, "Found transition at snapshot image {}", image);
+          for (int ii = 0; ii < static_cast<int>(mdTimes.size()); ii++) {
+            QUILL_LOG_DEBUG(log, "MDTimes[{}] = {:.3f}", ii,
+                            mdTimes[ii] * params.constants().timeUnit);
+          }
+          // Subtract half the record interval to avoid systematic bias
+          time = mdTimes[static_cast<size_t>(image)] -
+                 params.saddle_search_options().dynamics.record_interval / 2.0;
+          // Half a record interval before the leaving frame is the unbiased
+          // crossing, and it must not fall before the preceding reactant frame.
+          if (image > 0 && time < mdTimes[static_cast<size_t>(image - 1)]) {
+            time = mdTimes[static_cast<size_t>(image - 1)];
+          }
         }
         QUILL_LOG_DEBUG(log, "Transition time {:.2f} fs",
                         time * params.constants().timeUnit);
@@ -364,8 +375,9 @@ int DynamicsSaddleSearch::refineTransition(
     std::shared_ptr<Matter> prod) {
   int lo = 0;
   int hi = static_cast<int>(snapshots.size()) - 1;
-  if (hi == 0) {
-    return 0;
+  // One frame is index 0. Zero frames yield -1, which is not a subscript.
+  if (hi <= 0) {
+    return hi;
   }
 
   QUILL_LOG_DEBUG(log, "refining transition time");
