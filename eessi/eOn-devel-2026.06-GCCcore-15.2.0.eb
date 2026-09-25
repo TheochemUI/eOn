@@ -1,0 +1,50 @@
+# A development environment for eOn on EESSI 2026.06: one module that loads
+# everything a meson build of an eOn checkout needs. Install it once into an
+# EESSI-extend prefix, then load it instead of the individual modules:
+#
+#   source /cvmfs/software.eessi.io/versions/2026.06/init/bash
+#   module load EESSI-extend
+#   eb eessi/eOn-devel-2026.06-GCCcore-15.2.0.eb
+#   module load eOn-devel/2026.06-GCCcore-15.2.0
+#   meson setup bbdir -Dwith_tests=true && meson compile -C bbdir
+#
+# quill, inih, nlohmann_json, Highway, rgpot and readcon-core come from the
+# wraps in subprojects/, so the build needs network the first time.
+easyblock = 'Bundle'
+
+name = 'eOn-devel'
+version = '2026.06'
+
+homepage = 'https://eondocs.org'
+description = """Build and test dependencies for developing eOn from a source checkout
+ on EESSI 2026.06: compilers, Meson, Ninja, CMake, pkg-config, Eigen, Python and Rust."""
+
+toolchain = {'name': 'GCCcore', 'version': '15.2.0'}
+
+dependencies = [
+    ('Meson', '1.10.2'),
+    ('Ninja', '1.13.2'),
+    ('CMake', '4.2.1'),
+    ('pkgconf', '2.5.1'),
+    ('Eigen', '5.0.0'),
+    ('Python', '3.14.2'),
+    ('Rust', '1.94.1'),
+]
+
+# Name the compilers: meson otherwise wraps cc in any ccache or sccache on PATH.
+modextravars = {
+    'CC': 'gcc',
+    'CXX': 'g++',
+    'FC': 'gfortran',
+}
+
+# cargo ignores CURL_CA_BUNDLE, which EESSI's init sets on systems whose CA
+# bundle is not at the Debian path; readcon-core's cargo build needs it.
+modluafooter = """
+local ca = os.getenv("CURL_CA_BUNDLE")
+if ca and ca ~= "" then
+    setenv("CARGO_HTTP_CAINFO", ca)
+end
+"""
+
+moduleclass = 'devel'
