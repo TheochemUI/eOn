@@ -556,6 +556,23 @@ struct neb_options_t {
     } ocineb;
   } climbing_image;
 
+  /// Zoom-NEB packs every image onto a window around the climbing image
+  /// once that image is stable and the band force is below
+  /// activation_threshold. A zero threshold means 10x force_tolerance.
+  /// max_iterations 0 keeps the band iteration cap.
+  struct zoom_options_t {
+    bool enabled{false};
+    double alpha{0.5};
+    int offset{1};
+    enum class Mode { Auto, Manual };
+    Mode mode{Mode::Auto};
+    double activation_threshold{0.0};
+    enum class Interpolation { Cubic, Linear };
+    Interpolation interpolation{Interpolation::Cubic};
+    int stability_count{5};
+    int max_iterations{0};
+  } zoom;
+
   struct path_initialization_t {
     NEBInit method{NEBInit::LINEAR};
     std::string input_path;

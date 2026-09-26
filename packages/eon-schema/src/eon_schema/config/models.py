@@ -2118,6 +2118,46 @@ class NudgedElasticBandConfig(BaseModel):
         default=0.05,
         description="Generate modes and peak configurations.",
     )
+    zoom_neb: bool = Field(
+        default=False,
+        description=(
+            "After the climbing image is stable, pack every image onto a "
+            "window around it and continue the band, including OCINEB."
+        ),
+    )
+    zoom_alpha: float = Field(
+        default=0.5,
+        description=(
+            "Auto window keeps images above this fraction of the barrier "
+            "height, measured from the lower endpoint."
+        ),
+    )
+    zoom_offset: int = Field(
+        default=1,
+        description="Manual window half-width in images on each side of the climbing image.",
+    )
+    zoom_mode: Literal["auto", "manual"] = Field(
+        default="auto",
+        description="auto uses zoom_alpha; manual uses zoom_offset.",
+    )
+    zoom_after: float = Field(
+        default=0.0,
+        description=(
+            "Band force that arms Zoom-NEB. 0 uses ten times converged_force."
+        ),
+    )
+    zoom_interpolation: Literal["cubic", "linear"] = Field(
+        default="cubic",
+        description="Arc-length interpolation used to pack images into the window.",
+    )
+    zoom_ci_stability: int = Field(
+        default=5,
+        description="Iterations the climbing-image index must stay fixed before zoom.",
+    )
+    zoom_max_iterations: int = Field(
+        default=0,
+        description="Iterations allowed after zoom. 0 keeps the band iteration cap.",
+    )
 
 
 class LanczosConfig(BaseModel):
