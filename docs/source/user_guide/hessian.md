@@ -65,7 +65,15 @@ share a color only when their closed cutoff neighborhoods are disjoint. One
 displacement of a whole color along x, y, or z fills every column of that
 color. Central differences use two force evaluations per Cartesian direction
 per color, and fourth-order differences use four, independent of the number
-of atoms. The same matrix is
+of atoms. Catch2 `Colored FD Hessian matches serial central difference` uses
+four atoms on a line, spaced 1.2 Å, with a 1.5 Å cutoff. That coloring has
+three colors, so the central scheme takes `1 + 2 × 3 × 3 = 19` force calls.
+The per-column loop takes `1 + 2 × 12 = 25`. The colored matrix matches the
+serial central matrix to `1e-8`. Catch2 `Fourth-order stencil matches a
+complex-step oracle` evaluates `z^4 + 0.3 z^2` at `0.8`. The fourth-order
+value stays within `1e-10` of the complex-step derivative. The central value
+is more than `1e-3` away, and farther from the oracle than the fourth-order
+value. The same matrix is
 built one column at a time when the potential is not finite-range, when
 `[Main] remove_net_force` couples every atom, or when a column checkpoint is
 in use.
