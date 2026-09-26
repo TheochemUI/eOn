@@ -1,4 +1,4 @@
-``Parameters`` now has a private load-state ``Impl``
-(``last_load_source`` / ``last_load_error``). Option-group layout stays
-in the installed header and is not ABI-stable. ``Matter`` still exposes
-Eigen.
+``Parameters`` stores load state and option groups in a private ``Impl``.
+``sizeof(Parameters)`` is that pointer. Const accessors and
+``ParametersLoadAccess`` are the read and write surface. Option-group
+types stay in ``ParametersOptions.h``. ``Matter`` still exposes Eigen.
