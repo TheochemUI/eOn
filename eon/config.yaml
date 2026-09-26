@@ -1062,6 +1062,9 @@ Hessian:
         fd_scheme:
             kind: string
             default: one_sided
+            # one_sided (default), central, or fourth (fourth_order,
+            # central4). fourth is a real fourth-order central stencil
+            # for the assembled Hessian and for Lanczos/Davidson products.
 
         resume:
             kind: bool

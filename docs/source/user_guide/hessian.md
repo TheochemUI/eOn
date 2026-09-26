@@ -41,9 +41,20 @@ $$H_{ij} \approx -\frac{F_j(x + h e_i) - F_j(x)}{h}$$
 
 $$H_{ij} \approx -\frac{F_j(x + h e_i) - F_j(x - h e_i)}{2h}$$
 
+**fourth** — fourth-order central difference, \(\sim 4M\) force evaluations
+(aliases `fourth_order` and `central4`):
+
+$$H_{ij} \approx -\frac{-F_j(x+2h e_i)+8F_j(x+h e_i)-8F_j(x-h e_i)+F_j(x-2h e_i)}{12h}$$
+
 One-sided is preferred for classical EAM AKMC cost; central reduces \(O(h)\) bias
-when validating prefactors. The assembled matrix is symmetrized \((H+H^T)/2\)
-before diagonalization. Mass-weighting uses \(\tilde H_{ij} = H_{ij}/\sqrt{m_i m_j}\).
+when validating prefactors. Fourth-order cancels the \(O(h^2)\) term as well.
+The same `fd_scheme = fourth` value selects that stencil for Lanczos and
+Davidson Hessian-vector products. `one_sided` and `central` leave those
+products on the forward difference. Dimer rotation, conjugate gradients, and
+LBFGS keep their own real steps. Complex-step is not a scheme: cutoffs and
+external potentials are not holomorphic. The assembled matrix is symmetrized
+\((H+H^T)/2\) before diagonalization. Mass-weighting uses
+\(\tilde H_{ij} = H_{ij}/\sqrt{m_i m_j}\).
 
 ### Cutoff coloring
 
@@ -52,8 +63,9 @@ including classical rgpot kernels with `config().cutoff`) does not need one
 displacement per coordinate. Mobile atoms are greedy-colored so that two atoms
 share a color only when their closed cutoff neighborhoods are disjoint. One
 displacement of a whole color along x, y, or z fills every column of that
-color. With central differences that is two force evaluations per Cartesian
-direction per color, independent of the number of atoms. The same matrix is
+color. Central differences use two force evaluations per Cartesian direction
+per color, and fourth-order differences use four, independent of the number
+of atoms. The same matrix is
 built one column at a time when the potential is not finite-range, when
 `[Main] remove_net_force` couples every atom, or when a column checkpoint is
 in use.
@@ -75,6 +87,7 @@ finite_difference = 0.01
 phva_atoms = All
 fd_scheme = one_sided
 # fd_scheme = central
+# fd_scheme = fourth
 # resume = true
 # checkpoint_path = hessian.ckpt
 zero_freq_value = 1e-6
