@@ -9,7 +9,7 @@ option('with_cuh2', type : 'boolean', value : true)
 option('with_tests', type : 'boolean', value : true)
 option('with_gp_surrogate', type : 'boolean', value : false)
 option('with_catlearn', type : 'boolean', value : false)
-# Native linked libxtb (fat host). Prefer -Dwith_rgpot=true + RGPOT backend=xtb
+# Native linked libxtb (fat host). Prefer potential=RGPOT backend=xtb
 # (dlopen libxtb_engine.so) for packaging; leave this false by default.
 option('with_xtb', type : 'boolean', value : false)
 option('with_ase_orca', type : 'boolean', value : false)
@@ -18,11 +18,10 @@ option('with_ase', type : 'boolean', value : false)
 option('use_mkl', type: 'boolean', value: false, description: 'Enable Intel MKL support')
 option('gprd_linalg_backend', type: 'combo', choices: ['eigen', 'cusolver', 'kokkos', 'stdpar'], value: 'eigen', description: 'Linear algebra backend for GPR-dimer hot-path operations')
 option('with_metatomic', type : 'boolean', value : false)
-# --- rgpot roles (independent; see docs/source/user_guide/rgpot_integration.md) ---
-# 1) Direct in-process: eOn Potential RGPOT → rgpot NWChemPot/CPMDPot → dlopen engines.
-option('with_rgpot', type : 'boolean', value : false,
-       description : 'Direct in-process rgpot: Potential RGPOT links NWChemPot/CPMDPot and dlopens libnwchemc/libcpmdc (NOT potserv RPC, NOT --serve)')
-# 2) eOn as RPC server: eonclient --serve implements rgpot Potential RPC for any pot.
+# --- rgpot roles (see docs/source/user_guide/rgpot_integration.md) ---
+# Direct in-process RGPOT (NWChemPot/CPMDPot dlopen) is always on except
+# Windows, where those frontends are not built. It is not a Meson option.
+# eOn as RPC server: eonclient --serve implements rgpot Potential RPC for any pot.
 option('with_serve', type : 'boolean', value : false,
        description : 'eOn as rgpot-compatible Cap\'n Proto RPC *server* (eonclient --serve); clients connect TO eOn (NOT RGPOT pot, NOT potserv client)')
 # (RPC *client* to potserv is not an eOn pot type; use rgpot potserv + external client.)

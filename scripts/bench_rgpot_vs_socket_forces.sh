@@ -15,7 +15,7 @@ TEST_BIN="${TEST_BIN:-}"
   echo
   echo "--- RgpotPot (in-process NWChem backend, dlopen libnwchemc) ---"
   if [[ -z "$TEST_BIN" || ! -x "$TEST_BIN" ]]; then
-    echo "SKIP: set TEST_BIN to test_rgpot_pot (built with -Dwith_rgpot=true)"
+    echo "SKIP: set TEST_BIN to test_rgpot_pot"
   elif [[ -z "${NWCHEMC_LIBRARY:-}${RGPOT_NWCHEMC_ENGINE:-}" ]]; then
     echo "SKIP: set NWCHEMC_LIBRARY (or RGPOT_NWCHEMC_ENGINE) to an engine library"
   else

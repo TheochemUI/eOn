@@ -1,0 +1,1 @@
+The direct in-process RGPOT arm is linked on every non-Windows build. `-Dwith_rgpot` is no longer a Meson option, and Cap'n Proto is required there. Windows builds still omit the NWChem/CPMD frontends.

@@ -43,7 +43,7 @@ def test_pyproject_identity_and_extras():
     assert "ase" in opt
     setup = data["tool"]["meson-python"]["args"]["setup"]
     assert "-Dwith_pyeonclient=true" in setup
-    assert "-Dwith_rgpot=true" in setup
+    assert not any("with_rgpot" in a for a in setup)
     assert "-Dwith_metatomic=false" in setup
     assert "-Dinstall_eon_server=false" in setup
     assert "-Db_lto=false" in setup

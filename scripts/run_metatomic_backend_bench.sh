@@ -6,7 +6,7 @@
 #   pixi run -e mta-bench mta-backend-bench
 #
 # What this does:
-#   1. meson setup/compile fat pyeonclient (with_metatomic + with_rgpot)
+#   1. meson setup/compile fat pyeonclient (with_metatomic; RGPOT is always linked)
 #   2. meson setup/compile ASE-safe pyeonclient (no C++ metatomic; TORCH_LIBRARY)
 #   3. locate PET-MAD model + geometry under subprojects/gpr_optim/bench_data
 #   4. run scripts/compare_metatomic_backends.py → docs JSON SSoT
@@ -105,7 +105,6 @@ meson_setup_compile "$BUILD_FAT" \
   -Dwith_metatomic=true \
   -Dpip_metatomic=true \
   -Dtorch_version="$TORCH_VER" \
-  -Dwith_rgpot=true \
   -Dwith_pyeonclient=true \
   -Dwith_tests=false \
   -Dwith_xtb=false
@@ -114,7 +113,6 @@ log "build ASE-safe pyeonclient (no C++ metatomic)"
 meson_setup_compile "$BUILD_ASE" \
   -Dwith_metatomic=false \
   -Dpip_metatomic=false \
-  -Dwith_rgpot=false \
   -Dwith_pyeonclient=true \
   -Dwith_tests=false \
   -Dwith_xtb=false

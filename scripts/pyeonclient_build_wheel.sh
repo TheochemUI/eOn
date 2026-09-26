@@ -2,8 +2,8 @@
 # Build a pyeonclient wheel for the *current* interpreter (PyPI-style).
 #
 # Variants (env):
-#   PYEONCLIENT_VARIANT=base        # default: with_rgpot, no torch link → PyPI
-#   PYEONCLIENT_VARIANT=metatomic   # with_metatomic + with_rgpot; wheel tagged
+#   PYEONCLIENT_VARIANT=base        # default: RGPOT linked, no torch link → PyPI
+#   PYEONCLIENT_VARIANT=metatomic   # with_metatomic; wheel tagged
 #                                   # 0.X.Y+metatomic (GitHub artifacts / local;
 #                                   # not flattened onto PyPI as 0.X.Y)
 #
@@ -36,7 +36,7 @@ python -m pip install -U pip build 'nanobind>=2.4,<3' 'numpy>=1.26.4' meson ninj
 
 # A conda or pixi environment ships its .pc files under $CONDA_PREFIX but
 # leaves PKG_CONFIG_PATH empty, so pkg-config finds none of them. The base
-# wheel builds with -Dwith_rgpot=true, which turns on rgpot's RPC arm and
+# wheel builds link the direct RGPOT arm, which turns on rgpot's RPC arm and
 # needs capnp-rpc; without this the build stops at
 # subprojects/rgpot/CppCore/rgpot/rpc/meson.build.
 if [ -n "${CONDA_PREFIX:-}" ] && [ -d "${CONDA_PREFIX}/lib/pkgconfig" ]; then
@@ -102,7 +102,6 @@ SETUP_ARGS=(
   "-Dwith_serve=false"
   "-Dwith_fortran=true"
   "-Dwith_cuh2=true"
-  "-Dwith_rgpot=true"
   "-Dwrap_mode=forcefallback"
   # Explicit: manylinux/PyPI wheels never need LTO; avoids GCC format LTO traps
   "-Db_lto=false"
