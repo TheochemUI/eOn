@@ -7,7 +7,7 @@ sockets); the CPMD engine library is `dlopen`ed at runtime.
    [OmniPotentRPC/cpmdc](https://github.com/OmniPotentRPC/cpmdc), or the fake
    engine from an rgpot build with `-Dwith_rpc=true -Dwith_tests=true`
    (`libcpmdc_fake_engine.so`).
-2. Build eOn with `-Dwith_rgpot=true`.
+2. Build eOn (non-Windows builds link RGPOT; Cap'n Proto is required).
 3. Point the potential at the engine and run a point job with this
    `config.ini` and a `pos.con` (e.g. copy from
    `client/unit_tests/data/systems/...`):

@@ -10,7 +10,7 @@ myst:
 ```{versionadded} 2.16.0
 ```
 
-When eOn is built with `-Dwith_rgpot=true`, potential type `RGPOT` links
+On non-Windows builds, potential type `RGPOT` links
 [rgpot](https://github.com/OmniPotentRPC/rgpot) NWChemPot / CPMDPot and loads
 `libnwchemc.so` / `libcpmdc.so` with `dlopen` in the eOn process.
 
@@ -21,7 +21,7 @@ NWChem binary). Overview: [rgpot integration](project:rgpot_integration.md).
 ## Build
 
 ```{code-block} bash
-meson setup bbdir-rgpot -Dwith_rgpot=true -Dwith_tests=true
+meson setup bbdir-rgpot -Dwith_tests=true
 meson compile -C bbdir-rgpot
 ```
 

@@ -23,6 +23,7 @@ library-api
 in-process
 abi-surface
 rgpot-migration
+porting_potentials
 docbuild
 svn
 svn-migration

@@ -13,8 +13,8 @@ against **PyPI torch**.
 
 | Variant | Meson | Torch in wheel NEEDED? | Use |
 |---------|-------|------------------------|-----|
-| **base** (default CI) | `with_rgpot=true`, `with_metatomic=false` | No | LJ/EMT/… + **RGPOT** (dlopen engines) |
-| **metatomic** | `with_metatomic=true`, `with_rgpot=true` | Yes (links libtorch stack) | Fat Metatomic pot + engine |
+| **base** (default CI) | `with_metatomic=false` (RGPOT always linked) | No | LJ/EMT/… + **RGPOT** (dlopen engines) |
+| **metatomic** | `with_metatomic=true` (RGPOT always linked) | Yes (links libtorch stack) | Fat Metatomic pot + engine |
 
 ```bash
 pip install pyeonclient                 # base

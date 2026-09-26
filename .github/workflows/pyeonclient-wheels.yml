@@ -148,11 +148,9 @@ jobs:
           fi
           if [[ "${{ matrix.variant }}" == "metatomic" ]]; then
             CFG+="setup-args=-Dwith_metatomic=true"$'\n'
-            CFG+="setup-args=-Dwith_rgpot=true"$'\n'
             CFG+="setup-args=-Dpip_metatomic=true"$'\n'
           else
             CFG+="setup-args=-Dwith_metatomic=false"$'\n'
-            CFG+="setup-args=-Dwith_rgpot=true"$'\n'
           fi
           {
             echo "CIBW_CONFIG_SETTINGS<<EOF"
