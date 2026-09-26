@@ -1,0 +1,1 @@
+Cutoff-colored finite differences on a four-atom line take 19 central force calls, against 25 for one column per coordinate, and match the serial matrix to 1e-8. The fourth-order stencil stays within 1e-10 of the complex-step derivative of z^4 + 0.3 z^2 at 0.8, where the central stencil is more than 1e-3 away.
