@@ -11,6 +11,7 @@
 */
 #include "eon/XtsciOptimizer.h"
 #include "eon/PairHessian.h"
+#include "eon/XtsciEindir.h"
 
 #include <algorithm>
 #include <stdexcept>
@@ -33,6 +34,7 @@ struct XtsObjectiveContext {
   double precon_mu;
   double precon_rcut;
   Eigen::VectorXd *cached_x;
+  eonc::xtsci_eindir::State *eindir;
 };
 
 Eigen::Map<const Eigen::VectorXd>
@@ -90,6 +92,10 @@ xts_status_t evaluate_gradient(void *user, const DLManagedTensorVersioned *x,
                                DLManagedTensorVersioned *gradient_out) {
   try {
     auto *context = static_cast<XtsObjectiveContext *>(user);
+    if (context->eindir != nullptr) {
+      return static_cast<xts_status_t>(eonc::xtsci_eindir::eval_grad(
+          context->eindir, x, value_out, gradient_out));
+    }
     const auto positions = map_input(x);
     set_positions_if_changed(context->objective, positions, context->cached_x);
     *value_out = context->objective->getEnergy();
@@ -243,7 +249,11 @@ std::string resolved_accept(const eonc::Parameters::optimizer_options_t &opts) {
 
 namespace eonc {
 
-XtsciOptimizer::~XtsciOptimizer() { xts_solver_free(m_solver); }
+XtsciOptimizer::~XtsciOptimizer() {
+  xts_solver_free(m_solver);
+  xtsci_eindir::release(m_eindir);
+  m_eindir = nullptr;
+}
 
 void XtsciOptimizer::ensureSolver(double a_maxMove) {
   if (m_solver != nullptr) {
@@ -351,6 +361,9 @@ void XtsciOptimizer::ensureSolver(double a_maxMove) {
       mani == "eckart" || mani == "irc") {
     xts_solver_set_periodic(m_solver, m_objf->getPeriodic() ? 1 : 0);
   }
+  if (m_eindir == nullptr) {
+    m_eindir = xtsci_eindir::bind(m_objf.get(), &m_cached_x);
+  }
 }
 
 int XtsciOptimizer::step(double a_maxMove) {
@@ -384,7 +397,7 @@ int XtsciOptimizer::step(double a_maxMove) {
   }
   XtsObjectiveContext context{
       m_objf.get(),    m_optConfig.potential, precon,      lbfgs.precon_A,
-      lbfgs.precon_mu, lbfgs.precon_rcut,     &m_cached_x,
+      lbfgs.precon_mu, lbfgs.precon_rcut,     &m_cached_x, m_eindir,
   };
   xts_report_t report{};
   const bool want_hess = method == XTS_NEWTON || method == XTS_RFO ||
@@ -406,6 +419,35 @@ int XtsciOptimizer::step(double a_maxMove) {
 
 int XtsciOptimizer::run(size_t a_maxIterations, double a_maxMove) {
   if (m_objf->degreesOfFreedom() <= 0 || a_maxIterations == 0) {
+    return m_objf->isConverged() ? 1 : 0;
+  }
+  ensureSolver(a_maxMove);
+  const auto &lbfgs = m_optConfig.opts.lbfgs;
+  std::string precon = resolved_precon(m_optConfig.opts);
+  const xts_method_t method = method_from_name(m_optConfig.opts.xtsci.method);
+  if (method == XTS_DOGLEG && !is_host_precon(precon)) {
+    precon = "pair";
+  }
+  const bool want_hess = method == XTS_NEWTON || method == XTS_RFO ||
+                         method == XTS_DOGLEG || is_host_precon(precon);
+  // A full minimize without a host Hessian goes through the eindir entry.
+  // step() stays one session iteration so the host loop keeps its memory.
+  if (m_eindir != nullptr && !want_hess) {
+    if (m_x.size() == 0) {
+      m_x = m_objf->getPositions();
+    }
+    double value = 0.0;
+    const int status = xtsci_eindir::minimize(
+        m_eindir, m_x.data(), static_cast<size_t>(m_x.size()), a_maxIterations,
+        m_optConfig.opts.converged_force, std::max(a_maxMove, 1.0e-12),
+        static_cast<size_t>(std::max<long>(0, lbfgs.memory)),
+        static_cast<int>(method), &value);
+    if (status != XTS_SUCCESS) {
+      throw std::runtime_error(xts_last_error());
+    }
+    m_objf->setPositions(m_x);
+    m_cached_x = m_x;
+    (void)value;
     return m_objf->isConverged() ? 1 : 0;
   }
   for (size_t i = 0; i < a_maxIterations; ++i) {

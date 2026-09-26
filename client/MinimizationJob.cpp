@@ -15,12 +15,14 @@
 #include "eon/JobResult.h"
 #include "eon/Matter.h"
 #include "eon/Optimizer.h"
+#include "eon/XtsciEindir.h"
 
 #include <filesystem>
 #include <format>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
+#include <string>
 
 namespace eonc {
 
@@ -85,10 +87,19 @@ std::vector<std::string> MinimizationJob::run() {
 
   const bool hasE = status != RunStatus::FAIL_POTENTIAL_FAILED;
   const double energy = hasE ? pos->getPotentialEnergy() : 0.0;
-  JobResultEnvelope::fromMinimization(
+  auto env = JobResultEnvelope::fromMinimization(
       status, params.potential_options().potential,
-      this->pot->forceCallCounter.load(), hasE, energy)
-      .writeResultsDat(resultsFilename.string());
+      this->pot->forceCallCounter.load(), hasE, energy);
+  env.tags.emplace_back("optimizer", std::string(magic_enum::enum_name(
+                                         params.optimizer_options().method)));
+  if (params.optimizer_options().method == OptType::XTSCI) {
+    env.tags.emplace_back("xtsci_method",
+                          params.optimizer_options().xtsci.method);
+  }
+  if (!xtsci_eindir::provenance().empty()) {
+    env.tags.emplace_back("eindir_abi", xtsci_eindir::provenance());
+  }
+  env.writeResultsDat(resultsFilename.string());
 
   return returnFiles;
 }
