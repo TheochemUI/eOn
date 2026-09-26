@@ -34,7 +34,7 @@ splits publish independently with their own versions when useful.
 Runtime control-plane types for kill-file-IPC (not parameter authoring):
 
 - `Geometry` — flat `positions` (3N), `box` (9), Z, frozen mask
-- `JobRequest` / `JobResult` — status codes, barriers, force-call buckets, optional geometries, append-only `landfoldArtifacts`
+- `JobRequest` / `JobResult` — status codes, barriers, force-call buckets, optional geometries, optimizer provenance, append-only `landfoldArtifacts`
 
 Python: `eon_schema.jobs` (path helper + `results.dat` adapters).
 Landfold trajectories use `trajectory_manifest`: exact per-frame geometry

@@ -68,6 +68,110 @@ def dict_to_results_dat(data: Mapping[str, Any]) -> str:
     return "\n".join(lines) + ("\n" if lines else "")
 
 
+
+_ENGINE_STAMP_FIELDS = (
+    "compatibility_schema",
+    "engine_id",
+    "compatibility_engine_protocol_family",
+    "compatibility_engine_protocol_major",
+    "compatibility_engine_protocol_minor",
+    "compatibility_engine_abi_major",
+    "compatibility_engine_abi_minor",
+    "compatibility_engine_layout_revision",
+    "engine_build_identity",
+)
+
+
+def _engine_compatibility(d: Mapping[str, Any]) -> Optional[Dict[str, Any]]:
+    """Strict eon.compatibility.v1 object. Unknown schemas stay un-upgraded."""
+    if d.get("compatibility_schema") != "eon.compatibility.v1":
+        return None
+    if any(key not in d for key in _ENGINE_STAMP_FIELDS):
+        return None
+    stamp: Dict[str, Any] = {
+        "schema": d["compatibility_schema"],
+        "engineId": d["engine_id"],
+        "protocolFamily": d["compatibility_engine_protocol_family"],
+        "protocolMajor": d["compatibility_engine_protocol_major"],
+        "protocolMinor": d["compatibility_engine_protocol_minor"],
+        "abiMajor": d["compatibility_engine_abi_major"],
+        "abiMinor": d["compatibility_engine_abi_minor"],
+        "layoutRevision": d["compatibility_engine_layout_revision"],
+        "buildIdentity": d["engine_build_identity"],
+    }
+    for source, target in (
+        ("compatibility_readcon_spec_version", "readconSpecVersion"),
+        ("compatibility_readcon_min_version", "readconMinVersion"),
+        ("compatibility_eon_schema_min_version", "eonSchemaMinVersion"),
+        ("compatibility_rgpycrumbs_min_version", "rgpycrumbsMinVersion"),
+        ("compatibility_chemparseplot_min_version", "chemparseplotMinVersion"),
+        ("rgpot_name", "rgpotName"),
+        ("rgpot_version", "rgpotVersion"),
+    ):
+        if source in d:
+            stamp[target] = d[source]
+    return stamp
+
+
+def _eindir_from_results(d: Mapping[str, Any]) -> Optional[Dict[str, Any]]:
+    if "optimizer_eindir_abi_major" not in d:
+        return None
+    return {
+        "abi_major": d.get("optimizer_eindir_abi_major", 0),
+        "abi_minor": d.get("optimizer_eindir_abi_minor", 0),
+        "objective_layout": d.get("optimizer_eindir_objective_layout", 0),
+        "objective_size": d.get("optimizer_eindir_objective_size", 0),
+        "objective_align": d.get("optimizer_eindir_objective_align", 0),
+        "dlpack_major": d.get("optimizer_eindir_dlpack_major", 0),
+        "dlpack_minor": d.get("optimizer_eindir_dlpack_minor", 0),
+        "features": d.get("optimizer_eindir_features", 0),
+    }
+
+
+def _provenance_from_results(d: Mapping[str, Any]) -> Dict[str, Any]:
+    eindir = _eindir_from_results(d)
+    optimizer: Dict[str, Any] = {
+        "schema": d.get("optimizer_provenance_schema", ""),
+        "backend": d.get("optimizer_backend", ""),
+        "xts_abi": {
+            "major": d.get("optimizer_xts_abi_major", 0),
+            "minor": d.get("optimizer_xts_abi_minor", 0),
+            "layout": d.get("optimizer_xts_abi_layout", 0),
+        },
+        "has_eindir": eindir is not None,
+    }
+    if eindir is not None:
+        optimizer["eindir"] = eindir
+    rgpot_version = d.get("rgpot_version", "")
+    rgpot = {
+        "schema": d.get("rgpot_schema", ""),
+        "name": d.get("rgpot_name", d.get("potential_type", "")),
+        "version": rgpot_version if isinstance(rgpot_version, str) else str(rgpot_version),
+    }
+    compatibility: Dict[str, Any] = {
+        "schema": d.get("compatibility_schema", ""),
+        "readcon": {
+            "spec_version": d.get("compatibility_readcon_spec_version", 0),
+            "min_version": d.get("compatibility_readcon_min_version", ""),
+        },
+        "eon_schema": {"min_version": d.get("compatibility_eon_schema_min_version", "")},
+        "rgpycrumbs": {"min_version": d.get("compatibility_rgpycrumbs_min_version", "")},
+        "chemparseplot": {
+            "min_version": d.get("compatibility_chemparseplot_min_version", "")
+        },
+        "engine": {
+            "id": d.get("engine_id", d.get("potential_type", "")),
+            "version": d.get("engine_version"),
+            "build_identity": d.get("engine_build_identity"),
+        },
+        "rgpot": {"name": rgpot["name"], "version": rgpot["version"]},
+    }
+    stamp = _engine_compatibility(d)
+    if stamp is not None:
+        compatibility["engine_compatibility"] = stamp
+    return {"optimizer": optimizer, "compatibility": compatibility, "rgpot": rgpot}
+
+
 def job_result_scalars_from_results_dat(text: str) -> Dict[str, Any]:
     """Map results.dat keys into JobResult-oriented scalar names.
 
@@ -105,6 +209,7 @@ def job_result_scalars_from_results_dat(text: str) -> Dict[str, Any]:
         out["simulation_time"] = d["simulation_time"]
         out["md_temperature"] = d.get("md_temperature", 0.0)
         out["has_dynamics"] = True
+    out.update(_provenance_from_results(d))
     return out
 
 
@@ -217,6 +322,40 @@ def job_result_to_wire(data: Mapping[str, Any]) -> Dict[str, Any]:
         if key in ("landfold_artifacts", "landfoldArtifacts"):
             wire["landfoldArtifacts"] = _landfold_artifacts_to_wire(val)
             continue
+        if key == "optimizer" and isinstance(val, Mapping):
+            xts = val.get("xts_abi") or {}
+            eindir = val.get("eindir") or {}
+            wire["optimizer"] = {
+                "schema": val.get("schema", ""),
+                "backend": val.get("backend", ""),
+                "xtsAbiMajor": int(xts.get("major", 0)),
+                "xtsAbiMinor": int(xts.get("minor", 0)),
+                "xtsAbiLayout": int(xts.get("layout", 0)),
+                "hasEindir": bool(val.get("has_eindir", False)),
+                "eindir": {
+                    "abiMajor": int(eindir.get("abi_major", 0)),
+                    "abiMinor": int(eindir.get("abi_minor", 0)),
+                    "objectiveLayout": int(eindir.get("objective_layout", 0)),
+                    "objectiveSize": int(eindir.get("objective_size", 0)),
+                    "objectiveAlign": int(eindir.get("objective_align", 0)),
+                    "dlpackMajor": int(eindir.get("dlpack_major", 0)),
+                    "dlpackMinor": int(eindir.get("dlpack_minor", 0)),
+                    "features": int(eindir.get("features", 0)),
+                },
+            }
+            continue
+        if key == "rgpot" and isinstance(val, Mapping):
+            wire["rgpot"] = {
+                "schema": val.get("schema", ""),
+                "name": val.get("name", ""),
+                "version": val.get("version", ""),
+            }
+            continue
+        if key == "compatibility" and isinstance(val, Mapping):
+            stamp = val.get("engine_compatibility")
+            if isinstance(stamp, Mapping):
+                wire["compatibility"] = dict(stamp)
+            continue
         dest = _SNAKE_TO_WIRE.get(key, key)
         wire[dest] = val
     return wire
@@ -237,6 +376,41 @@ def job_result_from_wire(data: Mapping[str, Any]) -> Dict[str, Any]:
             continue
         if key == "landfoldArtifacts":
             out["landfold_artifacts"] = _landfold_artifacts_from_wire(val)
+            continue
+        if key == "optimizer" and isinstance(val, Mapping):
+            eindir = val.get("eindir") or {}
+            opt = {
+                "schema": val.get("schema", ""),
+                "backend": val.get("backend", ""),
+                "xts_abi": {
+                    "major": int(val.get("xtsAbiMajor", 0)),
+                    "minor": int(val.get("xtsAbiMinor", 0)),
+                    "layout": int(val.get("xtsAbiLayout", 0)),
+                },
+                "has_eindir": bool(val.get("hasEindir", False)),
+            }
+            if opt["has_eindir"]:
+                opt["eindir"] = {
+                    "abi_major": int(eindir.get("abiMajor", 0)),
+                    "abi_minor": int(eindir.get("abiMinor", 0)),
+                    "objective_layout": int(eindir.get("objectiveLayout", 0)),
+                    "objective_size": int(eindir.get("objectiveSize", 0)),
+                    "objective_align": int(eindir.get("objectiveAlign", 0)),
+                    "dlpack_major": int(eindir.get("dlpackMajor", 0)),
+                    "dlpack_minor": int(eindir.get("dlpackMinor", 0)),
+                    "features": int(eindir.get("features", 0)),
+                }
+            out["optimizer"] = opt
+            continue
+        if key == "rgpot" and isinstance(val, Mapping):
+            out["rgpot"] = {
+                "schema": val.get("schema", ""),
+                "name": val.get("name", ""),
+                "version": val.get("version", ""),
+            }
+            continue
+        if key == "compatibility" and isinstance(val, Mapping):
+            out["compatibility"] = {"engine_compatibility": dict(val)}
             continue
         dest = _WIRE_TO_SNAKE.get(key, key)
         out[dest] = val
@@ -298,6 +472,8 @@ def job_result_dumps(data: Mapping[str, Any]) -> bytes:
             continue
         if key == "landfoldArtifacts" and isinstance(val, list):
             _fill_landfold_artifacts(msg, val)
+            continue
+        if isinstance(val, Mapping):
             continue
         if hasattr(msg, key):
             try:

@@ -21,12 +21,96 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "magic_enum/magic_enum.hpp"
 
 namespace eonc {
+
+/// Optimizer, xtsci, eindir, and rgpot identity carried on a JobResult.
+/// Empty backend means the record is absent. Legacy results.dat parsing
+/// is unchanged: these lines are extra value-key records.
+struct JobResultProvenance {
+  std::string backend;
+  std::string engine_version;
+  std::string engine_build_identity;
+  std::string rgpot_name;
+  std::string rgpot_version;
+  bool xtsci{false};
+  std::uint16_t xts_abi_major{0};
+  std::uint16_t xts_abi_minor{0};
+  std::uint16_t xts_abi_layout{0};
+  bool has_eindir{false};
+  std::uint32_t eindir_abi_major{0};
+  std::uint32_t eindir_abi_minor{0};
+  std::uint32_t eindir_objective_layout{0};
+  std::uint64_t eindir_objective_size{0};
+  std::uint64_t eindir_objective_align{0};
+  std::uint32_t eindir_dlpack_major{0};
+  std::uint32_t eindir_dlpack_minor{0};
+  std::uint64_t eindir_features{0};
+
+  static constexpr std::uint16_t readcon_spec_version = 3;
+  static constexpr std::string_view readcon_min_version = "0.14.9";
+  static constexpr std::string_view eon_schema_min_version = "0.2.3";
+  static constexpr std::string_view rgpycrumbs_min_version = "1.10.4";
+  static constexpr std::string_view chemparseplot_min_version = "1.9.17";
+  static constexpr std::string_view rgpot_pin = "3.2.0";
+
+  std::string text() const {
+    if (backend.empty()) {
+      return {};
+    }
+    std::ostringstream out;
+    out << backend << " optimizer_backend\n";
+    out << "eon.optimizer.v1 optimizer_provenance_schema\n";
+    out << "eon.compatibility.v1 compatibility_schema\n";
+    out << readcon_spec_version << " compatibility_readcon_spec_version\n";
+    out << readcon_min_version << " compatibility_readcon_min_version\n";
+    out << eon_schema_min_version << " compatibility_eon_schema_min_version\n";
+    out << rgpycrumbs_min_version << " compatibility_rgpycrumbs_min_version\n";
+    out << chemparseplot_min_version
+        << " compatibility_chemparseplot_min_version\n";
+    out << "eon engine_id\n";
+    if (!engine_version.empty()) {
+      out << engine_version << " engine_version\n";
+    }
+    if (!engine_build_identity.empty()) {
+      out << engine_build_identity << " engine_build_identity\n";
+    }
+    if (!rgpot_name.empty()) {
+      out << rgpot_name << " rgpot_name\n";
+    }
+    if (!rgpot_version.empty()) {
+      out << "eon.rgpot.v1 rgpot_schema\n";
+      out << rgpot_version << " rgpot_version\n";
+    }
+    if (xtsci) {
+      out << "eon.objective compatibility_engine_protocol_family\n";
+      out << "1 compatibility_engine_protocol_major\n";
+      out << "0 compatibility_engine_protocol_minor\n";
+      out << xts_abi_major << " compatibility_engine_abi_major\n";
+      out << xts_abi_minor << " compatibility_engine_abi_minor\n";
+      out << xts_abi_layout << " compatibility_engine_layout_revision\n";
+      out << xts_abi_major << " optimizer_xts_abi_major\n";
+      out << xts_abi_minor << " optimizer_xts_abi_minor\n";
+      out << xts_abi_layout << " optimizer_xts_abi_layout\n";
+    }
+    if (has_eindir) {
+      out << eindir_abi_major << " optimizer_eindir_abi_major\n";
+      out << eindir_abi_minor << " optimizer_eindir_abi_minor\n";
+      out << eindir_objective_layout << " optimizer_eindir_objective_layout\n";
+      out << eindir_objective_size << " optimizer_eindir_objective_size\n";
+      out << eindir_objective_align << " optimizer_eindir_objective_align\n";
+      out << eindir_dlpack_major << " optimizer_eindir_dlpack_major\n";
+      out << eindir_dlpack_minor << " optimizer_eindir_dlpack_minor\n";
+      out << eindir_features << " optimizer_eindir_features\n";
+    }
+    return out.str();
+  }
+};
 
 /// In-memory JobResult scalars. Matches schema/eon_job_result.capnp
 /// field names as results.dat keys. Geometries stay on Matter until capnp
@@ -63,6 +147,7 @@ struct JobResultEnvelope {
   std::optional<readcon::ConFrame> product_frame;
   std::vector<std::pair<std::string, double>> extras;
   std::vector<std::pair<std::string, std::string>> tags;
+  JobResultProvenance provenance;
 
   std::string processSearchString() const {
     std::ostringstream out;
@@ -141,6 +226,7 @@ struct JobResultEnvelope {
     for (const auto &kv : tags) {
       out << kv.second << " " << kv.first << "\n";
     }
+    out << provenance.text();
     return out.str();
   }
 

@@ -23,10 +23,16 @@
 #include "eon/EpiCenters.h"
 #include "eon/HelperFunctions.h"
 #include "eon/Job.h"
+#include "eon/JobResult.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
 #include "eon/Runtime.h"
 #include "version.h"
+#ifdef WITH_XTSCI
+#include <xts.h>
+#endif
+#include <algorithm>
+#include <cctype>
 #include <cstdlib>
 #include <exception>
 #include <format>
@@ -492,6 +498,33 @@ static int eonClientMain(int argc, char **argv) {
         result_file << std::format("{:.12e} user_time\n", utime);
         result_file << std::format("{:.12e} system_time\n", stime);
 #endif
+        eonc::JobResultProvenance provenance;
+        provenance.backend = std::string(
+            magic_enum::enum_name(parameters.optimizer_options().method));
+        std::ranges::transform(
+            provenance.backend, provenance.backend.begin(),
+            [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+        provenance.engine_version = VERSION;
+        provenance.engine_build_identity = GIT_HASH;
+        provenance.rgpot_name = std::string(
+            magic_enum::enum_name(parameters.potential_options().potential));
+        std::ranges::transform(
+            provenance.rgpot_name, provenance.rgpot_name.begin(),
+            [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+#ifdef WITH_RGPOT
+        provenance.rgpot_version =
+            std::string(eonc::JobResultProvenance::rgpot_pin);
+#endif
+#ifdef WITH_XTSCI
+        if (parameters.optimizer_options().method == eonc::OptType::XTSCI) {
+          provenance.xtsci = true;
+          const auto stamp = xts_abi_stamp();
+          provenance.xts_abi_major = stamp.abi_major;
+          provenance.xts_abi_minor = stamp.abi_minor;
+          provenance.xts_abi_layout = stamp.layout_revision;
+        }
+#endif
+        result_file << provenance.text();
       } else {
         QUILL_LOG_ERROR(logger, "Failed to write timing to results.dat");
       }
