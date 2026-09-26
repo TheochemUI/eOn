@@ -20,14 +20,12 @@ namespace eonc {
 class MinimizationJob : public Job {
 public:
   MinimizationJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
-      : Job(std::move(parameters), rt),
-        fcalls{0} {}
+      : Job(std::move(parameters), rt) {}
   ~MinimizationJob(void) = default;
-  std::vector<std::string> run(void);
+  std::vector<std::string> run(void) override;
 
 private:
-  size_t fcalls;
-  RunStatus status;
+  RunStatus status{RunStatus::GOOD};
   eonc::log::Scoped log;
 };
 
