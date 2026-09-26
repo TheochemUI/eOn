@@ -25,6 +25,8 @@
 #include <vector>
 
 namespace {
+constexpr double kLbfgsEps = 1e-30;
+
 void maybeProjectRigid(Eigen::VectorXd &vec, const Eigen::VectorXd &pos,
                        bool enabled) {
   if (!enabled || pos.size() < 6 || pos.size() % 3 != 0) {
@@ -273,7 +275,7 @@ int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
   const double H0 = std::max(cfg.inverse_curvature, 1.0e-16);
   const double ss = s0.squaredNorm();
 
-  if (cfg.secant == "zhangxu" && ss > LBFGS_EPS) {
+  if (cfg.secant == "zhangxu" && ss > kLbfgsEps) {
     // Zhang, Deng, Chen, JOTA 102, 147 (1999); Zhang and Xu, JOTA 2001.
     // t = 6(f_k - f_{k+1}) + 3(g_k + g_{k+1})·s, ŷ = y + (t - y·s)/||s||^2 s.
     // Forces f = -g, so (g_k + g_{k+1})·s = -(f0 + f1)·s.
@@ -304,7 +306,7 @@ int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
                       sy, thresh);
       return 0;
     }
-  } else if (std::abs(sy) < LBFGS_EPS || (curv != "reset" && sy < 0.2 * sBs)) {
+  } else if (std::abs(sy) < kLbfgsEps || (curv != "reset" && sy < 0.2 * sBs)) {
     if (curv == "skip") {
       QUILL_LOG_DEBUG(m_log, "[LBFGS] skip pair, s·y={:.4e}", sy);
       return 0;
@@ -319,7 +321,7 @@ int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
       sy = s0.dot(y0);
       QUILL_LOG_DEBUG(m_log, "[LBFGS] Powell damp θ={:.3f} s·ŷ={:.4e}", theta,
                       sy);
-    } else if (std::abs(sy) < LBFGS_EPS) {
+    } else if (std::abs(sy) < kLbfgsEps) {
       QUILL_LOG_WARNING(m_log,
                         "[LBFGS] s0.y0 too small ({:.4e}), resetting memory",
                         s0.dot(y0));
@@ -334,7 +336,7 @@ int LBFGS::update(const Eigen::VectorXd &a_r1, const Eigen::VectorXd &a_r0,
     return 0;
   }
   // Relative overlap skip belongs to skip/damped/cautious. reset
-  // keeps the ASE rule: only |s·y| < LBFGS_EPS drops the pair.
+  // keeps the ASE rule: only |s·y| < kLbfgsEps drops the pair.
   if (curv != "reset" && sy <= 1.0e-8 * sn * yn) {
     QUILL_LOG_DEBUG(m_log, "[LBFGS] overlap skip, s·y={:.4e}", sy);
     return 0;

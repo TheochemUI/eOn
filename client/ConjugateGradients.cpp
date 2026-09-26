@@ -17,7 +17,7 @@
 namespace eonc {
 
 Eigen::VectorXd ConjugateGradients::getStep() {
-  double a = std::fabs(m_force.dot(m_forceOld));
+  double a = std::abs(m_force.dot(m_forceOld));
   double b = m_forceOld.squaredNorm();
   double gamma = 0.0;
   if (a < 0.5 * b) {
@@ -82,11 +82,11 @@ int ConjugateGradients::line_search(double a_maxMove) {
   int line_i = 0;
   do {
     // Determine curvature from last step (Secant method)
-    curvature = std::fabs(eonc::safemath::safe_div(
+    curvature = std::abs(eonc::safemath::safe_div(
         projectedForceBeforeStep - projectedForce, stepSize, 0.0));
     stepSize = eonc::safemath::safe_div(projectedForce, curvature, a_maxMove);
 
-    if (a_maxMove < std::fabs(stepSize)) {
+    if (a_maxMove < std::abs(stepSize)) {
       // first part get the sign of stepSize
       stepSize = ((stepSize > 0) - (stepSize < 0)) * a_maxMove;
     }
@@ -104,7 +104,7 @@ int ConjugateGradients::line_search(double a_maxMove) {
     // Line search considered converged based in the ratio between the projected
     // force and the norm of the true force
   } while (m_optConfig.opts.cg.line_converged <
-               std::fabs(projectedForce) /
+               std::abs(projectedForce) /
                    (std::sqrt(m_force.dot(m_force) +
                               m_optConfig.opts.cg.line_converged)) &&
            line_i < m_optConfig.opts.cg.line_search_max_iter);
@@ -161,7 +161,7 @@ int ConjugateGradients::single_step(double a_maxMove) {
     double passedMinimum = -1.;
     double forceChange = 0.;
     while (passedMinimum < 0.0 &&
-           0.1 * std::fabs(projectedForce1) < std::fabs(projectedForce2)) {
+           0.1 * std::abs(projectedForce1) < std::abs(projectedForce2)) {
       posStep = pos + eonc::geometry::maxAtomMotionAppliedV(
                           stepSize * m_directionNorm, a_maxMove);
       m_objf->setPositions(posStep);
@@ -170,7 +170,7 @@ int ConjugateGradients::single_step(double a_maxMove) {
 
       passedMinimum = projectedForce1 * projectedForce2;
       if (passedMinimum < 0.0 &&
-          0.1 * std::fabs(projectedForce1) < std::fabs(projectedForce2)) {
+          0.1 * std::abs(projectedForce1) < std::abs(projectedForce2)) {
         forceChange = (projectedForce1 - projectedForce2);
         stepSize = eonc::safemath::safe_div(projectedForce1, forceChange, 0.0) *
                    stepSize;
