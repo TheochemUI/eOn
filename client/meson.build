@@ -727,6 +727,7 @@ eonclib_sources = [
     'NEBSplineExtrema.cpp',
     'NEBSpringForce.cpp',
     'NEBTangent.cpp',
+    'NEBZoom.cpp',
     'NudgedElasticBand.cpp',
     'MonteCarloJob.cpp',
     'DynamicsJob.cpp',
@@ -1554,6 +1555,7 @@ if get_option('with_tests')
         ['test_bondboost', 'BondBoostTest.cpp', 'neb_morse'],
         ['test_emt_cu', 'EMTCuTest.cpp', 'cu_fcc'],
         ['test_neb_subsystem', 'NEBSubsystemTest.cpp', ''],
+        ['test_neb_zoom', 'NEBZoomTest.cpp', ''],
     ]
     # Fortran potential tests: require Fortran shared libs at runtime
     if get_option('with_fortran')

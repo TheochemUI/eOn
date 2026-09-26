@@ -55,6 +55,15 @@ def _neb_spec_cls() -> Any:
         ci_mmf_after_rel: float = Field(default=0.5, ge=0.0)
         ci_mmf_angle: float = Field(default=0.9, ge=0.0, le=1.0)
         ci_mmf_nsteps: int = Field(default=1000, ge=1)
+        # Zoom-NEB image packing around the climbing image. Composes with ci_mmf.
+        zoom: bool = False
+        zoom_alpha: float = Field(default=0.5, gt=0.0, lt=1.0)
+        zoom_offset: int = Field(default=1, ge=1)
+        zoom_mode: str = "auto"
+        zoom_after: float = Field(default=0.0, ge=0.0)
+        zoom_interpolation: str = "cubic"
+        zoom_ci_stability: int = Field(default=5, ge=0)
+        zoom_max_iterations: int = Field(default=0, ge=0)
         # Optimizer (mapped onto neb + opt Parameters fields)
         max_iterations: int = Field(default=1000, ge=1)
         force_tolerance: float = Field(default=0.01, gt=0.0)
@@ -105,6 +114,14 @@ def _neb_spec_cls() -> Any:
             params.neb_ci_mmf_after_rel = float(self.ci_mmf_after_rel)
             params.neb_ci_mmf_angle = float(self.ci_mmf_angle)
             params.neb_ci_mmf_nsteps = int(self.ci_mmf_nsteps)
+            params.neb_zoom = bool(self.zoom)
+            params.neb_zoom_alpha = float(self.zoom_alpha)
+            params.neb_zoom_offset = int(self.zoom_offset)
+            params.neb_zoom_mode = str(self.zoom_mode)
+            params.neb_zoom_after = float(self.zoom_after)
+            params.neb_zoom_interpolation = str(self.zoom_interpolation)
+            params.neb_zoom_ci_stability = int(self.zoom_ci_stability)
+            params.neb_zoom_max_iterations = int(self.zoom_max_iterations)
             params.neb_max_iterations = int(self.max_iterations)
             params.neb_force_tolerance = float(self.force_tolerance)
             params.opt_max_iterations = int(self.max_iterations)

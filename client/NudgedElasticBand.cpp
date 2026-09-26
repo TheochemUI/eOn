@@ -21,6 +21,7 @@
 #include "eon/NEBSplineExtrema.h"
 #include "eon/NEBSpringForce.h"
 #include "eon/NEBTangent.h"
+#include "eon/NEBZoom.h"
 #include "eon/Optimizer.h"
 #include "eon/PotCapabilities.h"
 #include "magic_enum/magic_enum.hpp"
@@ -266,6 +267,10 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
   // OCINEB controller
   auto ocinebCfg = eonc::neb::OCINEBController::fromParams(params);
   eonc::neb::OCINEBController ocineb(ocinebCfg);
+  bool zoomDone{false};
+  long zoomStable{0};
+  long zoomPrevCI{-1};
+  long zoomAt{-1};
 
   while (this->status != NEBStatus::GOOD) {
     if (params.debug_options().write_movies &&
@@ -381,9 +386,47 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
                          params.neb_options().climbing_image.trigger_factor ||
          convForce < params.neb_options().climbing_image.trigger_force);
 
+    bool zoomedThisStep = false;
+    if (iteration && !zoomDone && params.neb_options().zoom.enabled &&
+        climbingImage > 0 && climbingImage + 1 < path.size()) {
+      if (static_cast<long>(climbingImage) == zoomPrevCI) {
+        ++zoomStable;
+      } else {
+        zoomPrevCI = static_cast<long>(climbingImage);
+        zoomStable = 1;
+      }
+      const auto &zoom = params.neb_options().zoom;
+      const double zoomForce =
+          zoom.activation_threshold > 0.0
+              ? zoom.activation_threshold
+              : 10.0 * params.neb_options().force_tolerance;
+      if (zoomStable >= zoom.stability_count && convForce < zoomForce) {
+        std::vector<double> energy;
+        energy.reserve(path.size());
+        for (const auto &image : path) {
+          energy.push_back(image->getPotentialEnergy());
+        }
+        const auto window =
+            eonc::neb::zoom::selectWindow(energy, climbingImage, zoom);
+        if (eonc::neb::zoom::redistributePath(path, window,
+                                              zoom.interpolation)) {
+          movedAfterForceCall = true;
+          optim = eonc::helpers::create::mkOptim(
+              objf, params.neb_options().opt_method, params);
+          zoomDone = true;
+          zoomedThisStep = true;
+          zoomAt = iteration;
+          QUILL_LOG_INFO(log, "Zoom-NEB: packed the band onto images [{}, {}]",
+                         window.lo, window.hi);
+        }
+      }
+    }
+
     if (iteration) {
-      // MMF triggering via controller
-      if (ocineb.shouldTrigger(convForce, ci_active, climbingImage, numImages,
+      // MMF triggering via controller. Skipped on the zoom step so the
+      // dimer sees the redistributed band, not the pre-zoom geometry.
+      if (!zoomedThisStep &&
+          ocineb.shouldTrigger(convForce, ci_active, climbingImage, numImages,
                                ocineb.stabilityCount())) {
         auto result = ocineb.run(*this, convForce);
 
@@ -413,9 +456,19 @@ NudgedElasticBand::NEBStatus NudgedElasticBand::compute() {
         }
       }
 
-      if (iteration >= params.neb_options().max_iterations) {
+      long iterLimit = params.neb_options().max_iterations;
+      if (zoomDone && params.neb_options().zoom.max_iterations > 0 &&
+          zoomAt >= 0) {
+        iterLimit = zoomAt + params.neb_options().zoom.max_iterations;
+      }
+      if (iteration >= iterLimit) {
         status = NEBStatus::BAD_MAX_ITERATIONS;
         break;
+      }
+
+      if (zoomedThisStep) {
+        iteration++;
+        continue;
       }
 
       // Set CI state so updateForces() inside the optimizer step

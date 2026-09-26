@@ -1263,6 +1263,28 @@ int load_ini(INIReader &ini, Parameters &params) {
   oci.restore_unhelpful = ini.GetBoolean(
       neb_section, "ci_mmf_restore_unhelpful", oci.restore_unhelpful);
 
+  auto &zoom = ParametersLoadAccess::neb_options(params).zoom;
+  zoom.enabled = ini.GetBoolean(neb_section, "zoom_neb", zoom.enabled);
+  zoom.alpha = ini.GetReal(neb_section, "zoom_alpha", zoom.alpha);
+  zoom.offset = ini.GetInteger(neb_section, "zoom_offset", zoom.offset);
+  zoom.mode = magic_enum::enum_cast<neb_options_t::zoom_options_t::Mode>(
+                  ini.Get(neb_section, "zoom_mode",
+                          std::string(magic_enum::enum_name(zoom.mode))),
+                  magic_enum::case_insensitive)
+                  .value_or(zoom.mode);
+  zoom.activation_threshold =
+      ini.GetReal(neb_section, "zoom_after", zoom.activation_threshold);
+  zoom.interpolation =
+      magic_enum::enum_cast<neb_options_t::zoom_options_t::Interpolation>(
+          ini.Get(neb_section, "zoom_interpolation",
+                  std::string(magic_enum::enum_name(zoom.interpolation))),
+          magic_enum::case_insensitive)
+          .value_or(zoom.interpolation);
+  zoom.stability_count =
+      ini.GetInteger(neb_section, "zoom_ci_stability", zoom.stability_count);
+  zoom.max_iterations =
+      ini.GetInteger(neb_section, "zoom_max_iterations", zoom.max_iterations);
+
   auto &init = ParametersLoadAccess::neb_options(params).initialization;
   init.method =
       magic_enum::enum_cast<NEBInit>(ini.Get(neb_section, "initializer", ""),
