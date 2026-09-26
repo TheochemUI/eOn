@@ -18,7 +18,7 @@
 class GPRPotential : public eonc::Potential {
 
 private:
-  gpr::GaussianProcessRegression *gpr_model;
+  gpr::GaussianProcessRegression *gpr_model{nullptr};
 
 public:
   // Functions
@@ -28,9 +28,11 @@ public:
   void registerGPRObject(gpr::GaussianProcessRegression *_gpr_model);
 
   // To satisfy interface
-  void initialize(void);
-  void cleanMemory(void);
+  void initialize();
+  void cleanMemory();
 
   void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box);
+             double *U, double *variance, const double *box) override;
+  /// The registered model is shared mutable state.
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
 };

@@ -166,7 +166,9 @@ void ExtPot::prepareExchangeDir() {
 
 void ExtPot::force(long N, const double *R, const int *atomicNrs, double *F,
                    double *U, double *variance, const double *box) {
-  variance = nullptr;
+  if (variance != nullptr) {
+    *variance = 0.0;
+  }
   if (eon_extpot_path.empty()) {
     throw std::runtime_error(
         "ExtPot needs potential_options.extPotPath to name a program to run");
