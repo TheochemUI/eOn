@@ -17,7 +17,7 @@
 namespace eonc {
 
 // Floating Point Trapping. It is platform specific!
-// This causes the program to crash on divison by zero,
+// This causes the program to crash on division by zero,
 // invalid operations, and overflows.
 void enableFPE(void);
 void disableFPE(void);

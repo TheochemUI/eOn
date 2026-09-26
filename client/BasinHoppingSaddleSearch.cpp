@@ -10,14 +10,9 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/BasinHoppingSaddleSearch.h"
-#include "eon/Dimer.h"
-#include "eon/ImprovedDimer.h"
-#include "eon/Lanczos.h"
-#include "eon/LowestEigenmode.h"
 #include "eon/MinModeSaddleSearch.h"
 #include "eon/NudgedElasticBand.h"
 #include <cmath>
-#include <cstdio>
 
 namespace eonc {
 
@@ -39,7 +34,8 @@ int BasinHoppingSaddleSearch::run() {
   double r = eonc::rng::random();
   if (ereactant < eproduct) {
     if (r > p) { // reject
-      return 1;
+      status = 1;
+      return status;
     }
   }
   // NEB reactant to minimized "saddle"
@@ -54,7 +50,12 @@ int BasinHoppingSaddleSearch::run() {
     }
   }
   neb.compute();
-  // pick the maximum energy image along the band
+  // Interior images only. Endpoints are fixed, and a band with fewer than
+  // two images has no finite-difference tangent.
+  if (neb.numImages < 2) {
+    status = 1;
+    return status;
+  }
   double Emax = -1e100;
   int HighestImage = 0;
 
@@ -78,7 +79,8 @@ int BasinHoppingSaddleSearch::run() {
   *saddle = *neb.path[HighestImage];
   eigenvalue = dim.getEigenvalue();
   eigenvector = dim.getEigenvector();
-  return 0;
+  status = 0;
+  return status;
 }
 
 double BasinHoppingSaddleSearch::getEigenvalue() { return eigenvalue; }

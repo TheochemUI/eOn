@@ -11,9 +11,11 @@
 */
 #pragma once
 
-#include "ConjugateGradients.h"
 #include "Job.h"
 #include "Parameters.h"
+
+#include <memory>
+#include <utility>
 
 namespace eonc {
 
@@ -21,15 +23,15 @@ class TestJob : public Job {
 public:
   TestJob(std::unique_ptr<Parameters> params)
       : Job(std::move(params)), tolerance{0.01} {}
-  ~TestJob(void) = default;
-  std::vector<std::string> run(void);
+  ~TestJob() = default;
+  std::vector<std::string> run();
 
 private:
-  double tolerance{0.0};
-  void checkFullSearch(void);
-  void checkPotentials(void);
-  double getEnergyDiff(std::string potTag, double refEnergy);
-  double getForceDiff(std::string potTag, double refForce);
+  double tolerance{0.01};
+  void checkFullSearch();
+  void checkPotentials();
+  double getEnergyDiff(const std::string &potTag, double refEnergy);
+  double getForceDiff(const std::string &potTag, double refForce);
 };
 
 } // namespace eonc

@@ -18,11 +18,7 @@
 #include "eon/SaddleSearchMethod.h"
 #include "eon/SafeMath.h"
 
-#include <cassert>
 #include <cmath>
-#include <cstdlib>
-#include <cstring>
-#include <map>
 
 namespace eonc {
 
@@ -52,8 +48,7 @@ public:
     return Henergy;
   }
 
-  VectorXd getGradient(bool fdstep = false) {
-    (void)fdstep;
+  VectorXd getGradient(bool /*fdstep*/ = false) {
     VectorXd Vforce = matter.getForcesFreeV();
     const double magVforce = Vforce.norm();
     const double fd = params.bgsd_options().gradient_finite_difference;
@@ -162,13 +157,8 @@ int BiasedGradientSquaredDescent::run() {
   eigenvector = eonc::eigenmodeGetEigenvector(*minModeMethod);
   eigenvalue = eonc::eigenmodeGetEigenvalue(*minModeMethod);
   QUILL_LOG_DEBUG(log, "lowest eigenvalue {:.8f}", eigenvalue);
-  if (objf2->isConvergedV()) {
-    return 0;
-  } else if (objf2->isConvergedIP()) {
-    return 1;
-  } else {
-    return 1;
-  };
+  status = objf2->isConvergedV() ? 0 : 1;
+  return status;
 }
 
 double BiasedGradientSquaredDescent::getEigenvalue() { return eigenvalue; }

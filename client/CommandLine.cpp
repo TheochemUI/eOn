@@ -30,8 +30,10 @@
 #include <sstream>
 #include <string>
 
+namespace {
 constexpr auto colorScheme = Argum::basicDefaultColorScheme<char>;
 Argum::BasicColorizer<char> colorizer(colorScheme);
+} // namespace
 
 void singlePoint(std::unique_ptr<eonc::Matter> matter) {
   std::cout << "Energy:         " << std::fixed << std::setprecision(15)
@@ -95,9 +97,9 @@ void commandLine(int argc, char **argv) {
   std::string confile;
   std::string confileout;
   std::string optimizer("cg");
-  std::optional<std::string> config_path;
 
 #ifdef WITH_SERVE_MODE
+  std::optional<std::string> config_path;
   std::optional<std::string> serve_spec;
   std::optional<std::string> serve_host("localhost");
   std::optional<uint16_t> serve_port(12345);

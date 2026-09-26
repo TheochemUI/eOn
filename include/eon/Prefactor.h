@@ -16,13 +16,15 @@
 
 #include "Parameters.h"
 
+#include <string_view>
+
 namespace eonc {
 
 namespace Prefactor {
-const char RATE_HTST[] = "htst";
-const char RATE_QQHTST[] = "qqhtst";
-const char FILTER_CUTOFF[] = "cutoff";
-const char FILTER_FRACTION[] = "fraction";
+inline constexpr std::string_view RATE_HTST{"htst"};
+inline constexpr std::string_view RATE_QQHTST{"qqhtst"};
+inline constexpr std::string_view FILTER_CUTOFF{"cutoff"};
+inline constexpr std::string_view FILTER_FRACTION{"fraction"};
 
 int getPrefactors(const Parameters &parameters, Matter *min1, Matter *saddle,
                   Matter *min2, double &pref1, double &pref2);
@@ -31,7 +33,6 @@ VectorXi movedAtoms(const Parameters &parameters, Matter *min1, Matter *saddle,
 VectorXi movedAtomsPct(const Parameters &parameters, Matter *min1,
                        Matter *saddle, Matter *min2);
 VectorXi allFreeAtoms(Matter *matter);
-VectorXd removeZeroFreqs(const Parameters &parameters, VectorXd freqs);
 void logFreqs(const VectorXd &freqs, const char *name);
 } // namespace Prefactor
 

@@ -1,0 +1,1 @@
+Lanczos, Hessian, prefactor, bundling, IDPP, and the BGSD and basin-hopping saddle searches use standard library parsing and drop unused helpers. Basin-hopping refuses a band that has no interior tangent, and both searches record the status they return.

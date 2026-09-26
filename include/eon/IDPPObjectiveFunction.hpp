@@ -29,11 +29,7 @@ public:
                         const Parameters &paramsPassed,
                         const MatrixXd &targetDistances)
       : ObjectiveFunction(paramsPassed), matter{std::move(matterPassed)},
-        d_target(targetDistances) {
-
-    // Initialize working variables to avoid re-allocation
-    int natoms = matter->numberOfAtoms();
-  }
+        d_target(targetDistances) {}
 
   // IDPP Energy: E = 0.5 * sum( w * (r_ij - d_target_ij)^2 )
   // w = 1 / r_ij^4
