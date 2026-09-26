@@ -12,6 +12,7 @@
 #include "eon/Matter.h"
 #include "eon/BaseStructures.h"
 #include "eon/BondBoost.h"
+#include "eon/ForceNorm.h"
 #include "eon/GeometryAnalysis.h"
 #include "eon/HelperFunctions.h"
 #include "eon/Parameters.h"
@@ -642,19 +643,18 @@ void Matter::applyPeriodicBoundary() {
       eonc::pbc::applyPositions(positions, cell, cellInverse, pbcConvention);
 }
 
+double Matter::maxFreeAtomForce(const AtomMatrix &rows) const {
+  if (rows.rows() != nAtoms) {
+    throw std::invalid_argument(
+        "Matter::maxFreeAtomForce: row count does not match atom count");
+  }
+  return maxFreeAtomForceNorm(rows.data(), isFixed.data(), nAtoms);
+}
+
 double Matter::maxForce() const {
   // Ensures that the forces are up to date
   computePotential();
-
-  const AtomMatrix &f = getForces();
-  double maxForce = 0.0;
-  for (int i = 0; i < nAtoms; i++) {
-    if (getFixed(i)) {
-      continue;
-    }
-    maxForce = std::max(f.row(i).norm(), maxForce);
-  }
-  return maxForce;
+  return maxFreeAtomForce(getForces());
 }
 
 VectorXi Matter::getAtomicNrs() const { return this->atomicNrs; }
