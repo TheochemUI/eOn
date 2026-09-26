@@ -27,9 +27,10 @@ jobs:
           vsversion: "2022"
       - name: Hide GNU link from rustc [windows]
         if: runner.os == 'Windows'
-        shell: bash
+        shell: pwsh
         run: |
-          echo "PATH=$(echo "$PATH" | tr ':' '\n' | grep -vE '/usr/bin$' | paste -sd:)" >> "$GITHUB_ENV"
+          $parts = $env:PATH -split ';' | Where-Object { $_ -notmatch '\\Git\\usr\\bin$' }
+          "PATH=$($parts -join ';')" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
       - uses: prefix-dev/setup-pixi@a0af7a228712d6121d37aba47adf55c1332c9c2e # v0.9.4
         with:
           cache: true
