@@ -11,7 +11,9 @@
 */
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
+#endif
 #include "eon/EonLogger.h"
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -45,10 +47,6 @@
 #include <fcntl.h>
 #include <mpi.h>
 #include <sstream>
-#endif
-
-#if defined WITH_ASE_ORCA || EMBED_PYTHON || WITH_ASE_NWCHEM
-#include "eon/PyGuard.h"
 #endif
 
 // Includes for FPE trapping
@@ -127,61 +125,26 @@ void printSystemInfo() {
 }
 
 static int eonClientMain(int argc, char **argv) {
-  // --- Start Logging setup
-  // Configure backend for optimal performance (see BackendOptions.h)
-  quill::BackendOptions backend_options;
-  // Use 10us sleep for balanced performance (10x faster than 100us default)
-  backend_options.sleep_duration = std::chrono::microseconds{10};
-  // Larger initial buffer avoids reallocs in NEB (43 LOG calls/iter)
-  backend_options.transit_event_buffer_initial_capacity = 2048;
-  // eOn is single-threaded; SPSC queue guarantees ordering, no grace needed
-  backend_options.log_timestamp_ordering_grace_period =
-      std::chrono::microseconds{0};
-  // Flush more frequently for better responsiveness
-  backend_options.sink_min_flush_interval = std::chrono::milliseconds{100};
-  // Disable per-string printable char scan (eOn logs numeric data only)
-  backend_options.check_printable_char = {};
-  quill::Backend::start(backend_options);
-  auto console_sink =
-      quill::Frontend::create_or_get_sink<quill::ConsoleSink>("console");
-  auto file_sink = quill::Frontend::create_or_get_sink<quill::FileSink>(
-      "client_quill.log",
-      []() {
-        quill::FileSinkConfig cfg;
-        cfg.set_open_mode('w');
-        return cfg;
-      }(),
-      quill::FileEventNotifier{});
-  auto *logger = quill::Frontend::create_or_get_logger(
-      "combi", {std::move(console_sink), std::move(file_sink)},
-      quill::PatternFormatterOptions{"%(message)"},
-      quill::ClockSourceType::System);
-  logger->set_log_level(quill::LogLevel::TraceL3);
-  // Traceback logger
-  auto trace_csink =
-      quill::Frontend::create_or_get_sink<quill::ConsoleSink>("trace_console");
-  auto trace_fsink = quill::Frontend::create_or_get_sink<quill::FileSink>(
-      "client_traceback.log",
-      []() {
-        quill::FileSinkConfig cfg;
-        cfg.set_open_mode('w');
-        return cfg;
-      }(),
-      quill::FileEventNotifier{});
-  quill::Frontend::create_or_get_logger(
-      "_traceback", {std::move(trace_csink), std::move(trace_fsink)},
-      quill::PatternFormatterOptions{
-          " [%(log_level)] [%(source_location)] [%(caller_function)] \n "
-          "%(message)\n[end %(log_level)]"},
-      quill::ClockSourceType::System);
-  //--- End logging setup
-  // File sinks above open relative to this directory. MPI jobs chdir later.
-  const auto logHome = std::filesystem::current_path();
   eonc::Parameters parameters;
 
-#if defined WITH_ASE_ORCA || EMBED_PYTHON || WITH_ASE_NWCHEM
-  eonc::ensure_interpreter();
+#ifndef EONMPI
+  // Help, version, and one-shot argv jobs must not pay logger setup first.
+  // commandLine starts the backend only after the flag parse commits to work.
+  if (argc > 1) {
+    eonc::commandLine(argc, argv);
+    quill::Backend::stop();
+    return 0;
+  }
 #endif
+
+  // Quill backend, file sinks, and the combi logger. Deferred until a job
+  // path actually runs so process start is not dominated by the log thread.
+  auto *logger = eonc::log::init_client();
+  if (!logger) {
+    logger = eonc::log::get();
+  }
+  // File sinks open relative to this directory. MPI jobs chdir later.
+  const auto logHome = std::filesystem::current_path();
 
 #ifdef EONMPI
   bool client_standalone = false;
@@ -357,13 +320,6 @@ static int eonClientMain(int argc, char **argv) {
       MPI_Finalize();
       return 0;
     }
-  }
-#endif
-
-#ifndef EONMPI
-  if (argc > 1) {
-    eonc::commandLine(argc, argv);
-    return 0;
   }
 #endif
 

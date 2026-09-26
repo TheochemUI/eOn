@@ -10,6 +10,7 @@
 ** https://github.com/TheochemUI/eOn
 */
 #include "eon/CommandLine.h"
+#include "eon/EonLogger.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 #include "eon/Potential.h"
@@ -246,6 +247,10 @@ void commandLine(int argc, char **argv) {
     std::cerr << colorizer.warning(parser.formatUsage(progname)) << '\n';
     std::exit(EXIT_FAILURE);
   }
+
+  // Help, version, and features exit inside parse. Logger setup waits until
+  // a flag set commits to a potential, a compare, or a config load.
+  eonc::log::init_client();
 
   if (sflag && mflag) {
     std::cerr << colorizer.error(

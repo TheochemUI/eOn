@@ -18,6 +18,7 @@
 #include "quill/sinks/ConsoleSink.h"
 #include "quill/sinks/FileSink.h"
 #include <atomic>
+#include <chrono>
 #include <filesystem>
 #include <mutex>
 #include <source_location>
@@ -32,6 +33,67 @@ namespace detail {
 inline constexpr std::string_view kDefaultLoggerName{"combi"};
 inline constexpr std::string_view kTracebackLoggerName{"_traceback"};
 } // namespace detail
+
+
+/// \brief Start the client backend and the combi / traceback loggers once.
+///
+/// Not called from process load. Help, version, and feature flags return
+/// before this. Tests that already registered "combi" are left alone.
+[[nodiscard]] inline quill::Logger *init_client() noexcept {
+  static std::once_flag once;
+  std::call_once(once, [] {
+    if (quill::Frontend::get_logger(std::string(detail::kDefaultLoggerName))) {
+      return;
+    }
+    try {
+      quill::BackendOptions backend_options;
+      backend_options.sleep_duration = std::chrono::microseconds{10};
+      backend_options.transit_event_buffer_initial_capacity = 2048;
+      backend_options.log_timestamp_ordering_grace_period =
+          std::chrono::microseconds{0};
+      backend_options.sink_min_flush_interval = std::chrono::milliseconds{100};
+      backend_options.check_printable_char = {};
+      try {
+        quill::Backend::start(backend_options);
+      } catch (...) {
+      }
+      auto console_sink =
+          quill::Frontend::create_or_get_sink<quill::ConsoleSink>("console");
+      auto file_sink = quill::Frontend::create_or_get_sink<quill::FileSink>(
+          "client_quill.log",
+          []() {
+            quill::FileSinkConfig cfg;
+            cfg.set_open_mode('w');
+            return cfg;
+          }(),
+          quill::FileEventNotifier{});
+      auto *logger = quill::Frontend::create_or_get_logger(
+          "combi", {std::move(console_sink), std::move(file_sink)},
+          quill::PatternFormatterOptions{"%(message)"},
+          quill::ClockSourceType::System);
+      logger->set_log_level(quill::LogLevel::TraceL3);
+      auto trace_csink =
+          quill::Frontend::create_or_get_sink<quill::ConsoleSink>(
+              "trace_console");
+      auto trace_fsink = quill::Frontend::create_or_get_sink<quill::FileSink>(
+          "client_traceback.log",
+          []() {
+            quill::FileSinkConfig cfg;
+            cfg.set_open_mode('w');
+            return cfg;
+          }(),
+          quill::FileEventNotifier{});
+      quill::Frontend::create_or_get_logger(
+          "_traceback", {std::move(trace_csink), std::move(trace_fsink)},
+          quill::PatternFormatterOptions{
+              " [%(log_level)] [%(source_location)] [%(caller_function)] \n "
+              "%(message)\n[end %(log_level)]"},
+          quill::ClockSourceType::System);
+    } catch (...) {
+    }
+  });
+  return quill::Frontend::get_logger(std::string(detail::kDefaultLoggerName));
+}
 
 /// \brief Get or create the default "combi" logger.
 ///
