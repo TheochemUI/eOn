@@ -90,6 +90,14 @@ inside that engine is ``[Xtsci] method``. Build with
 each ``step()`` is one outer iteration so L-BFGS pairs and NLCG
 conjugacy survive the host loop.
 
+When ``eindir-core`` is on the pkg-config path, the same backend borrows
+an ``eindir_objective_t`` around the ``ObjectiveFunction``. The adapter
+checks the eindir ABI stamp, the gradient feature bit, and the semantic
+descriptor (eV, angstrom, analytic forces) before dispatch.
+``Optimizer::run`` then calls ``xts_minimize_eindir`` unless the step
+needs a host Hessian. ``step()`` stays one ``xts_solver_t`` iteration.
+LBFGS, CG, and the other built-in solvers are unchanged.
+
 ``[Xtsci] qn_step``, ``precon``, and ``accept`` are the first-class
 knobs for an L-BFGS session. They map onto
 ``xts_solver_set_qn_step``, ``xts_solver_step_hess_fg``, and

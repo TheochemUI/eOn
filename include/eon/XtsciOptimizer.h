@@ -12,6 +12,7 @@
 #pragma once
 
 #include "eon/Optimizer.h"
+#include "eon/XtsciEindir.h"
 
 struct xts_solver_t;
 
@@ -36,6 +37,8 @@ public:
 private:
   // Opaque xtsci session. L-BFGS pairs / NLCG directions live here.
   xts_solver_t *m_solver{nullptr};
+  // Borrowed eindir objective. Null unless eindir-core is linked.
+  xtsci_eindir::State *m_eindir{nullptr};
   // Last x passed to setPositions. Persists across step() so eval
   // at the accepted point does not dirty Matter.
   Eigen::VectorXd m_cached_x;

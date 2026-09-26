@@ -316,6 +316,14 @@ if get_option('with_xtsci')
     )
     _deps += xtsci_dep
     _args += ['-DWITH_XTSCI']
+    eindir_dep = dependency('eindir-core', method: 'pkg-config', required: false)
+    if not eindir_dep.found()
+        eindir_dep = dependency('eindir', method: 'pkg-config', required: false)
+    endif
+    if eindir_dep.found()
+        _deps += eindir_dep
+        _args += ['-DWITH_EINDIR']
+    endif
 endif
 
 eigen_dep = dependency('eigen3', required: false)
@@ -758,6 +766,7 @@ eonclib_sources = [
     'IRACompare.cpp',
 ]
 
+eonclib_sources += ['XtsciEindir.cpp']
 if get_option('with_xtsci')
     eonclib_sources += ['XtsciOptimizer.cpp']
 endif
@@ -1534,6 +1543,7 @@ if get_option('with_tests')
         ['test_storage_order', 'StorageOrderTest.cpp', ''],
         # neb_morse workdir: displacement synth test needs reactant.con (#189)
         ['test_helpers', 'HelperFunctionsTest.cpp', 'neb_morse'],
+        ['test_xtsci_eindir', 'XtsciEindirTest.cpp', ''],
         ['test_lammps_loader', 'LammpsLoaderTest.cpp', ''],
         ['test_metatomic_loader', 'MetatomicLoaderTest.cpp', ''],
         ['test_pot_registry', 'PotRegistryTest.cpp', ''],
