@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Added
+
+- ``eon_schema.jobs.trajectory_manifest`` emits an ``eon.trajectory.v1``
+  manifest with exact geometry and frame digests and an ``eon.rgpot.v1``
+  potential identity. ``landfold_consume`` verifies the digests and returns
+  embedding coordinates and FES energies. ``results.dat`` text is rejected.
+
+
 ## [0.2.3] — 2026-07-24
 
 ### Added

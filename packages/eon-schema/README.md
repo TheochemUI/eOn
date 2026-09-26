@@ -5,7 +5,7 @@
 | Layer | Module | Role |
 |-------|--------|------|
 | **L0** | `eon_schema.ssot` | Cap’n Proto params field graph (vendored from monorepo `schema/`) |
-| **L0** | `eon_schema.jobs` | Cap’n Proto `JobRequest` / `JobResult` / `Geometry` + `results.dat` adapters |
+| **L0** | `eon_schema.jobs` | Cap’n Proto `JobRequest` / `JobResult` / `Geometry`, `results.dat` adapters, Landfold trajectory manifests |
 | **L1** | `eon_schema.config` | Full job-config pydantic models (`MainConfig`, `Metatomic`, `Config`, …) |
 | **L2** | `eon_schema.api` / `fields` | In-process specs (`DimerSpec`, `NebSpec`, enums) |
 
