@@ -93,6 +93,10 @@ setup = [
     "-Dwrap_mode=forcefallback",
     "-Db_lto=false",
 ]
+# fortcuh2 is inside librgpot, so --skip-subprojects does not drop it.
+# client/meson.build configures the wrap with with_fortran_pots enabled.
+# This wheel bundles that library; it does not link a pip rgpot wheel.
+# libgfortran stays a system dependency here.
 install = ["--skip-subprojects"]
 dist = ["--include-subprojects"]
 

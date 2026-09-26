@@ -64,6 +64,10 @@ def test_build_wheel_script_variants_disambiguated():
     rtext = repair.read_text()
     assert "patchelf" in rtext
     assert "libcapnp" in rtext or "vendor" in rtext
+    # One bundled SONAME. Lennard-Jones is not its own shared object.
+    assert "[librgpot.so.3]=libeon_rgpot.so.3" in rtext
+    assert "liblennard_jones.so" not in rtext
+    assert "does not link the pip rgpot wheel" in rtext
     # A host ~/.cargo/config.toml naming an absolute linker reaches the
     # readcon-core wrap through cargo and the conda cc rejects it, so the
     # script exports RUSTFLAGS rather than inheriting the host's.
@@ -77,6 +81,12 @@ def test_workflow_publish_excludes_metatomic_local_version():
     assert "+metatomic" in text
     assert "refusing to publish metatomic" in text or "exclude +metatomic" in text
     assert "Tag metatomic wheels" in text
+    assert "pip rgpot + pyeonclient" in text
+    assert "pyeonclient_joint_import.py" in text
+    probe = (ROOT / "scripts" / "pyeonclient_joint_import.py").read_text()
+    assert "JOINT_IMPORT_OK" in probe
+    assert "libeon_rgpot.so.3" in probe
+    assert "rgpot wheel lost the librgpot SONAME" in probe
 
 
 def test_runtime_feature_flags_when_built():
