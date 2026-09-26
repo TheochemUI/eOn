@@ -232,20 +232,42 @@ repair_one() {
     echo "vendor-ok: $ncap capnp libraries in wheel"
   fi
 
-  # Avoid SONAME collisions with pip rgpot (both ship a liblennard_jones.so).
-  # Rename eOn pot libs to libeon_* and rewrite NEEDED across the wheel.
-  local old_soname new_soname so
+  # pyeonclient bundles librgpot. It does not link the pip rgpot wheel.
+  # The bundled copy takes one private SONAME so both packages can load.
+  local old_soname new_soname so base got dest renamed
   declare -A soname_map=(
-    [liblennard_jones.so]=libeon_lennard_jones.so
-    [liblennard_jones_cluster.so]=libeon_lennard_jones_cluster.so
+    [librgpot.so.3]=libeon_rgpot.so.3
   )
   for old_soname in "${!soname_map[@]}"; do
     new_soname="${soname_map[$old_soname]}"
-    if [[ -f "$libs_dir/$old_soname" ]]; then
-      mv -f "$libs_dir/$old_soname" "$libs_dir/$new_soname"
-      patchelf --set-soname "$new_soname" "$libs_dir/$new_soname"
-      echo "soname: $old_soname -> $new_soname"
-    fi
+    while IFS= read -r -d '' so; do
+      base="$(basename "$so")"
+      got="$(readelf -d "$so" 2>/dev/null | sed -n 's/.*SONAME.*\[\(.*\)\]/\1/p' | head -1 || true)"
+      if [[ "$base" != "$old_soname" && "$got" != "$old_soname" ]]; then
+        continue
+      fi
+      patchelf --set-soname "$new_soname" "$so"
+      if [[ "$base" == "$old_soname" ]]; then
+        dest="$(dirname "$so")/$new_soname"
+        if [[ "$so" != "$dest" ]]; then
+          mv -f "$so" "$dest"
+        fi
+        echo "soname: $old_soname -> $new_soname"
+      elif [[ "$base" == librgpot.so* ]]; then
+        renamed="$(dirname "$so")/${base/librgpot/libeon_rgpot}"
+        if [[ "$so" != "$renamed" ]]; then
+          mv -f "$so" "$renamed"
+        fi
+        echo "soname: $base -> $(basename "$renamed") ($new_soname)"
+      fi
+    done < <(find "$work" -type f -name 'librgpot.so*' -print0)
+    while IFS= read -r -d '' so; do
+      dest="$(dirname "$so")/$new_soname"
+      if [[ ! -e "$dest" ]]; then
+        cp -aL "$so" "$dest"
+        echo "soname-alias: $new_soname <- $(basename "$so")"
+      fi
+    done < <(find "$work" -type f -name 'libeon_rgpot.so*' -print0)
   done
   while IFS= read -r -d '' so; do
     for old_soname in "${!soname_map[@]}"; do

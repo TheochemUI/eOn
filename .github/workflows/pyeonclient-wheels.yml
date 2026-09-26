@@ -264,8 +264,35 @@ jobs:
           name: pyeonclient-sdist
           path: dist/*.tar.gz
 
+  joint-import:
+    name: pip rgpot + pyeonclient
+    needs: build
+    if: always() && needs.build.result != 'cancelled'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: pyeonclient-abi3-manylinux
+          path: wheelhouse
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Install both wheels and import them
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y binutils libgfortran5
+          python -m pip install -U pip
+          whl=$(find wheelhouse -name 'pyeonclient-*.whl' ! -name '*+metatomic*' | head -1)
+          test -n "${whl}"
+          python -m pip install "rgpot>=3.2.0" "${whl}" numpy readcon
+          python scripts/pyeonclient_joint_import.py
+
   publish:
-    needs: [build, sdist]
+    needs: [build, sdist, joint-import]
     if: >-
       github.event_name == 'push' && startsWith(github.ref, 'refs/tags/pyeonclient-v')
       || (github.event_name == 'workflow_dispatch' && inputs.publish)

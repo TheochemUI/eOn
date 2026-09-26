@@ -64,3 +64,5 @@ Probes::
   (engine may be produced by a metatomic-variant build).
 
 Neither path requires conda-forge.
+
+The base wheel bundles `librgpot` as `libeon_rgpot.so.3`. It does not link the `rgpot` wheel. CI installs both packages and imports them in one process.
