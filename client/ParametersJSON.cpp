@@ -198,6 +198,19 @@ json to_json(const Parameters &p) {
       {"band_slack",
        ParametersLoadAccess::neb_options(p).climbing_image.band_slack},
   };
+  {
+    const auto &zoom = ParametersLoadAccess::neb_options(p).zoom;
+    j["Nudged Elastic Band"]["zoom"] = {
+        {"enabled", zoom.enabled},
+        {"alpha", zoom.alpha},
+        {"offset", zoom.offset},
+        {"mode", enum_to_json(zoom.mode)},
+        {"activation_threshold", zoom.activation_threshold},
+        {"interpolation", enum_to_json(zoom.interpolation)},
+        {"stability_count", zoom.stability_count},
+        {"max_iterations", zoom.max_iterations},
+    };
+  }
 
   // [Dimer]
   j["Dimer"] = {
@@ -496,6 +509,23 @@ void from_json(const json &j, Parameters &p) {
           ParametersLoadAccess::neb_options(p).climbing_image.converged_only);
       JSON_OPT(ci, "band_slack",
                ParametersLoadAccess::neb_options(p).climbing_image.band_slack);
+    }
+    if (s.contains("zoom")) {
+      auto &z = s.at("zoom");
+      auto &zoom = ParametersLoadAccess::neb_options(p).zoom;
+      JSON_OPT(z, "enabled", zoom.enabled);
+      JSON_OPT(z, "alpha", zoom.alpha);
+      JSON_OPT(z, "offset", zoom.offset);
+      if (z.contains("mode")) {
+        zoom.mode = enum_from_json(z.at("mode"), zoom.mode);
+      }
+      JSON_OPT(z, "activation_threshold", zoom.activation_threshold);
+      if (z.contains("interpolation")) {
+        zoom.interpolation =
+            enum_from_json(z.at("interpolation"), zoom.interpolation);
+      }
+      JSON_OPT(z, "stability_count", zoom.stability_count);
+      JSON_OPT(z, "max_iterations", zoom.max_iterations);
     }
   }
 

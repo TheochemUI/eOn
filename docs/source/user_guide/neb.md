@@ -125,6 +125,37 @@ climbing_image_converged_only = true
 climbing_image_band_slack = 10.0
 ```
 
+### Zoom-NEB
+
+Zoom-NEB packs the images onto a window around the climbing image once
+that image index has stayed fixed for `zoom_ci_stability` iterations and
+the band force is below `zoom_after`. A `zoom_after` of 0 uses ten times
+`converged_force`. The window endpoints become the fixed ends of the
+band, and the images are placed at equal arc length inside it.
+
+`zoom_mode = auto` keeps the contiguous images whose energy is above
+`zoom_alpha` of the barrier, measured from the lower endpoint. If that
+test leaves only the climbing image, the window falls back to
+`zoom_offset` images on each side. `zoom_mode = manual` uses the offset
+directly. `zoom_interpolation` is `cubic` (default) or `linear`.
+
+Zoom does not turn off climbing-image NEB or OCINEB. The dimer step is
+skipped on the redistribution iteration so it runs on the packed band.
+`zoom_max_iterations` limits the steps after the pack; 0 keeps
+`max_iterations`.
+
+```ini
+[Nudged Elastic Band]
+zoom_neb = true
+zoom_mode = auto
+zoom_alpha = 0.5
+zoom_offset = 1
+zoom_after = 0.0
+zoom_interpolation = cubic
+zoom_ci_stability = 5
+ci_mmf = true
+```
+
 ### Parallel evaluation
 
 When compiled with TBB (`-Dwith_parallel_neb=true`) or nvc++
