@@ -61,7 +61,7 @@ IRAResource::~IRAResource() {
   }
 }
 
-void IRAResource::require_loaded() const {
+void IRAResource::require_loaded() {
   if (!m_loaded) {
     throw std::runtime_error(
         "IRA structure comparison requested but libira not found.\n"
