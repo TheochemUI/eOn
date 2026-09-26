@@ -128,7 +128,7 @@ void bind_analysis(nb::module_ &m) {
         }
         std::vector<int> typ1(t1.data(), t1.data() + t1.size());
         std::vector<int> typ2(t2.data(), t2.data() + t2.size());
-        auto r = eonc::IRACompare::matchArrays(
+        auto r = eonc::IRACompare{}.matchArrays(
             static_cast<int>(p1.rows()), typ1.data(), p1.data(),
             static_cast<int>(p2.rows()), typ2.data(), p2.data(), thresh);
         return nb::make_tuple(r.hausdorffDistance, r.error);

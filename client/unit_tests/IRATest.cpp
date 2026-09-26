@@ -17,6 +17,7 @@
 #include "catch2/catch_amalgamated.hpp"
 #include "eon/IRACompare.h"
 #include "eon/Matter.h"
+#include "eon/libs/IRA/IRAResource.h"
 #include <vector>
 
 namespace tests {
@@ -47,7 +48,7 @@ protected:
 TEST_CASE_METHOD(IRAFixture,
                  "IRA match of identical structures returns zero distance",
                  "[ira][match]") {
-  auto result = eonc::IRACompare::match(*m1, *m2, 1.0);
+  auto result = eonc::IRACompare{}.match(*m1, *m2, 1.0);
 
   REQUIRE(result.error == 0);
   REQUIRE_THAT(result.hausdorffDistance, Catch::Matchers::WithinAbs(0.0, 1e-4));
@@ -58,7 +59,7 @@ TEST_CASE_METHOD(IRAFixture,
 
 TEST_CASE_METHOD(IRAFixture, "IRA matchArrays agrees with match",
                  "[ira][match]") {
-  auto via_matter = eonc::IRACompare::match(*m1, *m2, 1.0);
+  auto via_matter = eonc::IRACompare{}.match(*m1, *m2, 1.0);
   std::vector<int> z1(static_cast<size_t>(m1->numberOfAtoms()));
   std::vector<int> z2(static_cast<size_t>(m2->numberOfAtoms()));
   auto nrs1 = m1->getAtomicNrs();
@@ -69,7 +70,7 @@ TEST_CASE_METHOD(IRAFixture, "IRA matchArrays agrees with match",
   for (int i = 0; i < m2->numberOfAtoms(); ++i) {
     z2[static_cast<size_t>(i)] = nrs2[i];
   }
-  auto via_arr = eonc::IRACompare::matchArrays(
+  auto via_arr = eonc::IRACompare{}.matchArrays(
       m1->numberOfAtoms(), z1.data(), m1->getPositions().data(),
       m2->numberOfAtoms(), z2.data(), m2->getPositions().data(), 1.0);
   REQUIRE(via_arr.error == via_matter.error);
@@ -88,7 +89,7 @@ TEST_CASE_METHOD(IRAFixture,
   }
   m2->setPositions(pos);
 
-  auto result = eonc::IRACompare::match(*m1, *m2, 5.0);
+  auto result = eonc::IRACompare{}.match(*m1, *m2, 5.0);
 
   REQUIRE(result.error == 0);
   // After alignment, Hausdorff distance should be near zero
@@ -105,7 +106,7 @@ TEST_CASE_METHOD(IRAFixture,
   pos.row(1) = row0;
   m2->setPositions(pos);
 
-  auto result = eonc::IRACompare::match(*m1, *m2, 5.0);
+  auto result = eonc::IRACompare{}.match(*m1, *m2, 5.0);
 
   REQUIRE(result.error == 0);
   REQUIRE_THAT(result.hausdorffDistance, Catch::Matchers::WithinAbs(0.0, 0.1));
@@ -123,7 +124,7 @@ TEST_CASE_METHOD(IRAFixture,
   pos(0, 1) += 2.0;
   m2->setPositions(pos);
 
-  auto result = eonc::IRACompare::match(*m1, *m2, 10.0);
+  auto result = eonc::IRACompare{}.match(*m1, *m2, 10.0);
 
   REQUIRE(result.error == 0);
   REQUIRE(result.hausdorffDistance > 0.1);
@@ -131,7 +132,7 @@ TEST_CASE_METHOD(IRAFixture,
 
 TEST_CASE_METHOD(IRAFixture, "IRA findSymmetry returns valid point group",
                  "[ira][symmetry]") {
-  auto result = eonc::IRACompare::findSymmetry(*m1, 0.1);
+  auto result = eonc::IRACompare{}.findSymmetry(*m1, 0.1);
 
   REQUIRE(result.error == 0);
   // Every structure has at least the identity operation
@@ -139,6 +140,68 @@ TEST_CASE_METHOD(IRAFixture, "IRA findSymmetry returns valid point group",
   REQUIRE(!result.pointGroup.empty());
   REQUIRE(result.operations.size() == static_cast<size_t>(result.nOperations));
   REQUIRE(result.axes.size() == static_cast<size_t>(result.nOperations));
+}
+
+namespace {
+class MockIRAResource : public eonc::IIRAResource {
+public:
+  int require_calls{0};
+  int match_calls{0};
+
+  MockIRAResource() {
+    libira_match_ = &MockIRAResource::match_fn;
+    active_ = this;
+  }
+
+  void require_loaded() override { ++require_calls; }
+  [[nodiscard]] bool is_loaded() const noexcept override { return true; }
+
+private:
+  static MockIRAResource *active_;
+
+  static void match_fn(int, const int *, const double *, const int *, int nat2,
+                       const int *, const double *, const int *, double,
+                       double **rotMat, double **trans, int **perm,
+                       double *hausdorffDist, int *ierr) {
+    ++active_->match_calls;
+    if (rotMat && *rotMat) {
+      for (int i = 0; i < 9; ++i) {
+        (*rotMat)[i] = (i % 4 == 0) ? 1.0 : 0.0;
+      }
+    }
+    if (trans && *trans) {
+      (*trans)[0] = (*trans)[1] = (*trans)[2] = 0.0;
+    }
+    if (perm && *perm) {
+      for (int i = 0; i < nat2; ++i) {
+        (*perm)[i] = i;
+      }
+    }
+    if (hausdorffDist) {
+      *hausdorffDist = 1.25;
+    }
+    if (ierr) {
+      *ierr = 0;
+    }
+  }
+};
+
+MockIRAResource *MockIRAResource::active_{nullptr};
+} // namespace
+
+TEST_CASE("IRACompare constructs with injected resource mock",
+          "[ira][inject]") {
+  const bool singleton_loaded = eonc::IRAResource::instance().is_loaded();
+  MockIRAResource mock;
+  eonc::IRACompare cmp(mock);
+  const int typ[1] = {1};
+  const double pos[3] = {0.0, 0.0, 0.0};
+  auto result = cmp.matchArrays(1, typ, pos, 1, typ, pos, 1.0);
+  REQUIRE(mock.require_calls == 1);
+  REQUIRE(mock.match_calls == 1);
+  REQUIRE(result.error == 0);
+  REQUIRE(result.hausdorffDistance == 1.25);
+  REQUIRE(eonc::IRAResource::instance().is_loaded() == singleton_loaded);
 }
 
 } /* namespace tests */

@@ -17,10 +17,42 @@
 extern "C" {
 #include "iralib_interf.h"
 }
-#include "eon/libs/IRA/IRAResource.h" // Include IRA resource after IRA interfaces are defined
 #endif
+#include "eon/libs/IRA/IRAResource.h"
+
+#include <stdexcept>
 
 namespace eonc {
+
+#ifndef WITH_IRA
+namespace {
+class UnavailableIRA final : public IIRAResource {
+public:
+  void require_loaded() override {
+    throw std::runtime_error(
+        "IRA structure comparison requested but eOn was built without IRA.");
+  }
+  [[nodiscard]] bool is_loaded() const noexcept override { return false; }
+};
+
+UnavailableIRA &unavailable_ira() {
+  static UnavailableIRA resource;
+  return resource;
+}
+} // namespace
+#endif
+
+IRACompare::IRACompare(IIRAResource &resource)
+    : resource_{resource} {}
+
+IRACompare::IRACompare()
+#ifdef WITH_IRA
+    : IRACompare(get_ira_resource())
+#else
+    : IRACompare(unavailable_ira())
+#endif
+{
+}
 
 IRACompare::MatchResult IRACompare::match(const Matter &m1, const Matter &m2,
                                           double distThreshold) {
@@ -50,7 +82,7 @@ IRACompare::MatchResult IRACompare::matchArrays(int nat1, const int *typ1,
                                                 double distThreshold) {
   MatchResult result;
 #ifdef WITH_IRA
-  auto &res = get_ira_resource();
+  auto &res = resource_;
 
   // Lock the library for the duration of this specific comparison
   std::lock_guard<std::mutex> lock(res.library_mutex);
@@ -134,7 +166,7 @@ IRACompare::MatchResult IRACompare::matchPBC(const Matter &m1, const Matter &m2,
                                              double distThreshold) {
   MatchResult result;
 #ifdef WITH_IRA
-  auto &res = get_ira_resource();
+  auto &res = resource_;
 
   // Lock the library for the duration of this specific comparison
   std::lock_guard<std::mutex> lock(res.library_mutex);
@@ -206,7 +238,7 @@ IRACompare::SymmetryResult
 IRACompare::findSymmetry(const Matter &m, double threshold, bool prescreenIh) {
   SymmetryResult result;
 #ifdef WITH_IRA
-  auto &res = get_ira_resource();
+  auto &res = resource_;
 
   // Lock the library for the duration of this specific symmetry analysis
   std::lock_guard<std::mutex> lock(res.library_mutex);

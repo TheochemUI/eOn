@@ -31,7 +31,10 @@
 
 namespace eonc {
 
-class IRAResource {
+// ---------------------------------------------------------------------------
+// IIRAResource: injectable ABI. Production uses IRAResource::instance().
+// ---------------------------------------------------------------------------
+class IIRAResource {
 public:
   // IRA C API function pointer types (from iralib_interf.h)
   using libira_match_fn = void (*)(int nat1, const int *typ1,
@@ -53,17 +56,22 @@ public:
                char **pg, int *n_prin_ax, double **prin_ax, int *cerr);
   using libira_get_nmax_fn = int (*)();
 
-  /// Singleton accessor (Meyer's pattern).
-  static IRAResource &instance();
-
   /// Global mutex to ensure only one thread accesses IRA library at a time
   std::mutex library_mutex;
 
+  // Loaded function pointers (null if library not found)
+  libira_match_fn libira_match_{nullptr};
+  libira_cshda_pbc_fn libira_cshda_pbc_{nullptr};
+  libira_compute_all_fn libira_compute_all_{nullptr};
+  libira_get_nmax_fn libira_get_nmax_{nullptr};
+
+  virtual ~IIRAResource() = default;
+
   /// True if libira was successfully loaded.
-  [[nodiscard]] bool is_loaded() const noexcept { return m_loaded; }
+  [[nodiscard]] virtual bool is_loaded() const noexcept = 0;
 
   /// Throws std::runtime_error if libira is not available.
-  void require_loaded() const;
+  virtual void require_loaded() = 0;
 
   // Function pointer accessors
   libira_match_fn get_match_fn() const { return libira_match_; }
@@ -73,22 +81,34 @@ public:
   }
   libira_get_nmax_fn get_get_nmax_fn() const { return libira_get_nmax_; }
 
-  /// Non-copyable, non-movable
+  IIRAResource(const IIRAResource &) = delete;
+  IIRAResource &operator=(const IIRAResource &) = delete;
+
+protected:
+  IIRAResource() = default;
+};
+
+// ---------------------------------------------------------------------------
+// IRAResource: process-default loader (Meyer's singleton).
+// ---------------------------------------------------------------------------
+class IRAResource : public IIRAResource {
+public:
+  /// Singleton accessor (Meyer's pattern).
+  static IRAResource &instance();
+
+  [[nodiscard]] bool is_loaded() const noexcept override { return m_loaded; }
+
+  void require_loaded() override;
+
   IRAResource(const IRAResource &) = delete;
   IRAResource &operator=(const IRAResource &) = delete;
 
 private:
   IRAResource();
-  ~IRAResource();
+  ~IRAResource() override;
 
   bool m_loaded{false};
   dynlib::Handle m_handle{};
-
-  // Loaded function pointers (null if library not found)
-  libira_match_fn libira_match_{nullptr};
-  libira_cshda_pbc_fn libira_cshda_pbc_{nullptr};
-  libira_compute_all_fn libira_compute_all_{nullptr};
-  libira_get_nmax_fn libira_get_nmax_{nullptr};
 
   /// Try to load a symbol; returns nullptr on failure.
   template <typename Fn> Fn load_sym(const char *name) const {

@@ -52,7 +52,7 @@ NudgedElasticBand::NudgedElasticBand(std::shared_ptr<Matter> initialPassed,
             const size_t base_count =
                 parametersPassed.neb_options().image_count;
             if (parametersPassed.neb_options().match_endpoints) {
-              auto aligned = eonc::IRACompare::alignReactantToProduct(
+              auto aligned = eonc::IRACompare{}.alignReactantToProduct(
                   *initialPassed, *finalPassed, 1.0);
               auto *log = eonc::log::get();
               if (aligned.error != 0) {
