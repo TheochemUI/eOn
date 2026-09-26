@@ -29,10 +29,6 @@
 
 namespace eonc {
 
-const char PrefactorJob::PREFACTOR_REACTANT[] = "reactant";
-const char PrefactorJob::PREFACTOR_SADDLE[] = "saddle";
-const char PrefactorJob::PREFACTOR_PRODUCT[] = "product";
-
 std::vector<std::string> PrefactorJob::run() {
   std::vector<std::string> returnFiles;
   VectorXd freqs;

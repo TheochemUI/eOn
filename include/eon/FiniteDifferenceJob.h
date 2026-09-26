@@ -20,7 +20,7 @@ public:
   FiniteDifferenceJob(std::unique_ptr<Parameters> parameters, Runtime &rt)
       : Job(std::move(parameters), rt) {}
   ~FiniteDifferenceJob(void) = default;
-  std::vector<std::string> run(void);
+  std::vector<std::string> run(void) override;
 };
 
 } // namespace eonc
