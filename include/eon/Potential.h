@@ -29,16 +29,24 @@ protected:
   PotType ptype;
 
 private:
-  uint64_t m_registry_id;
-  PotRegistry::TimePoint m_created_at;
+  // Production constructors bind PotRegistry::get(). nullptr is a null
+  // sink: create, destroy, and force are not recorded.
+  PotRegistry *m_registry_{nullptr};
+  uint64_t m_registry_id{0};
+  PotRegistry::TimePoint m_created_at{};
   bool force_serial_{false};
 
 public:
   std::atomic<size_t> forceCallCounter;
 
-  // Main Constructor (no Parameters dependency)
+  // Main Constructor (no Parameters dependency). Uses the process registry.
   explicit Potential(PotType a_ptype)
-      : ptype{a_ptype}, m_registry_id{PotRegistry::get().on_created(a_ptype)},
+      : Potential(a_ptype, &PotRegistry::get()) {}
+
+  /// Local or process registry. nullptr records nothing.
+  Potential(PotType a_ptype, PotRegistry *registry)
+      : ptype{a_ptype}, m_registry_{registry},
+        m_registry_id{registry != nullptr ? registry->on_created(a_ptype) : 0},
         m_created_at{PotRegistry::Clock::now()}, forceCallCounter{0} {}
 
   // Out-of-line in eoncbase (PotentialParams.cpp) so shared plugins
@@ -48,8 +56,17 @@ public:
   explicit Potential(const Parameters &a_params);
 
   virtual ~Potential() {
-    PotRegistry::get().on_destroyed(m_registry_id, ptype, forceCallCounter,
-                                    m_created_at);
+    if (m_registry_ != nullptr) {
+      m_registry_->on_destroyed(m_registry_id, ptype, forceCallCounter.load(),
+                                m_created_at);
+    }
+  }
+
+  /// One force call on the bound registry. No-op for a null sink.
+  void notifyForceCall() noexcept {
+    if (m_registry_ != nullptr) {
+      m_registry_->on_force_call(ptype);
+    }
   }
 
   // Does not take into account the fixed / free atoms
@@ -162,7 +179,7 @@ public:
       if (variances)
         variances[i] = var;
       forceCallCounter++;
-      PotRegistry::get().on_force_call(ptype);
+      notifyForceCall();
     }
   }
 };

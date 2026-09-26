@@ -608,7 +608,7 @@ void Matter::computePotential() const {
                        &potentialEnergy, &var,
                        std::span<const double>(force_cell.data(), 9));
       potential->forceCallCounter++;
-      PotRegistry::get().on_force_call(potential->getType());
+      potential->notifyForceCall();
     }
     if (!std::isfinite(potentialEnergy) || !forces.allFinite()) {
       throw std::runtime_error(
