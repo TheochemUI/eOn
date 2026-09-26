@@ -6,6 +6,7 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>
 
+#include <cctype>
 #include <stdexcept>
 #include <string>
 
@@ -593,6 +594,108 @@ void bind_parameters(nb::module_ &m) {
             eonc::ParametersLoadAccess::neb_options(s).match_endpoints = v;
           },
           "IRA permute+rotate reactant onto product before NEB interpolation")
+      .def_prop_rw(
+          "neb_zoom",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::neb_options(s).zoom.enabled;
+          },
+          [](eonc::Parameters &s, bool v) {
+            eonc::ParametersLoadAccess::neb_options(s).zoom.enabled = v;
+          },
+          "Pack images onto a window around the climbing image")
+      .def_prop_rw(
+          "neb_zoom_alpha",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::neb_options(s).zoom.alpha;
+          },
+          [](eonc::Parameters &s, double v) {
+            eonc::ParametersLoadAccess::neb_options(s).zoom.alpha = v;
+          })
+      .def_prop_rw(
+          "neb_zoom_offset",
+          [](const eonc::Parameters &s) {
+            return static_cast<long>(
+                eonc::ParametersLoadAccess::neb_options(s).zoom.offset);
+          },
+          [](eonc::Parameters &s, long v) {
+            eonc::ParametersLoadAccess::neb_options(s).zoom.offset =
+                static_cast<int>(v);
+          })
+      .def_prop_rw(
+          "neb_zoom_mode",
+          [](const eonc::Parameters &s) {
+            auto name = std::string(magic_enum::enum_name(
+                eonc::ParametersLoadAccess::neb_options(s).zoom.mode));
+            for (char &c : name) {
+              c = static_cast<char>(
+                  std::tolower(static_cast<unsigned char>(c)));
+            }
+            return name;
+          },
+          [](eonc::Parameters &s, const std::string &v) {
+            auto mode = magic_enum::enum_cast<
+                eonc::neb_options_t::zoom_options_t::Mode>(
+                v, magic_enum::case_insensitive);
+            if (!mode) {
+              throw std::invalid_argument(
+                  "neb_zoom_mode must be auto or manual");
+            }
+            eonc::ParametersLoadAccess::neb_options(s).zoom.mode = *mode;
+          })
+      .def_prop_rw(
+          "neb_zoom_after",
+          [](const eonc::Parameters &s) {
+            return eonc::ParametersLoadAccess::neb_options(s)
+                .zoom.activation_threshold;
+          },
+          [](eonc::Parameters &s, double v) {
+            eonc::ParametersLoadAccess::neb_options(s)
+                .zoom.activation_threshold = v;
+          },
+          "Force threshold that arms Zoom-NEB; 0 means 10x converged_force")
+      .def_prop_rw(
+          "neb_zoom_interpolation",
+          [](const eonc::Parameters &s) {
+            auto name = std::string(magic_enum::enum_name(
+                eonc::ParametersLoadAccess::neb_options(s).zoom.interpolation));
+            for (char &c : name) {
+              c = static_cast<char>(
+                  std::tolower(static_cast<unsigned char>(c)));
+            }
+            return name;
+          },
+          [](eonc::Parameters &s, const std::string &v) {
+            auto how = magic_enum::enum_cast<
+                eonc::neb_options_t::zoom_options_t::Interpolation>(
+                v, magic_enum::case_insensitive);
+            if (!how) {
+              throw std::invalid_argument(
+                  "neb_zoom_interpolation must be cubic or linear");
+            }
+            eonc::ParametersLoadAccess::neb_options(s).zoom.interpolation =
+                *how;
+          })
+      .def_prop_rw(
+          "neb_zoom_ci_stability",
+          [](const eonc::Parameters &s) {
+            return static_cast<long>(eonc::ParametersLoadAccess::neb_options(s)
+                                         .zoom.stability_count);
+          },
+          [](eonc::Parameters &s, long v) {
+            eonc::ParametersLoadAccess::neb_options(s).zoom.stability_count =
+                static_cast<int>(v);
+          })
+      .def_prop_rw(
+          "neb_zoom_max_iterations",
+          [](const eonc::Parameters &s) {
+            return static_cast<long>(
+                eonc::ParametersLoadAccess::neb_options(s).zoom.max_iterations);
+          },
+          [](eonc::Parameters &s, long v) {
+            eonc::ParametersLoadAccess::neb_options(s).zoom.max_iterations =
+                static_cast<int>(v);
+          },
+          "Iterations after zoom; 0 keeps the band iteration cap")
       // --- RgpotPot (incl. backend=metatomic → libmetatomic_engine) ---
       .def_prop_rw(
           "rgpot_backend",

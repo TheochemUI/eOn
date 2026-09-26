@@ -355,6 +355,44 @@ Nudged Elastic Band:
             kind: boolean
             default: false
 
+        zoom_neb:
+            kind: boolean
+            default: false
+
+        zoom_alpha:
+            kind: float
+            default: 0.5
+
+        zoom_offset:
+            kind: int
+            default: 1
+
+        zoom_mode:
+            kind: string
+            default: auto
+            values:
+                - auto
+                - manual
+
+        zoom_after:
+            kind: float
+            default: 0.0
+
+        zoom_interpolation:
+            kind: string
+            default: cubic
+            values:
+                - cubic
+                - linear
+
+        zoom_ci_stability:
+            kind: int
+            default: 5
+
+        zoom_max_iterations:
+            kind: int
+            default: 0
+
 ################################################################################
 
 Distributed Replica:
