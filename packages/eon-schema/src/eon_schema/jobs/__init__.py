@@ -118,8 +118,74 @@ _SNAKE_TO_WIRE = {
     "user_time_seconds": "userTimeSeconds",
     "system_time_seconds": "systemTimeSeconds",
     "client_version": "clientVersion",
+    "landfold_artifacts": "landfoldArtifacts",
 }
+_ENGINE_SNAKE_TO_WIRE = {
+    "engine_id": "engineId",
+    "protocol_family": "protocolFamily",
+    "protocol_major": "protocolMajor",
+    "protocol_minor": "protocolMinor",
+    "abi_major": "abiMajor",
+    "abi_minor": "abiMinor",
+    "layout_revision": "layoutRevision",
+    "build_identity": "buildIdentity",
+}
+_ENGINE_WIRE_TO_SNAKE = {v: k for k, v in _ENGINE_SNAKE_TO_WIRE.items()}
+_ARTIFACT_SNAKE_TO_WIRE = {
+    "source_run_id": "sourceRunId",
+    "input_digest": "inputDigest",
+    "engine_compatibility": "engineCompatibility",
+}
+_ARTIFACT_WIRE_TO_SNAKE = {v: k for k, v in _ARTIFACT_SNAKE_TO_WIRE.items()}
 _WIRE_TO_SNAKE = {v: k for k, v in _SNAKE_TO_WIRE.items()}
+
+
+def _engine_to_wire(data: Mapping[str, Any]) -> Dict[str, Any]:
+    out: Dict[str, Any] = {}
+    for key, val in data.items():
+        out[_ENGINE_SNAKE_TO_WIRE.get(key, key)] = val
+    return out
+
+
+def _engine_from_wire(data: Mapping[str, Any]) -> Dict[str, Any]:
+    out: Dict[str, Any] = {}
+    for key, val in data.items():
+        out[_ENGINE_WIRE_TO_SNAKE.get(key, key)] = val
+    return out
+
+
+def _artifact_to_wire(data: Mapping[str, Any]) -> Dict[str, Any]:
+    out: Dict[str, Any] = {}
+    for key, val in data.items():
+        dest = _ARTIFACT_SNAKE_TO_WIRE.get(key, key)
+        if dest == "engineCompatibility" and isinstance(val, Mapping):
+            out[dest] = _engine_to_wire(val)
+        else:
+            out[dest] = val
+    return out
+
+
+def _artifact_from_wire(data: Mapping[str, Any]) -> Dict[str, Any]:
+    out: Dict[str, Any] = {}
+    for key, val in data.items():
+        dest = _ARTIFACT_WIRE_TO_SNAKE.get(key, key)
+        if dest == "engine_compatibility" and isinstance(val, Mapping):
+            out[dest] = _engine_from_wire(val)
+        else:
+            out[dest] = val
+    return out
+
+
+def _landfold_artifacts_to_wire(val: Any) -> list:
+    if not isinstance(val, list):
+        return []
+    return [_artifact_to_wire(item) if isinstance(item, Mapping) else item for item in val]
+
+
+def _landfold_artifacts_from_wire(val: Any) -> list:
+    if not isinstance(val, list):
+        return []
+    return [_artifact_from_wire(item) if isinstance(item, Mapping) else item for item in val]
 
 
 def job_result_to_wire(data: Mapping[str, Any]) -> Dict[str, Any]:
@@ -134,6 +200,9 @@ def job_result_to_wire(data: Mapping[str, Any]) -> Dict[str, Any]:
                 "prefactors": int(val.get("prefactors", 0)),
                 "neb": int(val.get("neb", 0)),
             }
+            continue
+        if key in ("landfold_artifacts", "landfoldArtifacts"):
+            wire["landfoldArtifacts"] = _landfold_artifacts_to_wire(val)
             continue
         dest = _SNAKE_TO_WIRE.get(key, key)
         wire[dest] = val
@@ -153,9 +222,47 @@ def job_result_from_wire(data: Mapping[str, Any]) -> Dict[str, Any]:
                 "neb": int(val.get("neb", 0)),
             }
             continue
+        if key == "landfoldArtifacts":
+            out["landfold_artifacts"] = _landfold_artifacts_from_wire(val)
+            continue
         dest = _WIRE_TO_SNAKE.get(key, key)
         out[dest] = val
     return out
+
+
+_ENGINE_TEXT = ("schema", "engineId", "protocolFamily", "buildIdentity")
+_ENGINE_INT = (
+    "protocolMajor",
+    "protocolMinor",
+    "abiMajor",
+    "abiMinor",
+    "layoutRevision",
+)
+
+
+def _fill_engine_compatibility(node: Any, data: Mapping[str, Any]) -> None:
+    for name in _ENGINE_TEXT:
+        val = data.get(name)
+        if isinstance(val, str):
+            setattr(node, name, val)
+    for name in _ENGINE_INT:
+        if name in data and data[name] is not None:
+            setattr(node, name, int(data[name]))
+
+
+def _fill_landfold_artifacts(msg: Any, artifacts: list) -> None:
+    nodes = msg.init("landfoldArtifacts", len(artifacts))
+    for index, art in enumerate(artifacts):
+        if not isinstance(art, Mapping):
+            continue
+        node = nodes[index]
+        for name in ("schema", "sourceRunId", "inputDigest"):
+            val = art.get(name)
+            if isinstance(val, str):
+                setattr(node, name, val)
+        compat = art.get("engineCompatibility")
+        if isinstance(compat, Mapping):
+            _fill_engine_compatibility(node.engineCompatibility, compat)
 
 
 def job_result_dumps(data: Mapping[str, Any]) -> bytes:
@@ -175,6 +282,9 @@ def job_result_dumps(data: Mapping[str, Any]) -> bytes:
             for sub, sval in val.items():
                 if hasattr(fc, sub):
                     setattr(fc, sub, sval)
+            continue
+        if key == "landfoldArtifacts" and isinstance(val, list):
+            _fill_landfold_artifacts(msg, val)
             continue
         if hasattr(msg, key):
             try:

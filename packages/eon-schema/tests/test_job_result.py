@@ -26,6 +26,11 @@ def test_job_result_capnp_exists():
     assert "struct MinimizationBody" in text
     assert "struct NEBBody" in text
     assert "struct ProcessSearchBody" in text
+    assert "struct EngineCompatibility" in text
+    assert "struct LandfoldArtifact" in text
+    assert "landfoldArtifacts @35 :List(LandfoldArtifact);" in text
+    # Body union already owns @31-@34; the artifact list is append-only.
+    assert "unset @31" in text
 
 
 def test_results_dat_roundtrip_scalars():
@@ -80,3 +85,48 @@ def test_job_result_wire_roundtrip():
     again = job_result_loads(blob)
     assert again["job_type"] == "minimization"
     assert again["force_calls"]["total"] == 7
+
+
+def test_landfold_artifact_roundtrip():
+    src = {
+        "job_type": "minimization",
+        "status_code": 0,
+        "landfold_artifacts": [
+            {
+                "schema": "landfold.analysis.v1",
+                "source_run_id": "run-7",
+                "input_digest": "sha256:abc",
+                "engine_compatibility": {
+                    "schema": "eon.compatibility.v1",
+                    "engine_id": "eon",
+                    "protocol_family": "eindir",
+                    "protocol_major": 1,
+                    "protocol_minor": 2,
+                    "abi_major": 3,
+                    "abi_minor": 4,
+                    "layout_revision": 9,
+                    "build_identity": "eon-schema",
+                },
+            }
+        ],
+    }
+    wire = job_result_to_wire(src)
+    assert wire["landfoldArtifacts"][0]["sourceRunId"] == "run-7"
+    assert wire["landfoldArtifacts"][0]["engineCompatibility"]["engineId"] == "eon"
+    back = job_result_from_wire(wire)
+    assert back["landfold_artifacts"] == src["landfold_artifacts"]
+    again = job_result_loads(job_result_dumps(src))
+    arts = again["landfold_artifacts"]
+    assert arts[0]["schema"] == "landfold.analysis.v1"
+    assert arts[0]["source_run_id"] == "run-7"
+    assert arts[0]["input_digest"] == "sha256:abc"
+    compat = arts[0]["engine_compatibility"]
+    assert compat["schema"] == "eon.compatibility.v1"
+    assert compat["engine_id"] == "eon"
+    assert compat["protocol_family"] == "eindir"
+    assert int(compat["protocol_major"]) == 1
+    assert int(compat["protocol_minor"]) == 2
+    assert int(compat["abi_major"]) == 3
+    assert int(compat["abi_minor"]) == 4
+    assert int(compat["layout_revision"]) == 9
+    assert compat["build_identity"] == "eon-schema"
