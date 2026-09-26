@@ -1694,6 +1694,8 @@ if get_option('with_tests')
         ['test_params_ssot', 'ParametersSSOTTest.cpp', ''],
         ['test_bondboost', 'BondBoostTest.cpp', 'neb_morse'],
         ['test_job_result', 'JobResultProvenanceTest.cpp', ''],
+        ['test_prefactor', 'PrefactorTest.cpp', 'neb_morse'],
+        ['test_job_runners', 'JobRunnerCoverageTest.cpp', 'neb_morse'],
         ['test_emt_cu', 'EMTCuTest.cpp', 'cu_fcc'],
         ['test_neb_subsystem', 'NEBSubsystemTest.cpp', ''],
         ['test_neb_zoom', 'NEBZoomTest.cpp', ''],

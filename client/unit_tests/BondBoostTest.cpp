@@ -358,4 +358,70 @@ TEST_CASE("Dynamics saddle search applies bond-boost forces",
   REQUIRE((plain - boosted).norm() > 1e-4);
 }
 
+TEST_CASE("BondBoost rejects a null Matter", "[bondboost]") {
+  Parameters params;
+  REQUIRE_THROWS_AS(BondBoost(nullptr, params), std::invalid_argument);
+}
+
+TEST_CASE("BondBoost skips fixed and duplicate list entries", "[bondboost][list]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "0,0";
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter matter(pot, params);
+  matter.con2matter(std::string("reactant.con"));
+  matter.setFixed(0, true);
+  BondBoost fixedOnly(&matter, params);
+  REQUIRE_THROWS_AS(fixedOnly.initialize(), std::runtime_error);
+
+  matter.setFixed(0, false);
+  BondBoost listed(&matter, params);
+  listed.initialize();
+  REQUIRE(std::isfinite(listed.boost()));
+}
+
+TEST_CASE("BondBoost bias is finite after one equilibration step",
+          "[bondboost][bias]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
+  ParametersLoadAccess::hyperdynamics_options(params).rmd_time = 1.0;
+  ParametersLoadAccess::hyperdynamics_options(params).dvmax = 0.05;
+  ParametersLoadAccess::hyperdynamics_options(params).qrr = 0.3;
+  ParametersLoadAccess::hyperdynamics_options(params).prr = 0.9;
+  ParametersLoadAccess::hyperdynamics_options(params).qcut = 5.0;
+  ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "All";
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter matter(pot, params);
+  matter.con2matter(std::string("reactant.con"));
+  BondBoost bb(&matter, params);
+  bb.initialize();
+  bb.advance();
+  double atEq = bb.boost();
+  REQUIRE(std::isfinite(atEq));
+  REQUIRE(atEq >= 0.0);
+
+  AtomMatrix pos = matter.getPositions();
+  pos.row(1) += Eigen::RowVector3d(2.5, 0.0, 0.0);
+  matter.setPositions(pos);
+  double stretched = bb.boost();
+  REQUIRE(std::isfinite(stretched));
+  REQUIRE(stretched >= 0.0);
+}
+
+TEST_CASE("BondBoost with a nonpositive qrr contributes no bias",
+          "[bondboost]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::dynamics_options(params).time_step = 0.0;
+  ParametersLoadAccess::hyperdynamics_options(params).qrr = 0.0;
+  ParametersLoadAccess::hyperdynamics_options(params).boost_atom_list = "All";
+  auto pot = eonc::helpers::makePotential(PotType::LJ, params);
+  Matter matter(pot, params);
+  matter.con2matter(std::string("reactant.con"));
+  BondBoost bb(&matter, params);
+  bb.initialize();
+  REQUIRE(bb.boost() == 0.0);
+}
+
 } /* namespace tests */

@@ -20,6 +20,7 @@
 
 #include <cmath>
 #include <filesystem>
+#include <stdexcept>
 
 namespace tests {
 
@@ -435,6 +436,55 @@ TEST_CASE_METHOD(DynamicsFixture,
                           std::abs(after(0, 1) - before(0, 1));
   REQUIRE(freeMove > 1e-8);
   REQUIRE(matter->getVelocities()(0, 2) == 0.0);
+}
+
+TEST_CASE_METHOD(DynamicsFixture,
+                 "Dynamics rescaleVelocity matches the target temperature",
+                 "[dynamics][rescale]") {
+  Dynamics dyn(matter, params);
+  dyn.setTemperature(300.0);
+  dyn.setThermalVelocity();
+  dyn.rescaleVelocity();
+  const double ke300 = matter->getKineticEnergy();
+  REQUIRE(ke300 > 0.0);
+  dyn.setTemperature(600.0);
+  dyn.rescaleVelocity();
+  REQUIRE(matter->getKineticEnergy() ==
+          Catch::Approx(2.0 * ke300).epsilon(1e-8));
+}
+
+TEST_CASE_METHOD(DynamicsFixture,
+                 "Dynamics Nose-Hoover rejects a nonpositive mass",
+                 "[dynamics][nose_hoover]") {
+  ParametersLoadAccess::thermostat_options(params).kind = "nose_hoover";
+  ParametersLoadAccess::thermostat_options(params).nose_mass = 0.0;
+  Dynamics dyn(matter, params);
+  dyn.setTemperature(300.0);
+  dyn.setThermalVelocity();
+  REQUIRE_THROWS_AS(dyn.oneStep(), std::invalid_argument);
+}
+
+TEST_CASE_METHOD(DynamicsFixture, "Dynamics run writes a movie when asked",
+                 "[dynamics][movie]") {
+  namespace fs = std::filesystem;
+  const auto original = fs::current_path();
+  const auto dir = fs::temp_directory_path() / "eon_dynamics_movie";
+  fs::remove_all(dir);
+  fs::create_directories(dir);
+  fs::copy_file(original / "reactant.con", dir / "reactant.con");
+  fs::current_path(dir);
+  ParametersLoadAccess::dynamics_options(params).steps = 1;
+  ParametersLoadAccess::dynamics_options(params).time_step = 1.0;
+  ParametersLoadAccess::debug_options(params).write_movies = true;
+  ParametersLoadAccess::debug_options(params).write_movies_interval = 1;
+  Dynamics dyn(matter, params);
+  dyn.setTemperature(300.0);
+  dyn.setThermalVelocity();
+  dyn.run();
+  const bool wrote = fs::exists(dir / "dynamics.con");
+  fs::current_path(original);
+  fs::remove_all(dir);
+  REQUIRE(wrote);
 }
 
 } /* namespace tests */
