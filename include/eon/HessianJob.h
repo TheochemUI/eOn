@@ -20,7 +20,7 @@ public:
   HessianJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)) {}
   ~HessianJob(void) = default;
-  std::vector<std::string> run(void);
+  std::vector<std::string> run(void) override;
 };
 
 } // namespace eonc

@@ -146,7 +146,7 @@ int SaddleSearchJob::doSaddleSearch() {
     if (e == 100) {
       status = MinModeSaddleSearch::STATUS_POTENTIAL_FAILED;
     } else {
-      printf("unknown exception: %i\n", e);
+      QUILL_LOG_ERROR(log, "unknown exception: {}", e);
       throw e;
     }
   } catch (const std::exception &e) {
