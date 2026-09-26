@@ -18,6 +18,7 @@
 // to 3 N_mobile without changing free/fixed.
 
 #include "eon/Davidson.h"
+#include "eon/FiniteDifference.h"
 
 #include "eon/EonLogger.h"
 #include "eon/HelperFunctions.h"
@@ -63,6 +64,11 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
   const long maxIter = std::max(1L, params.davidson_options().max_iterations);
   const double tol = params.davidson_options().tolerance;
   const double dr = params.main_options().finiteDifference;
+  const FdScheme requested = parseFdScheme(params.hessian_options().fd_scheme);
+  // Fourth-order is the only scheme that changes the matrix-free product.
+  // one_sided and central keep the forward difference used by min-mode.
+  const FdScheme hvpScheme =
+      requested == FdScheme::Fourth ? FdScheme::Fourth : FdScheme::OneSided;
   const bool useDiagPrec = params.davidson_options().diagonal_preconditioner;
 
   MatrixXd V(size, maxIter);
@@ -84,10 +90,14 @@ void Davidson::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
   const VectorXd force0 = mobileForces(tmpMatter.get(), mobile);
 
   auto applyH = [&](const VectorXd &v) -> VectorXd {
-    AtomMatrix pos = pos0;
-    unpackMobileRows(packMobileRows(pos0, mobile) + dr * v, mobile, pos);
-    tmpMatter->setPositions(pos);
-    return -(mobileForces(tmpMatter.get(), mobile) - force0) / dr;
+    auto at = [&](double scale) -> VectorXd {
+      AtomMatrix pos = pos0;
+      unpackMobileRows(packMobileRows(pos0, mobile) + (scale * dr) * v, mobile,
+                       pos);
+      tmpMatter->setPositions(pos);
+      return mobileForces(tmpMatter.get(), mobile);
+    };
+    return fdHessianVector(hvpScheme, dr, force0, at);
   };
 
   VectorXd diagH = VectorXd::Ones(size);

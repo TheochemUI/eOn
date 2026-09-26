@@ -13,6 +13,7 @@
 #include "Eigen.h"
 #include "EonLogger.h"
 
+#include "FiniteDifference.h"
 #include "Matter.h"
 #include "Parameters.h"
 
@@ -40,8 +41,8 @@ private:
   VectorXi atoms;
   bool calculate();
   bool finalizeHessian(int size);
-  bool calculateColored(double cutoff, double dr, bool useCentral);
-  bool calculateSerial(double dr, bool useCentral);
+  bool calculateColored(double cutoff, double dr, FdScheme scheme);
+  bool calculateSerial(double dr, FdScheme scheme);
   eonc::log::Scoped log;
 };
 

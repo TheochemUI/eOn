@@ -21,6 +21,7 @@
 
 #include "eon/Lanczos.h"
 #include "eon/EonLogger.h"
+#include "eon/FiniteDifference.h"
 #include "eon/HelperFunctions.h"
 #include "eon/MobileAtoms.h"
 #include "eon/Potential.h"
@@ -72,6 +73,11 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
   }
   double ew = 0, ewOld = 0, ewAbsRelErr;
   const double dr = params.main_options().finiteDifference;
+  const FdScheme requested = parseFdScheme(params.hessian_options().fd_scheme);
+  // Fourth-order is the only scheme that changes the matrix-free product.
+  // one_sided and central keep the forward difference used by min-mode.
+  const FdScheme hvpScheme =
+      requested == FdScheme::Fourth ? FdScheme::Fourth : FdScheme::OneSided;
   VectorXd evEst, evT, evOldEst;
 
   auto tmpMatter = std::make_unique<Matter>(*matter);
@@ -80,10 +86,14 @@ void Lanczos::compute(std::shared_ptr<Matter> matter, AtomMatrix direction,
   const VectorXd force0 = mobileForces(tmpMatter.get(), mobile);
 
   auto applyH = [&](const VectorXd &v) -> VectorXd {
-    AtomMatrix pos = pos0;
-    unpackMobileRows(packMobileRows(pos0, mobile) + dr * v, mobile, pos);
-    tmpMatter->setPositions(pos);
-    return -(mobileForces(tmpMatter.get(), mobile) - force0) / dr;
+    auto at = [&](double scale) -> VectorXd {
+      AtomMatrix pos = pos0;
+      unpackMobileRows(packMobileRows(pos0, mobile) + (scale * dr) * v, mobile,
+                       pos);
+      tmpMatter->setPositions(pos);
+      return mobileForces(tmpMatter.get(), mobile);
+    };
+    return fdHessianVector(hvpScheme, dr, force0, at);
   };
 
   for (int i = 0; i < size; i++) {

@@ -13,6 +13,9 @@
 #include "eon/Hessian.h"
 #include "TestUtils.hpp"
 #include "catch2/catch_amalgamated.hpp"
+#include "eon/Davidson.h"
+#include "eon/FiniteDifference.h"
+#include "eon/Lanczos.h"
 #include "eon/Matter.h"
 #include "eon/Parameters.h"
 #include "eon/SafeMath.h"
@@ -20,6 +23,7 @@
 #include "rgpot/LennardJones/LJPot.hpp"
 
 #include <algorithm>
+#include <complex>
 #include <cstdio>
 #include <fstream>
 #include <vector>
@@ -332,6 +336,128 @@ TEST_CASE("Colored FD Hessian matches serial central difference",
       REQUIRE_THAT(H(i, j), Catch::Matchers::WithinAbs(serial(i, j), 1e-8));
     }
   }
+}
+
+TEST_CASE("Fourth-order stencil matches a complex-step oracle", "[hessian]") {
+  // Polynomial oracle. Complex-step stays here; Potential::force is real.
+  const auto f = [](std::complex<double> z) {
+    return z * z * z * z + std::complex<double>(0.3, 0.0) * z * z;
+  };
+  const double x = 0.8;
+  const double hcs = 1e-8;
+  const double oracle = std::imag(f(std::complex<double>(x, hcs))) / hcs;
+  const double dr = 0.05;
+  const auto sample = [&](double z) {
+    VectorXd v(1);
+    v(0) = std::real(f(std::complex<double>(z, 0.0)));
+    return v;
+  };
+  const VectorXd f0 = sample(x);
+  const VectorXd fourth = fdForceDerivative(
+      FdScheme::Fourth, dr, f0, sample(x + dr), sample(x - dr),
+      sample(x + 2.0 * dr), sample(x - 2.0 * dr));
+  const VectorXd central = fdForceDerivative(
+      FdScheme::Central, dr, f0, sample(x + dr), sample(x - dr), f0, f0);
+  REQUIRE(parseFdScheme("fourth_order") == FdScheme::Fourth);
+  REQUIRE(parseFdScheme("CENTRAL4") == FdScheme::Fourth);
+  REQUIRE(parseFdScheme("central") == FdScheme::Central);
+  REQUIRE(parseFdScheme("nope") == FdScheme::OneSided);
+  REQUIRE_THAT(fourth(0), Catch::Matchers::WithinAbs(oracle, 1e-10));
+  REQUIRE(std::abs(central(0) - oracle) > 1e-3);
+  REQUIRE(std::abs(fourth(0) - oracle) < std::abs(central(0) - oracle));
+}
+
+TEST_CASE("Colored fourth-order FD matches the serial stencil",
+          "[hessian][color]") {
+  Parameters params;
+  ParametersLoadAccess::potential_options(params).potential = PotType::LJ;
+  ParametersLoadAccess::main_options(params).finiteDifference = 1e-4;
+  ParametersLoadAccess::main_options(params).removeNetForce = false;
+  ParametersLoadAccess::hessian_options(params).fd_scheme = "fourth";
+  ParametersLoadAccess::lanczos_options(params).max_iterations = 3;
+  ParametersLoadAccess::davidson_options(params).max_iterations = 3;
+
+  constexpr double kCutoff = 1.5;
+  auto pot = std::make_shared<RgpotAdapter<rgpot::LJPot>>(
+      PotType::LJ, params, rgpot::LJConfig{.cutoff = kCutoff});
+  auto matter = std::make_shared<Matter>(pot, params);
+  matter->resize(4);
+  for (long i = 0; i < 4; ++i) {
+    matter->setAtomicNr(i, 1);
+    matter->setMass(i, 1.0);
+  }
+  AtomMatrix pos(4, 3);
+  pos.setZero();
+  pos(0, 0) = 0.0;
+  pos(1, 0) = 1.2;
+  pos(2, 0) = 2.4;
+  pos(3, 0) = 3.6;
+  matter->setPositions(pos);
+  matter->setCell(Matrix3d::Identity() * 40.0);
+  matter->setPeriodic(false);
+
+  VectorXi all(4);
+  all << 0, 1, 2, 3;
+  const std::vector<int> colors =
+      eonc::colorMobileCutoffGraph(*matter, all, pot->finiteCutoff());
+  int nColors = 0;
+  for (int c : colors) {
+    nColors = std::max(nColors, c + 1);
+  }
+  REQUIRE(nColors == 3);
+
+  pot->forceCallCounter.store(0);
+  Hessian hess(params, matter.get());
+  MatrixXd H = hess.getHessian(matter.get(), all);
+  REQUIRE(H.rows() == 12);
+  const auto calls = pot->forceCallCounter.load();
+  REQUIRE(calls == static_cast<size_t>(1 + 4 * 3 * nColors));
+
+  const double dr = params.main_options().finiteDifference;
+  Matter probe(*matter);
+  const AtomMatrix force0 = probe.getForces();
+  MatrixXd serial = MatrixXd::Zero(12, 12);
+  for (int i = 0; i < 12; ++i) {
+    AtomMatrix disp = AtomMatrix::Zero(4, 3);
+    disp(all(i / 3), i % 3) = dr;
+    probe.setPositions(pos + disp);
+    const AtomMatrix fp = probe.getForces();
+    probe.setPositions(pos - disp);
+    const AtomMatrix fm = probe.getForces();
+    disp(all(i / 3), i % 3) = 2.0 * dr;
+    probe.setPositions(pos + disp);
+    const AtomMatrix fp2 = probe.getForces();
+    probe.setPositions(pos - disp);
+    const AtomMatrix fm2 = probe.getForces();
+    const AtomMatrix slope =
+        fdForceDerivative(FdScheme::Fourth, dr, force0, fp, fm, fp2, fm2);
+    for (int j = 0; j < 12; ++j) {
+      serial(i, j) = -slope(all(j / 3), j % 3);
+      const double effMass =
+          std::sqrt(matter->getMass(all(j / 3)) * matter->getMass(all(i / 3)));
+      serial(i, j) = eonc::safemath::safe_div(serial(i, j), effMass, 0.0);
+    }
+  }
+  for (int i = 0; i < 12; ++i) {
+    for (int j = 0; j < i; ++j) {
+      serial(i, j) = (serial(i, j) + serial(j, i)) / 2.0;
+      serial(j, i) = serial(i, j);
+    }
+  }
+  for (int i = 0; i < 12; ++i) {
+    for (int j = 0; j < 12; ++j) {
+      REQUIRE_THAT(H(i, j), Catch::Matchers::WithinAbs(serial(i, j), 1e-8));
+    }
+  }
+
+  AtomMatrix direction = AtomMatrix::Zero(4, 3);
+  direction(0, 0) = 1.0;
+  Lanczos lanczos(matter, params, pot);
+  lanczos.compute(matter, direction);
+  REQUIRE(std::isfinite(lanczos.getEigenvalue()));
+  Davidson davidson(matter, params, pot);
+  davidson.compute(matter, direction);
+  REQUIRE(std::isfinite(davidson.getEigenvalue()));
 }
 
 } /* namespace tests */
