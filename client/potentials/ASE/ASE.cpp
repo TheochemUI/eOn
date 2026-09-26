@@ -12,6 +12,7 @@
 
 #include "eon/potentials/ASE/ASE.h"
 #include "eon/Eigen.h"
+#include "eon/EonLogger.h"
 #include "eon/Parameters.h"
 #include "eon/PyGuard.h"
 #include "eon/fpe_handler.h"
@@ -67,11 +68,8 @@ ASE::ASE(const eonc::Parameters &a_params)
     }
 
   } catch (const std::exception &e) {
-    fprintf(stderr,
-            "ASE Calculator: Exception during Python module import: %s\n",
-            e.what());
-    fprintf(stderr, "%s should exist and have no errors on the Python side.\n",
-            py_file.c_str());
+    EONC_LOG_ERROR("ASE calculator import failed for {}: {}", py_file,
+                   e.what());
     throw std::runtime_error(std::string("ASE calculator import failed: ") +
                              e.what());
   }
@@ -80,12 +78,14 @@ ASE::ASE(const eonc::Parameters &a_params)
 
 void ASE::force(long nAtoms, const double *R, const int *atomicNrs, double *F,
                 double *U, double *variance, const double *box) {
-  variance = nullptr;
+  if (variance != nullptr) {
+    *variance = 0.0;
+  }
   py::gil_scoped_acquire gil;
   try {
-    AtomMatrix positions = AtomMatrix::Map(const_cast<double *>(R), nAtoms, 3);
-    RotationMatrix boxx = RotationMatrix::Map(const_cast<double *>(box), 3, 3);
-    Eigen::Map<Eigen::VectorXi> atmnmrs(const_cast<int *>(atomicNrs), nAtoms);
+    const Eigen::Map<const AtomMatrix> positions(R, nAtoms, 3);
+    const Eigen::Map<const RotationMatrix> boxx(box);
+    const Eigen::Map<const Eigen::VectorXi> atmnmrs(atomicNrs, nAtoms);
 
     std::tuple<double, py::array_t<double>> py_result =
         _calculate(positions, atmnmrs, boxx, calculator)
@@ -102,11 +102,11 @@ void ASE::force(long nAtoms, const double *R, const int *atomicNrs, double *F,
         static_cast<const double *>(buffer.ptr), nAtoms, 3);
 
   } catch (py::error_already_set &e) {
-    fprintf(stderr, "ASE calculator: Python error: %s\n", e.what());
+    EONC_LOG_ERROR("ASE calculator Python error: {}", e.what());
     throw std::runtime_error(std::string("ASE calculator Python error: ") +
                              e.what());
   } catch (const std::exception &e) {
-    fprintf(stderr, "ASE calculator: C++ exception: %s\n", e.what());
+    EONC_LOG_ERROR("ASE calculator C++ exception: {}", e.what());
     throw std::runtime_error(std::string("ASE calculator C++ exception: ") +
                              e.what());
   }
@@ -163,11 +163,11 @@ void ASE::forceBatch(long nSystems, long nAtoms, const double *const *positions,
       }
     }
   } catch (py::error_already_set &e) {
-    fprintf(stderr, "ASE calculator: Python error: %s\n", e.what());
+    EONC_LOG_ERROR("ASE calculator Python error: {}", e.what());
     throw std::runtime_error(std::string("ASE calculator Python error: ") +
                              e.what());
   } catch (const std::exception &e) {
-    fprintf(stderr, "ASE calculator: C++ exception: %s\n", e.what());
+    EONC_LOG_ERROR("ASE calculator C++ exception: {}", e.what());
     throw std::runtime_error(std::string("ASE calculator C++ exception: ") +
                              e.what());
   }

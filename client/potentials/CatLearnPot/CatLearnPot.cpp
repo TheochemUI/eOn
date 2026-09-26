@@ -18,8 +18,7 @@ CatLearnPot::CatLearnPot(const eonc::Parameters &a_params)
     : eonc::SurrogatePotential(eonc::PotType::CatLearn, a_params) {
   using namespace pybind11::literals;
   py::module_ sys = py::module_::import("sys");
-  py::exec(
-      std::format("sys.path.insert(0, {})", a_params.catlearn_options().path));
+  sys.attr("path").attr("insert")(0, a_params.catlearn_options().path);
 
   py::module_ gp_module = py::module_::import(
       "catlearn.regression.gaussianprocess.calculator.mlmodel");
@@ -30,7 +29,8 @@ CatLearnPot::CatLearnPot(const eonc::Parameters &a_params)
       "model"_a = a_params.catlearn_options().model);
 };
 
-void CatLearnPot::train_optimize(MatrixXd features, MatrixXd targets) {
+void CatLearnPot::train_optimize(const MatrixXd &features,
+                                 const MatrixXd &targets) {
   m_gpmod.attr("optimize")(features, targets, py::arg("retrain") = true);
   return;
 }
@@ -39,8 +39,10 @@ void CatLearnPot::force(long nAtoms, const double *positions,
                         const int *atomicNrs, double *forces, double *energy,
                         double *variance, const double *box) {
   using namespace pybind11::literals;
-  MatrixXd features =
-      Eigen::Map<MatrixXd>(const_cast<double *>(positions), 1, nAtoms * 3);
+  (void)atomicNrs;
+  (void)box;
+  py::gil_scoped_acquire gil;
+  const Eigen::Map<const MatrixXd> features(positions, 1, nAtoms * 3);
   py::tuple ef_and_unc = (this->m_gpmod.attr("predict")(
       features, "get_variance"_a = true, "get_derivatives"_a = true));
   auto ef_dat = ef_and_unc[0].cast<MatrixXd>();
@@ -51,7 +53,9 @@ void CatLearnPot::force(long nAtoms, const double *positions,
     forces[3 * idx + 1] = gradients(0, 3 * idx + 1) * -1;
     forces[3 * idx + 2] = gradients(0, 3 * idx + 2) * -1;
   }
-  *variance = vari(0, 0); // energy variance only
+  if (variance != nullptr) {
+    *variance = vari(0, 0); // energy variance only
+  }
   *energy = ef_dat(0, 0);
   return;
 }

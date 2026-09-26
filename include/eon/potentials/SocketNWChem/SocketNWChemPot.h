@@ -64,6 +64,11 @@ public:
     return true;
   }
   [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
+  /// One listening socket and one NWChem client. A second instance would
+  /// bind the same path, so per-image copies are not independent.
+  [[nodiscard]] bool needsPerImageInstance() const noexcept override {
+    return false;
+  }
 
 private:
   // --- Private Methods ---
@@ -91,9 +96,9 @@ private:
   bool make_template_input;
 
   // Socket state
-  int listen_fd; // Socket for listening
-  int conn_fd;   // Socket for the active connection
-  bool is_connected;
+  int listen_fd{-1};
+  int conn_fd{-1};
+  bool is_connected{false};
 
   // --- Constants for i-PI protocol and unit conversions ---
   static constexpr int MSG_LEN = 12;
