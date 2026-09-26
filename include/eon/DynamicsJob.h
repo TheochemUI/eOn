@@ -22,8 +22,7 @@ public:
   DynamicsJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)) {}
   ~DynamicsJob(void) = default;
-  std::vector<std::string> run(void);
-  std::vector<std::string> returnFiles;
+  std::vector<std::string> run(void) override;
 };
 
 } // namespace eonc

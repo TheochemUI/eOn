@@ -1,0 +1,1 @@
+Finite-difference and saddle-search jobs log through the client logger instead of printf, and the finite-difference step list is a fixed array rather than a sentinel. Monte Carlo writes its final structure once.\n

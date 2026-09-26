@@ -18,9 +18,11 @@
 #include "eon/Matter.h"
 #include "eon/PotRegistry.h"
 
+#include <array>
 #include <format>
 #include <fstream>
 #include <stdexcept>
+#include <string>
 
 namespace eonc {
 
@@ -33,7 +35,8 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
   }
   AtomMatrix posA = reactant->getPositions();
 
-  double dRs[] = {1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 5e-3, 0.01, 0.05, 0.1, -1};
+  constexpr std::array<double, 9> dRs = {1e-7, 1e-6, 1e-5, 1e-4, 1e-3,
+                                          5e-3, 0.01, 0.05, 0.1};
 
   AtomMatrix forceA = reactant->getForces();
 
@@ -43,10 +46,13 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
   AtomMatrix displacement;
   displacement.resize(reactant->numberOfAtoms(), 3);
   displacement.setZero();
-  printf("displacing atoms:");
+  std::string displaced;
   for (int i = 0; i < reactant->numberOfAtoms(); i++) {
     if (reactant->distance(epicenter, i) <= cutoff) {
-      printf(" %i", i);
+      if (!displaced.empty()) {
+        displaced.push_back(' ');
+      }
+      displaced += std::to_string(i);
       for (int j = 0; j < 3; j++) {
         if (!reactant->getFixed(i)) {
           displacement(i, j) = eonc::rng::randomDouble(1.0);
@@ -54,7 +60,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
       }
     }
   }
-  printf("\n");
+  EONC_LOG_INFO("displacing atoms: {}", displaced);
   const double dispNorm = displacement.norm();
   if (!(dispNorm > 0.0)) {
     throw std::runtime_error(
@@ -69,11 +75,11 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
 
   std::ofstream table("curvature.dat");
   table << std::format("{:>14s}    {:>14s}\n", "dR", "curvature");
-  printf("%14s    %14s\n", "dR", "curvature");
+  EONC_LOG_INFO("{:>14}    {:>14}", "dR", "curvature");
   AtomMatrix posB;
   AtomMatrix forceB;
   double curvature = 0.0;
-  for (int dRi = 0; dRs[dRi] != -1; dRi++) {
+  for (size_t dRi = 0; dRi < dRs.size(); ++dRi) {
     posB = posA + displacement * dRs[dRi];
     reactant->setPositions(posB);
     forceB = reactant->getForces();
@@ -81,7 +87,7 @@ std::vector<std::string> FiniteDifferenceJob::run(void) {
     table << std::format("{:14.8f}    {:14.8f}\n", dRs[dRi], curvature);
     env.extras.emplace_back(std::format("dR_{}", dRi), dRs[dRi]);
     env.extras.emplace_back(std::format("curvature_{}", dRi), curvature);
-    printf("%14.8f    %14.8f\n", dRs[dRi], curvature);
+    EONC_LOG_INFO("{:14.8f}    {:14.8f}", dRs[dRi], curvature);
     table.flush();
   }
 

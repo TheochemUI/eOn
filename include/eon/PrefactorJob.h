@@ -14,6 +14,8 @@
 #include "Job.h"
 #include "Parameters.h"
 
+#include <string_view>
+
 namespace eonc {
 
 class PrefactorJob : public Job {
@@ -21,11 +23,10 @@ public:
   PrefactorJob(std::unique_ptr<Parameters> parameters)
       : Job(std::move(parameters)) {}
   ~PrefactorJob() = default;
-  std::vector<std::string> run();
-  // Ugly but OK for now I guess
-  static const char PREFACTOR_REACTANT[];
-  static const char PREFACTOR_SADDLE[];
-  static const char PREFACTOR_PRODUCT[];
+  std::vector<std::string> run() override;
+  static constexpr std::string_view PREFACTOR_REACTANT{"reactant"};
+  static constexpr std::string_view PREFACTOR_SADDLE{"saddle"};
+  static constexpr std::string_view PREFACTOR_PRODUCT{"product"};
 };
 
 } // namespace eonc
