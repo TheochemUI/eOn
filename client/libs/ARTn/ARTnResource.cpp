@@ -72,7 +72,7 @@ ARTnResource::~ARTnResource() {
   }
 }
 
-void ARTnResource::require_loaded() const {
+void ARTnResource::require_loaded() {
   if (!m_loaded) {
     throw std::runtime_error(
         "ARTn saddle search requested but libartn not found.\n"

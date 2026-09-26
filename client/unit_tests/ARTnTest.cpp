@@ -187,4 +187,26 @@ TEST_CASE_METHOD(ARTnVsDimerFixture,
   REQUIRE(artnSearch->getForceCalls() == 0);
 }
 
+namespace {
+class MockARTnResource : public eonc::IARTnResource {
+public:
+  int require_calls{0};
+  void require_loaded() override { ++require_calls; }
+  [[nodiscard]] bool is_loaded() const noexcept override { return true; }
+};
+} // namespace
+
+TEST_CASE_METHOD(ARTnVsDimerFixture,
+                 "ARTnSaddleSearch constructs with injected resource mock",
+                 "[artn][inject]") {
+  const bool singleton_loaded = eonc::ARTnResource::instance().is_loaded();
+  MockARTnResource mock;
+  auto artnSearch = std::make_unique<ARTnSaddleSearch>(
+      matter_artn, pot, displacement, params, mock);
+  REQUIRE(artnSearch != nullptr);
+  REQUIRE(mock.require_calls == 0);
+  REQUIRE(artnSearch->getStatus() == 0);
+  REQUIRE(eonc::ARTnResource::instance().is_loaded() == singleton_loaded);
+}
+
 } /* namespace tests */

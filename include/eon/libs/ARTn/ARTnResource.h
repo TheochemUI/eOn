@@ -31,7 +31,10 @@
 
 namespace eonc {
 
-class ARTnResource {
+// ---------------------------------------------------------------------------
+// IARTnResource: injectable ABI. Production uses ARTnResource::instance().
+// ---------------------------------------------------------------------------
+class IARTnResource {
 public:
   // ARTn C API function pointer types (from artn.h)
   using artn_create_fn = int (*)();
@@ -59,17 +62,28 @@ public:
   /// C-string the caller must std::free. Zero leaves *cmsg null.
   using get_error_fn = int (*)(void **cmsg);
 
-  /// Singleton accessor (Meyer's pattern).
-  static ARTnResource &instance();
-
   /// Global mutex to ensure only one thread accesses ARTn library at a time
   std::mutex library_mutex;
 
+  artn_create_fn artn_create_{nullptr};
+  setup_artn_fn setup_artn_{nullptr};
+  artn_fn artn_{nullptr};
+  artn_destroy_fn artn_destroy_{nullptr};
+  set_param_fn set_param_{nullptr};
+  get_param_fn get_param_{nullptr};
+  get_runparam_fn get_runparam_{nullptr};
+  get_data_fn get_data_{nullptr};
+  print_caller_fn print_caller_{nullptr};
+  artn_step_fn artn_step_{nullptr};
+  get_error_fn get_error_{nullptr};
+
+  virtual ~IARTnResource() = default;
+
   /// True if libartn was successfully loaded.
-  [[nodiscard]] bool is_loaded() const noexcept { return m_loaded; }
+  [[nodiscard]] virtual bool is_loaded() const noexcept = 0;
 
   /// Throws std::runtime_error if libartn is not available.
-  void require_loaded() const;
+  virtual void require_loaded() = 0;
 
   // Function pointer accessors
   artn_create_fn get_create_fn() const { return artn_create_; }
@@ -86,29 +100,34 @@ public:
   /// wrapper; callers must null-check before dispatching.
   get_error_fn get_get_error_fn() const { return get_error_; }
 
-  /// Non-copyable, non-movable
+  IARTnResource(const IARTnResource &) = delete;
+  IARTnResource &operator=(const IARTnResource &) = delete;
+
+protected:
+  IARTnResource() = default;
+};
+
+// ---------------------------------------------------------------------------
+// ARTnResource: process-default loader (Meyer's singleton).
+// ---------------------------------------------------------------------------
+class ARTnResource : public IARTnResource {
+public:
+  /// Singleton accessor (Meyer's pattern).
+  static ARTnResource &instance();
+
+  [[nodiscard]] bool is_loaded() const noexcept override { return m_loaded; }
+
+  void require_loaded() override;
+
   ARTnResource(const ARTnResource &) = delete;
   ARTnResource &operator=(const ARTnResource &) = delete;
 
 private:
   ARTnResource();
-  ~ARTnResource();
+  ~ARTnResource() override;
 
   bool m_loaded{false};
   dynlib::Handle m_handle{};
-
-  // Loaded function pointers (null if library not found)
-  artn_create_fn artn_create_{nullptr};
-  setup_artn_fn setup_artn_{nullptr};
-  artn_fn artn_{nullptr};
-  artn_destroy_fn artn_destroy_{nullptr};
-  set_param_fn set_param_{nullptr};
-  get_param_fn get_param_{nullptr};
-  get_runparam_fn get_runparam_{nullptr};
-  get_data_fn get_data_{nullptr};
-  print_caller_fn print_caller_{nullptr};
-  artn_step_fn artn_step_{nullptr};
-  get_error_fn get_error_{nullptr};
 
   /// Try to load a symbol; returns nullptr on failure.
   template <typename Fn> Fn load_sym(const char *name) const {

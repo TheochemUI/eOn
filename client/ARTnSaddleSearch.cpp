@@ -11,9 +11,7 @@
  */
 #include "eon/ARTnSaddleSearch.h"
 #include "eon/Eigen.h"
-#ifdef WITH_ARTN
 #include "eon/libs/ARTn/ARTnResource.h"
-#endif
 
 #include <cstdlib>
 #include <filesystem>
@@ -25,10 +23,20 @@ ARTnSaddleSearch::ARTnSaddleSearch(std::shared_ptr<Matter> matterPassed,
                                    std::shared_ptr<Potential> potPassed,
                                    AtomMatrix modeInitial,
                                    const Parameters &paramsPassed)
+    : ARTnSaddleSearch(std::move(matterPassed), std::move(potPassed),
+                       std::move(modeInitial), paramsPassed,
+                       get_artn_resource()) {}
+
+ARTnSaddleSearch::ARTnSaddleSearch(std::shared_ptr<Matter> matterPassed,
+                                   std::shared_ptr<Potential> potPassed,
+                                   AtomMatrix modeInitial,
+                                   const Parameters &paramsPassed,
+                                   IARTnResource &resource)
     : SaddleSearchMethod(potPassed, paramsPassed),
       matter{matterPassed},
       mode{modeInitial},
-      eigenvector{AtomMatrix::Zero(matterPassed->numberOfAtoms(), 3)} {
+      eigenvector{AtomMatrix::Zero(matterPassed->numberOfAtoms(), 3)},
+      resource_{resource} {
   log = eonc::log::get();
   if (!log) {
     throw std::runtime_error("ARTnSaddleSearch: Logger not initialized");
@@ -43,7 +51,7 @@ ARTnSaddleSearch::~ARTnSaddleSearch() {
 
 int ARTnSaddleSearch::run() {
 #ifdef WITH_ARTN
-  auto &res = get_artn_resource();
+  auto &res = resource_;
   const int nat = matter->numberOfAtoms();
 
   if (mode.rows() != nat || mode.cols() != 3) {
