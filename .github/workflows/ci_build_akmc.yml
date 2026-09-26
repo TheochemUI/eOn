@@ -97,6 +97,27 @@ jobs:
           # with_tests defaults true; catch compile/link failures in unit tests.
           meson test -C bbdir --suite eon --print-errorlogs
 
+      - name: Run rgpot potential tests [linux]
+        if: runner.os == 'Linux'
+        shell: pixi run bash -e {0}
+        run: |
+          # Fake engines stand in for libnwchemc / libcpmdc. The cpmdc fake
+          # uses the capnp header generated during the eonclient build.
+          cc -shared -fPIC -O2 \
+            -I subprojects/rgpot/CppCore/rgpot/NWChemPot \
+            subprojects/rgpot/CppCore/tests/nwchemc_fake_engine.c \
+            -o libnwchemc_fake_engine.so
+          c++ -shared -fPIC -O2 \
+            -I subprojects/rgpot/CppCore \
+            -I subprojects/rgpot/CppCore/rgpot/CPMDPot \
+            -I bbdir/subprojects/rgpot/CppCore \
+            subprojects/rgpot/CppCore/tests/cpmdc_fake_engine.cc \
+            -lcapnp -lkj \
+            -o libcpmdc_fake_engine.so
+          export NWCHEMC_LIBRARY=$PWD/libnwchemc_fake_engine.so
+          export CPMDC_LIBRARY=$PWD/libcpmdc_fake_engine.so
+          meson test -C bbdir --suite rgpot --print-errorlogs
+
       - name: Run Catch2 unit tests [windows]
         if: runner.os == 'Windows'
         shell: pixi run bash -e {0}
