@@ -1,1 +1,1 @@
-The production neighbor list stays on vesin. ``neighbor_list_linkcell`` compares that cutoff list with linkcell k-nearest pairs. Wire ``Geometry`` now carries forces, atom ids, and a per-axis fixed bitmask at ordinals 8, 9, and 10.
+The production neighbor list stays on vesin. ``neighbor_list_linkcell`` compares that cutoff list with linkcell k-nearest pairs. Wire ``Geometry`` now carries forces, atom ids, and a fixed-direction bitmask at ordinals 8, 9, and 10.
