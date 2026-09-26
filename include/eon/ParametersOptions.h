@@ -485,7 +485,9 @@ struct prefactor_options_t {
 struct hessian_options_t {
   std::string phva_atoms{"All"};
   double zero_freq_value{1e-6};
-  // FD scheme: "one_sided" (default, ~3M force evals) or "central" (~6M).
+  // FD scheme: "one_sided" (default), "central", or "fourth"
+  // (aliases fourth_order, central4). Fourth-order is real central
+  // differences for this Hessian and for Lanczos/Davidson products.
   // Step size is Main.finite_difference (dx).
   std::string fd_scheme{"one_sided"};
   // If true and checkpoint_path is set, resume FD columns from checkpoint.

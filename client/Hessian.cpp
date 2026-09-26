@@ -30,10 +30,6 @@ namespace {
 // phva_atoms entries are *mobile / displaced* atoms for FD (hybrid/PHVA-class
 // active set). Intersect with non-fixed atoms in HessianJob.
 
-bool isCentralScheme(const std::string &scheme) {
-  return scheme == "central" || scheme == "CENTRAL" || scheme == "Central";
-}
-
 // Checkpoint: first line "eon_hess_ckpt <size> <next_col>", then size*size
 // doubles in row-major order matching MatrixXd storage.
 bool loadColumnCheckpoint(const std::string &path, int size, int &nextCol,
@@ -298,8 +294,7 @@ bool Hessian::calculate() {
     return false;
   }
 
-  const bool useCentral =
-      isCentralScheme(parameters.hessian_options().fd_scheme);
+  const FdScheme scheme = parseFdScheme(parameters.hessian_options().fd_scheme);
   const std::string &ckptPath = parameters.hessian_options().checkpoint_path;
 
   hessian.resize(size, size);
@@ -323,15 +318,15 @@ bool Hessian::calculate() {
   }
   if (!netCoupled && ckptPath.empty() && cutoff > 0.0 &&
       std::isfinite(cutoff)) {
-    if (calculateColored(cutoff, dr, useCentral)) {
+    if (calculateColored(cutoff, dr, scheme)) {
       return true;
     }
     hessian.setZero();
   }
-  return calculateSerial(dr, useCentral);
+  return calculateSerial(dr, scheme);
 }
 
-bool Hessian::calculateColored(double cutoff, double dr, bool useCentral) {
+bool Hessian::calculateColored(double cutoff, double dr, FdScheme scheme) {
   const int nAtoms = static_cast<int>(matter->numberOfAtoms());
   const int nMobile = static_cast<int>(atoms.rows());
   const int size = nMobile * 3;
@@ -393,37 +388,52 @@ bool Hessian::calculateColored(double cutoff, double dr, bool useCentral) {
       if (group.empty()) {
         continue;
       }
-      posDisplace.setZero();
-      for (int ia : group) {
-        posDisplace(atoms(ia), dir) = dr;
-      }
-      matterTemp.setPositions(pos + posDisplace);
-      AtomMatrix forcePlus = matterTemp.getForces();
-      if (!forcePlus.allFinite()) {
-        QUILL_LOG_ERROR(log,
-                        "[Hessian] non-finite forces for color {} dir {} (+); "
-                        "aborting FD Hessian",
-                        c, dir);
-        return false;
-      }
-      AtomMatrix forceMinus;
-      if (useCentral) {
-        matterTemp.setPositions(pos - posDisplace);
-        forceMinus = matterTemp.getForces();
-        if (!forceMinus.allFinite()) {
+      auto shifted = [&](double scale, const char *side) -> AtomMatrix {
+        posDisplace.setZero();
+        for (int ia : group) {
+          posDisplace(atoms(ia), dir) = scale * dr;
+        }
+        matterTemp.setPositions(pos + posDisplace);
+        AtomMatrix force = matterTemp.getForces();
+        if (!force.allFinite()) {
           QUILL_LOG_ERROR(log,
                           "[Hessian] non-finite forces for color {} dir {} "
-                          "(-); aborting FD Hessian",
-                          c, dir);
+                          "({}); aborting FD Hessian",
+                          c, dir, side);
+          return AtomMatrix();
+        }
+        return force;
+      };
+      const AtomMatrix forcePlus = shifted(1.0, "+");
+      if (forcePlus.size() == 0) {
+        return false;
+      }
+      AtomMatrix forceMinus = force0;
+      AtomMatrix forcePlus2 = force0;
+      AtomMatrix forceMinus2 = force0;
+      if (scheme != FdScheme::OneSided) {
+        forceMinus = shifted(-1.0, "-");
+        if (forceMinus.size() == 0) {
           return false;
         }
       }
-      const double denom = useCentral ? (2.0 * dr) : dr;
-      const AtomMatrix &forceB = useCentral ? forceMinus : force0;
+      if (scheme == FdScheme::Fourth) {
+        forcePlus2 = shifted(2.0, "+2");
+        if (forcePlus2.size() == 0) {
+          return false;
+        }
+        forceMinus2 = shifted(-2.0, "-2");
+        if (forceMinus2.size() == 0) {
+          return false;
+        }
+      }
+      const AtomMatrix slope = fdForceDerivative(
+          scheme, dr, force0, forcePlus, forceMinus, forcePlus2, forceMinus2);
+      const AtomMatrix zero = AtomMatrix::Zero(nAtoms, 3);
       for (int ia : group) {
         const int col = ia * 3 + dir;
         writeMassWeighted(hessian, *matter, atoms, col,
-                          static_cast<int>(atoms(ia)), forcePlus, forceB, denom,
+                          static_cast<int>(atoms(ia)), slope, zero, 1.0,
                           owner[static_cast<std::size_t>(c)], ia);
       }
     }
@@ -431,7 +441,7 @@ bool Hessian::calculateColored(double cutoff, double dr, bool useCentral) {
   return finalizeHessian(size);
 }
 
-bool Hessian::calculateSerial(double dr, bool useCentral) {
+bool Hessian::calculateSerial(double dr, FdScheme scheme) {
   const int nAtoms = static_cast<int>(matter->numberOfAtoms());
   const int size = static_cast<int>(atoms.rows()) * 3;
   const std::string &ckptPath = parameters.hessian_options().checkpoint_path;
@@ -476,7 +486,7 @@ bool Hessian::calculateSerial(double dr, bool useCentral) {
       return false;
     }
 
-    if (useCentral) {
+    if (scheme != FdScheme::OneSided) {
       posTemp = pos - posDisplace;
       matterTemp.setPositions(posTemp);
       forceMinus = matterTemp.getForces();
@@ -487,25 +497,38 @@ bool Hessian::calculateSerial(double dr, bool useCentral) {
                         i);
         return false;
       }
-      // Central: H_ij ≈ -(F+(xj) - F-(xj)) / (2 dr), mass-weighted
-      for (int j = 0; j < size; j++) {
-        const double dF =
-            forcePlus(atoms(j / 3), j % 3) - forceMinus(atoms(j / 3), j % 3);
-        hessian(i, j) = -dF / (2.0 * dr);
-        const double effMass = std::sqrt(matter->getMass(atoms(j / 3)) *
-                                         matter->getMass(atoms(i / 3)));
-        hessian(i, j) = eonc::safemath::safe_div(hessian(i, j), effMass, 0.0);
+    }
+    AtomMatrix forcePlus2 = force0;
+    AtomMatrix forceMinus2 = force0;
+    if (scheme == FdScheme::Fourth) {
+      posDisplace(atoms(i / 3), i % 3) = 2.0 * dr;
+      matterTemp.setPositions(pos + posDisplace);
+      forcePlus2 = matterTemp.getForces();
+      if (!forcePlus2.allFinite()) {
+        QUILL_LOG_ERROR(log,
+                        "[Hessian] non-finite forces for FD column {} (+2); "
+                        "aborting FD Hessian",
+                        i);
+        return false;
       }
-    } else {
-      // One-sided (forward): H_ij ≈ -(F+(xj) - F0(xj)) / dr
-      for (int j = 0; j < size; j++) {
-        const double dF =
-            forcePlus(atoms(j / 3), j % 3) - force0(atoms(j / 3), j % 3);
-        hessian(i, j) = -dF / dr;
-        const double effMass = std::sqrt(matter->getMass(atoms(j / 3)) *
-                                         matter->getMass(atoms(i / 3)));
-        hessian(i, j) = eonc::safemath::safe_div(hessian(i, j), effMass, 0.0);
+      matterTemp.setPositions(pos - posDisplace);
+      forceMinus2 = matterTemp.getForces();
+      if (!forceMinus2.allFinite()) {
+        QUILL_LOG_ERROR(log,
+                        "[Hessian] non-finite forces for FD column {} (-2); "
+                        "aborting FD Hessian",
+                        i);
+        return false;
       }
+    }
+    // H ≈ -dF, mass-weighted. dF is the selected real stencil.
+    const AtomMatrix slope = fdForceDerivative(
+        scheme, dr, force0, forcePlus, forceMinus, forcePlus2, forceMinus2);
+    for (int j = 0; j < size; j++) {
+      hessian(i, j) = -slope(atoms(j / 3), j % 3);
+      const double effMass = std::sqrt(matter->getMass(atoms(j / 3)) *
+                                       matter->getMass(atoms(i / 3)));
+      hessian(i, j) = eonc::safemath::safe_div(hessian(i, j), effMass, 0.0);
     }
 
     if (!ckptPath.empty()) {
