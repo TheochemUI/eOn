@@ -432,8 +432,8 @@ _rgpot_pkg = dependency(
 )
 if not _rgpot_pkg.found()
     # One profile must serve every eOn consumer in this configure: pots
-    # always; the RPC stack only when the RGPOT arm or serve mode asks
-    # (keeps capnp-rpc out of plain builds).
+    # always. The RPC stack is on for the direct RGPOT arm (non-Windows)
+    # and for serve mode. Plain Windows builds keep capnp-rpc out.
     rgpot_opts = {
         'with_rpc_client_only': false,
         'pure_lib': true,
@@ -446,7 +446,8 @@ if not _rgpot_pkg.found()
         # Fortran kernels inside librgpot.
         'with_fortran_pots': 'enabled',
     }
-    if get_option('with_rgpot') or get_option('with_serve')
+    # Direct RGPOT is mandatory off Windows; serve still opts into RPC there.
+    if not is_windows or get_option('with_serve')
         rgpot_opts += {'with_rpc': true}
     endif
     _rgpot_proj = subproject('rgpot', default_options: rgpot_opts)
@@ -460,9 +461,13 @@ if not _rgpot_pkg.found()
     )
 endif
 
-# vesin: single neighbor-list backend for classical pots + Metatomic.
+# vesin: single neighbor-list backend for Metatomic and eonc::VesinNeighbors.
 # Prefer pkg-config / system; else the rgpot subproject's vendored copy;
 # else eOn's own thirdparty/vesin single TU.
+# The vendored TU stays. Metatomic calls vesin_neighbors directly, and
+# eonc::VesinNeighbors is a public header, so Metatomic is not the only
+# consumer. An installed rgpot does not export vesin headers. The wrapper
+# stays in eOn; moving it would be an rgpot API change.
 vesin_dep = dependency('vesin', required: false)
 if not vesin_dep.found()
     vesin_dep = dependency('vesin', method: 'cmake', required: false)
@@ -581,7 +586,7 @@ if not is_windows
 endif
 
 # rgpot roles (see docs/user_guide/rgpot_integration.md):
-#   with_rgpot  -> nwchempot_dep + cpmdpot_dep (direct dlopen engines in eOn)
+#   non-Windows -> nwchempot_dep + cpmdpot_dep (direct dlopen engines in eOn)
 #   with_serve  -> ptlrpc_dep (eOn is Cap'n Proto RPC server)
 # potserv RPC *client* is not wired as an eOn Potential.
 #
@@ -596,7 +601,8 @@ cpmdpot_dep = disabler()
 _rgpot_from_pkg = false
 # rgpot is a hard dependency: the classical pair pots (LJ, LJCluster,
 # Morse, ZBL, ...) live in librgpot and eOn consumes them through the
-# RgpotAdapter. The QM frontends / RPC stack remain optional.
+# RgpotAdapter. The direct NWChem/CPMD arm is on everywhere except
+# Windows. Serve mode stays optional.
 #
 # 1) installed module first (never wrap fallback here); _rgpot_pkg is
 # probed above, next to the vesin choice that depends on it.
@@ -638,7 +644,7 @@ else
     if get_option('with_serve')
         ptlrpc_dep = _rgpot_proj.get_variable('ptlrpc_dep')
     endif
-    if get_option('with_rgpot') and not is_windows
+    if not is_windows
         nwchempot_dep = _rgpot_proj.get_variable('nwchempot_dep')
         cpmdpot_dep = _rgpot_proj.get_variable('cpmdpot_dep')
     endif
@@ -650,9 +656,9 @@ if get_option('with_serve')
         error('with_serve requires ptlrpc from rgpot (pkg-config or subproject)')
     endif
 endif
-if get_option('with_rgpot') and not is_windows
+if not is_windows
     if not nwchempot_dep.found() or not cpmdpot_dep.found()
-        error('with_rgpot requires nwchempot/cpmdpot from rgpot (pkg-config or subproject)')
+        error('RGPOT requires nwchempot/cpmdpot from rgpot (pkg-config or subproject)')
     endif
     _deps += [nwchempot_dep, cpmdpot_dep]
     _args += ['-DWITH_RGPOT']
@@ -668,7 +674,7 @@ potentials = [
 if not is_windows
     potentials += [socket_nwchem]
 endif
-if get_option('with_rgpot') and not is_windows
+if not is_windows
     potentials += [rgpot_pot]
 endif
 
@@ -1687,7 +1693,7 @@ if get_option('with_tests')
         message('NWChem executable not found, skipping SocketNWChemPotTest.')
     endif
 
-    if get_option('with_rgpot') and not is_windows
+    if not is_windows
         test_rgpot_exe = executable(
             'test_rgpot_pot',
             sources: [

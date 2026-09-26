@@ -85,7 +85,6 @@ setup = [
     "-Dwith_tests=false",
     "-Dwith_ase=false",
     "-Dwith_metatomic=false",
-    "-Dwith_rgpot=true",
     "-Dwith_xtb=false",
     "-Dwith_serve=false",
     "-Dwith_fortran=true",

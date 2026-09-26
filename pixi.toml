@@ -33,6 +33,9 @@ pyyaml = "*"
 sccache = "*"
 quill = ">=11.0.2,<12"
 rust = ">=1.88"
+# Direct RGPOT (non-Windows) links rgpot's NWChem/CPMD frontends, which need
+# Cap'n Proto. Windows builds leave that arm off.
+capnproto = ">=1.0,<2"
 
 [pypi-dependencies]
 towncrier = ">=25.8.0, <26"
@@ -125,8 +128,8 @@ ipython = ">=9.3.0,<10"
 # fixtures.
 pytest = ">=8"
 pytest-datadir = ">=1.5"
-# test_pyeonclient_packaging builds a -Dwith_rgpot=true wheel, which turns on
-# rgpot's RPC arm: capnp-rpc.pc and the capnp program are both required there.
+# pyeonclient wheels link the direct RGPOT arm, which turns on rgpot's RPC
+# stack: capnp-rpc.pc and the capnp program are both required there.
 capnproto = ">=1.0,<2"
 
 # sh drives the installed eonclient/eon binaries in tests/test_akmc_pt.py and

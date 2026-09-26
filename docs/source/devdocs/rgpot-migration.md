@@ -1,7 +1,7 @@
 # rgpot kernel inventory
 
-`eOn-6yzk` is the migration epic. This is the current split, not a
-claim that the epic is done.
+This is the current split of kernels between eOn and rgpot, not a
+claim that the move is finished.
 
 ## Already in rgpot (used via headers / FortranPots)
 
@@ -21,3 +21,18 @@ Highway SIMD for Morse/LJ belongs in **rgpot**, not `client/potentials`.
 | EMT / EAM / Water / Water_Pt / GPR / CatLearn | not yet in rgpot |
 
 Adding a new empirical kernel should go to rgpot first.
+
+## Neighbor lists
+
+`eonc::VesinNeighbors` stays in eOn. Metatomic calls `vesin_neighbors`
+directly and does not use that wrapper, so Metatomic is not the only
+consumer of vesin headers. Wrap builds take vesin from the rgpot
+subproject. Builds against an installed rgpot still compile eOn's
+vendored translation unit, because an installed `rgpot.pc` does not
+export vesin headers. Moving the wrapper into rgpot would be an rgpot
+API change, not a deletion of `client/thirdparty/vesin`.
+
+## Adding a kernel
+
+New empirical kernels go into rgpot, then an `RgpotAdapter` arm in eOn.
+See [Porting potentials](project:porting_potentials.md).

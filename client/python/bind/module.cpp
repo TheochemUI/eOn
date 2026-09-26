@@ -53,7 +53,7 @@ NB_MODULE(_core, m) {
         return false;
 #endif
       },
-      "True if compiled with -Dwith_rgpot=true (RGPOT pot / engine dlopen)");
+      "True on non-Windows builds (RGPOT pot / engine dlopen)");
 
   eonc::pybind::bind_enums(m);
   eonc::pybind::bind_parameters(m);
