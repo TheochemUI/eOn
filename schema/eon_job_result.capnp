@@ -1,7 +1,8 @@
 # eOn job request/result envelope — Cap'n Proto L0 for kill-file-IPC.
 #
 # Geometry is flat C-order positions (len=3N) and box (len=9), not .con text.
-# ConFrame remains the on-disk codec; this is the runtime / wire contract.
+# ConFrame remains the on-disk codec. The wire also carries forces, atom ids,
+# and a per-axis fixed bitmask when those lists are non-empty.
 # Wire ordinals are API: never renumber existing fields.
 #
 # statusCode preserves historical results.dat integer termination_reason values.
@@ -29,6 +30,12 @@ struct Geometry {
   # Optional energy associated with this geometry (eV)
   energy @6 :Float64 = 0.0;
   hasEnergy @7 :Bool = false;
+  # Cartesian forces, C-order, length 0 or 3 * nAtoms (eV/Å). Empty means absent.
+  forces @8 :List(Float64);
+  # readcon atom_id, length 0 or nAtoms. Empty means the file order is the identity.
+  atomId @9 :List(UInt64);
+  # Per-atom fixed axes. Bit 0 is x, bit 1 is y, bit 2 is z. Empty means all free.
+  fixedAxes @10 :List(UInt8);
 }
 
 # ---------------------------------------------------------------------

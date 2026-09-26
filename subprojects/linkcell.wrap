@@ -1,0 +1,9 @@
+[wrap-git]
+directory = linkcell
+url = https://github.com/d-SEAMS/linkcell.git
+revision = v0.3.3
+depth = 1
+
+[provide]
+linkcell = linkcell_dep
+linkcell-gpu = linkcell_gpu_dep

@@ -41,6 +41,7 @@ capnproto = ">=1.0,<2"
 towncrier = ">=25.8.0, <26"
 readcon = ">=0.14.9"
 vesin = ">=0.6.1, <0.7"
+linkcell = ">=0.3.3, <0.4"
 nanobind = ">=2.4.0, <3"  # pyeonclient (stable ABI / free-threaded); not pybind11
 xxhash = ">=3.4.0, <4"
 # In-tree source, not the PyPI release: the authoring flow in
