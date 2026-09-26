@@ -520,6 +520,9 @@ eoncbase_sources = [
     'fpe_handler.cpp',
     'PotRegistry.cpp',
     'PotentialParams.cpp',
+    # Option accessors only. Loaders stay in eonclib: they call io, rng,
+    # and the convergence-metric helper, which the plugin link does not.
+    'ParametersAccess.cpp',
     'VesinNeighbors.cpp',
     'potentials/PluginLoader.cpp',
 ]
