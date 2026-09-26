@@ -17,18 +17,16 @@
 #include <stdexcept>
 
 GPRPotential::GPRPotential(const eonc::Parameters &p)
-    : eonc::Potential(eonc::PotType::GPR, p) {
-  gpr_model = nullptr;
-}
+    : eonc::Potential(eonc::PotType::GPR, p) {}
 
 void GPRPotential::registerGPRObject(
     gpr::GaussianProcessRegression *_gpr_model) {
   gpr_model = _gpr_model;
 }
 
-void GPRPotential::initialize(void) {}
+void GPRPotential::initialize() {}
 
-void GPRPotential::cleanMemory(void) {}
+void GPRPotential::cleanMemory() {}
 
 // pointer to number of atoms, pointer to array of positions
 // pointer to array of forces, pointer to internal energy
@@ -36,7 +34,14 @@ void GPRPotential::cleanMemory(void) {}
 void GPRPotential::force(long N, const double *R, const int *atomicNrs,
                          double *F, double *U, double *variance,
                          const double *box) {
-  variance = nullptr;
+  (void)atomicNrs;
+  (void)box;
+  if (variance != nullptr) {
+    *variance = 0.0;
+  }
+  if (gpr_model == nullptr) {
+    throw std::runtime_error("GPRPotential: no GPR model registered");
+  }
   gpr::Observation observation;
 
   // Copy R points. Note, R should correspond to the moving atoms only.

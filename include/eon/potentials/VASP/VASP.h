@@ -19,9 +19,9 @@ public:
   VASP(const eonc::Parameters &p) : eonc::Potential(p) { vaspRunCount++; }
   ~VASP() { cleanMemory(); }
   void initialize() {};
-  void cleanMemory(void);
+  void cleanMemory();
   void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box);
+             double *U, double *variance, const double *box) override;
   /// force() writes POSCAR, signals through NEWCAR and waits on FU, all at
   /// fixed names in the working directory, so two threads in it swap results.
   [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }

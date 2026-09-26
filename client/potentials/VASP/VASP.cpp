@@ -10,16 +10,14 @@
 ** https://github.com/TheochemUI/eOn
 */
 
+#include <cerrno>
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
-#include <errno.h>
 #include <filesystem>
 #include <format>
 #include <fstream>
-#include <iostream>
 #include <stdexcept>
-#include <stdlib.h>
 #include <string>
 #include <system_error>
 #include <utility>
@@ -168,15 +166,14 @@ void VASP::spawnVASP() {
   const std::string scriptPath = script.string();
 
   if ((vaspPID = fork()) == -1) {
-    fprintf(stderr, "error forking for vasp: %s\n", strerror(errno));
-    exit(1);
+    throw std::runtime_error(
+        std::format("error forking for vasp: {}", std::strerror(errno)));
   }
 
-  if (vaspPID) {
-    /* We are the parent */
-    setvbuf(stdout, (char *)NULL, _IONBF, 0); // non-buffered output
+  if (vaspPID != 0) {
+    setvbuf(stdout, nullptr, _IONBF, 0);
   } else {
-    /* We are the child */
+    // The child must not throw: that would run the parent's destructors.
     int outFd = open("vaspout", O_CREAT | O_WRONLY | O_TRUNC, 0644);
     if (outFd == -1) {
       fprintf(stderr, "error opening vaspout: %s\n", strerror(errno));
@@ -186,7 +183,7 @@ void VASP::spawnVASP() {
       fprintf(stderr, "error redirecting vasp output: %s\n", strerror(errno));
       _exit(1);
     }
-    execl(scriptPath.c_str(), scriptPath.c_str(), (char *)NULL);
+    execl(scriptPath.c_str(), scriptPath.c_str(), nullptr);
     // Only reached when the exec failed; _exit keeps the child out of the
     // parent's exit handlers.
     fprintf(stderr, "error spawning vasp: %s\n", strerror(errno));
@@ -204,9 +201,8 @@ bool VASP::vaspRunning() {
 
   pid = waitpid(vaspPID, &status, WNOHANG);
 
-  if (pid) {
-    fprintf(stderr, "vasp died unexpectedly!\n");
-    exit(1);
+  if (pid != 0) {
+    throw std::runtime_error("vasp died unexpectedly");
   }
 
   return true;
@@ -214,7 +210,9 @@ bool VASP::vaspRunning() {
 
 void VASP::force(long N, const double *R, const int *atomicNrs, double *F,
                  double *U, double *variance, const double *box) {
-  variance = nullptr;
+  if (variance != nullptr) {
+    *variance = 0.0;
+  }
   writePOSCAR(N, R, atomicNrs, box);
 
   if (!vaspRunning()) {

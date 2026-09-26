@@ -20,9 +20,12 @@ public:
   MPIPot(const eonc::Parameters &p);
   ~MPIPot();
   void initialize() {};
-  void cleanMemory(void);
+  void cleanMemory();
   void force(long N, const double *R, const int *atomicNrs, double *F,
-             double *U, double *variance, const double *box);
+             double *U, double *variance, const double *box) override;
+  /// MPI_COMM_WORLD sends are not safe from two threads unless the library
+  /// was initialized with MPI_THREAD_MULTIPLE, which eOn does not require.
+  [[nodiscard]] bool isThreadSafe() const noexcept override { return false; }
 
 private:
   int potentialRank{0};
