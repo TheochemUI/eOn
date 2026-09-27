@@ -48,6 +48,7 @@ private:
             bool isolate_worker);
   eonc::ILammpsLoader &loader_;
   int lammpsThr{0};
+  bool lammpsLogging_{false};
 #ifdef EONMPI
   MPI_Comm mpiComm;
 #endif
