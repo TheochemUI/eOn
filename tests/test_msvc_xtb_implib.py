@@ -20,6 +20,16 @@ def test_lowercase_export_aliases_the_header_spelling():
     assert "xtb_newenvironment=xtb_newenvironment_" in lines
 
 
+def test_export_table_uses_the_xtb_token_not_the_rva_column():
+    mod = _implib()
+    text = """
+    ordinal hint RVA      name
+
+          1    0 00001000 00001000 xtb_newenvironment_
+"""
+    assert mod.export_names(text) == ["xtb_newenvironment_"]
+
+
 def test_existing_header_spelling_is_not_aliased():
     mod = _implib()
     lines = mod.alias_lines(["xtb_newEnvironment"])

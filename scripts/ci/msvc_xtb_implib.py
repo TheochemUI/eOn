@@ -94,10 +94,14 @@ def export_names(text: str) -> list[str]:
                 break
             continue
         parts = stripped.split()
-        if len(parts) < 4 or not parts[0].isdigit() or not parts[1].isdigit():
+        if len(parts) < 3 or not parts[0].isdigit() or not parts[1].isdigit():
             continue
-        name = parts[3]
-        if name.lower() in {"name", "rva"}:
+        name = ""
+        for token in parts:
+            bare = token.split("=", 1)[0]
+            if bare.lower().startswith("xtb") or bare.lower().startswith("_xtb"):
+                name = bare
+        if not name:
             continue
         names.append(name)
     return names
@@ -127,6 +131,13 @@ def main() -> None:
         if "environment" in name.lower():
             print(f"xtb export: {name}", file=sys.stderr)
     lines = alias_lines(names)
+    exported = {line.split("=", 1)[0] for line in lines}
+    if "xtb_newEnvironment" not in exported:
+        shown = "\n".join(names[:80])
+        sys.exit(
+            "xtb import library has no xtb_newEnvironment. "
+            f"DLL exports:\n{shown}"
+        )
     out_lib.parent.mkdir(parents=True, exist_ok=True)
     out_def = out_lib.with_suffix(".def")
     out_def.write_text("EXPORTS\n" + "\n".join(lines) + "\n", encoding="ascii")
