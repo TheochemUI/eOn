@@ -48,11 +48,12 @@ jobs:
             subprojects/rgpot/CppCore/tests/nwchemc_fake_engine.c \
             -o libnwchemc_fake_engine.so
           c++ -shared -fPIC -O2 \
+            $(pkg-config --cflags capnp) \
             -I subprojects/rgpot/CppCore \
             -I subprojects/rgpot/CppCore/rgpot/CPMDPot \
             -I bbdir/subprojects/rgpot/CppCore \
             subprojects/rgpot/CppCore/tests/cpmdc_fake_engine.cc \
-            -lcapnp -lkj \
+            $(pkg-config --libs capnp) \
             -o libcpmdc_fake_engine.so
       - name: Run rgpot potential tests
         shell: pixi run bash -e {0}
