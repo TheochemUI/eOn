@@ -244,14 +244,6 @@ repair_one() {
     [liblennard_jones_cluster.so]=libeon_lennard_jones_cluster.so
     [librgpot.so.3]=libeon_rgpot.so.3
   )
-  # Copies under the other librgpot names are unused once .so.3 is renamed;
-  # left in place they would still collide with pip rgpot's files.
-  local extra
-  for extra in "$libs_dir"/librgpot.so "$libs_dir"/librgpot.so.3.*; do
-    [[ -f "$extra" ]] || continue
-    rm -f "$extra"
-    echo "drop: $(basename "$extra")"
-  done
   for old_soname in "${!soname_map[@]}"; do
     new_soname="${soname_map[$old_soname]}"
     if [[ -f "$libs_dir/$old_soname" ]]; then
@@ -268,6 +260,21 @@ repair_one() {
         echo "replace-needed: $(basename "$so") $old_soname -> $new_soname"
       fi
     done
+  done < <(find "$work" -type f \( -name '*.so' -o -name '*.so.*' \) -print0)
+
+  # Copies under the other librgpot names, here or next to _core in the
+  # package directory, are unused once .so.3 is renamed; left in place they
+  # would still carry the colliding SONAME on _core's $ORIGIN RUNPATH.
+  local extra
+  while IFS= read -r -d '' extra; do
+    rm -f "$extra"
+    echo "drop: ${extra#"$work/"}"
+  done < <(find "$work" -type f \( -name 'librgpot.so' -o -name 'librgpot.so.[0-9]*' \) -print0)
+  while IFS= read -r -d '' so; do
+    if needed_libs "$so" | grep -q '^librgpot\.so'; then
+      echo "ERROR: $(basename "$so") still needs a dropped librgpot name" >&2
+      exit 1
+    fi
   done < <(find "$work" -type f \( -name '*.so' -o -name '*.so.*' \) -print0)
 
   # Repack with zip (always portable; no wheel.cli dependency)
