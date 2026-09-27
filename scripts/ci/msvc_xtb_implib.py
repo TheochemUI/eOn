@@ -94,7 +94,8 @@ def export_names(text: str) -> list[str]:
                 break
             continue
         parts = stripped.split()
-        if len(parts) < 3 or not parts[0].isdigit() or not parts[1].isdigit():
+        # The hint is hex, so it is not a decimal integer. The ordinal is.
+        if len(parts) < 3 or not parts[0].isdigit():
             continue
         name = ""
         for token in parts:

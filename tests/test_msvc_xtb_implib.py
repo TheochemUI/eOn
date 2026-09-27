@@ -20,6 +20,16 @@ def test_lowercase_export_aliases_the_header_spelling():
     assert "xtb_newenvironment=xtb_newenvironment_" in lines
 
 
+def test_hex_hint_does_not_drop_the_c_api_name():
+    mod = _implib()
+    text = """
+    ordinal hint RVA      name
+
+       2870  0B36 0005A580 xtb_newEnvironment
+"""
+    assert mod.export_names(text) == ["xtb_newEnvironment"]
+
+
 def test_export_table_uses_the_xtb_token_not_the_rva_column():
     mod = _implib()
     text = """
