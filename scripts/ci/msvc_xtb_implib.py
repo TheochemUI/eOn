@@ -68,10 +68,21 @@ def main() -> None:
     # The xtb header calls the undecorated C name.
     export_set = set(names)
     lines = list(names)
+    aliased = set()
     for name in names:
-        plain = name[1:] if name.startswith("_") else ""
-        if plain.startswith("xtb_") and plain not in export_set:
+        if "Environment" in name or "environment" in name:
+            print(f"xtb export: {name}", file=sys.stderr)
+        plain = name[1:] if name.startswith("_") else name
+        if plain.endswith("_"):
+            plain = plain[:-1]
+        if (
+            plain.startswith("xtb_")
+            and plain not in export_set
+            and plain not in aliased
+            and plain != name
+        ):
             lines.append(f"{plain}={name}")
+            aliased.add(plain)
     out_lib.parent.mkdir(parents=True, exist_ok=True)
     out_def = out_lib.with_suffix(".def")
     out_def.write_text("EXPORTS\n" + "\n".join(lines) + "\n", encoding="ascii")
