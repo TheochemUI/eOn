@@ -1493,7 +1493,10 @@ endif
 if get_option('default_library') == 'static'
     test_link = _linkto
 else
-    test_link = [eclib]
+    # eclib holds the one PotRegistry. Potential archives still have to be
+    # on the link line: a test can construct LAMMPSPot even when the client
+    # library did not pull that object in.
+    test_link = [eclib] + potentials
 endif
 
 # ---------------------- Executable
