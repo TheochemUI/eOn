@@ -1,0 +1,1 @@
+pyeonclient wheels carry the vendored rgpot as libeon_rgpot.so.3. Under the shared librgpot.so.3 SONAME, the pip rgpot wheel bound to that copy. Importing rgpot after pyeonclient then failed on a missing rgpot::D3Pot symbol, and the metatomic engine was not found.
